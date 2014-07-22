@@ -1,0 +1,65 @@
+body {
+    font-size: 11px;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+table#events {
+    font-size: 12px;
+}
+
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited, .ui-state-hover a, .ui-state-hover a:link, .ui-state-hover a:visited  {
+    outline: none;
+}
+
+.ui-jqgrid tr.jqgrow td {
+    font-size: 12px;
+}
+
+.ui-jqgrid .ui-pg-input {
+    height: 20px !important;
+}
+#tabs {
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+
+}
+
+.header {
+    height: 29px;
+    line-height: 29px;
+    font-size: 16px;
+    margin-left: 5px !important;
+    margin-right: 6px !important;
+}
+
+.ui-tabs-nav {
+    border-radius: 0;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+.ui-tabs-panel {
+    border: none;
+    padding: 8px !important;
+}
+
+.ui-jqgrid-titlebar-close {
+    display: none !important;
+}
+
+#edit-object-common, #edit-object-native {
+    font-size: 12px;
+    width: 300px;
+    height: 240px;
+    padding:0;
+    margin:0;
+    border: 1px solid grey;
+    outline: none;
+    box-shadow: none;
+    resize:none;
+}

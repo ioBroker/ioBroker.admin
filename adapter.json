@@ -1,0 +1,19 @@
+{
+    "common": {
+        "name":                     "admin",
+        "version":                  "0.0.1",
+        "mode":                     "daemon",
+        "platform":                 "javascript/Node.js",
+        "loglevel":                 "info"
+    },
+    "native": {
+        "listenPort":               8080,
+        "listenPortSsl":            null,
+        "auth":                     false,
+        "authSsl":                  false,
+        "cache":                    false
+    },
+    "objects": [
+
+    ]
+}
