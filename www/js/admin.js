@@ -57,7 +57,8 @@ $(document).ready(function () {
         },
         afterInsertRow: function (rowid) {
             // Remove icon and click handler if no children available
-            if (!children[rowid.slice(7)]) {
+            var id = $('tr#' + rowid.replace(/\./g, '\\.')).find('td[aria-describedby$="_id"]').html();
+            if (!children[id]) {
                 $('td.sgcollapsed', '[id="' + rowid + '"').empty().removeClass('ui-sgcollapsed sgcollapsed');
             }
         },
@@ -109,7 +110,8 @@ $(document).ready(function () {
                     }
                 });
             }
-            alert('TODO delete ' + objSelected.slice(7)); //TODO
+            var id = $('tr#' + objSelected.replace(/\./g, '\\.')).find('td[aria-describedby$="_id"]').html();
+            alert('TODO delete ' + id); //TODO
         },
         position: 'first',
         id: 'del-object',
@@ -127,7 +129,8 @@ $(document).ready(function () {
                     }
                 });
             }
-            editObject(objSelected.slice(7));
+            var id = $('tr#' + objSelected.replace(/\./g, '\\.')).find('td[aria-describedby$="_id"]').html();
+            editObject(id);
         },
         position: 'first',
         id: 'edit-object',
@@ -213,7 +216,6 @@ $(document).ready(function () {
         $subgrid.jqGrid(gridConf);
 
         for (var i = 0; i < children[id].length; i++) {
-            console.log(children[id]);
             $subgrid.jqGrid('addRowData', 'object_' + objects[children[id][i]]._id.replace(/ /g, '_'), objects[children[id][i]]);
         }
         $subgrid.trigger('reloadGrid');
@@ -295,8 +297,6 @@ $(document).ready(function () {
             }
             $gridObjects.trigger('reloadGrid');
             if (typeof callback === 'function') callback();
-            console.log(toplevel);
-            console.log(children);
         });
     }
 
