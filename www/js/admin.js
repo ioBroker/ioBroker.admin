@@ -227,12 +227,13 @@ $(document).ready(function () {
     var $gridStates = $('#grid-states');
     $gridStates.jqGrid({
         datatype: 'local',
-        colNames:['id', 'name', 'val', 'ack', 'ts', 'lc'],
+        colNames:['id', 'name', 'val', 'ack', 'from', 'ts', 'lc'],
         colModel :[
             {name:'_id', index:'_id', width: 475, fixed: true},
             {name:'name', index:'name', width: 200, fixed: false},
             {name:'val', index:'ack', width: 160, editable: true},
             {name:'ack', index:'ack', width: 80, fixed: false, editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
+            {name:'from', index:'from', width: 80, fixed: false},
             {name:'ts', index:'ts', width: 138, fixed: false},
             {name:'lc', index:'lc', width: 138, fixed: false}
         ],
@@ -246,6 +247,7 @@ $(document).ready(function () {
         onSelectRow: function (id) {
             var rowData = $gridStates.jqGrid('getRowData', id);
             rowData.ack = false;
+            rowData.from = '';
             $gridStates.jqGrid('setRowData', id, rowData);
 
             if (id && id !== stateLastSelected) {
@@ -267,7 +269,7 @@ $(document).ready(function () {
                 var ack = $gridStates.jqGrid("getCell", stateLastSelected, "ack");
                 if (ack === 'true') ack = true;
                 if (ack === 'false') ack = false;
-                var id = stateLastSelected.slice(6);
+                var id = $('tr#' + stateLastSelected.replace(/\./g, '\\.')).find('td[aria-describedby$="_id"]').html();
                 socket.emit('setState', id, {val:val, ack:ack});
             });
         }
@@ -345,7 +347,8 @@ $(document).ready(function () {
         rowData.ack = obj.ack;
         if (obj.ts) rowData.ts = formatDate(new Date(obj.ts * 1000));
         if (obj.lc) rowData.lc = formatDate(new Date(obj.lc * 1000));
-        $gridStates.jqGrid('setRowData', 'state_' + id, rowData);
+        rowData.from = obj.from;
+        $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), rowData);
 
         // prepend to Event-Table
         $('#events').prepend('<tr><td>stateChange</td><td>' + id + '</td><td>' + JSON.stringify(obj) + '</td></tr>');
