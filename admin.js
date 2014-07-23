@@ -14,12 +14,10 @@ var adapter = require('../../modules/adapter.js')({
 
     // Ein paar Attribute die jeder Adapter mitbringen muss
     name:           'admin',
-    version:        '0.0.1',
-
 
     // Event-Handler für Adapter-Installation
     install: function (callback) {
-        if (typeof callback === 'function') callback;
+        if (typeof callback === 'function') callback();
     },
 
     // Wird aufgerufen wenn sich ein Objekt - das via adapter.subscribeObjects aboniert wurde - ändert.
