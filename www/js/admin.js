@@ -214,7 +214,7 @@ $(document).ready(function () {
 
         for (var i = 0; i < children[id].length; i++) {
             console.log(children[id]);
-            $subgrid.jqGrid('addRowData', 'object_' + objects[children[id][i]]._id.replace(' ', '_'), objects[children[id][i]]);
+            $subgrid.jqGrid('addRowData', 'object_' + objects[children[id][i]]._id.replace(/ /g, '_'), objects[children[id][i]]);
         }
         $subgrid.trigger('reloadGrid');
     }
@@ -291,7 +291,7 @@ $(document).ready(function () {
                 }
             }
             for (var i = 0; i < toplevel.length; i++) {
-                $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(' ', '_'), objects[toplevel[i]]);
+                $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/ /g, '_'), objects[toplevel[i]]);
             }
             $gridObjects.trigger('reloadGrid');
             if (typeof callback === 'function') callback();
@@ -311,7 +311,7 @@ $(document).ready(function () {
                 obj.type = objects[obj._id] && objects[obj._id].common ? objects[obj._id].common.type : '';
                 if (obj.ts) obj.ts = formatDate(new Date(obj.ts * 1000));
                 if (obj.lc) obj.lc = formatDate(new Date(obj.lc * 1000));
-                $gridStates.jqGrid('addRowData', 'state_' + key.replace(' ', '_'), obj);
+                $gridStates.jqGrid('addRowData', 'state_' + key.replace(/ /g, '_'), obj);
             }
             $gridStates.trigger('reloadGrid');
             if (typeof callback === 'function') callback();
