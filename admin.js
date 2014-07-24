@@ -76,8 +76,8 @@ function main() {
 
 function initWebserver() {
     if (adapter.config.listenPort) {
-        app = express();
-        server =    require('http').createServer(app)
+        app    = express();
+        server = require('http').createServer(app);
     }
     if (adapter.config.listenPortSsl) {
         try {
