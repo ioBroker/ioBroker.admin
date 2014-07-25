@@ -10,7 +10,7 @@ var app,
 var objects = {};
 var states = {};
 
-var adapter = require('../../modules/adapter.js')({
+var adapter = require('.././adapter.js')({
 
     // Ein paar Attribute die jeder Adapter mitbringen muss
     name:           'admin',
