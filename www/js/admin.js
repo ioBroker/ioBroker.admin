@@ -57,10 +57,11 @@ $(document).ready(function () {
         },
         afterInsertRow: function (rowid) {
             // Remove icon and click handler if no children available
-            var id = $('tr#' + rowid.replace(/\./g, '\\.')).find('td[aria-describedby$="_id"]').html();
+            var id = $('tr#' + rowid.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
             if (!children[id]) {
                 $('td.sgcollapsed', '[id="' + rowid + '"').empty().removeClass('ui-sgcollapsed sgcollapsed');
             }
+
         },
         onSelectRow: function (rowid, e) {
             // unselect other subgrids but not myself
@@ -110,7 +111,7 @@ $(document).ready(function () {
                     }
                 });
             }
-            var id = $('tr#' + objSelected.replace(/\./g, '\\.')).find('td[aria-describedby$="_id"]').html();
+            var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
             alert('TODO delete ' + id); //TODO
         },
         position: 'first',
@@ -129,7 +130,7 @@ $(document).ready(function () {
                     }
                 });
             }
-            var id = $('tr#' + objSelected.replace(/\./g, '\\.')).find('td[aria-describedby$="_id"]').html();
+            var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
             editObject(id);
         },
         position: 'first',
@@ -149,7 +150,7 @@ $(document).ready(function () {
     });
 
     function subGridObjects(grid, row, level) {
-        var id = $('tr#' + row.replace(/\./g, '\\.')).find('td[aria-describedby$="_id"]').html();
+        var id = $('tr#' + row.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
         var subgridTableId = grid + '_t';
         $('[id="' + grid + '"]').html('<table class="subgrid-level-' + level + '" id="' + subgridTableId + '"></table>');
         var $subgrid = $('table[id="' + subgridTableId + '"]');
@@ -216,7 +217,12 @@ $(document).ready(function () {
         $subgrid.jqGrid(gridConf);
 
         for (var i = 0; i < children[id].length; i++) {
-            $subgrid.jqGrid('addRowData', 'object_' + objects[children[id][i]]._id.replace(/ /g, '_'), objects[children[id][i]]);
+            console.log(objects[children[id][i]]);
+            $subgrid.jqGrid('addRowData', 'object_' + objects[children[id][i]]._id.replace(/ /g, '_'), {
+                _id: objects[children[id][i]]._id,
+                name: objects[children[id][i]].common ? objects[children[id][i]].common.name : '',
+                type: objects[children[id][i]].type
+            });
         }
         $subgrid.trigger('reloadGrid');
     }
@@ -269,7 +275,7 @@ $(document).ready(function () {
                 var ack = $gridStates.jqGrid("getCell", stateLastSelected, "ack");
                 if (ack === 'true') ack = true;
                 if (ack === 'false') ack = false;
-                var id = $('tr#' + stateLastSelected.replace(/\./g, '\\.')).find('td[aria-describedby$="_id"]').html();
+                var id = $('tr#' + stateLastSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
                 socket.emit('setState', id, {val:val, ack:ack});
             });
         }
@@ -295,7 +301,11 @@ $(document).ready(function () {
                 }
             }
             for (var i = 0; i < toplevel.length; i++) {
-                $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/ /g, '_'), objects[toplevel[i]]);
+                $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/ /g, '_'), {
+                    _id: objects[toplevel[i]]._id,
+                    name: objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
+                    type: objects[toplevel[i]].type
+                });
             }
             $gridObjects.trigger('reloadGrid');
             if (typeof callback === 'function') callback();
