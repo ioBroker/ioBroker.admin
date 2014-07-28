@@ -1,3 +1,7 @@
+/* jshint -W097 */// jshint strict:false
+/*jslint node: true */
+"use strict";
+
 var express =   require('express');
 var socketio =  require('socket.io');
 var app;
@@ -12,8 +16,15 @@ var states =    {};
 
 var adapter = require(__dirname + '/../../lib/adapter.js')({
 
+    // Ein paar Attribute die jeder Adapter mitbringen muss
     name:           'admin',
 
+    // Event-Handler für Adapter-Installation
+    install: function (callback) {
+        if (typeof callback === 'function') callback();
+    },
+
+    // Wird aufgerufen wenn sich ein Objekt - das via adapter.subscribeObjects aboniert wurde - ändert.
     objectChange: function (id, obj) {
         objects[id] = obj;
 
@@ -21,12 +32,14 @@ var adapter = require(__dirname + '/../../lib/adapter.js')({
         if (ioSsl)  ioSsl.sockets.emit('objectChange', id, obj);
     },
 
+    // Wird aufgerufen wenn sich ein Status - der via adapter.subscribeStates aboniert wurde - ändert.
     stateChange: function (id, state) {
         states[id] = state;
         if (io)     io.sockets.emit('stateChange', id, state);
         if (ioSsl)  ioSsl.sockets.emit('stateChange', id, state);
     },
 
+    // Wird aufgerufen bevor der Adapter beendet wird - callback muss unbedingt aufgerufen werden!
     unload: function (callback) {
         try {
             if (server) {
@@ -45,6 +58,8 @@ var adapter = require(__dirname + '/../../lib/adapter.js')({
         }
     },
 
+    // Wird aufgerufen wenn der Adapter mit den Datenbanken verbunden ist und seine Konfiguration erhalten hat.
+    // Hier einsteigen!
     ready: function () {
         main();
     }
@@ -70,12 +85,14 @@ function initWebserver() {
         server = require('http').createServer(app);
     }
     if (adapter.config.listenPortSsl) {
+        var fs = require('fs');
+        var options;
         try {
             options = {
-                key: fs.readFileSync(__dirname+'/cert/privatekey.pem'),
-                cert: fs.readFileSync(__dirname+'/cert/certificate.pem')
+                key:  fs.readFileSync(__dirname + '/cert/privatekey.pem'),
+                cert: fs.readFileSync(__dirname + '/cert/certificate.pem')
             };
-        } catch(err) {
+        } catch (err) {
             adapter.log.error(err.message);
         }
         if (options) {
@@ -85,7 +102,7 @@ function initWebserver() {
     }
 
     if (adapter.config.cache) {
-        app.use('/', express.static(__dirname + '/www', { maxAge: 30758400000 }));
+        app.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
     } else {
         app.use('/', express.static(__dirname + '/www'));
     }
