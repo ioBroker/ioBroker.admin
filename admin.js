@@ -157,5 +157,10 @@ function initSocket(socket) {
         });
     });
 
+    socket.on('extendObject', function (id, obj, callback) {
+        adapter.extendForeignObject(id, obj, function (err, res) {
+            if (typeof callback === 'function') callback(err, res);
+        });
+    });
 }
 

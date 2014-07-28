@@ -1,9 +1,13 @@
 {
     "common": {
         "name":                     "admin",
-        "version":                  "0.0.1",
+        "version":                  "0.0.2",
+        "title":                    "ioBroker Admin Adapter",
+        "desc": {
+            "en":                   "opens a webserver for the ioBroker admin UI"
+        },
         "mode":                     "daemon",
-        "platform":                 "javascript/Node.js",
+        "platform":                 "Javascript/Node.js",
         "loglevel":                 "info"
     },
     "native": {
