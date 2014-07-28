@@ -32,11 +32,11 @@ $(document).ready(function () {
     var $gridObjects = $('#grid-objects');
     $gridObjects.jqGrid({
         datatype: 'local',
-        colNames:['id','name', 'type'],
-        colModel :[
-            {name:'_id', index:'_id', width: 450, fixed: true},
-            {name:'name', index:'name'},
-            {name:'type', index:'type', width: 120, fixed: true,
+        colNames: ['id', 'name', 'type'],
+        colModel: [
+            {name: '_id',  index:'_id', width: 450, fixed: true},
+            {name: 'name', index:'name'},
+            {name: 'type', index:'type', width: 120, fixed: true,
                 //formatter:'select',
                 stype: 'select',
                 searchoptions: {
@@ -46,7 +46,7 @@ $(document).ready(function () {
         ],
         pager: $('#pager-objects'),
         rowNum: 100,
-        rowList: [20,50,100],
+        rowList: [20, 50, 100],
         sortname: "id",
         sortorder: "desc",
         viewrecords: true,
@@ -77,7 +77,7 @@ $(document).ready(function () {
             var objSelected = $gridObjects.jqGrid('getGridParam', 'selrow');
             if (!objSelected) {
                 $('[id^="grid-objects"][id$="_t"]').not('[id="' + grid + '_t"]').each(function () {
-                    if ($(this).jqGrid('getGridParam','selrow')) {
+                    if ($(this).jqGrid('getGridParam', 'selrow')) {
                         objSelected = $(this).jqGrid('getGridParam', 'selrow');
                     }
                 });
@@ -103,11 +103,11 @@ $(document).ready(function () {
         caption: '',
         buttonicon: 'ui-icon-trash',
         onClickButton: function () {
-            var objSelected = $gridObjects.jqGrid('getGridParam','selrow');
+            var objSelected = $gridObjects.jqGrid('getGridParam', 'selrow');
             if (!objSelected) {
                 $('[id^="grid-objects"][id$="_t"]').each(function () {
-                    if ($(this).jqGrid('getGridParam','selrow')) {
-                        objSelected = $(this).jqGrid('getGridParam','selrow');
+                    if ($(this).jqGrid('getGridParam', 'selrow')) {
+                        objSelected = $(this).jqGrid('getGridParam', 'selrow');
                     }
                 });
             }
@@ -122,11 +122,11 @@ $(document).ready(function () {
         caption: '',
         buttonicon: 'ui-icon-pencil',
         onClickButton: function () {
-            var objSelected = $gridObjects.jqGrid('getGridParam','selrow');
+            var objSelected = $gridObjects.jqGrid('getGridParam', 'selrow');
             if (!objSelected) {
                 $('[id^="grid-objects"][id$="_t"]').each(function () {
-                    if ($(this).jqGrid('getGridParam','selrow')) {
-                        objSelected = $(this).jqGrid('getGridParam','selrow');
+                    if ($(this).jqGrid('getGridParam', 'selrow')) {
+                        objSelected = $(this).jqGrid('getGridParam', 'selrow');
                     }
                 });
             }
@@ -156,11 +156,11 @@ $(document).ready(function () {
         var $subgrid = $('table[id="' + subgridTableId + '"]');
         var gridConf = {
             datatype: 'local',
-            colNames:['id','name', 'type'],
-            colModel :[
-                {name:'_id', index:'_id', width: 450 - (level * 27), fixed: true},
-                {name:'name', index:'name'},
-                {name:'type', index:'type', width: 120 - (level * 2), fixed: true}
+            colNames: ['id', 'name', 'type'],
+            colModel: [
+                {name: '_id',  index: '_id', width: 450 - (level * 27), fixed: true},
+                {name: 'name', index: 'name'},
+                {name: 'type', index: 'type', width: 120 - (level * 2), fixed: true}
             ],
             rowNum: 1000000,
             autowidth: true,
@@ -180,7 +180,7 @@ $(document).ready(function () {
                 var objSelected = $gridObjects.jqGrid('getGridParam', 'selrow');
                 if (!objSelected) {
                     $('[id^="grid-objects"][id$="_t"]').not('[id="' + grid + '_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam','selrow')) {
+                        if ($(this).jqGrid('getGridParam', 'selrow')) {
                             objSelected = $(this).jqGrid('getGridParam', 'selrow');
                         }
                     });
@@ -233,19 +233,19 @@ $(document).ready(function () {
     var $gridStates = $('#grid-states');
     $gridStates.jqGrid({
         datatype: 'local',
-        colNames:['id', 'name', 'val', 'ack', 'from', 'ts', 'lc'],
-        colModel :[
-            {name:'_id', index:'_id', width: 475, fixed: true},
-            {name:'name', index:'name', width: 200, fixed: false},
-            {name:'val', index:'ack', width: 160, editable: true},
-            {name:'ack', index:'ack', width: 80, fixed: false, editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
-            {name:'from', index:'from', width: 80, fixed: false},
-            {name:'ts', index:'ts', width: 138, fixed: false},
-            {name:'lc', index:'lc', width: 138, fixed: false}
+        colNames: ['id', 'name', 'val', 'ack', 'from', 'ts', 'lc'],
+        colModel: [
+            {name: '_id',  index: '_id',  width: 475, fixed: true},
+            {name: 'name', index: 'name', width: 200, fixed: false},
+            {name: 'val',  index: 'ack',  width: 160, editable: true},
+            {name: 'ack',  index: 'ack',  width: 80,  fixed: false, editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
+            {name: 'from', index: 'from', width: 80,  fixed: false},
+            {name: 'ts',   index: 'ts',   width: 138, fixed: false},
+            {name: 'lc',   index: 'lc',   width: 138, fixed: false}
         ],
         pager: $('#pager-states'),
         rowNum: 100,
-        rowList: [20,50,100],
+        rowList: [20, 50, 100],
         sortname: "id",
         sortorder: "desc",
         viewrecords: true,
@@ -394,8 +394,12 @@ $(document).ready(function () {
     function resizeGrids() {
         var x = $(window).width();
         var y = $(window).height();
-        if (x < 720) { x = 720; }
-        if (y < 480) { y = 480; }
+        if (x < 720) {
+            x = 720;
+        }
+        if (y < 480) {
+            y = 480;
+        }
         $('#grid-states').setGridHeight(y - 150).setGridWidth(x - 20);
         $('#grid-objects').setGridHeight(y - 150).setGridWidth(x - 20);
         $('.subgrid-level-1').setGridWidth(x - 67);
