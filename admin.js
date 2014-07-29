@@ -4,6 +4,7 @@
 
 var express =   require('express');
 var socketio =  require('socket.io');
+var password =  require(__dirname + '/../../lib/password.js');
 var app;
 var appSsl;
 var server;
@@ -76,6 +77,39 @@ function main() {
     initWebserver();
 
     getData();
+
+}
+
+function checkPassword(user, pw, callback) {
+
+    if (!objects['system.user.' + user]) callback(false);
+
+    password(pw).check(objects['system.user.' + user].common.password, function (err, res) {
+        callback(res);
+    });
+
+}
+
+function setPassword(user, pw, callback) {
+    if (!objects['system.user.' + user]) {
+        if (typeof callback === 'function') callback(false);
+        return false;
+    }
+
+    password(pw).hash(null, null, function (err, res) {
+        if (err) {
+            if (typeof callback === 'function') callback(false);
+            return;
+        }
+        adapter.extendForeignObject('system.user.' + user, {
+            common: {
+                password: res
+            }
+        }, function () {
+            if (typeof callback === 'function') callback(true);
+            return true;
+        });
+    });
 
 }
 
