@@ -294,8 +294,8 @@ $(document).ready(function () {
     var $gridInstances = $('#grid-instances');
     $gridInstances.jqGrid({
         datatype: 'local',
-        colNames:['id', 'name', 'title', 'version', 'enabled', 'host', 'mode', 'platform', 'loglevel', 'alive', 'connected'],
-        colModel :[
+        colNames: ['id', 'name', 'title', 'version', 'enabled', 'host', 'mode', 'platform', 'loglevel', 'alive', 'connected'],
+        colModel: [
             {name: '_id',       index: '_id'},
             {name: 'name',      index: 'name', editable: true},
             {name: 'title',     index: 'title'},
@@ -310,7 +310,7 @@ $(document).ready(function () {
         ],
         pager: $('#pager-instances'),
         rowNum: 100,
-        rowList: [20,50,100],
+        rowList: [20, 50, 100],
         sortname: "id",
         sortorder: "desc",
         viewrecords: true,
@@ -370,11 +370,11 @@ $(document).ready(function () {
         caption: '',
         buttonicon: 'ui-icon-trash',
         onClickButton: function () {
-            var objSelected = $gridInstances.jqGrid('getGridParam','selrow');
+            var objSelected = $gridInstances.jqGrid('getGridParam', 'selrow');
             if (!objSelected) {
                 $('[id^="grid-objects"][id$="_t"]').each(function () {
-                    if ($(this).jqGrid('getGridParam','selrow')) {
-                        objSelected = $(this).jqGrid('getGridParam','selrow');
+                    if ($(this).jqGrid('getGridParam', 'selrow')) {
+                        objSelected = $(this).jqGrid('getGridParam', 'selrow');
                     }
                 });
             }
@@ -389,11 +389,11 @@ $(document).ready(function () {
         caption: '',
         buttonicon: 'ui-icon-pencil',
         onClickButton: function () {
-            var objSelected = $gridInstances.jqGrid('getGridParam','selrow');
+            var objSelected = $gridInstances.jqGrid('getGridParam', 'selrow');
             if (!objSelected) {
                 $('[id^="grid-objects"][id$="_t"]').each(function () {
-                    if ($(this).jqGrid('getGridParam','selrow')) {
-                        objSelected = $(this).jqGrid('getGridParam','selrow');
+                    if ($(this).jqGrid('getGridParam', 'selrow')) {
+                        objSelected = $(this).jqGrid('getGridParam', 'selrow');
                     }
                 });
             }
