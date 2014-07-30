@@ -16,31 +16,21 @@ var objects =   {};
 var states =    {};
 
 var adapter = require(__dirname + '/../../lib/adapter.js')({
-
-    // Ein paar Attribute die jeder Adapter mitbringen muss
     name:           'admin',
-
-    // Event-Handler für Adapter-Installation
     install: function (callback) {
         if (typeof callback === 'function') callback();
     },
-
-    // Wird aufgerufen wenn sich ein Objekt - das via adapter.subscribeObjects aboniert wurde - ändert.
     objectChange: function (id, obj) {
         objects[id] = obj;
 
         if (io)     io.sockets.emit('objectChange', id, obj);
         if (ioSsl)  ioSsl.sockets.emit('objectChange', id, obj);
     },
-
-    // Wird aufgerufen wenn sich ein Status - der via adapter.subscribeStates aboniert wurde - ändert.
     stateChange: function (id, state) {
         states[id] = state;
         if (io)     io.sockets.emit('stateChange', id, state);
         if (ioSsl)  ioSsl.sockets.emit('stateChange', id, state);
     },
-
-    // Wird aufgerufen bevor der Adapter beendet wird - callback muss unbedingt aufgerufen werden!
     unload: function (callback) {
         try {
             if (server) {
@@ -58,16 +48,10 @@ var adapter = require(__dirname + '/../../lib/adapter.js')({
             callback();
         }
     },
-
-    // Wird aufgerufen wenn der Adapter mit den Datenbanken verbunden ist und seine Konfiguration erhalten hat.
-    // Hier einsteigen!
     ready: function () {
         main();
     }
-
 });
-
-
 
 function main() {
 
@@ -83,8 +67,12 @@ function main() {
 function initWebserver() {
     if (adapter.config.listenPort) {
         app    = express();
+        if (adapter.config.auth && adapter.config.authUser) {
+            app.use(express.basicAuth(adapter.config.authUser, adapter.config.authPassword));
+        }
         server = require('http').createServer(app);
     }
+
     if (adapter.config.listenPortSsl) {
         var fs = require('fs');
         var options;
@@ -98,6 +86,9 @@ function initWebserver() {
         }
         if (options) {
             appSsl = express();
+            if (adapter.config.auth && adapter.config.authUser) {
+                appSsl.use(express.basicAuth(adapter.config.authUser, adapter.config.authPassword));
+            }
             serverSsl = require('https').createServer(options, appSsl);
         }
     }

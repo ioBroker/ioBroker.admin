@@ -420,10 +420,11 @@ $(document).ready(function () {
     function getObjects(callback) {
         $gridObjects.jqGrid('clearGridData');
         socket.emit('getObjects', function (err, res) {
+            var obj;
             objects = res;
             for (var id in objects) {
                 if (id.slice(0, 7) === '_design') continue;
-                var obj = objects[id];
+                obj = objects[id];
                 if (obj.parent) {
                     if (!children[obj.parent]) children[obj.parent] = [];
                     children[obj.parent].push(id);
@@ -442,8 +443,8 @@ $(document).ready(function () {
                 });
             }
             $gridObjects.trigger('reloadGrid');
-            for (var i = 0; i < instances.length; i++) {
-                var obj = objects[instances[i]];
+            for (i = 0; i < instances.length; i++) {
+                obj = objects[instances[i]];
                 $gridInstances.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
                     _id: obj._id,
                     name: obj.common ? obj.common.name : '',
@@ -543,12 +544,12 @@ $(document).ready(function () {
         id = parts.join('.');
         if (last === 'alive' && instances.indexOf(id) !== -1) {
             rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
-            rowData.alive = obj.val
+            rowData.alive = obj.val;
             $gridInstances.jqGrid('setRowData', 'instance_' + id.replace(/ /g, '_'), rowData);
 
         } else if (last === 'connected' && instances.indexOf(id) !== -1) {
             rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
-            rowData.connected = obj.val
+            rowData.connected = obj.val;
             $gridInstances.jqGrid('setRowData', 'instance_' + id.replace(/ /g, '_'), rowData);
         }
 
