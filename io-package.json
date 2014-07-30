@@ -4,17 +4,22 @@
         "version":                  "0.0.2",
         "title":                    "ioBroker Admin Adapter",
         "desc": {
-            "en":                   "opens a webserver for the ioBroker admin UI"
+            "en":                   "opens a webserver for the ioBroker admin UI",
+            "de":                   "Stellt webserver mit 'ioBroker admin UI' zur Verfügung",
+            "ru":                   "Запускает веб сервер с 'ioBroker admin UI' для удобной настройки через веб интерфейс"
         },
         "mode":                     "daemon",
         "platform":                 "Javascript/Node.js",
-        "loglevel":                 "info"
+        "loglevel":                 "info",
+        "keywords":                 ["admin", "setup"]
     },
     "native": {
         "listenPort":               8080,
         "listenPortSsl":            null,
         "auth":                     false,
         "authSsl":                  false,
+        "authUser":                 "admin",
+        "authPassword":             "password",
         "cache":                    false
     },
     "objects": [
