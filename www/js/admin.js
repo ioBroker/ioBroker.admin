@@ -246,6 +246,7 @@ $(document).ready(function () {
     var stateEdit = false;
     var stateLastSelected;
 
+
     var $gridStates = $('#grid-states');
     $gridStates.jqGrid({
         datatype: 'local',
