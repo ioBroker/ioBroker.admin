@@ -4,6 +4,7 @@
 
 var express =   require('express');
 var socketio =  require('socket.io');
+var password =  require(__dirname + '/../../lib/password.js');
 var app;
 var appSsl;
 var server;
@@ -61,7 +62,7 @@ function main() {
 
     getData();
 
-}
+
 
 function initWebserver() {
     if (adapter.config.listenPort) {
