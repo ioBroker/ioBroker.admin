@@ -62,7 +62,7 @@ function main() {
 
     getData();
 
-
+}
 
 function initWebserver() {
     if (adapter.config.listenPort) {
