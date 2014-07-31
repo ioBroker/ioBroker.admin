@@ -4,6 +4,7 @@
 
 var express =   require('express');
 var socketio =  require('socket.io');
+var crypto =    require('crypto');
 var password =  require(__dirname + '/../../lib/password.js');
 var app;
 var appSsl;
@@ -69,7 +70,7 @@ function unauthorized (res, realm) {
     res.end('Unauthorized');
 };
 
-function basicAuth(callback, realm) {
+function basicAuth (callback, realm) {
     var username, password;
 
     // user / pass strings
@@ -123,6 +124,27 @@ function basicAuth(callback, realm) {
     }
 };
 
+function authFile (isSsl) {
+    return function (req, res) {
+        if ((!isSsl && !adapter.config.auth) || (isSsl && !!adapter.config.authSsl)) {
+            res.set('Content-Type', 'text/javascript');
+            res.send("var socketSession='nokey';");
+        } else {
+            // Read md5 hash of this user
+            adapter.getForeignObject('system.user.' + req.user, function (err, obj) {
+                res.set('Content-Type', 'text/javascript');
+                if (err || !obj || !obj.common || !obj.common.password) {
+                    res.send("var socketSession='invalid user " + req.user + "';");
+                    return;
+                }
+                var random = crypto.randomBytes(16).toString('hex');
+                var authHash = crypto.createHash('md5').update(req.connection.remoteAddress + random + req.user + obj.common.password).digest("hex");
+                res.send("var socketSession='" + random + req.user + '|' + authHash + "';");
+            });
+        }
+    }
+}
+
 function initWebserver() {
     if ((adapter.config.listenPort && adapter.config.auth) ||
         (adapter.config.listenPortSsl && adapter.config.authSsl)) {
@@ -145,6 +167,15 @@ function initWebserver() {
                 });
             }));
         }
+
+        if (adapter.config.cache) {
+            app.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
+        } else {
+            app.use('/', express.static(__dirname + '/www'));
+        }
+
+        app.get('/auth/*', authFile(false));
+
         server = require('http').createServer(app);
     }
 
@@ -170,14 +201,17 @@ function initWebserver() {
                     });
                 }));
             }
+
+            if (adapter.config.cache) {
+                appSsl.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
+            } else {
+                appSsl.use('/', express.static(__dirname + '/www'));
+            }
+
+            appSsl.get('/auth/*', authFile(true));
+
             serverSsl = require('https').createServer(options, appSsl);
         }
-    }
-
-    if (adapter.config.cache) {
-        app.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
-    } else {
-        app.use('/', express.static(__dirname + '/www'));
     }
 
     if (server) {
@@ -191,6 +225,15 @@ function initWebserver() {
                 error: function(obj) {adapter.log.error("socket.io: "+obj)},
                 warn: function(obj) {adapter.log.warn("socket.io: "+obj)}
             });*/
+
+            /*io.set("authorization", function (handshakeData, callback) {
+                // make sure the handshake data looks good
+                callback(null, true); // error first, &amp;#039;authorized&amp;#039; boolean second
+            });
+*/
+            if (adapter.config.auth) {
+                io.use(authSocket);
+            }
             io.on('connection', initSocket);
         });
 
@@ -207,6 +250,9 @@ function initWebserver() {
                 error: function(obj) {adapter.log.error("socket.io: "+obj)},
                 warn: function(obj) {adapter.log.warn("socket.io: "+obj)}
             });*/
+            if (adapter.config.authSsl) {
+                ioSsl.use(authSocket);
+            }
             ioSsl.on('connection', initSocket);
         });
     }
@@ -254,3 +300,57 @@ function initSocket(socket) {
     });
 }
 
+function authSocket(socket, next) {
+    var handshakeData = socket.handshake;
+    if (socket.authorized) {
+        next();
+    } else
+    // do not check if localhost
+    if(handshakeData.address.address.toString() == "127.0.0.1") {
+        socket.authorized = true;
+        adapter.log.debug("local authentication 127.0.0.1");
+        next();
+    } else {
+        var error = false;
+        if (handshakeData.query["key"] === undefined) {
+            error = true;
+            adapter.log.warn("authentication failed. No key found.");
+        } else {
+            var text = handshakeData.query["key"];
+            var random = text.substring(0, 32);
+            text = text.substring(32);
+            var pos = text.indexOf('|');
+            if (pos != -1) {
+                var user = text.substring(0, pos);
+                text = text.substring(pos + 1);
+
+                adapter.getForeignObject('system.user.' + user, function (err, obj) {
+                    var _error = false;
+                    if (err || !obj || !obj.common || !obj.common.password) {
+                        _error = true;
+                    } else {
+                        var authHash = crypto.createHash('md5').update(handshakeData.address.address.toString() + random + user + obj.common.password).digest("hex");
+                        if (authHash != text) {
+                            _error = true;
+                        }
+                    }
+                    if (_error) {
+                        adapter.log.warn("authetication error on " + handshakeData.address.address);
+                        next(new Error("Invalid session key"));
+                    } else{
+                        adapter.log.debug("authetication successful on " + handshakeData.address.address);
+                        socket.authorized = true;
+                        next();
+                    }
+                });
+            } else {
+                error = true;
+            }
+        }
+
+        if (error) {
+            adapter.log.warn("authetication error on " + handshakeData.address.address);
+            next(new Error("not authorized"));
+        }
+    }
+}

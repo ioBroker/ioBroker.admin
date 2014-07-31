@@ -4,7 +4,8 @@ $(document).ready(function () {
     var toplevel = [];
     var instances = [];
     var children = {};
-    var objects = {};
+    var objects = {};//location.protocol + '//' + location.hostname + ':' + (parseInt(location.port)+1) +
+    var connLink = '/?key=' + ((typeof socketSession != 'undefined') ? socketSession : 'nokey');
 
     $('#tabs').tabs();
     $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
@@ -524,7 +525,7 @@ $(document).ready(function () {
 
     }
 
-    var socket = io.connect();
+    var socket = io.connect(connLink);
 
     socket.on('stateChange', function (id, obj) {
 
