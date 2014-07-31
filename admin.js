@@ -107,7 +107,6 @@ function setPassword(user, pw, callback) {
             }
         }, function () {
             if (typeof callback === 'function') callback(true);
-            return true;
         });
     });
 
