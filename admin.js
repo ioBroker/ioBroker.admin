@@ -151,7 +151,7 @@ function initWebserver() {
         // Check if "admin" user exists
         adapter.getForeignObject('system.user.admin', function (err, obj) {
             if (err) {
-                adapter.setPassword("admin", "password");
+                adapter.addUser("admin", "password");
             }
         });
     }
