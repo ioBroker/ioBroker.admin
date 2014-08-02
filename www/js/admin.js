@@ -6,16 +6,41 @@ $(document).ready(function () {
 
     var toplevel  = [];
     var instances = [];
-    var enums = [];
-    var scripts = [];
-    var users = [];
-    var groups = [];
-    var children = {};
-    var objects = {};
+    var enums =     [];
+    var scripts =   [];
+    var users =     [];
+    var groups =    [];
+    var children =  {};
+    var objects =   {};
 
     $('#tabs').tabs({
+        activate: function (event, ui){
+            switch(ui.newPanel.selector) {
+                case '#tab-objects':
+                    break;
+
+                case '#tab-states':
+                    break;
+
+                case '#tab-instances':
+                    initInstances ();
+                    break;
+
+                case '#tab-users':
+                    initUsers ();
+                    break;
+            }
+        },
         create: function () {
             $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
+        }
+    });
+
+    $(".ui-tabs-nav").
+        append("<button title='Logout' value='Logout' class='menu-button' id='button-logout'>Logout</button>");
+    $("#button-logout").click(function () {
+        window.location.href = "/logout/";
+    });
 
     var $dialogObject = $('#dialog-object');
     $dialogObject.dialog({
@@ -769,7 +794,7 @@ $(document).ready(function () {
         $dialogObject.dialog('close');
     }
 
-    function initInstances () {
+    function initInstances() {
         if (typeof $gridInstances != 'undefined' && $gridInstances[0]._isInited) {
             $gridInstances[0]._isInited = true;
             for (var i = 0; i < instances.length; i++) {
@@ -792,7 +817,7 @@ $(document).ready(function () {
         }
     }
 
-    function initUsers () {
+    function initUsers() {
         if (typeof $gridUsers != 'undefined' && !$gridUsers[0]._isInited) {
             $gridUsers[0]._isInited = true;
             for (var i = 0; i < users.length; i++) {
@@ -817,7 +842,7 @@ $(document).ready(function () {
         }
     }
 
-    var socket = io.connect(connLink);
+    var socket = io.connect();
 
     socket.on('stateChange', function (id, obj) {
 
