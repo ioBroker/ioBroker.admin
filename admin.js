@@ -8,6 +8,7 @@ var bodyParser =        require('body-parser');
 var session =           require('express-session');
 var AdapterStore =      require(__dirname + '/../../lib/session.js')(session);
 var socketio =          require('socket.io');
+var passportSocketIo =  require("passport.socketio");
 var password =          require(__dirname + '/../../lib/password.js');
 var passport =          require('passport');
 var LocalStrategy =     require('passport-local').Strategy;
@@ -173,7 +174,22 @@ function initWebserver() {
         var port = adapter.getPort(adapter.config.listenPort, function (port) {
             server.listen(port);
             adapter.log.info("http server listening on port " + port);
+
+
             io = socketio.listen(server);
+
+            if (adapter.config.authSsl) {
+                io.set(passportSocketIo.authorize({
+                    cookieParser: express.cookieParser,
+                    key:         'express.sid',       // the name of the cookie where express/connect stores its session_id
+                    secret:      'session_secret',    // the session_secret to parse the cookie
+                    store:       AdapterStore,        // we NEED to use a sessionstore. no memorystore please
+                    success:     onAuthorizeSuccess,  // *optional* callback on success - read more below
+                    fail:        onAuthorizeFail     // *optional* callback on fail/error - read more below
+                }));
+
+            }
+
             /*io.set('logger', {
                 debug: function(obj) {adapter.log.debug("socket.io: "+obj)},
                 info: function(obj) {adapter.log.debug("socket.io: "+obj)} ,
@@ -189,7 +205,23 @@ function initWebserver() {
         var portSsl = adapter.getPort(adapter.config.listenPortSsl, function (portSsl) {
             serverSsl.listen(portSsl);
             adapter.log.info("https server listening on port " + portSsl);
+
+
             ioSsl = socketio.listen(serverSsl);
+
+            if (adapter.config.authSsl) {
+                ioSsl.use(passportSocketIo.authorize({
+                    cookieParser: express.cookieParser,
+                    key:         'express.sid',       // the name of the cookie where express/connect stores its session_id
+                    secret:      'session_secret',    // the session_secret to parse the cookie
+                    store:       AdapterStore,        // we NEED to use a sessionstore. no memorystore please
+                    success:     onAuthorizeSuccess,  // *optional* callback on success - read more below
+                    fail:        onAuthorizeFail     // *optional* callback on fail/error - read more below
+                }));
+
+
+            }
+
             /*io.set('logger', {
                 debug: function(obj) {adapter.log.debug("socket.io: "+obj)},
                 info: function(obj) {adapter.log.debug("socket.io: "+obj)} ,
@@ -243,3 +275,21 @@ function initSocket(socket) {
     });
 }
 
+function onAuthorizeSuccess(data, accept){
+    adapter.log.info('successful connection to socket.io');
+    adapter.log.info(JSON.stringify(data));
+
+
+    accept();
+}
+
+
+function onAuthorizeFail(data, message, error, accept){
+    if (error) adapter.log.error('failed connection to socket.io:', message);
+
+    accept(null, false);
+
+    if (error) accept(new Error(message));
+    // this error will be sent to the user as a special error-package
+    // see: http://socket.io/docs/client-api/#socket > error-object
+}
