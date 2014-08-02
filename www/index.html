@@ -3,12 +3,15 @@
     <link rel="stylesheet" type="text/css" href="lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/admin.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/jqGrid/ui.jqgrid-4.5.4.css"/>
+    <link rel="stylesheet" type="text/css" href="lib/css/jquery.multiselect-1.13.css"/>
 
     <script type="text/javascript" src="lib/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="lib/js/jquery-ui-1.10.3.full.min.js"></script>
     <script type="text/javascript" src="lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js"></script>
     <script type="text/javascript" src="lib/js/jqGrid/i18n/grid.locale-en.js"></script>
+    <script type="text/javascript" src="lib/js/jquery.multiselect-1.13.min.js"></script>
     <script type="text/javascript" src="./socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="./auth/auth.js"></script>
     <script type="text/javascript" src="js/admin.js"></script>
 </head>
 <body>
@@ -20,6 +23,8 @@
         <li><a href="#tab-instances">Instances</a></li>
         <li><a href="#tab-enums">Enums</a></li>
         <li><a href="#tab-scripts">Scripts</a></li>
+        <li><a href="#tab-users">Users</a></li>
+        <li><a href="#tab-groups">Groups</a></li>
     </ul>
     <div id="tab-objects">
         <table id="grid-objects"></table>
@@ -43,6 +48,14 @@
     <div id="tab-scripts">
         <table id="grid-scripts"></table>
         <div id="pager-scripts"></div>
+    </div>
+    <div id="tab-users">
+        <table id="grid-users"></table>
+        <div id="pager-users"></div>
+    </div>
+    <div id="tab-groups">
+        <table id="grid-groups"></table>
+        <div id="pager-groups"></div>
     </div>
 </div>
 <div id="dialog-object">
@@ -71,6 +84,8 @@
                     <option>path</option>
                     <option>file</option>
                     <option>script</option>
+                    <option>group</option>
+                    <option>user</option>
                 </select>
             </td>
         </tr>
