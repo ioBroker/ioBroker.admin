@@ -75,7 +75,7 @@ function unauthorized (res, realm) {
     res.statusCode = 401;
     res.setHeader('WWW-Authenticate', 'Basic realm="' + realm + '"');
     res.end('Unauthorized');
-};
+}
 
 function initWebserver() {
 
@@ -85,35 +85,35 @@ function initWebserver() {
         res.redirect('/login/');
     }
 
+    // If auth enabled
+    if ((adapter.config.listenPort    && adapter.config.auth) ||
+        (adapter.config.listenPortSsl && adapter.config.authSsl)) {
+        passport.use(new LocalStrategy(
+            function (username, password, done) {
 
+                adapter.checkPassword(username, password, function (res) {
+                    if (res) {
+                        return done(null, username);
+                    } else {
+                        return done(null, false);
+                    }
+                });
+
+            }
+        ));
+        passport.serializeUser(function (user, done) {
+            done(null, user);
+        });
+
+        passport.deserializeUser(function (user, done) {
+            done(null, user);
+        });
+    }
 
 
     if (adapter.config.listenPort) {
-        app    = express();
+        app = express();
         if (adapter.config.auth) {
-
-            passport.use(new LocalStrategy(
-                function (username, password, done) {
-
-                    adapter.checkPassword(username, password, function (res) {
-                        if (res) {
-                            return done(null, username);
-                        } else {
-                            return done(null, false);
-                        }
-                    });
-
-                }
-            ));
-
-            passport.serializeUser(function (user, done) {
-                done(null, user);
-            });
-
-            passport.deserializeUser(function (user, done) {
-                done(null, user);
-            });
-
 
             app.use(cookieParser());
             app.use(bodyParser.urlencoded({
@@ -131,9 +131,11 @@ function initWebserver() {
 
 
             app.post('/login',
-                passport.authenticate('local', { successRedirect: '/',
+                passport.authenticate('local', {
+                    successRedirect: '/',
                     failureRedirect: '/login',
-                    failureFlash: true })
+                    failureFlash: true
+                })
             );
 
             app.get('/logout', function (req, res) {
@@ -143,9 +145,14 @@ function initWebserver() {
 
             app.use(isLoggedIn);
 
-
         }
         server = require('http').createServer(app);
+
+        if (adapter.config.cache) {
+            app.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
+        } else {
+            app.use('/', express.static(__dirname + '/www'));
+        }
     }
 
     if (adapter.config.listenPortSsl) {
@@ -161,23 +168,47 @@ function initWebserver() {
         }
         if (options) {
             appSsl = express();
-            
+
+            if (adapter.config.authSsl) {
+                appSsl.use(cookieParser());
+                appSsl.use(bodyParser.urlencoded({
+                    extended: true
+                }));
+                appSsl.use(bodyParser.json());
+                appSsl.use(session({
+                    secret: 'Zgfr56gFe87jJOM',
+                    saveUninitialized: true,
+                    resave: true,
+                    store: new AdapterStore({adapter: adapter})
+                }));
+                appSsl.use(passport.initialize());
+                appSsl.use(passport.session());
+
+
+                appSsl.post('/login',
+                    passport.authenticate('local', {
+                        successRedirect: '/',
+                        failureRedirect: '/login',
+                        failureFlash: true
+                    })
+                );
+
+                appSsl.get('/logout', function (req, res) {
+                    req.logout();
+                    res.redirect('/index/login.html');
+                });
+
+                appSsl.use(isLoggedIn);
+            }
+
+            serverSsl = require('https').createServer(options, appSsl);
+
             if (adapter.config.cache) {
                 appSsl.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
             } else {
                 appSsl.use('/', express.static(__dirname + '/www'));
             }
-
-            appSsl.get('/auth/*', authFile(true));
-
-            serverSsl = require('https').createServer(options, appSsl);
         }
-    }
-
-    if (adapter.config.cache) {
-        app.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
-    } else {
-        app.use('/', express.static(__dirname + '/www'));
     }
 
     if (server) {
@@ -285,7 +316,7 @@ function initSocket(socket) {
     });
 }
 
-function onAuthorizeSuccess(data, accept){
+function onAuthorizeSuccess(data, accept) {
     adapter.log.info('successful connection to socket.io');
     adapter.log.info(JSON.stringify(data));
 
@@ -294,7 +325,7 @@ function onAuthorizeSuccess(data, accept){
 }
 
 
-function onAuthorizeFail(data, message, error, accept){
+function onAuthorizeFail(data, message, error, accept) {
     if (error) adapter.log.error('failed connection to socket.io:', message);
 
     accept(null, false);

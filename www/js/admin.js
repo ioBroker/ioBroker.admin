@@ -1,6 +1,10 @@
 /* jshint -W097 */// jshint strict:false
 'use strict';
 
+/*global io:false */
+/*global jQuery:false */
+/*jslint browser:true */
+
 (function ($) {
 $(document).ready(function () {
 
@@ -14,12 +18,16 @@ $(document).ready(function () {
     var objects =   {};
 
     $('#tabs').tabs({
-        activate: function (event, ui){
-            switch(ui.newPanel.selector) {
+        activate: function (event, ui) {
+            switch (ui.newPanel.selector) {
                 case '#tab-objects':
                     break;
 
                 case '#tab-states':
+                    break;
+
+                case '#tab-scripts':
+                    initScripts();
                     break;
 
                 case '#tab-instances':
@@ -471,49 +479,12 @@ $(document).ready(function () {
         sortorder: "desc",
         viewrecords: true,
         caption: 'ioBroker users',
-        onSelectRow: function (id, e) {
-            return;
-            $('#del-user').removeClass('ui-state-disabled');
-            $('#edit-user').removeClass('ui-state-disabled');
-
-            var rowData = $gridUsers.jqGrid('getRowData', id);
-            rowData.ack = false;
-            rowData.from = '';
-            $gridUsers.jqGrid('setRowData', id, rowData);
-
-            if (id && id !== userLastSelected) {
-                $gridUsers.restoreRow(userLastSelected);
-                userLastSelected = id;
-            }
-            $gridUsers.editRow(id, true, function () {
-                // onEdit
-                userEdit = true;
-            }, function (obj) {
-                // success
-            }, "clientArray", null, function () {
-                // afterSave
-                userEdit = false;
-                var obj = {common:{}};
-                /*obj.common.host = $gridUsers.jqGrid("getCell", userLastSelected, "host");
-                obj.common.loglevel = $gridUsers.jqGrid("getCell", userLastSelected, "loglevel");*/
-                obj.common.enabled = $gridUsers.jqGrid("getCell", userLastSelected, "enabled");
-                if (obj.common.enabled === 'true') obj.common.enabled = true;
-                if (obj.common.enabled === 'false') obj.common.enabled = false;
-
-
-
-                var id = $('tr#' + userLastSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
-
-                socket.emit('extendObject', id, obj);
-            });
-
-        },
         gridComplete: function () {
             $('#del-user').addClass('ui-state-disabled');
             $('#edit-user').addClass('ui-state-disabled');
-            $(".user-group-edit").multiselect( {
+            $(".user-group-edit").multiselect({
                 selectedList: 4,
-                close: function(){
+                close: function () {
                     var obj = {native: {groups: $(this).val()}};
                     var id  = $(this).attr('data-id');
                     socket.emit('extendObject', id, obj);
@@ -720,18 +691,6 @@ $(document).ready(function () {
             }
             $gridObjects.trigger('reloadGrid');
 
-          
-            for (var i = 0; i < scripts.length; i++) {
-                var obj = objects[scripts[i]];
-                $gridScripts.jqGrid('addRowData', 'script_' + instances[i].replace(/ /g, '_'), {
-                    _id: obj._id,
-                    name: obj.common ? obj.common.name : '',
-                    platform: obj.common ? obj.common.platform : '',
-                    enabled: obj.common ? obj.common.enabled : '',
-                    engine: obj.common ? obj.common.engine : ''
-                });
-            }
-            $gridScripts.trigger('reloadGrid');
 
             if (typeof callback === 'function') callback();
         });
@@ -826,7 +785,7 @@ $(document).ready(function () {
                 var select = '<select class="user-group-edit" multiple="multiple" data-id="' + users[i] + '">';
                 for (var j = 0; j < groups.length; j++) {
                     var name = groups[j].substring('system.group.'.length);
-                    name = name.substring(0,1).toUpperCase() + name.substring(1);
+                    name = name.substring(0, 1).toUpperCase() + name.substring(1);
                     select += '<option value="' + groups[j] + '"';
                     if (obj.native && obj.native.groups && obj.native.groups.indexOf(groups[j]) != -1) select += ' selected';
                     select += '>' + name + '</option>';
@@ -840,6 +799,24 @@ $(document).ready(function () {
                 });
             }
             $gridUsers.trigger('reloadGrid');
+        }
+    }
+
+    function initScripts() {
+        if (typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
+            $gridScripts[0]._isInited = true;
+
+            for (var i = 0; i < scripts.length; i++) {
+                var obj = objects[scripts[i]];
+                $gridScripts.jqGrid('addRowData', 'script_' + instances[i].replace(/ /g, '_'), {
+                    _id: obj._id,
+                    name: obj.common ? obj.common.name : '',
+                    platform: obj.common ? obj.common.platform : '',
+                    enabled: obj.common ? obj.common.enabled : '',
+                    engine: obj.common ? obj.common.engine : ''
+                });
+            }
+            $gridScripts.trigger('reloadGrid');
         }
     }
 
