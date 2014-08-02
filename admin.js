@@ -12,16 +12,14 @@ var passportSocketIo =  require("passport.socketio");
 var password =          require(__dirname + '/../../lib/password.js');
 var passport =          require('passport');
 var LocalStrategy =     require('passport-local').Strategy;
+var flash =             require('connect-flash');
 
-var app;
-var appSsl;
-var server;
-var serverSsl;
-var io;
-var ioSsl;
+var webServers = [];
 
 var objects =   {};
 var states =    {};
+
+var isAuthUsed = false;
 
 var adapter = require(__dirname + '/../../lib/adapter.js')({
     name:           'admin',
@@ -31,26 +29,23 @@ var adapter = require(__dirname + '/../../lib/adapter.js')({
     objectChange: function (id, obj) {
         objects[id] = obj;
 
-        if (io)     io.sockets.emit('objectChange', id, obj);
-        if (ioSsl)  ioSsl.sockets.emit('objectChange', id, obj);
+        for (var i = 0; i < webServers.length; i++) {
+            webServers[i].io.sockets.emit('objectChange', id, obj);
+        }
     },
     stateChange: function (id, state) {
         states[id] = state;
-        if (io)     io.sockets.emit('stateChange', id, state);
-        if (ioSsl)  ioSsl.sockets.emit('stateChange', id, state);
+        for (var i = 0; i < webServers.length; i++) {
+            webServers[i].io.sockets.emit('stateChange', id, state);
+        }
     },
     unload: function (callback) {
         try {
-            if (server) {
-                adapter.log.info("terminating http server");
-                server.close();
-
+            for (var i = 0; i < webServers.length; i++) {
+                adapter.log.info("terminating http" + (webServers[i].isSsl ? "s" : "") + " server on port " + webServers[i].port);
+                webServers[i].server.close();
             }
-            if (serverSsl) {
-                adapter.log.info("terminating https server");
-                serverSsl.close();
 
-            }
             callback();
         } catch (e) {
             callback();
@@ -66,7 +61,7 @@ function main() {
     adapter.subscribeForeignStates('*');
     adapter.subscribeForeignObjects('*');
 
-    initWebserver();
+    initWebServers();
 
     getData();
 
@@ -74,7 +69,7 @@ function main() {
 
 // use setForeignObject instead
 function addUser (user, pw, callback) {
-    this.setForeignObject('system.user.' + user, {
+    adapter.setForeignObject('system.user.' + user, {
         type: 'user',
         common: {
             name:    user,
@@ -85,201 +80,157 @@ function addUser (user, pw, callback) {
     });
 }
 
-function initWebserver() {
-
-    // route middleware to make sure a user is logged in
-    function isLoggedIn(req, res, next) {
-        if (req.isAuthenticated() || req.originalUrl === '/login/') return next();
-        res.redirect('/login/');
+function initWebServer(isSsl, listenPort, auth) {
+    var server = {
+        app:    null,
+        server: null,
+        io:     null,
+        port:   listenPort,
+        isSsl:  isSsl
     }
 
-    // If auth enabled
-    if ((adapter.config.listenPort    && adapter.config.auth) ||
-        (adapter.config.listenPortSsl && adapter.config.authSsl)) {
-        passport.use(new LocalStrategy(
-            function (username, password, done) {
+    if (listenPort) {
+        var options = null;
 
-                adapter.checkPassword(username, password, function (res) {
-                    if (res) {
-                        return done(null, username);
-                    } else {
-                        return done(null, false);
+        if (isSsl) {
+            var fs = require('fs');
+            try {
+                options = {
+                    key:  fs.readFileSync(__dirname + '/cert/privatekey.pem'),
+                    cert: fs.readFileSync(__dirname + '/cert/certificate.pem')
+                };
+            } catch (err) {
+                adapter.log.error(err.message);
+            }
+            if (!options) return null;
+        }
+
+        server.app = express();
+
+        if (auth) {
+
+            if (!isAuthUsed) {
+                isAuthUsed = true;
+
+                passport.use(new LocalStrategy(
+                    function (username, password, done) {
+
+                        adapter.checkPassword(username, password, function (res) {
+                            if (res) {
+                                return done(null, username);
+                            } else {
+                                return done(null, false);
+                            }
+                        });
+
                     }
+                ));
+                passport.serializeUser(function (user, done) {
+                    done(null, user);
                 });
 
+                passport.deserializeUser(function (user, done) {
+                    done(null, user);
+                });
             }
-        ));
-        passport.serializeUser(function (user, done) {
-            done(null, user);
-        });
 
-        passport.deserializeUser(function (user, done) {
-            done(null, user);
-        });
-    }
-
-
-    if (adapter.config.listenPort) {
-        app = express();
-        if (adapter.config.auth) {
-
-            app.use(cookieParser());
-            app.use(bodyParser.urlencoded({
+            server.app.use(cookieParser());
+            server.app.use(bodyParser.urlencoded({
                 extended: true
             }));
-            app.use(bodyParser.json());
-            app.use(session({
+            server.app.use(bodyParser.json());
+            server.app.use(session({
                 secret: 'Zgfr56gFe87jJOM',
                 saveUninitialized: true,
                 resave: true,
-                store: new AdapterStore({adapter:adapter})
+                store: new AdapterStore({adapter: adapter})
             }));
-            app.use(passport.initialize());
-            app.use(passport.session());
+            server.app.use(passport.initialize());
+            server.app.use(passport.session());
+            server.app.use(flash());
 
-
-            app.post('/login',
+            server.app.post('/login',
                 passport.authenticate('local', {
                     successRedirect: '/',
                     failureRedirect: '/login',
-                    failureFlash: true
+                    failureFlash: 'Invalid username or password.'
                 })
             );
 
-            app.get('/logout', function (req, res) {
+            server.app.get('/logout', function (req, res) {
                 req.logout();
-                res.redirect('/index/login.html');
+                res.redirect('/login/index.html');
             });
 
-            app.use(isLoggedIn);
-
+            // route middleware to make sure a user is logged in
+            server.app.use(function (req, res, next) {
+                if (req.isAuthenticated() || req.originalUrl === '/login/') return next();
+                res.redirect('/login/');
+            });
+        } else {
+            server.app.get('/login', function(req, res) {
+                res.redirect('/');
+            });
+            server.app.get('/logout', function(req, res) {
+                res.redirect('/');
+            });
         }
-        server = require('http').createServer(app);
+
+        if (isSsl) {
+            server.server = require('https').createServer(options, server.app);
+        } else {
+            server.server = require('http').createServer(server.app);
+        }
 
         if (adapter.config.cache) {
-            app.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
+            server.app.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
         } else {
-            app.use('/', express.static(__dirname + '/www'));
+            server.app.use('/', express.static(__dirname + '/www'));
         }
     }
 
-    if (adapter.config.listenPortSsl) {
-        var fs = require('fs');
-        var options;
-        try {
-            options = {
-                key:  fs.readFileSync(__dirname + '/cert/privatekey.pem'),
-                cert: fs.readFileSync(__dirname + '/cert/certificate.pem')
-            };
-        } catch (err) {
-            adapter.log.error(err.message);
-        }
-        if (options) {
-            appSsl = express();
+    if (server.server) {
+        adapter.getPort(listenPort, function (port) {
+            server.server.listen(port);
+            adapter.log.info("http" + (isSsl ? "s" : "") + " server listening on port " + port);
 
-            if (adapter.config.authSsl) {
-                appSsl.use(cookieParser());
-                appSsl.use(bodyParser.urlencoded({
-                    extended: true
+            server.io = socketio.listen(server.server);
+
+            if (auth) {
+                server.io.use(passportSocketIo.authorize({
+                    cookieParser: cookieParser,
+                    key:          'express.sid',       // the name of the cookie where express/connect stores its session_id
+                    secret:       'session_secret',    // the session_secret to parse the cookie
+                    store:        AdapterStore,        // we NEED to use a sessionstore. no memorystore please
+                    success:      onAuthorizeSuccess,  // *optional* callback on success - read more below
+                    fail:         onAuthorizeFail     // *optional* callback on fail/error - read more below
                 }));
-                appSsl.use(bodyParser.json());
-                appSsl.use(session({
-                    secret: 'Zgfr56gFe87jJOM',
-                    saveUninitialized: true,
-                    resave: true,
-                    store: new AdapterStore({adapter: adapter})
-                }));
-                appSsl.use(passport.initialize());
-                appSsl.use(passport.session());
-
-
-                appSsl.post('/login',
-                    passport.authenticate('local', {
-                        successRedirect: '/',
-                        failureRedirect: '/login',
-                        failureFlash: true
-                    })
-                );
-
-                appSsl.get('/logout', function (req, res) {
-                    req.logout();
-                    res.redirect('/index/login.html');
-                });
-
-                appSsl.use(isLoggedIn);
             }
 
-            serverSsl = require('https').createServer(options, appSsl);
-
-            if (adapter.config.cache) {
-                appSsl.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
-            } else {
-                appSsl.use('/', express.static(__dirname + '/www'));
-            }
-        }
-    }
-
-    if (server) {
-        var port = adapter.getPort(adapter.config.listenPort, function (port) {
-            server.listen(port);
-            adapter.log.info("http server listening on port " + port);
-
-
-            io = socketio.listen(server);
-
-            if (adapter.config.authSsl) {
-                io.set(passportSocketIo.authorize({
-                    cookieParser: express.cookieParser,
-                    key:         'express.sid',       // the name of the cookie where express/connect stores its session_id
-                    secret:      'session_secret',    // the session_secret to parse the cookie
-                    store:       AdapterStore,        // we NEED to use a sessionstore. no memorystore please
-                    success:     onAuthorizeSuccess,  // *optional* callback on success - read more below
-                    fail:        onAuthorizeFail     // *optional* callback on fail/error - read more below
-                }));
-
-            }
-
-            /*io.set('logger', {
-                debug: function(obj) {adapter.log.debug("socket.io: "+obj)},
-                info: function(obj) {adapter.log.debug("socket.io: "+obj)} ,
-                error: function(obj) {adapter.log.error("socket.io: "+obj)},
-                warn: function(obj) {adapter.log.warn("socket.io: "+obj)}
-            });*/
-            io.on('connection', initSocket);
-        });
-
-    }
-
-    if (serverSsl) {
-        var portSsl = adapter.getPort(adapter.config.listenPortSsl, function (portSsl) {
-            serverSsl.listen(portSsl);
-            adapter.log.info("https server listening on port " + portSsl);
-
-
-            ioSsl = socketio.listen(serverSsl);
-
-            if (adapter.config.authSsl) {
-                ioSsl.use(passportSocketIo.authorize({
-                    cookieParser: express.cookieParser,
-                    key:         'express.sid',       // the name of the cookie where express/connect stores its session_id
-                    secret:      'session_secret',    // the session_secret to parse the cookie
-                    store:       AdapterStore,        // we NEED to use a sessionstore. no memorystore please
-                    success:     onAuthorizeSuccess,  // *optional* callback on success - read more below
-                    fail:        onAuthorizeFail     // *optional* callback on fail/error - read more below
-                }));
-
-
-            }
-
-            /*io.set('logger', {
-                debug: function(obj) {adapter.log.debug("socket.io: "+obj)},
-                info: function(obj) {adapter.log.debug("socket.io: "+obj)} ,
-                error: function(obj) {adapter.log.error("socket.io: "+obj)},
-                warn: function(obj) {adapter.log.warn("socket.io: "+obj)}
-            });*/
-            ioSsl.on('connection', initSocket);
+            /*server.io.set('logger', {
+             debug: function(obj) {adapter.log.debug("socket.io: " + obj)},
+             info:  function(obj) {adapter.log.debug("socket.io: " + obj)} ,
+             error: function(obj) {adapter.log.error("socket.io: " + obj)},
+             warn:  function(obj) {adapter.log.warn("socket.io: " + obj)}
+             });*/
+            server.io.on('connection', initSocket);
         });
     }
+
+    if (server.server) {
+        return server;
+    } else {
+        return null;
+    }
+}
+
+function initWebServers() {
+
+    var server = initWebServer(false, adapter.config.listenPort, adapter.config.auth);
+    if (server) webServers.push(server);
+
+    server = initWebServer(true, adapter.config.listenPortSsl, adapter.config.authSsl);
+    if (server) webServers.push(server);
 
 }
 
@@ -327,7 +278,6 @@ function initSocket(socket) {
 function onAuthorizeSuccess(data, accept) {
     adapter.log.info('successful connection to socket.io');
     adapter.log.info(JSON.stringify(data));
-
 
     accept();
 }
