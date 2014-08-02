@@ -33,14 +33,15 @@ $(document).ready(function () {
         },
         create: function () {
             $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
+            $(".ui-tabs-nav").
+                append("<button title='Logout' value='Logout' class='menu-button' id='button-logout'>Logout</button>");
+            $("#button-logout").click(function () {
+                window.location.href = "/logout/";
+            });
         }
     });
 
-    $(".ui-tabs-nav").
-        append("<button title='Logout' value='Logout' class='menu-button' id='button-logout'>Logout</button>");
-    $("#button-logout").click(function () {
-        window.location.href = "/logout/";
-    });
+
 
     var $dialogObject = $('#dialog-object');
     $dialogObject.dialog({
