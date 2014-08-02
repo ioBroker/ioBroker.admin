@@ -2,18 +2,10 @@
 /*jslint node: true */
 "use strict";
 
-var express =           require('express');
-var cookieParser =      require('cookie-parser');
-var bodyParser =        require('body-parser');
-var session =           require('express-session');
-var AdapterStore =      require(__dirname + '/../../lib/session.js')(session);
-var socketio =          require('socket.io');
-var passportSocketIo =  require("passport.socketio");
-var password =          require(__dirname + '/../../lib/password.js');
-var passport =          require('passport');
-var LocalStrategy =     require('passport-local').Strategy;
-
-
+var express =   require('express');
+var socketio =  require('socket.io');
+var crypto =    require('crypto');
+var password =  require(__dirname + '/../../lib/password.js');
 var app;
 var appSsl;
 var server;
@@ -72,6 +64,11 @@ function main() {
     getData();
 
 }
+function unauthorized (res, realm) {
+    res.statusCode = 401;
+    res.setHeader('WWW-Authenticate', 'Basic realm="' + realm + '"');
+    res.end('Unauthorized');
+};
 
 function initWebserver() {
 
@@ -157,9 +154,15 @@ function initWebserver() {
         }
         if (options) {
             appSsl = express();
-            if (adapter.config.auth && adapter.config.authUser) {
-                appSsl.use(express.basicAuth(adapter.config.authUser, adapter.config.authPassword));
+            
+            if (adapter.config.cache) {
+                appSsl.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
+            } else {
+                appSsl.use('/', express.static(__dirname + '/www'));
             }
+
+            appSsl.get('/auth/*', authFile(true));
+
             serverSsl = require('https').createServer(options, appSsl);
         }
     }
