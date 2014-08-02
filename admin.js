@@ -71,10 +71,18 @@ function main() {
     getData();
 
 }
-function unauthorized (res, realm) {
-    res.statusCode = 401;
-    res.setHeader('WWW-Authenticate', 'Basic realm="' + realm + '"');
-    res.end('Unauthorized');
+
+// use setForeignObject instead
+function addUser (user, pw, callback) {
+    this.setForeignObject('system.user.' + user, {
+        type: 'user',
+        common: {
+            name:    user,
+            enabled: true
+        }
+    }, function () {
+        adapter.setPassword(user, pw);
+    });
 }
 
 function initWebserver() {
