@@ -854,8 +854,7 @@ $(document).ready(function () {
         }
 
         if (typeof $gridInstances !== 'undefined' && !$gridInstances[0]._isInited) {
-            $("#load_grid-instances").show()
-            $gridInstances[0]._isInited = true;
+             $gridInstances[0]._isInited = true;
             for (var i = 0; i < instances.length; i++) {
                 var obj = objects[instances[i]];
                 $gridInstances.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
@@ -911,7 +910,6 @@ $(document).ready(function () {
         }
 
         if (typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
-            $("#load_grid-scripts").show();
             $gridScripts[0]._isInited = true;
 
             for (var i = 0; i < scripts.length; i++) {
@@ -997,6 +995,9 @@ $(document).ready(function () {
             // Here we go!
             $("#load_grid-objects").show();
             $("#load_grid-states").show();
+            $("#load_grid-scripts").show();
+            $("#load_grid-instances").show()
+
             //$("#load_grid-enums").show();
             getObjects(getStates);
         }
