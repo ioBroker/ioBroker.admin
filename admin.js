@@ -68,7 +68,7 @@ function main() {
 }
 
 // use setForeignObject instead
-function addUser (user, pw, callback) {
+function addUser(user, pw, callback) {
     adapter.setForeignObject('system.user.' + user, {
         type: 'user',
         common: {
@@ -168,10 +168,10 @@ function initWebServer(isSsl, listenPort, auth) {
                 res.redirect('/login/');
             });
         } else {
-            server.app.get('/login', function(req, res) {
+            server.app.get('/login', function (req, res) {
                 res.redirect('/');
             });
-            server.app.get('/logout', function(req, res) {
+            server.app.get('/logout', function (req, res) {
                 res.redirect('/');
             });
         }
