@@ -41,9 +41,10 @@ $(document).ready(function () {
         },
         create: function () {
             $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
+
             $(".ui-tabs-nav").
                 append("<button title='Logout' value='Logout' class='menu-button' id='button-logout'>Logout</button>");
-            $("#button-logout").click(function () {
+            $("#button-logout").button().click(function () {
                 window.location.href = "/logout/";
             });
         }
@@ -616,7 +617,7 @@ $(document).ready(function () {
         onClickButton: function () {
             var objSelected = $gridScripts.jqGrid('getGridParam', 'selrow');
             if (!objSelected) {
-                $('[id^="grid-objects"][id$="_t"]').each(function () {
+                $('[id^="grid-scripts"][id$="_t"]').each(function () {
                     if ($(this).jqGrid('getGridParam', 'selrow')) {
                         objSelected = $(this).jqGrid('getGridParam', 'selrow');
                     }
@@ -635,7 +636,7 @@ $(document).ready(function () {
         onClickButton: function () {
             var objSelected = $gridScripts.jqGrid('getGridParam', 'selrow');
             if (!objSelected) {
-                $('[id^="grid-objects"][id$="_t"]').each(function () {
+                $('[id^="grid-scripts"][id$="_t"]').each(function () {
                     if ($(this).jqGrid('getGridParam', 'selrow')) {
                         objSelected = $(this).jqGrid('getGridParam', 'selrow');
                     }
@@ -696,7 +697,7 @@ $(document).ready(function () {
         });
     }
 
-    function getStates (callback) {
+    function getStates(callback) {
         $gridStates.jqGrid('clearGridData');
         socket.emit('getStates', function (err, res) {
             var i = 0;

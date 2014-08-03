@@ -63,3 +63,9 @@ table#events {
     box-shadow: none;
     resize:none;
 }
+
+.menu-button {
+    float: right;
+    height: 26px;
+    margin: 1px 2px 1px 2px;
+}
