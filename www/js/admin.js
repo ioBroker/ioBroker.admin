@@ -846,7 +846,6 @@ $(document).ready(function () {
 
     function initInstances() {
 
-        if (!$gridInstances[0]._isInited) $("#load_grid-instances").show();
 
         if (!objectsLoaded) {
             setTimeout(initInstances, 250);
@@ -854,6 +853,7 @@ $(document).ready(function () {
         }
 
         if (typeof $gridInstances !== 'undefined' && !$gridInstances[0]._isInited) {
+            $("#load_grid-instances").show()
             $gridInstances[0]._isInited = true;
             for (var i = 0; i < instances.length; i++) {
                 var obj = objects[instances[i]];
@@ -902,7 +902,7 @@ $(document).ready(function () {
 
     function initScripts() {
 
-        if (!$gridScripts[0]._isInited) $("#load_grid-scripts").show();
+
 
         if (!objectsLoaded) {
             setTimeout(initScripts, 250);
@@ -910,6 +910,7 @@ $(document).ready(function () {
         }
 
         if (typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
+            $("#load_grid-scripts").show();
             $gridScripts[0]._isInited = true;
 
             for (var i = 0; i < scripts.length; i++) {
