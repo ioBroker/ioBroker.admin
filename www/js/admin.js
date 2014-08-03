@@ -846,7 +846,7 @@ $(document).ready(function () {
 
     function initInstances() {
 
-        $("#load_grid-instances").show();
+        if (!$gridInstances[0]._isInited) $("#load_grid-instances").show();
 
         if (!objectsLoaded) {
             setTimeout(initInstances, 250);
@@ -901,7 +901,8 @@ $(document).ready(function () {
     }
 
     function initScripts() {
-        $("#load_grid-scripts").show();
+
+        if (!$gridScripts[0]._isInited) $("#load_grid-scripts").show();
 
         if (!objectsLoaded) {
             setTimeout(initScripts, 250);
