@@ -539,6 +539,30 @@ $(document).ready(function () {
         cursor: 'pointer'
     });
 
+
+
+    var $dialogScript = $('#dialog-script');
+    $dialogScript.dialog({
+        autoOpen:   false,
+        modal:      true,
+        width: 640,
+        height: 480,
+        buttons: [
+            {
+                text: 'Save',
+                click: saveScript
+            },
+            {
+                text: 'Cancel',
+                click: function () {
+                    $dialogScript.dialog('close');
+
+                }
+            }
+        ]
+    });
+
+
     var scriptLastSelected;
     var scriptEdit;
 
@@ -582,16 +606,11 @@ $(document).ready(function () {
                 // afterSave
                 scriptEdit = false;
                 var obj = {common:{}};
-                obj.common.host = $gridScripts.jqGrid("getCell", scriptLastSelected, "host");
-                obj.common.loglevel = $gridScripts.jqGrid("getCell", scriptLastSelected, "loglevel");
+                obj.common.engine = $gridScripts.jqGrid("getCell", scriptLastSelected, "engine");
                 obj.common.enabled = $gridScripts.jqGrid("getCell", scriptLastSelected, "enabled");
                 if (obj.common.enabled === 'true') obj.common.enabled = true;
                 if (obj.common.enabled === 'false') obj.common.enabled = false;
-
-
-
                 var id = $('tr#' + scriptLastSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
-
                 socket.emit('extendObject', id, obj);
             });
 
@@ -643,7 +662,7 @@ $(document).ready(function () {
                 });
             }
             var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
-            alert('todo edit script ' + id);
+            editScript(id);
         },
         position: 'first',
         id: 'edit-script',
@@ -653,7 +672,7 @@ $(document).ready(function () {
         caption: '',
         buttonicon: 'ui-icon-plus',
         onClickButton: function () {
-            alert('TODO add script'); //TODO
+            editScript();
         },
         position: 'first',
         id: 'add-script',
@@ -726,6 +745,40 @@ $(document).ready(function () {
         $('#edit-object-common').val(JSON.stringify(obj.common, null, '  '));
         $('#edit-object-native').val(JSON.stringify(obj.native, null, '  '));
         $dialogObject.dialog('open');
+    }
+
+    function editScript(id) {
+        if (id) {
+            $dialogScript.dialog('option', 'title', id);
+            $('#edit-script-id').val(obj._id);
+            $('#edit-script-name').val(obj.common.name);
+            $('#edit-script-platform').val(obj.common.platform);
+            $('#edit-script-source').val(obj.common.source);
+            $dialogScript.dialog('open');
+        } else {
+            $dialogScript.dialog('option', 'title', 'new script');
+            $('#edit-script-id').val('');
+            $('#edit-script-name').val('');
+            $('#edit-script-platform').val('Javascript/Node.js');
+            $('#edit-script-source').val('');
+            $dialogScript.dialog('open');
+        }
+    }
+
+    function saveScript() {
+        var obj = {common: {}};
+        obj._id = $('#edit-script-id').val();
+        obj.type = 'script';
+        obj.common.name = $('#edit-script-name').val();
+        obj.common.source = $('#edit-script-source').val();
+        obj.common.platform = $('#edit-script-platform').val() || '';
+        var extension;
+        if (obj.common.platform.match(/^[jJ]avascript/)) extension = 'js.';
+        if (!obj._id) obj._id = 'script.' + extension + obj.common.name;
+        console.log(obj);
+
+        socket.emit('extendObject', obj._id, obj);
+        $dialogScript.dialog('close');
     }
 
     function saveObject() {

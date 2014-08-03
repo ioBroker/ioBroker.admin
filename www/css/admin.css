@@ -64,6 +64,18 @@ table#events {
     resize:none;
 }
 
+#edit-script-source {
+    font-size: 12px;
+    width: 600px;
+    height: 240px;
+    padding:0;
+    margin:0;
+    border: 1px solid grey;
+    outline: none;
+    box-shadow: none;
+    resize:none;
+}
+
 .menu-button {
     float: right;
     height: 26px;
