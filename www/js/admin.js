@@ -19,6 +19,7 @@ $(document).ready(function () {
 
     $('#tabs').tabs({
         activate: function (event, ui) {
+            window.location.hash = '#' + ui.newPanel.selector.slice(5);
             switch (ui.newPanel.selector) {
                 case '#tab-objects':
                     break;
@@ -31,11 +32,11 @@ $(document).ready(function () {
                     break;
 
                 case '#tab-instances':
-                    initInstances ();
+                    initInstances();
                     break;
 
                 case '#tab-users':
-                    initUsers ();
+                    initUsers();
                     break;
             }
         },
@@ -681,6 +682,7 @@ $(document).ready(function () {
     });
 
 
+    var objectsLoaded = false;
 
     function getObjects(callback) {
         $gridObjects.jqGrid('clearGridData');
@@ -702,6 +704,7 @@ $(document).ready(function () {
                     if (obj.type === 'group') groups.push(id);
                 }
             }
+            objectsLoaded = true;
             for (var i = 0; i < toplevel.length; i++) {
                 $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/ /g, '_'), {
                     _id: objects[toplevel[i]]._id,
@@ -814,7 +817,14 @@ $(document).ready(function () {
     }
 
     function initInstances() {
-        if (typeof $gridInstances != 'undefined' && $gridInstances[0]._isInited) {
+        $("#load_grid-instances").show();
+
+        if (!objectsLoaded) {
+            setTimeout(initInstances, 250);
+            return;
+        }
+
+        if (typeof $gridInstances != 'undefined' && $gridInstances[0]._isined) {
             $gridInstances[0]._isInited = true;
             for (var i = 0; i < instances.length; i++) {
                 var obj = objects[instances[i]];
@@ -862,6 +872,13 @@ $(document).ready(function () {
     }
 
     function initScripts() {
+        $("#load_grid-scripts").show();
+
+        if (!objectsLoaded) {
+            setTimeout(initScripts, 250);
+            return;
+        }
+
         if (typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
             $gridScripts[0]._isInited = true;
 
@@ -948,8 +965,6 @@ $(document).ready(function () {
             // Here we go!
             $("#load_grid-objects").show();
             $("#load_grid-states").show();
-            $("#load_grid-instances").show();
-            //$("#load_grid-scripts").show();
             //$("#load_grid-enums").show();
             getObjects(getStates);
         }
