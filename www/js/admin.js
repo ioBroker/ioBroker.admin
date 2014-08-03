@@ -461,6 +461,8 @@ $(document).ready(function () {
         cursor: 'pointer'
     });
 
+
+
     var userLastSelected;
     var userEdit;
 
@@ -817,6 +819,9 @@ $(document).ready(function () {
     }
 
     function initInstances() {
+
+        console.log('initInstances');
+
         $("#load_grid-instances").show();
 
         if (!objectsLoaded) {
@@ -824,7 +829,7 @@ $(document).ready(function () {
             return;
         }
 
-        if (typeof $gridInstances != 'undefined' && $gridInstances[0]._isined) {
+        if (typeof $gridInstances !== 'undefined' && !$gridInstances[0]._isInited) {
             $gridInstances[0]._isInited = true;
             for (var i = 0; i < instances.length; i++) {
                 var obj = objects[instances[i]];
