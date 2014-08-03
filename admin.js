@@ -197,6 +197,10 @@ function initWebServer(isSsl, listenPort, auth) {
 
     if (server.server) {
         adapter.getPort(listenPort, function (port) {
+            if (port != listenPort && !adapter.config.findNextPort) {
+                adapter.log.error('port ' + listenPort + ' already in use');
+                process.exit(1);
+            }
             server.server.listen(port);
             adapter.log.info("http" + (isSsl ? "s" : "") + " server listening on port " + port);
 
