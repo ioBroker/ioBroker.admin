@@ -8,11 +8,11 @@ var bodyParser =        require('body-parser');
 var session =           require('express-session');
 var AdapterStore =      require(__dirname + '/../../lib/session.js')(session);
 var socketio =          require('socket.io');
-var passportSocketIo =  require("passport.socketio");
+var passportSocketIo =  require(__dirname + "/passport.socketio.js");
 var password =          require(__dirname + '/../../lib/password.js');
 var passport =          require('passport');
 var LocalStrategy =     require('passport-local').Strategy;
-var flash =             require('connect-flash');
+var flash =             require('connect-flash'); // TODO report error to user
 
 var webServers = [];
 
@@ -89,6 +89,8 @@ function initWebServer(isSsl, listenPort, auth) {
         isSsl:  isSsl
     }
 
+    var store;
+
     if (listenPort) {
         var options = null;
 
@@ -104,88 +106,92 @@ function initWebServer(isSsl, listenPort, auth) {
             }
             if (!options) return null;
         }
+        var app;
+        if (!app) {
+            var store = new AdapterStore({adapter: adapter});
+            app = express();
+            if (auth) {
 
-        server.app = express();
+                if (!isAuthUsed) {
+                    isAuthUsed = true;
 
-        if (auth) {
+                    passport.use(new LocalStrategy(
+                        function (username, password, done) {
 
-            if (!isAuthUsed) {
-                isAuthUsed = true;
+                            adapter.checkPassword(username, password, function (res) {
+                                if (res) {
+                                    return done(null, username);
+                                } else {
+                                    return done(null, false);
+                                }
+                            });
 
-                passport.use(new LocalStrategy(
-                    function (username, password, done) {
+                        }
+                    ));
+                    passport.serializeUser(function (user, done) {
+                        done(null, user);
+                    });
 
-                        adapter.checkPassword(username, password, function (res) {
-                            if (res) {
-                                return done(null, username);
-                            } else {
-                                return done(null, false);
-                            }
-                        });
+                    passport.deserializeUser(function (user, done) {
+                        done(null, user);
+                    });
+                }
 
-                    }
-                ));
-                passport.serializeUser(function (user, done) {
-                    done(null, user);
+                app.use(cookieParser());
+                app.use(bodyParser.urlencoded({
+                    extended: true
+                }));
+                app.use(bodyParser.json());
+                app.use(session({
+                    secret: 'Zgfr56gFe87jJOM',
+                    saveUninitialized: true,
+                    resave: true,
+                    store: store
+                }));
+                app.use(passport.initialize());
+                app.use(passport.session());
+                app.use(flash());
+
+                app.post('/login',
+                    passport.authenticate('local', {
+                        successRedirect: '/',
+                        failureRedirect: '/login',
+                        failureFlash: 'Invalid username or password.'
+                    })
+                );
+
+                app.get('/logout', function (req, res) {
+                    req.logout();
+                    res.redirect('/login/index.html');
                 });
 
-                passport.deserializeUser(function (user, done) {
-                    done(null, user);
+                // route middleware to make sure a user is logged in
+                app.use(function (req, res, next) {
+                    if (req.isAuthenticated() || req.originalUrl === '/login/') return next();
+                    res.redirect('/login/');
+                });
+            } else {
+                app.get('/login', function (req, res) {
+                    res.redirect('/');
+                });
+                app.get('/logout', function (req, res) {
+                    res.redirect('/');
                 });
             }
 
-            server.app.use(cookieParser());
-            server.app.use(bodyParser.urlencoded({
-                extended: true
-            }));
-            server.app.use(bodyParser.json());
-            server.app.use(session({
-                secret: 'Zgfr56gFe87jJOM',
-                saveUninitialized: true,
-                resave: true,
-                store: new AdapterStore({adapter: adapter})
-            }));
-            server.app.use(passport.initialize());
-            server.app.use(passport.session());
-            server.app.use(flash());
-
-            server.app.post('/login',
-                passport.authenticate('local', {
-                    successRedirect: '/',
-                    failureRedirect: '/login',
-                    failureFlash: 'Invalid username or password.'
-                })
-            );
-
-            server.app.get('/logout', function (req, res) {
-                req.logout();
-                res.redirect('/login/index.html');
-            });
-
-            // route middleware to make sure a user is logged in
-            server.app.use(function (req, res, next) {
-                if (req.isAuthenticated() || req.originalUrl === '/login/') return next();
-                res.redirect('/login/');
-            });
-        } else {
-            server.app.get('/login', function (req, res) {
-                res.redirect('/');
-            });
-            server.app.get('/logout', function (req, res) {
-                res.redirect('/');
-            });
+            if (adapter.config.cache) {
+                app.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
+            } else {
+                app.use('/', express.static(__dirname + '/www'));
+            }
         }
+        
+        server.app = app;
 
         if (isSsl) {
             server.server = require('https').createServer(options, server.app);
         } else {
             server.server = require('http').createServer(server.app);
-        }
-
-        if (adapter.config.cache) {
-            server.app.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
-        } else {
-            server.app.use('/', express.static(__dirname + '/www'));
         }
     }
 
@@ -198,10 +204,11 @@ function initWebServer(isSsl, listenPort, auth) {
 
             if (auth) {
                 server.io.use(passportSocketIo.authorize({
+                    passport:     passport,
                     cookieParser: cookieParser,
-                    key:          'express.sid',       // the name of the cookie where express/connect stores its session_id
-                    secret:       'session_secret',    // the session_secret to parse the cookie
-                    store:        AdapterStore,        // we NEED to use a sessionstore. no memorystore please
+                    key:         'connect.sid',       // the name of the cookie where express/connect stores its session_id
+                    secret:      'Zgfr56gFe87jJOM',    // the session_secret to parse the cookie
+                    store:        store,        // we NEED to use a sessionstore. no memorystore please
                     success:      onAuthorizeSuccess,  // *optional* callback on success - read more below
                     fail:         onAuthorizeFail     // *optional* callback on fail/error - read more below
                 }));
@@ -276,19 +283,21 @@ function initSocket(socket) {
 }
 
 function onAuthorizeSuccess(data, accept) {
-    adapter.log.info('successful connection to socket.io');
-    adapter.log.info(JSON.stringify(data));
+    adapter.log.info('successful connection to socket.io from ' + data.connection.remoteAddress);
+    //adapter.log.info(JSON.stringify(data));
 
     accept();
 }
 
 
 function onAuthorizeFail(data, message, error, accept) {
-    if (error) adapter.log.error('failed connection to socket.io:', message);
+    if (error) adapter.log.error('failed connection to socket.io from ' + data.connection.remoteAddress + ':', message);
 
-    accept(null, false);
-
-    if (error) accept(new Error(message));
+    if (error) {
+        accept(new Error(message))
+    } else {
+        accept('failed connection to socket.io: ' + message);//null, false);
+    }
     // this error will be sent to the user as a special error-package
     // see: http://socket.io/docs/client-api/#socket > error-object
 }
