@@ -780,6 +780,7 @@ $(document).ready(function () {
 
     function editScript(id) {
         if (id) {
+            var obj = objects[id];
             $dialogScript.dialog('option', 'title', id);
             $('#edit-script-id').val(obj._id);
             $('#edit-script-name').val(obj.common.name);
