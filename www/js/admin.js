@@ -363,6 +363,7 @@ $(document).ready(function () {
         onSelectRow: function (id, e) {
             $('#del-instance').removeClass('ui-state-disabled');
             $('#edit-instance').removeClass('ui-state-disabled');
+            $('#reload-instance').removeClass('ui-state-disabled');
 
             var rowData = $gridInstances.jqGrid('getRowData', id);
             rowData.ack = false;
@@ -399,6 +400,7 @@ $(document).ready(function () {
         gridComplete: function () {
             $('#del-instance').addClass('ui-state-disabled');
             $('#edit-instance').addClass('ui-state-disabled');
+            $('#reload-instance').addClass('ui-state-disabled');
         }
     }).jqGrid('filterToolbar', {
         defaultSearch: 'cn',
@@ -458,6 +460,18 @@ $(document).ready(function () {
         position: 'first',
         id: 'add-instance',
         title: 'new instance',
+        cursor: 'pointer'
+    }).jqGrid('navButtonAdd', '#pager-instances', {
+        caption: '',
+        buttonicon: 'ui-icon-refresh',
+        onClickButton: function () {
+            var objSelected = $gridInstances.jqGrid('getGridParam', 'selrow');
+            var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+            socket.emit('extendObject', id, {});
+        },
+        position: 'first',
+        id: 'reload-instance',
+        title: 'reload instance',
         cursor: 'pointer'
     });
 
@@ -819,8 +833,6 @@ $(document).ready(function () {
     }
 
     function initInstances() {
-
-        console.log('initInstances');
 
         $("#load_grid-instances").show();
 
