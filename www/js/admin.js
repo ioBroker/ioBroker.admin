@@ -17,6 +17,12 @@ $(document).ready(function () {
     var children =  {};
     var objects =   {};
 
+    function navigation() {
+        var tab = 'tab-' + window.location.hash.slice(1);
+        var index = $('#tabs a[href="#' + tab + '"]').parent().index() - 1;
+        $('#tabs').tabs('option', 'active', index);
+    }
+
     $('#tabs').tabs({
         activate: function (event, ui) {
             window.location.hash = '#' + ui.newPanel.selector.slice(5);
@@ -48,8 +54,14 @@ $(document).ready(function () {
             $("#button-logout").button().click(function () {
                 window.location.href = "/logout/";
             });
+
+            window.onhashchange = navigation;
+            navigation();
+
         }
     });
+
+
 
 
 
