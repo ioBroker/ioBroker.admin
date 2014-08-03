@@ -773,9 +773,14 @@ $(document).ready(function () {
         obj.common.source = $('#edit-script-source').val();
         obj.common.platform = $('#edit-script-platform').val() || '';
         var extension;
-        if (obj.common.platform.match(/^[jJ]avascript/)) extension = 'js.';
-        if (!obj._id) obj._id = 'script.' + extension + obj.common.name;
-        console.log(obj);
+
+        if (!obj._id) {
+            if (obj.common.platform.match(/^[jJ]avascript/)) {
+                extension = 'js.';
+                obj.common.engine = 'system.adapter.javascript.0';
+            }
+            obj._id = 'script.' + extension + obj.common.name;
+        }
 
         socket.emit('extendObject', obj._id, obj);
         $dialogScript.dialog('close');
