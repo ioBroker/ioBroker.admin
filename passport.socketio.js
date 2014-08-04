@@ -21,18 +21,18 @@ function authorize(options) {
         key:          'connect.sid',
         secret:       null,
         store:        null,
-        success:      function (data, accept){
+        success:      function (data, accept) {
             if (data.socketio_version_1) {
                 accept();
             } else {
-                accept(null, true)
+                accept(null, true);
             }
         },
         fail:         function (data, message, critical, accept) {
             if (data.socketio_version_1) {
                 accept(new Error(message));
             } else {
-                accept(null, false)
+                accept(null, false);
             }
         }
     };
@@ -45,7 +45,7 @@ function authorize(options) {
         throw new Error('cookieParser is required use connect.cookieParser or express.cookieParser');
     }
 
-    return function(data, accept){
+    return function (data, accept) {
 
         // socket.io v1.0 now provides socket handshake data via `socket.request`
         if (data.request) {
@@ -59,20 +59,20 @@ function authorize(options) {
             logged_in: false
         };
 
-        if(data.xdomain && !data.sessionID)
+        if (data.xdomain && !data.sessionID)
             return auth.fail(data, 'Can not read cookies from CORS-Requests. See CORS-Workaround in the readme.', false, accept);
 
-        auth.store.get(data.sessionID, function(err, session){
-            if(err)
+        auth.store.get(data.sessionID, function (err, session) {
+            if (err)
                 return auth.fail(data, 'Error in session store:\n' + err.message, true, accept);
-            if(!session)
+            if (!session)
                 return auth.fail(data, 'No session found', false, accept);
-            if(!session[auth.passport._key])
+            if (!session[auth.passport._key])
                 return auth.fail(data, 'Passport was not initialized', true, accept);
 
             var userKey = session[auth.passport._key][auth.userProperty];
 
-            if(!userKey)
+            if (!userKey)
                 return auth.fail(data, 'User not authorized through passport. (User Property not found)', false, accept);
 
             // Because of authentication error removed
@@ -93,13 +93,13 @@ function authorize(options) {
     };
 }
 
-function filterSocketsByUser(socketIo, filter){
+function filterSocketsByUser(socketIo, filter) {
     var handshaken = socketIo.sockets.manager.handshaken;
     return Object.keys(handshaken || {})
-        .filter(function(skey){
+        .filter(function (skey) {
             return filter(handshaken[skey].user);
         })
-        .map(function(skey){
+        .map(function (skey) {
             return socketIo.sockets.manager.sockets.sockets[skey];
         });
 }

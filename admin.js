@@ -16,8 +16,8 @@ var flash =             require('connect-flash'); // TODO report error to user
 
 var webServers = [];
 
-var objects =   {};
-var states =    {};
+var objects =    {};
+var states =     {};
 
 var isAuthUsed = false;
 
@@ -67,16 +67,87 @@ function main() {
 
 }
 
-// use setForeignObject instead
 function addUser(user, pw, callback) {
-    adapter.setForeignObject('system.user.' + user, {
-        type: 'user',
-        common: {
-            name:    user,
-            enabled: true
+    adapter.getForeignObject("system.user." + user, function (err, obj) {
+        if (obj) {
+            if (callback) callback("User yet exists");
+        } else {
+            adapter.setForeignObject('system.user.' + user, {
+                type: 'user',
+                common: {
+                    name:    user,
+                    enabled: true,
+                    groups:  []
+                }
+            }, function () {
+                adapter.setPassword(user, pw, callback);
+            });
         }
-    }, function () {
-        adapter.setPassword(user, pw);
+    });
+}
+
+function delUser(user, callback) {
+    adapter.getForeignObject("system.user." + user, function (err, obj) {
+        if (err || !obj) {
+            if (callback) callback("User does not exist");
+        } else {
+            if (obj.common.dontDelete) {
+                if (callback) callback("Cannot delete user, while is system user");
+            } else {
+                adapter.delForeignObject("system.user." + user, function (err) {
+                    // TODO Remove this user from all groups
+
+
+
+                    if (callback) callback(err);
+                });
+            }
+        }
+    });
+}
+
+function addGroup(group, desc, callback) {
+    var name = group;
+    if (name && name.substring(0, 1) != name.substring(0, 1).toUpperCase()) {
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+    }
+    group = group.substring(0, 1).toLowerCase() + group.substring(1);
+
+    adapter.getForeignObject("system.group." + group, function (err, obj) {
+        if (obj) {
+            if (callback) callback("Group yet exists");
+        } else {
+            adapter.setForeignObject('system.group.' + group, {
+                type: 'group',
+                common: {
+                    name:    name,
+                    desc:    desc,
+                    members: []
+                }
+            }, function (err, obj) {
+                if (callback) callback(err, obj);
+            });
+        }
+    });
+}
+
+function delGroup(group, callback) {
+    adapter.getForeignObject("system.group." + group, function (err, obj) {
+        if (err || !obj) {
+            if (callback) callback("Group does not exist");
+        } else {
+            if (obj.common.dontDelete) {
+                if (callback) callback("Cannot delete group, while is system group");
+            } else {
+                adapter.delForeignObject("system.group." + group, function (err) {
+                    // TODO Remove this group from all users
+
+
+
+                    if (callback) callback(err);
+                });
+            }
+        }
     });
 }
 
@@ -87,7 +158,7 @@ function initWebServer(isSsl, listenPort, auth) {
         io:     null,
         port:   listenPort,
         isSsl:  isSsl
-    }
+    };
 
     var store;
 
@@ -108,7 +179,7 @@ function initWebServer(isSsl, listenPort, auth) {
         }
         var app;
         if (!app) {
-            var store = new AdapterStore({adapter: adapter});
+            store = new AdapterStore({adapter: adapter});
             app = express();
             if (auth) {
 
@@ -279,6 +350,26 @@ function initSocket(socket) {
         });
     });
 
+    socket.on('addUser', function (user, pass, callback) {
+        addUser(user, pass, callback);
+    });
+
+    socket.on('delUser', function (user, callback) {
+        delUser(user, callback);
+    });
+
+    socket.on('addGroup', function (group, desc, callback) {
+        addGroup(group, desc, callback);
+    });
+
+    socket.on('delGroup', function (group, callback) {
+        delGroup(group, callback);
+    });
+
+    socket.on('changePassword', function (user, pass, callback) {
+        adapter.setPassword(user, pass, callback);
+    });
+
     socket.on('extendObject', function (id, obj, callback) {
         adapter.extendForeignObject(id, obj, function (err, res) {
             if (typeof callback === 'function') callback(err, res);
@@ -298,7 +389,7 @@ function onAuthorizeFail(data, message, error, accept) {
     if (error) adapter.log.error('failed connection to socket.io from ' + data.connection.remoteAddress + ':', message);
 
     if (error) {
-        accept(new Error(message))
+        accept(new Error(message));
     } else {
         accept('failed connection to socket.io: ' + message);//null, false);
     }
