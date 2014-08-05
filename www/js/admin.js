@@ -540,14 +540,7 @@ $(document).ready(function () {
                 $(".user-groups-edit").multiselect({
                     selectedList: 4,
                     close: function () {
-                        var obj = {common: {members: $(this).val()}};
-                        var id  = $(this).attr('data-id');
-                        socket.emit('extendObject', id, obj, function (err, obj) {
-                            if (!err && obj) {
-                                // Add this user to correspond group
-                                synchronizeUser(id);
-                            }
-                        });
+                        synchronizeUser($(this).attr('data-id'), $(this).val());
                     }
                 });
                 $(".user-enabled-edit").change(function () {
@@ -584,6 +577,8 @@ $(document).ready(function () {
                     socket.emit('delUser', id.replace("system.user.", ""), function (err) {
                         if (err) {
                             window.alert("Cannot delete user: " + err);
+                        } else {
+                            delUser(id);
                         }
                     });
                 }
@@ -705,9 +700,9 @@ $(document).ready(function () {
                         var obj = {common: {members: $(this).val()}};
                         var id  = $(this).attr('data-id');
                         socket.emit('extendObject', id, obj, function (err, obj) {
-                            if (!err && obj) {
-                                // Add this group to correspond user
-                                synchronizeGroup(id);
+                            if (err) {
+                                // Cannot modify
+                                window.alert("Cannot change group");
                             }
                         });
                     }
@@ -1236,7 +1231,7 @@ $(document).ready(function () {
                     var name = groups[j].substring('system.group.'.length);
                     name = name.substring(0, 1).toUpperCase() + name.substring(1);
                     select += '<option value="' + groups[j] + '"';
-                    if (obj.common && obj.common.members && obj.common.members.indexOf(groups[j]) != -1) select += ' selected';
+                    if (objects[groups[j]].common && objects[groups[j]].common.members && objects[groups[j]].common.members.indexOf(users[i]) != -1) select += ' selected';
                     select += '>' + name + '</option>';
                 }
 
@@ -1302,15 +1297,41 @@ $(document).ready(function () {
         }
     }
 
-    function synchronizeGroup(id) {
-        // TODO
-        console.log("TODO synchronise !!!")
-   }
-
-    function synchronizeUser(id) {
-        // TODO
-        console.log("TODO synchronise !!!")
+    function synchronizeUser(userId, userGroups) {
+        var obj;
+        userGroups = userGroups || [];
+        for (var i = 0; i < groups.length; i++) {
+            // If user has no group, but group has user => delete user from group
+            if (userGroups.indexOf(groups[i]) == -1 &&
+                objects[groups[i]].common.members && objects[groups[i]].common.members.indexOf(userId) != -1) {
+                objects[groups[i]].common.members.splice(objects[groups[i]].common.members.indexOf(userId), 1);
+                obj = {common: {members: objects[groups[i]].common.members}};
+                socket.emit('extendObject', groups[i], obj);
+            }
+            if (userGroups.indexOf(groups[i]) != -1 &&
+                (!objects[groups[i]].common.members || objects[groups[i]].common.members.indexOf(userId) == -1)) {
+                objects[groups[i]].common.members = objects[groups[i]].common.members || [];
+                objects[groups[i]].common.members.push(userId);
+                obj = {common: {members: objects[groups[i]].common.members}};
+                socket.emit('extendObject', groups[i], obj);
+            }
+        }
     }
+
+    function delUser(id) {
+        for (var i = 0; i < groups.length; i++) {
+            // If user has no group, but group has user => delete user from group
+            if (objects[groups[i]].common.members && objects[groups[i]].common.members.indexOf(id) != -1) {
+                objects[groups[i]].common.members.splice(objects[groups[i]].common.members.indexOf(id), 1);
+                socket.emit('extendObject', groups[i], {
+                    common: {
+                        members: objects[groups[i]].common.members
+                    }
+                });
+            }
+        }
+    }
+
     var socket = io.connect();
 
     socket.on('stateChange', function (id, obj) {
@@ -1382,12 +1403,13 @@ $(document).ready(function () {
                     users.splice(i, 1);
                 }
             }
-            if (!updateTimers.initUsers) {
-                clearTimeout(updateTimers.initUsers);
+            if (!updateTimers.initUsersGroups) {
+                clearTimeout(updateTimers.initUsersGroups);
             }
-            updateTimers.initUsers = setTimeout(function () {
-                updateTimers.initUsers = null;
+            updateTimers.initUsersGroups = setTimeout(function () {
+                updateTimers.initUsersGroups = null;
                 initUsers(true);
+                initGroups(true);
             }, 200);
         }
         // Update groups
@@ -1403,12 +1425,13 @@ $(document).ready(function () {
             setTimeout(function () {
                 initGroups(true);
             }, 0);
-            if (!updateTimers.initGroups) {
-                clearTimeout(updateTimers.initGroups);
+            if (!updateTimers.initUsersGroups) {
+                clearTimeout(updateTimers.initUsersGroups);
             }
-            updateTimers.initGroups = setTimeout(function () {
-                updateTimers.initGroups = null;
+            updateTimers.initUsersGroups = setTimeout(function () {
+                updateTimers.initUsersGroups = null;
                 initGroups(true);
+                initUsers(true);
             }, 200);
         }
     });

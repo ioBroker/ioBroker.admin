@@ -8,16 +8,18 @@ var bodyParser =        require('body-parser');
 var session =           require('express-session');
 var AdapterStore =      require(__dirname + '/../../lib/session.js')(session);
 var socketio =          require('socket.io');
-var passportSocketIo =  require(__dirname + "/passport.socketio.js");
+var passportSocketIo =  require(__dirname + "/lib/passport.socketio.js");
 var password =          require(__dirname + '/../../lib/password.js');
 var passport =          require('passport');
 var LocalStrategy =     require('passport-local').Strategy;
 var flash =             require('connect-flash'); // TODO report error to user
 
 var webServers = [];
-
+var store =      null;
 var objects =    {};
 var states =     {};
+var secret =     'Zgfr56gFe87jJOM';
+var userKey =    'connect.sid';
 
 var isAuthUsed = false;
 
@@ -57,7 +59,7 @@ var adapter = require(__dirname + '/../../lib/adapter.js')({
 });
 
 function main() {
-
+    store = new AdapterStore({adapter: adapter});
     adapter.subscribeForeignStates('*');
     adapter.subscribeForeignObjects('*');
 
@@ -95,10 +97,7 @@ function delUser(user, callback) {
                 if (callback) callback("Cannot delete user, while is system user");
             } else {
                 adapter.delForeignObject("system.user." + user, function (err) {
-                    // TODO Remove this user from all groups
-
-
-
+                    // Remove this user from all groups in web client
                     if (callback) callback(err);
                 });
             }
@@ -140,10 +139,7 @@ function delGroup(group, callback) {
                 if (callback) callback("Cannot delete group, while is system group");
             } else {
                 adapter.delForeignObject("system.group." + group, function (err) {
-                    // TODO Remove this group from all users
-
-
-
+                    // Remove this group from all users in web client
                     if (callback) callback(err);
                 });
             }
@@ -159,8 +155,6 @@ function initWebServer(isSsl, listenPort, auth) {
         port:   listenPort,
         isSsl:  isSsl
     };
-
-    var store;
 
     if (listenPort) {
         var options = null;
@@ -179,7 +173,6 @@ function initWebServer(isSsl, listenPort, auth) {
         }
         var app;
         if (!app) {
-            store = new AdapterStore({adapter: adapter});
             app = express();
             if (auth) {
 
@@ -214,10 +207,10 @@ function initWebServer(isSsl, listenPort, auth) {
                 }));
                 app.use(bodyParser.json());
                 app.use(session({
-                    secret: 'Zgfr56gFe87jJOM',
+                    secret: secret,
                     saveUninitialized: true,
                     resave: true,
-                    store: store
+                    store:  store
                 }));
                 app.use(passport.initialize());
                 app.use(passport.session());
@@ -264,6 +257,7 @@ function initWebServer(isSsl, listenPort, auth) {
         } else {
             server.server = require('http').createServer(server.app);
         }
+        server.server.__server = server;
     }
 
     if (server.server) {
@@ -281,11 +275,11 @@ function initWebServer(isSsl, listenPort, auth) {
                 server.io.use(passportSocketIo.authorize({
                     passport:     passport,
                     cookieParser: cookieParser,
-                    key:         'connect.sid',       // the name of the cookie where express/connect stores its session_id
-                    secret:      'Zgfr56gFe87jJOM',    // the session_secret to parse the cookie
-                    store:        store,        // we NEED to use a sessionstore. no memorystore please
+                    key:          userKey,             // the name of the cookie where express/connect stores its session_id
+                    secret:       secret,              // the session_secret to parse the cookie
+                    store:        store,               // we NEED to use a sessionstore. no memorystore please
                     success:      onAuthorizeSuccess,  // *optional* callback on success - read more below
-                    fail:         onAuthorizeFail     // *optional* callback on fail/error - read more below
+                    fail:         onAuthorizeFail      // *optional* callback on fail/error - read more below
                 }));
             }
 
@@ -333,46 +327,76 @@ function getData() {
     });
 }
 
+// Extract user name from socket
+function getUserFromSocket(socket, callback) {
+    var wait = false;
+    try {
+        if (socket.conn.request.sessionID) {
+            wait = true;
+            store.get(socket.conn.request.sessionID, function (err, obj) {
+                if (obj && obj.passport && obj.passport.user) {
+                    if (callback) callback(null, obj.passport.user);
+                    return;
+                }
+            });
+        }
+    } catch (e) {
+
+    }
+    if (!wait && callback) callback("Cannot detect user");
+}
+
 function initSocket(socket) {
+    getUserFromSocket (socket, function (err, user) {
+        if (err || !user) {
+            adapter.log.info('Cannot detect user: ' + err + '"');
+            return;
+        } else {
+            adapter.log.info('Connected client as "' + user + '"');
+        }
 
-    socket.on('getStates', function (callback) {
-        callback(null, states);
-    });
+        // TODO Check if user may create and delete objects and so on
 
-    socket.on('getObjects', function (callback) {
-        callback(null, objects);
-    });
 
-    socket.on('setState', function (id, state, callback) {
-        if (typeof state !== 'object') state = {val: state};
-        adapter.setForeignState(id, state, function (err, res) {
-            if (typeof callback === 'function') callback(err, res);
+        socket.on('getStates', function (callback) {
+            callback(null, states);
         });
-    });
 
-    socket.on('addUser', function (user, pass, callback) {
-        addUser(user, pass, callback);
-    });
+        socket.on('getObjects', function (callback) {
+            callback(null, objects);
+        });
 
-    socket.on('delUser', function (user, callback) {
-        delUser(user, callback);
-    });
+        socket.on('setState', function (id, state, callback) {
+            if (typeof state !== 'object') state = {val: state};
+            adapter.setForeignState(id, state, function (err, res) {
+                if (typeof callback === 'function') callback(err, res);
+            });
+        });
 
-    socket.on('addGroup', function (group, desc, callback) {
-        addGroup(group, desc, callback);
-    });
+        socket.on('addUser', function (user, pass, callback) {
+            addUser(user, pass, callback);
+        });
 
-    socket.on('delGroup', function (group, callback) {
-        delGroup(group, callback);
-    });
+        socket.on('delUser', function (user, callback) {
+            delUser(user, callback);
+        });
 
-    socket.on('changePassword', function (user, pass, callback) {
-        adapter.setPassword(user, pass, callback);
-    });
+        socket.on('addGroup', function (group, desc, callback) {
+            addGroup(group, desc, callback);
+        });
 
-    socket.on('extendObject', function (id, obj, callback) {
-        adapter.extendForeignObject(id, obj, function (err, res) {
-            if (typeof callback === 'function') callback(err, res);
+        socket.on('delGroup', function (group, callback) {
+            delGroup(group, callback);
+        });
+
+        socket.on('changePassword', function (user, pass, callback) {
+            adapter.setPassword(user, pass, callback);
+        });
+
+        socket.on('extendObject', function (id, obj, callback) {
+            adapter.extendForeignObject(id, obj, function (err, res) {
+                if (typeof callback === 'function') callback(err, res);
+            });
         });
     });
 }
