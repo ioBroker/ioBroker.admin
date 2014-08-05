@@ -540,7 +540,7 @@ $(document).ready(function () {
                 $(".user-groups-edit").multiselect({
                     selectedList: 4,
                     close: function () {
-                        var obj = {common: {groups: $(this).val()}};
+                        var obj = {common: {members: $(this).val()}};
                         var id  = $(this).attr('data-id');
                         socket.emit('extendObject', id, obj, function (err, obj) {
                             if (!err && obj) {
@@ -1236,7 +1236,7 @@ $(document).ready(function () {
                     var name = groups[j].substring('system.group.'.length);
                     name = name.substring(0, 1).toUpperCase() + name.substring(1);
                     select += '<option value="' + groups[j] + '"';
-                    if (obj.common && obj.common.groups && obj.common.groups.indexOf(groups[j]) != -1) select += ' selected';
+                    if (obj.common && obj.common.members && obj.common.members.indexOf(groups[j]) != -1) select += ' selected';
                     select += '>' + name + '</option>';
                 }
 
