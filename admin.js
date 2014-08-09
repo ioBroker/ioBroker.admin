@@ -354,14 +354,20 @@ function initSocket(socket) {
           admin.0
             adapter.config.port: 8080
             adapter.config.secure: false
-            adapter.config.family: ipv4
-            adapter.config.bind: 192.168.2.100
+            adapter.config.family: "ipv4"
+            adapter.config.bind: "192.168.2.100"
             adapter.config.auth: false
           admin.1
              adapter.config.port: 8443
              adapter.config.secure: true
-             adapter.config.family: ipv4
-             adapter.config.bind: 0.0.0.0
+             adapter.config.family: "ipv4"
+             adapter.config.bind: "0.0.0.0"
+             adapter.config.auth: true
+         admin.2
+             adapter.config.port: 8443
+             adapter.config.secure: true
+             adapter.config.family: "ipv6"
+             adapter.config.bind: "::"
              adapter.config.auth: true
 
      so we wouldn't have to deal with multiple webserver instances inside the adapter and the user could open
