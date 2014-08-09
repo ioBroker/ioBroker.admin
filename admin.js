@@ -347,56 +347,84 @@ function getUserFromSocket(socket, callback) {
 }
 
 function initSocket(socket) {
-    getUserFromSocket (socket, function (err, user) {
-        if (err || !user) {
-            adapter.log.info('Cannot detect user: ' + err + '"');
-            return;
-        } else {
-            adapter.log.info('Connected client as "' + user + '"');
-        }
-
-        // TODO Check if user may create and delete objects and so on
 
 
-        socket.on('getStates', function (callback) {
-            callback(null, states);
+    if (adapter.config.auth) {
+    /** todo https @Bluefox let us phone about the webserver in the admin-adapter, i would suggest to use multiple adapter instances for different servers:
+          admin.0
+            adapter.config.port: 8080
+            adapter.config.secure: false
+            adapter.config.family: ipv4
+            adapter.config.bind: 192.168.2.100
+            adapter.config.auth: false
+          admin.1
+             adapter.config.port: 8443
+             adapter.config.secure: true
+             adapter.config.family: ipv4
+             adapter.config.bind: 0.0.0.0
+             adapter.config.auth: true
+
+     so we wouldn't have to deal with multiple webserver instances inside the adapter and the user could open
+     a https webserver without and another one with authentication f.e., that's more flexible i think.
+
+     */
+        getUserFromSocket(socket, function (err, user) {
+            if (err || !user) {
+                adapter.log.error('socket.io ' + err);
+                return;
+            } else {
+                adapter.log.debug('socket.io client ' + user + ' connected');
+                socketEvents(socket, user);
+            }
         });
+    } else {
+        socketEvents(socket);
+    }
 
-        socket.on('getObjects', function (callback) {
-            callback(null, objects);
+}
+
+function socketEvents(socket, user) {
+
+    // TODO Check if user may create and delete objects and so on
+
+    socket.on('getStates', function (callback) {
+        callback(null, states);
+    });
+
+    socket.on('getObjects', function (callback) {
+        callback(null, objects);
+    });
+
+    socket.on('setState', function (id, state, callback) {
+        if (typeof state !== 'object') state = {val: state};
+        adapter.setForeignState(id, state, function (err, res) {
+            if (typeof callback === 'function') callback(err, res);
         });
+    });
 
-        socket.on('setState', function (id, state, callback) {
-            if (typeof state !== 'object') state = {val: state};
-            adapter.setForeignState(id, state, function (err, res) {
-                if (typeof callback === 'function') callback(err, res);
-            });
-        });
+    socket.on('addUser', function (user, pass, callback) {
+        addUser(user, pass, callback);
+    });
 
-        socket.on('addUser', function (user, pass, callback) {
-            addUser(user, pass, callback);
-        });
+    socket.on('delUser', function (user, callback) {
+        delUser(user, callback);
+    });
 
-        socket.on('delUser', function (user, callback) {
-            delUser(user, callback);
-        });
+    socket.on('addGroup', function (group, desc, callback) {
+        addGroup(group, desc, callback);
+    });
 
-        socket.on('addGroup', function (group, desc, callback) {
-            addGroup(group, desc, callback);
-        });
+    socket.on('delGroup', function (group, callback) {
+        delGroup(group, callback);
+    });
 
-        socket.on('delGroup', function (group, callback) {
-            delGroup(group, callback);
-        });
+    socket.on('changePassword', function (user, pass, callback) {
+        adapter.setPassword(user, pass, callback);
+    });
 
-        socket.on('changePassword', function (user, pass, callback) {
-            adapter.setPassword(user, pass, callback);
-        });
-
-        socket.on('extendObject', function (id, obj, callback) {
-            adapter.extendForeignObject(id, obj, function (err, res) {
-                if (typeof callback === 'function') callback(err, res);
-            });
+    socket.on('extendObject', function (id, obj, callback) {
+        adapter.extendForeignObject(id, obj, function (err, res) {
+            if (typeof callback === 'function') callback(err, res);
         });
     });
 }
