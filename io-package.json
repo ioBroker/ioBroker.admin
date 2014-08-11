@@ -11,6 +11,7 @@
         "mode":                     "daemon",
         "platform":                 "Javascript/Node.js",
         "loglevel":                 "info",
+        "noRepository":             true,
         "keywords":                 ["admin", "setup"]
     },
     "native": {
