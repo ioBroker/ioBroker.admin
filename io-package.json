@@ -15,10 +15,10 @@
         "keywords":                 ["admin", "setup"]
     },
     "native": {
-        "listenPort":               8080,
-        "listenPortSsl":            null,
+        "port":                     8080,
         "auth":                     false,
-        "authSsl":                  false,
+        "secure":                   false,
+        "bind":                     "0.0.0.0",
         "cache":                    false
     },
     "objects": [
