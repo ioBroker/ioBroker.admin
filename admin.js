@@ -51,7 +51,7 @@ var adapter = require(__dirname + '/../../lib/adapter.js')({
         adapter.getForeignObject("system.adapter.admin", function (err, obj) {
             if (!err && obj) {
                 if (!obj.native.secret) {
-                    require('crypto').randomBytes(24, function(ex, buf) {
+                    require('crypto').randomBytes(24, function (ex, buf) {
                         secret = buf.toString('hex');
                         adapter.extendForeignObject("system.adapter.admin", {native: {secret: secret}});
                         main();
