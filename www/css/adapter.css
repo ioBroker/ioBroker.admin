@@ -1,0 +1,41 @@
+body {
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Lucida Grande,Lucida Sans,Arial,sans-serif;
+}
+
+#adapter-container {
+    padding-left: 6px;
+}
+
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited, .ui-state-hover a, .ui-state-hover a:link, .ui-state-hover a:visited  {
+    outline: none;
+}
+
+
+#tabs {
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+
+}
+
+.header {
+    padding-left: 4px;
+}
+
+.header input {
+    margin: 4px;
+
+}
+
+.ui-tabs-nav {
+    border-radius: 0;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+

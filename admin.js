@@ -4,6 +4,8 @@
 
 var express =           require('express');
 var socketio =          require('socket.io');
+var request =           require('request');
+
 var session;// =           require('express-session');
 var cookieParser;// =      require('cookie-parser');
 var bodyParser;// =        require('body-parser');
@@ -30,12 +32,11 @@ var adapter = require(__dirname + '/../../lib/adapter.js')({
     },
     objectChange: function (id, obj) {
         objects[id] = obj;
-
-        webServer.io.sockets.emit('objectChange', id, obj);
+        if (webServer) webServer.io.sockets.emit('objectChange', id, obj);
     },
     stateChange: function (id, state) {
         states[id] = state;
-        webServer.io.sockets.emit('stateChange', id, state);
+        if (webServer) webServer.io.sockets.emit('stateChange', id, state);
     },
     unload: function (callback) {
         try {
@@ -56,7 +57,7 @@ var adapter = require(__dirname + '/../../lib/adapter.js')({
                         adapter.extendForeignObject("system.adapter.admin", {native: {secret: secret}});
                         main();
                     });
-                }else {
+                } else {
                     secret = obj.native.secret;
                     main();
                 }
@@ -75,6 +76,12 @@ function main() {
 
     getData();
 
+}
+
+function getAdapterUI() {
+    adapter.objects.getObjectView('system', 'adapterUI', {}, function (err, res) {
+
+    });
 }
 
 function addUser(user, pw, callback) {
@@ -162,6 +169,7 @@ function delGroup(group, callback) {
 //    "cache":  false
 //}
 function initWebServer(settings) {
+
     var server = {
         app:       null,
         server:    null,
@@ -263,11 +271,33 @@ function initWebServer(settings) {
             });
         }
 
+        var appOptions = {};
         if (settings.cache) {
-            server.app.use('/', express.static(__dirname + '/www', {maxAge: 30758400000}));
-        } else {
-            server.app.use('/', express.static(__dirname + '/www'));
+            appOptions.maxAge = 30758400000;
         }
+
+        server.app.use('/', express.static(__dirname + '/www', appOptions));
+
+        // reverse proxy with url rewrite for couchdb attachments in <adapter-name>.admin
+        server.app.use('/adapter/', function(req, res) {
+
+            var url = req.url;
+                // Example: /example/?0
+
+            // add .admin to adapter name
+            url = url.replace(/^\/([a-zA-Z0-9-_]+)\//, '/$1.admin/');
+
+            // add index.html
+            url = url.replace(/\/($|\?|#)/, '/index.html$1');
+
+            // TODO use settings from conf/iobroker.json for couch host, port and database!
+            url = 'http://127.0.0.1:5984/iobroker' + url;
+                // Example: http://127.0.0.1:5984/iobroker/example.admin/index.html?0
+
+            // TODO own 404/500 Page? possible with pipe?
+            req.pipe(request(url)).pipe(res);
+
+        });
 
         if (settings.secure) {
             server.server = require('https').createServer(options, server.app);
@@ -275,6 +305,9 @@ function initWebServer(settings) {
             server.server = require('http').createServer(server.app);
         }
         server.server.__server = server;
+    } else {
+        adapter.log.error('port missing');
+        process.exit(1);
     }
 
     if (server.server) {
@@ -373,12 +406,28 @@ function socketEvents(socket, user) {
 
     // TODO Check if user may create and delete objects and so on
 
-    socket.on('getStates', function (callback) {
-        callback(null, states);
+
+    /*
+     *      objects
+     */
+    socket.on('getObject', function (id, callback) {
+        adapter.getForeignObject(id, callback);
     });
 
     socket.on('getObjects', function (callback) {
         callback(null, objects);
+    });
+
+    socket.on('extendObject', function (id, obj, callback) {
+        adapter.extendForeignObject(id, obj, callback);
+    });
+
+
+    /*
+     *      states
+     */
+    socket.on('getStates', function (callback) {
+        callback(null, states);
     });
 
     socket.on('setState', function (id, state, callback) {
@@ -388,6 +437,10 @@ function socketEvents(socket, user) {
         });
     });
 
+
+    /*
+     *      user/group
+     */
     socket.on('addUser', function (user, pass, callback) {
         addUser(user, pass, callback);
     });
@@ -408,11 +461,7 @@ function socketEvents(socket, user) {
         adapter.setPassword(user, pass, callback);
     });
 
-    socket.on('extendObject', function (id, obj, callback) {
-        adapter.extendForeignObject(id, obj, function (err, res) {
-            if (typeof callback === 'function') callback(err, res);
-        });
-    });
+
 }
 
 function onAuthorizeSuccess(data, accept) {

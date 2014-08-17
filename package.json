@@ -1,6 +1,6 @@
 {
   "name": "ioBroker.admin",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "dependencies": {
     "express": "~4.4.4",
@@ -10,6 +10,7 @@
     "express-session": "~1.7.2",
     "passport-local": "~1.0.0",
     "passport": "~0.2.0",
+    "request": "~2.38.0",
     "connect-flash": "~0.1.1",
     "xtend": "~2.0.3"
   }

@@ -17,6 +17,7 @@ $(document).ready(function () {
     var children =     {};
     var objects =      {};
     var updateTimers = {};
+    var adapterWindow;
 
     function navigation() {
         var tab = 'tab-' + window.location.hash.slice(1);
@@ -311,6 +312,7 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: 'ioBroker States',
+            // TODO Inline Edit on dblClick only
             onSelectRow: function (id) {
                 var rowData = $gridStates.jqGrid('getRowData', id);
                 rowData.ack = false;
@@ -357,7 +359,7 @@ $(document).ready(function () {
         var $gridInstances = $('#grid-instances');
         $gridInstances.jqGrid({
             datatype: 'local',
-            colNames: ['id', 'name', 'title', 'version', 'enabled', 'host', 'mode', 'platform', 'loglevel', 'alive', 'connected'],
+            colNames: ['id', 'name', 'title', 'version', 'enabled', 'host', 'mode', 'config', 'platform', 'loglevel', 'alive', 'connected'],
             colModel: [
                 {name: '_id',       index: '_id'},
                 {name: 'name',      index: 'name', editable: true},
@@ -366,6 +368,7 @@ $(document).ready(function () {
                 {name: 'enabled',   index: 'enabled', editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
                 {name: 'host',      index: 'host', editable: true},
                 {name: 'mode',      index: 'mode'},
+                {name: 'config',    index: 'config'},
                 {name: 'platform',  index: 'platform'},
                 {name: 'loglevel',  index: 'loglevel', editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}},
                 {name: 'alive',     index: 'alive'},
@@ -378,6 +381,7 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: 'ioBroker adapter instances',
+            // TODO Inline Edit on dblClick only
             onSelectRow: function (id, e) {
                 $('#del-instance').removeClass('ui-state-disabled');
                 $('#edit-instance').removeClass('ui-state-disabled');
@@ -406,8 +410,6 @@ $(document).ready(function () {
                     obj.common.enabled = $gridInstances.jqGrid("getCell", instanceLastSelected, "enabled");
                     if (obj.common.enabled === 'true') obj.common.enabled = true;
                     if (obj.common.enabled === 'false') obj.common.enabled = false;
-
-
 
                     var id = $('tr#' + instanceLastSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
 
@@ -830,6 +832,7 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: 'ioBroker adapter scripts',
+            // TODO Inline Edit on dblClick only
             onSelectRow: function (id, e) {
                 $('#del-script').removeClass('ui-state-disabled');
                 $('#edit-script').removeClass('ui-state-disabled');
@@ -1199,9 +1202,12 @@ $(document).ready(function () {
         }
 
         if (typeof $gridInstances !== 'undefined' && !$gridInstances[0]._isInited) {
-             $gridInstances[0]._isInited = true;
+            $gridInstances[0]._isInited = true;
             for (var i = 0; i < instances.length; i++) {
                 var obj = objects[instances[i]];
+                var tmp = obj._id.split('.');
+                var adapter = tmp[2];
+                var instance = tmp[3];
                 $gridInstances.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
                     _id:      obj._id,
                     name:     obj.common ? obj.common.name : '',
@@ -1210,6 +1216,7 @@ $(document).ready(function () {
                     enabled:  obj.common ? obj.common.enabled : '',
                     host:     obj.common ? obj.common.host : '',
                     mode:     obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
+                    config:   '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" class="adapter-settings">config</button>',
                     platform: obj.common ? obj.common.platform : '',
                     loglevel: obj.common ? obj.common.loglevel : '',
                     alive:    '',
@@ -1217,7 +1224,19 @@ $(document).ready(function () {
                 });
             }
             $gridInstances.trigger('reloadGrid');
+
+            $(document).on('click', '.adapter-settings', function () {
+                if (typeof adapterWindow === 'undefined' || adapterWindow.closed) {
+                    adapterWindow = window.open($(this).attr('data-adapter-href'), '', 'height=480,width=800');
+                } else {
+                    adapterWindow.location.href = $(this).attr('data-adapter-href');
+                    adapterWindow.focus();
+                }
+                return false;
+            });
         }
+
+
     }
 
     function initUsers(isForce) {
