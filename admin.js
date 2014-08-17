@@ -461,6 +461,34 @@ function socketEvents(socket, user) {
         adapter.setPassword(user, pass, callback);
     });
 
+    // iobroker commands
+    socket.on('cmdExec', function (cmd, callback) {
+        // TODO - Generate 'cmd session code', give it to callback and all following on('data') and on('exit)'
+        var spawn = require('child_process').spawn;
+        var args = [__dirname + '/../../iobroker.js'];
+        cmd = cmd.split(' ');
+        for (var i = 0; i < cmd.length; i++) {
+            args.push(cmd[i]);
+        }
+        adapter.log.info('iobroker ' + args.slice(1));
+
+        var child = spawn('/usr/local/bin/node', args);
+        child.stdout.on('data', function (data) {
+            data = data.toString().replace('\n', '');
+            adapter.log.info('iobroker ' + data);
+            socket.emit('cmdStdout', null, data);
+        });
+        child.stderr.on('data', function (data) {
+            data = data.toString().replace('\n', '');
+            adapter.log.error('iobroker ' + data);
+            socket.emit('cmdStderr', null, data);
+        });
+        child.on('exit', function (exitCode) {
+            adapter.log.info('iobroker exit ' + exitCode);
+            socket.emit('cmdExit', null, exitCode);
+        });
+
+    });
 
 }
 
