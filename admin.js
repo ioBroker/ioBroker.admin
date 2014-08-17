@@ -470,7 +470,7 @@ function socketEvents(socket, user) {
         for (var i = 0; i < cmd.length; i++) {
             args.push(cmd[i]);
         }
-        adapter.log.info('iobroker ' + args.slice(1));
+        adapter.log.info('iobroker ' + args.slice(1).join(' '));
 
         var child = spawn('/usr/local/bin/node', args);
         child.stdout.on('data', function (data) {

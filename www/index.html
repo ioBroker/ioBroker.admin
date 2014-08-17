@@ -19,6 +19,7 @@
         <li><a href="#tab-objects">Objects</a></li>
         <li><a href="#tab-states">States</a></li>
         <li><a href="#tab-events">Events</a></li>
+        <li><a href="#tab-adapters">Adapters</a></li>
         <li><a href="#tab-instances">Instances</a></li>
         <li><a href="#tab-enums">Enums</a></li>
         <li><a href="#tab-scripts">Scripts</a></li>
@@ -35,6 +36,10 @@
     </div>
     <div id="tab-events">
         <table id="events"></table>
+    </div>
+    <div id="tab-adapters">
+        <table id="grid-adapters"></table>
+        <div id="pager-adapters"></div>
     </div>
     <div id="tab-instances">
         <table id="grid-instances"></table>
@@ -151,10 +156,6 @@
         </tr>
     </table><br/>
     <input type="hidden" id="edit-group-id">
-</div>
-<div title="add instance" id="dialog-adapter-install">
-    <table id="grid-adapters"></table>
-    <div id="pager-adapters"></div>
 </div>
 <div title="command execution" id="dialog-command">
     <textarea style="font-family: courier, monospace; font-size: 11px;" id="stdout" disabled="disabled" cols="120" rows="30"></textarea>

@@ -43,6 +43,10 @@ $(document).ready(function () {
                     initScripts();
                     break;
 
+                case '#tab-adapters':
+                    initInstances();
+                    break;
+
                 case '#tab-instances':
                     initInstances();
                     break;
@@ -71,25 +75,17 @@ $(document).ready(function () {
     });
 
     var cmdCode;
+    var stdout;
 
     function cmdExec(cmd) {
         $stdout.val('');
         $dialogCommand.dialog('open');
-        $stdout.val('$ ./iobroker ' + cmd);
+        stdout = '$ ./iobroker ' + cmd;
+        $stdout.val(stdout);
         socket.emit('cmdExec', cmd, function (code) {
             cmdCode = code;
         });
     }
-
-
-
-    var $dialogInstall = $('#dialog-adapter-install');
-    $dialogInstall.dialog({
-        autoOpen:   false,
-        modal:      true,
-        width: 990,
-        height: 480
-    });
 
     var $dialogCommand = $('#dialog-command');
     $dialogCommand.dialog({
@@ -389,7 +385,7 @@ $(document).ready(function () {
         var $gridAdapter = $('#grid-adapters');
         $gridAdapter.jqGrid({
             datatype: 'local',
-            colNames: ['id', 'name', 'title', 'desc', 'keywords', 'version', 'platform', 'install'],
+            colNames: ['id', 'name', 'title', 'desc', 'keywords', 'version', 'platform', ''],
             colModel: [
                 {name: '_id',       index: '_id',                       hidden: true},
                 {name: 'name',      index: 'name',      width:  64},
@@ -398,7 +394,7 @@ $(document).ready(function () {
                 {name: 'keywords',  index: 'keywords',  width: 120},
                 {name: 'version',   index: 'version',   width:  70},
                 {name: 'platform',  index: 'platform',  hidden: true},
-                {name: 'install',   index: 'install',   width: 126}
+                {name: 'install',   index: 'install',   width: 160}
             ],
             pager: $('#pager-adapters'),
             width: 964,
@@ -557,18 +553,6 @@ $(document).ready(function () {
             position: 'first',
             id: 'edit-instance',
             title: 'edit instance',
-            cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-instances', {
-            caption: '',
-            buttonicon: 'ui-icon-plus',
-            onClickButton: function () {
-                console.log('dialogInstall');
-                console.log(adapters);
-                $dialogInstall.dialog('open');
-            },
-            position: 'first',
-            id: 'add-instance',
-            title: 'new instance',
             cursor: 'pointer'
         }).jqGrid('navButtonAdd', '#pager-instances', {
             caption: '',
@@ -1304,7 +1288,7 @@ $(document).ready(function () {
                     desc:    obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc['en'] : obj.common.desc) : '',
                     keywords:    obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
                     version:  obj.common ? obj.common.version : '',
-                    install:   '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">install</button>' +
+                    install:   '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">add instance</button>' +
                         '<button data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">readme</button>',
                     platform: obj.common ? obj.common.platform : ''
                });
@@ -1472,17 +1456,21 @@ $(document).ready(function () {
 
     var socket = io.connect();
 
+
     socket.on('cmdStdout', function (code, text) {
-        $stdout.val($stdout.val() + '\n' + text);
+        stdout += '\n' + text;
+        $stdout.val(stdout);
         $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
     });
 
     socket.on('cmdExit', function (code, exitCode) {
-        $stdout.val($stdout.val() + '\n' + 'process exited with code ' + exitCode);
+        stdout += '\n' + 'process exited with code ' + exitCode;
+        $stdout.val(stdout);
+        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
         cmdCode = null;
         setTimeout(function () {
-        //    $dialogCommand.dialog('close');
-        }, 1000);
+            $dialogCommand.dialog('close');
+        }, 1500);
     });
 
     socket.on('stateChange', function (id, obj) {
@@ -1529,9 +1517,7 @@ $(document).ready(function () {
 
         // Update Instance Table
         if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.[0-9]+$/) && typeof $gridInstance != 'undefined' && $gridInstance[0]._isInited) {
-            console.log(id);
-            var rowData = $gridInstance.jqGrid('getRowData', 'state_' + id);
-            console.log(rowData);
+            var rowData = $gridInstance.jqGrid('getRowData', 'instance_' + id);
             if (rowData && rowData._id) {
                 $gridInstance.jqGrid('setRowData', 'instance_' + id.replace(/ /g, '_'), {
                     _id:       obj._id,
@@ -1567,6 +1553,42 @@ $(document).ready(function () {
             }
 
         }
+
+        // Update Adapter Table
+        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]$/) && typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
+            var rowData = $gridAdapter.jqGrid('getRowData', 'adapter' + id);
+            if (rowData && rowData._id) {
+                $gridAdapter.jqGrid('setRowData', 'adapter_' + id.replace(/ /g, '_'), {
+                    _id:      obj._id,
+                    name:     obj.common.name,
+                    title:    obj.common ? obj.common.title : '',
+                    desc:    obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc['en'] : obj.common.desc) : '',
+                    keywords:    obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
+                    version:  obj.common ? obj.common.version : '',
+                    install:   '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">add instance</button>' +
+                        '<button data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">readme</button>',
+                    platform: obj.common ? obj.common.platform : ''
+
+                });
+            } else {
+                var tmp = id.split('.');
+
+                $gridAdapter.jqGrid('addRowData', 'adapter_' + id.replace(/ /g, '_'), {
+                    _id:      obj._id,
+                    name:     obj.common.name,
+                    title:    obj.common ? obj.common.title : '',
+                    desc:    obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc['en'] : obj.common.desc) : '',
+                    keywords:    obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
+                    version:  obj.common ? obj.common.version : '',
+                    install:   '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">add instance</button>' +
+                        '<button data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">readme</button>',
+                    platform: obj.common ? obj.common.platform : ''
+
+                });
+            }
+
+        }
+
 
         // Update users
         if (id.substring(0, "system.user.".length) == "system.user.") {
@@ -1619,7 +1641,10 @@ $(document).ready(function () {
             $("#load_grid-objects").show();
             $("#load_grid-states").show();
             $("#load_grid-scripts").show();
+            $("#load_grid-adapters").show();
             $("#load_grid-instances").show();
+            $("#load_grid-users").show();
+            $("#load_grid-groups").show();
 
             //$("#load_grid-enums").show();
             getStates(getObjects());
@@ -1647,6 +1672,7 @@ $(document).ready(function () {
         $('#grid-states').setGridHeight(y - 150).setGridWidth(x - 20);
         $('#grid-objects').setGridHeight(y - 150).setGridWidth(x - 20);
         $('#grid-enums').setGridHeight(y - 150).setGridWidth(x - 20);
+        $('#grid-adapters').setGridHeight(y - 150).setGridWidth(x - 20);
         $('#grid-instances').setGridHeight(y - 150).setGridWidth(x - 20);
         $('#grid-scripts').setGridHeight(y - 150).setGridWidth(x - 20);
         $('#grid-users').setGridHeight(y - 150).setGridWidth(x - 20);
