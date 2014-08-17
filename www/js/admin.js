@@ -445,20 +445,21 @@ $(document).ready(function () {
         var $gridInstance = $('#grid-instances');
         $gridInstance.jqGrid({
             datatype: 'local',
-            colNames: ['id', 'name', 'title', 'version', 'enabled', 'host', 'mode', 'config', 'platform', 'loglevel', 'alive', 'connected'],
+            colNames: ['id', 'name', 'instance', 'title', 'version', 'enabled', 'host', 'mode', 'config', 'platform', 'loglevel', 'alive', 'connected'],
             colModel: [
-                {name: '_id',       index: '_id'},
-                {name: 'name',      index: 'name', editable: true},
-                {name: 'title',     index: 'title'},
-                {name: 'version',   index: 'version'},
-                {name: 'enabled',   index: 'enabled', editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
-                {name: 'host',      index: 'host', editable: true},
-                {name: 'mode',      index: 'mode'},
-                {name: 'config',    index: 'config'},
-                {name: 'platform',  index: 'platform'},
-                {name: 'loglevel',  index: 'loglevel', editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}},
-                {name: 'alive',     index: 'alive'},
-                {name: 'connected', index: 'connected'}
+                {name: '_id',       index: '_id', hidden: true},
+                {name: 'name',      index: 'name', editable: true, width: 130},
+                {name: 'instance',  index: 'instance', width: 100},
+                {name: 'title',     index: 'title', width: 220},
+                {name: 'version',   index: 'version', width: 80},
+                {name: 'enabled',   index: 'enabled', editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}, width: 80},
+                {name: 'host',      index: 'host', editable: true, width: 90},
+                {name: 'mode',      index: 'mode', width: 110},
+                {name: 'config',    index: 'config', width: 80},
+                {name: 'platform',  index: 'platform', hidden: true, width: 80},
+                {name: 'loglevel',  index: 'loglevel', editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}, width: 80},
+                {name: 'alive',     index: 'alive', width: 80},
+                {name: 'connected', index: 'connected', width: 80}
             ],
             pager: $('#pager-instances'),
             rowNum: 100,
@@ -1328,8 +1329,9 @@ $(document).ready(function () {
                 $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
                     _id:      obj._id,
                     name:     obj.common ? obj.common.name : '',
+                    instance: obj._id.slice(15),
                     title:    obj.common ? obj.common.title : '',
-                    version:  obj.common ? obj.common.version + ' <input type="button" value="check"/>' : '',
+                    version:  obj.common ? obj.common.version : '',
                     enabled:  obj.common ? obj.common.enabled : '',
                     host:     obj.common ? obj.common.host : '',
                     mode:     obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
@@ -1526,20 +1528,44 @@ $(document).ready(function () {
 
 
         // Update Instance Table
-        if (instances.indexOf(id) !== -1 && typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
-            var rowData = $gridAdapter.jqGrid('getRowData', 'state_' + id);
-            $gridInstance.jqGrid('setRowData', 'instance_' + id.replace(/ /g, '_'), {
-                _id:       obj._id,
-                name:      obj.common ? obj.common.name : '',
-                title:     obj.common ? obj.common.title : '',
-                enabled:   obj.common ? obj.common.enabled : '',
-                host:      obj.common ? obj.common.host : '',
-                mode:      obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
-                platform:  obj.common ? obj.common.platform : '',
-                loglevel:  obj.common ? obj.common.loglevel : '',
-                alive:     rowData.alive,
-                connected: rowData.connected
-            });
+        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.[0-9]+$/) && typeof $gridInstance != 'undefined' && $gridInstance[0]._isInited) {
+            console.log(id);
+            var rowData = $gridInstance.jqGrid('getRowData', 'state_' + id);
+            console.log(rowData);
+            if (rowData && rowData._id) {
+                $gridInstance.jqGrid('setRowData', 'instance_' + id.replace(/ /g, '_'), {
+                    _id:       obj._id,
+                    name:      obj.common ? obj.common.name : '',
+                    instance:  obj._id.slice(15),
+                    title:     obj.common ? obj.common.title : '',
+                    enabled:   obj.common ? obj.common.enabled : '',
+                    host:      obj.common ? obj.common.host : '',
+                    mode:      obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
+                    platform:  obj.common ? obj.common.platform : '',
+                    loglevel:  obj.common ? obj.common.loglevel : '',
+                    alive:     rowData ? rowData.alive : '',
+                    connected: rowData ? rowData.connected : ''
+                });
+            } else {
+                var tmp = id.split('.');
+
+                $gridInstance.jqGrid('addRowData', 'instance_' + id.replace(/ /g, '_'), {
+                    _id:      obj._id,
+                    name:     obj.common ? obj.common.name : '',
+                    instance:  obj._id.slice(15),
+                    title:    obj.common ? obj.common.title : '',
+                    version:  obj.common ? obj.common.version : '',
+                    enabled:  obj.common ? obj.common.enabled : '',
+                    host:     obj.common ? obj.common.host : '',
+                    mode:     obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
+                    config:   '<button data-adapter-href="/adapter/' + tmp[2] + '/?' + tmp[3] + '" class="adapter-settings">config</button>',
+                    platform: obj.common ? obj.common.platform : '',
+                    loglevel: obj.common ? obj.common.loglevel : '',
+                    alive:    '',
+                    connected: ''
+                });
+            }
+
         }
 
         // Update users
