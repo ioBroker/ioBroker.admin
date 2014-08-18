@@ -29,6 +29,12 @@ $(document).ready(function () {
         $('#tabs').tabs('option', 'active', index);
     }
 
+
+    var editor = ace.edit("script-editor");
+    //editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/javascript");
+    editor.resize()
+
     $('#tabs').tabs({
         activate: function (event, ui) {
             window.location.hash = '#' + ui.newPanel.selector.slice(5);
@@ -92,7 +98,9 @@ $(document).ready(function () {
         autoOpen:   false,
         modal:      true,
         width: 920,
-        height: 480
+        height: 480,
+        closeOnEscape: false,
+        open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog || ui).hide(); }
     });
 
     var $dialogObject = $('#dialog-object');
@@ -1012,8 +1020,8 @@ $(document).ready(function () {
         $dialogScript.dialog({
             autoOpen:   false,
             modal:      true,
-            width: 640,
-            height: 480,
+            width: 800,
+            height: 540,
             buttons: [
                 {
                     text: 'Save',
@@ -1105,14 +1113,21 @@ $(document).ready(function () {
             $('#edit-script-id').val(obj._id);
             $('#edit-script-name').val(obj.common.name);
             $('#edit-script-platform').val(obj.common.platform);
-            $('#edit-script-source').val(obj.common.source);
+            if (obj.common.platform.match(/^[jJ]ava[sS]cript/)) {
+                editor.getSession().setMode("ace/mode/javascript");
+            } else if (obj.common.platform.match(/^[cC]offee[sS]cript/)) {
+                editor.getSession().setMode("ace/mode/coffee");
+            }
+            //$('#edit-script-source').val(obj.common.source);
+            editor.setValue(obj.common.source);
             $dialogScript.dialog('open');
         } else {
             $dialogScript.dialog('option', 'title', 'new script');
             $('#edit-script-id').val('');
             $('#edit-script-name').val('');
             $('#edit-script-platform').val('Javascript/Node.js');
-            $('#edit-script-source').val('');
+            //$('#edit-script-source').val('');
+            editor.setValue('');
             $dialogScript.dialog('open');
         }
     }
@@ -1122,13 +1137,16 @@ $(document).ready(function () {
         obj._id = $('#edit-script-id').val();
         obj.type = 'script';
         obj.common.name = $('#edit-script-name').val();
-        obj.common.source = $('#edit-script-source').val();
+        obj.common.source = editor.getValue();
         obj.common.platform = $('#edit-script-platform').val() || '';
         var extension;
 
         if (!obj._id) {
-            if (obj.common.platform.match(/^[jJ]avascript/)) {
+            if (obj.common.platform.match(/^[jJ]ava[sS]cript/)) {
                 extension = 'js.';
+                obj.common.engine = 'system.adapter.javascript.0';
+            } else if (obj.common.platform.match(/^[cC]offee[sS]cript/)) {
+                extension = 'coffee.';
                 obj.common.engine = 'system.adapter.javascript.0';
             }
             obj._id = 'script.' + extension + obj.common.name;
