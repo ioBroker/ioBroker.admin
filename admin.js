@@ -8,6 +8,7 @@ var request =           require('request');
 
 var session;// =           require('express-session');
 var cookieParser;// =      require('cookie-parser');
+var bodyParser;// =        require('cookie-parser');
 var bodyParser;// =        require('body-parser');
 var AdapterStore;// =      require(__dirname + '/../../lib/session.js')(session);
 var passportSocketIo;// =  require(__dirname + "/lib/passport.socketio.js");
@@ -476,7 +477,7 @@ function socketEvents(socket, user) {
         }
         adapter.log.info('iobroker ' + args.slice(1).join(' '));
 
-        var child = spawn('/usr/local/bin/node', args);
+        var child = spawn('node', args);
         child.stdout.on('data', function (data) {
             data = data.toString().replace('\n', '');
             adapter.log.info('iobroker ' + data);
