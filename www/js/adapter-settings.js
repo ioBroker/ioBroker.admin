@@ -16,11 +16,19 @@ $(document).ready(function () {
 
     $('input[type="button"]').button();
     $('input#save').click(function () {
+        if (!save) {
+            alert("Please implement save function in your admin/index.html");
+            return;
+        }
         save(function (obj) {
             saveSettings(obj);
         });
     });
     $('input#saveclose').click(function () {
+        if (!save) {
+            alert("Please implement save function in your admin/index.html");
+            return;
+        }
         save(function (obj) {
             saveSettings(obj);
             window.close();
@@ -41,9 +49,24 @@ $(document).ready(function () {
                 $('.adapter-instance').html(adapter + '.' + instance);
                 $('.adapter-config').html('system.adapter.' + adapter + '.' + instance);
                 if (res.common && res.common.name) $('.adapter-name').html(res.common.name);
-                load(res.native);
+                if (!load) {
+                    alert("Please implement save function in your admin/index.html");
+                } else {
+                    load(res.native);
+                }
             } else {
                 alert('error loading settings for ' + id + '\n\n' + err);
+            }
+        });
+    }
+
+    function getObject(id, callback) {
+        socket.emit('getObject', id, function (err, res) {
+            console.log(err, res);
+            if (!err && res) {
+                if (callback) callback(res);
+            } else {
+                if (callback) callback(null);
             }
         });
     }

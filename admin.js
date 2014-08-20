@@ -5,6 +5,9 @@
 var express =           require('express');
 var socketio =          require('socket.io');
 var request =           require('request');
+var fs =                require('fs');
+var Stream =            require('stream');
+
 
 var session;// =           require('express-session');
 var cookieParser;// =      require('cookie-parser');
@@ -182,11 +185,11 @@ function initWebServer(settings) {
         var options = null;
 
         if (settings.secure) {
-            var fs = require('fs');
+            var _fs = require('fs');
             try {
                 options = {
-                    key:  fs.readFileSync(__dirname + '/cert/privatekey.pem'),
-                    cert: fs.readFileSync(__dirname + '/cert/certificate.pem')
+                    key:  _fs.readFileSync(__dirname + '/cert/privatekey.pem'),
+                    cert: _fs.readFileSync(__dirname + '/cert/certificate.pem')
                 };
             } catch (err) {
                 adapter.log.error(err.message);
@@ -282,14 +285,34 @@ function initWebServer(settings) {
         // reverse proxy with url rewrite for couchdb attachments in <adapter-name>.admin
         server.app.use('/adapter/', function(req, res) {
 
+            // Example: /example/?0
             var url = req.url;
-                // Example: /example/?0
+
+            // add index.html
+            url = url.replace(/\/($|\?|#)/, '/index.html$1');
+
+            // Read config files for admin from /adapters/admin/admin/...
+            if (url.substring(0, '/admin/'.length) == '/admin/') {
+                url = url.replace(/\/admin\//, __dirname + '/admin/');
+                url = url.replace(/\?[0-9]*/, '');
+
+                try{
+                    fs.createReadStream(url).pipe(res);
+                } catch (e) {
+                    var s = new Stream();
+                    s.pipe = function(dest) {
+                        dest.write('File not found: ' + e);
+                    }
+
+                    s.pipe(res);
+                }
+                return;
+            }
 
             // add .admin to adapter name
             url = url.replace(/^\/([a-zA-Z0-9-_]+)\//, '/$1.admin/');
 
-            // add index.html
-            url = url.replace(/\/($|\?|#)/, '/index.html$1');
+
 
             // TODO use settings from conf/iobroker.json for couch host, port and database!
             url = 'http://127.0.0.1:5984/iobroker' + url;
