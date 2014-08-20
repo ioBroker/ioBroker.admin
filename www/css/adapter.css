@@ -6,9 +6,7 @@ body {
     font-family: Lucida Grande,Lucida Sans,Arial,sans-serif;
 }
 
-#adapter-container {
-    padding-left: 6px;
-}
+
 
 .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited, .ui-state-hover a, .ui-state-hover a:link, .ui-state-hover a:visited  {
     outline: none;
@@ -39,3 +37,6 @@ body {
     border-right: none;
 }
 
+#adapter-container {
+    font-size: 0.82em;
+}

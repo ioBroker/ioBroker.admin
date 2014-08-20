@@ -1,14 +1,11 @@
+var socket =    io.connect();
+var instance =  window.location.search.slice(1);
+
 $(document).ready(function () {
 
-    var socket;
-    var path = window.location.pathname;
-    var tmp = path.split('/');
+    var tmp = window.location.pathname.split('/');
     var adapter = tmp[2];
-    var instance = window.location.search.slice(1);
-
     var id = 'system.adapter.' + adapter + '.' + instance;
-
-    socket = io.connect();
 
     loadSettings();
     $('body').prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" >' + adapter + '.' + instance + ' settings' +

@@ -418,6 +418,10 @@ function socketEvents(socket, user) {
         callback(null, objects);
     });
 
+    socket.on('getObjectView', function (design, search, params, callback) {
+        adapter.objects.getObjectView(design, search, params, callback)
+    });
+
     socket.on('extendObject', function (id, obj, callback) {
         adapter.extendForeignObject(id, obj, callback);
     });
