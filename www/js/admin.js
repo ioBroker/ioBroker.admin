@@ -5,6 +5,8 @@
 /*global jQuery:false */
 /*jslint browser:true */
 
+var $iframeDialog = null;
+
 (function ($) {
 $(document).ready(function () {
 
@@ -102,6 +104,25 @@ $(document).ready(function () {
         height: 480,
         closeOnEscape: false,
         open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog || ui).hide(); }
+    });
+
+    var $configFrame = $('#config-iframe');
+    var $dialogConfig = $('#dialog-config');
+    $dialogConfig.dialog({
+        autoOpen:   false,
+        modal:      true,
+        width:      $(window).width() > 920 ? 920: $(window).width(),
+        height:     $(window).height() - 100, // 480
+        closeOnEscape: false,
+        open: function(event, ui) {
+            $(".ui-dialog-titlebar-close", ui.dialog || ui).hide();
+        },
+        close: function () {
+            // Clear iframe
+            setTimeout(function () {
+                $configFrame.attr('src', '');
+            }, 1000);
+        }
     });
 
     var $dialogObject = $('#dialog-object');
@@ -454,17 +475,17 @@ $(document).ready(function () {
             colModel: [
                 {name: '_id',       index: '_id', hidden: true},
                 {name: 'name',      index: 'name', editable: true, width: 130},
-                {name: 'instance',  index: 'instance', width: 100},
+                {name: 'instance',  index: 'instance', width: 70},
                 {name: 'title',     index: 'title', width: 220},
-                {name: 'version',   index: 'version', width: 80},
-                {name: 'enabled',   index: 'enabled', editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}, width: 80},
-                {name: 'host',      index: 'host', editable: true, width: 90},
-                {name: 'mode',      index: 'mode', width: 110},
-                {name: 'config',    index: 'config', width: 80},
-                {name: 'platform',  index: 'platform', hidden: true, width: 80},
-                {name: 'loglevel',  index: 'loglevel', editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}, width: 80},
-                {name: 'alive',     index: 'alive', width: 80},
-                {name: 'connected', index: 'connected', width: 80}
+                {name: 'version',   index: 'version', width: 60},
+                {name: 'enabled',   index: 'enabled', editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}, width: 60},
+                {name: 'host',      index: 'host', editable: true, width: 100},
+                {name: 'mode',      index: 'mode', width: 80},
+                {name: 'config',    index: 'config', width: 60},
+                {name: 'platform',  index: 'platform', hidden: true, width: 60},
+                {name: 'loglevel',  index: 'loglevel', editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}, width: 60},
+                {name: 'alive',     index: 'alive', width: 60},
+                {name: 'connected', index: 'connected', width: 60}
             ],
             pager: $('#pager-instances'),
             rowNum: 100,
@@ -538,7 +559,9 @@ $(document).ready(function () {
                     });
                 }
                 var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
-                cmdExec('del ' + id.replace('system.adapter.', ''));
+                if (confirm('Are you sure?')) {
+                    cmdExec('del ' + id.replace('system.adapter.', ''));
+                }
             },
             position: 'first',
             id: 'del-object',
@@ -1287,7 +1310,6 @@ $(document).ready(function () {
 
     function initAdapters(isForce) {
 
-
         if (!objectsLoaded) {
             setTimeout(initAdapters, 250);
             return;
@@ -1323,7 +1345,6 @@ $(document).ready(function () {
 
     function initInstances(isForce) {
 
-
         if (!objectsLoaded) {
             setTimeout(initInstances, 250);
             return;
@@ -1347,7 +1368,7 @@ $(document).ready(function () {
                     enabled:  obj.common ? obj.common.enabled : '',
                     host:     obj.common ? obj.common.host : '',
                     mode:     obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
-                    config:   '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" class="adapter-settings">config</button>',
+                    config:   '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" data-adapter-name="' + adapter + '.' + instance + '" class="adapter-settings">config</button>',
                     platform: obj.common ? obj.common.platform : '',
                     loglevel: obj.common ? obj.common.loglevel : '',
                     alive:    '',
@@ -1357,12 +1378,16 @@ $(document).ready(function () {
             $gridInstance.trigger('reloadGrid');
 
             $(document).on('click', '.adapter-settings', function () {
-                if (typeof adapterWindow === 'undefined' || adapterWindow.closed) {
+                $iframeDialog = $dialogConfig;
+                $configFrame.attr('src', $(this).attr('data-adapter-href'));
+                $dialogConfig.dialog('option', 'title', 'Adapter configuration: ' + $(this).attr('data-adapter-name')).dialog('open');
+
+                /*if (typeof adapterWindow === 'undefined' || adapterWindow.closed) {
                     adapterWindow = window.open($(this).attr('data-adapter-href'), '', 'height=480,width=800');
                 } else {
                     adapterWindow.location.href = $(this).attr('data-adapter-href');
                     adapterWindow.focus();
-                }
+                }*/
                 return false;
             });
         }
@@ -1371,6 +1396,12 @@ $(document).ready(function () {
     }
 
     function initUsers(isForce) {
+
+        if (!objectsLoaded) {
+            setTimeout(initUsers, 500);
+            return;
+        }
+
         if (typeof $gridUsers != 'undefined' && (isForce || !$gridUsers[0]._isInited)) {
             $gridUsers[0]._isInited = true;
             $gridUsers.jqGrid('clearGridData');
@@ -1397,6 +1428,12 @@ $(document).ready(function () {
     }
 
     function initGroups(isForce) {
+
+        if (!objectsLoaded) {
+            setTimeout(initGroups, 500);
+            return;
+        }
+
         if (typeof $gridGroups != 'undefined' && (isForce || !$gridGroups[0]._isInited)) {
             $gridGroups[0]._isInited = true;
             $gridGroups.jqGrid('clearGridData');
@@ -1422,8 +1459,6 @@ $(document).ready(function () {
     }
 
     function initScripts() {
-
-
 
         if (!objectsLoaded) {
             setTimeout(initScripts, 250);
@@ -1597,7 +1632,7 @@ $(document).ready(function () {
         }
 
         // Update Adapter Table
-        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]$/) && typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
+        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+$/) && typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
             if (obj) {
                 if (adapters.indexOf(id) == -1) adapters.push(id);
             } else {

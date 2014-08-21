@@ -313,7 +313,6 @@ function initWebServer(settings) {
             url = url.replace(/^\/([a-zA-Z0-9-_]+)\//, '/$1.admin/');
 
 
-
             // TODO use settings from conf/iobroker.json for couch host, port and database!
             url = 'http://127.0.0.1:5984/iobroker' + url;
                 // Example: http://127.0.0.1:5984/iobroker/example.admin/index.html?0
@@ -448,6 +447,28 @@ function socketEvents(socket, user) {
 
     socket.on('extendObject', function (id, obj, callback) {
         adapter.extendForeignObject(id, obj, callback);
+    });
+
+    socket.on('getHostByIp', function (ip, callback) {
+        adapter.objects.getObjectView('system', 'host', {}, function (err, data) {
+            if (data.rows.length) {
+                for (var i = 0; i < data.rows.length; i++) {
+                    if (data.rows[i].value.native.hardware && data.rows[i].value.native.hardware.networkInterfaces) {
+                        var net = data.rows[i].value.native.hardware.networkInterfaces;
+                        for (var eth in net) {
+                            for (var j = 0; j < net[eth].length; j++) {
+                                if (net[eth][j].address == ip) {
+                                    if (callback) callback(ip, data.rows[i].value);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (callback) callback(ip, null);
+        });
     });
 
 
