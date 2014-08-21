@@ -21,6 +21,8 @@ $(document).ready(function () {
     var objects =       {};
     var updateTimers =  {};
     var adapterWindow;
+    var hosts =         [];
+    var states =        {};
 
     var $stdout = $('#stdout');
 
@@ -473,18 +475,18 @@ $(document).ready(function () {
             datatype: 'local',
             colNames: ['id', 'name', 'instance', 'title', 'version', 'enabled', 'host', 'mode', 'config', 'platform', 'loglevel', 'alive', 'connected'],
             colModel: [
-                {name: '_id',       index: '_id', hidden: true},
-                {name: 'name',      index: 'name', editable: true, width: 130},
-                {name: 'instance',  index: 'instance', width: 70},
-                {name: 'title',     index: 'title', width: 220},
-                {name: 'version',   index: 'version', width: 60},
-                {name: 'enabled',   index: 'enabled', editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}, width: 60},
-                {name: 'host',      index: 'host', editable: true, width: 100},
-                {name: 'mode',      index: 'mode', width: 80},
-                {name: 'config',    index: 'config', width: 60},
-                {name: 'platform',  index: 'platform', hidden: true, width: 60},
-                {name: 'loglevel',  index: 'loglevel', editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}, width: 60},
-                {name: 'alive',     index: 'alive', width: 60},
+                {name: '_id',       index: '_id',       hidden: true},
+                {name: 'name',      index: 'name',      width: 130,  editable: true},
+                {name: 'instance',  index: 'instance',  width: 70},
+                {name: 'title',     index: 'title',     width: 220},
+                {name: 'version',   index: 'version',   width: 60},
+                {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
+                {name: 'host',      index: 'host',      width: 100,  editable: false},
+                {name: 'mode',      index: 'mode',      width: 80},
+                {name: 'config',    index: 'config',    width: 60},
+                {name: 'platform',  index: 'platform',  width: 60,   hidden: true},
+                {name: 'loglevel',  index: 'loglevel',  width: 60,   editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}},
+                {name: 'alive',     index: 'alive',     width: 60},
                 {name: 'connected', index: 'connected', width: 60}
             ],
             pager: $('#pager-instances'),
@@ -518,9 +520,9 @@ $(document).ready(function () {
                     // afterSave
                     instanceEdit = false;
                     var obj = {common:{}};
-                    obj.common.host = $gridInstance.jqGrid("getCell", instanceLastSelected, "host");
+                    obj.common.host     = $gridInstance.jqGrid("getCell", instanceLastSelected, "host");
                     obj.common.loglevel = $gridInstance.jqGrid("getCell", instanceLastSelected, "loglevel");
-                    obj.common.enabled = $gridInstance.jqGrid("getCell", instanceLastSelected, "enabled");
+                    obj.common.enabled  = $gridInstance.jqGrid("getCell", instanceLastSelected, "enabled");
                     if (obj.common.enabled === 'true') obj.common.enabled = true;
                     if (obj.common.enabled === 'false') obj.common.enabled = false;
 
@@ -1082,12 +1084,28 @@ $(document).ready(function () {
                     if (obj.type === 'user')    users.push(id);
                     if (obj.type === 'group')   groups.push(id);
                     if (obj.type === 'adapter') adapters.push(id);
+                    if (obj.type === 'host') {
+                        var addr = null;
+                        // Find first non internal IP and use it as identifier
+                        if (obj.native.hardware && obj.native.hardware.networkInterfaces) {
+                            for (var eth in obj.native.hardware.networkInterfaces) {
+                                for (var num = 0; num < obj.native.hardware.networkInterfaces[eth].length; num++) {
+                                    if (!obj.native.hardware.networkInterfaces[eth][num].internal) {
+                                        addr = obj.native.hardware.networkInterfaces[eth][num].address;
+                                        break;
+                                    }
+                                }
+                                if (addr) break;
+                            }
+                        }
+                        if (addr) hosts.push({name: obj.common.hostname, address: addr});
+                    }
                 }
             }
             objectsLoaded = true;
             for (var i = 0; i < toplevel.length; i++) {
                 $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/ /g, '_'), {
-                    _id: objects[toplevel[i]]._id,
+                    _id:  objects[toplevel[i]]._id,
                     name: objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
                     type: objects[toplevel[i]].type
                 });
@@ -1103,6 +1121,7 @@ $(document).ready(function () {
         $gridStates.jqGrid('clearGridData');
         socket.emit('getStates', function (err, res) {
             var i = 0;
+            states = res;
             for (var key in res) {
                 var obj = res[key];
                 obj._id = key;
@@ -1354,28 +1373,42 @@ $(document).ready(function () {
             $gridInstance[0]._isInited = true;
             $gridInstance.jqGrid('clearGridData');
             console.log('instances', instances);
+            var selHosts = '<select data-id="%%%" class="host-selector">';
+            for (var j = 0; j < hosts.length; j++) {
+                selHosts += '<option value="' + hosts[j].address + '">' + hosts[j].name + '</option>';
+            }
+            selHosts += '</select>'
+
             for (var i = 0; i < instances.length; i++) {
                 var obj = objects[instances[i]];
                 var tmp = obj._id.split('.');
                 var adapter = tmp[2];
                 var instance = tmp[3];
                 $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
-                    _id:      obj._id,
-                    name:     obj.common ? obj.common.name : '',
-                    instance: obj._id.slice(15),
-                    title:    obj.common ? obj.common.title : '',
-                    version:  obj.common ? obj.common.version : '',
-                    enabled:  obj.common ? obj.common.enabled : '',
-                    host:     obj.common ? obj.common.host : '',
-                    mode:     obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
-                    config:   '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" data-adapter-name="' + adapter + '.' + instance + '" class="adapter-settings">config</button>',
-                    platform: obj.common ? obj.common.platform : '',
-                    loglevel: obj.common ? obj.common.loglevel : '',
-                    alive:    '',
-                    connected: ''
+                    _id:       obj._id,
+                    name:      obj.common ? obj.common.name : '',
+                    instance:  obj._id.slice(15),
+                    title:     obj.common ? obj.common.title : '',
+                    version:   obj.common ? obj.common.version : '',
+                    enabled:   obj.common ? obj.common.enabled : '',
+                    host:      selHosts.replace('%%%', obj._id),//obj.common ? obj.common.host : '',
+                    mode:      obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
+                    config:    '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" data-adapter-name="' + adapter + '.' + instance + '" class="adapter-settings">config</button>',
+                    platform:  obj.common ? obj.common.platform : '',
+                    loglevel:  obj.common ? obj.common.loglevel : '',
+                    alive:     states[obj._id + '.alive'].val,
+                    connected: states[obj._id + '.connected'].val
                 });
             }
             $gridInstance.trigger('reloadGrid');
+
+            $('.host-selector').each(function () {
+                var id = $(this).attr('data-id');
+                $(this).val((objects[id] && objects[id].common) ? obj.common.host || '': '').
+                    change(function () {
+                        socket.emit('extendObject', $(this).attr('data-id'), {common:{host: $(this).val()}});
+                    });
+            });
 
             $(document).on('click', '.adapter-settings', function () {
                 $iframeDialog = $dialogConfig;
