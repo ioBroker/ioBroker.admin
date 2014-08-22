@@ -401,9 +401,9 @@ $(document).ready(function () {
                 {name: 'title',     index: 'title',     width: 180},
                 {name: 'desc',      index: 'desc',      width: 360},
                 {name: 'keywords',  index: 'keywords',  width: 120},
-                {name: 'version',   index: 'version',   width:  66},
-                {name: 'installed',   index: 'installed',   width:  100},
-                {name: 'platform',  index: 'platform',  hidden: true},
+                {name: 'version',   index: 'version',   width:  70},
+                {name: 'installed', index: 'installed', width:  110},
+                {name: 'platform',  index: 'platform',                  hidden: true},
                 {name: 'install',   index: 'install',   width: 160}
             ],
             pager: $('#pager-adapters'),
@@ -1299,7 +1299,13 @@ $(document).ready(function () {
             $gridAdapter[0]._isInited = true;
             for (var i = 0; i < adapters.length; i++) {
                 var obj = objects[adapters[i]];
-                var tmp = obj._id.split('.');
+                var installed = '';
+                if (obj.common && obj.common.installedVersion) {
+                    installed = obj.common.installedVersion;
+                    if (!upToDate(obj.common.version, obj.common.installedVersion)) {
+                        installed += ' <button class="adapter-update-submit" data-adapter-name="' + obj.common.name + '">update</button>';
+                    }
+                }
                 $gridAdapter.jqGrid('addRowData', 'adapter_' + adapters[i].replace(/ /g, '_'), {
                     _id:      obj._id,
                     name:     obj.common.name,
@@ -1307,7 +1313,7 @@ $(document).ready(function () {
                     desc:     obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc['en'] : obj.common.desc) : '',
                     keywords: obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
                     version:  obj.common ? obj.common.version : '',
-                    installed: obj.common ? obj.common.installedVersion: '',
+                    installed: installed,
                     install:  '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">add instance</button>' +
                         '<button data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">readme</button>',
                     platform: obj.common ? obj.common.platform : ''
@@ -1317,6 +1323,12 @@ $(document).ready(function () {
 
             $(document).on('click', '.adapter-install-submit', function () {
                 cmdExec('add ' + $(this).attr('data-adapter-name'));
+            });
+            $(document).on('click', '.adapter-update-submit', function () {
+                cmdExec('upgrade ' + $(this).attr('data-adapter-name'));
+            });
+            $(document).on('click', '.adapter-readme-submit', function () {
+                alert('todo'); //$(this).attr('data-adapter-name');
             });
         }
     }
@@ -1703,6 +1715,32 @@ $(document).ready(function () {
             getStates(getObjects());
         }
     });
+
+    function upToDate(a, b) {
+        var a = a.split('.');
+        var b = b.split('.');
+        a[0] = parseInt(a[0], 10);
+        b[0] = parseInt(b[0], 10);
+        if (a[0] > b[0]) {
+            return false;
+        } else if (a[0] === b[0]) {
+            a[1] = parseInt(a[1], 10);
+            b[1] = parseInt(b[1], 10);
+            if (a[1] > b[1]) {
+                return false;
+            } else if (a[1] === b[1]) {
+                a[2] = parseInt(a[2], 10);
+                b[2] = parseInt(b[2], 10);
+                if (a[2] > b[2]) {
+                    return false;
+                } else  {
+                    return true;
+                }
+            }
+        } else {
+            return true;
+        }
+    }
 
     function formatDate(dateObj) {
         return dateObj.getFullYear() + '-' +
