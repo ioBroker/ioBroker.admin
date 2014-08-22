@@ -5,6 +5,8 @@
 /*global jQuery:false */
 /*jslint browser:true */
 
+var $iframeDialog = null;
+
 (function ($) {
 $(document).ready(function () {
 
@@ -19,6 +21,8 @@ $(document).ready(function () {
     var objects =       {};
     var updateTimers =  {};
     var adapterWindow;
+    var hosts =         [];
+    var states =        {};
 
     var $stdout = $('#stdout');
 
@@ -102,6 +106,25 @@ $(document).ready(function () {
         height: 480,
         closeOnEscape: false,
         open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog || ui).hide(); }
+    });
+
+    var $configFrame = $('#config-iframe');
+    var $dialogConfig = $('#dialog-config');
+    $dialogConfig.dialog({
+        autoOpen:   false,
+        modal:      true,
+        width:      $(window).width() > 920 ? 920: $(window).width(),
+        height:     $(window).height() - 100, // 480
+        closeOnEscape: false,
+        open: function(event, ui) {
+            $(".ui-dialog-titlebar-close", ui.dialog || ui).hide();
+        },
+        close: function () {
+            // Clear iframe
+            setTimeout(function () {
+                $configFrame.attr('src', '');
+            }, 1000);
+        }
     });
 
     var $dialogObject = $('#dialog-object');
@@ -452,19 +475,19 @@ $(document).ready(function () {
             datatype: 'local',
             colNames: ['id', 'name', 'instance', 'title', 'version', 'enabled', 'host', 'mode', 'config', 'platform', 'loglevel', 'alive', 'connected'],
             colModel: [
-                {name: '_id',       index: '_id', hidden: true},
-                {name: 'name',      index: 'name', editable: true, width: 130},
-                {name: 'instance',  index: 'instance', width: 100},
-                {name: 'title',     index: 'title', width: 220},
-                {name: 'version',   index: 'version', width: 80},
-                {name: 'enabled',   index: 'enabled', editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}, width: 80},
-                {name: 'host',      index: 'host', editable: true, width: 90},
-                {name: 'mode',      index: 'mode', width: 110},
-                {name: 'config',    index: 'config', width: 80},
-                {name: 'platform',  index: 'platform', hidden: true, width: 80},
-                {name: 'loglevel',  index: 'loglevel', editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}, width: 80},
-                {name: 'alive',     index: 'alive', width: 80},
-                {name: 'connected', index: 'connected', width: 80}
+                {name: '_id',       index: '_id',       hidden: true},
+                {name: 'name',      index: 'name',      width: 130,  editable: true},
+                {name: 'instance',  index: 'instance',  width: 70},
+                {name: 'title',     index: 'title',     width: 220},
+                {name: 'version',   index: 'version',   width: 60},
+                {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
+                {name: 'host',      index: 'host',      width: 100,  editable: false},
+                {name: 'mode',      index: 'mode',      width: 80},
+                {name: 'config',    index: 'config',    width: 60},
+                {name: 'platform',  index: 'platform',  width: 60,   hidden: true},
+                {name: 'loglevel',  index: 'loglevel',  width: 60,   editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}},
+                {name: 'alive',     index: 'alive',     width: 60},
+                {name: 'connected', index: 'connected', width: 60}
             ],
             pager: $('#pager-instances'),
             rowNum: 100,
@@ -497,9 +520,9 @@ $(document).ready(function () {
                     // afterSave
                     instanceEdit = false;
                     var obj = {common:{}};
-                    obj.common.host = $gridInstance.jqGrid("getCell", instanceLastSelected, "host");
+                    obj.common.host     = $gridInstance.jqGrid("getCell", instanceLastSelected, "host");
                     obj.common.loglevel = $gridInstance.jqGrid("getCell", instanceLastSelected, "loglevel");
-                    obj.common.enabled = $gridInstance.jqGrid("getCell", instanceLastSelected, "enabled");
+                    obj.common.enabled  = $gridInstance.jqGrid("getCell", instanceLastSelected, "enabled");
                     if (obj.common.enabled === 'true') obj.common.enabled = true;
                     if (obj.common.enabled === 'false') obj.common.enabled = false;
 
@@ -538,7 +561,9 @@ $(document).ready(function () {
                     });
                 }
                 var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
-                cmdExec('del ' + id.replace('system.adapter.', ''));
+                if (confirm('Are you sure?')) {
+                    cmdExec('del ' + id.replace('system.adapter.', ''));
+                }
             },
             position: 'first',
             id: 'del-object',
@@ -1059,12 +1084,28 @@ $(document).ready(function () {
                     if (obj.type === 'user')    users.push(id);
                     if (obj.type === 'group')   groups.push(id);
                     if (obj.type === 'adapter') adapters.push(id);
+                    if (obj.type === 'host') {
+                        var addr = null;
+                        // Find first non internal IP and use it as identifier
+                        if (obj.native.hardware && obj.native.hardware.networkInterfaces) {
+                            for (var eth in obj.native.hardware.networkInterfaces) {
+                                for (var num = 0; num < obj.native.hardware.networkInterfaces[eth].length; num++) {
+                                    if (!obj.native.hardware.networkInterfaces[eth][num].internal) {
+                                        addr = obj.native.hardware.networkInterfaces[eth][num].address;
+                                        break;
+                                    }
+                                }
+                                if (addr) break;
+                            }
+                        }
+                        if (addr) hosts.push({name: obj.common.hostname, address: addr});
+                    }
                 }
             }
             objectsLoaded = true;
             for (var i = 0; i < toplevel.length; i++) {
                 $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/ /g, '_'), {
-                    _id: objects[toplevel[i]]._id,
+                    _id:  objects[toplevel[i]]._id,
                     name: objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
                     type: objects[toplevel[i]].type
                 });
@@ -1080,6 +1121,7 @@ $(document).ready(function () {
         $gridStates.jqGrid('clearGridData');
         socket.emit('getStates', function (err, res) {
             var i = 0;
+            states = res;
             for (var key in res) {
                 var obj = res[key];
                 obj._id = key;
@@ -1287,7 +1329,6 @@ $(document).ready(function () {
 
     function initAdapters(isForce) {
 
-
         if (!objectsLoaded) {
             setTimeout(initAdapters, 250);
             return;
@@ -1323,7 +1364,6 @@ $(document).ready(function () {
 
     function initInstances(isForce) {
 
-
         if (!objectsLoaded) {
             setTimeout(initInstances, 250);
             return;
@@ -1333,36 +1373,54 @@ $(document).ready(function () {
             $gridInstance[0]._isInited = true;
             $gridInstance.jqGrid('clearGridData');
             console.log('instances', instances);
+            var selHosts = '<select data-id="%%%" class="host-selector">';
+            for (var j = 0; j < hosts.length; j++) {
+                selHosts += '<option value="' + hosts[j].address + '">' + hosts[j].name + '</option>';
+            }
+            selHosts += '</select>'
+
             for (var i = 0; i < instances.length; i++) {
                 var obj = objects[instances[i]];
                 var tmp = obj._id.split('.');
                 var adapter = tmp[2];
                 var instance = tmp[3];
                 $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
-                    _id:      obj._id,
-                    name:     obj.common ? obj.common.name : '',
-                    instance: obj._id.slice(15),
-                    title:    obj.common ? obj.common.title : '',
-                    version:  obj.common ? obj.common.version : '',
-                    enabled:  obj.common ? obj.common.enabled : '',
-                    host:     obj.common ? obj.common.host : '',
-                    mode:     obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
-                    config:   '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" class="adapter-settings">config</button>',
-                    platform: obj.common ? obj.common.platform : '',
-                    loglevel: obj.common ? obj.common.loglevel : '',
-                    alive:    '',
-                    connected: ''
+                    _id:       obj._id,
+                    name:      obj.common ? obj.common.name : '',
+                    instance:  obj._id.slice(15),
+                    title:     obj.common ? obj.common.title : '',
+                    version:   obj.common ? obj.common.version : '',
+                    enabled:   obj.common ? obj.common.enabled : '',
+                    host:      selHosts.replace('%%%', obj._id),//obj.common ? obj.common.host : '',
+                    mode:      obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
+                    config:    '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" data-adapter-name="' + adapter + '.' + instance + '" class="adapter-settings">config</button>',
+                    platform:  obj.common ? obj.common.platform : '',
+                    loglevel:  obj.common ? obj.common.loglevel : '',
+                    alive:     states[obj._id + '.alive'].val,
+                    connected: states[obj._id + '.connected'].val
                 });
             }
             $gridInstance.trigger('reloadGrid');
 
+            $('.host-selector').each(function () {
+                var id = $(this).attr('data-id');
+                $(this).val((objects[id] && objects[id].common) ? obj.common.host || '': '').
+                    change(function () {
+                        socket.emit('extendObject', $(this).attr('data-id'), {common:{host: $(this).val()}});
+                    });
+            });
+
             $(document).on('click', '.adapter-settings', function () {
-                if (typeof adapterWindow === 'undefined' || adapterWindow.closed) {
+                $iframeDialog = $dialogConfig;
+                $configFrame.attr('src', $(this).attr('data-adapter-href'));
+                $dialogConfig.dialog('option', 'title', 'Adapter configuration: ' + $(this).attr('data-adapter-name')).dialog('open');
+
+                /*if (typeof adapterWindow === 'undefined' || adapterWindow.closed) {
                     adapterWindow = window.open($(this).attr('data-adapter-href'), '', 'height=480,width=800');
                 } else {
                     adapterWindow.location.href = $(this).attr('data-adapter-href');
                     adapterWindow.focus();
-                }
+                }*/
                 return false;
             });
         }
@@ -1371,6 +1429,12 @@ $(document).ready(function () {
     }
 
     function initUsers(isForce) {
+
+        if (!objectsLoaded) {
+            setTimeout(initUsers, 500);
+            return;
+        }
+
         if (typeof $gridUsers != 'undefined' && (isForce || !$gridUsers[0]._isInited)) {
             $gridUsers[0]._isInited = true;
             $gridUsers.jqGrid('clearGridData');
@@ -1397,6 +1461,12 @@ $(document).ready(function () {
     }
 
     function initGroups(isForce) {
+
+        if (!objectsLoaded) {
+            setTimeout(initGroups, 500);
+            return;
+        }
+
         if (typeof $gridGroups != 'undefined' && (isForce || !$gridGroups[0]._isInited)) {
             $gridGroups[0]._isInited = true;
             $gridGroups.jqGrid('clearGridData');
@@ -1422,8 +1492,6 @@ $(document).ready(function () {
     }
 
     function initScripts() {
-
-
 
         if (!objectsLoaded) {
             setTimeout(initScripts, 250);
@@ -1597,7 +1665,7 @@ $(document).ready(function () {
         }
 
         // Update Adapter Table
-        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]$/) && typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
+        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+$/) && typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
             if (obj) {
                 if (adapters.indexOf(id) == -1) adapters.push(id);
             } else {
