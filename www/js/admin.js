@@ -507,7 +507,7 @@ $(document).ready(function () {
             },
             afterInsertRow: function (rowid) {
                 // Remove icon and click handler if no children available
-                if (!children[rowid.slice(7)]) {
+                if (!children[rowid.slice(5)]) {
                     $('td.sgcollapsed', '[id="' + rowid + '"').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
             },
@@ -517,10 +517,10 @@ $(document).ready(function () {
             },
             onSelectRow: function (rowid, e) {
                 // unselect other subgrids but not myself
-                $('[id^="grid-enum"][id$="_t"]').not('[id="' + this.id + '"]').jqGrid('resetSelection');
+                $('[id^="grid-enums"][id$="_t"]').not('[id="' + this.id + '"]').jqGrid('resetSelection');
 
                 // unselect objects grid
-                $gridObjects.jqGrid('resetSelection');
+                $gridEnums.jqGrid('resetSelection');
 
                 // enable buttons
                 $('#del-enum').removeClass('ui-state-disabled');
