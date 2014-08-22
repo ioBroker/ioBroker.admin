@@ -394,14 +394,15 @@ $(document).ready(function () {
         var $gridAdapter = $('#grid-adapters');
         $gridAdapter.jqGrid({
             datatype: 'local',
-            colNames: ['id', 'name', 'title', 'desc', 'keywords', 'version', 'platform', ''],
+            colNames: ['id', 'name', 'title', 'desc', 'keywords', 'available', 'installed', 'platform', ''],
             colModel: [
                 {name: '_id',       index: '_id',                       hidden: true},
                 {name: 'name',      index: 'name',      width:  64},
                 {name: 'title',     index: 'title',     width: 180},
                 {name: 'desc',      index: 'desc',      width: 360},
                 {name: 'keywords',  index: 'keywords',  width: 120},
-                {name: 'version',   index: 'version',   width:  70},
+                {name: 'version',   index: 'version',   width:  66},
+                {name: 'installed',   index: 'installed',   width:  100},
                 {name: 'platform',  index: 'platform',  hidden: true},
                 {name: 'install',   index: 'install',   width: 160}
             ],
@@ -450,13 +451,12 @@ $(document).ready(function () {
         var $gridInstance = $('#grid-instances');
         $gridInstance.jqGrid({
             datatype: 'local',
-            colNames: ['id', 'name', 'instance', 'title', 'version', 'enabled', 'host', 'mode', 'config', 'platform', 'loglevel', 'alive', 'connected'],
+            colNames: ['id', 'name', 'instance', 'title', 'enabled', 'host', 'mode', 'config', 'platform', 'loglevel', 'alive', 'connected'],
             colModel: [
                 {name: '_id',       index: '_id', hidden: true},
                 {name: 'name',      index: 'name', editable: true, width: 130},
                 {name: 'instance',  index: 'instance', width: 100},
                 {name: 'title',     index: 'title', width: 220},
-                {name: 'version',   index: 'version', width: 80},
                 {name: 'enabled',   index: 'enabled', editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}, width: 80},
                 {name: 'host',      index: 'host', editable: true, width: 90},
                 {name: 'mode',      index: 'mode', width: 110},
@@ -1300,7 +1300,6 @@ $(document).ready(function () {
             for (var i = 0; i < adapters.length; i++) {
                 var obj = objects[adapters[i]];
                 var tmp = obj._id.split('.');
-
                 $gridAdapter.jqGrid('addRowData', 'adapter_' + adapters[i].replace(/ /g, '_'), {
                     _id:      obj._id,
                     name:     obj.common.name,
@@ -1308,6 +1307,7 @@ $(document).ready(function () {
                     desc:     obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc['en'] : obj.common.desc) : '',
                     keywords: obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
                     version:  obj.common ? obj.common.version : '',
+                    installed: obj.common ? obj.common.installedVersion: '',
                     install:  '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">add instance</button>' +
                         '<button data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">readme</button>',
                     platform: obj.common ? obj.common.platform : ''
