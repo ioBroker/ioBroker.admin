@@ -442,7 +442,12 @@ function socketEvents(socket, user) {
     });
 
     socket.on('getObjectView', function (design, search, params, callback) {
+        console.log('getObjectView', design, search, params);
         adapter.objects.getObjectView(design, search, params, callback)
+    });
+
+    socket.on('setObject', function (id, obj, callback) {
+        adapter.setForeignObject(id, obj, callback);
     });
 
     socket.on('extendObject', function (id, obj, callback) {

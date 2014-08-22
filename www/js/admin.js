@@ -113,17 +113,15 @@ $(document).ready(function () {
     $dialogConfig.dialog({
         autoOpen:   false,
         modal:      true,
-        width:      $(window).width() > 920 ? 920: $(window).width(),
-        height:     $(window).height() - 100, // 480
+        width:      830, //$(window).width() > 920 ? 920: $(window).width(),
+        height:     536, //$(window).height() - 100, // 480
         closeOnEscape: false,
         open: function(event, ui) {
             $(".ui-dialog-titlebar-close", ui.dialog || ui).hide();
         },
         close: function () {
             // Clear iframe
-            setTimeout(function () {
-                $configFrame.attr('src', '');
-            }, 1000);
+            $configFrame.attr('src', '');
         }
     });
 
@@ -417,7 +415,7 @@ $(document).ready(function () {
         var $gridAdapter = $('#grid-adapters');
         $gridAdapter.jqGrid({
             datatype: 'local',
-            colNames: ['id', 'name', 'title', 'desc', 'keywords', 'version', 'platform', ''],
+            colNames: ['id', 'name', 'title', 'desc', 'keywords', 'available', 'installed', 'platform', ''],
             colModel: [
                 {name: '_id',       index: '_id',                       hidden: true},
                 {name: 'name',      index: 'name',      width:  64},
@@ -425,7 +423,8 @@ $(document).ready(function () {
                 {name: 'desc',      index: 'desc',      width: 360},
                 {name: 'keywords',  index: 'keywords',  width: 120},
                 {name: 'version',   index: 'version',   width:  70},
-                {name: 'platform',  index: 'platform',  hidden: true},
+                {name: 'installed', index: 'installed', width:  110},
+                {name: 'platform',  index: 'platform',                  hidden: true},
                 {name: 'install',   index: 'install',   width: 160}
             ],
             pager: $('#pager-adapters'),
@@ -473,13 +472,12 @@ $(document).ready(function () {
         var $gridInstance = $('#grid-instances');
         $gridInstance.jqGrid({
             datatype: 'local',
-            colNames: ['id', 'name', 'instance', 'title', 'version', 'enabled', 'host', 'mode', 'config', 'platform', 'loglevel', 'alive', 'connected'],
+            colNames: ['id', 'name', 'instance', 'title', 'enabled', 'host', 'mode', 'config', 'platform', 'loglevel', 'alive', 'connected'],
             colModel: [
                 {name: '_id',       index: '_id',       hidden: true},
                 {name: 'name',      index: 'name',      width: 130,  editable: true},
                 {name: 'instance',  index: 'instance',  width: 70},
                 {name: 'title',     index: 'title',     width: 220},
-                {name: 'version',   index: 'version',   width: 60},
                 {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
                 {name: 'host',      index: 'host',      width: 100,  editable: false},
                 {name: 'mode',      index: 'mode',      width: 80},
@@ -566,7 +564,7 @@ $(document).ready(function () {
                 }
             },
             position: 'first',
-            id: 'del-object',
+            id: 'del-instance',
             title: 'delete instance',
             cursor: 'pointer'
         }).jqGrid('navButtonAdd', '#pager-instances', {
@@ -1340,8 +1338,13 @@ $(document).ready(function () {
             $gridAdapter[0]._isInited = true;
             for (var i = 0; i < adapters.length; i++) {
                 var obj = objects[adapters[i]];
-                var tmp = obj._id.split('.');
-
+                var installed = '';
+                if (obj.common && obj.common.installedVersion) {
+                    installed = obj.common.installedVersion;
+                    if (!upToDate(obj.common.version, obj.common.installedVersion)) {
+                        installed += ' <button class="adapter-update-submit" data-adapter-name="' + obj.common.name + '">update</button>';
+                    }
+                }
                 $gridAdapter.jqGrid('addRowData', 'adapter_' + adapters[i].replace(/ /g, '_'), {
                     _id:      obj._id,
                     name:     obj.common.name,
@@ -1349,6 +1352,7 @@ $(document).ready(function () {
                     desc:     obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc['en'] : obj.common.desc) : '',
                     keywords: obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
                     version:  obj.common ? obj.common.version : '',
+                    installed: installed,
                     install:  '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">add instance</button>' +
                         '<button data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">readme</button>',
                     platform: obj.common ? obj.common.platform : ''
@@ -1358,6 +1362,12 @@ $(document).ready(function () {
 
             $(document).on('click', '.adapter-install-submit', function () {
                 cmdExec('add ' + $(this).attr('data-adapter-name'));
+            });
+            $(document).on('click', '.adapter-update-submit', function () {
+                cmdExec('upgrade ' + $(this).attr('data-adapter-name'));
+            });
+            $(document).on('click', '.adapter-readme-submit', function () {
+                alert('todo'); //$(this).attr('data-adapter-name');
             });
         }
     }
@@ -1389,15 +1399,14 @@ $(document).ready(function () {
                     name:      obj.common ? obj.common.name : '',
                     instance:  obj._id.slice(15),
                     title:     obj.common ? obj.common.title : '',
-                    version:   obj.common ? obj.common.version : '',
                     enabled:   obj.common ? obj.common.enabled : '',
                     host:      selHosts.replace('%%%', obj._id),//obj.common ? obj.common.host : '',
                     mode:      obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
                     config:    '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" data-adapter-name="' + adapter + '.' + instance + '" class="adapter-settings">config</button>',
                     platform:  obj.common ? obj.common.platform : '',
                     loglevel:  obj.common ? obj.common.loglevel : '',
-                    alive:     states[obj._id + '.alive'].val,
-                    connected: states[obj._id + '.connected'].val
+                    alive:     states[obj._id + '.alive'] ? states[obj._id + '.alive'].val : '',
+                    connected: states[obj._id + '.connected'] ? states[obj._id + '.connected'].val : ''
                 });
             }
             $gridInstance.trigger('reloadGrid');
@@ -1560,13 +1569,15 @@ $(document).ready(function () {
     });
 
     socket.on('cmdExit', function (code, exitCode) {
-        stdout += '\n' + 'process exited with code ' + exitCode;
+        stdout += '\n' + (exitCode != 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
         $stdout.val(stdout);
         $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
         cmdCode = null;
-        setTimeout(function () {
-            $dialogCommand.dialog('close');
-        }, 1500);
+        if (exitCode == 0) {
+            setTimeout(function () {
+                $dialogCommand.dialog('close');
+            }, 1500);
+        }
         if (cmdCallback) {
             cmdCallback(exitCode);
             cmdCallback = null;
@@ -1771,6 +1782,32 @@ $(document).ready(function () {
             getStates(getObjects());
         }
     });
+
+    function upToDate(a, b) {
+        var a = a.split('.');
+        var b = b.split('.');
+        a[0] = parseInt(a[0], 10);
+        b[0] = parseInt(b[0], 10);
+        if (a[0] > b[0]) {
+            return false;
+        } else if (a[0] === b[0]) {
+            a[1] = parseInt(a[1], 10);
+            b[1] = parseInt(b[1], 10);
+            if (a[1] > b[1]) {
+                return false;
+            } else if (a[1] === b[1]) {
+                a[2] = parseInt(a[2], 10);
+                b[2] = parseInt(b[2], 10);
+                if (a[2] > b[2]) {
+                    return false;
+                } else  {
+                    return true;
+                }
+            }
+        } else {
+            return true;
+        }
+    }
 
     function formatDate(dateObj) {
         return dateObj.getFullYear() + '-' +
