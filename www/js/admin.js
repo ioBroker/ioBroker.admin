@@ -113,17 +113,15 @@ $(document).ready(function () {
     $dialogConfig.dialog({
         autoOpen:   false,
         modal:      true,
-        width:      $(window).width() > 920 ? 920: $(window).width(),
-        height:     $(window).height() - 100, // 480
+        width:      830, //$(window).width() > 920 ? 920: $(window).width(),
+        height:     536, //$(window).height() - 100, // 480
         closeOnEscape: false,
         open: function(event, ui) {
             $(".ui-dialog-titlebar-close", ui.dialog || ui).hide();
         },
         close: function () {
             // Clear iframe
-            setTimeout(function () {
-                $configFrame.attr('src', '');
-            }, 1000);
+            $configFrame.attr('src', '');
         }
     });
 
@@ -1407,8 +1405,8 @@ $(document).ready(function () {
                     config:    '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" data-adapter-name="' + adapter + '.' + instance + '" class="adapter-settings">config</button>',
                     platform:  obj.common ? obj.common.platform : '',
                     loglevel:  obj.common ? obj.common.loglevel : '',
-                    alive:     states[obj._id + '.alive'].val,
-                    connected: states[obj._id + '.connected'].val
+                    alive:     states[obj._id + '.alive'] ? states[obj._id + '.alive'].val : '',
+                    connected: states[obj._id + '.connected'] ? states[obj._id + '.connected'].val : ''
                 });
             }
             $gridInstance.trigger('reloadGrid');
