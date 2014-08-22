@@ -541,7 +541,7 @@ $(document).ready(function () {
                 cmdExec('del ' + id.replace('system.adapter.', ''));
             },
             position: 'first',
-            id: 'del-object',
+            id: 'del-instance',
             title: 'delete instance',
             cursor: 'pointer'
         }).jqGrid('navButtonAdd', '#pager-instances', {
