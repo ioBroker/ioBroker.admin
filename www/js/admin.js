@@ -1569,13 +1569,15 @@ $(document).ready(function () {
     });
 
     socket.on('cmdExit', function (code, exitCode) {
-        stdout += '\n' + 'process exited with code ' + exitCode;
+        stdout += '\n' + (exitCode != 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
         $stdout.val(stdout);
         $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
         cmdCode = null;
-        setTimeout(function () {
-            $dialogCommand.dialog('close');
-        }, 1500);
+        if (exitCode == 0) {
+            setTimeout(function () {
+                $dialogCommand.dialog('close');
+            }, 1500);
+        }
         if (cmdCallback) {
             cmdCallback(exitCode);
             cmdCallback = null;
