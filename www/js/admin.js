@@ -1316,6 +1316,7 @@ $(document).ready(function () {
 
             }
             $gridObjects.trigger('reloadGrid');
+            $gridEnums.trigger('reloadGrid');
 
 
             if (typeof callback === 'function') callback();
@@ -1978,6 +1979,7 @@ $(document).ready(function () {
             firstConnect = false;
             // Here we go!
             $("#load_grid-objects").show();
+            $("#load_grid-enums").show();
             $("#load_grid-states").show();
             $("#load_grid-scripts").show();
             $("#load_grid-adapters").show();
