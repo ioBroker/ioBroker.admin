@@ -146,6 +146,124 @@ $(document).ready(function () {
         ]
     });
 
+    var $gridEnums = $('#grid-enums');
+    $gridEnums.jqGrid({
+        datatype: 'local',
+        colNames: ['id', 'name', 'members', ''],
+        colModel: [
+            {name: '_id',       index: '_id', width: 450, fixed: true},
+            {name: 'name',      index: 'name'},
+            {name: 'count',     index: 'count'},
+            {name: 'buttons',   index: 'buttons'}
+        ],
+        pager: $('#pager-enums'),
+        rowNum: 100,
+        rowList: [20, 50, 100],
+        sortname: "id",
+        sortorder: "desc",
+        viewrecords: true,
+        caption: 'ioBroker Enums',
+        subGrid: true,
+        subGridRowExpanded: function (grid, row) {
+            subGridEnums(grid, row, 1);
+        },
+        afterInsertRow: function (rowid) {
+            // Remove icon and click handler if no children available
+            var id = $('tr#' + rowid.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+            if (!children[id]) {
+                $('td.sgcollapsed', '[id="' + rowid + '"').empty().removeClass('ui-sgcollapsed sgcollapsed');
+            }
+
+        },
+        onSelectRow: function (rowid, e) {
+            // unselect other subgrids but not myself
+            $('[id^="grid-enums"][id$="_t"]').not('[id="' + this.id + '"]').jqGrid('resetSelection');
+            $('#del-enum').removeClass('ui-state-disabled');
+            $('#edit-enum').removeClass('ui-state-disabled');
+        },
+        gridComplete: function () {
+            $('#del-enum').addClass('ui-state-disabled');
+            $('#edit-enum').addClass('ui-state-disabled');
+        },
+        subGridRowColapsed: function (grid, id) {
+            var objSelected = $gridEnums.jqGrid('getGridParam', 'selrow');
+            if (!objSelected) {
+                $('[id^="grid-enums"][id$="_t"]').not('[id="' + grid + '_t"]').each(function () {
+                    if ($(this).jqGrid('getGridParam', 'selrow')) {
+                        objSelected = $(this).jqGrid('getGridParam', 'selrow');
+                    }
+                });
+            }
+            if (!objSelected) {
+                $('#del-enum').addClass('ui-state-disabled');
+                $('#edit-enum').addClass('ui-state-disabled');
+            }
+            return true;
+        }
+    }).jqGrid('filterToolbar', {
+        defaultSearch: 'cn',
+        autosearch: true,
+        searchOnEnter: false,
+        enableClear: false
+    }).navGrid('#pager-enums', {
+        search: false,
+        edit: false,
+        add: false,
+        del: false,
+        refresh: false
+    }).jqGrid('navButtonAdd', '#pager-enums', {
+        caption: '',
+        buttonicon: 'ui-icon-trash',
+        onClickButton: function () {
+            var objSelected = $gridEnums.jqGrid('getGridParam', 'selrow');
+            if (!objSelected) {
+                $('[id^="grid-enums"][id$="_t"]').each(function () {
+                    if ($(this).jqGrid('getGridParam', 'selrow')) {
+                        objSelected = $(this).jqGrid('getGridParam', 'selrow');
+                    }
+                });
+            }
+            var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+            alert('TODO delete ' + id); //TODO
+        },
+        position: 'first',
+        id: 'del-enum',
+        title: 'Delete enum',
+        cursor: 'pointer'
+    }).jqGrid('navButtonAdd', '#pager-enums', {
+        caption: '',
+        buttonicon: 'ui-icon-pencil',
+        onClickButton: function () {
+            var objSelected = $gridEnums.jqGrid('getGridParam', 'selrow');
+            if (!objSelected) {
+                $('[id^="grid-enums"][id$="_t"]').each(function () {
+                    if ($(this).jqGrid('getGridParam', 'selrow')) {
+                        objSelected = $(this).jqGrid('getGridParam', 'selrow');
+                    }
+                });
+            }
+            var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+            editObject(id);
+        },
+        position: 'first',
+        id: 'edit-enum',
+        title: 'Edit enum',
+        cursor: 'pointer'
+    }).jqGrid('navButtonAdd', '#pager-enums', {
+        caption: '',
+        buttonicon: 'ui-icon-plus',
+        onClickButton: function () {
+            alert('TODO add enum'); //TODO
+        },
+        position: 'first',
+        id: 'add-enum',
+        title: 'New objekt',
+        cursor: 'pointer'
+    });
+
+
+
+
     var $gridObjects = $('#grid-objects');
     $gridObjects.jqGrid({
         datatype: 'local',
@@ -338,6 +456,86 @@ $(document).ready(function () {
                 _id: objects[children[id][i]]._id,
                 name: objects[children[id][i]].common ? objects[children[id][i]].common.name : '',
                 type: objects[children[id][i]].type
+            });
+        }
+        $subgrid.trigger('reloadGrid');
+    }
+
+    function subGridEnums(grid, row, level) {
+        var id = $('tr#' + row.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+        var subgridTableId = grid + '_t';
+        $('[id="' + grid + '"]').html('<table class="subgrid-level-' + level + '" id="' + subgridTableId + '"></table>');
+        var $subgrid = $('table[id="' + subgridTableId + '"]');
+        var gridConf = {
+            datatype: 'local',
+            colNames: ['id', 'name', 'members', ''],
+            colModel: [
+                {name: '_id',  index: '_id', width: 450 - (level * 27), fixed: true},
+                {name: 'name', index: 'name'},
+                {name: 'members', index: 'members'},
+                {name: 'buttons', index: 'buttons'}
+            ],
+            rowNum: 1000000,
+            autowidth: true,
+            height: 'auto',
+            width: 1200,
+            //sortname: '_id',
+            //sortorder: 'desc',
+            viewrecords: true,
+            sortorder: 'desc',
+            ignoreCase: true,
+            subGrid: true,
+            subGridRowExpanded: function (grid, row) {
+                subGridEnums(grid, row, level + 1);
+            },
+            subGridRowColapsed: function (grid, id) {
+                // Check if there is still a row selected
+                var objSelected = $gridObjects.jqGrid('getGridParam', 'selrow');
+                if (!objSelected) {
+                    $('[id^="grid-enum"][id$="_t"]').not('[id="' + grid + '_t"]').each(function () {
+                        if ($(this).jqGrid('getGridParam', 'selrow')) {
+                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
+                        }
+                    });
+                }
+                // Disable buttons if no row is selected
+                if (!objSelected) {
+                    $('#del-enum').addClass('ui-state-disabled');
+                    $('#edit-enum').addClass('ui-state-disabled');
+                }
+                return true;
+            },
+            afterInsertRow: function (rowid) {
+                // Remove icon and click handler if no children available
+                if (!children[rowid.slice(5)]) {
+                    $('td.sgcollapsed', '[id="' + rowid + '"').empty().removeClass('ui-sgcollapsed sgcollapsed');
+                }
+            },
+            gridComplete: function () {
+                // Hide header
+                $subgrid.parent().parent().parent().find('table.ui-jqgrid-htable').hide();
+            },
+            onSelectRow: function (rowid, e) {
+                // unselect other subgrids but not myself
+                $('[id^="grid-enums"][id$="_t"]').not('[id="' + this.id + '"]').jqGrid('resetSelection');
+
+                // unselect objects grid
+                $gridEnums.jqGrid('resetSelection');
+
+                // enable buttons
+                $('#del-enum').removeClass('ui-state-disabled');
+                $('#edit-enum').removeClass('ui-state-disabled');
+            }
+        };
+        $subgrid.jqGrid(gridConf);
+
+        for (var i = 0; i < children[id].length; i++) {
+            $subgrid.jqGrid('addRowData', 'enum_' + objects[children[id][i]]._id.replace(/ /g, '_'), {
+                _id: objects[children[id][i]]._id,
+                name: objects[children[id][i]].common ? objects[children[id][i]].common.name : '',
+                members: objects[children[id][i]].common.members ? objects[children[id][i]].common.members.length : '',
+                buttons: '<button data-enum-id="' + objects[children[id][i]]._id + '" class="enum-edit">members</button>'
+
             });
         }
         $subgrid.trigger('reloadGrid');
@@ -1102,13 +1300,23 @@ $(document).ready(function () {
             }
             objectsLoaded = true;
             for (var i = 0; i < toplevel.length; i++) {
+                if (objects[toplevel[i]].type === 'enum') {
+                    $gridEnums.jqGrid('addRowData', 'enum_' + toplevel[i].replace(/ /g, '_'), {
+                        _id:  objects[toplevel[i]]._id,
+                        name: objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
+                        members: objects[toplevel[i]].common.members ? objects[toplevel[i]].common.members.length : '',
+                        buttons: '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-edit">members</button>'
+                    });
+                }
                 $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/ /g, '_'), {
                     _id:  objects[toplevel[i]]._id,
                     name: objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
                     type: objects[toplevel[i]].type
                 });
+
             }
             $gridObjects.trigger('reloadGrid');
+            $gridEnums.trigger('reloadGrid');
 
 
             if (typeof callback === 'function') callback();
@@ -1771,6 +1979,7 @@ $(document).ready(function () {
             firstConnect = false;
             // Here we go!
             $("#load_grid-objects").show();
+            $("#load_grid-enums").show();
             $("#load_grid-states").show();
             $("#load_grid-scripts").show();
             $("#load_grid-adapters").show();
