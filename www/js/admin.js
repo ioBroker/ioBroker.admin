@@ -667,6 +667,7 @@ $(document).ready(function () {
         var instanceLastSelected;
         var instanceEdit;
 
+
         var $gridInstance = $('#grid-instances');
         $gridInstance.jqGrid({
             datatype: 'local',
@@ -677,11 +678,11 @@ $(document).ready(function () {
                 {name: 'instance',  index: 'instance',  width: 70},
                 {name: 'title',     index: 'title',     width: 220},
                 {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
-                {name: 'host',      index: 'host',      width: 100,  editable: false},
+                {name: 'host',      index: 'host',      width: 100,  editable: true, edittype: 'select', editoptions: ''},
                 {name: 'mode',      index: 'mode',      width: 80},
                 {name: 'config',    index: 'config',    width: 60},
                 {name: 'platform',  index: 'platform',  width: 60,   hidden: true},
-                {name: 'loglevel',  index: 'loglevel',  width: 60,   editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}},
+                {name: 'loglevel',  index: 'loglevel',  width: 60,   editable: true, edittype: 'select', editoptions: {value: ''}},
                 {name: 'alive',     index: 'alive',     width: 60},
                 {name: 'connected', index: 'connected', width: 60}
             ],
@@ -1299,6 +1300,15 @@ $(document).ready(function () {
                 }
             }
             objectsLoaded = true;
+
+            // Change editoptions for gridInstances column host
+            var tmp = '';
+            for (var j = 0; j < hosts.length; j++) {
+                tmp += (j > 0 ? ';' : '') + hosts[j].name + ':' + hosts[j].name;
+            }
+            $gridInstance.jqGrid('setColProp', 'host', {editoptions: {value: tmp}});
+
+
             for (var i = 0; i < toplevel.length; i++) {
                 if (objects[toplevel[i]].type === 'enum') {
                     $gridEnums.jqGrid('addRowData', 'enum_' + toplevel[i].replace(/ /g, '_'), {
@@ -1590,12 +1600,6 @@ $(document).ready(function () {
         if (typeof $gridInstance !== 'undefined' && (!$gridInstance[0]._isInited || isForce)) {
             $gridInstance[0]._isInited = true;
             $gridInstance.jqGrid('clearGridData');
-            console.log('instances', instances);
-            var selHosts = '<select data-id="%%%" class="host-selector">';
-            for (var j = 0; j < hosts.length; j++) {
-                selHosts += '<option value="' + hosts[j].address + '">' + hosts[j].name + '</option>';
-            }
-            selHosts += '</select>'
 
             for (var i = 0; i < instances.length; i++) {
                 var obj = objects[instances[i]];
@@ -1608,7 +1612,7 @@ $(document).ready(function () {
                     instance:  obj._id.slice(15),
                     title:     obj.common ? obj.common.title : '',
                     enabled:   obj.common ? obj.common.enabled : '',
-                    host:      selHosts.replace('%%%', obj._id),//obj.common ? obj.common.host : '',
+                    host:      obj.common ? obj.common.host : '',
                     mode:      obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
                     config:    '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" data-adapter-name="' + adapter + '.' + instance + '" class="adapter-settings">config</button>',
                     platform:  obj.common ? obj.common.platform : '',
