@@ -10,11 +10,12 @@ $(document).ready(function () {
     var id = 'system.adapter.' + adapter + '.' + instance;
 
     loadSettings();
-    $('body').prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" >'/* + adapter + '.' + instance + ' settings'*/ +
-        '<input type="button" id="save" value="save"/>' +
+    $('body').prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" >' +
+        '<input type="button" id="save" value="save"/>');
+         /*+
         '<input type="button" id="saveclose" value="save and close"/>' +
         '<input type="button" id="close" value="close"/>' +
-        '</div>');
+        '</div>')*/
 
     $('input[type="button"]').button();
     $('input#save').click(function () {

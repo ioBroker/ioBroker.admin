@@ -117,7 +117,7 @@ $(document).ready(function () {
         height:     536, //$(window).height() - 100, // 480
         closeOnEscape: false,
         open: function(event, ui) {
-            $(".ui-dialog-titlebar-close", ui.dialog || ui).hide();
+            $('#dialog-config').css('padding', '2px 0px');
         },
         close: function () {
             // Clear iframe
