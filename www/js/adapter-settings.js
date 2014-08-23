@@ -1,6 +1,6 @@
 var socket =    io.connect();
 var instance =  window.location.search.slice(1);
-var common =    null; // common infromation of adapter
+var common =    null; // common information of adapter
 var host =      null; // host object on which the adapter runs
 
 $(document).ready(function () {
@@ -72,6 +72,17 @@ $(document).ready(function () {
 
 function getObject(id, callback) {
     socket.emit('getObject', id, function (err, res) {
+        console.log(err, res);
+        if (!err && res) {
+            if (callback) callback(res);
+        } else {
+            if (callback) callback(null);
+        }
+    });
+}
+
+function getState(id, callback) {
+    socket.emit('getState', id, function (err, res) {
         console.log(err, res);
         if (!err && res) {
             if (callback) callback(res);

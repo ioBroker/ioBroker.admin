@@ -613,16 +613,17 @@ $(document).ready(function () {
         var $gridAdapter = $('#grid-adapters');
         $gridAdapter.jqGrid({
             datatype: 'local',
-            colNames: ['id', 'name', 'title', 'desc', 'keywords', 'available', 'installed', 'platform', ''],
+            colNames: ['id', '', 'name', 'title', 'desc', 'keywords', 'available', 'installed', 'platform', ''],
             colModel: [
-                {name: '_id',       index: '_id',                       hidden: true},
+                {name: '_id',       index: '_id',       hidden: true},
+                {name: 'image',     index: 'image',     width: 22,   editable: false, sortable: false, search: false, align: 'center'},
                 {name: 'name',      index: 'name',      width:  64},
                 {name: 'title',     index: 'title',     width: 180},
                 {name: 'desc',      index: 'desc',      width: 360},
                 {name: 'keywords',  index: 'keywords',  width: 120},
-                {name: 'version',   index: 'version',   width:  70},
-                {name: 'installed', index: 'installed', width:  110},
-                {name: 'platform',  index: 'platform',                  hidden: true},
+                {name: 'version',   index: 'version',   width:  70, align: 'center'},
+                {name: 'installed', index: 'installed', width: 110, align: 'center'},
+                {name: 'platform',  index: 'platform',  hidden: true},
                 {name: 'install',   index: 'install',   width: 160}
             ],
             pager: $('#pager-adapters'),
@@ -671,20 +672,21 @@ $(document).ready(function () {
         var $gridInstance = $('#grid-instances');
         $gridInstance.jqGrid({
             datatype: 'local',
-            colNames: ['id', 'name', 'instance', 'title', 'enabled', 'host', 'mode', 'config', 'platform', 'loglevel', 'alive', 'connected'],
+            colNames: ['id', '', 'name', 'instance', 'title', 'enabled', 'host', 'mode', 'config', 'platform', 'loglevel', 'alive', 'connected'],
             colModel: [
                 {name: '_id',       index: '_id',       hidden: true},
+                {name: 'image',     index: 'image',     width: 22,   editable: false, sortable: false, search: false, align: 'center'},
                 {name: 'name',      index: 'name',      width: 130,  editable: true},
                 {name: 'instance',  index: 'instance',  width: 70},
                 {name: 'title',     index: 'title',     width: 220},
-                {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
+                {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}, align: 'center'},
                 {name: 'host',      index: 'host',      width: 100,  editable: true, edittype: 'select', editoptions: ''},
-                {name: 'mode',      index: 'mode',      width: 80},
-                {name: 'config',    index: 'config',    width: 60},
+                {name: 'mode',      index: 'mode',      width: 80,   align: 'center'},
+                {name: 'config',    index: 'config',    width: 60,   align: 'center'},
                 {name: 'platform',  index: 'platform',  width: 60,   hidden: true},
-                {name: 'loglevel',  index: 'loglevel',  width: 60,   editable: true, edittype: 'select', editoptions: {value: ''}},
-                {name: 'alive',     index: 'alive',     width: 60},
-                {name: 'connected', index: 'connected', width: 60}
+                {name: 'loglevel',  index: 'loglevel',  width: 60,   align: 'center',   editable: true, edittype: 'select', editoptions: {value: ''}},
+                {name: 'alive',     index: 'alive',     width: 60,   align: 'center'},
+                {name: 'connected', index: 'connected', width: 60,   align: 'center'}
             ],
             pager: $('#pager-instances'),
             rowNum: 100,
@@ -1565,6 +1567,7 @@ $(document).ready(function () {
                 }
                 $gridAdapter.jqGrid('addRowData', 'adapter_' + adapters[i].replace(/ /g, '_'), {
                     _id:      obj._id,
+                    image:    obj.common && obj.common.extIcon ? '<img src="' + obj.common.extIcon+ '" width="22px" height="22px" />' : '',
                     name:     obj.common.name,
                     title:    obj.common ? obj.common.title : '',
                     desc:     obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc['en'] : obj.common.desc) : '',
@@ -1608,6 +1611,7 @@ $(document).ready(function () {
                 var instance = tmp[3];
                 $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
                     _id:       obj._id,
+                    image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px"/>' : '',
                     name:      obj.common ? obj.common.name : '',
                     instance:  obj._id.slice(15),
                     title:     obj.common ? obj.common.title : '',

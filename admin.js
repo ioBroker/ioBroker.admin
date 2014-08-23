@@ -484,6 +484,10 @@ function socketEvents(socket, user) {
         callback(null, states);
     });
 
+    socket.on('getState', id, function (callback) {
+        callback(null, states[id]);
+    });
+
     socket.on('setState', function (id, state, callback) {
         if (typeof state !== 'object') state = {val: state};
         adapter.setForeignState(id, state, function (err, res) {
