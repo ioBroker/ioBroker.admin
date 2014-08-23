@@ -39,7 +39,11 @@
 
         for (var key in settings) {
             // example: select elements with id=key and class=value and insert value
-            $('#' + key + '.value').val(settings[key]);
+            if ($('#' + key + '.value').attr('type') == 'checkbox') {
+                $('#' + key + '.value').prop('checked', settings[key]);
+            } else {
+                $('#' + key + '.value').val(settings[key]);
+            }
         }
 
     }
@@ -64,7 +68,7 @@
 <!-- you have to put your config page in a div with id adapter-container -->
 <div id="adapter-container">
 
-    <h3>Admin adapter settings</h3>
+    <table><tr><td><img src="admin.png"></td><td><h3>Admin adapter settings</h3></td></tr></table>
 
     <table>
         <tr><td>IP:</td><td>            <select class="value" id="bind"></select></td></tr>
