@@ -72,9 +72,8 @@ $(document).ready(function () {
 
 function getObject(id, callback) {
     socket.emit('getObject', id, function (err, res) {
-        console.log(err, res);
         if (!err && res) {
-            if (callback) callback(res);
+            if (callback) callback(err, res);
         } else {
             if (callback) callback(null);
         }
@@ -83,13 +82,16 @@ function getObject(id, callback) {
 
 function getState(id, callback) {
     socket.emit('getState', id, function (err, res) {
-        console.log(err, res);
         if (!err && res) {
-            if (callback) callback(res);
+            if (callback) callback(err, res);
         } else {
             if (callback) callback(null);
         }
     });
+}
+
+function getEnums(enums, callback) {
+   if (callback) callback(null, ['Whonzimmer', 'Küche', 'WC']);
 }
 
 function getIPs(callback) {
@@ -117,3 +119,6 @@ function getIPs(callback) {
     });
 }
 
+function sendTo(adapter, command, message, callback) {
+    socket.emit('sendTo', adapter, command, message, callback);
+}

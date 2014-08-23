@@ -1,9 +1,9 @@
 /* jshint -W097 */// jshint strict:false
+/* global io:false */
+/* global jQuery:false */
+/* jslint browser:true */
 'use strict';
 
-/*global io:false */
-/*global jQuery:false */
-/*jslint browser:true */
 
 var $iframeDialog = null;
 
@@ -37,7 +37,7 @@ $(document).ready(function () {
     var editor = ace.edit("script-editor");
     //editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode("ace/mode/javascript");
-    editor.resize()
+    editor.resize();
 
     $('#tabs').tabs({
         activate: function (event, ui) {
@@ -1553,7 +1553,7 @@ $(document).ready(function () {
         }
 
         if (typeof $gridAdapter !== 'undefined' && (!$gridAdapter[0]._isInited || isForce)) {
-            console.log('adapters', adapters)
+            console.log('adapters', adapters);
             $gridAdapter.jqGrid('clearGridData');
             $gridAdapter[0]._isInited = true;
             for (var i = 0; i < adapters.length; i++) {
@@ -1570,7 +1570,7 @@ $(document).ready(function () {
                     image:    obj.common && obj.common.extIcon ? '<img src="' + obj.common.extIcon+ '" width="22px" height="22px" />' : '',
                     name:     obj.common.name,
                     title:    obj.common ? obj.common.title : '',
-                    desc:     obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc['en'] : obj.common.desc) : '',
+                    desc:     obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc.en : obj.common.desc) : '',
                     keywords: obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
                     version:  obj.common ? obj.common.version : '',
                     installed: installed,
@@ -1785,7 +1785,8 @@ $(document).ready(function () {
     });
 
     socket.on('cmdExit', function (code, exitCode) {
-        stdout += '\n' + (exitCode != 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
+        exitCode = parseInt(exitCode, 10);
+        stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
         $stdout.val(stdout);
         $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
         cmdCode = null;
@@ -1896,9 +1897,9 @@ $(document).ready(function () {
             if (obj) {
                 if (adapters.indexOf(id) == -1) adapters.push(id);
             } else {
-                var i = adapters.indexOf(id);
-                if (i != -1) {
-                    adapters.splice(i, 1);
+                var j = adapters.indexOf(id);
+                if (j != -1) {
+                    adapters.splice(j, 1);
                 }
             }
             initAdapters(true);
@@ -1943,9 +1944,9 @@ $(document).ready(function () {
             if (obj) {
                 if (users.indexOf(id) == -1) users.push(id);
             } else {
-                var i = users.indexOf(id);
-                if (i != -1) {
-                    users.splice(i, 1);
+                var k = users.indexOf(id);
+                if (k != -1) {
+                    users.splice(k, 1);
                 }
             }
             if (!updateTimers.initUsersGroups) {
