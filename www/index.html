@@ -36,7 +36,35 @@
         <div id="pager-states"></div>
     </div>
     <div id="tab-events">
-        <table id="events"></table>
+        <div id="grid-events" class="ui-jqgrid" style="display: block;">
+            <div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">
+                <div class="">
+                    <span class="ui-jqgrid-title">Events</span>
+                </div>
+
+            </div>
+            <table style="width: 100%; border-collapse: collapse;" class="ui-widget ui-state-default ui-corner-bottom">
+                <thead>
+                <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
+                    <th class="event-column-1 ui-state-default ui-th-column ui-th-ltr">Event</th>
+                    <th class="event-column-2 ui-state-default ui-th-column ui-th-ltr">id</th>
+                    <th class="event-column-3 ui-state-default ui-th-column ui-th-ltr">val</th>
+                    <th class="event-column-4 ui-state-default ui-th-column ui-th-ltr">ack</th>
+                    <th class="event-column-5 ui-state-default ui-th-column ui-th-ltr">from</th>
+                    <th class="event-column-6 ui-state-default ui-th-column ui-th-ltr">ts</th>
+                    <th class="event-column-7 ui-state-default ui-th-column ui-th-ltr">lc</th>
+                </tr>
+                </thead>
+            </table>
+            <div id="grid-events-inner" style="width: 100%; overflow-y: scroll;">
+                <table id="event-outer" style="width: 100%; border-collapse: collapse; margin-top: -1px" class="ui-widget ui-state-default ui-corner-bottom">
+                    <tbody id="event-table">
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
     </div>
     <div id="tab-adapters">
         <table id="grid-adapters"></table>
@@ -68,15 +96,9 @@
         <tr>
             <td>name</td>
             <td><input size="60" id="edit-object-name"></td>
-        </tr>
-        <tr>
-            <td>parent</td>
-            <td><input size="60" id="edit-object-parent"></td>
-        </tr>
-        <tr>
             <td>type</td>
             <td>
-                <select id="edit-object-type">
+                <select id="edit-object-type" disabled="disabled">
                     <option>device</option>
                     <option>channel</option>
                     <option>state</option>
@@ -94,14 +116,23 @@
                 </select>
             </td>
         </tr>
-    </table><br/>
-    <table>
         <tr>
-            <td>
+            <td>parent</td>
+            <td colspan="3"><input size="60" id="edit-object-parent" disabled="disabled"><button class="jump" id="jump-parent">-></button></td>
+        </tr>
+        <tr>
+            <td>children</td>
+            <td colspan="3" id="edit-object-children"></button></td>
+        </tr>
+
+    </table><br/>
+    <table width="100%">
+        <tr>
+            <td width="50%">
                 common<br/>
                 <textarea id="edit-object-common"></textarea>
             </td>
-            <td>
+            <td width="50%">
                 native<br/>
                 <textarea id="edit-object-native"></textarea>
             </td>
