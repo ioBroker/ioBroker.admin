@@ -516,7 +516,15 @@ function socketEvents(socket, user) {
     });
 
     // iobroker commands
+    var cmdActive = false;
+
     socket.on('cmdExec', function (cmd, callback) {
+        if (cmdActive) {
+            callback(true, null);
+            return
+        } else {
+            cmdActive = true;
+        }
         // TODO - Generate 'cmd session code', give it to callback and all following on('data') and on('exit)'
         var spawn = require('child_process').spawn;
         var args = [__dirname + '/../../iobroker.js'];
@@ -538,6 +546,7 @@ function socketEvents(socket, user) {
             socket.emit('cmdStderr', null, data);
         });
         child.on('exit', function (exitCode) {
+            cmdActive = false;
             adapter.log.info('iobroker exit ' + exitCode);
             socket.emit('cmdExit', null, exitCode);
         });
