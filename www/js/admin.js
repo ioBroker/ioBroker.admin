@@ -1,9 +1,9 @@
 /* jshint -W097 */// jshint strict:false
+/* global io:false */
+/* global jQuery:false */
+/* jslint browser:true */
 'use strict';
 
-/*global io:false */
-/*global jQuery:false */
-/*jslint browser:true */
 
 var $iframeDialog = null;
 
@@ -37,7 +37,7 @@ $(document).ready(function () {
     var editor = ace.edit("script-editor");
     //editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode("ace/mode/javascript");
-    editor.resize()
+    editor.resize();
 
     $('#tabs').tabs({
         activate: function (event, ui) {
@@ -619,16 +619,17 @@ $(document).ready(function () {
         var $gridAdapter = $('#grid-adapters');
         $gridAdapter.jqGrid({
             datatype: 'local',
-            colNames: ['id', 'name', 'title', 'desc', 'keywords', 'available', 'installed', 'platform', ''],
+            colNames: ['id', '', 'name', 'title', 'desc', 'keywords', 'available', 'installed', 'platform', ''],
             colModel: [
-                {name: '_id',       index: '_id',                       hidden: true},
+                {name: '_id',       index: '_id',       hidden: true},
+                {name: 'image',     index: 'image',     width: 22,   editable: false, sortable: false, search: false, align: 'center'},
                 {name: 'name',      index: 'name',      width:  64},
                 {name: 'title',     index: 'title',     width: 180},
                 {name: 'desc',      index: 'desc',      width: 360},
                 {name: 'keywords',  index: 'keywords',  width: 120},
-                {name: 'version',   index: 'version',   width:  70},
-                {name: 'installed', index: 'installed', width:  110},
-                {name: 'platform',  index: 'platform',                  hidden: true},
+                {name: 'version',   index: 'version',   width:  70, align: 'center'},
+                {name: 'installed', index: 'installed', width: 110, align: 'center'},
+                {name: 'platform',  index: 'platform',  hidden: true},
                 {name: 'install',   index: 'install',   width: 160}
             ],
             pager: $('#pager-adapters'),
@@ -677,20 +678,21 @@ $(document).ready(function () {
         var $gridInstance = $('#grid-instances');
         $gridInstance.jqGrid({
             datatype: 'local',
-            colNames: ['id', 'name', 'instance', 'title', 'enabled', 'host', 'mode', 'config', 'platform', 'loglevel', 'alive', 'connected'],
+            colNames: ['id', '', 'name', 'instance', 'title', 'enabled', 'host', 'mode', 'config', 'platform', 'loglevel', 'alive', 'connected'],
             colModel: [
                 {name: '_id',       index: '_id',       hidden: true},
+                {name: 'image',     index: 'image',     width: 22,   editable: false, sortable: false, search: false, align: 'center'},
                 {name: 'name',      index: 'name',      width: 130,  editable: true},
                 {name: 'instance',  index: 'instance',  width: 70},
                 {name: 'title',     index: 'title',     width: 220},
-                {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
+                {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}, align: 'center'},
                 {name: 'host',      index: 'host',      width: 100,  editable: true, edittype: 'select', editoptions: ''},
-                {name: 'mode',      index: 'mode',      width: 80},
-                {name: 'config',    index: 'config',    width: 60},
+                {name: 'mode',      index: 'mode',      width: 80,   align: 'center'},
+                {name: 'config',    index: 'config',    width: 60,   align: 'center'},
                 {name: 'platform',  index: 'platform',  width: 60,   hidden: true},
-                {name: 'loglevel',  index: 'loglevel',  width: 60,   editable: true, edittype: 'select', editoptions: {value: ''}},
-                {name: 'alive',     index: 'alive',     width: 60},
-                {name: 'connected', index: 'connected', width: 60}
+                {name: 'loglevel',  index: 'loglevel',  width: 60,   align: 'center',   editable: true, edittype: 'select', editoptions: {value: ''}},
+                {name: 'alive',     index: 'alive',     width: 60,   align: 'center'},
+                {name: 'connected', index: 'connected', width: 60,   align: 'center'}
             ],
             pager: $('#pager-instances'),
             rowNum: 100,
@@ -1572,7 +1574,7 @@ $(document).ready(function () {
         }
 
         if (typeof $gridAdapter !== 'undefined' && (!$gridAdapter[0]._isInited || isForce)) {
-            console.log('adapters', adapters)
+            console.log('adapters', adapters);
             $gridAdapter.jqGrid('clearGridData');
             $gridAdapter[0]._isInited = true;
             for (var i = 0; i < adapters.length; i++) {
@@ -1586,9 +1588,10 @@ $(document).ready(function () {
                 }
                 $gridAdapter.jqGrid('addRowData', 'adapter_' + adapters[i].replace(/ /g, '_'), {
                     _id:      obj._id,
+                    image:    obj.common && obj.common.extIcon ? '<img src="' + obj.common.extIcon+ '" width="22px" height="22px" />' : '',
                     name:     obj.common.name,
                     title:    obj.common ? obj.common.title : '',
-                    desc:     obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc['en'] : obj.common.desc) : '',
+                    desc:     obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc.en : obj.common.desc) : '',
                     keywords: obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
                     version:  obj.common ? obj.common.version : '',
                     installed: installed,
@@ -1629,6 +1632,7 @@ $(document).ready(function () {
                 var instance = tmp[3];
                 $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
                     _id:       obj._id,
+                    image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px"/>' : '',
                     name:      obj.common ? obj.common.name : '',
                     instance:  obj._id.slice(15),
                     title:     obj.common ? obj.common.title : '',
@@ -1802,7 +1806,8 @@ $(document).ready(function () {
     });
 
     socket.on('cmdExit', function (code, exitCode) {
-        stdout += '\n' + (exitCode != 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
+        exitCode = parseInt(exitCode, 10);
+        stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
         $stdout.val(stdout);
         $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
         cmdCode = null;
@@ -1917,9 +1922,9 @@ $(document).ready(function () {
             if (obj) {
                 if (adapters.indexOf(id) == -1) adapters.push(id);
             } else {
-                var i = adapters.indexOf(id);
-                if (i != -1) {
-                    adapters.splice(i, 1);
+                var j = adapters.indexOf(id);
+                if (j != -1) {
+                    adapters.splice(j, 1);
                 }
             }
             initAdapters(true);
@@ -1964,9 +1969,9 @@ $(document).ready(function () {
             if (obj) {
                 if (users.indexOf(id) == -1) users.push(id);
             } else {
-                var i = users.indexOf(id);
-                if (i != -1) {
-                    users.splice(i, 1);
+                var k = users.indexOf(id);
+                if (k != -1) {
+                    users.splice(k, 1);
                 }
             }
             if (!updateTimers.initUsersGroups) {

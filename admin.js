@@ -302,7 +302,7 @@ function initWebServer(settings) {
                     var s = new Stream();
                     s.pipe = function(dest) {
                         dest.write('File not found: ' + e);
-                    }
+                    };
 
                     s.pipe(res);
                 }
@@ -443,7 +443,7 @@ function socketEvents(socket, user) {
 
     socket.on('getObjectView', function (design, search, params, callback) {
         console.log('getObjectView', design, search, params);
-        adapter.objects.getObjectView(design, search, params, callback)
+        adapter.objects.getObjectView(design, search, params, callback);
     });
 
     socket.on('setObject', function (id, obj, callback) {
@@ -482,6 +482,10 @@ function socketEvents(socket, user) {
      */
     socket.on('getStates', function (callback) {
         callback(null, states);
+    });
+
+    socket.on('getState', function (id, callback) {
+        callback(null, states[id]);
     });
 
     socket.on('setState', function (id, state, callback) {
@@ -553,6 +557,10 @@ function socketEvents(socket, user) {
 
     });
 
+    // sendTo
+    socket.on('sendTo', function (adapterInstance, command, message, callback) {
+        adapter.sendTo(adapterInstance, command, message, callback);
+    });
 }
 
 function onAuthorizeSuccess(data, accept) {
