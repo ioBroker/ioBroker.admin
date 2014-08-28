@@ -54,7 +54,7 @@ table#events {
 
 #edit-object-common, #edit-object-native {
     font-size: 12px;
-    width: 300px;
+    width: 100%;
     height: 240px;
     padding:0;
     margin:0;
@@ -88,4 +88,45 @@ table#events {
     right: 0;
     bottom: 0;
     left: 0;
+}
+
+.event-column-1 {
+    width: 10%;
+}
+.event-column-2 {
+    width: 35%;
+}
+.event-column-3 {
+    width: 11%;
+}
+.event-column-4 {
+    width: 7%;
+}
+.event-column-5 {
+    width: 7%;
+}
+
+.event-column-6 {
+    width: 16%;
+}
+
+.event-column-7 {
+    width: 16%;
+}
+#event-outer {
+    border-collapse: collapse;
+}
+
+#event-table tr {
+    height: 25px;
+    max-height: 25px;
+}
+
+#event-table tr td {
+    padding-left: 2px;
+    font-size: 12px;
+    font-weight: normal;
+    background-color: #fff;
+    color: #222;
+    border: 1px solid #c5dbec;
 }

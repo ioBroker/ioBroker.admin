@@ -16,11 +16,12 @@ $(document).ready(function () {
         loadSettings();
     });
 
-    $('body').prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" >'/* + adapter + '.' + instance + ' settings'*/ +
-        '<input type="button" id="save"      class="translateV" value="save"/>' +
+    $('body').prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" >' +
+        '<input type="button" id="save" class="translateV" value="save"/>');
+         /*+
         '<input type="button" id="saveclose" class="translateV" value="save and close"/>' +
-        '<input type="button" id="close"     class="translateV" value="close"/>' +
-        '</div>');
+        '<input type="button" id="close" class="translateV" value="close"/>' +
+        '</div>')*/
 
     $('input[type="button"]').button();
     $('input#save').click(function () {

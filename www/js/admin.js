@@ -117,7 +117,7 @@ $(document).ready(function () {
         height:     536, //$(window).height() - 100, // 480
         closeOnEscape: false,
         open: function(event, ui) {
-            $(".ui-dialog-titlebar-close", ui.dialog || ui).hide();
+            $('#dialog-config').css('padding', '2px 0px');
         },
         close: function () {
             // Clear iframe
@@ -125,12 +125,18 @@ $(document).ready(function () {
         }
     });
 
+    $(document).on('click', '.jump', function (e) {
+        editObject($(this).attr('data-jump-to'));
+        e.preventDefault();
+        return false;
+    });
+
     var $dialogObject = $('#dialog-object');
     $dialogObject.dialog({
         autoOpen:   false,
         modal:      true,
-        width: 640,
-        height: 480,
+        width: 800,
+        height: 540,
         buttons: [
             {
                 text: 'Save',
@@ -232,7 +238,7 @@ $(document).ready(function () {
         cursor: 'pointer'
     }).jqGrid('navButtonAdd', '#pager-enums', {
         caption: '',
-        buttonicon: 'ui-icon-pencil',
+        buttonicon: 'ui-icon-gear',
         onClickButton: function () {
             var objSelected = $gridEnums.jqGrid('getGridParam', 'selrow');
             if (!objSelected) {
@@ -355,7 +361,7 @@ $(document).ready(function () {
         cursor: 'pointer'
     }).jqGrid('navButtonAdd', '#pager-objects', {
         caption: '',
-        buttonicon: 'ui-icon-pencil',
+        buttonicon: 'ui-icon-gear',
         onClickButton: function () {
             var objSelected = $gridObjects.jqGrid('getGridParam', 'selrow');
             if (!objSelected) {
@@ -770,7 +776,7 @@ $(document).ready(function () {
             cursor: 'pointer'
         }).jqGrid('navButtonAdd', '#pager-instances', {
             caption: '',
-            buttonicon: 'ui-icon-pencil',
+            buttonicon: 'ui-icon-gear',
             onClickButton: function () {
                 var objSelected = $gridInstance.jqGrid('getGridParam', 'selrow');
                 if (!objSelected) {
@@ -1356,12 +1362,27 @@ $(document).ready(function () {
 
     function editObject(id) {
         var obj = objects[id];
+        console.log(obj);
         $dialogObject.dialog('option', 'title', id);
         $('#edit-object-id').val(obj._id);
         $('#edit-object-parent-old').val(obj.parent);
         $('#edit-object-name').val(obj.common.name);
         $('#edit-object-type').val(obj.type);
         $('#edit-object-parent').val(obj.parent);
+        $('#jump-parent').attr('data-jump-to', obj.parent);
+        var childs = '<div style="font-size: 10px">';
+        // childs += '<table style="font-size: 11px">';
+        if (obj.children) {
+
+            for (var i = 0; i < obj.children.length; i++) {
+                //childs += '<tr><td>' + obj.children[i] + '</td><td><button data-jump-to="' + obj.children[i] + '" class="jump">-></button></td></tr>';
+                childs += '<a style="text-decoration: underline; cursor: pointer;" class="jump" data-jump-to="' + obj.children[i] + '">' + obj.children[i] + '</a><br>';
+            }
+        }
+
+        childs += '</div>';
+        //childs += '</table>';
+        $('#edit-object-children').html(childs);
         $('#edit-object-common').val(JSON.stringify(obj.common, null, '  '));
         $('#edit-object-native').val(JSON.stringify(obj.native, null, '  '));
         $dialogObject.dialog('open');
@@ -1812,7 +1833,11 @@ $(document).ready(function () {
         rowData.from = obj.from;
         $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), rowData);
 
-        $('#events').prepend('<tr><td>stateChange</td><td>' + id + '</td><td>' + JSON.stringify(obj) + '</td></tr>');
+        $('#event-table').prepend('<tr><td class="event-column-1">stateChange</td><td class="event-column-2">' + id +
+            '</td><td class="event-column-3">' + obj.val +
+            '</td><td class="event-column-4">' + obj.ack + '</td>' +
+            '<td class="event-column-5">' + obj.from + '</td><td class="event-column-6">' + rowData.ts + '</td><td class="event-column-7">' +
+            rowData.lc + '</td></tr>');
 
         var parts = id.split('.');
         var last = parts.pop();
@@ -2045,6 +2070,7 @@ $(document).ready(function () {
         if (y < 480) {
             y = 480;
         }
+        $('#grid-events-inner').css('height', (y - 130) + 'px');
         $('#grid-states').setGridHeight(y - 150).setGridWidth(x - 20);
         $('#grid-objects').setGridHeight(y - 150).setGridWidth(x - 20);
         $('#grid-enums').setGridHeight(y - 150).setGridWidth(x - 20);
