@@ -20,11 +20,13 @@
 
 <!-- these two file always have to be included -->
 <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+<script type="text/javascript" src="../../js/translate.js"></script>
 <script type="text/javascript" src="../../js/adapter-settings.js"></script>
-
 
 <!-- you have to define 2 functions in the global scope: -->
 <script type="text/javascript">
+    systemDictionary = {
+    };
 
     // the function loadSettings has to exist ...
     function load(settings) {
@@ -68,23 +70,17 @@
 <!-- you have to put your config page in a div with id adapter-container -->
 <div id="adapter-container">
 
-    <table><tr><td><img src="admin.png"></td><td><h3>Admin adapter settings</h3></td></tr></table>
+    <table><tr><td><img src="admin.png"></td><td><h3 class="translate">Admin adapter settings</h3></td></tr></table>
 
     <table>
-        <tr><td>IP:</td><td>            <select class="value" id="bind"></select></td></tr>
-        <tr><td>Port:</td><td>          <input  class="value" id="port" size="5"  maxsize="5"/></td></tr>
-        <tr><td>Secure(HTTPS):</td><td> <input  class="value" id="secure" type="checkbox" /></td></tr>
-        <tr><td>Authentication:</td><td><input  class="value" id="auth"   type="checkbox" /></td></tr>
-        <tr><td>Cache:</td><td>         <input  class="value" id="cache"  type="checkbox" /></td></tr>
+        <tr><td class="translate">IP:</td><td>            <select class="value" id="bind"></select></td></tr>
+        <tr><td class="translate">Port:</td><td>          <input  class="value" id="port" size="5"  maxlength="5"/></td></tr>
+        <tr><td class="translate">Secure(HTTPS):</td><td> <input  class="value" id="secure" type="checkbox" /></td></tr>
+        <tr><td class="translate">Authentication:</td><td><input  class="value" id="auth"   type="checkbox" /></td></tr>
+        <tr><td class="translate">Cache:</td><td>         <input  class="value" id="cache"  type="checkbox" /></td></tr>
     </table>
 
-    <p>
-        On save the adapter restarts with new configuration immediately
-    </p>
+    <p class="translate">On save the adapter restarts with new configuration immediately</p>
 
 </div>
-<script type="text/javascript">
-    // Read somehow, where belongs this adapter to and read the ip addresses of this host
-    //getObject("system.host")
-</script>
 </html>

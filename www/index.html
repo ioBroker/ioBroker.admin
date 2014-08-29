@@ -16,21 +16,71 @@
     <script type="text/javascript" src="lib/js/jquery.multiselect-1.13.min.js"></script>
     <script type="text/javascript" src="./socket.io/socket.io.js"></script>
     <script type="text/javascript" src="lib/js/ace-1.1.6/ace.js"></script>
+    <script type="text/javascript" src="js/translate.js"></script>
+    <script type="text/javascript" src="js/words.js"></script><!--this file must be after translate.js -->
+    <script type="text/javascript" src="js/license.js"></script>
     <script type="text/javascript" src="js/admin.js"></script>
 </head>
 <body>
-<div id="tabs">
+<div id="tabs" style="display: none">
     <ul>
-        <li><a href="#tab-objects">Objects</a></li>
-        <li><a href="#tab-states">States</a></li>
-        <li><a href="#tab-events">Events</a></li>
-        <li><a href="#tab-adapters">Adapters</a></li>
-        <li><a href="#tab-instances">Instances</a></li>
-        <li><a href="#tab-enums">Enums</a></li>
-        <li><a href="#tab-scripts">Scripts</a></li>
-        <li><a href="#tab-users">Users</a></li>
-        <li><a href="#tab-groups">Groups</a></li>
+        <li><a href="#tab-system"    class="translate">System</a></li>
+        <li><a href="#tab-objects"   class="translate">Objects</a></li>
+        <li><a href="#tab-states"    class="translate">States</a></li>
+        <li><a href="#tab-events"    class="translate">Events</a></li>
+        <li><a href="#tab-adapters"  class="translate">Adapters</a></li>
+        <li><a href="#tab-instances" class="translate">Instances</a></li>
+        <li><a href="#tab-enums"     class="translate">Enums</a></li>
+        <li><a href="#tab-scripts"   class="translate">Scripts</a></li>
+        <li><a href="#tab-users"     class="translate">Users</a></li>
+        <li><a href="#tab-groups"    class="translate">Groups</a></li>
     </ul>
+    <div id="tab-system">
+        <div class="header ui-widget ui-widget-header ui-corner-all" >
+            <input type="button" id="save-system" class="translateV" value="save"/>
+        </div>
+        <table>
+            <tr><td class="translate">System language:</td>
+                <td>
+                    <select id="system_language" class="value">
+                        <option value="en">English</option>
+                        <option value="de">Deutsch</option>
+                        <option value="ru">русский</option>
+                    </select>
+                </td>
+            </tr>
+            <tr><td class="translate">Temperature units:</td>
+                <td>
+                    <select id="system_tempUnit" class="value">
+                        <option value="C°">C°</option>
+                        <option value="F°">F°</option>
+                    </select>
+                </td>
+            </tr>
+            <tr><td class="translate">Currency:</td>
+                <td>
+                    <input type="text" size="5" maxlength="5" id="system_currency" class="value"/>
+                </td>
+            </tr>
+            <tr><td class="translate">Date format:</td>
+                <td>
+                    <select id="system_dateFormat" class="value">
+                        <option value="DD.MM.YYYY" class="translate">DD.MM.YYYY</option>
+                        <option value="DD.MM.YY"   class="translate">DD.MM.YY</option>
+                        <option value="DD/MM/YYYY" class="translate">DD/MM/YYYY</option>
+                    </select>
+                </td>
+            </tr>
+            <tr><td class="translate">Float divider:</td>
+                <td>
+                    <select id="system_isFloatComma" class="value">
+                        <option value="true"  class="translate">comma</option>
+                        <option value="false" class="translate">point</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </div>
     <div id="tab-objects">
         <table id="grid-objects"></table>
         <div id="pager-objects"></div>
@@ -43,20 +93,21 @@
         <div id="grid-events" class="ui-jqgrid" style="display: block;">
             <div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">
                 <div class="">
-                    <span class="ui-jqgrid-title">Events</span>
+                    <span class="ui-jqgrid-title translate">Events</span>
                 </div>
 
             </div>
             <table style="width: 100%; border-collapse: collapse;" class="ui-widget ui-state-default ui-corner-bottom">
                 <thead>
                 <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
-                    <th class="event-column-1 ui-state-default ui-th-column ui-th-ltr">Event</th>
+                    <th class="event-column-1 ui-state-default ui-th-column ui-th-ltr translate">Event</th>
                     <th class="event-column-2 ui-state-default ui-th-column ui-th-ltr">id</th>
-                    <th class="event-column-3 ui-state-default ui-th-column ui-th-ltr">val</th>
-                    <th class="event-column-4 ui-state-default ui-th-column ui-th-ltr">ack</th>
-                    <th class="event-column-5 ui-state-default ui-th-column ui-th-ltr">from</th>
-                    <th class="event-column-6 ui-state-default ui-th-column ui-th-ltr">ts</th>
-                    <th class="event-column-7 ui-state-default ui-th-column ui-th-ltr">lc</th>
+                    <th class="event-column-3 ui-state-default ui-th-column ui-th-ltr translate">val</th>
+                    <th class="event-column-4 ui-state-default ui-th-column ui-th-ltr translate">ack</th>
+                    <th class="event-column-5 ui-state-default ui-th-column ui-th-ltr translate">from</th>
+                    <th class="event-column-6 ui-state-default ui-th-column ui-th-ltr translate">ts</th>
+                    <th class="event-column-7 ui-state-default ui-th-column ui-th-ltr translate">lc</th>
+                    <th class="event-column-8 ui-state-default ui-th-column ui-th-ltr">&nbsp;&nbsp;&nbsp;</th>
                 </tr>
                 </thead>
             </table>
@@ -95,7 +146,7 @@
         <div id="pager-groups"></div>
     </div>
 </div>
-<div id="dialog-object">
+<div id="dialog-object" style="display:none">
     <table>
         <tr>
             <td>name</td>
@@ -122,11 +173,14 @@
         </tr>
         <tr>
             <td>parent</td>
-            <td colspan="3"><input size="60" id="edit-object-parent" disabled="disabled"><button class="jump" id="jump-parent">-></button></td>
+            <td colspan="3">
+                <input size="60" id="edit-object-parent" disabled="disabled">
+                <button class="jump" id="jump-parent">-&gt;</button>
+            </td>
         </tr>
         <tr>
             <td>children</td>
-            <td colspan="3" id="edit-object-children"></button></td>
+            <td colspan="3" id="edit-object-children"></td>
         </tr>
 
     </table><br/>
@@ -145,7 +199,7 @@
     <input type="hidden" id="edit-object-id">
     <input type="hidden" id="edit-object-parent-old">
 </div>
-<div id="dialog-script">
+<div id="dialog-script" style="display:none">
     <table>
         <tr>
             <td>name</td>
@@ -167,7 +221,7 @@
 
 
 </div>
-<div id="dialog-user">
+<div id="dialog-user" style="display:none">
     <table>
         <tr>
             <td>name</td>
@@ -184,7 +238,7 @@
     </table><br/>
     <input type="hidden" id="edit-user-id">
 </div>
-<div id="dialog-group">
+<div id="dialog-group" style="display:none">
     <table>
         <tr>
             <td>name</td>
@@ -197,11 +251,20 @@
     </table><br/>
     <input type="hidden" id="edit-group-id">
 </div>
-<div title="command execution" id="dialog-command">
+<div title="command execution" id="dialog-command" style="display:none">
     <textarea style="font-family: courier, monospace; font-size: 11px;" id="stdout" disabled="disabled" cols="120" rows="30"></textarea>
 </div>
-<div title="adater configuration" id="dialog-config">
-    <iframe style="border:0px solid #FFF; display:block; left:0; top:0px; width: 100%; height: 100%" id="config-iframe"></iframe>
+<div title="adater configuration" id="dialog-config" style="display:none">
+    <iframe style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%; height: 100%" id="config-iframe"></iframe>
 </div>
+<div title="license agreement" id="dialog-license" style="display:none">
+    <select id="license_language">
+        <option value="en">English</option>
+        <option value="de">Deutsch</option>
+        <option value="ru">русский</option>
+    </select>
+    <div id="license_text" style="width: 100%"></div>
+</div>
+<div id="connecting" style="left:50%; top:50%;position: fixed;"><img src="img/gear.png"/></div>
 </body>
 </html>

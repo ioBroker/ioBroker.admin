@@ -7,6 +7,7 @@ var socketio =          require('socket.io');
 var request =           require('request');
 var fs =                require('fs');
 var Stream =            require('stream');
+var config =            JSON.parse(fs.readFileSync(__dirname + '/../../conf/iobroker.json'));
 
 
 var session;// =           require('express-session');
@@ -313,13 +314,12 @@ function initWebServer(settings) {
             url = url.replace(/^\/([a-zA-Z0-9-_]+)\//, '/$1.admin/');
 
 
-            // TODO use settings from conf/iobroker.json for couch host, port and database!
-            url = 'http://127.0.0.1:5984/iobroker' + url;
+            // TODO use user and pass
+            url = 'http://' + config.couch.host + ':' + config.couch.port + '/iobroker' + url;
                 // Example: http://127.0.0.1:5984/iobroker/example.admin/index.html?0
 
             // TODO own 404/500 Page? possible with pipe?
             req.pipe(request(url)).pipe(res);
-
         });
 
         if (settings.secure) {
