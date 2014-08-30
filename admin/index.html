@@ -26,6 +26,21 @@
 <!-- you have to define 2 functions in the global scope: -->
 <script type="text/javascript">
     systemDictionary = {
+        "Admin adapter settings": {
+            "de": "Admin adapter Einstellungen",
+            "ru": "Настройки драйвера Admin"
+        },
+        "IP:":              {"de": "IP:",                     "ru": "IP:"},
+        "Port:":            {"de": "Port:",                   "ru": "Порт:"},
+        "Secure(HTTPS):":   {"de": "Verschlüsselung(HTTPS):", "ru": "Шифрование(HTTPS):"},
+        "Authentication:":  {"de": "Authentifikation:",       "ru": "Аутентификация:"},
+        "Cache:":           {"de": "Puffer:",                 "ru": "Кэш:"},
+        "help_tip":         {
+            "en": "On save the adapter restarts with new configuration immediately",
+            "de": "Beim Speichern von Einstellungen der Adapter wird sofort neu gestartet.",
+            "ru": "Сразу после сохранения настроек драйвер перезапуститься с новыми значениями"
+        }
+
     };
 
     // the function loadSettings has to exist ...
@@ -42,12 +57,18 @@
         for (var key in settings) {
             // example: select elements with id=key and class=value and insert value
             if ($('#' + key + '.value').attr('type') == 'checkbox') {
-                $('#' + key + '.value').prop('checked', settings[key]);
+                $('#' + key + '.value').prop('checked', settings[key]).change(function() {
+                    $('#save').button("enable");
+                });
             } else {
-                $('#' + key + '.value').val(settings[key]);
+                $('#' + key + '.value').val(settings[key]).change(function() {
+                    $('#save').button("enable");
+                }).keyup(function() {
+                    $('#save').button("enable");
+                });
             }
         }
-
+        $('#save').button("disable");
     }
 
     // ... and the function save has to exist.
@@ -63,6 +84,7 @@
                 obj[$this.attr('id')] = $this.val();
             }
         });
+        $('#save').button("disable");
         callback(obj);
     }
 </script>
@@ -80,7 +102,7 @@
         <tr><td class="translate">Cache:</td><td>         <input  class="value" id="cache"  type="checkbox" /></td></tr>
     </table>
 
-    <p class="translate">On save the adapter restarts with new configuration immediately</p>
+    <p class="translate">help_tip</p>
 
 </div>
 </html>
