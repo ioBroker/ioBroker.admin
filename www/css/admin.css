@@ -113,6 +113,9 @@ table#events {
 .event-column-7 {
     width: 16%;
 }
+.event-column-8 {
+    width: 30px;
+}
 #event-outer {
     border-collapse: collapse;
 }
