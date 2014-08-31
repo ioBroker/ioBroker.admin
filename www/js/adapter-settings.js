@@ -10,6 +10,7 @@ $(document).ready(function () {
     var id = 'system.adapter.' + adapter + '.' + instance;
 
     // Extend dictionary with standard words for adapter
+    if (typeof systemDictionary === 'undefined') systemDictionary = {};
     systemDictionary["save"] = {"en": "Save", "de": "Speichern", "ru": "Сохранить"};
 
     loadSystemConfig(function () {
