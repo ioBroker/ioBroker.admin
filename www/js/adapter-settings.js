@@ -13,8 +13,9 @@ $(document).ready(function () {
     if (typeof systemDictionary === 'undefined') systemDictionary = {};
     systemDictionary["save"] = {"en": "Save", "de": "Speichern", "ru": "Сохранить"};
 
+
     loadSystemConfig(function () {
-        translateAll();
+        if (typeof translateAll === 'function') translateAll();
         loadSettings();
     });
 
