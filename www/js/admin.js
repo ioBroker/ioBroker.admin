@@ -716,39 +716,7 @@ $(document).ready(function () {
                 $('#reload-instance').removeClass('ui-state-disabled');
 
             },
-            ondblClickRow: function (id, e) {
-
-                var rowData = $gridInstance.jqGrid('getRowData', id);
-                rowData.ack = false;
-                rowData.from = '';
-                $gridInstance.jqGrid('setRowData', id, rowData);
-
-                if (id && id !== instanceLastSelected) {
-                    $gridInstance.restoreRow(instanceLastSelected);
-                    instanceLastSelected = id;
-                }
-                $gridInstance.editRow(id, true, function () {
-                    // onEdit
-                    instanceEdit = true;
-                }, function (obj) {
-                    // success
-                }, "clientArray", null, function () {
-                    // afterSave
-                    instanceEdit = false;
-                    var obj = {common:{}};
-                    obj.common.host     = $gridInstance.jqGrid("getCell", instanceLastSelected, "host");
-                    obj.common.loglevel = $gridInstance.jqGrid("getCell", instanceLastSelected, "loglevel");
-                    obj.common.schedule = $gridInstance.jqGrid("getCell", instanceLastSelected, "schedule");
-                    obj.common.enabled  = $gridInstance.jqGrid("getCell", instanceLastSelected, "enabled");
-                    if (obj.common.enabled === 'true') obj.common.enabled = true;
-                    if (obj.common.enabled === 'false') obj.common.enabled = false;
-
-                    var id = $('tr#' + instanceLastSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
-
-                    socket.emit('extendObject', id, obj);
-                });
-
-            },
+            ondblClickRow: configInstance,
             gridComplete: function () {
                 $('#del-instance').addClass('ui-state-disabled');
                 $('#edit-instance').addClass('ui-state-disabled');
@@ -807,6 +775,16 @@ $(document).ready(function () {
             cursor: 'pointer'
         }).jqGrid('navButtonAdd', '#pager-instances', {
             caption: '',
+            buttonicon: 'ui-icon-pencil',
+            onClickButton: function () {
+                configInstance($gridInstance.jqGrid('getGridParam', 'selrow'));
+            },
+            position: 'first',
+            id: 'config-instance',
+            title: _('config instance'),
+            cursor: 'pointer'
+        }).jqGrid('navButtonAdd', '#pager-instances', {
+            caption: '',
             buttonicon: 'ui-icon-refresh',
             onClickButton: function () {
                 var objSelected = $gridInstance.jqGrid('getGridParam', 'selrow');
@@ -818,8 +796,42 @@ $(document).ready(function () {
             title: _('reload instance'),
             cursor: 'pointer'
         });
-        
+
+        function configInstance(id, e) {
+            var rowData = $gridInstance.jqGrid('getRowData', id);
+            rowData.ack = false;
+            rowData.from = '';
+            $gridInstance.jqGrid('setRowData', id, rowData);
+
+            if (id && id !== instanceLastSelected) {
+                $gridInstance.restoreRow(instanceLastSelected);
+                instanceLastSelected = id;
+            }
+            $gridInstance.editRow(id, true, function () {
+                // onEdit
+                instanceEdit = true;
+            }, function (obj) {
+                // success
+            }, "clientArray", null, function () {
+                // afterSave
+                instanceEdit = false;
+                var obj = {common:{}};
+                obj.common.host     = $gridInstance.jqGrid("getCell", instanceLastSelected, "host");
+                obj.common.loglevel = $gridInstance.jqGrid("getCell", instanceLastSelected, "loglevel");
+                obj.common.schedule = $gridInstance.jqGrid("getCell", instanceLastSelected, "schedule");
+                obj.common.enabled  = $gridInstance.jqGrid("getCell", instanceLastSelected, "enabled");
+                if (obj.common.enabled === 'true') obj.common.enabled = true;
+                if (obj.common.enabled === 'false') obj.common.enabled = false;
+
+                var id = $('tr#' + instanceLastSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+
+                socket.emit('extendObject', id, obj);
+            });
+        }
+
+
     }
+
 
     // Grid users
     var $gridUsers;
@@ -1684,12 +1696,6 @@ $(document).ready(function () {
                 $configFrame.attr('src', $(this).attr('data-adapter-href'));
                 $dialogConfig.dialog('option', 'title', _('Adapter configuration') + ': ' + $(this).attr('data-adapter-name')).dialog('open');
 
-                /*if (typeof adapterWindow === 'undefined' || adapterWindow.closed) {
-                    adapterWindow = window.open($(this).attr('data-adapter-href'), '', 'height=480,width=800');
-                } else {
-                    adapterWindow.location.href = $(this).attr('data-adapter-href');
-                    adapterWindow.focus();
-                }*/
                 return false;
             });
         }
