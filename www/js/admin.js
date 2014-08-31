@@ -1632,7 +1632,7 @@ $(document).ready(function () {
                     version:  obj.common ? obj.common.version : '',
                     installed: installed,
                     install:  '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                              '<button data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>',
+                              '<button data-adapter-name="' + obj.common.name + '" data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>',
                     platform: obj.common ? obj.common.platform : ''
                 });
             }
@@ -1645,7 +1645,7 @@ $(document).ready(function () {
                 cmdExec('upgrade ' + $(this).attr('data-adapter-name'));
             });
             $(document).on('click', '.adapter-readme-submit', function () {
-                alert('todo'); //$(this).attr('data-adapter-name');
+                window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
             });
         }
     }
