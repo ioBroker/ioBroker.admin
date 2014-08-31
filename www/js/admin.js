@@ -1600,14 +1600,14 @@ $(document).ready(function () {
         $dialogObject.dialog('close');
     }
 
-    function initAdapters(isForce) {
+    function initAdapters(update) {
 
         if (!objectsLoaded) {
             setTimeout(initAdapters, 250);
             return;
         }
 
-        if (typeof $gridAdapter !== 'undefined' && (!$gridAdapter[0]._isInited || isForce)) {
+        if (typeof $gridAdapter !== 'undefined' && (!$gridAdapter[0]._isInited || update)) {
             console.log('adapters', adapters);
             $gridAdapter.jqGrid('clearGridData');
             $gridAdapter[0]._isInited = true;
@@ -1648,14 +1648,14 @@ $(document).ready(function () {
         }
     }
 
-    function initInstances(isForce) {
+    function initInstances(update) {
 
         if (!objectsLoaded) {
             setTimeout(initInstances, 250);
             return;
         }
 
-        if (typeof $gridInstance !== 'undefined' && (!$gridInstance[0]._isInited || isForce)) {
+        if (typeof $gridInstance !== 'undefined' && (!$gridInstance[0]._isInited || update)) {
             $gridInstance[0]._isInited = true;
             $gridInstance.jqGrid('clearGridData');
 
@@ -1703,14 +1703,14 @@ $(document).ready(function () {
 
     }
 
-    function initUsers(isForce) {
+    function initUsers(update) {
 
         if (!objectsLoaded) {
             setTimeout(initUsers, 500);
             return;
         }
 
-        if (typeof $gridUsers != 'undefined' && (isForce || !$gridUsers[0]._isInited)) {
+        if (typeof $gridUsers != 'undefined' && (update || !$gridUsers[0]._isInited)) {
             $gridUsers[0]._isInited = true;
             $gridUsers.jqGrid('clearGridData');
             for (var i = 0; i < users.length; i++) {
@@ -1735,14 +1735,14 @@ $(document).ready(function () {
         }
     }
 
-    function initGroups(isForce) {
+    function initGroups(update) {
 
         if (!objectsLoaded) {
             setTimeout(initGroups, 500);
             return;
         }
 
-        if (typeof $gridGroups != 'undefined' && (isForce || !$gridGroups[0]._isInited)) {
+        if (typeof $gridGroups != 'undefined' && (update || !$gridGroups[0]._isInited)) {
             $gridGroups[0]._isInited = true;
             $gridGroups.jqGrid('clearGridData');
             for (var i = 0; i < groups.length; i++) {
@@ -2026,39 +2026,19 @@ $(document).ready(function () {
                 }
             }
             initAdapters(true);
-            /*
+        }
 
-            var rowData = $gridAdapter.jqGrid('getRowData', 'adapter' + id);
-            if (rowData && rowData._id) {
-                $gridAdapter.jqGrid('setRowData', 'adapter_' + id.replace(/ /g, '_'), {
-                    _id:      obj._id,
-                    name:     obj.common.name,
-                    title:    obj.common ? obj.common.title : '',
-                    desc:    obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc['en'] : obj.common.desc) : '',
-                    keywords:    obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
-                    version:  obj.common ? obj.common.version : '',
-                    install:   '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">add instance</button>' +
-                        '<button data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">readme</button>',
-                    platform: obj.common ? obj.common.platform : ''
-
-                });
+        // Update Instance Table
+        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.[0-9]+$/) && typeof $gridInstance != 'undefined' && $gridInstance[0]._isInited) {
+            if (obj) {
+                if (instances.indexOf(id) == -1) instances.push(id);
             } else {
-                var tmp = id.split('.');
-
-                $gridAdapter.jqGrid('addRowData', 'adapter_' + id.replace(/ /g, '_'), {
-                    _id:      obj._id,
-                    name:     obj.common.name,
-                    title:    obj.common ? obj.common.title : '',
-                    desc:    obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc['en'] : obj.common.desc) : '',
-                    keywords:    obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
-                    version:  obj.common ? obj.common.version : '',
-                    install:   '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">add instance</button>' +
-                        '<button data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">readme</button>',
-                    platform: obj.common ? obj.common.platform : ''
-
-                });
-            }*/
-
+                var j = instances.indexOf(id);
+                if (j != -1) {
+                    instances.splice(j, 1);
+                }
+            }
+            initInstances(true);
         }
 
 
