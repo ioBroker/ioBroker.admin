@@ -685,7 +685,7 @@ $(document).ready(function () {
         $gridInstance = $('#grid-instances');
         $gridInstance.jqGrid({
             datatype: 'local',
-            colNames: ['id', '', _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), '', _('platform'), _('loglevel'), _('alive'), _('connected')],
+            colNames: ['id', '', _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('alive'), _('connected')],
             colModel: [
                 {name: '_id',       index: '_id',       hidden: true},
                 {name: 'image',     index: 'image',     width: 22,   editable: false, sortable: false, search: false, align: 'center'},
@@ -695,9 +695,10 @@ $(document).ready(function () {
                 {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}, align: 'center'},
                 {name: 'host',      index: 'host',      width: 100,  editable: true, edittype: 'select', editoptions: ''},
                 {name: 'mode',      index: 'mode',      width: 80,   align: 'center'},
+                {name: 'schedule',  index: 'schedule',  width: 80,   align: 'center', editable: true},
                 {name: 'config',    index: 'config',    width: 60,   align: 'center', sortable: false, search: false},
                 {name: 'platform',  index: 'platform',  width: 60,   hidden: true},
-                {name: 'loglevel',  index: 'loglevel',  width: 60,   align: 'center',   editable: true, edittype: 'select', editoptions: {value: ''}},
+                {name: 'loglevel',  index: 'loglevel',  width: 60,   align: 'center',   editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}},
                 {name: 'alive',     index: 'alive',     width: 60,   align: 'center'},
                 {name: 'connected', index: 'connected', width: 60,   align: 'center'}
             ],
@@ -713,6 +714,9 @@ $(document).ready(function () {
                 $('#del-instance').removeClass('ui-state-disabled');
                 $('#edit-instance').removeClass('ui-state-disabled');
                 $('#reload-instance').removeClass('ui-state-disabled');
+
+            },
+            ondblClickRow: function (id, e) {
 
                 var rowData = $gridInstance.jqGrid('getRowData', id);
                 rowData.ack = false;
@@ -734,6 +738,7 @@ $(document).ready(function () {
                     var obj = {common:{}};
                     obj.common.host     = $gridInstance.jqGrid("getCell", instanceLastSelected, "host");
                     obj.common.loglevel = $gridInstance.jqGrid("getCell", instanceLastSelected, "loglevel");
+                    obj.common.schedule = $gridInstance.jqGrid("getCell", instanceLastSelected, "schedule");
                     obj.common.enabled  = $gridInstance.jqGrid("getCell", instanceLastSelected, "enabled");
                     if (obj.common.enabled === 'true') obj.common.enabled = true;
                     if (obj.common.enabled === 'false') obj.common.enabled = false;
@@ -1655,7 +1660,8 @@ $(document).ready(function () {
                     title:     obj.common ? obj.common.title : '',
                     enabled:   obj.common ? obj.common.enabled : '',
                     host:      obj.common ? obj.common.host : '',
-                    mode:      obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
+                    mode:      obj.common.mode,
+                    schedule:  obj.common.mode === 'schedule' ? obj.common.schedule : '',
                     config:    '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" data-adapter-name="' + adapter + '.' + instance + '" class="adapter-settings">' + _('config') + '</button>',
                     platform:  obj.common ? obj.common.platform : '',
                     loglevel:  obj.common ? obj.common.loglevel : '',
