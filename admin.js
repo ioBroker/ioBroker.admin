@@ -523,6 +523,12 @@ function socketEvents(socket, user) {
         adapter.setPassword(user, pass, callback);
     });
 
+
+    // HTTP
+    socket.on('httpGet', function (url, callback) {
+        request(url, callback);
+    });
+
     // iobroker commands
     var cmdActive = false;
 
