@@ -713,6 +713,7 @@ $(document).ready(function () {
             onSelectRow: function (id, e) {
                 $('#del-instance').removeClass('ui-state-disabled');
                 $('#edit-instance').removeClass('ui-state-disabled');
+                $('#config-instance').removeClass('ui-state-disabled');
                 $('#reload-instance').removeClass('ui-state-disabled');
 
             },
@@ -720,6 +721,7 @@ $(document).ready(function () {
             gridComplete: function () {
                 $('#del-instance').addClass('ui-state-disabled');
                 $('#edit-instance').addClass('ui-state-disabled');
+                $('#config-instance').addClass('ui-state-disabled');
                 $('#reload-instance').addClass('ui-state-disabled');
             }
         }).jqGrid('filterToolbar', {
