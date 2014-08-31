@@ -72,7 +72,6 @@ $(document).ready(function () {
 
     function loadSettings() {
         socket.emit('getObject', id, function (err, res) {
-            console.log(err, res);
             if (!err && res && res.native) {
                 $('.adapter-instance').html(adapter + '.' + instance);
                 $('.adapter-config').html('system.adapter.' + adapter + '.' + instance);
