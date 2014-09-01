@@ -299,7 +299,7 @@ $(document).ready(function () {
                     //formatter:'select',
                     stype: 'select',
                     searchoptions: {
-                        sopt: ['eq'], value: ":All;device:device;channel:channel;state:state;enum:enum;host:host;adapter:adapter;meta:meta;path:path;config:config"
+                        sopt: ['eq'], value: ":All;device:device;channel:channel;state:state;enum:enum;host:host;adapter:adapter;meta:meta;config:config"
                     }
                 }
             ],
