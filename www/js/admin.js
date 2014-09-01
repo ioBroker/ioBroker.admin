@@ -25,7 +25,27 @@ $(document).ready(function () {
     var states =        {};
     var settingsChanged;
 
-    var $stdout = $('#stdout');
+    var $stdout =               $('#stdout');
+    var $configFrame =          $('#config-iframe');
+
+    var $dialogCommand =        $('#dialog-command');
+    var $dialogEnumMembers =    $('#dialog-enum-members');
+    var $dialogConfig =         $('#dialog-config');
+    var $dialogScript =         $('#dialog-script');
+    var $dialogObject =         $('#dialog-object');
+    var $dialogUser =           $('#dialog-user');
+    var $dialogGroup =          $('#dialog-group');
+    var $dialogLicense =        $('#dialog-license');
+
+    var $gridUsers =            $('#grid-users');
+    var $gridGroups =           $('#grid-groups');
+    var $gridEnums =            $('#grid-enums');
+    var $gridEnumMembers =      $('#grid-enum-members');
+    var $gridObjects =          $('#grid-objects');
+    var $gridStates =           $('#grid-states');
+    var $gridAdapter =          $('#grid-adapters');
+    var $gridInstance =         $('#grid-instances');
+    var $gridScripts =          $('#grid-scripts');
 
     function navigation() {
         var tab = 'tab-' + window.location.hash.slice(1);
@@ -98,7 +118,6 @@ $(document).ready(function () {
         });
     }
 
-    var $dialogCommand = $('#dialog-command');
     $dialogCommand.dialog({
         autoOpen:      false,
         modal:         true,
@@ -108,7 +127,6 @@ $(document).ready(function () {
         open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog || ui).hide(); }
     });
 
-    var $dialogEnumMembers = $('#dialog-enum-members');
 
     $dialogEnumMembers.dialog({
         autoOpen:   false,
@@ -118,7 +136,6 @@ $(document).ready(function () {
         buttons: []
     });
 
-    var $gridEnumMembers = $('#grid-enum-members');
     $gridEnumMembers.jqGrid({
         datatype: 'local',
         colNames: ['id', _('name'), _('type')],
@@ -139,8 +156,6 @@ $(document).ready(function () {
     });
 
 
-    var $configFrame = $('#config-iframe');
-    var $dialogConfig = $('#dialog-config');
     $dialogConfig.dialog({
         autoOpen:   false,
         modal:      true,
@@ -163,11 +178,8 @@ $(document).ready(function () {
     });
 
 
-    var $dialogObject;
-    var $gridObjects;
 
     function prepareObjects () {
-        $dialogObject = $('#dialog-object');
         $dialogObject.dialog({
             autoOpen:   false,
             modal:      true,
@@ -188,7 +200,6 @@ $(document).ready(function () {
             ]
         });
 
-        $gridObjects = $('#grid-objects');
         $gridObjects.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('type')],
@@ -386,9 +397,7 @@ $(document).ready(function () {
         $subgrid.trigger('reloadGrid');
     }
 
-    var $gridEnums;
     function prepareEnums () {
-        $gridEnums = $('#grid-enums');
         $gridEnums.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('members'), ''],
@@ -587,12 +596,10 @@ $(document).ready(function () {
     }
 
     // Grid states
-    var $gridStates;
     function prepareStates() {
         var stateEdit = false;
         var stateLastSelected;
 
-        $gridStates = $('#grid-states');
         $gridStates.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('val'), _('ack'), _('from'), _('ts'), _('lc')],
@@ -651,12 +658,10 @@ $(document).ready(function () {
     }
 
     // Grid adapters
-    var $gridAdapter;
     function prepareAdapters() {
         var adapteLastSelected;
         var adapteEdit;
 
-        $gridAdapter = $('#grid-adapters');
         $gridAdapter.jqGrid({
             datatype: 'local',
             colNames: ['id', '', _('name'), _('title'), _('desc'), _('keywords'), _('available'), _('installed'), _('platform'), ''],
@@ -710,13 +715,11 @@ $(document).ready(function () {
     }
     
     // Grid instances
-    var $gridInstance;
     function prepareInstances() {
         var instanceLastSelected;
         var instanceEdit;
 
 
-        $gridInstance = $('#grid-instances');
         $gridInstance.jqGrid({
             datatype: 'local',
             colNames: ['id', '', _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('alive'), _('connected')],
@@ -870,11 +873,8 @@ $(document).ready(function () {
 
 
     // Grid users
-    var $gridUsers;
-    var $dialogUser;
     function prepareUsers() {
         var userLastSelected;
-        $gridUsers = $('#grid-users');
         $gridUsers.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('enabled'), _('groups')],
@@ -1000,7 +1000,6 @@ $(document).ready(function () {
             cursor: 'pointer'
         });
 
-        $dialogUser = $('#dialog-user');
         $dialogUser.dialog({
             autoOpen: false,
             modal:    true,
@@ -1032,11 +1031,8 @@ $(document).ready(function () {
     }
 
     // Grid groups
-    var $gridGroups;
-    var $dialogGroup;
     function prepareGroups() {
         var groupLastSelected;
-        $gridGroups = $('#grid-groups');
         $gridGroups.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('desc'), _('users')],
@@ -1162,7 +1158,6 @@ $(document).ready(function () {
             cursor: 'pointer'
         });
 
-        $dialogGroup = $('#dialog-group');
         $dialogGroup.dialog({
             autoOpen: false,
             modal:    true,
@@ -1191,12 +1186,10 @@ $(document).ready(function () {
     }
     
     // Grid scripts
-    var $gridScripts;
     function prepareScripts() {
         var scriptLastSelected;
         var scriptEdit;
 
-        $gridScripts = $('#grid-scripts');
         $gridScripts.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('platform'), _('enabled'), _('engine')],
@@ -1317,7 +1310,6 @@ $(document).ready(function () {
             cursor: 'pointer'
         });
 
-        var $dialogScript = $('#dialog-script');
         $dialogScript.dialog({
             autoOpen:   false,
             modal:      true,
@@ -2118,7 +2110,7 @@ $(document).ready(function () {
                             $('#license_text').html(license[language] || license['en']);
                         });
 
-                        var $dialogLicense = $('#dialog-license').css({'z-index': 200});
+                        $dialogLicense.css({'z-index': 200});
                         $dialogLicense.dialog({
                             autoOpen: true,
                             modal:    true,
