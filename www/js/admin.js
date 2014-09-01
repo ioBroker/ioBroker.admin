@@ -2198,6 +2198,10 @@ $(document).ready(function () {
         if (firstConnect) {
             firstConnect = false;
 
+            socket.emit('authEnabled', function (auth) {
+                if (!auth) $('#button-logout').remove();
+            });
+
             // Read system configuration
             socket.emit('getObject', 'system.config', function (err, systemConfig) {
                 if (!err && systemConfig && systemConfig.common) {
@@ -2269,9 +2273,9 @@ $(document).ready(function () {
                     };
                     systemConfig.common.language = window.navigator.userLanguage || window.navigator.language;
 
-                    if (systemConfig.common.language != 'en' &&
-                        systemConfig.common.language != 'de' &&
-                        systemConfig.common.language != 'ru') systemConfig.common.language = 'en';
+                    if (systemConfig.common.language !== 'en' && systemConfig.common.language !== 'de' && systemConfig.common.language !== 'ru') {
+                        systemConfig.common.language = 'en';
+                    }
                 }
 
                 translateAll();

@@ -563,9 +563,12 @@ function socketEvents(socket, user) {
 
     });
 
-    // sendTo
     socket.on('sendTo', function (adapterInstance, command, message, callback) {
         adapter.sendTo(adapterInstance, command, message, callback);
+    });
+
+    socket.on('authEnabled', function (callback) {
+        callback(adapter.config.auth);
     });
 }
 
