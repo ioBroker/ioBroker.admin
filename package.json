@@ -1,6 +1,5 @@
 {
   "name": "ioBroker.admin",
-  "version": "0.0.4",
   "private": true,
   "dependencies": {
     "express": "~4.4.4",
