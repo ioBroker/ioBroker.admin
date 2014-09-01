@@ -692,10 +692,10 @@ $(document).ready(function () {
             datatype: 'local',
             colNames: ['id', _('name'), _('val'), _('ack'), _('from'), _('ts'), _('lc')],
             colModel: [
-                {name: '_id',  index: '_id',  width: 475, fixed: true},
-                {name: 'name', index: 'name', width: 200, fixed: false},
+                {name: '_id',  index: '_id',  width: 350, fixed: false},
+                {name: 'name', index: 'name', width: 350, fixed: false},
                 {name: 'val',  index: 'ack',  width: 160, editable: true},
-                {name: 'ack',  index: 'ack',  width: 80,  fixed: false, editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
+                {name: 'ack',  index: 'ack',  width: 60,  fixed: false, editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
                 {name: 'from', index: 'from', width: 80,  fixed: false},
                 {name: 'ts',   index: 'ts',   width: 138, fixed: false},
                 {name: 'lc',   index: 'lc',   width: 138, fixed: false}
