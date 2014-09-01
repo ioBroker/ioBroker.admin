@@ -33,6 +33,7 @@ $(document).ready(function () {
 
     var $dialogCommand =        $('#dialog-command');
     var $dialogEnumMembers =    $('#dialog-enum-members');
+    var $dialogSelectMember =   $('#dialog-select-member');
     var $dialogConfig =         $('#dialog-config');
     var $dialogScript =         $('#dialog-script');
     var $dialogObject =         $('#dialog-object');
@@ -44,6 +45,7 @@ $(document).ready(function () {
     var $gridGroups =           $('#grid-groups');
     var $gridEnums =            $('#grid-enums');
     var $gridEnumMembers =      $('#grid-enum-members');
+    var $gridSelectMember =     $('#grid-select-member');
     var $gridObjects =          $('#grid-objects');
     var $gridStates =           $('#grid-states');
     var $gridAdapter =          $('#grid-adapters');
@@ -178,9 +180,7 @@ $(document).ready(function () {
             caption: '',
             buttonicon: 'ui-icon-plus',
             onClickButton: function () {
-                var memberSelected = $gridEnumMembers.jqGrid('getGridParam', 'selrow');
-                var id = $('tr#' + memberSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
-                alert('TODO add ' + id); //TODO
+                $dialogSelectMember.dialog('open');
             },
             position: 'first',
             id: 'add-member',
@@ -189,6 +189,49 @@ $(document).ready(function () {
         });
 
         $dialogEnumMembers.dialog({
+            autoOpen:   false,
+            modal:      true,
+            width:      800,
+            height:     500,
+            buttons: []
+        });
+
+        $gridSelectMember.jqGrid({
+            datatype: 'local',
+            colNames: ['id', _('name'), _('type')],
+            colModel: [
+                {name: '_id',  index:'_id', width: 240},
+                {name: 'name', index:'name', width: 400},
+                {name: 'type', index:'type', width: 100, fixed: true,
+                    stype: 'select',
+                    searchoptions: {
+                        sopt: ['eq'], value: ':' + _('all') + ';device:' + _('device') + ';channel:' + _('channel') + ';state:' + _('state')
+                    }
+                }
+
+            ],
+            width: 768,
+            height: 370,
+            rowNum: 1000000,
+            sortname: "id",
+            sortorder: "desc",
+            viewrecords: true,
+            caption: _('select member by double click'),
+            onSelectRow: function (rowid, e) {
+                $('#del-member').removeClass('ui-state-disabled');
+            },
+            ondblClickRow: function (rowid, e) {
+                alert('todo');
+            }
+        }).jqGrid('filterToolbar', {
+            defaultSearch: 'cn',
+            ignoreCase: true,
+            autosearch: true,
+            searchOnEnter: false,
+            enableClear: false
+        });
+
+        $dialogSelectMember.dialog({
             autoOpen:   false,
             modal:      true,
             width:      800,
@@ -478,6 +521,7 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
+            ignoreCase: true,
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
@@ -674,6 +718,7 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
+            ignoreCase: true,
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
@@ -713,6 +758,7 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
+            ignoreCase: true,
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
@@ -784,6 +830,7 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
+            ignoreCase: true,
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
@@ -948,6 +995,7 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
+            ignoreCase: true,
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
@@ -1262,6 +1310,7 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
+            ignoreCase: true,
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
@@ -1559,7 +1608,17 @@ $(document).ready(function () {
             objects = res;
             for (var id in objects) {
                 if (id.slice(0, 7) === '_design') continue;
+
                 obj = objects[id];
+
+                if (obj.type === 'device' || obj.type === 'channel' || obj.type === 'state') {
+                    $gridSelectMember.jqGrid('addRowData', 'select_obj_' + id.replace(/ /g, '_'), {
+                        _id: id,
+                        name: obj.common.name,
+                        type: obj.type
+                    });
+                }
+
                 if (obj.parent) {
                     if (!children[obj.parent]) children[obj.parent] = [];
                     children[obj.parent].push(id);
@@ -1587,6 +1646,8 @@ $(document).ready(function () {
                         if (addr) hosts.push({name: obj.common.hostname, address: addr});
                     }
                 }
+
+
             }
             objectsLoaded = true;
 
@@ -1612,8 +1673,9 @@ $(document).ready(function () {
                     name: objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
                     type: objects[toplevel[i]].type
                 });
-
             }
+
+            $gridSelectMember.trigger('reloadGrid');
             $gridObjects.trigger('reloadGrid');
             $gridEnums.trigger('reloadGrid');
 
@@ -1627,11 +1689,21 @@ $(document).ready(function () {
 
     function enumMembers(id) {
         $dialogEnumMembers.dialog('option', 'title', id);
+        $dialogSelectMember.dialog('option', 'title', id);
         var members = objects[id].common.members || [];
         $gridEnumMembers.jqGrid('clearGridData');
         for (var i = 0; i < members.length; i++) {
-            $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {_id: members[i], name: objects[members[i]].common.name, type: objects[members[i]].type});
+            if (objects[members[i]]) {
+                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {_id: members[i], name: objects[members[i]].common.name, type: objects[members[i]].type});
+            } else {
+                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {
+                    _id: members[i],
+                    name: '<span style="color:red; font-weight:bold; font-style:italic;">object missing</span>',
+                    type: ''
+                });
+            }
         }
+        $('#del-member').addClass('ui-state-disabled');
         $dialogEnumMembers.dialog('open');
     }
 
@@ -2214,6 +2286,7 @@ $(document).ready(function () {
                 prepareScripts();
                 resizeGrids();
 
+                $("#load_grid-select-member").show();
                 $("#load_grid-objects").show();
                 $("#load_grid-enums").show();
                 $("#load_grid-states").show();
