@@ -55,10 +55,12 @@ $(document).ready(function () {
     var firstConnect =          true;
     var objectsLoaded =         false;
 
+
     var editor = ace.edit("script-editor");
     //editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode("ace/mode/javascript");
     editor.resize();
+
 
     // jQuery UI initializations
     $('#tabs').tabs({
@@ -163,7 +165,8 @@ $(document).ready(function () {
         return false;
     });
 
-    // Grids
+
+    // Grids init
     function prepareObjects() {
         $dialogObject.dialog({
             autoOpen:   false,
@@ -1309,6 +1312,198 @@ $(document).ready(function () {
     }
 
 
+    // Grids content
+    function initAdapters(update) {
+
+        if (!objectsLoaded) {
+            setTimeout(initAdapters, 250);
+            return;
+        }
+
+        if (typeof $gridAdapter !== 'undefined' && (!$gridAdapter[0]._isInited || update)) {
+            console.log('adapters', adapters);
+            $gridAdapter.jqGrid('clearGridData');
+            $gridAdapter[0]._isInited = true;
+            for (var i = 0; i < adapters.length; i++) {
+                var obj = objects[adapters[i]];
+                var installed = '';
+                if (obj.common && obj.common.installedVersion) {
+                    installed = obj.common.installedVersion;
+                    if (!upToDate(obj.common.version, obj.common.installedVersion)) {
+                        installed += ' <button class="adapter-update-submit" data-adapter-name="' + obj.common.name + '">' + _('update') + '</button>';
+                    }
+                }
+                $gridAdapter.jqGrid('addRowData', 'adapter_' + adapters[i].replace(/ /g, '_'), {
+                    _id:      obj._id,
+                    image:    obj.common && obj.common.extIcon ? '<img src="' + obj.common.extIcon+ '" width="22px" height="22px" />' : '',
+                    name:     obj.common.name,
+                    title:    obj.common ? obj.common.title : '',
+                    desc:     obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc.en : obj.common.desc) : '',
+                    keywords: obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
+                    version:  obj.common ? obj.common.version : '',
+                    installed: installed,
+                    install:  '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
+                        '<button data-adapter-name="' + obj.common.name + '" data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>',
+                    platform: obj.common ? obj.common.platform : ''
+                });
+            }
+            $gridAdapter.trigger('reloadGrid');
+
+            $(document).on('click', '.adapter-install-submit', function () {
+                cmdExec('add ' + $(this).attr('data-adapter-name'));
+            });
+            $(document).on('click', '.adapter-update-submit', function () {
+                cmdExec('upgrade ' + $(this).attr('data-adapter-name'));
+            });
+            $(document).on('click', '.adapter-readme-submit', function () {
+                window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
+            });
+        }
+    }
+
+    function initInstances(update) {
+
+        if (!objectsLoaded) {
+            setTimeout(initInstances, 250);
+            return;
+        }
+
+        if (typeof $gridInstance !== 'undefined' && (!$gridInstance[0]._isInited || update)) {
+            $gridInstance[0]._isInited = true;
+            $gridInstance.jqGrid('clearGridData');
+
+            for (var i = 0; i < instances.length; i++) {
+                var obj = objects[instances[i]];
+                var tmp = obj._id.split('.');
+                var adapter = tmp[2];
+                var instance = tmp[3];
+                $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
+                    _id:       obj._id,
+                    image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px"/>' : '',
+                    name:      obj.common ? obj.common.name : '',
+                    instance:  obj._id.slice(15),
+                    title:     obj.common ? obj.common.title : '',
+                    enabled:   obj.common ? obj.common.enabled : '',
+                    host:      obj.common ? obj.common.host : '',
+                    mode:      obj.common.mode,
+                    schedule:  obj.common.mode === 'schedule' ? obj.common.schedule : '',
+                    config:    '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" data-adapter-name="' + adapter + '.' + instance + '" class="adapter-settings">' + _('config') + '</button>',
+                    platform:  obj.common ? obj.common.platform : '',
+                    loglevel:  obj.common ? obj.common.loglevel : '',
+                    alive:     states[obj._id + '.alive'] ? states[obj._id + '.alive'].val : '',
+                    connected: states[obj._id + '.connected'] ? states[obj._id + '.connected'].val : ''
+                });
+            }
+            $gridInstance.trigger('reloadGrid');
+
+            $('.host-selector').each(function () {
+                var id = $(this).attr('data-id');
+                $(this).val((objects[id] && objects[id].common) ? obj.common.host || '': '').
+                    change(function () {
+                        socket.emit('extendObject', $(this).attr('data-id'), {common:{host: $(this).val()}});
+                    });
+            });
+
+            $(document).on('click', '.adapter-settings', function () {
+                $iframeDialog = $dialogConfig;
+                $configFrame.attr('src', $(this).attr('data-adapter-href'));
+                $dialogConfig.dialog('option', 'title', _('Adapter configuration') + ': ' + $(this).attr('data-adapter-name')).dialog('open');
+
+                return false;
+            });
+        }
+
+
+    }
+
+    function initUsers(update) {
+
+        if (!objectsLoaded) {
+            setTimeout(initUsers, 500);
+            return;
+        }
+
+        if (typeof $gridUsers != 'undefined' && (update || !$gridUsers[0]._isInited)) {
+            $gridUsers[0]._isInited = true;
+            $gridUsers.jqGrid('clearGridData');
+            for (var i = 0; i < users.length; i++) {
+                var obj = objects[users[i]];
+                var select = '<select class="user-groups-edit" multiple="multiple" data-id="' + users[i] + '">';
+                for (var j = 0; j < groups.length; j++) {
+                    var name = groups[j].substring('system.group.'.length);
+                    name = name.substring(0, 1).toUpperCase() + name.substring(1);
+                    select += '<option value="' + groups[j] + '"';
+                    if (objects[groups[j]].common && objects[groups[j]].common.members && objects[groups[j]].common.members.indexOf(users[i]) != -1) select += ' selected';
+                    select += '>' + name + '</option>';
+                }
+
+                $gridUsers.jqGrid('addRowData', 'user_' + users[i].replace(/ /g, '_'), {
+                    _id:     obj._id,
+                    name:    obj.common ? obj.common.name : '',
+                    enabled: '<input class="user-enabled-edit" type="checkbox" data-id="' + users[i] + '" ' + (obj.common && obj.common.enabled ? 'checked' : '') + '/>',
+                    groups:  select
+                });
+            }
+            $gridUsers.trigger('reloadGrid');
+        }
+    }
+
+    function initGroups(update) {
+
+        if (!objectsLoaded) {
+            setTimeout(initGroups, 500);
+            return;
+        }
+
+        if (typeof $gridGroups != 'undefined' && (update || !$gridGroups[0]._isInited)) {
+            $gridGroups[0]._isInited = true;
+            $gridGroups.jqGrid('clearGridData');
+            for (var i = 0; i < groups.length; i++) {
+                var obj = objects[groups[i]];
+                var select = '<select class="group-users-edit" multiple="multiple" data-id="' + groups[i] + '">';
+                for (var j = 0; j < users.length; j++) {
+                    var name = users[j].substring('system.user.'.length);
+                    select += '<option value="' + users[j] + '"';
+                    if (obj.common && obj.common.members && obj.common.members.indexOf(users[j]) != -1) select += ' selected';
+                    select += '>' + name + '</option>';
+                }
+
+                $gridGroups.jqGrid('addRowData', 'group_' + groups[i].replace(/ /g, '_'), {
+                    _id:         obj._id,
+                    name:        obj.common ? obj.common.name : '',
+                    description: obj.common ? obj.common.desc : '',
+                    users:       select
+                });
+            }
+            $gridGroups.trigger('reloadGrid');
+        }
+    }
+
+    function initScripts() {
+
+        if (!objectsLoaded) {
+            setTimeout(initScripts, 250);
+            return;
+        }
+
+        if (typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
+            $gridScripts[0]._isInited = true;
+
+            for (var i = 0; i < scripts.length; i++) {
+                var obj = objects[scripts[i]];
+                $gridScripts.jqGrid('addRowData', 'script_' + instances[i].replace(/ /g, '_'), {
+                    _id: obj._id,
+                    name: obj.common ? obj.common.name : '',
+                    platform: obj.common ? obj.common.platform : '',
+                    enabled: obj.common ? obj.common.enabled : '',
+                    engine: obj.common ? obj.common.engine : ''
+                });
+            }
+            $gridScripts.trigger('reloadGrid');
+        }
+    }
+
+
     // Methods
     function cmdExec(cmd) {
         $stdout.val('');
@@ -1628,196 +1823,6 @@ $(document).ready(function () {
         $dialogObject.dialog('close');
     }
 
-    function initAdapters(update) {
-
-        if (!objectsLoaded) {
-            setTimeout(initAdapters, 250);
-            return;
-        }
-
-        if (typeof $gridAdapter !== 'undefined' && (!$gridAdapter[0]._isInited || update)) {
-            console.log('adapters', adapters);
-            $gridAdapter.jqGrid('clearGridData');
-            $gridAdapter[0]._isInited = true;
-            for (var i = 0; i < adapters.length; i++) {
-                var obj = objects[adapters[i]];
-                var installed = '';
-                if (obj.common && obj.common.installedVersion) {
-                    installed = obj.common.installedVersion;
-                    if (!upToDate(obj.common.version, obj.common.installedVersion)) {
-                        installed += ' <button class="adapter-update-submit" data-adapter-name="' + obj.common.name + '">' + _('update') + '</button>';
-                    }
-                }
-                $gridAdapter.jqGrid('addRowData', 'adapter_' + adapters[i].replace(/ /g, '_'), {
-                    _id:      obj._id,
-                    image:    obj.common && obj.common.extIcon ? '<img src="' + obj.common.extIcon+ '" width="22px" height="22px" />' : '',
-                    name:     obj.common.name,
-                    title:    obj.common ? obj.common.title : '',
-                    desc:     obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc.en : obj.common.desc) : '',
-                    keywords: obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
-                    version:  obj.common ? obj.common.version : '',
-                    installed: installed,
-                    install:  '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                              '<button data-adapter-name="' + obj.common.name + '" data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>',
-                    platform: obj.common ? obj.common.platform : ''
-                });
-            }
-            $gridAdapter.trigger('reloadGrid');
-
-            $(document).on('click', '.adapter-install-submit', function () {
-                cmdExec('add ' + $(this).attr('data-adapter-name'));
-            });
-            $(document).on('click', '.adapter-update-submit', function () {
-                cmdExec('upgrade ' + $(this).attr('data-adapter-name'));
-            });
-            $(document).on('click', '.adapter-readme-submit', function () {
-                window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
-            });
-        }
-    }
-
-    function initInstances(update) {
-
-        if (!objectsLoaded) {
-            setTimeout(initInstances, 250);
-            return;
-        }
-
-        if (typeof $gridInstance !== 'undefined' && (!$gridInstance[0]._isInited || update)) {
-            $gridInstance[0]._isInited = true;
-            $gridInstance.jqGrid('clearGridData');
-
-            for (var i = 0; i < instances.length; i++) {
-                var obj = objects[instances[i]];
-                var tmp = obj._id.split('.');
-                var adapter = tmp[2];
-                var instance = tmp[3];
-                $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
-                    _id:       obj._id,
-                    image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px"/>' : '',
-                    name:      obj.common ? obj.common.name : '',
-                    instance:  obj._id.slice(15),
-                    title:     obj.common ? obj.common.title : '',
-                    enabled:   obj.common ? obj.common.enabled : '',
-                    host:      obj.common ? obj.common.host : '',
-                    mode:      obj.common.mode,
-                    schedule:  obj.common.mode === 'schedule' ? obj.common.schedule : '',
-                    config:    '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" data-adapter-name="' + adapter + '.' + instance + '" class="adapter-settings">' + _('config') + '</button>',
-                    platform:  obj.common ? obj.common.platform : '',
-                    loglevel:  obj.common ? obj.common.loglevel : '',
-                    alive:     states[obj._id + '.alive'] ? states[obj._id + '.alive'].val : '',
-                    connected: states[obj._id + '.connected'] ? states[obj._id + '.connected'].val : ''
-                });
-            }
-            $gridInstance.trigger('reloadGrid');
-
-            $('.host-selector').each(function () {
-                var id = $(this).attr('data-id');
-                $(this).val((objects[id] && objects[id].common) ? obj.common.host || '': '').
-                    change(function () {
-                        socket.emit('extendObject', $(this).attr('data-id'), {common:{host: $(this).val()}});
-                    });
-            });
-
-            $(document).on('click', '.adapter-settings', function () {
-                $iframeDialog = $dialogConfig;
-                $configFrame.attr('src', $(this).attr('data-adapter-href'));
-                $dialogConfig.dialog('option', 'title', _('Adapter configuration') + ': ' + $(this).attr('data-adapter-name')).dialog('open');
-
-                return false;
-            });
-        }
-
-
-    }
-
-    function initUsers(update) {
-
-        if (!objectsLoaded) {
-            setTimeout(initUsers, 500);
-            return;
-        }
-
-        if (typeof $gridUsers != 'undefined' && (update || !$gridUsers[0]._isInited)) {
-            $gridUsers[0]._isInited = true;
-            $gridUsers.jqGrid('clearGridData');
-            for (var i = 0; i < users.length; i++) {
-                var obj = objects[users[i]];
-                var select = '<select class="user-groups-edit" multiple="multiple" data-id="' + users[i] + '">';
-                for (var j = 0; j < groups.length; j++) {
-                    var name = groups[j].substring('system.group.'.length);
-                    name = name.substring(0, 1).toUpperCase() + name.substring(1);
-                    select += '<option value="' + groups[j] + '"';
-                    if (objects[groups[j]].common && objects[groups[j]].common.members && objects[groups[j]].common.members.indexOf(users[i]) != -1) select += ' selected';
-                    select += '>' + name + '</option>';
-                }
-
-                $gridUsers.jqGrid('addRowData', 'user_' + users[i].replace(/ /g, '_'), {
-                    _id:     obj._id,
-                    name:    obj.common ? obj.common.name : '',
-                    enabled: '<input class="user-enabled-edit" type="checkbox" data-id="' + users[i] + '" ' + (obj.common && obj.common.enabled ? 'checked' : '') + '/>',
-                    groups:  select
-                });
-            }
-            $gridUsers.trigger('reloadGrid');
-        }
-    }
-
-    function initGroups(update) {
-
-        if (!objectsLoaded) {
-            setTimeout(initGroups, 500);
-            return;
-        }
-
-        if (typeof $gridGroups != 'undefined' && (update || !$gridGroups[0]._isInited)) {
-            $gridGroups[0]._isInited = true;
-            $gridGroups.jqGrid('clearGridData');
-            for (var i = 0; i < groups.length; i++) {
-                var obj = objects[groups[i]];
-                var select = '<select class="group-users-edit" multiple="multiple" data-id="' + groups[i] + '">';
-                for (var j = 0; j < users.length; j++) {
-                    var name = users[j].substring('system.user.'.length);
-                    select += '<option value="' + users[j] + '"';
-                    if (obj.common && obj.common.members && obj.common.members.indexOf(users[j]) != -1) select += ' selected';
-                    select += '>' + name + '</option>';
-                }
-
-                $gridGroups.jqGrid('addRowData', 'group_' + groups[i].replace(/ /g, '_'), {
-                    _id:         obj._id,
-                    name:        obj.common ? obj.common.name : '',
-                    description: obj.common ? obj.common.desc : '',
-                    users:       select
-                });
-            }
-            $gridGroups.trigger('reloadGrid');
-        }
-    }
-
-    function initScripts() {
-
-        if (!objectsLoaded) {
-            setTimeout(initScripts, 250);
-            return;
-        }
-
-        if (typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
-            $gridScripts[0]._isInited = true;
-
-            for (var i = 0; i < scripts.length; i++) {
-                var obj = objects[scripts[i]];
-                $gridScripts.jqGrid('addRowData', 'script_' + instances[i].replace(/ /g, '_'), {
-                    _id: obj._id,
-                    name: obj.common ? obj.common.name : '',
-                    platform: obj.common ? obj.common.platform : '',
-                    enabled: obj.common ? obj.common.enabled : '',
-                    engine: obj.common ? obj.common.engine : ''
-                });
-            }
-            $gridScripts.trigger('reloadGrid');
-        }
-    }
-
     function synchronizeUser(userId, userGroups) {
         var obj;
         userGroups = userGroups || [];
@@ -1924,29 +1929,6 @@ $(document).ready(function () {
 
 
     // Socket.io methods
-    socket.on('cmdStdout', function (code, text) {
-        stdout += '\n' + text;
-        $stdout.val(stdout);
-        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
-    });
-
-    socket.on('cmdExit', function (code, exitCode) {
-        exitCode = parseInt(exitCode, 10);
-        stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
-        $stdout.val(stdout);
-        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
-        cmdCode = null;
-        if (exitCode == 0) {
-            setTimeout(function () {
-                $dialogCommand.dialog('close');
-            }, 1500);
-        }
-        if (cmdCallback) {
-            cmdCallback(exitCode);
-            cmdCallback = null;
-        }
-    });
-
     socket.on('stateChange', function (id, obj) {
         if (!$gridStates) return;
 
@@ -2071,6 +2053,29 @@ $(document).ready(function () {
                 initGroups(true);
                 initUsers(true);
             }, 200);
+        }
+    });
+
+    socket.on('cmdStdout', function (code, text) {
+        stdout += '\n' + text;
+        $stdout.val(stdout);
+        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+    });
+
+    socket.on('cmdExit', function (code, exitCode) {
+        exitCode = parseInt(exitCode, 10);
+        stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
+        $stdout.val(stdout);
+        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+        cmdCode = null;
+        if (exitCode == 0) {
+            setTimeout(function () {
+                $dialogCommand.dialog('close');
+            }, 1500);
+        }
+        if (cmdCallback) {
+            cmdCallback(exitCode);
+            cmdCallback = null;
         }
     });
 
