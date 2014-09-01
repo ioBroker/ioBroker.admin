@@ -1969,7 +1969,7 @@ $(document).ready(function () {
 
 
         // Update Instance Table
-        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.[0-9]+$/) && typeof $gridInstance != 'undefined' && $gridInstance[0]._isInited) {
+        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.[0-9]+$/)) {
             if (obj) {
                 if (instances.indexOf(id) == -1) instances.push(id);
             } else {
@@ -1978,47 +1978,14 @@ $(document).ready(function () {
                     instances.splice(i, 1);
                 }
             }
-            initInstances(true);
 
-            /*var rowData = $gridInstance.jqGrid('getRowData', 'instance_' + id);
-            if (rowData && rowData._id) {
-                $gridInstance.jqGrid('setRowData', 'instance_' + id.replace(/ /g, '_'), {
-                    _id:       obj._id,
-                    name:      obj.common ? obj.common.name : '',
-                    instance:  obj._id.slice(15),
-                    title:     obj.common ? obj.common.title : '',
-                    enabled:   obj.common ? obj.common.enabled : '',
-                    host:      obj.common ? obj.common.host : '',
-                    mode:      obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
-                    platform:  obj.common ? obj.common.platform : '',
-                    loglevel:  obj.common ? obj.common.loglevel : '',
-                    alive:     rowData ? rowData.alive : '',
-                    connected: rowData ? rowData.connected : ''
-                });
-            } else {
-                var tmp = id.split('.');
-
-                $gridInstance.jqGrid('addRowData', 'instance_' + id.replace(/ /g, '_'), {
-                    _id:      obj._id,
-                    name:     obj.common ? obj.common.name : '',
-                    instance:  obj._id.slice(15),
-                    title:    obj.common ? obj.common.title : '',
-                    version:  obj.common ? obj.common.version : '',
-                    enabled:  obj.common ? obj.common.enabled : '',
-                    host:     obj.common ? obj.common.host : '',
-                    mode:     obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
-                    config:   '<button data-adapter-href="/adapter/' + tmp[2] + '/?' + tmp[3] + '" class="adapter-settings">config</button>',
-                    platform: obj.common ? obj.common.platform : '',
-                    loglevel: obj.common ? obj.common.loglevel : '',
-                    alive:    '',
-                    connected: ''
-                });
-            }*/
-
+            if (typeof $gridInstance !== 'undefined' && $gridInstance[0]._isInited) {
+                initInstances(true);
+            }
         }
 
         // Update Adapter Table
-        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+$/) && typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
+        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+$/)) {
             if (obj) {
                 if (adapters.indexOf(id) == -1) adapters.push(id);
             } else {
@@ -2027,20 +1994,10 @@ $(document).ready(function () {
                     adapters.splice(j, 1);
                 }
             }
-            initAdapters(true);
-        }
-
-        // Update Instance Table
-        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.[0-9]+$/) && typeof $gridInstance != 'undefined' && $gridInstance[0]._isInited) {
-            if (obj) {
-                if (instances.indexOf(id) == -1) instances.push(id);
-            } else {
-                var j = instances.indexOf(id);
-                if (j != -1) {
-                    instances.splice(j, 1);
-                }
+            if (typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
+                initAdapters(true);
             }
-            initInstances(true);
+
         }
 
 
