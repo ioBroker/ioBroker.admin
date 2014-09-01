@@ -1956,10 +1956,13 @@ $(document).ready(function () {
     });
 
     socket.on('objectChange', function (id, obj) {
-        // Todo handle deleted objects
 
         // update objects cache
-        objects[id] = obj;
+        if (obj) {
+            objects[id] = obj;
+        } else {
+            delete objects[id];
+        }
 
         // prepend to event table
         var row = '<tr><td>objectChange</td><td>' + id + '</td><td>' + JSON.stringify(obj) + '</td></tr>';
@@ -2020,6 +2023,7 @@ $(document).ready(function () {
                 initGroups(true);
             }, 200);
         }
+
         // Update groups
         if (id.substring(0, "system.group.".length) == "system.group.") {
             if (obj) {
@@ -2150,7 +2154,6 @@ $(document).ready(function () {
                 $("#load_grid-users").show();
                 $("#load_grid-groups").show();
 
-                //$("#load_grid-enums").show();
                 getStates(getObjects());
 
             });
