@@ -4,26 +4,30 @@
 /* jslint browser:true */
 'use strict';
 
-
 var $iframeDialog = null;
 
 (function ($) {
 $(document).ready(function () {
 
-    var toplevel  =     [];
-    var instances =     [];
-    var enums =         [];
-    var scripts =       [];
-    var users =         [];
-    var groups =        [];
-    var adapters =      [];
-    var children =      {};
-    var objects =       {};
-    var updateTimers =  {};
+    var toplevel  =             [];
+    var instances =             [];
+    var enums =                 [];
+    var scripts =               [];
+    var users =                 [];
+    var groups =                [];
+    var adapters =              [];
+    var children =              {};
+    var objects =               {};
+    var updateTimers =          {};
     var adapterWindow;
-    var hosts =         [];
-    var states =        {};
+    var hosts =                 [];
+    var states =                {};
+
     var settingsChanged;
+
+    var cmdCode;
+    var cmdCallback = null;
+    var stdout;
 
     var $stdout =               $('#stdout');
     var $configFrame =          $('#config-iframe');
@@ -47,18 +51,16 @@ $(document).ready(function () {
     var $gridInstance =         $('#grid-instances');
     var $gridScripts =          $('#grid-scripts');
 
-    function navigation() {
-        var tab = 'tab-' + window.location.hash.slice(1);
-        var index = $('#tabs a[href="#' + tab + '"]').parent().index() - 1;
-        $('#tabs').tabs('option', 'active', index);
-    }
-
+    var socket =                io.connect();
+    var firstConnect =          true;
+    var objectsLoaded =         false;
 
     var editor = ace.edit("script-editor");
     //editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode("ace/mode/javascript");
     editor.resize();
 
+    // jQuery UI initializations
     $('#tabs').tabs({
         activate: function (event, ui) {
             window.location.hash = '#' + ui.newPanel.selector.slice(5);
@@ -104,20 +106,6 @@ $(document).ready(function () {
         }
     });
 
-    var cmdCode;
-    var cmdCallback = null;
-    var stdout;
-
-    function cmdExec(cmd) {
-        $stdout.val('');
-        $dialogCommand.dialog('open');
-        stdout = '$ ./iobroker ' + cmd;
-        $stdout.val(stdout);
-        socket.emit('cmdExec', cmd, function (code) {
-            cmdCode = code;
-        });
-    }
-
     $dialogCommand.dialog({
         autoOpen:      false,
         modal:         true,
@@ -127,13 +115,27 @@ $(document).ready(function () {
         open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog || ui).hide(); }
     });
 
-
     $dialogEnumMembers.dialog({
         autoOpen:   false,
         modal:      true,
         width:      800,
         height:     500,
         buttons: []
+    });
+
+    $dialogConfig.dialog({
+        autoOpen:   false,
+        modal:      true,
+        width:      830, //$(window).width() > 920 ? 920: $(window).width(),
+        height:     536, //$(window).height() - 100, // 480
+        closeOnEscape: false,
+        open: function(event, ui) {
+            $('#dialog-config').css('padding', '2px 0px');
+        },
+        close: function () {
+            // Clear iframe
+            $configFrame.attr('src', '');
+        }
     });
 
     $gridEnumMembers.jqGrid({
@@ -155,31 +157,14 @@ $(document).ready(function () {
         caption: _('members')
     });
 
-
-    $dialogConfig.dialog({
-        autoOpen:   false,
-        modal:      true,
-        width:      830, //$(window).width() > 920 ? 920: $(window).width(),
-        height:     536, //$(window).height() - 100, // 480
-        closeOnEscape: false,
-        open: function(event, ui) {
-            $('#dialog-config').css('padding', '2px 0px');
-        },
-        close: function () {
-            // Clear iframe
-            $configFrame.attr('src', '');
-        }
-    });
-
     $(document).on('click', '.jump', function (e) {
         editObject($(this).attr('data-jump-to'));
         e.preventDefault();
         return false;
     });
 
-
-
-    function prepareObjects () {
+    // Grids
+    function prepareObjects() {
         $dialogObject.dialog({
             autoOpen:   false,
             modal:      true,
@@ -319,7 +304,7 @@ $(document).ready(function () {
             cursor: 'pointer'
         });
 
-    };
+    }
     function subGridObjects(grid, row, level) {
         var id = $('tr#' + row.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
         var subgridTableId = grid + '_t';
@@ -397,7 +382,7 @@ $(document).ready(function () {
         $subgrid.trigger('reloadGrid');
     }
 
-    function prepareEnums () {
+    function prepareEnums() {
         $gridEnums.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('members'), ''],
@@ -514,7 +499,6 @@ $(document).ready(function () {
 
 
     }
-
     function subGridEnums(grid, row, level) {
         var id = $('tr#' + row.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
         var subgridTableId = grid + '_t';
@@ -595,7 +579,6 @@ $(document).ready(function () {
         $subgrid.trigger('reloadGrid');
     }
 
-    // Grid states
     function prepareStates() {
         var stateEdit = false;
         var stateLastSelected;
@@ -657,7 +640,6 @@ $(document).ready(function () {
         });
     }
 
-    // Grid adapters
     function prepareAdapters() {
         var adapteLastSelected;
         var adapteEdit;
@@ -713,8 +695,7 @@ $(document).ready(function () {
         });
 
     }
-    
-    // Grid instances
+
     function prepareInstances() {
         var instanceLastSelected;
         var instanceEdit;
@@ -871,8 +852,6 @@ $(document).ready(function () {
 
     }
 
-
-    // Grid users
     function prepareUsers() {
         var userLastSelected;
         $gridUsers.jqGrid({
@@ -1030,7 +1009,6 @@ $(document).ready(function () {
         });
     }
 
-    // Grid groups
     function prepareGroups() {
         var groupLastSelected;
         $gridGroups.jqGrid({
@@ -1185,7 +1163,6 @@ $(document).ready(function () {
         });
     }
     
-    // Grid scripts
     function prepareScripts() {
         var scriptLastSelected;
         var scriptEdit;
@@ -1331,7 +1308,17 @@ $(document).ready(function () {
         });
     }
 
-    var objectsLoaded = false;
+
+    // Methods
+    function cmdExec(cmd) {
+        $stdout.val('');
+        $dialogCommand.dialog('open');
+        stdout = '$ ./iobroker ' + cmd;
+        $stdout.val(stdout);
+        socket.emit('cmdExec', cmd, function (code) {
+            cmdCode = code;
+        });
+    }
 
     function getObjects(callback) {
         $gridObjects.jqGrid('clearGridData');
@@ -1935,8 +1922,8 @@ $(document).ready(function () {
         }*/
     }
 
-    var socket = io.connect();
 
+    // Socket.io methods
     socket.on('cmdStdout', function (code, text) {
         stdout += '\n' + text;
         $stdout.val(stdout);
@@ -2087,7 +2074,6 @@ $(document).ready(function () {
         }
     });
 
-    var firstConnect = true;
     socket.on('connect', function () {
         $('#connecting').hide();
         if (firstConnect) {
@@ -2207,6 +2193,8 @@ $(document).ready(function () {
         $('#connecting').hide();
     });
 
+
+    // Helper methods
     function upToDate(a, b) {
         var a = a.split('.');
         var b = b.split('.');
@@ -2262,6 +2250,12 @@ $(document).ready(function () {
         $('#grid-groups').setGridHeight(y - 150).setGridWidth(x - 20);
         $('.subgrid-level-1').setGridWidth(x - 67);
         $('.subgrid-level-2').setGridWidth(x - 94);
+    }
+
+    function navigation() {
+        var tab = 'tab-' + window.location.hash.slice(1);
+        var index = $('#tabs a[href="#' + tab + '"]').parent().index() - 1;
+        $('#tabs').tabs('option', 'active', index);
     }
 
     $(window).resize(resizeGrids);
