@@ -135,7 +135,7 @@ $(document).ready(function () {
         sortname: "id",
         sortorder: "desc",
         viewrecords: true,
-        caption: 'members'
+        caption: _('members')
     });
 
 
