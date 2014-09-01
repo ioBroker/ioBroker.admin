@@ -171,9 +171,16 @@ $(document).ready(function () {
             onClickButton: function () {
                 var memberSelected = $gridEnumMembers.jqGrid('getGridParam', 'selrow');
                 var id = $('tr#' + memberSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
-                alert('TODO delete ' + id + ' from ' + enumEdit); //TODO
-
-
+                var obj = objects[enumEdit];
+                var idx = obj.common.members.indexOf(id);
+                if (idx !== -1) {
+                    obj.common.members.splice(idx, 1);
+                }
+                objects[enumEdit] = obj;
+                socket.emit('setObject', enumEdit, obj, function () {
+                    enumMembers(enumEdit);
+                    // TODO update member count in subGridEnum
+                });
             },
             position: 'first',
             id: 'del-member',
@@ -226,7 +233,16 @@ $(document).ready(function () {
             ondblClickRow: function (rowid, e) {
                 var memberSelected = rowid;
                 var id = $('tr#' + memberSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
-                alert('todo add ' + id + ' to ' + enumEdit);
+                var obj = objects[enumEdit];
+                if (obj.common.members.indexOf(id) === -1) {
+                    obj.common.members.push(id)
+                }
+                objects[enumEdit] = obj;
+                socket.emit('setObject', enumEdit, obj, function () {
+                    $dialogSelectMember.dialog('close');
+                    enumMembers(enumEdit);
+                    // TODO update member count in subGridEnum
+                });
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
