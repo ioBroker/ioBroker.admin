@@ -19,7 +19,6 @@ $(document).ready(function () {
     var children =              {};
     var objects =               {};
     var updateTimers =          {};
-    var adapterWindow;
     var hosts =                 [];
     var states =                {};
 
@@ -117,14 +116,6 @@ $(document).ready(function () {
         open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog || ui).hide(); }
     });
 
-    $dialogEnumMembers.dialog({
-        autoOpen:   false,
-        modal:      true,
-        width:      800,
-        height:     500,
-        buttons: []
-    });
-
     $dialogConfig.dialog({
         autoOpen:   false,
         modal:      true,
@@ -140,34 +131,74 @@ $(document).ready(function () {
         }
     });
 
-    $gridEnumMembers.jqGrid({
-        datatype: 'local',
-        colNames: ['id', _('name'), _('type')],
-        colModel: [
-            {name: '_id',  index:'_id', width: 240},
-            {name: 'name', index:'name', width: 400},
-            {name: 'type', index:'type', width: 100, fixed: true}
-        ],
-        pager: $('#pager-enum-members'),
-        width: 768,
-        height: 370,
-        rowNum: 100,
-        rowList: [20, 50, 100],
-        sortname: "id",
-        sortorder: "desc",
-        viewrecords: true,
-        caption: _('members')
-    });
-
-    $(document).on('click', '.jump', function (e) {
-        editObject($(this).attr('data-jump-to'));
-        e.preventDefault();
-        return false;
-    });
 
 
-    // Grids init
+
+    // Grids and Dialog inits
+    function prepareEnumMembers() {
+        $gridEnumMembers.jqGrid({
+            datatype: 'local',
+            colNames: ['id', _('name'), _('type')],
+            colModel: [
+                {name: '_id',  index:'_id', width: 240},
+                {name: 'name', index:'name', width: 400},
+                {name: 'type', index:'type', width: 100, fixed: true}
+            ],
+            pager: $('#pager-enum-members'),
+            width: 768,
+            height: 370,
+            rowNum: 100,
+            rowList: [20, 50, 100],
+            sortname: "id",
+            sortorder: "desc",
+            viewrecords: true,
+            caption: _('members'),
+            onSelectRow: function (rowid, e) {
+                $('#del-member').removeClass('ui-state-disabled');
+            }
+        }).navGrid('#pager-enum-members', {
+            search: false,
+            edit: false,
+            add: false,
+            del: false,
+            refresh: false
+        }).jqGrid('navButtonAdd', '#pager-enum-members', {
+            caption: '',
+            buttonicon: 'ui-icon-trash',
+            onClickButton: function () {
+                var memberSelected = $gridEnumMembers.jqGrid('getGridParam', 'selrow');
+                var id = $('tr#' + memberSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                alert('TODO delete ' + id); //TODO
+            },
+            position: 'first',
+            id: 'del-member',
+            title: _('Delete member'),
+            cursor: 'pointer'
+        }).jqGrid('navButtonAdd', '#pager-enum-members', {
+            caption: '',
+            buttonicon: 'ui-icon-plus',
+            onClickButton: function () {
+                var memberSelected = $gridEnumMembers.jqGrid('getGridParam', 'selrow');
+                var id = $('tr#' + memberSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                alert('TODO add ' + id); //TODO
+            },
+            position: 'first',
+            id: 'add-member',
+            title: _('Add member'),
+            cursor: 'pointer'
+        });
+
+        $dialogEnumMembers.dialog({
+            autoOpen:   false,
+            modal:      true,
+            width:      800,
+            height:     500,
+            buttons: []
+        });
+    }
+
     function prepareObjects() {
+
         $dialogObject.dialog({
             autoOpen:   false,
             modal:      true,
@@ -186,6 +217,12 @@ $(document).ready(function () {
                     }
                 }
             ]
+        });
+
+        $(document).on('click', '.jump', function (e) {
+            editObject($(this).attr('data-jump-to'));
+            e.preventDefault();
+            return false;
         });
 
         $gridObjects.jqGrid({
@@ -2159,12 +2196,14 @@ $(document).ready(function () {
                         systemConfig.common.language != 'de' &&
                         systemConfig.common.language != 'ru') systemConfig.common.language = 'en';
                 }
+
                 translateAll();
 
                 loadSettings(systemConfig);
 
                 // Here we go!
                 $('#tabs').show();
+                prepareEnumMembers();
                 prepareObjects();
                 prepareEnums();
                 prepareStates();
