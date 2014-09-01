@@ -108,6 +108,37 @@ $(document).ready(function () {
         open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog || ui).hide(); }
     });
 
+    var $dialogEnumMembers = $('#dialog-enum-members');
+
+    $dialogEnumMembers.dialog({
+        autoOpen:   false,
+        modal:      true,
+        width:      800,
+        height:     500,
+        buttons: []
+    });
+
+    var $gridEnumMembers = $('#grid-enum-members');
+    $gridEnumMembers.jqGrid({
+        datatype: 'local',
+        colNames: ['id', _('name'), _('type')],
+        colModel: [
+            {name: '_id',  index:'_id', width: 240},
+            {name: 'name', index:'name', width: 400},
+            {name: 'type', index:'type', width: 100, fixed: true}
+        ],
+        pager: $('#pager-enum-members'),
+        width: 768,
+        height: 370,
+        rowNum: 100,
+        rowList: [20, 50, 100],
+        sortname: "id",
+        sortorder: "desc",
+        viewrecords: true,
+        caption: 'members'
+    });
+
+
     var $configFrame = $('#config-iframe');
     var $dialogConfig = $('#dialog-config');
     $dialogConfig.dialog({
@@ -471,7 +502,10 @@ $(document).ready(function () {
             title: _('New objekt'),
             cursor: 'pointer'
         });
-    };
+
+
+    }
+
     function subGridEnums(grid, row, level) {
         var id = $('tr#' + row.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
         var subgridTableId = grid + '_t';
@@ -545,7 +579,7 @@ $(document).ready(function () {
                 _id: objects[children[id][i]]._id,
                 name: objects[children[id][i]].common ? objects[children[id][i]].common.name : '',
                 members: objects[children[id][i]].common.members ? objects[children[id][i]].common.members.length : '',
-                buttons: '<button data-enum-id="' + objects[children[id][i]]._id + '" class="enum-edit">members</button>'
+                buttons: '<button data-enum-id="' + objects[children[id][i]]._id + '" class="enum-members">members</button>'
 
             });
         }
@@ -1359,7 +1393,7 @@ $(document).ready(function () {
                         _id:  objects[toplevel[i]]._id,
                         name: objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
                         members: objects[toplevel[i]].common.members ? objects[toplevel[i]].common.members.length : '',
-                        buttons: '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-edit">members</button>'
+                        buttons: '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-members">members</button>'
                     });
                 }
                 $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/ /g, '_'), {
@@ -1372,9 +1406,22 @@ $(document).ready(function () {
             $gridObjects.trigger('reloadGrid');
             $gridEnums.trigger('reloadGrid');
 
+            $(document).on('click', '.enum-members', function () {
+                enumMembers($(this).attr('data-enum-id'));
+            });
 
             if (typeof callback === 'function') callback();
         });
+    }
+
+    function enumMembers(id) {
+        $dialogEnumMembers.dialog('option', 'title', id);
+        var members = objects[id].common.members || [];
+        $gridEnumMembers.jqGrid('clearGridData');
+        for (var i = 0; i < members.length; i++) {
+            $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {_id: members[i], name: objects[members[i]].common.name, type: objects[members[i]].type});
+        }
+        $dialogEnumMembers.dialog('open');
     }
 
     function getStates(callback) {
