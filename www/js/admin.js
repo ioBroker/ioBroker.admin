@@ -227,6 +227,7 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: _('select member by double click'),
+            ignoreCase: true,
             onSelectRow: function (rowid, e) {
                 $('#del-member').removeClass('ui-state-disabled');
             },
@@ -246,7 +247,6 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            ignoreCase: true,
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
@@ -504,6 +504,7 @@ $(document).ready(function () {
             viewrecords: true,
             caption: _('ioBroker Enums'),
             subGrid: true,
+            ignoreCase: true,
             subGridRowExpanded: function (grid, row) {
                 subGridEnums(grid, row, 1);
             },
@@ -542,7 +543,6 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            ignoreCase: true,
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
@@ -707,6 +707,7 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: _('ioBroker States'),
+            ignoreCase: true,
             // TODO Inline Edit on dblClick only
             onSelectRow: function (id) {
                 var rowData = $gridStates.jqGrid('getRowData', id);
@@ -739,7 +740,6 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            ignoreCase: true,
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
@@ -774,12 +774,12 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: _('ioBroker adapters'),
+            ignoreCase: true,
             gridComplete: function () {
 
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            ignoreCase: true,
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
@@ -834,6 +834,7 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: _('ioBroker adapter instances'),
+            ignoreCase: true,
             onSelectRow: function (id, e) {
                 $('#del-instance').removeClass('ui-state-disabled');
                 $('#edit-instance').removeClass('ui-state-disabled');
@@ -850,7 +851,6 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            ignoreCase: true,
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
@@ -977,6 +977,7 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: _('ioBroker users'),
+            ignoreCase: true,
             onSelectRow: function (id, e) {
                 if (id && id !== userLastSelected) {
                     $gridUsers.restoreRow(userLastSelected);
@@ -1015,7 +1016,6 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            ignoreCase: true,
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
@@ -1292,6 +1292,7 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: _('ioBroker adapter scripts'),
+            ignoreCase: true,
             // TODO Inline Edit on dblClick only
             onSelectRow: function (id, e) {
                 $('#del-script').removeClass('ui-state-disabled');
@@ -1330,7 +1331,6 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            ignoreCase: true,
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
