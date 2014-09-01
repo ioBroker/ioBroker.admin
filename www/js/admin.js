@@ -56,6 +56,7 @@ $(document).ready(function () {
     var firstConnect =          true;
     var objectsLoaded =         false;
 
+    var enumEdit =              null;
 
     var editor = ace.edit("script-editor");
     //editor.setTheme("ace/theme/monokai");
@@ -170,7 +171,9 @@ $(document).ready(function () {
             onClickButton: function () {
                 var memberSelected = $gridEnumMembers.jqGrid('getGridParam', 'selrow');
                 var id = $('tr#' + memberSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
-                alert('TODO delete ' + id); //TODO
+                alert('TODO delete ' + id + ' from ' + enumEdit); //TODO
+
+
             },
             position: 'first',
             id: 'del-member',
@@ -221,7 +224,9 @@ $(document).ready(function () {
                 $('#del-member').removeClass('ui-state-disabled');
             },
             ondblClickRow: function (rowid, e) {
-                alert('todo');
+                var memberSelected = rowid;
+                var id = $('tr#' + memberSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                alert('todo add ' + id + ' to ' + enumEdit);
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
@@ -813,7 +818,6 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: _('ioBroker adapter instances'),
-            // TODO Inline Edit on dblClick only
             onSelectRow: function (id, e) {
                 $('#del-instance').removeClass('ui-state-disabled');
                 $('#edit-instance').removeClass('ui-state-disabled');
@@ -1688,6 +1692,7 @@ $(document).ready(function () {
     }
 
     function enumMembers(id) {
+        enumEdit = id;
         $dialogEnumMembers.dialog('option', 'title', id);
         $dialogSelectMember.dialog('option', 'title', id);
         var members = objects[id].common.members || [];
