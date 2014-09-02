@@ -2245,12 +2245,16 @@ $(document).ready(function () {
                                 {
                                     text: _('agree'),
                                     click: function () {
-                                        socket.emit('extendObject', 'system.config', {common: {
-                                            licenseConfirmed: true,
-                                            language: language
-                                        }});
-                                        $dialogLicense.dialog('close');
-                                        $('#license_language').hide();
+                                        socket.emit('extendObject', 'system.config', {
+                                            common: {
+                                                licenseConfirmed: true,
+                                                language: language
+                                            }
+                                        }, function () {
+                                            $dialogLicense.dialog('close');
+                                            $('#license_language').hide();
+                                        });
+
                                     }
                                 },
                                 {
