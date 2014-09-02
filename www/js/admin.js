@@ -691,15 +691,16 @@ $(document).ready(function () {
 
         $gridStates.jqGrid({
             datatype: 'local',
-            colNames: ['id', _('name'), _('val'), _('ack'), _('from'), _('ts'), _('lc')],
+            colNames: ['id', _('parent name'), _('name'), _('val'), _('ack'), _('from'), _('ts'), _('lc')],
             colModel: [
-                {name: '_id',  index: '_id',  width: 350, fixed: false},
-                {name: 'name', index: 'name', width: 350, fixed: false},
+                {name: '_id',  index: '_id',  width: 250, fixed: false},
+                {name: 'pname', index: 'pname', width: 250, fixed: false},
+                {name: 'name', index: 'name', width: 250, fixed: false},
                 {name: 'val',  index: 'ack',  width: 160, editable: true},
                 {name: 'ack',  index: 'ack',  width: 60,  fixed: false, editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
                 {name: 'from', index: 'from', width: 80,  fixed: false},
-                {name: 'ts',   index: 'ts',   width: 138, fixed: false},
-                {name: 'lc',   index: 'lc',   width: 138, fixed: false}
+                {name: 'ts',   index: 'ts',   width: 140, fixed: false},
+                {name: 'lc',   index: 'lc',   width: 140, fixed: false}
             ],
             pager: $('#pager-states'),
             rowNum: 100,
@@ -1738,6 +1739,11 @@ $(document).ready(function () {
                 var obj = res[key];
                 obj._id = key;
                 obj.name = objects[obj._id] ? objects[obj._id].common.name : '';
+
+                if (objects[key] && objects[key].parent && objects[objects[key].parent]) {
+                    obj.pname = objects[objects[key].parent].common.name;
+                }
+
                 obj.type = objects[obj._id] && objects[obj._id].common ? objects[obj._id].common.type : '';
                 if (obj.ts) obj.ts = formatDate(new Date(obj.ts * 1000));
                 if (obj.lc) obj.lc = formatDate(new Date(obj.lc * 1000));
