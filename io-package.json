@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "admin",
-        "version":                  "0.0.6",
+        "version":                  "0.0.7",
         "title":                    "ioBroker Admin Adapter",
         "desc": {
             "en":                   "opens a webserver for the ioBroker admin UI",
@@ -12,7 +12,8 @@
         "platform":                 "Javascript/Node.js",
         "loglevel":                 "info",
         "icon":                     "admin.png",
-        "keywords":                 ["admin", "setup", "config", "update"]
+        "keywords":                 ["admin", "setup", "config", "update"],
+        "readme":                   "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md"
     },
     "native": {
         "port":                     8081,

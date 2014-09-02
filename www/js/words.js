@@ -39,7 +39,7 @@ systemDictionary = {
     "enabled":            {"en": "enabled", "de": "enabled", "ru": "enabled"},
     "host":               {"en": "host", "de": "host", "ru": "host"},
     "mode":               {"en": "mode", "de": "mode", "ru": "mode"},
-    "config":             {"en": "Settings", "de": "einstellen", "ru": "настроить"},
+    "config":             {"en": "Settings", "de": "Konfiguration", "ru": "настроить"},
     "loglevel":           {"en": "loglevel", "de": "loglevel", "ru": "loglevel"},
     "alive":              {"en": "alive", "de": "alive", "ru": "alive"},
     "connected":          {"en": "connected", "de": "connected", "ru": "connected"},
