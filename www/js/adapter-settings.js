@@ -10,10 +10,12 @@ $(document).ready(function () {
     var id = 'system.adapter.' + adapter + '.' + instance;
 
     // Extend dictionary with standard words for adapter
+    if (typeof systemDictionary === 'undefined') systemDictionary = {};
     systemDictionary["save"] = {"en": "Save", "de": "Speichern", "ru": "Сохранить"};
 
+
     loadSystemConfig(function () {
-        translateAll();
+        if (typeof translateAll === 'function') translateAll();
         loadSettings();
     });
 
@@ -70,7 +72,6 @@ $(document).ready(function () {
 
     function loadSettings() {
         socket.emit('getObject', id, function (err, res) {
-            console.log(err, res);
             if (!err && res && res.native) {
                 $('.adapter-instance').html(adapter + '.' + instance);
                 $('.adapter-config').html('system.adapter.' + adapter + '.' + instance);

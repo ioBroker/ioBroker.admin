@@ -4,41 +4,67 @@
 /* jslint browser:true */
 'use strict';
 
-
 var $iframeDialog = null;
 
 (function ($) {
 $(document).ready(function () {
 
-    var toplevel  =     [];
-    var instances =     [];
-    var enums =         [];
-    var scripts =       [];
-    var users =         [];
-    var groups =        [];
-    var adapters =      [];
-    var children =      {};
-    var objects =       {};
-    var updateTimers =  {};
-    var adapterWindow;
-    var hosts =         [];
-    var states =        {};
+    var toplevel  =             [];
+    var instances =             [];
+    var enums =                 [];
+    var scripts =               [];
+    var users =                 [];
+    var groups =                [];
+    var adapters =              [];
+    var children =              {};
+    var objects =               {};
+    var updateTimers =          {};
+    var hosts =                 [];
+    var states =                {};
+
     var settingsChanged;
 
-    var $stdout = $('#stdout');
+    var cmdCode;
+    var cmdCallback = null;
+    var stdout;
 
-    function navigation() {
-        var tab = 'tab-' + window.location.hash.slice(1);
-        var index = $('#tabs a[href="#' + tab + '"]').parent().index() - 1;
-        $('#tabs').tabs('option', 'active', index);
-    }
+    var $stdout =               $('#stdout');
+    var $configFrame =          $('#config-iframe');
 
+    var $dialogCommand =        $('#dialog-command');
+    var $dialogEnumMembers =    $('#dialog-enum-members');
+    var $dialogSelectMember =   $('#dialog-select-member');
+    var $dialogConfig =         $('#dialog-config');
+    var $dialogScript =         $('#dialog-script');
+    var $dialogObject =         $('#dialog-object');
+    var $dialogUser =           $('#dialog-user');
+    var $dialogGroup =          $('#dialog-group');
+    var $dialogLicense =        $('#dialog-license');
+
+    var $gridUsers =            $('#grid-users');
+    var $gridGroups =           $('#grid-groups');
+    var $gridEnums =            $('#grid-enums');
+    var $gridEnumMembers =      $('#grid-enum-members');
+    var $gridSelectMember =     $('#grid-select-member');
+    var $gridObjects =          $('#grid-objects');
+    var $gridStates =           $('#grid-states');
+    var $gridAdapter =          $('#grid-adapters');
+    var $gridInstance =         $('#grid-instances');
+    var $gridScripts =          $('#grid-scripts');
+
+    var socket =                io.connect();
+    var firstConnect =          true;
+    var objectsLoaded =         false;
+
+    var enumEdit =              null;
 
     var editor = ace.edit("script-editor");
     //editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode("ace/mode/javascript");
     editor.resize();
 
+
+    // jQuery UI initializations
     $('#tabs').tabs({
         activate: function (event, ui) {
             window.location.hash = '#' + ui.newPanel.selector.slice(5);
@@ -84,21 +110,6 @@ $(document).ready(function () {
         }
     });
 
-    var cmdCode;
-    var cmdCallback = null;
-    var stdout;
-
-    function cmdExec(cmd) {
-        $stdout.val('');
-        $dialogCommand.dialog('open');
-        stdout = '$ ./iobroker ' + cmd;
-        $stdout.val(stdout);
-        socket.emit('cmdExec', cmd, function (code) {
-            cmdCode = code;
-        });
-    }
-
-    var $dialogCommand = $('#dialog-command');
     $dialogCommand.dialog({
         autoOpen:      false,
         modal:         true,
@@ -108,8 +119,6 @@ $(document).ready(function () {
         open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog || ui).hide(); }
     });
 
-    var $configFrame = $('#config-iframe');
-    var $dialogConfig = $('#dialog-config');
     $dialogConfig.dialog({
         autoOpen:   false,
         modal:      true,
@@ -125,18 +134,135 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on('click', '.jump', function (e) {
-        editObject($(this).attr('data-jump-to'));
-        e.preventDefault();
-        return false;
-    });
 
 
-    var $dialogObject;
-    var $gridObjects;
 
-    function prepareObjects () {
-        $dialogObject = $('#dialog-object');
+    // Grids and Dialog inits
+    function prepareEnumMembers() {
+        $gridEnumMembers.jqGrid({
+            datatype: 'local',
+            colNames: ['id', _('name'), _('type')],
+            colModel: [
+                {name: '_id',  index:'_id', width: 240},
+                {name: 'name', index:'name', width: 400},
+                {name: 'type', index:'type', width: 100, fixed: true}
+            ],
+            pager: $('#pager-enum-members'),
+            width: 768,
+            height: 370,
+            rowNum: 100,
+            rowList: [20, 50, 100],
+            sortname: "id",
+            sortorder: "desc",
+            viewrecords: true,
+            caption: _('members'),
+            onSelectRow: function (rowid, e) {
+                $('#del-member').removeClass('ui-state-disabled');
+            }
+        }).navGrid('#pager-enum-members', {
+            search: false,
+            edit: false,
+            add: false,
+            del: false,
+            refresh: false
+        }).jqGrid('navButtonAdd', '#pager-enum-members', {
+            caption: '',
+            buttonicon: 'ui-icon-trash',
+            onClickButton: function () {
+                var memberSelected = $gridEnumMembers.jqGrid('getGridParam', 'selrow');
+                var id = $('tr#' + memberSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var obj = objects[enumEdit];
+                var idx = obj.common.members.indexOf(id);
+                if (idx !== -1) {
+                    obj.common.members.splice(idx, 1);
+                }
+                objects[enumEdit] = obj;
+                socket.emit('setObject', enumEdit, obj, function () {
+                    enumMembers(enumEdit);
+                    // TODO update member count in subGridEnum
+                });
+            },
+            position: 'first',
+            id: 'del-member',
+            title: _('Delete member'),
+            cursor: 'pointer'
+        }).jqGrid('navButtonAdd', '#pager-enum-members', {
+            caption: '',
+            buttonicon: 'ui-icon-plus',
+            onClickButton: function () {
+                $dialogSelectMember.dialog('open');
+            },
+            position: 'first',
+            id: 'add-member',
+            title: _('Add member'),
+            cursor: 'pointer'
+        });
+
+        $dialogEnumMembers.dialog({
+            autoOpen:   false,
+            modal:      true,
+            width:      800,
+            height:     500,
+            buttons: []
+        });
+
+        $gridSelectMember.jqGrid({
+            datatype: 'local',
+            colNames: ['id', _('name'), _('type')],
+            colModel: [
+                {name: '_id',  index:'_id', width: 240},
+                {name: 'name', index:'name', width: 400},
+                {name: 'type', index:'type', width: 100, fixed: true,
+                    stype: 'select',
+                    searchoptions: {
+                        sopt: ['eq'], value: ':' + _('all') + ';device:' + _('device') + ';channel:' + _('channel') + ';state:' + _('state')
+                    }
+                }
+
+            ],
+            width: 768,
+            height: 370,
+            rowNum: 1000000,
+            sortname: "id",
+            sortorder: "desc",
+            viewrecords: true,
+            caption: _('select member by double click'),
+            ignoreCase: true,
+            onSelectRow: function (rowid, e) {
+                $('#del-member').removeClass('ui-state-disabled');
+            },
+            ondblClickRow: function (rowid, e) {
+                var memberSelected = rowid;
+                var id = $('tr#' + memberSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var obj = objects[enumEdit];
+                if (obj.common.members.indexOf(id) === -1) {
+                    obj.common.members.push(id)
+                }
+                objects[enumEdit] = obj;
+                socket.emit('setObject', enumEdit, obj, function () {
+                    $dialogSelectMember.dialog('close');
+                    enumMembers(enumEdit);
+                    // TODO update member count in subGridEnum
+                });
+            }
+        }).jqGrid('filterToolbar', {
+            defaultSearch: 'cn',
+            autosearch: true,
+            searchOnEnter: false,
+            enableClear: false
+        });
+
+        $dialogSelectMember.dialog({
+            autoOpen:   false,
+            modal:      true,
+            width:      800,
+            height:     500,
+            buttons: []
+        });
+    }
+
+    function prepareObjects() {
+
         $dialogObject.dialog({
             autoOpen:   false,
             modal:      true,
@@ -157,7 +283,12 @@ $(document).ready(function () {
             ]
         });
 
-        $gridObjects = $('#grid-objects');
+        $(document).on('click', '.jump', function (e) {
+            editObject($(this).attr('data-jump-to'));
+            e.preventDefault();
+            return false;
+        });
+
         $gridObjects.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('type')],
@@ -168,7 +299,7 @@ $(document).ready(function () {
                     //formatter:'select',
                     stype: 'select',
                     searchoptions: {
-                        sopt: ['eq'], value: ":All;device:device;channel:channel;state:state;enum:enum;host:host;adapter:adapter;meta:meta;path:path;config:config"
+                        sopt: ['eq'], value: ":All;device:device;channel:channel;state:state;enum:enum;host:host;adapter:adapter;meta:meta;config:config"
                     }
                 }
             ],
@@ -277,7 +408,7 @@ $(document).ready(function () {
             cursor: 'pointer'
         });
 
-    };
+    }
     function subGridObjects(grid, row, level) {
         var id = $('tr#' + row.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
         var subgridTableId = grid + '_t';
@@ -355,9 +486,7 @@ $(document).ready(function () {
         $subgrid.trigger('reloadGrid');
     }
 
-    var $gridEnums;
-    function prepareEnums () {
-        $gridEnums = $('#grid-enums');
+    function prepareEnums() {
         $gridEnums.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('members'), ''],
@@ -375,6 +504,7 @@ $(document).ready(function () {
             viewrecords: true,
             caption: _('ioBroker Enums'),
             subGrid: true,
+            ignoreCase: true,
             subGridRowExpanded: function (grid, row) {
                 subGridEnums(grid, row, 1);
             },
@@ -471,7 +601,9 @@ $(document).ready(function () {
             title: _('New objekt'),
             cursor: 'pointer'
         });
-    };
+
+
+    }
     function subGridEnums(grid, row, level) {
         var id = $('tr#' + row.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
         var subgridTableId = grid + '_t';
@@ -545,28 +677,25 @@ $(document).ready(function () {
                 _id: objects[children[id][i]]._id,
                 name: objects[children[id][i]].common ? objects[children[id][i]].common.name : '',
                 members: objects[children[id][i]].common.members ? objects[children[id][i]].common.members.length : '',
-                buttons: '<button data-enum-id="' + objects[children[id][i]]._id + '" class="enum-edit">members</button>'
+                buttons: '<button data-enum-id="' + objects[children[id][i]]._id + '" class="enum-members">members</button>'
 
             });
         }
         $subgrid.trigger('reloadGrid');
     }
 
-    // Grid states
-    var $gridStates;
     function prepareStates() {
         var stateEdit = false;
         var stateLastSelected;
 
-        $gridStates = $('#grid-states');
         $gridStates.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('val'), _('ack'), _('from'), _('ts'), _('lc')],
             colModel: [
-                {name: '_id',  index: '_id',  width: 475, fixed: true},
-                {name: 'name', index: 'name', width: 200, fixed: false},
+                {name: '_id',  index: '_id',  width: 350, fixed: false},
+                {name: 'name', index: 'name', width: 350, fixed: false},
                 {name: 'val',  index: 'ack',  width: 160, editable: true},
-                {name: 'ack',  index: 'ack',  width: 80,  fixed: false, editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
+                {name: 'ack',  index: 'ack',  width: 60,  fixed: false, editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
                 {name: 'from', index: 'from', width: 80,  fixed: false},
                 {name: 'ts',   index: 'ts',   width: 138, fixed: false},
                 {name: 'lc',   index: 'lc',   width: 138, fixed: false}
@@ -578,6 +707,7 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: _('ioBroker States'),
+            ignoreCase: true,
             // TODO Inline Edit on dblClick only
             onSelectRow: function (id) {
                 var rowData = $gridStates.jqGrid('getRowData', id);
@@ -616,13 +746,10 @@ $(document).ready(function () {
         });
     }
 
-    // Grid adapters
-    var $gridAdapter;
     function prepareAdapters() {
         var adapteLastSelected;
         var adapteEdit;
 
-        $gridAdapter = $('#grid-adapters');
         $gridAdapter.jqGrid({
             datatype: 'local',
             colNames: ['id', '', _('name'), _('title'), _('desc'), _('keywords'), _('available'), _('installed'), _('platform'), ''],
@@ -647,6 +774,7 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: _('ioBroker adapters'),
+            ignoreCase: true,
             gridComplete: function () {
 
             }
@@ -674,15 +802,12 @@ $(document).ready(function () {
         });
 
     }
-    
-    // Grid instances
-    var $gridInstance;
+
     function prepareInstances() {
         var instanceLastSelected;
         var instanceEdit;
 
 
-        $gridInstance = $('#grid-instances');
         $gridInstance.jqGrid({
             datatype: 'local',
             colNames: ['id', '', _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('alive'), _('connected')],
@@ -709,7 +834,7 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: _('ioBroker adapter instances'),
-            // TODO Inline Edit on dblClick only
+            ignoreCase: true,
             onSelectRow: function (id, e) {
                 $('#del-instance').removeClass('ui-state-disabled');
                 $('#edit-instance').removeClass('ui-state-disabled');
@@ -834,13 +959,8 @@ $(document).ready(function () {
 
     }
 
-
-    // Grid users
-    var $gridUsers;
-    var $dialogUser;
     function prepareUsers() {
         var userLastSelected;
-        $gridUsers = $('#grid-users');
         $gridUsers.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('enabled'), _('groups')],
@@ -857,6 +977,7 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: _('ioBroker users'),
+            ignoreCase: true,
             onSelectRow: function (id, e) {
                 if (id && id !== userLastSelected) {
                     $gridUsers.restoreRow(userLastSelected);
@@ -966,7 +1087,6 @@ $(document).ready(function () {
             cursor: 'pointer'
         });
 
-        $dialogUser = $('#dialog-user');
         $dialogUser.dialog({
             autoOpen: false,
             modal:    true,
@@ -997,12 +1117,8 @@ $(document).ready(function () {
         });
     }
 
-    // Grid groups
-    var $gridGroups;
-    var $dialogGroup;
     function prepareGroups() {
         var groupLastSelected;
-        $gridGroups = $('#grid-groups');
         $gridGroups.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('desc'), _('users')],
@@ -1128,7 +1244,6 @@ $(document).ready(function () {
             cursor: 'pointer'
         });
 
-        $dialogGroup = $('#dialog-group');
         $dialogGroup.dialog({
             autoOpen: false,
             modal:    true,
@@ -1156,13 +1271,10 @@ $(document).ready(function () {
         });
     }
     
-    // Grid scripts
-    var $gridScripts;
     function prepareScripts() {
         var scriptLastSelected;
         var scriptEdit;
 
-        $gridScripts = $('#grid-scripts');
         $gridScripts.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('platform'), _('enabled'), _('engine')],
@@ -1180,6 +1292,7 @@ $(document).ready(function () {
             sortorder: "desc",
             viewrecords: true,
             caption: _('ioBroker adapter scripts'),
+            ignoreCase: true,
             // TODO Inline Edit on dblClick only
             onSelectRow: function (id, e) {
                 $('#del-script').removeClass('ui-state-disabled');
@@ -1283,7 +1396,6 @@ $(document).ready(function () {
             cursor: 'pointer'
         });
 
-        var $dialogScript = $('#dialog-script');
         $dialogScript.dialog({
             autoOpen:   false,
             modal:      true,
@@ -1305,7 +1417,209 @@ $(document).ready(function () {
         });
     }
 
-    var objectsLoaded = false;
+
+    // Grids content
+    function initAdapters(update) {
+
+        if (!objectsLoaded) {
+            setTimeout(initAdapters, 250);
+            return;
+        }
+
+        if (typeof $gridAdapter !== 'undefined' && (!$gridAdapter[0]._isInited || update)) {
+            console.log('adapters', adapters);
+            $gridAdapter.jqGrid('clearGridData');
+            $gridAdapter[0]._isInited = true;
+            for (var i = 0; i < adapters.length; i++) {
+                var obj = objects[adapters[i]];
+                var installed = '';
+                if (obj.common && obj.common.installedVersion) {
+                    installed = obj.common.installedVersion;
+                    if (!upToDate(obj.common.version, obj.common.installedVersion)) {
+                        installed += ' <button class="adapter-update-submit" data-adapter-name="' + obj.common.name + '">' + _('update') + '</button>';
+                    }
+                }
+                $gridAdapter.jqGrid('addRowData', 'adapter_' + adapters[i].replace(/ /g, '_'), {
+                    _id:      obj._id,
+                    image:    obj.common && obj.common.extIcon ? '<img src="' + obj.common.extIcon+ '" width="22px" height="22px" />' : '',
+                    name:     obj.common.name,
+                    title:    obj.common ? obj.common.title : '',
+                    desc:     obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc.en : obj.common.desc) : '',
+                    keywords: obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
+                    version:  obj.common ? obj.common.version : '',
+                    installed: installed,
+                    install:  '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
+                        '<button data-adapter-name="' + obj.common.name + '" data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>',
+                    platform: obj.common ? obj.common.platform : ''
+                });
+            }
+            $gridAdapter.trigger('reloadGrid');
+
+            $(document).on('click', '.adapter-install-submit', function () {
+                cmdExec('add ' + $(this).attr('data-adapter-name'));
+            });
+            $(document).on('click', '.adapter-update-submit', function () {
+                cmdExec('upgrade ' + $(this).attr('data-adapter-name'));
+            });
+            $(document).on('click', '.adapter-readme-submit', function () {
+                window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
+            });
+        }
+    }
+
+    function initInstances(update) {
+
+        if (!objectsLoaded) {
+            setTimeout(initInstances, 250);
+            return;
+        }
+
+        if (typeof $gridInstance !== 'undefined' && (!$gridInstance[0]._isInited || update)) {
+            $gridInstance[0]._isInited = true;
+            $gridInstance.jqGrid('clearGridData');
+
+            for (var i = 0; i < instances.length; i++) {
+                var obj = objects[instances[i]];
+                var tmp = obj._id.split('.');
+                var adapter = tmp[2];
+                var instance = tmp[3];
+                $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
+                    _id:       obj._id,
+                    image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px"/>' : '',
+                    name:      obj.common ? obj.common.name : '',
+                    instance:  obj._id.slice(15),
+                    title:     obj.common ? obj.common.title : '',
+                    enabled:   obj.common ? obj.common.enabled : '',
+                    host:      obj.common ? obj.common.host : '',
+                    mode:      obj.common.mode,
+                    schedule:  obj.common.mode === 'schedule' ? obj.common.schedule : '',
+                    config:    '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" data-adapter-name="' + adapter + '.' + instance + '" class="adapter-settings">' + _('config') + '</button>',
+                    platform:  obj.common ? obj.common.platform : '',
+                    loglevel:  obj.common ? obj.common.loglevel : '',
+                    alive:     states[obj._id + '.alive'] ? states[obj._id + '.alive'].val : '',
+                    connected: states[obj._id + '.connected'] ? states[obj._id + '.connected'].val : ''
+                });
+            }
+            $gridInstance.trigger('reloadGrid');
+
+            $('.host-selector').each(function () {
+                var id = $(this).attr('data-id');
+                $(this).val((objects[id] && objects[id].common) ? obj.common.host || '': '').
+                    change(function () {
+                        socket.emit('extendObject', $(this).attr('data-id'), {common:{host: $(this).val()}});
+                    });
+            });
+
+            $(document).on('click', '.adapter-settings', function () {
+                $iframeDialog = $dialogConfig;
+                $configFrame.attr('src', $(this).attr('data-adapter-href'));
+                $dialogConfig.dialog('option', 'title', _('Adapter configuration') + ': ' + $(this).attr('data-adapter-name')).dialog('open');
+
+                return false;
+            });
+        }
+
+
+    }
+
+    function initUsers(update) {
+
+        if (!objectsLoaded) {
+            setTimeout(initUsers, 500);
+            return;
+        }
+
+        if (typeof $gridUsers != 'undefined' && (update || !$gridUsers[0]._isInited)) {
+            $gridUsers[0]._isInited = true;
+            $gridUsers.jqGrid('clearGridData');
+            for (var i = 0; i < users.length; i++) {
+                var obj = objects[users[i]];
+                var select = '<select class="user-groups-edit" multiple="multiple" data-id="' + users[i] + '">';
+                for (var j = 0; j < groups.length; j++) {
+                    var name = groups[j].substring('system.group.'.length);
+                    name = name.substring(0, 1).toUpperCase() + name.substring(1);
+                    select += '<option value="' + groups[j] + '"';
+                    if (objects[groups[j]].common && objects[groups[j]].common.members && objects[groups[j]].common.members.indexOf(users[i]) != -1) select += ' selected';
+                    select += '>' + name + '</option>';
+                }
+
+                $gridUsers.jqGrid('addRowData', 'user_' + users[i].replace(/ /g, '_'), {
+                    _id:     obj._id,
+                    name:    obj.common ? obj.common.name : '',
+                    enabled: '<input class="user-enabled-edit" type="checkbox" data-id="' + users[i] + '" ' + (obj.common && obj.common.enabled ? 'checked' : '') + '/>',
+                    groups:  select
+                });
+            }
+            $gridUsers.trigger('reloadGrid');
+        }
+    }
+
+    function initGroups(update) {
+
+        if (!objectsLoaded) {
+            setTimeout(initGroups, 500);
+            return;
+        }
+
+        if (typeof $gridGroups != 'undefined' && (update || !$gridGroups[0]._isInited)) {
+            $gridGroups[0]._isInited = true;
+            $gridGroups.jqGrid('clearGridData');
+            for (var i = 0; i < groups.length; i++) {
+                var obj = objects[groups[i]];
+                var select = '<select class="group-users-edit" multiple="multiple" data-id="' + groups[i] + '">';
+                for (var j = 0; j < users.length; j++) {
+                    var name = users[j].substring('system.user.'.length);
+                    select += '<option value="' + users[j] + '"';
+                    if (obj.common && obj.common.members && obj.common.members.indexOf(users[j]) != -1) select += ' selected';
+                    select += '>' + name + '</option>';
+                }
+
+                $gridGroups.jqGrid('addRowData', 'group_' + groups[i].replace(/ /g, '_'), {
+                    _id:         obj._id,
+                    name:        obj.common ? obj.common.name : '',
+                    description: obj.common ? obj.common.desc : '',
+                    users:       select
+                });
+            }
+            $gridGroups.trigger('reloadGrid');
+        }
+    }
+
+    function initScripts() {
+
+        if (!objectsLoaded) {
+            setTimeout(initScripts, 250);
+            return;
+        }
+
+        if (typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
+            $gridScripts[0]._isInited = true;
+
+            for (var i = 0; i < scripts.length; i++) {
+                var obj = objects[scripts[i]];
+                $gridScripts.jqGrid('addRowData', 'script_' + instances[i].replace(/ /g, '_'), {
+                    _id: obj._id,
+                    name: obj.common ? obj.common.name : '',
+                    platform: obj.common ? obj.common.platform : '',
+                    enabled: obj.common ? obj.common.enabled : '',
+                    engine: obj.common ? obj.common.engine : ''
+                });
+            }
+            $gridScripts.trigger('reloadGrid');
+        }
+    }
+
+
+    // Methods
+    function cmdExec(cmd) {
+        $stdout.val('');
+        $dialogCommand.dialog('open');
+        stdout = '$ ./iobroker ' + cmd;
+        $stdout.val(stdout);
+        socket.emit('cmdExec', cmd, function (code) {
+            cmdCode = code;
+        });
+    }
 
     function getObjects(callback) {
         $gridObjects.jqGrid('clearGridData');
@@ -1314,7 +1628,17 @@ $(document).ready(function () {
             objects = res;
             for (var id in objects) {
                 if (id.slice(0, 7) === '_design') continue;
+
                 obj = objects[id];
+
+                if (obj.type === 'device' || obj.type === 'channel' || obj.type === 'state') {
+                    $gridSelectMember.jqGrid('addRowData', 'select_obj_' + id.replace(/ /g, '_'), {
+                        _id: id,
+                        name: obj.common.name,
+                        type: obj.type
+                    });
+                }
+
                 if (obj.parent) {
                     if (!children[obj.parent]) children[obj.parent] = [];
                     children[obj.parent].push(id);
@@ -1342,6 +1666,8 @@ $(document).ready(function () {
                         if (addr) hosts.push({name: obj.common.hostname, address: addr});
                     }
                 }
+
+
             }
             objectsLoaded = true;
 
@@ -1359,7 +1685,7 @@ $(document).ready(function () {
                         _id:  objects[toplevel[i]]._id,
                         name: objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
                         members: objects[toplevel[i]].common.members ? objects[toplevel[i]].common.members.length : '',
-                        buttons: '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-edit">members</button>'
+                        buttons: '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-members">members</button>'
                     });
                 }
                 $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/ /g, '_'), {
@@ -1367,14 +1693,39 @@ $(document).ready(function () {
                     name: objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
                     type: objects[toplevel[i]].type
                 });
-
             }
+
+            $gridSelectMember.trigger('reloadGrid');
             $gridObjects.trigger('reloadGrid');
             $gridEnums.trigger('reloadGrid');
 
+            $(document).on('click', '.enum-members', function () {
+                enumMembers($(this).attr('data-enum-id'));
+            });
 
             if (typeof callback === 'function') callback();
         });
+    }
+
+    function enumMembers(id) {
+        enumEdit = id;
+        $dialogEnumMembers.dialog('option', 'title', id);
+        $dialogSelectMember.dialog('option', 'title', id);
+        var members = objects[id].common.members || [];
+        $gridEnumMembers.jqGrid('clearGridData');
+        for (var i = 0; i < members.length; i++) {
+            if (objects[members[i]]) {
+                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {_id: members[i], name: objects[members[i]].common.name, type: objects[members[i]].type});
+            } else {
+                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {
+                    _id: members[i],
+                    name: '<span style="color:red; font-weight:bold; font-style:italic;">object missing</span>',
+                    type: ''
+                });
+            }
+        }
+        $('#del-member').addClass('ui-state-disabled');
+        $dialogEnumMembers.dialog('open');
     }
 
     function getStates(callback) {
@@ -1602,196 +1953,6 @@ $(document).ready(function () {
         $dialogObject.dialog('close');
     }
 
-    function initAdapters(update) {
-
-        if (!objectsLoaded) {
-            setTimeout(initAdapters, 250);
-            return;
-        }
-
-        if (typeof $gridAdapter !== 'undefined' && (!$gridAdapter[0]._isInited || update)) {
-            console.log('adapters', adapters);
-            $gridAdapter.jqGrid('clearGridData');
-            $gridAdapter[0]._isInited = true;
-            for (var i = 0; i < adapters.length; i++) {
-                var obj = objects[adapters[i]];
-                var installed = '';
-                if (obj.common && obj.common.installedVersion) {
-                    installed = obj.common.installedVersion;
-                    if (!upToDate(obj.common.version, obj.common.installedVersion)) {
-                        installed += ' <button class="adapter-update-submit" data-adapter-name="' + obj.common.name + '">' + _('update') + '</button>';
-                    }
-                }
-                $gridAdapter.jqGrid('addRowData', 'adapter_' + adapters[i].replace(/ /g, '_'), {
-                    _id:      obj._id,
-                    image:    obj.common && obj.common.extIcon ? '<img src="' + obj.common.extIcon+ '" width="22px" height="22px" />' : '',
-                    name:     obj.common.name,
-                    title:    obj.common ? obj.common.title : '',
-                    desc:     obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc.en : obj.common.desc) : '',
-                    keywords: obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
-                    version:  obj.common ? obj.common.version : '',
-                    installed: installed,
-                    install:  '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                              '<button data-adapter-name="' + obj.common.name + '" data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>',
-                    platform: obj.common ? obj.common.platform : ''
-                });
-            }
-            $gridAdapter.trigger('reloadGrid');
-
-            $(document).on('click', '.adapter-install-submit', function () {
-                cmdExec('add ' + $(this).attr('data-adapter-name'));
-            });
-            $(document).on('click', '.adapter-update-submit', function () {
-                cmdExec('upgrade ' + $(this).attr('data-adapter-name'));
-            });
-            $(document).on('click', '.adapter-readme-submit', function () {
-                window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
-            });
-        }
-    }
-
-    function initInstances(update) {
-
-        if (!objectsLoaded) {
-            setTimeout(initInstances, 250);
-            return;
-        }
-
-        if (typeof $gridInstance !== 'undefined' && (!$gridInstance[0]._isInited || update)) {
-            $gridInstance[0]._isInited = true;
-            $gridInstance.jqGrid('clearGridData');
-
-            for (var i = 0; i < instances.length; i++) {
-                var obj = objects[instances[i]];
-                var tmp = obj._id.split('.');
-                var adapter = tmp[2];
-                var instance = tmp[3];
-                $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
-                    _id:       obj._id,
-                    image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px"/>' : '',
-                    name:      obj.common ? obj.common.name : '',
-                    instance:  obj._id.slice(15),
-                    title:     obj.common ? obj.common.title : '',
-                    enabled:   obj.common ? obj.common.enabled : '',
-                    host:      obj.common ? obj.common.host : '',
-                    mode:      obj.common.mode,
-                    schedule:  obj.common.mode === 'schedule' ? obj.common.schedule : '',
-                    config:    '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" data-adapter-name="' + adapter + '.' + instance + '" class="adapter-settings">' + _('config') + '</button>',
-                    platform:  obj.common ? obj.common.platform : '',
-                    loglevel:  obj.common ? obj.common.loglevel : '',
-                    alive:     states[obj._id + '.alive'] ? states[obj._id + '.alive'].val : '',
-                    connected: states[obj._id + '.connected'] ? states[obj._id + '.connected'].val : ''
-                });
-            }
-            $gridInstance.trigger('reloadGrid');
-
-            $('.host-selector').each(function () {
-                var id = $(this).attr('data-id');
-                $(this).val((objects[id] && objects[id].common) ? obj.common.host || '': '').
-                    change(function () {
-                        socket.emit('extendObject', $(this).attr('data-id'), {common:{host: $(this).val()}});
-                    });
-            });
-
-            $(document).on('click', '.adapter-settings', function () {
-                $iframeDialog = $dialogConfig;
-                $configFrame.attr('src', $(this).attr('data-adapter-href'));
-                $dialogConfig.dialog('option', 'title', _('Adapter configuration') + ': ' + $(this).attr('data-adapter-name')).dialog('open');
-
-                return false;
-            });
-        }
-
-
-    }
-
-    function initUsers(update) {
-
-        if (!objectsLoaded) {
-            setTimeout(initUsers, 500);
-            return;
-        }
-
-        if (typeof $gridUsers != 'undefined' && (update || !$gridUsers[0]._isInited)) {
-            $gridUsers[0]._isInited = true;
-            $gridUsers.jqGrid('clearGridData');
-            for (var i = 0; i < users.length; i++) {
-                var obj = objects[users[i]];
-                var select = '<select class="user-groups-edit" multiple="multiple" data-id="' + users[i] + '">';
-                for (var j = 0; j < groups.length; j++) {
-                    var name = groups[j].substring('system.group.'.length);
-                    name = name.substring(0, 1).toUpperCase() + name.substring(1);
-                    select += '<option value="' + groups[j] + '"';
-                    if (objects[groups[j]].common && objects[groups[j]].common.members && objects[groups[j]].common.members.indexOf(users[i]) != -1) select += ' selected';
-                    select += '>' + name + '</option>';
-                }
-
-                $gridUsers.jqGrid('addRowData', 'user_' + users[i].replace(/ /g, '_'), {
-                    _id:     obj._id,
-                    name:    obj.common ? obj.common.name : '',
-                    enabled: '<input class="user-enabled-edit" type="checkbox" data-id="' + users[i] + '" ' + (obj.common && obj.common.enabled ? 'checked' : '') + '/>',
-                    groups:  select
-                });
-            }
-            $gridUsers.trigger('reloadGrid');
-        }
-    }
-
-    function initGroups(update) {
-
-        if (!objectsLoaded) {
-            setTimeout(initGroups, 500);
-            return;
-        }
-
-        if (typeof $gridGroups != 'undefined' && (update || !$gridGroups[0]._isInited)) {
-            $gridGroups[0]._isInited = true;
-            $gridGroups.jqGrid('clearGridData');
-            for (var i = 0; i < groups.length; i++) {
-                var obj = objects[groups[i]];
-                var select = '<select class="group-users-edit" multiple="multiple" data-id="' + groups[i] + '">';
-                for (var j = 0; j < users.length; j++) {
-                    var name = users[j].substring('system.user.'.length);
-                    select += '<option value="' + users[j] + '"';
-                    if (obj.common && obj.common.members && obj.common.members.indexOf(users[j]) != -1) select += ' selected';
-                    select += '>' + name + '</option>';
-                }
-
-                $gridGroups.jqGrid('addRowData', 'group_' + groups[i].replace(/ /g, '_'), {
-                    _id:         obj._id,
-                    name:        obj.common ? obj.common.name : '',
-                    description: obj.common ? obj.common.desc : '',
-                    users:       select
-                });
-            }
-            $gridGroups.trigger('reloadGrid');
-        }
-    }
-
-    function initScripts() {
-
-        if (!objectsLoaded) {
-            setTimeout(initScripts, 250);
-            return;
-        }
-
-        if (typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
-            $gridScripts[0]._isInited = true;
-
-            for (var i = 0; i < scripts.length; i++) {
-                var obj = objects[scripts[i]];
-                $gridScripts.jqGrid('addRowData', 'script_' + instances[i].replace(/ /g, '_'), {
-                    _id: obj._id,
-                    name: obj.common ? obj.common.name : '',
-                    platform: obj.common ? obj.common.platform : '',
-                    enabled: obj.common ? obj.common.enabled : '',
-                    engine: obj.common ? obj.common.engine : ''
-                });
-            }
-            $gridScripts.trigger('reloadGrid');
-        }
-    }
-
     function synchronizeUser(userId, userGroups) {
         var obj;
         userGroups = userGroups || [];
@@ -1896,31 +2057,8 @@ $(document).ready(function () {
         }*/
     }
 
-    var socket = io.connect();
 
-    socket.on('cmdStdout', function (code, text) {
-        stdout += '\n' + text;
-        $stdout.val(stdout);
-        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
-    });
-
-    socket.on('cmdExit', function (code, exitCode) {
-        exitCode = parseInt(exitCode, 10);
-        stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
-        $stdout.val(stdout);
-        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
-        cmdCode = null;
-        if (exitCode == 0) {
-            setTimeout(function () {
-                $dialogCommand.dialog('close');
-            }, 1500);
-        }
-        if (cmdCallback) {
-            cmdCallback(exitCode);
-            cmdCallback = null;
-        }
-    });
-
+    // Socket.io methods
     socket.on('stateChange', function (id, obj) {
         if (!$gridStates) return;
 
@@ -1956,10 +2094,13 @@ $(document).ready(function () {
     });
 
     socket.on('objectChange', function (id, obj) {
-        // Todo handle deleted objects
 
         // update objects cache
-        objects[id] = obj;
+        if (obj) {
+            objects[id] = obj;
+        } else {
+            delete objects[id];
+        }
 
         // prepend to event table
         var row = '<tr><td>objectChange</td><td>' + id + '</td><td>' + JSON.stringify(obj) + '</td></tr>';
@@ -1969,7 +2110,7 @@ $(document).ready(function () {
 
 
         // Update Instance Table
-        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.[0-9]+$/) && typeof $gridInstance != 'undefined' && $gridInstance[0]._isInited) {
+        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.[0-9]+$/)) {
             if (obj) {
                 if (instances.indexOf(id) == -1) instances.push(id);
             } else {
@@ -1978,47 +2119,14 @@ $(document).ready(function () {
                     instances.splice(i, 1);
                 }
             }
-            initInstances(true);
 
-            /*var rowData = $gridInstance.jqGrid('getRowData', 'instance_' + id);
-            if (rowData && rowData._id) {
-                $gridInstance.jqGrid('setRowData', 'instance_' + id.replace(/ /g, '_'), {
-                    _id:       obj._id,
-                    name:      obj.common ? obj.common.name : '',
-                    instance:  obj._id.slice(15),
-                    title:     obj.common ? obj.common.title : '',
-                    enabled:   obj.common ? obj.common.enabled : '',
-                    host:      obj.common ? obj.common.host : '',
-                    mode:      obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
-                    platform:  obj.common ? obj.common.platform : '',
-                    loglevel:  obj.common ? obj.common.loglevel : '',
-                    alive:     rowData ? rowData.alive : '',
-                    connected: rowData ? rowData.connected : ''
-                });
-            } else {
-                var tmp = id.split('.');
-
-                $gridInstance.jqGrid('addRowData', 'instance_' + id.replace(/ /g, '_'), {
-                    _id:      obj._id,
-                    name:     obj.common ? obj.common.name : '',
-                    instance:  obj._id.slice(15),
-                    title:    obj.common ? obj.common.title : '',
-                    version:  obj.common ? obj.common.version : '',
-                    enabled:  obj.common ? obj.common.enabled : '',
-                    host:     obj.common ? obj.common.host : '',
-                    mode:     obj.common.mode === 'schedule' ? 'schedule ' + obj.common.schedule : obj.common.mode,
-                    config:   '<button data-adapter-href="/adapter/' + tmp[2] + '/?' + tmp[3] + '" class="adapter-settings">config</button>',
-                    platform: obj.common ? obj.common.platform : '',
-                    loglevel: obj.common ? obj.common.loglevel : '',
-                    alive:    '',
-                    connected: ''
-                });
-            }*/
-
+            if (typeof $gridInstance !== 'undefined' && $gridInstance[0]._isInited) {
+                initInstances(true);
+            }
         }
 
         // Update Adapter Table
-        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+$/) && typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
+        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+$/)) {
             if (obj) {
                 if (adapters.indexOf(id) == -1) adapters.push(id);
             } else {
@@ -2027,20 +2135,10 @@ $(document).ready(function () {
                     adapters.splice(j, 1);
                 }
             }
-            initAdapters(true);
-        }
-
-        // Update Instance Table
-        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.[0-9]+$/) && typeof $gridInstance != 'undefined' && $gridInstance[0]._isInited) {
-            if (obj) {
-                if (instances.indexOf(id) == -1) instances.push(id);
-            } else {
-                var j = instances.indexOf(id);
-                if (j != -1) {
-                    instances.splice(j, 1);
-                }
+            if (typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
+                initAdapters(true);
             }
-            initInstances(true);
+
         }
 
 
@@ -2063,6 +2161,7 @@ $(document).ready(function () {
                 initGroups(true);
             }, 200);
         }
+
         // Update groups
         if (id.substring(0, "system.group.".length) == "system.group.") {
             if (obj) {
@@ -2087,11 +2186,37 @@ $(document).ready(function () {
         }
     });
 
-    var firstConnect = true;
+    socket.on('cmdStdout', function (code, text) {
+        stdout += '\n' + text;
+        $stdout.val(stdout);
+        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+    });
+
+    socket.on('cmdExit', function (code, exitCode) {
+        exitCode = parseInt(exitCode, 10);
+        stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
+        $stdout.val(stdout);
+        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+        cmdCode = null;
+        if (exitCode == 0) {
+            setTimeout(function () {
+                $dialogCommand.dialog('close');
+            }, 1500);
+        }
+        if (cmdCallback) {
+            cmdCallback(exitCode);
+            cmdCallback = null;
+        }
+    });
+
     socket.on('connect', function () {
         $('#connecting').hide();
         if (firstConnect) {
             firstConnect = false;
+
+            socket.emit('authEnabled', function (auth) {
+                if (!auth) $('#button-logout').remove();
+            });
 
             // Read system configuration
             socket.emit('getObject', 'system.config', function (err, systemConfig) {
@@ -2110,7 +2235,7 @@ $(document).ready(function () {
                             $('#license_text').html(license[language] || license['en']);
                         });
 
-                        var $dialogLicense = $('#dialog-license').css({'z-index': 200});
+                        $dialogLicense.css({'z-index': 200});
                         $dialogLicense.dialog({
                             autoOpen: true,
                             modal:    true,
@@ -2120,12 +2245,16 @@ $(document).ready(function () {
                                 {
                                     text: _('agree'),
                                     click: function () {
-                                        socket.emit('extendObject', 'system.config', {common: {
-                                            licenseConfirmed: true,
-                                            language: language
-                                        }});
-                                        $dialogLicense.dialog('close');
-                                        $('#license_language').hide();
+                                        socket.emit('extendObject', 'system.config', {
+                                            common: {
+                                                licenseConfirmed: true,
+                                                language: language
+                                            }
+                                        }, function () {
+                                            $dialogLicense.dialog('close');
+                                            $('#license_language').hide();
+                                        });
+
                                     }
                                 },
                                 {
@@ -2164,16 +2293,18 @@ $(document).ready(function () {
                     };
                     systemConfig.common.language = window.navigator.userLanguage || window.navigator.language;
 
-                    if (systemConfig.common.language != 'en' &&
-                        systemConfig.common.language != 'de' &&
-                        systemConfig.common.language != 'ru') systemConfig.common.language = 'en';
+                    if (systemConfig.common.language !== 'en' && systemConfig.common.language !== 'de' && systemConfig.common.language !== 'ru') {
+                        systemConfig.common.language = 'en';
+                    }
                 }
+
                 translateAll();
 
                 loadSettings(systemConfig);
 
                 // Here we go!
                 $('#tabs').show();
+                prepareEnumMembers();
                 prepareObjects();
                 prepareEnums();
                 prepareStates();
@@ -2184,6 +2315,7 @@ $(document).ready(function () {
                 prepareScripts();
                 resizeGrids();
 
+                $("#load_grid-select-member").show();
                 $("#load_grid-objects").show();
                 $("#load_grid-enums").show();
                 $("#load_grid-states").show();
@@ -2193,7 +2325,6 @@ $(document).ready(function () {
                 $("#load_grid-users").show();
                 $("#load_grid-groups").show();
 
-                //$("#load_grid-enums").show();
                 getStates(getObjects());
 
             });
@@ -2208,6 +2339,8 @@ $(document).ready(function () {
         $('#connecting').hide();
     });
 
+
+    // Helper methods
     function upToDate(a, b) {
         var a = a.split('.');
         var b = b.split('.');
@@ -2263,6 +2396,12 @@ $(document).ready(function () {
         $('#grid-groups').setGridHeight(y - 150).setGridWidth(x - 20);
         $('.subgrid-level-1').setGridWidth(x - 67);
         $('.subgrid-level-2').setGridWidth(x - 94);
+    }
+
+    function navigation() {
+        var tab = 'tab-' + window.location.hash.slice(1);
+        var index = $('#tabs a[href="#' + tab + '"]').parent().index() - 1;
+        $('#tabs').tabs('option', 'active', index);
     }
 
     $(window).resize(resizeGrids);
