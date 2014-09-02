@@ -121,8 +121,8 @@ table#events {
 }
 
 #event-table tr {
-    height: 25px;
-    max-height: 25px;
+    height: 23px;
+    max-height: 23px;
 }
 
 #event-table tr td {
