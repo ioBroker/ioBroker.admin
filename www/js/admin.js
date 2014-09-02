@@ -311,6 +311,7 @@ $(document).ready(function () {
             viewrecords: true,
             caption: 'ioBroker Objects',
             subGrid: true,
+            ignoreCase: true,
             subGridRowExpanded: function (grid, row) {
                 subGridObjects(grid, row, 1);
             },
