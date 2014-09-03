@@ -2272,7 +2272,7 @@ $(document).ready(function () {
                                 }
                             ],
                             close: function () {
-                                location.reload();
+
                             }
                         });
                         $('#edit-user-name').keydown(function (event) {
