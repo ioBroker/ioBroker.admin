@@ -318,7 +318,7 @@ $(document).ready(function () {
                 // Remove icon and click handler if no children available
                 var id = $('tr#' + rowid.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
                 if (!children[id]) {
-                    $('td.sgcollapsed', '[id="' + rowid + '"').empty().removeClass('ui-sgcollapsed sgcollapsed');
+                    $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
 
             },
@@ -455,7 +455,7 @@ $(document).ready(function () {
             afterInsertRow: function (rowid) {
                 // Remove icon and click handler if no children available
                 if (!children[rowid.slice(7)]) {
-                    $('td.sgcollapsed', '[id="' + rowid + '"').empty().removeClass('ui-sgcollapsed sgcollapsed');
+                    $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
             },
             gridComplete: function () {
@@ -476,12 +476,14 @@ $(document).ready(function () {
         };
         $subgrid.jqGrid(gridConf);
 
-        for (var i = 0; i < children[id].length; i++) {
-            $subgrid.jqGrid('addRowData', 'object_' + objects[children[id][i]]._id.replace(/ /g, '_'), {
-                _id: objects[children[id][i]]._id,
-                name: objects[children[id][i]].common ? objects[children[id][i]].common.name : '',
-                type: objects[children[id][i]].type
-            });
+        if (children[id]) {
+            for (var i = 0; i < children[id].length; i++) {
+                $subgrid.jqGrid('addRowData', 'object_' + objects[children[id][i]]._id.replace(/ /g, '_'), {
+                    _id: objects[children[id][i]]._id,
+                    name: objects[children[id][i]].common ? objects[children[id][i]].common.name : '',
+                    type: objects[children[id][i]].type
+                });
+            }
         }
         $subgrid.trigger('reloadGrid');
     }
@@ -512,7 +514,7 @@ $(document).ready(function () {
                 // Remove icon and click handler if no children available
                 var id = $('tr#' + rowid.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
                 if (!children[id]) {
-                    $('td.sgcollapsed', '[id="' + rowid + '"').empty().removeClass('ui-sgcollapsed sgcollapsed');
+                    $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
 
             },
@@ -651,7 +653,7 @@ $(document).ready(function () {
             afterInsertRow: function (rowid) {
                 // Remove icon and click handler if no children available
                 if (!children[rowid.slice(5)]) {
-                    $('td.sgcollapsed', '[id="' + rowid + '"').empty().removeClass('ui-sgcollapsed sgcollapsed');
+                    $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
             },
             gridComplete: function () {
@@ -1688,16 +1690,21 @@ $(document).ready(function () {
                         buttons: '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-members">members</button>'
                     });
                 }
-                $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/ /g, '_'), {
-                    _id:  objects[toplevel[i]]._id,
-                    name: objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
-                    type: objects[toplevel[i]].type
-                });
+                try {
+                    $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/[ ,\.]/g, '_'), {
+                        _id:  objects[toplevel[i]]._id,
+                        name: objects[toplevel[i]].common ? (objects[toplevel[i]].common.name || '') : '',
+                        type: objects[toplevel[i]].type
+                    });
+                } catch(e){
+                    console.log(e.toString());
+                }
             }
 
             $gridSelectMember.trigger('reloadGrid');
             $gridObjects.trigger('reloadGrid');
             $gridEnums.trigger('reloadGrid');
+
 
             $(document).on('click', '.enum-members', function () {
                 enumMembers($(this).attr('data-enum-id'));
