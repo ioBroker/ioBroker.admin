@@ -170,7 +170,7 @@ $(document).ready(function () {
             {
                 text: 'Cancel',
                 click: function () {
-                    $dialogObject.dialog('close');
+                    $dialogHistory.dialog('close');
                 }
             }
         ],
@@ -1957,6 +1957,7 @@ $(document).ready(function () {
                 }
                 $dialogHistory.dialog('option', 'title', 'history ' + id);
                 $dialogHistory.dialog('open');
+                $gridHistory.jqGrid('clearGridData');
                 $("#load_grid-history").show();
                 socket.emit('getStateHistory', id, function (err, res) {
                     if (!err) {
