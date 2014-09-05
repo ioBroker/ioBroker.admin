@@ -51,6 +51,7 @@ $(document).ready(function () {
     var $gridAdapter =          $('#grid-adapters');
     var $gridInstance =         $('#grid-instances');
     var $gridScripts =          $('#grid-scripts');
+    var $gridHosts =            $('#grid-hosts');
 
     var socket =                io.connect();
     var firstConnect =          true;
@@ -70,6 +71,10 @@ $(document).ready(function () {
             window.location.hash = '#' + ui.newPanel.selector.slice(5);
             switch (ui.newPanel.selector) {
                 case '#tab-objects':
+                    break;
+
+                case '#tab-hosts':
+                    initHosts();
                     break;
 
                 case '#tab-states':
@@ -318,7 +323,7 @@ $(document).ready(function () {
                 // Remove icon and click handler if no children available
                 var id = $('tr#' + rowid.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
                 if (!children[id]) {
-                    $('td.sgcollapsed', '[id="' + rowid + '"').empty().removeClass('ui-sgcollapsed sgcollapsed');
+                    $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
 
             },
@@ -455,7 +460,7 @@ $(document).ready(function () {
             afterInsertRow: function (rowid) {
                 // Remove icon and click handler if no children available
                 if (!children[rowid.slice(7)]) {
-                    $('td.sgcollapsed', '[id="' + rowid + '"').empty().removeClass('ui-sgcollapsed sgcollapsed');
+                    $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
             },
             gridComplete: function () {
@@ -476,12 +481,14 @@ $(document).ready(function () {
         };
         $subgrid.jqGrid(gridConf);
 
-        for (var i = 0; i < children[id].length; i++) {
-            $subgrid.jqGrid('addRowData', 'object_' + objects[children[id][i]]._id.replace(/ /g, '_'), {
-                _id: objects[children[id][i]]._id,
-                name: objects[children[id][i]].common ? objects[children[id][i]].common.name : '',
-                type: objects[children[id][i]].type
-            });
+        if (children[id]) {
+            for (var i = 0; i < children[id].length; i++) {
+                $subgrid.jqGrid('addRowData', 'object_' + objects[children[id][i]]._id.replace(/ /g, '_'), {
+                    _id: objects[children[id][i]]._id,
+                    name: objects[children[id][i]].common ? objects[children[id][i]].common.name : '',
+                    type: objects[children[id][i]].type
+                });
+            }
         }
         $subgrid.trigger('reloadGrid');
     }
@@ -512,7 +519,7 @@ $(document).ready(function () {
                 // Remove icon and click handler if no children available
                 var id = $('tr#' + rowid.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
                 if (!children[id]) {
-                    $('td.sgcollapsed', '[id="' + rowid + '"').empty().removeClass('ui-sgcollapsed sgcollapsed');
+                    $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
 
             },
@@ -651,7 +658,7 @@ $(document).ready(function () {
             afterInsertRow: function (rowid) {
                 // Remove icon and click handler if no children available
                 if (!children[rowid.slice(5)]) {
-                    $('td.sgcollapsed', '[id="' + rowid + '"').empty().removeClass('ui-sgcollapsed sgcollapsed');
+                    $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
             },
             gridComplete: function () {
@@ -747,8 +754,8 @@ $(document).ready(function () {
     }
 
     function prepareAdapters() {
-        var adapteLastSelected;
-        var adapteEdit;
+        var adapterLastSelected;
+        var adapterEdit;
 
         $gridAdapter.jqGrid({
             datatype: 'local',
@@ -1417,6 +1424,60 @@ $(document).ready(function () {
         });
     }
 
+    function prepareHosts() {
+        var adapterLastSelected;
+        var adapterEdit;
+
+        $gridHosts.jqGrid({
+            datatype: 'local',
+            colNames: ['id', _('name'), _('process'), _('platform'), _('os'), _('version'), _('install')],
+            colModel: [
+                {name: '_id',       index: '_id',       hidden: true},
+                {name: 'name',      index: 'name',      width:  64},
+                {name: 'process',   index: 'title',     width: 180},
+                {name: 'platform',  index: 'platform',  hidden: true},
+                {name: 'os',        index: 'os',        width: 360},
+                {name: 'version',   index: 'version',   width:  70, align: 'center'},
+                {name: 'install',   index: 'install',   width: 160}
+            ],
+            pager: $('#pager-hosts'),
+            width: 964,
+            height: 326,
+            rowNum: 100,
+            rowList: [20, 50, 100],
+            sortname: "id",
+            sortorder: "desc",
+            viewrecords: true,
+            caption: _('ioBroker hosts'),
+            ignoreCase: true,
+            gridComplete: function () {
+
+            }
+        }).jqGrid('filterToolbar', {
+            defaultSearch: 'cn',
+            autosearch: true,
+            searchOnEnter: false,
+            enableClear: false
+        }).navGrid('#pager-hosts', {
+            search: false,
+            edit: false,
+            add: false,
+            del: false,
+            refresh: false
+        })/*.jqGrid('navButtonAdd', '#pager-hosts', {
+            caption: '',
+            buttonicon: 'ui-icon-refresh',
+            onClickButton: function () {
+                cmdExec('update');
+            },
+            position: 'first',
+            id: 'add-object',
+            title: _('New objekt'),
+            cursor: 'pointer'
+        })*/;
+
+    }
+
 
     // Grids content
     function initAdapters(update) {
@@ -1427,18 +1488,23 @@ $(document).ready(function () {
         }
 
         if (typeof $gridAdapter !== 'undefined' && (!$gridAdapter[0]._isInited || update)) {
-            console.log('adapters', adapters);
+            $('a[href="#tab-adapters"]').removeClass('updateReady');
+
             $gridAdapter.jqGrid('clearGridData');
             $gridAdapter[0]._isInited = true;
             for (var i = 0; i < adapters.length; i++) {
                 var obj = objects[adapters[i]];
                 var installed = '';
+                var version = obj.common ? obj.common.version : '';
                 if (obj.common && obj.common.installedVersion) {
                     installed = obj.common.installedVersion;
                     if (!upToDate(obj.common.version, obj.common.installedVersion)) {
                         installed += ' <button class="adapter-update-submit" data-adapter-name="' + obj.common.name + '">' + _('update') + '</button>';
+                        version = '<span class="updateReady">' + version + '<span>';
+                        $('a[href="#tab-adapters"]').addClass('updateReady');
                     }
                 }
+
                 $gridAdapter.jqGrid('addRowData', 'adapter_' + adapters[i].replace(/ /g, '_'), {
                     _id:      obj._id,
                     image:    obj.common && obj.common.extIcon ? '<img src="' + obj.common.extIcon+ '" width="22px" height="22px" />' : '',
@@ -1446,10 +1512,10 @@ $(document).ready(function () {
                     title:    obj.common ? obj.common.title : '',
                     desc:     obj.common ? (typeof obj.common.desc === 'object' ? obj.common.desc.en : obj.common.desc) : '',
                     keywords: obj.common && obj.common.keywords ? obj.common.keywords.join(' ') : '',
-                    version:  obj.common ? obj.common.version : '',
+                    version:  version,
                     installed: installed,
                     install:  '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                        '<button data-adapter-name="' + obj.common.name + '" data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>',
+                        (obj.common.readme ? ('<button data-adapter-name="' + obj.common.name + '" data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>') : ''),
                     platform: obj.common ? obj.common.platform : ''
                 });
             }
@@ -1609,6 +1675,48 @@ $(document).ready(function () {
         }
     }
 
+    function initHosts(update) {
+
+        if (!objectsLoaded) {
+            setTimeout(initHosts, 250);
+            return;
+        }
+
+        if (typeof $gridHosts !== 'undefined' && (!$gridHosts[0]._isInited || update)) {
+            $('a[href="#tab-hosts"]').removeClass('updateReady');
+
+            $gridHosts.jqGrid('clearGridData');
+            $gridHosts[0]._isInited = true;
+            for (var i = 0; i < hosts.length; i++) {
+                var obj = objects[hosts[i].id];
+                var installed = '';
+                var version = obj.common ? obj.common.version : '';
+                /*if (obj.common && obj.common.installedVersion) {
+                   installed = obj.common.installedVersion;
+                    if (!upToDate(obj.common.version, obj.common.installedVersion)) {
+                        installed += ' <button class="adapter-update-submit" data-adapter-name="' + obj.common.name + '">' + _('update') + '</button>';
+                        version = '<span class="updateReady">' + version + '<span>';
+                        $('a[href="#tab-adapters"]').addClass('updateReady');
+                    }
+                }*/
+
+                $gridHosts.jqGrid('addRowData', 'host_' + hosts[i].id.replace(/ /g, '_'), {
+                    _id:      obj._id,
+                    name:     obj.common.hostname,
+                    process:  obj.common.process,
+                    platform: obj.common.platform,
+                    os:       obj.native.os.platform,
+                    version:  obj.common.version,
+                    install:  ''
+                });
+            }
+            $gridHosts.trigger('reloadGrid');
+
+            $(document).on('click', '.adapter-update-submit', function () {
+                cmdExec('upgrade ' + $(this).attr('data-adapter-name'));
+            });
+        }
+    }
 
     // Methods
     function cmdExec(cmd) {
@@ -1663,7 +1771,7 @@ $(document).ready(function () {
                                 if (addr) break;
                             }
                         }
-                        if (addr) hosts.push({name: obj.common.hostname, address: addr});
+                        if (addr) hosts.push({name: obj.common.hostname, address: addr, id: obj._id});
                     }
                 }
 
@@ -1688,22 +1796,30 @@ $(document).ready(function () {
                         buttons: '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-members">members</button>'
                     });
                 }
-                $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/ /g, '_'), {
-                    _id:  objects[toplevel[i]]._id,
-                    name: objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
-                    type: objects[toplevel[i]].type
-                });
+                try {
+                    $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/ /g, '_'), {
+                        _id:  objects[toplevel[i]]._id,
+                        name: objects[toplevel[i]].common ? (objects[toplevel[i]].common.name || '') : '',
+                        type: objects[toplevel[i]].type
+                    });
+                } catch(e){
+                    console.log(e.toString());
+                }
             }
 
             $gridSelectMember.trigger('reloadGrid');
             $gridObjects.trigger('reloadGrid');
             $gridEnums.trigger('reloadGrid');
 
+
             $(document).on('click', '.enum-members', function () {
                 enumMembers($(this).attr('data-enum-id'));
             });
 
             if (typeof callback === 'function') callback();
+
+            // Show if update available
+            initAdapters();
         });
     }
 
@@ -2305,6 +2421,7 @@ $(document).ready(function () {
                 // Here we go!
                 $('#tabs').show();
                 prepareEnumMembers();
+                prepareHosts();
                 prepareObjects();
                 prepareEnums();
                 prepareStates();
@@ -2386,14 +2503,15 @@ $(document).ready(function () {
             y = 480;
         }
         $('#grid-events-inner').css('height', (y - 130) + 'px');
-        $('#grid-states').setGridHeight(y - 150).setGridWidth(x - 20);
-        $('#grid-objects').setGridHeight(y - 150).setGridWidth(x - 20);
-        $('#grid-enums').setGridHeight(y - 150).setGridWidth(x - 20);
-        $('#grid-adapters').setGridHeight(y - 150).setGridWidth(x - 20);
-        $('#grid-instances').setGridHeight(y - 150).setGridWidth(x - 20);
-        $('#grid-scripts').setGridHeight(y - 150).setGridWidth(x - 20);
-        $('#grid-users').setGridHeight(y - 150).setGridWidth(x - 20);
-        $('#grid-groups').setGridHeight(y - 150).setGridWidth(x - 20);
+        $gridStates.setGridHeight(y - 150).setGridWidth(x - 20);
+        $gridObjects.setGridHeight(y - 150).setGridWidth(x - 20);
+        $gridEnums.setGridHeight(y - 150).setGridWidth(x - 20);
+        $gridAdapter.setGridHeight(y - 150).setGridWidth(x - 20);
+        $gridInstance.setGridHeight(y - 150).setGridWidth(x - 20);
+        $gridScripts.setGridHeight(y - 150).setGridWidth(x - 20);
+        $gridUsers.setGridHeight(y - 150).setGridWidth(x - 20);
+        $gridGroups.setGridHeight(y - 150).setGridWidth(x - 20);
+        $gridHosts.setGridHeight(y - 150).setGridWidth(x - 20);
         $('.subgrid-level-1').setGridWidth(x - 67);
         $('.subgrid-level-2').setGridWidth(x - 94);
     }

@@ -25,6 +25,7 @@
 <div id="tabs" style="display: none">
     <ul>
         <li><a href="#tab-system"    class="translate">System</a></li>
+        <li><a href="#tab-hosts"     class="translate">Hosts</a></li>
         <li><a href="#tab-objects"   class="translate">Objects</a></li>
         <li><a href="#tab-states"    class="translate">States</a></li>
         <li><a href="#tab-events"    class="translate">Events</a></li>
@@ -36,6 +37,7 @@
         <li><a href="#tab-groups"    class="translate">Groups</a></li>
     </ul>
     <div id="tab-system">
+        <h2 class="translate">Settings</h2>
         <div class="header ui-widget ui-widget-header ui-corner-all" >
             <input type="button" id="save-system" class="translateV" value="save"/>
         </div>
@@ -80,6 +82,15 @@
                 </td>
             </tr>
         </table>
+    </div>
+    <div id="tab-hosts">
+        <!--table>
+            <tr><td class="translate ui-state-default ui-widget-content ui-widget-header">Installed version</td>
+                <td class="translate ui-state-default ui-widget-content ui-widget-header">Available version</td></tr>
+            <tr><td id="installedNodejs"></td><td id="availableNodejs"></td></tr>
+        </table-->
+        <table id="grid-hosts"></table>
+        <div id="pager-hosts"></div>
     </div>
     <div id="tab-objects">
         <table id="grid-objects"></table>
