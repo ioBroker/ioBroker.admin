@@ -455,6 +455,10 @@ function socketEvents(socket, user) {
         adapter.objects.getObjectView('system', 'host', {}, function (err, data) {
             if (data.rows.length) {
                 for (var i = 0; i < data.rows.length; i++) {
+                    if (data.rows[i].value.common.hostname == ip) {
+                        if (callback) callback(ip, data.rows[i].value);
+                        return;
+                    }
                     if (data.rows[i].value.native.hardware && data.rows[i].value.native.hardware.networkInterfaces) {
                         var net = data.rows[i].value.native.hardware.networkInterfaces;
                         for (var eth in net) {
