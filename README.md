@@ -7,6 +7,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+#### 0.0.9
+* (hobbyquaker) history
+
 #### 0.0.8
 * (hobbyquaker) added column "parent name" to gridStates
 

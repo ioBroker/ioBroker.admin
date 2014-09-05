@@ -261,12 +261,27 @@
     </table><br/>
     <input type="hidden" id="edit-group-id">
 </div>
-<div id="dialog-enum-members">
+<div id="dialog-enum-members" style="display:none">
     <table id="grid-enum-members"></table>
     <div id="pager-enum-members"></div>
 </div>
-<div id="dialog-select-member">
+<div id="dialog-select-member" style="display:none">
     <table id="grid-select-member"></table>
+</div>
+<div id="dialog-history" style="display:none">
+    <table>
+        <tr>
+            <td>enabled</td>
+            <td><input type="checkbox" id="edit-history-enabled"></td>
+        </tr>
+        <tr>
+            <td>log changes only</td>
+            <td><input type="checkbox" id="edit-history-changesOnly"></td>
+        </tr>
+    </table><br/>
+    <input type="hidden" id="edit-history-id">
+    <table id="grid-history"></table>
+    <div id="pager-history"></div>
 </div>
 <div title="command execution" id="dialog-command" style="display:none">
     <textarea style="font-family: courier, monospace; font-size: 11px;" id="stdout" disabled="disabled" cols="120" rows="30"></textarea>

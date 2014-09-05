@@ -40,6 +40,7 @@ $(document).ready(function () {
     var $dialogUser =           $('#dialog-user');
     var $dialogGroup =          $('#dialog-group');
     var $dialogLicense =        $('#dialog-license');
+    var $dialogHistory =        $('#dialog-history');
 
     var $gridUsers =            $('#grid-users');
     var $gridGroups =           $('#grid-groups');
@@ -52,6 +53,7 @@ $(document).ready(function () {
     var $gridInstance =         $('#grid-instances');
     var $gridScripts =          $('#grid-scripts');
     var $gridHosts =            $('#grid-hosts');
+    var $gridHistory =          $('#grid-history');
 
     var socket =                io.connect();
     var firstConnect =          true;
@@ -64,7 +66,7 @@ $(document).ready(function () {
     editor.getSession().setMode("ace/mode/javascript");
     editor.resize();
 
-
+    // TODO hide tab scripts if no instance of adapter javascript enabled
     // jQuery UI initializations
     $('#tabs').tabs({
         activate: function (event, ui) {
@@ -140,9 +142,74 @@ $(document).ready(function () {
     });
 
 
+    $dialogHistory.dialog({
+        autoOpen:   false,
+        modal:      true,
+        width:      830,
+        height:     536,
+        closeOnEscape: false,
+        buttons: [
+            {
+                text: 'Save',
+                click: function () {
+                    var id =             $('#edit-history-id').val();
+                    var enabled =        $('#edit-history-enabled').is(':checked');
+                    var changesOnly =    $('#edit-history-changesOnly').is(':checked');
+
+                    objects[id].common.history = {
+                        enabled:            enabled,
+                        changesOnly:        changesOnly
+                    };
+
+                    socket.emit('setObject', id, objects[id], function () {
+                        $dialogHistory.dialog('close');
+                    });
+
+                }
+            },
+            {
+                text: 'Cancel',
+                click: function () {
+                    $dialogObject.dialog('close');
+                }
+            }
+        ],
+        open: function(event, ui) {
+
+        },
+        close: function () {
+
+        }
+    });
+
 
 
     // Grids and Dialog inits
+    function prepareHistory() {
+        $gridHistory.jqGrid({
+            datatype: 'local',
+            colNames: [_('val'), _('ack'), _('from'), _('ts'), _('lc')],
+            colModel: [
+                {name: 'val', index: 'ack', width: 160, editable: true},
+                {name: 'ack', index: 'ack', width: 60, fixed: false},
+                {name: 'from', index: 'from', width: 80, fixed: false},
+                {name: 'ts', index: 'ts', width: 140, fixed: false},
+                {name: 'lc', index: 'lc', width: 140, fixed: false},
+            ],
+            width: 800,
+            height: 300,
+            pager: $('#pager-history'),
+            rowNum: 100,
+            rowList: [20, 50, 100],
+            sortname: "id",
+            sortorder: "desc",
+            viewrecords: true,
+            caption: _('history data'),
+            ignoreCase: true
+
+        });
+    }
+
     function prepareEnumMembers() {
         $gridEnumMembers.jqGrid({
             datatype: 'local',
@@ -696,18 +763,20 @@ $(document).ready(function () {
         var stateEdit = false;
         var stateLastSelected;
 
+        // TODO hide column history if no instance of history-adapter enabled
         $gridStates.jqGrid({
             datatype: 'local',
-            colNames: ['id', _('parent name'), _('name'), _('val'), _('ack'), _('from'), _('ts'), _('lc')],
+            colNames: ['id', _('parent name'), _('name'), _('val'), _('ack'), _('from'), _('ts'), _('lc'), _('history')],
             colModel: [
-                {name: '_id',  index: '_id',  width: 250, fixed: false},
-                {name: 'pname', index: 'pname', width: 250, fixed: false},
-                {name: 'name', index: 'name', width: 250, fixed: false},
-                {name: 'val',  index: 'ack',  width: 160, editable: true},
-                {name: 'ack',  index: 'ack',  width: 60,  fixed: false, editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
-                {name: 'from', index: 'from', width: 80,  fixed: false},
-                {name: 'ts',   index: 'ts',   width: 140, fixed: false},
-                {name: 'lc',   index: 'lc',   width: 140, fixed: false}
+                {name: '_id',       index: '_id',       width: 250, fixed: false},
+                {name: 'pname',     index: 'pname',     width: 250, fixed: false},
+                {name: 'name',      index: 'name',      width: 250, fixed: false},
+                {name: 'val',       index: 'ack',       width: 160, editable: true},
+                {name: 'ack',       index: 'ack',       width: 60,  fixed: false, editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
+                {name: 'from',      index: 'from',      width: 80,  fixed: false},
+                {name: 'ts',        index: 'ts',        width: 140, fixed: false},
+                {name: 'lc',        index: 'lc',        width: 140, fixed: false},
+                {name: 'history',   index: 'history',   width: 80, fixed: false}
             ],
             pager: $('#pager-states'),
             rowNum: 100,
@@ -717,8 +786,7 @@ $(document).ready(function () {
             viewrecords: true,
             caption: _('ioBroker States'),
             ignoreCase: true,
-            // TODO Inline Edit on dblClick only
-            onSelectRow: function (id) {
+            ondblClickRow: function (id) {
                 var rowData = $gridStates.jqGrid('getRowData', id);
                 rowData.ack = false;
                 rowData.from = '';
@@ -1863,9 +1931,46 @@ $(document).ready(function () {
                 obj.type = objects[obj._id] && objects[obj._id].common ? objects[obj._id].common.type : '';
                 if (obj.ts) obj.ts = formatDate(new Date(obj.ts * 1000));
                 if (obj.lc) obj.lc = formatDate(new Date(obj.lc * 1000));
+                obj.history = '<button data-id="' + obj._id + '" class="history" id="history_' + obj._id + '">history</button>';
                 $gridStates.jqGrid('addRowData', 'state_' + key.replace(/ /g, '_'), obj);
             }
+
             $gridStates.trigger('reloadGrid');
+            $(document).on('click', '.history', function () {
+                var id = $(this).attr('data-id');
+                $('#edit-history-id').val(id);
+                if (!objects[id].common.history) {
+                    objects[id].common.history = {
+                        enabled:        false,
+                        changesOnly: false
+                    }
+                }
+                if (objects[id].common.history.enabled) {
+                    $('#edit-history-enabled').attr('checked', true);
+                } else {
+                    $('#edit-history-enabled').removeAttr('checked');
+                }
+                if (objects[id].common.history.changesOnly) {
+                    $('#edit-history-changesOnly').attr('checked', true);
+                } else {
+                    $('#edit-history-changesOnly').removeAttr('checked');
+                }
+                $dialogHistory.dialog('option', 'title', 'history ' + id);
+                $dialogHistory.dialog('open');
+                $("#load_grid-history").show();
+                socket.emit('getStateHistory', id, function (err, res) {
+                    if (!err) {
+                        for (var i = 0; i < res.length; i++) {
+                            res[i].ts = formatDate(new Date(res[i].ts * 1000));
+                            res[i].lc = formatDate(new Date(res[i].lc * 1000));
+                            $gridHistory.jqGrid('addRowData', i, res[i]);
+                        }
+                        $gridHistory.trigger('reloadGrid');
+                    }
+                });
+
+
+            });
             if (typeof callback === 'function') callback();
         });
     }
@@ -2437,6 +2542,7 @@ $(document).ready(function () {
                 prepareUsers();
                 prepareGroups();
                 prepareScripts();
+                prepareHistory();
                 resizeGrids();
 
                 $("#load_grid-select-member").show();
