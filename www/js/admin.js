@@ -4,6 +4,8 @@
 /* jslint browser:true */
 'use strict';
 
+//if (typeof Worker === 'undefined') alert('your browser does not support WebWorkers :-(');
+
 var $iframeDialog = null;
 
 (function ($) {
@@ -1804,6 +1806,7 @@ $(document).ready(function () {
         socket.emit('getObjects', function (err, res) {
             var obj;
             objects = res;
+//benchmark('starting getObjects loop');
             for (var id in objects) {
                 if (id.slice(0, 7) === '_design') continue;
 
@@ -1847,6 +1850,7 @@ $(document).ready(function () {
 
 
             }
+//benchmark('finished getObjects loop');
             objectsLoaded = true;
 
             // Change editoptions for gridInstances column host
@@ -1856,10 +1860,12 @@ $(document).ready(function () {
             }
             $gridInstance.jqGrid('setColProp', 'host', {editoptions: {value: tmp}});
 
-
+            var gridEnumsData = [];
+            var gridObjectsData = [];
             for (var i = 0; i < toplevel.length; i++) {
                 if (objects[toplevel[i]].type === 'enum') {
-                    $gridEnums.jqGrid('addRowData', 'enum_' + toplevel[i].replace(/ /g, '_'), {
+                    gridEnumsData.push({
+                        gridId: 'enum_' + toplevel[i].replace(/ /g, '_'),
                         _id:  objects[toplevel[i]]._id,
                         name: objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
                         members: objects[toplevel[i]].common.members ? objects[toplevel[i]].common.members.length : '',
@@ -1867,7 +1873,8 @@ $(document).ready(function () {
                     });
                 }
                 try {
-                    $gridObjects.jqGrid('addRowData', 'object_' + toplevel[i].replace(/ /g, '_'), {
+                    gridObjectsData.push({
+                        gridId: 'object_' + toplevel[i].replace(/ /g, '_'),
                         _id:  objects[toplevel[i]]._id,
                         name: objects[toplevel[i]].common ? (objects[toplevel[i]].common.name || '') : '',
                         type: objects[toplevel[i]].type
@@ -1876,10 +1883,14 @@ $(document).ready(function () {
                     console.log(e.toString());
                 }
             }
+            $gridEnums.jqGrid('addRowData', 'gridId', gridEnumsData);
+            $gridEnums.trigger('reloadGrid');
+
+            $gridObjects.jqGrid('addRowData', 'gridId', gridObjectsData);
+            $gridObjects.trigger('reloadGrid');
+
 
             $gridSelectMember.trigger('reloadGrid');
-            $gridObjects.trigger('reloadGrid');
-            $gridEnums.trigger('reloadGrid');
 
 
             $(document).on('click', '.enum-members', function () {
@@ -1919,6 +1930,8 @@ $(document).ready(function () {
         socket.emit('getStates', function (err, res) {
             var i = 0;
             states = res;
+//benchmark('starting getStates loop');
+            var gridData = [];
             for (var key in res) {
                 var obj = res[key];
                 obj._id = key;
@@ -1932,9 +1945,12 @@ $(document).ready(function () {
                 if (obj.ts) obj.ts = formatDate(new Date(obj.ts * 1000));
                 if (obj.lc) obj.lc = formatDate(new Date(obj.lc * 1000));
                 obj.history = '<button data-id="' + obj._id + '" class="history" id="history_' + obj._id + '">history</button>';
-                $gridStates.jqGrid('addRowData', 'state_' + key.replace(/ /g, '_'), obj);
+                obj.gridId = 'state_' + key.replace(/ /g, '_')
+                gridData.push(obj);
+                //$gridStates.jqGrid('addRowData', obj.gridId, obj);
             }
-
+            $gridStates.jqGrid('addRowData', 'gridId', gridData);
+//benchmark('finished getStates loop');
             $gridStates.trigger('reloadGrid');
             $(document).on('click', '.history', function () {
                 var id = $(this).attr('data-id');
@@ -2641,3 +2657,11 @@ $(document).ready(function () {
 });
 })(jQuery);
 
+var benchTime = (new Date()).getTime();
+
+function benchmark(text) {
+    var ts = (new Date()).getTime();
+    console.log('-- execution time: ' + (ts - benchTime) + 'ms');
+    benchTime = ts;
+    console.log('-- ' + text);
+}
