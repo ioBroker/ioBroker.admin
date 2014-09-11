@@ -148,7 +148,7 @@ $(document).ready(function () {
         autoOpen:   false,
         modal:      true,
         width:      830,
-        height:     536,
+        height:     545,
         closeOnEscape: false,
         buttons: [
             {

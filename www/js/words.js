@@ -26,7 +26,7 @@ systemDictionary = {
     "members":            {"en": "members",             "de": "Mitglieder",             "ru": "Части"},
     "val":                {"en": "val",                 "de": "val",                    "ru": "val"},
     "ack":                {"en": "ack",                 "de": "ack",                    "ru": "ack"},
-    "from":               {"en": "from",                "de": "von",                    "ru": "from"},
+    "from":               {"en": "from",                "de": "quelle",                 "ru": "from"},
     "ts":                 {"en": "ts",                  "de": "ts",                     "ru": "ts"},
     "lc":                 {"en": "lc",                  "de": "lc",                     "ru": "lc"},
     "title":              {"en": "title",               "de": "Titel",                  "ru": "Заголовок"},
