@@ -24,17 +24,18 @@
 <body>
 <div id="tabs" style="display: none">
     <ul>
-        <li><a href="#tab-system"    class="translate">System</a></li>
-        <li><a href="#tab-hosts"     class="translate">Hosts</a></li>
-        <li><a href="#tab-objects"   class="translate">Objects</a></li>
-        <li><a href="#tab-states"    class="translate">States</a></li>
-        <li><a href="#tab-events"    class="translate">Events</a></li>
-        <li><a href="#tab-adapters"  class="translate">Adapters</a></li>
-        <li><a href="#tab-instances" class="translate">Instances</a></li>
-        <li><a href="#tab-enums"     class="translate">Enums</a></li>
-        <li><a href="#tab-scripts"   class="translate">Scripts</a></li>
-        <li><a href="#tab-users"     class="translate">Users</a></li>
-        <li><a href="#tab-groups"    class="translate">Groups</a></li>
+        <li><a href="#tab-system"       class="translate">System</a></li>
+        <li><a href="#tab-hosts"        class="translate">Hosts</a></li>
+        <li><a href="#tab-objects"      class="translate">Objects</a></li>
+        <li><a href="#tab-states"       class="translate">States</a></li>
+        <li><a href="#tab-events"       class="translate">Events</a></li>
+        <li><a href="#tab-adapters"     class="translate">Adapters</a></li>
+        <li><a href="#tab-instances"    class="translate">Instances</a></li>
+        <li><a href="#tab-enums"        class="translate">Enums</a></li>
+        <li><a href="#tab-scripts"      class="translate">Scripts</a></li>
+        <li><a href="#tab-users"        class="translate">Users</a></li>
+        <li><a href="#tab-groups"       class="translate">Groups</a></li>
+       <!-- <li><a href="#tab-log"          class="translate">Log</a></li> -->
     </ul>
     <div id="tab-system">
         <h2 class="translate">Settings</h2>
@@ -155,6 +156,36 @@
         <table id="grid-groups"></table>
         <div id="pager-groups"></div>
     </div>
+    <!--
+    <div id="tab-log">
+        <div id="grid-log" class="ui-jqgrid" style="display: block;">
+            <div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">
+                <div class="">
+                    <span class="ui-jqgrid-title translate">Log</span>
+                </div>
+
+            </div>
+            <table style="width: 100%; border-collapse: collapse;" class="ui-widget ui-state-default ui-corner-bottom">
+                <thead>
+                <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
+                    <th class="log-column-1 ui-state-default ui-th-column ui-th-ltr translate">host</th>
+                    <th class="log-column-2 ui-state-default ui-th-column ui-th-ltr translate">ts</th>
+                    <th class="log-column-3 ui-state-default ui-th-column ui-th-ltr translate">severity</th>
+                    <th class="log-column-4 ui-state-default ui-th-column ui-th-ltr translate">message</th>
+                </tr>
+                </thead>
+            </table>
+            <div id="grid-log-inner" style="width: 100%; overflow-y: scroll;">
+                <table id="log-outer" style="width: 100%; border-collapse: collapse; margin-top: -1px" class="ui-widget ui-state-default ui-corner-bottom">
+                    <tbody id="log-table">
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+    -->
 </div>
 <div id="dialog-object" style="display:none">
     <table>
@@ -208,6 +239,18 @@
     </table>
     <input type="hidden" id="edit-object-id">
     <input type="hidden" id="edit-object-parent-old">
+</div>
+<div id="dialog-enum" title="edit enum" style="display:none">
+    <table>
+        <tr>
+            <td><label for="enum-parent">Parent</label></td>
+            <td><select id="enum-parent"></select></td>
+        </tr>
+        <tr>
+            <td><label for="enum-name">Name</label></td>
+            <td><input id="enum-name" type="text" size="50"/></td>
+        </tr>
+    </table>
 </div>
 <div id="dialog-script" style="display:none">
     <table>
@@ -269,14 +312,34 @@
     <table id="grid-select-member"></table>
 </div>
 <div id="dialog-history" style="display:none">
-    <table>
+    <table style="font-size: 12px">
         <tr>
-            <td>enabled</td>
+            <td class="translate">enabled</td>
             <td><input type="checkbox" id="edit-history-enabled"></td>
+            <td style="width: 40px">&nbsp;</td>
+            <td class="translate">log changes only</td>
+            <td><input type="checkbox" id="edit-history-changesOnly"></td>
         </tr>
         <tr>
-            <td>log changes only</td>
-            <td><input type="checkbox" id="edit-history-changesOnly"></td>
+            <td class="translate">minimum datapoint count in Redis</td>
+            <td><input type="number" id="edit-history-minLength"></td>
+            <td style="width: 40px">&nbsp;</td>
+            <td class="translate">CouchDB retention</td>
+            <td>
+                <select id="edit-history-retention">
+                    <option value="0"            class="translate">keep forever</option>
+                    <option value="63072000"    class="translate">2 years</option>
+                    <option value="31536000"    class="translate">1 year</option>
+                    <option value="15811200"    class="translate">6 months</option>
+                    <option value="7948800"     class="translate">3 months</option>
+                    <option value="2678400"     class="translate">1 months</option>
+                    <option value="1209600"     class="translate">2 weeks</option>
+                    <option value="604800"      class="translate">1 week</option>
+                    <option value="432000"      class="translate">5 days</option>
+                    <option value="259200"      class="translate">3 days</option>
+                    <option value="86400"       class="translate">1 day</option>
+                </select>
+            </td>
         </tr>
     </table><br/>
     <input type="hidden" id="edit-history-id">
@@ -290,11 +353,13 @@
     <iframe style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%; height: 100%" id="config-iframe"></iframe>
 </div>
 <div title="license agreement" id="dialog-license" style="display:none">
+    <h3>Select language</h3>
     <select id="license_language">
         <option value="en">English</option>
         <option value="de">Deutsch</option>
         <option value="ru">русский</option>
     </select>
+    <h3>License terms</h3>
     <div id="license_text" style="width: 100%"></div>
 </div>
 <div id="connecting" style="left:50%; top:50%;position: fixed;"><img src="img/gear.png"/></div>

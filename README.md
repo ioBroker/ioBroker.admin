@@ -4,8 +4,17 @@
 
 user interface for configuration and administration
 
+## Todo
+
 
 ## Changelog
+
+#### 0.0.10
+* (hobbyquaker) more options in dialogHistory
+* (hobbyquaker) add enums
+* (hobbyquaker) hide not-implemented buttons (add/del object f.e.)
+* (hobbyquaker) prepared tab log
+* (hobbyquaker) gridAdapters: colors for release state (red = planned, orange = alpha, yellow = beta, green = stable)
 
 #### 0.0.9
 * (hobbyquaker) history
