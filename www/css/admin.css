@@ -133,3 +133,27 @@ table#events {
     color: #222;
     border: 1px solid #c5dbec;
 }
+
+.planned {
+    background-color: rgba(255,0,0,0.4);
+    width: 100%;
+    display: block;
+}
+
+.alpha {
+    background-color: rgba(255,127,0,0.4);
+    width: 100%;
+    display: block;
+}
+
+.beta {
+    background-color: rgba(255,255,0,0.4);
+    width: 100%;
+    display: block;
+}
+
+.stable {
+    background-color: rgba(0,255,0,0.4);
+    width: 100%;
+    display: block;
+}

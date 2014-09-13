@@ -1,19 +1,25 @@
 {
     "common": {
         "name":                     "admin",
-        "version":                  "0.0.9",
-        "title":                    "ioBroker Admin Adapter",
+        "version":                  "0.0.10",
+        "title":                    "ioBroker Admin",
         "desc": {
             "en":                   "opens a webserver for the ioBroker admin UI",
-            "de":                   "Stellt webserver mit 'ioBroker admin UI' zur Verfügung",
+            "de":                   "Stellt Webserver für 'ioBroker Admin UI' zur Verfügung",
             "ru":                   "Запускает веб сервер с 'ioBroker admin UI' для удобной настройки через веб интерфейс"
         },
         "mode":                     "daemon",
         "platform":                 "Javascript/Node.js",
         "loglevel":                 "info",
         "icon":                     "admin.png",
-        "keywords":                 ["admin", "setup", "config", "update"],
-        "readme":                   "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md"
+        "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/admin/admin.png",
+        "keywords":                 ["setup", "config", "update", "upgrade", "system", "konfiguration", "administration", "einrichtung", "wartung"],
+        "readme":                   "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
+        "authors": [
+            "hobbyquaker <hq@ccu.io>",
+            "bluefox <bluefox@ccu.io>"
+        ],
+        "license":                  "MIT"
     },
     "native": {
         "port":                     8081,

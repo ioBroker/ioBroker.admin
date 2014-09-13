@@ -11,6 +11,9 @@ var $iframeDialog = null;
 (function ($) {
 $(document).ready(function () {
 
+    // Todo put this in adapter instance config
+    var historyMaxAge =         86400; // Maxmimum datapoint age to be shown in gridHistory (seconds)
+
     var toplevel  =             [];
     var instances =             [];
     var enums =                 [];
@@ -35,6 +38,7 @@ $(document).ready(function () {
 
     var $dialogCommand =        $('#dialog-command');
     var $dialogEnumMembers =    $('#dialog-enum-members');
+    var $dialogEnum =           $('#dialog-enum');
     var $dialogSelectMember =   $('#dialog-select-member');
     var $dialogConfig =         $('#dialog-config');
     var $dialogScript =         $('#dialog-script');
@@ -63,12 +67,12 @@ $(document).ready(function () {
 
     var enumEdit =              null;
 
+    // TODO hide tab scripts and don't initialize ace if no instance of adapter javascript enabled
     var editor = ace.edit("script-editor");
     //editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode("ace/mode/javascript");
     editor.resize();
 
-    // TODO hide tab scripts if no instance of adapter javascript enabled
     // jQuery UI initializations
     $('#tabs').tabs({
         activate: function (event, ui) {
@@ -119,6 +123,28 @@ $(document).ready(function () {
         }
     });
 
+
+    $dialogEnum.dialog({
+        autoOpen:   false,
+        modal:      true,
+        width:      500,
+        height:     300,
+        buttons: [
+            {
+                text: _('Save'),
+                click: function () {
+
+                }
+            },
+            {
+                text: _('Cancel'),
+                click: function () {
+                    $dialogEnum.dialog('close');
+                }
+            }
+        ]
+    });
+
     $dialogCommand.dialog({
         autoOpen:      false,
         modal:         true,
@@ -148,19 +174,24 @@ $(document).ready(function () {
         autoOpen:   false,
         modal:      true,
         width:      830,
-        height:     545,
+        height:     575,
         closeOnEscape: false,
         buttons: [
             {
                 text: 'Save',
                 click: function () {
-                    var id =             $('#edit-history-id').val();
-                    var enabled =        $('#edit-history-enabled').is(':checked');
-                    var changesOnly =    $('#edit-history-changesOnly').is(':checked');
+                    var id =            $('#edit-history-id').val();
+                    var enabled =       $('#edit-history-enabled').is(':checked');
+                    var changesOnly =   $('#edit-history-changesOnly').is(':checked');
+                    var minLength =     parseInt($('#edit-history-minLength').val(), 10) || 480;
+                    var retention =     parseInt($('#edit-history-retention').val(), 10) || 0;
 
                     objects[id].common.history = {
                         enabled:            enabled,
-                        changesOnly:        changesOnly
+                        changesOnly:        changesOnly,
+                        minLength:          minLength,
+                        maxLength:          minLength * 2,
+                        retention:          retention
                     };
 
                     socket.emit('setObject', id, objects[id], function () {
@@ -199,10 +230,10 @@ $(document).ready(function () {
                 {name: 'lc', index: 'lc', width: 140, fixed: false},
             ],
             width: 800,
-            height: 300,
+            height: 330,
             pager: $('#pager-history'),
             rowNum: 100,
-            rowList: [20, 50, 100],
+            rowList: [15, 100, 1000],
             sortname: "id",
             sortorder: "desc",
             viewrecords: true,
@@ -433,7 +464,7 @@ $(document).ready(function () {
             add: false,
             del: false,
             refresh: false
-        }).jqGrid('navButtonAdd', '#pager-objects', {
+        })/* TODO .jqGrid('navButtonAdd', '#pager-objects', {
             caption: '',
             buttonicon: 'ui-icon-trash',
             onClickButton: function () {
@@ -452,7 +483,7 @@ $(document).ready(function () {
             id: 'del-object',
             title: 'Delete object',
             cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-objects', {
+        })*/.jqGrid('navButtonAdd', '#pager-objects', {
             caption: '',
             buttonicon: 'ui-icon-gear',
             onClickButton: function () {
@@ -471,7 +502,7 @@ $(document).ready(function () {
             id: 'edit-object',
             title: _('Edit object'),
             cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-objects', {
+        })/*.jqGrid('navButtonAdd', '#pager-objects', {
             caption: '',
             buttonicon: 'ui-icon-plus',
             onClickButton: function () {
@@ -479,9 +510,9 @@ $(document).ready(function () {
             },
             position: 'first',
             id: 'add-object',
-            title: _('New objekt'),
+            title: _('New object'),
             cursor: 'pointer'
-        });
+        })*/;
 
     }
     function subGridObjects(grid, row, level) {
@@ -672,10 +703,18 @@ $(document).ready(function () {
             buttonicon: 'ui-icon-plus',
             onClickButton: function () {
                 alert('TODO add enum'); //TODO
+                $('#enum-parent').html('');
+                for (var i = 0; i < enums.length; i++) {
+                    if (!objects[enums[i]].parent) {
+                        $('#enum-parent').append('<option value="' + enums[i] + '">' + objects[enums[i]].common.name + ' (' + enums[i] + ')</option>')
+
+                    }
+                }
+                $dialogEnum.dialog('open');
             },
             position: 'first',
             id: 'add-enum',
-            title: _('New objekt'),
+            title: _('New enum'),
             cursor: 'pointer'
         });
 
@@ -831,7 +870,7 @@ $(document).ready(function () {
 
         $gridAdapter.jqGrid({
             datatype: 'local',
-            colNames: ['id', '', _('name'), _('title'), _('desc'), _('keywords'), _('available'), _('installed'), _('platform'), ''],
+            colNames: ['id', '', _('name'), _('title'), _('desc'), _('keywords'), _('available'), _('installed'), _('platform'), _('license'), ''],
             colModel: [
                 {name: '_id',       index: '_id',       hidden: true},
                 {name: 'image',     index: 'image',     width: 22,   editable: false, sortable: false, search: false, align: 'center'},
@@ -842,6 +881,7 @@ $(document).ready(function () {
                 {name: 'version',   index: 'version',   width:  70, align: 'center'},
                 {name: 'installed', index: 'installed', width: 110, align: 'center'},
                 {name: 'platform',  index: 'platform',  hidden: true},
+                {name: 'license',   index: 'license',   hidden: true},
                 {name: 'install',   index: 'install',   width: 160}
             ],
             pager: $('#pager-adapters'),
@@ -876,7 +916,7 @@ $(document).ready(function () {
             },
             position: 'first',
             id: 'add-object',
-            title: _('New objekt'),
+            title: _('update adapter information'),
             cursor: 'pointer'
         });
 
@@ -1544,7 +1584,7 @@ $(document).ready(function () {
             },
             position: 'first',
             id: 'add-object',
-            title: _('New objekt'),
+            title: _('New object'),
             cursor: 'pointer'
         })*/;
 
@@ -1568,8 +1608,22 @@ $(document).ready(function () {
                 var obj = objects[adapters[i]];
                 var installed = '';
                 var version = obj.common ? obj.common.version : '';
+                if (version) {
+                    var tmp = version.split('.');
+                    if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
+                        version = '<span class="planned">' + version + '</span>';
+                    } else if (tmp[0] === '0' && tmp[1] === '0') {
+                        version = '<span class="alpha">' + version + '</span>';
+                    } else if (tmp[0] === '0') {
+                        version = '<span class="beta">' + version + '</span>';
+                    } else {
+                        version = '<span class="stable">' + version + '</span>';
+                    }
+                }
+
                 if (obj.common && obj.common.installedVersion) {
                     installed = obj.common.installedVersion;
+                    var tmp = installed.split('.');
                     if (!upToDate(obj.common.version, obj.common.installedVersion)) {
                         installed += ' <button class="adapter-update-submit" data-adapter-name="' + obj.common.name + '">' + _('update') + '</button>';
                         version = '<span class="updateReady">' + version + '<span>';
@@ -1594,7 +1648,13 @@ $(document).ready(function () {
             $gridAdapter.trigger('reloadGrid');
 
             $(document).on('click', '.adapter-install-submit', function () {
-                cmdExec('add ' + $(this).attr('data-adapter-name'));
+                var obj = objects['system.adapter.' + $(this).attr('data-adapter-name')];
+                if (obj.common && obj.common.license && obj.common.license !== 'MIT') {
+                    // TODO Show license dialog!
+                    cmdExec('add ' + $(this).attr('data-adapter-name'));
+                } else {
+                    cmdExec('add ' + $(this).attr('data-adapter-name'));
+                }
             });
             $(document).on('click', '.adapter-update-submit', function () {
                 cmdExec('upgrade ' + $(this).attr('data-adapter-name'));
@@ -1823,13 +1883,15 @@ $(document).ready(function () {
                 if (obj.parent) {
                     if (!children[obj.parent]) children[obj.parent] = [];
                     children[obj.parent].push(id);
-                    if (obj.type === 'instance') instances.push(id);
+                    if (obj.type === 'instance')    instances.push(id);
+                    if (obj.type === 'enum')        enums.push(id);
                 } else {
                     toplevel.push(id);
-                    if (obj.type === 'script')  scripts.push(id);
-                    if (obj.type === 'user')    users.push(id);
-                    if (obj.type === 'group')   groups.push(id);
-                    if (obj.type === 'adapter') adapters.push(id);
+                    if (obj.type === 'script')      scripts.push(id);
+                    if (obj.type === 'user')        users.push(id);
+                    if (obj.type === 'group')       groups.push(id);
+                    if (obj.type === 'adapter')     adapters.push(id);
+                    if (obj.type === 'enum')        enums.push(id);
                     if (obj.type === 'host') {
                         var addr = null;
                         // Find first non internal IP and use it as identifier
@@ -1958,7 +2020,9 @@ $(document).ready(function () {
                 if (!objects[id].common.history) {
                     objects[id].common.history = {
                         enabled:        false,
-                        changesOnly: false
+                        changesOnly:    false,
+                        minLength:      480, // TODO use default value from history-adadpter config
+                        retention:      ''
                     }
                 }
                 if (objects[id].common.history.enabled) {
@@ -1971,17 +2035,28 @@ $(document).ready(function () {
                 } else {
                     $('#edit-history-changesOnly').removeAttr('checked');
                 }
+                $('#edit-history-minLength').val(objects[id].common.history.minLength);
+                $('#edit-history-retention').val(objects[id].common.history.retention);
                 $dialogHistory.dialog('option', 'title', 'history ' + id);
                 $dialogHistory.dialog('open');
                 $gridHistory.jqGrid('clearGridData');
                 $("#load_grid-history").show();
-                socket.emit('getStateHistory', id, function (err, res) {
+                var start = Math.round((new Date()).getTime() / 1000) - historyMaxAge;
+                var end =   Math.round((new Date()).getTime() / 1000);
+                socket.emit('getStateHistory', id, start, end, function (err, res) {
                     if (!err) {
+                        var rows = [];
                         for (var i = 0; i < res.length; i++) {
-                            res[i].ts = formatDate(new Date(res[i].ts * 1000));
-                            res[i].lc = formatDate(new Date(res[i].lc * 1000));
-                            $gridHistory.jqGrid('addRowData', i, res[i]);
+                            rows.push({
+                                gid: i,
+                                id: res[i].id,
+                                ack: res[i].ack,
+                                val: res[i].val,
+                                ts: formatDate(new Date(res[i].ts * 1000)),
+                                lc: formatDate(new Date(res[i].lc * 1000))
+                            });
                         }
+                        $gridHistory.jqGrid('addRowData', 'gid', rows);
                         $gridHistory.trigger('reloadGrid');
                     }
                 });
@@ -2237,6 +2312,7 @@ $(document).ready(function () {
         $('#save-system').button().button("disable").click(function() {
             var common = {};
             var languageChanged = false;
+            // TODO tempUnit and isFloatComma
             $('.value').each(function () {
                 var $this = $(this);
                 var id = $this.attr('id').substring('system_'.length);
@@ -2304,6 +2380,14 @@ $(document).ready(function () {
 
 
     // Socket.io methods
+    socket.on('log', function (host, ts, severity, message) {
+        $('#log-table').prepend('<tr class="log-severity-' + severity + '">' +
+            '<td class="log-column-1">' + host + '</td>' +
+            '<td class="log-column-2">' + ts + '</td>' +
+            '<td class="log-column-3">' + severity + '</td>' +
+            '<td class="log-column-4">' + message + '</td></tr>');
+    });
+
     socket.on('stateChange', function (id, obj) {
         if (!$gridStates) return;
 
@@ -2647,9 +2731,11 @@ $(document).ready(function () {
     }
 
     function navigation() {
-        var tab = 'tab-' + window.location.hash.slice(1);
-        var index = $('#tabs a[href="#' + tab + '"]').parent().index() - 1;
-        $('#tabs').tabs('option', 'active', index);
+        if (window.location.hash) {
+            var tab = 'tab-' + window.location.hash.slice(1);
+            var index = $('#tabs a[href="#' + tab + '"]').parent().index() - 1;
+            $('#tabs').tabs('option', 'active', index);
+        }
     }
 
     $(window).resize(resizeGrids);
