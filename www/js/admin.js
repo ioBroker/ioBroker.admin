@@ -2042,10 +2042,12 @@ $(document).ready(function () {
                 $gridHistory.jqGrid('clearGridData');
                 $("#load_grid-history").show();
                 var start = Math.round((new Date()).getTime() / 1000) - historyMaxAge;
-                var end =   Math.round((new Date()).getTime() / 1000);
+                var end =   Math.round((new Date()).getTime() / 1000) + 5000;
+                //console.log('getStateHistory', id, start, end)
                 socket.emit('getStateHistory', id, start, end, function (err, res) {
                     if (!err) {
                         var rows = [];
+                        //console.log('got ' + res.length + ' history datapoints for ' + id);
                         for (var i = 0; i < res.length; i++) {
                             rows.push({
                                 gid: i,
@@ -2058,6 +2060,8 @@ $(document).ready(function () {
                         }
                         $gridHistory.jqGrid('addRowData', 'gid', rows);
                         $gridHistory.trigger('reloadGrid');
+                    } else {
+                        console.log(err);
                     }
                 });
 
