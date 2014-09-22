@@ -29,7 +29,6 @@ $(document).ready(function () {
 
     var settingsChanged;
 
-    var cmdCode;
     var cmdCallback = null;
     var stdout;
 
@@ -227,7 +226,7 @@ $(document).ready(function () {
                 {name: 'ack', index: 'ack', width: 60, fixed: false},
                 {name: 'from', index: 'from', width: 80, fixed: false},
                 {name: 'ts', index: 'ts', width: 140, fixed: false},
-                {name: 'lc', index: 'lc', width: 140, fixed: false},
+                {name: 'lc', index: 'lc', width: 140, fixed: false}
             ],
             width: 800,
             height: 330,
@@ -909,15 +908,15 @@ $(document).ready(function () {
             del: false,
             refresh: false
         }).jqGrid('navButtonAdd', '#pager-adapters', {
-            caption: '',
-            buttonicon: 'ui-icon-refresh',
+            caption:       '',
+            buttonicon:    'ui-icon-refresh',
             onClickButton: function () {
-                cmdExec('update');
+                cmdExec('', 'update');
             },
-            position: 'first',
-            id: 'add-object',
-            title: _('update adapter information'),
-            cursor: 'pointer'
+            position:      'first',
+            id:            'add-object',
+            title:         _('update adapter information'),
+            cursor:        'pointer'
         });
 
     }
@@ -991,9 +990,10 @@ $(document).ready(function () {
                         }
                     });
                 }
-                var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var id   = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var host = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="host"]').html();
                 if (confirm('Are you sure?')) {
-                    cmdExec('del ' + id.replace('system.adapter.', ''));
+                    cmdExec(host, 'del ' + id.replace('system.adapter.', ''));
                 }
             },
             position: 'first',
@@ -1542,15 +1542,15 @@ $(document).ready(function () {
 
         $gridHosts.jqGrid({
             datatype: 'local',
-            colNames: ['id', _('name'), _('process'), _('platform'), _('os'), _('version'), _('install')],
+            colNames: ['id', _('name'), _('process'), _('platform'), _('os'), _('available'), _('installed')],
             colModel: [
                 {name: '_id',       index: '_id',       hidden: true},
                 {name: 'name',      index: 'name',      width:  64},
                 {name: 'process',   index: 'title',     width: 180},
                 {name: 'platform',  index: 'platform',  hidden: true},
                 {name: 'os',        index: 'os',        width: 360},
-                {name: 'version',   index: 'version',   width:  70, align: 'center'},
-                {name: 'install',   index: 'install',   width: 160}
+                {name: 'available', index: 'available', width:  70, align: 'center'},
+                {name: 'installed', index: 'installed', width: 160}
             ],
             pager: $('#pager-hosts'),
             width: 964,
@@ -1611,13 +1611,13 @@ $(document).ready(function () {
                 if (version) {
                     var tmp = version.split('.');
                     if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
-                        version = '<span class="planned">' + version + '</span>';
+                        version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
                     } else if (tmp[0] === '0' && tmp[1] === '0') {
-                        version = '<span class="alpha">' + version + '</span>';
+                        version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
                     } else if (tmp[0] === '0') {
-                        version = '<span class="beta">' + version + '</span>';
+                        version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
                     } else {
-                        version = '<span class="stable">' + version + '</span>';
+                        version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
                     }
                 }
 
@@ -1626,7 +1626,7 @@ $(document).ready(function () {
                     var tmp = installed.split('.');
                     if (!upToDate(obj.common.version, obj.common.installedVersion)) {
                         installed += ' <button class="adapter-update-submit" data-adapter-name="' + obj.common.name + '">' + _('update') + '</button>';
-                        version = '<span class="updateReady">' + version + '<span>';
+                        version = version.replace('class="', 'class="updateReady ');
                         $('a[href="#tab-adapters"]').addClass('updateReady');
                     }
                 }
@@ -1641,26 +1641,42 @@ $(document).ready(function () {
                     version:  version,
                     installed: installed,
                     install:  '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                        (obj.common.readme ? ('<button data-adapter-name="' + obj.common.name + '" data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>') : ''),
+                        (obj.common.readme ? ('<button data-adapter-name="' + obj.common.name + '" data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">?</button>') : '') +
+                        (installed ? '<button data-adapter-name="' + obj.common.name + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>' :''),
                     platform: obj.common ? obj.common.platform : ''
                 });
             }
             $gridAdapter.trigger('reloadGrid');
 
-            $(document).on('click', '.adapter-install-submit', function () {
+            $(".adapter-install-submit").button({
+                icons: {primary:'ui-icon-plusthick'}//,
+                //text:  false
+            }).unbind('click').on('click', function () {
                 var obj = objects['system.adapter.' + $(this).attr('data-adapter-name')];
                 if (obj.common && obj.common.license && obj.common.license !== 'MIT') {
                     // TODO Show license dialog!
-                    cmdExec('add ' + $(this).attr('data-adapter-name'));
+                    cmdExec('', 'add ' + $(this).attr('data-adapter-name'));
                 } else {
-                    cmdExec('add ' + $(this).attr('data-adapter-name'));
+                    cmdExec('', 'add ' + $(this).attr('data-adapter-name'));
                 }
             });
-            $(document).on('click', '.adapter-update-submit', function () {
-                cmdExec('upgrade ' + $(this).attr('data-adapter-name'));
+
+            $(".adapter-delete-submit").button({
+                icons: {primary:'ui-icon-trash'},
+                text:  false
+            }).unbind('click').on('click', function () {
+                cmdExec('', 'del ' + $(this).attr('data-adapter-name'));
             });
-            $(document).on('click', '.adapter-readme-submit', function () {
+
+            $(".adapter-readme-submit").button().unbind('click').on('click', function () {
                 window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
+            });
+
+            $(".adapter-update-submit").button({
+                icons: {primary:'ui-icon-refresh'}
+//              , text:  false
+            }).unbind('click').on('click', function () {
+                cmdExec('', 'upgrade ' + $(this).attr('data-adapter-name'));
             });
         }
     }
@@ -1708,7 +1724,7 @@ $(document).ready(function () {
                     });
             });
 
-            $(document).on('click', '.adapter-settings', function () {
+            $(document).unbind('click.adapter-settings').on('click', '.adapter-settings', function () {
                 $iframeDialog = $dialogConfig;
                 $configFrame.attr('src', $(this).attr('data-adapter-href'));
                 $dialogConfig.dialog('option', 'title', _('Adapter configuration') + ': ' + $(this).attr('data-adapter-name')).dialog('open');
@@ -1823,42 +1839,42 @@ $(document).ready(function () {
                 var obj = objects[hosts[i].id];
                 var installed = '';
                 var version = obj.common ? obj.common.version : '';
-                /*if (obj.common && obj.common.installedVersion) {
+                if (obj.common && obj.common.installedVersion) {
                    installed = obj.common.installedVersion;
                     if (!upToDate(obj.common.version, obj.common.installedVersion)) {
-                        installed += ' <button class="adapter-update-submit" data-adapter-name="' + obj.common.name + '">' + _('update') + '</button>';
+                        installed += ' <button class="host-update-submit" data-host-name="' + obj.common.name + '">' + _('update') + '</button>';
                         version = '<span class="updateReady">' + version + '<span>';
-                        $('a[href="#tab-adapters"]').addClass('updateReady');
+                        $('a[href="#tab-hosts"]').addClass('updateReady');
                     }
-                }*/
+                }
 
                 $gridHosts.jqGrid('addRowData', 'host_' + hosts[i].id.replace(/ /g, '_'), {
-                    _id:      obj._id,
-                    name:     obj.common.hostname,
-                    process:  obj.common.process,
-                    platform: obj.common.platform,
-                    os:       obj.native.os.platform,
-                    version:  obj.common.version,
-                    install:  ''
+                    _id:       obj._id,
+                    name:      obj.common.hostname,
+                    process:   obj.common.process,
+                    platform:  obj.common.platform,
+                    os:        obj.native.os.platform,
+                    available: version,
+                    installed: installed
                 });
             }
             $gridHosts.trigger('reloadGrid');
 
-            $(document).on('click', '.adapter-update-submit', function () {
-                cmdExec('upgrade ' + $(this).attr('data-adapter-name'));
+            $('.host-update-submit').unbind('click').on('click', function () {
+                cmdExec($(this).attr('data-host-name'), 'upgrade self');
             });
         }
     }
 
     // Methods
-    function cmdExec(cmd) {
+    function cmdExec(host, cmd) {
         $stdout.val('');
         $dialogCommand.dialog('open');
         stdout = '$ ./iobroker ' + cmd;
         $stdout.val(stdout);
-        socket.emit('cmdExec', cmd, function (code) {
-            cmdCode = code;
-        });
+        // genereate the unique id to coordinate the outputs
+        var id = Math.floor(Math.random() * 0xFFFFFFE) + 1;
+        socket.emit('cmdExec', host, id, cmd);
     }
 
     function getObjects(callback) {
@@ -1955,7 +1971,7 @@ $(document).ready(function () {
             $gridSelectMember.trigger('reloadGrid');
 
 
-            $(document).on('click', '.enum-members', function () {
+            $(document).unbind('click.enum-members').on('click', '.enum-members', function () {
                 enumMembers($(this).attr('data-enum-id'));
             });
 
@@ -2014,7 +2030,7 @@ $(document).ready(function () {
             $gridStates.jqGrid('addRowData', 'gridId', gridData);
 //benchmark('finished getStates loop');
             $gridStates.trigger('reloadGrid');
-            $(document).on('click', '.history', function () {
+            $(document).unbind('click.history').on('click', '.history', function () {
                 var id = $(this).attr('data-id');
                 $('#edit-history-id').val(id);
                 if (!objects[id].common.history) {
@@ -2467,9 +2483,7 @@ $(document).ready(function () {
             if (typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
                 initAdapters(true);
             }
-
         }
-
 
         // Update users
         if (id.substring(0, "system.user.".length) == "system.user.") {
@@ -2481,7 +2495,7 @@ $(document).ready(function () {
                     users.splice(k, 1);
                 }
             }
-            if (!updateTimers.initUsersGroups) {
+            if (updateTimers.initUsersGroups) {
                 clearTimeout(updateTimers.initUsersGroups);
             }
             updateTimers.initUsersGroups = setTimeout(function () {
@@ -2491,6 +2505,29 @@ $(document).ready(function () {
             }, 200);
         }
 
+        // Update hosts
+        if (id.substring(0, "system.host.".length) == "system.host.") {
+            var found = false;
+            for (var i = 0; i < hosts.length; i++) {
+                if (hosts[i].id == id) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (obj) {
+                if (!found) hosts.push({id: id, address: obj.common.address[0], name: obj.common.name});
+            } else {
+                if (found) hosts.splice(i, 1);
+            }
+            if (updateTimers.initHosts) {
+                clearTimeout(updateTimers.initHosts);
+            }
+            updateTimers.initHosts = setTimeout(function () {
+                updateTimers.initHosts = null;
+                initHosts(true);
+            }, 200);
+        }
         // Update groups
         if (id.substring(0, "system.group.".length) == "system.group.") {
             if (obj) {
@@ -2504,7 +2541,7 @@ $(document).ready(function () {
             setTimeout(function () {
                 initGroups(true);
             }, 0);
-            if (!updateTimers.initUsersGroups) {
+            if (updateTimers.initUsersGroups) {
                 clearTimeout(updateTimers.initUsersGroups);
             }
             updateTimers.initUsersGroups = setTimeout(function () {
@@ -2515,18 +2552,23 @@ $(document).ready(function () {
         }
     });
 
-    socket.on('cmdStdout', function (code, text) {
+    socket.on('cmdStdout', function (_id, text) {
         stdout += '\n' + text;
         $stdout.val(stdout);
         $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
     });
 
-    socket.on('cmdExit', function (code, exitCode) {
+    socket.on('cmdStderr', function (_id, text) {
+        stdout += '\nERROR: ' + text;
+        $stdout.val(stdout);
+        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+    });
+
+    socket.on('cmdExit', function (_id, exitCode) {
         exitCode = parseInt(exitCode, 10);
         stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
         $stdout.val(stdout);
         $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
-        cmdCode = null;
         if (exitCode == 0) {
             setTimeout(function () {
                 $dialogCommand.dialog('close');

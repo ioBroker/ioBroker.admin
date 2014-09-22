@@ -157,3 +157,8 @@ table#events {
     width: 100%;
     display: block;
 }
+
+.updateReady {
+    font-weight: bold;
+    color: green !important;
+}
