@@ -9,6 +9,10 @@ user interface for configuration and administration
 
 ## Changelog
 
+#### 0.0.11
+* (hobbyquaker) bugfix - slashes in IDs
+* (hobbyquaker) bugfix - gridHistory 
+
 #### 0.0.10
 * (hobbyquaker) more options in dialogHistory
 * (hobbyquaker) add enums
