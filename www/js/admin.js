@@ -6,6 +6,17 @@
 
 //if (typeof Worker === 'undefined') alert('your browser does not support WebWorkers :-(');
 
+Array.prototype.remove = function() {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+};
+
 var $iframeDialog = null;
 
 (function ($) {
@@ -1473,7 +1484,16 @@ $(document).ready(function () {
                 }
                 if (objSelected) {
                     var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                    alert('TODO delete ' + id); //TODO
+                    var obj = {
+                        id: id,
+                        _deleted: true
+                    };
+                    socket.emit('setObject', id, obj, function () {
+                        scripts.remove(id);
+                        delete objects[id];
+                        initScripts(true);
+                    });
+
                 }
             },
             position: 'first',
@@ -1783,18 +1803,20 @@ $(document).ready(function () {
         }
     }
 
-    function initScripts() {
+    function initScripts(update) {
 
         if (!objectsLoaded) {
             setTimeout(initScripts, 250);
             return;
         }
 
-        if (typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
+        if (update || typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
             $gridScripts[0]._isInited = true;
+            $gridScripts.jqGrid('clearGridData');
 
             for (var i = 0; i < scripts.length; i++) {
                 var obj = objects[scripts[i]];
+                if (!obj) continue;
                 $gridScripts.jqGrid('addRowData', 'script_' + instances[i].replace(/ /g, '_'), {
                     _id: obj._id,
                     name: obj.common ? obj.common.name : '',
@@ -2145,7 +2167,13 @@ $(document).ready(function () {
             obj._id = 'script.' + extension + obj.common.name;
         }
 
-        socket.emit('extendObject', obj._id, obj);
+        if (scripts.indexOf(obj._id) === -1) scripts.push(obj._id);
+        objects[obj._id] = obj;
+
+        socket.emit('extendObject', obj._id, obj, function () {
+            initScripts(true);
+
+        });
         $dialogScript.dialog('close');
     }
 
@@ -2755,3 +2783,4 @@ function benchmark(text) {
     benchTime = ts;
     console.log('-- ' + text);
 }
+
