@@ -564,6 +564,10 @@ function socketEvents(socket, user) {
         adapter.sendTo(adapterInstance, command, message, callback);
     });
 
+    socket.on('sendToHost', function (host, command, message, callback) {
+        adapter.sendToHost(host, command, message, callback);
+    });
+
     socket.on('authEnabled', function (callback) {
         callback(adapter.config.auth);
     });
