@@ -277,7 +277,7 @@ $(document).ready(function () {
             buttonicon: 'ui-icon-trash',
             onClickButton: function () {
                 var memberSelected = $gridEnumMembers.jqGrid('getGridParam', 'selrow');
-                var id = $('tr#' + memberSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var id = $('tr[id="' + memberSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 var obj = objects[enumEdit];
                 var idx = obj.common.members.indexOf(id);
                 if (idx !== -1) {
@@ -340,7 +340,7 @@ $(document).ready(function () {
             },
             ondblClickRow: function (rowid, e) {
                 var memberSelected = rowid;
-                var id = $('tr#' + memberSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var id = $('tr[id="' + memberSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 var obj = objects[enumEdit];
                 if (obj.common.members.indexOf(id) === -1) {
                     obj.common.members.push(id)
@@ -424,7 +424,7 @@ $(document).ready(function () {
             },
             afterInsertRow: function (rowid) {
                 // Remove icon and click handler if no children available
-                var id = $('tr#' + rowid.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var id = $('tr[id="' + rowid + '"]').find('td[aria-describedby$="_id"]').html();
                 if (!children[id]) {
                     $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
@@ -497,7 +497,7 @@ $(document).ready(function () {
                         }
                     });
                 }
-                var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 editObject(id);
             },
             position: 'first',
@@ -518,7 +518,7 @@ $(document).ready(function () {
 
     }
     function subGridObjects(grid, row, level) {
-        var id = $('tr#' + row.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+        var id = $('tr[id="' + row + '"]').find('td[aria-describedby$="_id"]').html();
         var subgridTableId = grid + '_t';
         $('[id="' + grid + '"]').html('<table class="subgrid-level-' + level + '" id="' + subgridTableId + '"></table>');
         var $subgrid = $('table[id="' + subgridTableId + '"]');
@@ -620,7 +620,7 @@ $(document).ready(function () {
             },
             afterInsertRow: function (rowid) {
                 // Remove icon and click handler if no children available
-                var id = $('tr#' + rowid.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var id = $('tr[id="' + rowid + '"]').find('td[aria-describedby$="_id"]').html();
                 if (!children[id]) {
                     $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
@@ -674,7 +674,7 @@ $(document).ready(function () {
                         }
                     });
                 }
-                var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 alert('TODO delete ' + id); //TODO
             },
             position: 'first',
@@ -693,7 +693,7 @@ $(document).ready(function () {
                         }
                     });
                 }
-                var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 editObject(id);
             },
             position: 'first',
@@ -723,7 +723,7 @@ $(document).ready(function () {
 
     }
     function subGridEnums(grid, row, level) {
-        var id = $('tr#' + row.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+        var id = $('tr[id="' + row + '"]').find('td[aria-describedby$="_id"]').html();
         var subgridTableId = grid + '_t';
         $('[id="' + grid + '"]').html('<table class="subgrid-level-' + level + '" id="' + subgridTableId + '"></table>');
         var $subgrid = $('table[id="' + subgridTableId + '"]');
@@ -854,7 +854,7 @@ $(document).ready(function () {
                     var ack = $gridStates.jqGrid("getCell", stateLastSelected, "ack");
                     if (ack === 'true') ack = true;
                     if (ack === 'false') ack = false;
-                    var id = $('tr#' + stateLastSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                    var id = $('tr[id="' + stateLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
                     socket.emit('setState', id, {val:val, ack:ack});
                 });
             }
@@ -993,8 +993,7 @@ $(document).ready(function () {
                         }
                     });
                 }
-                var id   = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
-                var host = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="host"]').html();
+                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 if (confirm('Are you sure?')) {
                     cmdExec(host, 'del ' + id.replace('system.adapter.', ''), function (exitCode) {
                         if (!exitCode) initAdapters(true);
@@ -1017,7 +1016,7 @@ $(document).ready(function () {
                         }
                     });
                 }
-                var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 editObject(id);
             },
             position: 'first',
@@ -1039,7 +1038,7 @@ $(document).ready(function () {
             buttonicon: 'ui-icon-refresh',
             onClickButton: function () {
                 var objSelected = $gridInstance.jqGrid('getGridParam', 'selrow');
-                var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 socket.emit('extendObject', id, {});
             },
             position: 'first',
@@ -1074,7 +1073,7 @@ $(document).ready(function () {
                 if (obj.common.enabled === 'true') obj.common.enabled = true;
                 if (obj.common.enabled === 'false') obj.common.enabled = false;
 
-                var id = $('tr#' + instanceLastSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var id = $('tr[id="' + instanceLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
 
                 socket.emit('extendObject', id, obj);
             });
@@ -1108,7 +1107,7 @@ $(document).ready(function () {
                     userLastSelected = id;
                 }
 
-                id = $('tr#' + userLastSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                id = $('tr[id="' + userLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
 
                 if (!users[id] || !users[id].common || !users[id].common.dontDelete) {
                     $('#del-user').removeClass('ui-state-disabled');
@@ -1161,7 +1160,7 @@ $(document).ready(function () {
                         }
                     });
                 }
-                var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 if (window.confirm("Are you sure?")) {
                     socket.emit('delUser', id.replace("system.user.", ""), function (err) {
                         if (err) {
@@ -1189,7 +1188,7 @@ $(document).ready(function () {
                     });
                 }
                 if (objSelected) {
-                    var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                    var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                     editUser(id);
                 } else {
                     window.alert("Invalid object " + objSelected);
@@ -1265,7 +1264,7 @@ $(document).ready(function () {
                     groupLastSelected = id;
                 }
 
-                id = $('tr#' + groupLastSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                id = $('tr[id="' + groupLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
 
                 if (!groups[id] || !groups[id].common || !groups[id].common.dontDelete) {
                     $('#del-group').removeClass('ui-state-disabled');
@@ -1320,7 +1319,7 @@ $(document).ready(function () {
                         }
                     });
                 }
-                var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 if (window.confirm("Are you sure?")) {
                     socket.emit('delGroup', id.replace("system.group.", ""), function (err) {
                         if (err) {
@@ -1346,7 +1345,7 @@ $(document).ready(function () {
                     });
                 }
                 if (objSelected) {
-                    var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                    var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                     editGroup(id);
                 } else {
                     window.alert("Invalid object " + objSelected);
@@ -1444,7 +1443,7 @@ $(document).ready(function () {
                     obj.common.enabled = $gridScripts.jqGrid("getCell", scriptLastSelected, "enabled");
                     if (obj.common.enabled === 'true') obj.common.enabled = true;
                     if (obj.common.enabled === 'false') obj.common.enabled = false;
-                    var id = $('tr#' + scriptLastSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                    var id = $('tr[id="' + scriptLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
                     socket.emit('extendObject', id, obj);
                 });
 
@@ -1477,7 +1476,7 @@ $(document).ready(function () {
                     });
                 }
                 if (objSelected) {
-                    var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                    var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                     alert('TODO delete ' + id); //TODO
                 }
             },
@@ -1498,7 +1497,7 @@ $(document).ready(function () {
                     });
                 }
                 if (objSelected) {
-                    var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
+                    var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                     editScript(id);
                 } else {
                     window.alert("Invalid object " + objSelected);
@@ -2264,10 +2263,12 @@ $(document).ready(function () {
                 $gridHistory.jqGrid('clearGridData');
                 $("#load_grid-history").show();
                 var start = Math.round((new Date()).getTime() / 1000) - historyMaxAge;
-                var end =   Math.round((new Date()).getTime() / 1000);
+                var end =   Math.round((new Date()).getTime() / 1000) + 5000;
+                //console.log('getStateHistory', id, start, end)
                 socket.emit('getStateHistory', id, start, end, function (err, res) {
                     if (!err) {
                         var rows = [];
+                        //console.log('got ' + res.length + ' history datapoints for ' + id);
                         for (var i = 0; i < res.length; i++) {
                             rows.push({
                                 gid: i,
@@ -2280,6 +2281,8 @@ $(document).ready(function () {
                         }
                         $gridHistory.jqGrid('addRowData', 'gid', rows);
                         $gridHistory.trigger('reloadGrid');
+                    } else {
+                        console.log(err);
                     }
                 });
 
