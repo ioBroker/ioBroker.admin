@@ -40,7 +40,6 @@ $(document).ready(function () {
 
     var settingsChanged;
 
-    var cmdCode;
     var cmdCallback = null;
     var stdout;
 
@@ -77,6 +76,9 @@ $(document).ready(function () {
     var objectsLoaded =         false;
 
     var enumEdit =              null;
+    var currentHost =           '';
+    var curRepository =         null;
+    var curInstalled =          null;
 
     // TODO hide tab scripts and don't initialize ace if no instance of adapter javascript enabled
     var editor = ace.edit("script-editor");
@@ -104,7 +106,7 @@ $(document).ready(function () {
                     break;
 
                 case '#tab-adapters':
-                    initAdapters();
+                    initHostsList();
                     break;
 
                 case '#tab-instances':
@@ -238,7 +240,7 @@ $(document).ready(function () {
                 {name: 'ack', index: 'ack', width: 60, fixed: false},
                 {name: 'from', index: 'from', width: 80, fixed: false},
                 {name: 'ts', index: 'ts', width: 140, fixed: false},
-                {name: 'lc', index: 'lc', width: 140, fixed: false},
+                {name: 'lc', index: 'lc', width: 140, fixed: false}
             ],
             width: 800,
             height: 330,
@@ -920,15 +922,15 @@ $(document).ready(function () {
             del: false,
             refresh: false
         }).jqGrid('navButtonAdd', '#pager-adapters', {
-            caption: '',
-            buttonicon: 'ui-icon-refresh',
+            caption:       '',
+            buttonicon:    'ui-icon-refresh',
             onClickButton: function () {
-                cmdExec('update');
+                initAdapters(true);
             },
-            position: 'first',
-            id: 'add-object',
-            title: _('update adapter information'),
-            cursor: 'pointer'
+            position:      'first',
+            id:            'add-object',
+            title:         _('update adapter information'),
+            cursor:        'pointer'
         });
 
     }
@@ -1004,7 +1006,9 @@ $(document).ready(function () {
                 }
                 var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 if (confirm('Are you sure?')) {
-                    cmdExec('del ' + id.replace('system.adapter.', ''));
+                    cmdExec(host, 'del ' + id.replace('system.adapter.', ''), function (exitCode) {
+                        if (!exitCode) initAdapters(true);
+                    });
                 }
             },
             position: 'first',
@@ -1562,15 +1566,16 @@ $(document).ready(function () {
 
         $gridHosts.jqGrid({
             datatype: 'local',
-            colNames: ['id', _('name'), _('process'), _('platform'), _('os'), _('version'), _('install')],
+            colNames: ['id', _('name'), _('type'), _('description'), _('platform'), _('os'), _('available'), _('installed')],
             colModel: [
                 {name: '_id',       index: '_id',       hidden: true},
                 {name: 'name',      index: 'name',      width:  64},
-                {name: 'process',   index: 'title',     width: 180},
+                {name: 'type',      index: 'type',      width:  70},
+                {name: 'title',     index: 'title',     width: 180},
                 {name: 'platform',  index: 'platform',  hidden: true},
                 {name: 'os',        index: 'os',        width: 360},
-                {name: 'version',   index: 'version',   width:  70, align: 'center'},
-                {name: 'install',   index: 'install',   width: 160}
+                {name: 'available', index: 'available', width:  70, align: 'center'},
+                {name: 'installed', index: 'installed', width: 160}
             ],
             pager: $('#pager-hosts'),
             width: 964,
@@ -1596,29 +1601,148 @@ $(document).ready(function () {
             add: false,
             del: false,
             refresh: false
-        })/*.jqGrid('navButtonAdd', '#pager-hosts', {
-            caption: '',
-            buttonicon: 'ui-icon-refresh',
-            onClickButton: function () {
-                cmdExec('update');
-            },
-            position: 'first',
-            id: 'add-object',
-            title: _('New object'),
-            cursor: 'pointer'
-        })*/;
-
+        });
     }
 
 
     // Grids content
     function initAdapters(update) {
+        $gridAdapter.jqGrid('clearGridData');
+        $("#load_grid-adapters").show();
+        $('a[href="#tab-adapters"]').removeClass('updateReady');
 
-        if (!objectsLoaded) {
-            setTimeout(initAdapters, 250);
-            return;
-        }
+        getAdaptersInfo(currentHost, update, function (repository, installedList) {
+            var id = 1;
+            // list of the installed adapters
+            for (var adapter in installedList) {
+                var obj = installedList[adapter];
+                if (!obj || obj.controller) continue;
+                var installed = '';
+                var version =   '';
+                var icon =      obj.icon;
+                if (repository[adapter] && repository[adapter].version) {
+                    version = repository[adapter].version;
+                }
 
+                if (repository[adapter] && repository[adapter].extIcon) icon = repository[adapter].extIcon;
+
+                if (obj.version) {
+                    installed = obj.version;
+                    var tmp = installed.split('.');
+                    if (!upToDate(version, installed)) {
+                        installed += ' <button class="adapter-update-submit" data-adapter-name="' + adapter + '">' + _('update') + '</button>';
+                        version = version.replace('class="', 'class="updateReady ');
+                        $('a[href="#tab-adapters"]').addClass('updateReady');
+                    }
+                }
+                if (version) {
+                    var tmp = version.split('.');
+                    if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
+                        version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
+                    } else if (tmp[0] === '0' && tmp[1] === '0') {
+                        version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
+                    } else if (tmp[0] === '0') {
+                        version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
+                    } else {
+                        version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
+                    }
+                }
+
+                $gridAdapter.jqGrid('addRowData', 'adapter_' + adapter.replace(/ /g, '_'), {
+                    _id:       id++,
+                    image:     icon ? '<img src="' + icon + '" width="22px" height="22px" />' : '',
+                    name:      adapter,
+                    title:     obj.title,
+                    desc:      (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc,
+                    keywords:  obj.keywords ? obj.keywords.join(' ') : '',
+                    version:   version,
+                    installed: installed,
+                    install:  '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
+                        (obj.readme ? ('<button data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">?</button>') : '') +
+                        (installed ? '<button data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>' :''),
+                    platform: obj.platform
+                });
+            }
+
+            // List of adapters for repository
+            for (var adapter in repository) {
+                var obj = repository[adapter];
+                if (!obj || obj.controller) continue;
+                var version =   '';
+                if (installedList[adapter]) continue;
+
+                if (repository[adapter] && repository[adapter].version) {
+                    version = repository[adapter].version;
+                    var tmp = version.split('.');
+                    if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
+                        version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
+                    } else if (tmp[0] === '0' && tmp[1] === '0') {
+                        version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
+                    } else if (tmp[0] === '0') {
+                        version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
+                    } else {
+                        version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
+                    }
+                }
+
+                $gridAdapter.jqGrid('addRowData', 'adapter_' + adapter.replace(/ /g, '_'), {
+                    _id:       id++,
+                    image:     repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" width="22px" height="22px" />' : '',
+                    name:      adapter,
+                    title:     obj.title,
+                    desc:      (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc,
+                    keywords:  obj.keywords ? obj.keywords.join(' ') : '',
+                    version:   version,
+                    installed: '',
+                    install:  '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
+                        (obj.readme ? ('<button data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">?</button>') : ''),
+                    platform: obj.platform
+                });
+            }
+
+
+            $gridAdapter.trigger('reloadGrid');
+
+            $(".adapter-install-submit").button({
+                icons: {primary:'ui-icon-plusthick'}//,
+                //text:  false
+            }).unbind('click').on('click', function () {
+                var obj = objects['system.adapter.' + $(this).attr('data-adapter-name')];
+                if (obj.common && obj.common.license && obj.common.license !== 'MIT') {
+                    // TODO Show license dialog!
+                    cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                        if (!exitCode) initAdapters(true);
+                    });
+                } else {
+                    cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                        if (!exitCode) initAdapters(true);
+                    });
+                }
+            });
+
+            $(".adapter-delete-submit").button({
+                icons: {primary:'ui-icon-trash'},
+                text:  false
+            }).unbind('click').on('click', function () {
+                cmdExec(currentHost, 'del ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                    if (!exitCode) initAdapters(true);
+                });
+            });
+
+            $(".adapter-readme-submit").button().unbind('click').on('click', function () {
+                window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
+            });
+
+            $(".adapter-update-submit").button({
+                icons: {primary:'ui-icon-refresh'}
+//              , text:  false
+            }).unbind('click').on('click', function () {
+                cmdExec(currentHost, 'upgrade ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                    if (!exitCode) initAdapters(true);
+                });
+            });
+        });
+        /*
         if (typeof $gridAdapter !== 'undefined' && (!$gridAdapter[0]._isInited || update)) {
             $('a[href="#tab-adapters"]').removeClass('updateReady');
 
@@ -1631,13 +1755,13 @@ $(document).ready(function () {
                 if (version) {
                     var tmp = version.split('.');
                     if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
-                        version = '<span class="planned">' + version + '</span>';
+                        version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
                     } else if (tmp[0] === '0' && tmp[1] === '0') {
-                        version = '<span class="alpha">' + version + '</span>';
+                        version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
                     } else if (tmp[0] === '0') {
-                        version = '<span class="beta">' + version + '</span>';
+                        version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
                     } else {
-                        version = '<span class="stable">' + version + '</span>';
+                        version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
                     }
                 }
 
@@ -1646,7 +1770,7 @@ $(document).ready(function () {
                     var tmp = installed.split('.');
                     if (!upToDate(obj.common.version, obj.common.installedVersion)) {
                         installed += ' <button class="adapter-update-submit" data-adapter-name="' + obj.common.name + '">' + _('update') + '</button>';
-                        version = '<span class="updateReady">' + version + '<span>';
+                        version = version.replace('class="', 'class="updateReady ');
                         $('a[href="#tab-adapters"]').addClass('updateReady');
                     }
                 }
@@ -1661,28 +1785,90 @@ $(document).ready(function () {
                     version:  version,
                     installed: installed,
                     install:  '<button data-adapter-name="' + obj.common.name + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                        (obj.common.readme ? ('<button data-adapter-name="' + obj.common.name + '" data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>') : ''),
+                        (obj.common.readme ? ('<button data-adapter-name="' + obj.common.name + '" data-adapter-url="' + obj.common.readme + '" class="adapter-readme-submit">?</button>') : '') +
+                        (installed ? '<button data-adapter-name="' + obj.common.name + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>' :''),
                     platform: obj.common ? obj.common.platform : ''
                 });
             }
             $gridAdapter.trigger('reloadGrid');
 
-            $(document).on('click', '.adapter-install-submit', function () {
+            $(".adapter-install-submit").button({
+                icons: {primary:'ui-icon-plusthick'}//,
+                //text:  false
+            }).unbind('click').on('click', function () {
                 var obj = objects['system.adapter.' + $(this).attr('data-adapter-name')];
                 if (obj.common && obj.common.license && obj.common.license !== 'MIT') {
                     // TODO Show license dialog!
-                    cmdExec('add ' + $(this).attr('data-adapter-name'));
+                    cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'));
                 } else {
-                    cmdExec('add ' + $(this).attr('data-adapter-name'));
+                    cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'));
                 }
             });
-            $(document).on('click', '.adapter-update-submit', function () {
-                cmdExec('upgrade ' + $(this).attr('data-adapter-name'));
+
+            $(".adapter-delete-submit").button({
+                icons: {primary:'ui-icon-trash'},
+                text:  false
+            }).unbind('click').on('click', function () {
+                cmdExec(currentHost, 'del ' + $(this).attr('data-adapter-name'));
             });
-            $(document).on('click', '.adapter-readme-submit', function () {
+
+            $(".adapter-readme-submit").button().unbind('click').on('click', function () {
                 window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
             });
+
+            $(".adapter-update-submit").button({
+                icons: {primary:'ui-icon-refresh'}
+//              , text:  false
+            }).unbind('click').on('click', function () {
+                cmdExec(currentHost, 'upgrade ' + $(this).attr('data-adapter-name'));
+            });
         }
+        */
+    }
+
+    function initHostsList() {
+
+        if (!objectsLoaded) {
+            setTimeout(initHostsList, 250);
+            return;
+        }
+
+        // fill the host list on adapter tab
+        var selHosts = document.getElementById('host-adapters');
+        var myOpts   = selHosts.options;
+        var $selHosts = $(selHosts);
+        for (var i = 0; i < myOpts.length; i++) {
+            var found = false;
+            for (var j = 0; j < hosts.length; j++) {
+                if (hosts[j] == myOpts[i].value) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                selHosts.remove(i);
+            }
+        }
+        for (var i = 0; i < hosts.length; i++) {
+            var found = false;
+            for (var j = 0; j < myOpts.length; j++) {
+                if (hosts[i].name == myOpts[j].value) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                $selHosts.append('<option value="' + hosts[i].name + '">' + hosts[i].name + '</option>');
+            }
+        }
+        if ($selHosts.val() != currentHost) {
+            currentHost = $selHosts.val();
+            initAdapters(true);
+        }
+        $selHosts.unbind('change').change(function() {
+            currentHost = $(this).val();
+            initAdapters(true);
+        });
     }
 
     function initInstances(update) {
@@ -1728,7 +1914,7 @@ $(document).ready(function () {
                     });
             });
 
-            $(document).on('click', '.adapter-settings', function () {
+            $(document).unbind('click.adapter-settings').on('click', '.adapter-settings', function () {
                 $iframeDialog = $dialogConfig;
                 $configFrame.attr('src', $(this).attr('data-adapter-href'));
                 $dialogConfig.dialog('option', 'title', _('Adapter configuration') + ': ' + $(this).attr('data-adapter-name')).dialog('open');
@@ -1829,6 +2015,7 @@ $(document).ready(function () {
         }
     }
 
+
     function initHosts(update) {
 
         if (!objectsLoaded) {
@@ -1840,47 +2027,81 @@ $(document).ready(function () {
             $('a[href="#tab-hosts"]').removeClass('updateReady');
 
             $gridHosts.jqGrid('clearGridData');
-            $gridHosts[0]._isInited = true;
-            for (var i = 0; i < hosts.length; i++) {
-                var obj = objects[hosts[i].id];
-                var installed = '';
-                var version = obj.common ? obj.common.version : '';
-                /*if (obj.common && obj.common.installedVersion) {
-                   installed = obj.common.installedVersion;
-                    if (!upToDate(obj.common.version, obj.common.installedVersion)) {
-                        installed += ' <button class="adapter-update-submit" data-adapter-name="' + obj.common.name + '">' + _('update') + '</button>';
-                        version = '<span class="updateReady">' + version + '<span>';
-                        $('a[href="#tab-adapters"]').addClass('updateReady');
+
+            getAdaptersInfo(currentHost, update, function (repository, installedList) {
+
+                $gridHosts[0]._isInited = true;
+                for (var i = 0; i < hosts.length; i++) {
+                    var obj = objects[hosts[i].id];
+                    var installed = '';
+                    var version = obj.common ? (repository[obj.common.type] ? repository[obj.common.type].version : '') : '';
+                    if (installedList && installedList.hosts && installedList.hosts[obj.common.hostname]) {
+                        installed = installedList.hosts[obj.common.hostname].version;
                     }
-                }*/
 
-                $gridHosts.jqGrid('addRowData', 'host_' + hosts[i].id.replace(/ /g, '_'), {
-                    _id:      obj._id,
-                    name:     obj.common.hostname,
-                    process:  obj.common.process,
-                    platform: obj.common.platform,
-                    os:       obj.native.os.platform,
-                    version:  obj.common.version,
-                    install:  ''
+                    if (!installed && obj.common && obj.common.installedVersion) installed = obj.common.installedVersion;
+
+                    if (installed && version) {
+                        if (!upToDate(version, installed)) {
+                            installed += ' <button class="host-update-submit" data-host-name="' + obj.common.hostname + '">' + _('update') + '</button>';
+                            version = '<span class="updateReady">' + version + '<span>';
+                            $('a[href="#tab-hosts"]').addClass('updateReady');
+                        }
+                    }
+
+                    $gridHosts.jqGrid('addRowData', 'host_' + hosts[i].id.replace(/ /g, '_'), {
+                        _id:       obj._id,
+                        name:      obj.common.hostname,
+                        type:      obj.common.type,
+                        title:     obj.common.title,
+                        platform:  obj.common.platform,
+                        os:        obj.native.os.platform,
+                        available: version,
+                        installed: installed
+                    });
+                }
+                $gridHosts.trigger('reloadGrid');
+
+                $('.host-update-submit').unbind('click').on('click', function () {
+                    cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
+                        if (!exitCode) initHosts(true);
+                    });
                 });
-            }
-            $gridHosts.trigger('reloadGrid');
-
-            $(document).on('click', '.adapter-update-submit', function () {
-                cmdExec('upgrade ' + $(this).attr('data-adapter-name'));
             });
         }
     }
 
     // Methods
-    function cmdExec(cmd) {
+    function cmdExec(host, cmd, callback) {
         $stdout.val('');
         $dialogCommand.dialog('open');
         stdout = '$ ./iobroker ' + cmd;
         $stdout.val(stdout);
-        socket.emit('cmdExec', cmd, function (code) {
-            cmdCode = code;
-        });
+        // genereate the unique id to coordinate the outputs
+        var id = Math.floor(Math.random() * 0xFFFFFFE) + 1;
+        cmdCallback = callback;
+        socket.emit('cmdExec', host, id, cmd);
+    }
+
+    function getAdaptersInfo(host, update, callback) {
+        if (!callback) throw 'Callback cannot be null or undefined';
+        if (update){
+            curRepository = null;
+            curInstalled  = null;
+        }
+        if (!curRepository) {
+            socket.emit('sendToHost', host, 'getRepository', null, function (_repository) {
+                curRepository = _repository;
+                if (curRepository && curInstalled) callback(curRepository, curInstalled);
+            });
+        }
+        if (!curInstalled) {
+            socket.emit('sendToHost', host, 'getInstalled', null, function (_installed) {
+                curInstalled = _installed;
+                if (curRepository && curInstalled) callback(curRepository, curInstalled);
+            });
+        }
+        if (curInstalled && curRepository) callback(curRepository, curInstalled)
     }
 
     function getObjects(callback) {
@@ -1934,7 +2155,7 @@ $(document).ready(function () {
 
 
             }
-//benchmark('finished getObjects loop');
+            //benchmark('finished getObjects loop');
             objectsLoaded = true;
 
             // Change editoptions for gridInstances column host
@@ -1977,14 +2198,14 @@ $(document).ready(function () {
             $gridSelectMember.trigger('reloadGrid');
 
 
-            $(document).on('click', '.enum-members', function () {
+            $(document).unbind('click.enum-members').on('click', '.enum-members', function () {
                 enumMembers($(this).attr('data-enum-id'));
             });
 
             if (typeof callback === 'function') callback();
 
             // Show if update available
-            initAdapters();
+            initHostsList();
         });
     }
 
@@ -2036,7 +2257,7 @@ $(document).ready(function () {
             $gridStates.jqGrid('addRowData', 'gridId', gridData);
 //benchmark('finished getStates loop');
             $gridStates.trigger('reloadGrid');
-            $(document).on('click', '.history', function () {
+            $(document).unbind('click.history').on('click', '.history', function () {
                 var id = $(this).attr('data-id');
                 $('#edit-history-id').val(id);
                 if (!objects[id].common.history) {
@@ -2487,7 +2708,7 @@ $(document).ready(function () {
         }
 
         // Update Adapter Table
-        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+$/)) {
+        /*if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+$/)) {
             if (obj) {
                 if (adapters.indexOf(id) == -1) adapters.push(id);
             } else {
@@ -2499,9 +2720,7 @@ $(document).ready(function () {
             if (typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
                 initAdapters(true);
             }
-
-        }
-
+        }*/
 
         // Update users
         if (id.substring(0, "system.user.".length) == "system.user.") {
@@ -2513,7 +2732,7 @@ $(document).ready(function () {
                     users.splice(k, 1);
                 }
             }
-            if (!updateTimers.initUsersGroups) {
+            if (updateTimers.initUsersGroups) {
                 clearTimeout(updateTimers.initUsersGroups);
             }
             updateTimers.initUsersGroups = setTimeout(function () {
@@ -2523,6 +2742,30 @@ $(document).ready(function () {
             }, 200);
         }
 
+        // Update hosts
+        if (id.substring(0, "system.host.".length) == "system.host.") {
+            var found = false;
+            for (var i = 0; i < hosts.length; i++) {
+                if (hosts[i].id == id) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (obj) {
+                if (!found) hosts.push({id: id, address: obj.common.address[0], name: obj.common.name});
+            } else {
+                if (found) hosts.splice(i, 1);
+            }
+            if (updateTimers.initHosts) {
+                clearTimeout(updateTimers.initHosts);
+            }
+            updateTimers.initHosts = setTimeout(function () {
+                updateTimers.initHosts = null;
+                initHosts(true);
+                initHostsList();
+            }, 200);
+        }
         // Update groups
         if (id.substring(0, "system.group.".length) == "system.group.") {
             if (obj) {
@@ -2536,7 +2779,7 @@ $(document).ready(function () {
             setTimeout(function () {
                 initGroups(true);
             }, 0);
-            if (!updateTimers.initUsersGroups) {
+            if (updateTimers.initUsersGroups) {
                 clearTimeout(updateTimers.initUsersGroups);
             }
             updateTimers.initUsersGroups = setTimeout(function () {
@@ -2547,18 +2790,23 @@ $(document).ready(function () {
         }
     });
 
-    socket.on('cmdStdout', function (code, text) {
+    socket.on('cmdStdout', function (_id, text) {
         stdout += '\n' + text;
         $stdout.val(stdout);
         $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
     });
 
-    socket.on('cmdExit', function (code, exitCode) {
+    socket.on('cmdStderr', function (_id, text) {
+        stdout += '\nERROR: ' + text;
+        $stdout.val(stdout);
+        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+    });
+
+    socket.on('cmdExit', function (_id, exitCode) {
         exitCode = parseInt(exitCode, 10);
         stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
         $stdout.val(stdout);
         $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
-        cmdCode = null;
         if (exitCode == 0) {
             setTimeout(function () {
                 $dialogCommand.dialog('close');
@@ -2752,7 +3000,7 @@ $(document).ready(function () {
         $gridStates.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridObjects.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridEnums.setGridHeight(y - 150).setGridWidth(x - 20);
-        $gridAdapter.setGridHeight(y - 150).setGridWidth(x - 20);
+        $gridAdapter.setGridHeight(y - 180).setGridWidth(x - 20);
         $gridInstance.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridScripts.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridUsers.setGridHeight(y - 150).setGridWidth(x - 20);

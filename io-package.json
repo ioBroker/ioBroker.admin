@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "admin",
-        "version":                  "0.0.11",
+        "version":                  "0.0.12",
         "title":                    "ioBroker Admin",
         "desc": {
             "en":                   "opens a webserver for the ioBroker admin UI",
@@ -12,6 +12,7 @@
         "platform":                 "Javascript/Node.js",
         "loglevel":                 "info",
         "icon":                     "admin.png",
+        "messagebox":               true,
         "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/admin/admin.png",
         "keywords":                 ["setup", "config", "update", "upgrade", "system", "konfiguration", "administration", "einrichtung", "wartung"],
         "readme":                   "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
