@@ -9,6 +9,10 @@ user interface for configuration and administration
 
 ## Changelog
 
+
+#### 0.0.12
+* (bluefox) new concept of updates/upgrades
+
 #### 0.0.11
 * (hobbyquaker) bugfix - slashes in IDs
 * (hobbyquaker) bugfix - gridHistory 
