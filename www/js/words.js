@@ -102,8 +102,9 @@ systemDictionary = {
     },
     "schedule":             {"en": "schedule",              "de": "Zeitplanung",            "ru": "schedule"},
     "config instance":      {"en": "config instance",       "de": "Instanz konfigurieren",  "ru": "config instance"},
-    "add instance":         {"en": "add instance",          "de": "Instanz hinzufügen",     "ru": "add instance"},
+    "add instance":         {"en": "instance",              "de": "Instanz",                "ru": "Экземпляр"},
     "readme":               {"en": "readme",                "de": "Lies mich",              "ru": "инструкции"},
+    "delete adapter":       {"en": "delete adapter",        "de": "Adapter löschen",        "ru": "Удалить адаптер"},
     "Save":                 {"en": "Save",                  "de": "Speichern",              "ru": "Save"},
     "Cancel":               {"en": "Cancel",                "de": "Abbrechen",              "ru": "Cancel"},
     "Log":                  {"en": "Log",                   "de": "Log",                    "ru": "Log"},
@@ -141,5 +142,9 @@ systemDictionary = {
         "de": "Adapter Informationen aktualisieren",
         "ru": "update adapter information"
     },
-    "history data":         {"en": "history data",          "de": "Historische Daten",      "ru": "history data"}
+    "history data":         {"en": "history data",          "de": "Historische Daten",      "ru": "history data"},
+    "alpha":                {"en": "alpha",                 "de": "alpha",                  "ru": "alpha"},
+    "update":               {"en": "update",                "de": "update",                 "ru": "обновить"},
+    "beta":                 {"en": "beta",                  "de": "beta",                   "ru": "beta"},
+    "planned":              {"en": "planned",               "de": "geplannt",               "ru": "в планах"}
 };
