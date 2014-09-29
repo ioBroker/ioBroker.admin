@@ -895,7 +895,7 @@ $(document).ready(function () {
                 {name: 'installed', index: 'installed', width: 110, align: 'center'},
                 {name: 'platform',  index: 'platform',  hidden: true},
                 {name: 'license',   index: 'license',   hidden: true},
-                {name: 'install',   index: 'install',   width: 160}
+                {name: 'install',   index: 'install',   width: 72}
             ],
             pager: $('#pager-adapters'),
             width: 964,
@@ -932,6 +932,8 @@ $(document).ready(function () {
             title:         _('update adapter information'),
             cursor:        'pointer'
         });
+
+        $('#gview_grid-adapters .ui-jqgrid-titlebar').append('<div style="margin-top: -3px; padding-left: 120px; margin-bottom: -3px;"><span class="translate">Host: </span><select id="host-adapters"></select></div>');
 
     }
 
@@ -1615,6 +1617,7 @@ $(document).ready(function () {
             var id = 1;
             // list of the installed adapters
             for (var adapter in installedList) {
+
                 var obj = installedList[adapter];
                 if (!obj || obj.controller) continue;
                 var installed = '';
@@ -1658,8 +1661,8 @@ $(document).ready(function () {
                     version:   version,
                     installed: installed,
                     install:  '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                        (obj.readme ? ('<button data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">?</button>') : '') +
-                        (installed ? '<button data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>' :''),
+                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
+                        '<button ' + (installed ? '' : 'disabled="disabled" ')+ 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
                     platform: obj.platform
                 });
             }
@@ -1695,7 +1698,8 @@ $(document).ready(function () {
                     version:   version,
                     installed: '',
                     install:  '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                        (obj.readme ? ('<button data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">?</button>') : ''),
+                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
+                        '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
                     platform: obj.platform
                 });
             }
@@ -1704,9 +1708,11 @@ $(document).ready(function () {
             $gridAdapter.trigger('reloadGrid');
 
             $(".adapter-install-submit").button({
-                icons: {primary:'ui-icon-plusthick'}//,
-                //text:  false
-            }).unbind('click').on('click', function () {
+                text: false,
+                icons: {
+                    primary: 'ui-icon-plusthick'
+                }
+            }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
                 var obj = objects['system.adapter.' + $(this).attr('data-adapter-name')];
                 if (obj.common && obj.common.license && obj.common.license !== 'MIT') {
                     // TODO Show license dialog!
@@ -1721,22 +1727,25 @@ $(document).ready(function () {
             });
 
             $(".adapter-delete-submit").button({
-                icons: {primary:'ui-icon-trash'},
+                icons: {primary: 'ui-icon-trash'},
                 text:  false
-            }).unbind('click').on('click', function () {
+            }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
                 cmdExec(currentHost, 'del ' + $(this).attr('data-adapter-name'), function (exitCode) {
                     if (!exitCode) initAdapters(true);
                 });
             });
 
-            $(".adapter-readme-submit").button().unbind('click').on('click', function () {
+            $(".adapter-readme-submit").button({
+                icons: {primary: 'ui-icon-help'},
+                text: false
+            }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
                 window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
             });
 
             $(".adapter-update-submit").button({
-                icons: {primary:'ui-icon-refresh'}
-//              , text:  false
-            }).unbind('click').on('click', function () {
+                icons: {primary: 'ui-icon-refresh'}
+                //text:  false
+            }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
                 cmdExec(currentHost, 'upgrade ' + $(this).attr('data-adapter-name'), function (exitCode) {
                     if (!exitCode) initAdapters(true);
                 });
@@ -3000,7 +3009,7 @@ $(document).ready(function () {
         $gridStates.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridObjects.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridEnums.setGridHeight(y - 150).setGridWidth(x - 20);
-        $gridAdapter.setGridHeight(y - 180).setGridWidth(x - 20);
+        $gridAdapter.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridInstance.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridScripts.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridUsers.setGridHeight(y - 150).setGridWidth(x - 20);
