@@ -907,8 +907,8 @@ $(document).ready(function () {
             viewrecords: true,
             caption: _('ioBroker adapters'),
             ignoreCase: true,
-            gridComplete: function () {
-
+            loadComplete: function () {
+                initAdapterButtons();
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
@@ -1707,49 +1707,7 @@ $(document).ready(function () {
 
             $gridAdapter.trigger('reloadGrid');
 
-            $(".adapter-install-submit").button({
-                text: false,
-                icons: {
-                    primary: 'ui-icon-plusthick'
-                }
-            }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
-                var obj = objects['system.adapter.' + $(this).attr('data-adapter-name')];
-                if (obj.common && obj.common.license && obj.common.license !== 'MIT') {
-                    // TODO Show license dialog!
-                    cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'), function (exitCode) {
-                        if (!exitCode) initAdapters(true);
-                    });
-                } else {
-                    cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'), function (exitCode) {
-                        if (!exitCode) initAdapters(true);
-                    });
-                }
-            });
 
-            $(".adapter-delete-submit").button({
-                icons: {primary: 'ui-icon-trash'},
-                text:  false
-            }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
-                cmdExec(currentHost, 'del ' + $(this).attr('data-adapter-name'), function (exitCode) {
-                    if (!exitCode) initAdapters(true);
-                });
-            });
-
-            $(".adapter-readme-submit").button({
-                icons: {primary: 'ui-icon-help'},
-                text: false
-            }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
-                window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
-            });
-
-            $(".adapter-update-submit").button({
-                icons: {primary: 'ui-icon-refresh'}
-                //text:  false
-            }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
-                cmdExec(currentHost, 'upgrade ' + $(this).attr('data-adapter-name'), function (exitCode) {
-                    if (!exitCode) initAdapters(true);
-                });
-            });
         });
         /*
         if (typeof $gridAdapter !== 'undefined' && (!$gridAdapter[0]._isInited || update)) {
@@ -1833,6 +1791,52 @@ $(document).ready(function () {
             });
         }
         */
+    }
+
+    function initAdapterButtons() {
+        $(".adapter-install-submit").button({
+            text: false,
+            icons: {
+                primary: 'ui-icon-plusthick'
+            }
+        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
+            var obj = objects['system.adapter.' + $(this).attr('data-adapter-name')];
+            if (obj.common && obj.common.license && obj.common.license !== 'MIT') {
+                // TODO Show license dialog!
+                cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                    if (!exitCode) initAdapters(true);
+                });
+            } else {
+                cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                    if (!exitCode) initAdapters(true);
+                });
+            }
+        });
+
+        $(".adapter-delete-submit").button({
+            icons: {primary: 'ui-icon-trash'},
+            text:  false
+        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
+            cmdExec(currentHost, 'del ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                if (!exitCode) initAdapters(true);
+            });
+        });
+
+        $(".adapter-readme-submit").button({
+            icons: {primary: 'ui-icon-help'},
+            text: false
+        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
+            window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
+        });
+
+        $(".adapter-update-submit").button({
+            icons: {primary: 'ui-icon-refresh'}
+            //text:  false
+        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
+            cmdExec(currentHost, 'upgrade ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                if (!exitCode) initAdapters(true);
+            });
+        });
     }
 
     function initHostsList() {
