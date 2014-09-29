@@ -38,7 +38,7 @@ $(document).ready(function () {
     var hosts =                 [];
     var states =                {};
 
-    var settingsChanged;
+    var systemConfig;
 
     var cmdCallback = null;
     var stdout;
@@ -57,6 +57,7 @@ $(document).ready(function () {
     var $dialogGroup =          $('#dialog-group');
     var $dialogLicense =        $('#dialog-license');
     var $dialogHistory =        $('#dialog-history');
+    var $dialogSystem =         $('#dialog-system');
 
     var $gridUsers =            $('#grid-users');
     var $gridGroups =           $('#grid-groups');
@@ -125,17 +126,82 @@ $(document).ready(function () {
         create: function () {
             $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
 
-            $(".ui-tabs-nav").
-                append("<button class='menu-button translateB' id='button-logout'>Logout</button>");
+            $(".ui-tabs-nav")
+                .append("<button class='menu-button translateB' id='button-logout'>Logout</button>")
+                .append("<button class='menu-button translateB' id='button-system'>System</button>");
             $("#button-logout").button().click(function () {
                 window.location.href = "/logout/";
             });
+            $("#button-system").button({
+                icons: {primary: 'ui-icon-gear'},
+                text: false
+            }).click(function () {
+                $('.system-settings.value').each(function () {
+                    var $this = $(this);
+                    var id = $this.attr('id').substring('system_'.length);
 
+                    $('.system-settings.value').each(function () {
+                        var $this = $(this);
+                        var id = $this.attr('id').substring('system_'.length);
+
+                        if ($this.attr('type') == 'checkbox') {
+                            $this.prop('checked', systemConfig.common[id]);
+                        } else {
+                            $this.val(systemConfig.common[id]);
+                        }
+
+                    });
+
+                });
+                $dialogSystem.dialog('open');
+            });
             window.onhashchange = navigation;
             navigation();
         }
     });
 
+    $dialogSystem.dialog({
+        autoOpen:   false,
+        modal:      true,
+        width:      800,
+        height:     480,
+        buttons: [
+            {
+                text: _('Save'),
+                click: function () {
+                    var common = {};
+                    var languageChanged = false;
+                    // TODO tempUnit and isFloatComma
+                    $('.system-settings.value').each(function () {
+                        var $this = $(this);
+                        var id = $this.attr('id').substring('system_'.length);
+
+                        if ($this.attr('type') == 'checkbox') {
+                            common[id] = $this.prop('checked');
+                        } else {
+                            if (id == 'language' && common[id] != $this.val()) languageChanged = true;
+                            common[id] = $this.val();
+                        }
+                    });
+
+                    socket.emit('extendObject', 'system.config', {common: common}, function (err) {
+                        if (!err) {
+                            if (languageChanged) {
+                                window.location.reload();
+                            }
+                        }
+                        $dialogSystem.dialog('close');
+                    });
+                }
+            },
+            {
+                text: _('Cancel'),
+                click: function () {
+                    $dialogEnum.dialog('close');
+                }
+            }
+        ]
+    });
 
     $dialogEnum.dialog({
         autoOpen:   false,
@@ -895,7 +961,7 @@ $(document).ready(function () {
                 {name: 'installed', index: 'installed', width: 110, align: 'center'},
                 {name: 'platform',  index: 'platform',  hidden: true},
                 {name: 'license',   index: 'license',   hidden: true},
-                {name: 'install',   index: 'install',   width: 160}
+                {name: 'install',   index: 'install',   width: 72}
             ],
             pager: $('#pager-adapters'),
             width: 964,
@@ -907,8 +973,8 @@ $(document).ready(function () {
             viewrecords: true,
             caption: _('ioBroker adapters'),
             ignoreCase: true,
-            gridComplete: function () {
-
+            loadComplete: function () {
+                initAdapterButtons();
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
@@ -932,6 +998,8 @@ $(document).ready(function () {
             title:         _('update adapter information'),
             cursor:        'pointer'
         });
+
+        $('#gview_grid-adapters .ui-jqgrid-titlebar').append('<div style="margin-top: -3px; padding-left: 120px; margin-bottom: -3px;"><span class="translate">Host: </span><select id="host-adapters"></select></div>');
 
     }
 
@@ -1615,6 +1683,7 @@ $(document).ready(function () {
             var id = 1;
             // list of the installed adapters
             for (var adapter in installedList) {
+
                 var obj = installedList[adapter];
                 if (!obj || obj.controller) continue;
                 var installed = '';
@@ -1658,8 +1727,8 @@ $(document).ready(function () {
                     version:   version,
                     installed: installed,
                     install:  '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                        (obj.readme ? ('<button data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">?</button>') : '') +
-                        (installed ? '<button data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>' :''),
+                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
+                        '<button ' + (installed ? '' : 'disabled="disabled" ')+ 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
                     platform: obj.platform
                 });
             }
@@ -1695,7 +1764,8 @@ $(document).ready(function () {
                     version:   version,
                     installed: '',
                     install:  '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                        (obj.readme ? ('<button data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">?</button>') : ''),
+                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
+                        '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
                     platform: obj.platform
                 });
             }
@@ -1703,44 +1773,7 @@ $(document).ready(function () {
 
             $gridAdapter.trigger('reloadGrid');
 
-            $(".adapter-install-submit").button({
-                icons: {primary:'ui-icon-plusthick'}//,
-                //text:  false
-            }).unbind('click').on('click', function () {
-                var obj = objects['system.adapter.' + $(this).attr('data-adapter-name')];
-                if (obj.common && obj.common.license && obj.common.license !== 'MIT') {
-                    // TODO Show license dialog!
-                    cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'), function (exitCode) {
-                        if (!exitCode) initAdapters(true);
-                    });
-                } else {
-                    cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'), function (exitCode) {
-                        if (!exitCode) initAdapters(true);
-                    });
-                }
-            });
 
-            $(".adapter-delete-submit").button({
-                icons: {primary:'ui-icon-trash'},
-                text:  false
-            }).unbind('click').on('click', function () {
-                cmdExec(currentHost, 'del ' + $(this).attr('data-adapter-name'), function (exitCode) {
-                    if (!exitCode) initAdapters(true);
-                });
-            });
-
-            $(".adapter-readme-submit").button().unbind('click').on('click', function () {
-                window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
-            });
-
-            $(".adapter-update-submit").button({
-                icons: {primary:'ui-icon-refresh'}
-//              , text:  false
-            }).unbind('click').on('click', function () {
-                cmdExec(currentHost, 'upgrade ' + $(this).attr('data-adapter-name'), function (exitCode) {
-                    if (!exitCode) initAdapters(true);
-                });
-            });
         });
         /*
         if (typeof $gridAdapter !== 'undefined' && (!$gridAdapter[0]._isInited || update)) {
@@ -1824,6 +1857,52 @@ $(document).ready(function () {
             });
         }
         */
+    }
+
+    function initAdapterButtons() {
+        $(".adapter-install-submit").button({
+            text: false,
+            icons: {
+                primary: 'ui-icon-plusthick'
+            }
+        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
+            var obj = objects['system.adapter.' + $(this).attr('data-adapter-name')];
+            if (obj.common && obj.common.license && obj.common.license !== 'MIT') {
+                // TODO Show license dialog!
+                cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                    if (!exitCode) initAdapters(true);
+                });
+            } else {
+                cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                    if (!exitCode) initAdapters(true);
+                });
+            }
+        });
+
+        $(".adapter-delete-submit").button({
+            icons: {primary: 'ui-icon-trash'},
+            text:  false
+        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
+            cmdExec(currentHost, 'del ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                if (!exitCode) initAdapters(true);
+            });
+        });
+
+        $(".adapter-readme-submit").button({
+            icons: {primary: 'ui-icon-help'},
+            text: false
+        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
+            window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
+        });
+
+        $(".adapter-update-submit").button({
+            icons: {primary: 'ui-icon-refresh'}
+            //text:  false
+        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
+            cmdExec(currentHost, 'upgrade ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                if (!exitCode) initAdapters(true);
+            });
+        });
     }
 
     function initHostsList() {
@@ -2561,76 +2640,6 @@ $(document).ready(function () {
         }
     }
 
-    function loadSettings(systemSettings) {
-        $('#save-system').button().button("disable").click(function() {
-            var common = {};
-            var languageChanged = false;
-            // TODO tempUnit and isFloatComma
-            $('.value').each(function () {
-                var $this = $(this);
-                var id = $this.attr('id').substring('system_'.length);
-
-                if ($this.attr('type') == 'checkbox') {
-                    common[id] = $this.prop('checked');
-                } else {
-                    if (id == 'language' && common[id] != $this.val()) languageChanged = true;
-                    common[id] = $this.val();
-                }
-            });
-
-            socket.emit('extendObject', 'system.config', {common: common}, function (err) {
-                if (!err) {
-                    settingsChanged = false;
-                    $('#save-system').button("disable");
-                    if (languageChanged) {
-                        translateAll();
-                    }
-                }
-            });
-        });
-
-        $('.value').each(function () {
-            var $this = $(this);
-            var id = $this.attr('id').substring('system_'.length);
-
-            if ($this.attr('type') == 'checkbox') {
-                $this.prop('checked', systemSettings.common[id]).change(function () {
-                    settingsChanged = true;
-                    $('#save-system').button("enable");
-                });
-            } else {
-                $this.val(systemSettings.common[id]).change(function() {
-                    settingsChanged = true;
-                    $('#save-system').button("enable");
-                }).keyup(function() {
-                    settingsChanged = true;
-                    $('#save-system').button("enable");
-                });
-            }
-
-        });
-
-        /*for (var param in systemSettings.common) {
-            var $param = $('#system_'  + param + '.value');
-            if ($param.length) {
-                if ($param.attr('type') == 'checkbox') {
-                    $param.prop('checked', systemSettings.common[param]).change(function () {
-                        settingsChanged = true;
-                        $('#save-system').button("enable");
-                    });
-                } else {
-                    $param.val(systemSettings.common[param]).change(function() {
-                        settingsChanged = true;
-                        $('#save-system').button("enable");
-                    }).keyup(function() {
-                        settingsChanged = true;
-                        $('#save-system').button("enable");
-                    });
-                }
-            }
-        }*/
-    }
-
 
     // Socket.io methods
     socket.on('log', function (host, ts, severity, message) {
@@ -2828,7 +2837,8 @@ $(document).ready(function () {
             });
 
             // Read system configuration
-            socket.emit('getObject', 'system.config', function (err, systemConfig) {
+            socket.emit('getObject', 'system.config', function (err, data) {
+                systemConfig = data;
                 if (!err && systemConfig && systemConfig.common) {
                     systemLang = systemConfig.common.language || systemLang;
                     if (!systemConfig.common.licenseConfirmed) {
@@ -2908,8 +2918,6 @@ $(document).ready(function () {
                 }
 
                 translateAll();
-
-                loadSettings(systemConfig);
 
                 // Here we go!
                 $('#tabs').show();
@@ -3000,7 +3008,7 @@ $(document).ready(function () {
         $gridStates.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridObjects.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridEnums.setGridHeight(y - 150).setGridWidth(x - 20);
-        $gridAdapter.setGridHeight(y - 180).setGridWidth(x - 20);
+        $gridAdapter.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridInstance.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridScripts.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridUsers.setGridHeight(y - 150).setGridWidth(x - 20);

@@ -102,7 +102,7 @@ systemDictionary = {
     },
     "schedule":             {"en": "schedule",              "de": "Zeitplanung",            "ru": "schedule"},
     "config instance":      {"en": "config instance",       "de": "Instanz konfigurieren",  "ru": "config instance"},
-    "add instance":         {"en": "instance",              "de": "Instanz",                "ru": "Экземпляр"},
+    "add instance":         {"en": "add instance",          "de": "Instanz hinzufügen",     "ru": "Экземпляр"},
     "readme":               {"en": "readme",                "de": "Lies mich",              "ru": "инструкции"},
     "delete adapter":       {"en": "delete adapter",        "de": "Adapter löschen",        "ru": "Удалить адаптер"},
     "Save":                 {"en": "Save",                  "de": "Speichern",              "ru": "Save"},
