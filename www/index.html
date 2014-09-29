@@ -24,7 +24,6 @@
 <body>
 <div id="tabs" style="display: none">
     <ul>
-        <li><a href="#tab-system"       class="translate">System</a></li>
         <li><a href="#tab-hosts"        class="translate">Hosts</a></li>
         <li><a href="#tab-objects"      class="translate">Objects</a></li>
         <li><a href="#tab-states"       class="translate">States</a></li>
@@ -37,53 +36,6 @@
         <li><a href="#tab-groups"       class="translate">Groups</a></li>
        <!-- <li><a href="#tab-log"          class="translate">Log</a></li> -->
     </ul>
-    <div id="tab-system">
-        <h2 class="translate">Settings</h2>
-        <div class="header ui-widget ui-widget-header ui-corner-all" >
-            <input type="button" id="save-system" class="translateV" value="save"/>
-        </div>
-        <table>
-            <tr><td class="translate">System language:</td>
-                <td>
-                    <select id="system_language" class="value">
-                        <option value="en">English</option>
-                        <option value="de">Deutsch</option>
-                        <option value="ru">русский</option>
-                    </select>
-                </td>
-            </tr>
-            <tr><td class="translate">Temperature units:</td>
-                <td>
-                    <select id="system_tempUnit" class="value">
-                        <option value="C°">C°</option>
-                        <option value="F°">F°</option>
-                    </select>
-                </td>
-            </tr>
-            <tr><td class="translate">Currency:</td>
-                <td>
-                    <input type="text" size="5" maxlength="5" id="system_currency" class="value"/>
-                </td>
-            </tr>
-            <tr><td class="translate">Date format:</td>
-                <td>
-                    <select id="system_dateFormat" class="value">
-                        <option value="DD.MM.YYYY" class="translate">DD.MM.YYYY</option>
-                        <option value="DD.MM.YY"   class="translate">DD.MM.YY</option>
-                        <option value="DD/MM/YYYY" class="translate">DD/MM/YYYY</option>
-                    </select>
-                </td>
-            </tr>
-            <tr><td class="translate">Float divider:</td>
-                <td>
-                    <select id="system_isFloatComma" class="value">
-                        <option value="true"  class="translate">comma</option>
-                        <option value="false" class="translate">point</option>
-                    </select>
-                </td>
-            </tr>
-        </table>
-    </div>
     <div id="tab-hosts">
         <table id="grid-hosts"></table>
         <div id="pager-hosts"></div>
@@ -358,5 +310,48 @@
     <div id="license_text" style="width: 100%"></div>
 </div>
 <div id="connecting" style="left:50%; top:50%;position: fixed;"><img src="img/gear.png"/></div>
+<div title="System settings" id="dialog-system" style="display:none">
+    <table>
+        <tr><td class="translate">System language:</td>
+            <td>
+                <select id="system_language" class="system-settings value">
+                    <option value="en">English</option>
+                    <option value="de">Deutsch</option>
+                    <option value="ru">русский</option>
+                </select>
+            </td>
+        </tr>
+        <tr><td class="translate">Temperature units:</td>
+            <td>
+                <select id="system_tempUnit" class="system-settings value">
+                    <option value="C°">C°</option>
+                    <option value="F°">F°</option>
+                </select>
+            </td>
+        </tr>
+        <tr><td class="translate">Currency:</td>
+            <td>
+                <input type="text" size="5" maxlength="5" id="system_currency" class="system-settings value"/>
+            </td>
+        </tr>
+        <tr><td class="translate">Date format:</td>
+            <td>
+                <select id="system_dateFormat" class="system-settings value">
+                    <option value="DD.MM.YYYY" class="translate">DD.MM.YYYY</option>
+                    <option value="DD.MM.YY"   class="translate">DD.MM.YY</option>
+                    <option value="DD/MM/YYYY" class="translate">DD/MM/YYYY</option>
+                </select>
+            </td>
+        </tr>
+        <tr><td class="translate">Float divider:</td>
+            <td>
+                <select id="system_isFloatComma" class="system-settings value">
+                    <option value="true"  class="translate">comma</option>
+                    <option value="false" class="translate">point</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+</div>
 </body>
 </html>

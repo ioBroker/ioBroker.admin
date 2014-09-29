@@ -38,7 +38,7 @@ $(document).ready(function () {
     var hosts =                 [];
     var states =                {};
 
-    var settingsChanged;
+    var systemConfig;
 
     var cmdCallback = null;
     var stdout;
@@ -57,6 +57,7 @@ $(document).ready(function () {
     var $dialogGroup =          $('#dialog-group');
     var $dialogLicense =        $('#dialog-license');
     var $dialogHistory =        $('#dialog-history');
+    var $dialogSystem =         $('#dialog-system');
 
     var $gridUsers =            $('#grid-users');
     var $gridGroups =           $('#grid-groups');
@@ -125,17 +126,82 @@ $(document).ready(function () {
         create: function () {
             $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
 
-            $(".ui-tabs-nav").
-                append("<button class='menu-button translateB' id='button-logout'>Logout</button>");
+            $(".ui-tabs-nav")
+                .append("<button class='menu-button translateB' id='button-logout'>Logout</button>")
+                .append("<button class='menu-button translateB' id='button-system'>System</button>");
             $("#button-logout").button().click(function () {
                 window.location.href = "/logout/";
             });
+            $("#button-system").button({
+                icons: {primary: 'ui-icon-gear'},
+                text: false
+            }).click(function () {
+                $('.system-settings.value').each(function () {
+                    var $this = $(this);
+                    var id = $this.attr('id').substring('system_'.length);
 
+                    $('.system-settings.value').each(function () {
+                        var $this = $(this);
+                        var id = $this.attr('id').substring('system_'.length);
+
+                        if ($this.attr('type') == 'checkbox') {
+                            $this.prop('checked', systemConfig.common[id]);
+                        } else {
+                            $this.val(systemConfig.common[id]);
+                        }
+
+                    });
+
+                });
+                $dialogSystem.dialog('open');
+            });
             window.onhashchange = navigation;
             navigation();
         }
     });
 
+    $dialogSystem.dialog({
+        autoOpen:   false,
+        modal:      true,
+        width:      800,
+        height:     480,
+        buttons: [
+            {
+                text: _('Save'),
+                click: function () {
+                    var common = {};
+                    var languageChanged = false;
+                    // TODO tempUnit and isFloatComma
+                    $('.system-settings.value').each(function () {
+                        var $this = $(this);
+                        var id = $this.attr('id').substring('system_'.length);
+
+                        if ($this.attr('type') == 'checkbox') {
+                            common[id] = $this.prop('checked');
+                        } else {
+                            if (id == 'language' && common[id] != $this.val()) languageChanged = true;
+                            common[id] = $this.val();
+                        }
+                    });
+
+                    socket.emit('extendObject', 'system.config', {common: common}, function (err) {
+                        if (!err) {
+                            if (languageChanged) {
+                                window.location.reload();
+                            }
+                        }
+                        $dialogSystem.dialog('close');
+                    });
+                }
+            },
+            {
+                text: _('Cancel'),
+                click: function () {
+                    $dialogEnum.dialog('close');
+                }
+            }
+        ]
+    });
 
     $dialogEnum.dialog({
         autoOpen:   false,
@@ -2574,76 +2640,6 @@ $(document).ready(function () {
         }
     }
 
-    function loadSettings(systemSettings) {
-        $('#save-system').button().button("disable").click(function() {
-            var common = {};
-            var languageChanged = false;
-            // TODO tempUnit and isFloatComma
-            $('.value').each(function () {
-                var $this = $(this);
-                var id = $this.attr('id').substring('system_'.length);
-
-                if ($this.attr('type') == 'checkbox') {
-                    common[id] = $this.prop('checked');
-                } else {
-                    if (id == 'language' && common[id] != $this.val()) languageChanged = true;
-                    common[id] = $this.val();
-                }
-            });
-
-            socket.emit('extendObject', 'system.config', {common: common}, function (err) {
-                if (!err) {
-                    settingsChanged = false;
-                    $('#save-system').button("disable");
-                    if (languageChanged) {
-                        translateAll();
-                    }
-                }
-            });
-        });
-
-        $('.value').each(function () {
-            var $this = $(this);
-            var id = $this.attr('id').substring('system_'.length);
-
-            if ($this.attr('type') == 'checkbox') {
-                $this.prop('checked', systemSettings.common[id]).change(function () {
-                    settingsChanged = true;
-                    $('#save-system').button("enable");
-                });
-            } else {
-                $this.val(systemSettings.common[id]).change(function() {
-                    settingsChanged = true;
-                    $('#save-system').button("enable");
-                }).keyup(function() {
-                    settingsChanged = true;
-                    $('#save-system').button("enable");
-                });
-            }
-
-        });
-
-        /*for (var param in systemSettings.common) {
-            var $param = $('#system_'  + param + '.value');
-            if ($param.length) {
-                if ($param.attr('type') == 'checkbox') {
-                    $param.prop('checked', systemSettings.common[param]).change(function () {
-                        settingsChanged = true;
-                        $('#save-system').button("enable");
-                    });
-                } else {
-                    $param.val(systemSettings.common[param]).change(function() {
-                        settingsChanged = true;
-                        $('#save-system').button("enable");
-                    }).keyup(function() {
-                        settingsChanged = true;
-                        $('#save-system').button("enable");
-                    });
-                }
-            }
-        }*/
-    }
-
 
     // Socket.io methods
     socket.on('log', function (host, ts, severity, message) {
@@ -2841,7 +2837,8 @@ $(document).ready(function () {
             });
 
             // Read system configuration
-            socket.emit('getObject', 'system.config', function (err, systemConfig) {
+            socket.emit('getObject', 'system.config', function (err, data) {
+                systemConfig = data;
                 if (!err && systemConfig && systemConfig.common) {
                     systemLang = systemConfig.common.language || systemLang;
                     if (!systemConfig.common.licenseConfirmed) {
@@ -2921,8 +2918,6 @@ $(document).ready(function () {
                 }
 
                 translateAll();
-
-                loadSettings(systemConfig);
 
                 // Here we go!
                 $('#tabs').show();
