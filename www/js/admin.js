@@ -136,6 +136,13 @@ $(document).ready(function () {
                 icons: {primary: 'ui-icon-gear'},
                 text: false
             }).click(function () {
+                $('#system_activeRepo').html('');
+                if (systemConfig.common.listRepo) {
+                    for (var repo in systemConfig.common.listRepo) {
+                        $('#system_activeRepo').append('<option value="' + repo + '">' + repo + '</option>');
+                    }
+                }
+
                 $('.system-settings.value').each(function () {
                     var $this = $(this);
                     var id = $this.attr('id').substring('system_'.length);
@@ -151,8 +158,8 @@ $(document).ready(function () {
                         }
 
                     });
-
                 });
+
                 $dialogSystem.dialog('open');
             });
             window.onhashchange = navigation;
@@ -171,6 +178,7 @@ $(document).ready(function () {
                 click: function () {
                     var common = {};
                     var languageChanged = false;
+                    var activeRepoChanged = false;
                     // TODO tempUnit and isFloatComma
                     $('.system-settings.value').each(function () {
                         var $this = $(this);
@@ -179,7 +187,8 @@ $(document).ready(function () {
                         if ($this.attr('type') == 'checkbox') {
                             common[id] = $this.prop('checked');
                         } else {
-                            if (id == 'language' && common[id] != $this.val()) languageChanged = true;
+                            if (id == 'language'   && common[id] != $this.val()) languageChanged   = true;
+                            if (id == 'activeRepo' && common[id] != $this.val()) activeRepoChanged = true;
                             common[id] = $this.val();
                         }
                     });
@@ -188,6 +197,8 @@ $(document).ready(function () {
                         if (!err) {
                             if (languageChanged) {
                                 window.location.reload();
+                            } else {
+                                if (activeRepoChanged) initAdapters(true);
                             }
                         }
                         $dialogSystem.dialog('close');
@@ -1685,7 +1696,7 @@ $(document).ready(function () {
             for (var adapter in installedList) {
 
                 var obj = installedList[adapter];
-                if (!obj || obj.controller) continue;
+                if (!obj || obj.controller || adapter == 'hosts') continue;
                 var installed = '';
                 var version =   '';
                 var icon =      obj.icon;
@@ -1867,6 +1878,7 @@ $(document).ready(function () {
             }
         }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
             var obj = objects['system.adapter.' + $(this).attr('data-adapter-name')];
+            if (!obj) return;
             if (obj.common && obj.common.license && obj.common.license !== 'MIT') {
                 // TODO Show license dialog!
                 cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'), function (exitCode) {
@@ -2169,7 +2181,7 @@ $(document).ready(function () {
             curInstalled  = null;
         }
         if (!curRepository) {
-            socket.emit('sendToHost', host, 'getRepository', null, function (_repository) {
+            socket.emit('sendToHost', host, 'getRepository', systemConfig.common.listRepo ? systemConfig.common.listRepo[systemConfig.common.activeRepo] : null, function (_repository) {
                 curRepository = _repository;
                 if (curRepository && curInstalled) callback(curRepository, curInstalled);
             });
