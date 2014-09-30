@@ -573,6 +573,13 @@ function socketEvents(socket, user) {
     socket.on('authEnabled', function (callback) {
         callback(adapter.config.auth);
     });
+
+    // Get list of repositories and active repository
+    socket.on('getRepositories', function (callback) {
+        callback(adapter.config.auth);
+    });
+
+
 }
 
 function onAuthorizeSuccess(data, accept) {

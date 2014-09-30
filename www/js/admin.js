@@ -71,6 +71,7 @@ $(document).ready(function () {
     var $gridScripts =          $('#grid-scripts');
     var $gridHosts =            $('#grid-hosts');
     var $gridHistory =          $('#grid-history');
+    var $gridRepo =             $('#grid-repos');
 
     var socket =                io.connect();
     var firstConnect =          true;
@@ -126,13 +127,13 @@ $(document).ready(function () {
         create: function () {
             $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
 
-            $(".ui-tabs-nav")
-                .append("<button class='menu-button translateB' id='button-logout'>Logout</button>")
-                .append("<button class='menu-button translateB' id='button-system'>System</button>");
-            $("#button-logout").button().click(function () {
-                window.location.href = "/logout/";
+            $('.ui-tabs-nav')
+                .append('<button class="menu-button" id="button-logout">' + _('Logout') + '</button>')
+                .append('<button class="menu-button" id="button-system">' + _('System') + '</button>');
+            $('#button-logout').button().click(function () {
+                window.location.href = '/logout/';
             });
-            $("#button-system").button({
+            $('#button-system').button({
                 icons: {primary: 'ui-icon-gear'},
                 text: false
             }).click(function () {
@@ -159,6 +160,7 @@ $(document).ready(function () {
 
                     });
                 });
+                $('#tabs-system').tabs();
 
                 $dialogSystem.dialog('open');
             });
@@ -208,10 +210,17 @@ $(document).ready(function () {
             {
                 text: _('Cancel'),
                 click: function () {
-                    $dialogEnum.dialog('close');
+                    $dialogSystem.dialog('close');
                 }
             }
-        ]
+        ],
+        open: function (event, ui) {
+            $gridRepo.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
+            initRepoGrid();
+        },
+        resize: function () {
+            $gridRepo.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
+        }
     });
 
     $dialogEnum.dialog({
@@ -1683,6 +1692,159 @@ $(document).ready(function () {
         });
     }
 
+    function prepareRepos() {
+        var instanceEdit = false;
+        $gridRepo.jqGrid({
+            datatype: 'local',
+            colNames: ['id', _('name'), _('link'), ''],
+            colModel: [
+                {name: '_id',       index: '_id',       hidden: true},
+                {name: 'name',      index: 'name',      width: 80,  editable: true},
+                {name: 'link',      index: 'link',      width: 200, align: 'center', editable: true},
+                {name: 'commands',  index: 'commands',  width: 60,  align: 'center'}
+            ],
+            pager: $('#pager-instances'),
+            rowNum: 100,
+            rowList: [20, 50, 100],
+            sortname: "id",
+            sortorder: "desc",
+            viewrecords: true,
+            caption: _('ioBroker repositories'),
+            ignoreCase: true,
+            onSelectRow: function (id, e) {
+                /*$('#del-instance').removeClass('ui-state-disabled');
+                $('#edit-instance').removeClass('ui-state-disabled');
+                $('#config-instance').removeClass('ui-state-disabled');
+                $('#reload-instance').removeClass('ui-state-disabled');
+                */
+            },
+            ondblClickRow: configRepo,
+            gridComplete: function () {
+                /*$('#del-instance').addClass('ui-state-disabled');
+                $('#edit-instance').addClass('ui-state-disabled');
+                $('#config-instance').addClass('ui-state-disabled');
+                $('#reload-instance').addClass('ui-state-disabled');
+                */
+            }
+        }).jqGrid('navButtonAdd', '#pager-repos', {
+            caption: '',
+            buttonicon: 'ui-icon-trash',
+            onClickButton: function () {
+                var objSelected = $gridRepo.jqGrid('getGridParam', 'selrow');
+                if (!objSelected) {
+                    $('[id^="grid-objects"][id$="_t"]').each(function () {
+                        if ($(this).jqGrid('getGridParam', 'selrow')) {
+                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
+                        }
+                    });
+                }
+                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
+                if (confirm('Are you sure?')) {
+                    cmdExec(host, 'del ' + id.replace('system.adapter.', ''), function (exitCode) {
+                        if (!exitCode) initAdapters(true);
+                    });
+                }
+            },
+            position: 'first',
+            id: 'del-instance',
+            title: _('delete instance'),
+            cursor: 'pointer'
+        }).jqGrid('navButtonAdd', '#pager-repos', {
+             caption: '',
+             buttonicon: 'ui-icon-plus',
+             onClickButton: function () {
+                 var objSelected = $gridRepo.jqGrid('getGridParam', 'selrow');
+                 if (!objSelected) {
+                     $('[id^="grid-objects"][id$="_t"]').each(function () {
+                         if ($(this).jqGrid('getGridParam', 'selrow')) {
+                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
+                         }
+                     });
+                 }
+                 var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
+                 editObject(id);
+             },
+             position: 'first',
+             id: 'add-repo',
+             title: _('add repository'),
+             cursor: 'pointer'
+         });
+         /*.jqGrid('navButtonAdd', '#pager-repos', {
+            caption: '',
+            buttonicon: 'ui-icon-gear',
+            onClickButton: function () {
+                var objSelected = $gridRepo.jqGrid('getGridParam', 'selrow');
+                if (!objSelected) {
+                    $('[id^="grid-objects"][id$="_t"]').each(function () {
+                        if ($(this).jqGrid('getGridParam', 'selrow')) {
+                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
+                        }
+                    });
+                }
+                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
+                editObject(id);
+            },
+            position: 'first',
+            id: 'edit-instance',
+            title: _('edit instance'),
+            cursor: 'pointer'
+        }).jqGrid('navButtonAdd', '#pager-repos', {
+            caption: '',
+            buttonicon: 'ui-icon-pencil',
+            onClickButton: function () {
+                configRepo($gridRepo.jqGrid('getGridParam', 'selrow'));
+            },
+            position: 'first',
+            id: 'config-instance',
+            title: _('config instance'),
+            cursor: 'pointer'
+        }).jqGrid('navButtonAdd', '#pager-repos', {
+            caption: '',
+            buttonicon: 'ui-icon-refresh',
+            onClickButton: function () {
+                var objSelected = $gridRepo.jqGrid('getGridParam', 'selrow');
+                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
+                socket.emit('extendObject', id, {});
+            },
+            position: 'first',
+            id: 'reload-instance',
+            title: _('reload instance'),
+            cursor: 'pointer'
+        });*/
+
+
+        function configRepo(id, e) {
+            var rowData = $gridInstance.jqGrid('getRowData', id);
+            rowData.ack = false;
+            rowData.from = '';
+            $gridInstance.jqGrid('setRowData', id, rowData);
+
+            if (id && id !== instanceLastSelected) {
+                $gridInstance.restoreRow(instanceLastSelected);
+                instanceLastSelected = id;
+            }
+            $gridInstance.editRow(id, true, function () {
+                // onEdit
+                instanceEdit = true;
+            }, function (obj) {
+                // success
+            }, "clientArray", null, function () {
+                // afterSave
+                instanceEdit = false;
+                var obj = {common:{}};
+                obj.common.host     = $gridInstance.jqGrid("getCell", instanceLastSelected, "host");
+                obj.common.loglevel = $gridInstance.jqGrid("getCell", instanceLastSelected, "loglevel");
+                obj.common.schedule = $gridInstance.jqGrid("getCell", instanceLastSelected, "schedule");
+                obj.common.enabled  = $gridInstance.jqGrid("getCell", instanceLastSelected, "enabled");
+                if (obj.common.enabled === 'true') obj.common.enabled = true;
+                if (obj.common.enabled === 'false') obj.common.enabled = false;
+
+                var id = $('tr[id="' + instanceLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
+
+                socket.emit('extendObject', id, obj);
+            });
+        }
+    }
 
     // Grids content
     function initAdapters(update) {
@@ -1775,7 +1937,7 @@ $(document).ready(function () {
                     version:   version,
                     installed: '',
                     install:  '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
+                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
                         '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
                     platform: obj.platform
                 });
@@ -1916,6 +2078,32 @@ $(document).ready(function () {
             });
         });
     }
+
+    function initRepoGrid(update) {
+        $gridRepo.jqGrid('clearGridData');
+        if (systemConfig.common.listRepo) {
+            var id = 1;
+            // list of the repositories
+            for (var repo in systemConfig.common.listRepo) {
+
+                var obj = systemConfig.common.listRepo[repo];
+
+                $gridRepo.jqGrid('addRowData', 'repo_' + id, {
+                    _id:     id,
+                    name:    repo,
+                    link:    systemConfig.common.listRepo[repo],
+                    command:
+                        '<button data-repo-id="' + id + '" class="repo-edit-submit">'   + _('edit')   + '</button>' +
+                        '<button data-repo-id="' + id + '" class="repo-delete-submit">' + _('delete') + '</button>'
+                });
+                id++;
+            }
+        }
+
+
+        $gridAdapter.trigger('reloadGrid');
+    }
+
 
     function initHostsList() {
 
@@ -2944,6 +3132,7 @@ $(document).ready(function () {
                 prepareGroups();
                 prepareScripts();
                 prepareHistory();
+                prepareRepos();
                 resizeGrids();
 
                 $("#load_grid-select-member").show();
