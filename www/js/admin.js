@@ -178,10 +178,10 @@ $(document).ready(function () {
             {
                 text: _('Save'),
                 click: function () {
-                    var common = {};
-                    var languageChanged = false;
+                    var common = systemConfig.common;
+                    var languageChanged   = false;
                     var activeRepoChanged = false;
-                    // TODO tempUnit and isFloatComma
+
                     $('.system-settings.value').each(function () {
                         var $this = $(this);
                         var id = $this.attr('id').substring('system_'.length);
@@ -189,11 +189,30 @@ $(document).ready(function () {
                         if ($this.attr('type') == 'checkbox') {
                             common[id] = $this.prop('checked');
                         } else {
-                            if (id == 'language'   && common[id] != $this.val()) languageChanged   = true;
-                            if (id == 'activeRepo' && common[id] != $this.val()) activeRepoChanged = true;
+                            if (id == 'language'   && common.language   != $this.val()) languageChanged   = true;
+                            if (id == 'activeRepo' && common.activeRepo != $this.val()) activeRepoChanged = true;
                             common[id] = $this.val();
                         }
                     });
+
+                    // Fill the repositories list
+                    common.listRepo = {};
+                    var data = $gridRepo.jqGrid('getRowData');
+                    var first = null;
+                    for (var i = 0; i < data.length; i++) {
+                        common.listRepo[data[i].name] = data[i].link;
+                        if (!first) first = data[i].name;
+                    }
+                    // Check if the active repository still exist in the list
+                    if (!first) {
+                        if (common.activeRepo != '') {
+                            activeRepoChanged = true;
+                            common.activeRepo = '';
+                        }
+                    } else if (!common.listRepo[common.activeRepo]) {
+                        activeRepoChanged = true;
+                        common.activeRepo = first;
+                    }
 
                     socket.emit('extendObject', 'system.config', {common: common}, function (err) {
                         if (!err) {
@@ -267,7 +286,6 @@ $(document).ready(function () {
             $configFrame.attr('src', '');
         }
     });
-
 
     $dialogHistory.dialog({
         autoOpen:   false,
@@ -964,9 +982,6 @@ $(document).ready(function () {
     }
 
     function prepareAdapters() {
-        var adapterLastSelected;
-        var adapterEdit;
-
         $gridAdapter.jqGrid({
             datatype: 'local',
             colNames: ['id', '', _('name'), _('title'), _('desc'), _('keywords'), _('available'), _('installed'), _('platform'), _('license'), ''],
@@ -1649,9 +1664,6 @@ $(document).ready(function () {
     }
 
     function prepareHosts() {
-        var adapterLastSelected;
-        var adapterEdit;
-
         $gridHosts.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('type'), _('description'), _('platform'), _('os'), _('available'), _('installed')],
@@ -1693,157 +1705,82 @@ $(document).ready(function () {
     }
 
     function prepareRepos() {
-        var instanceEdit = false;
         $gridRepo.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('link'), ''],
             colModel: [
                 {name: '_id',       index: '_id',       hidden: true},
-                {name: 'name',      index: 'name',      width: 80,  editable: true},
-                {name: 'link',      index: 'link',      width: 200, align: 'center', editable: true},
-                {name: 'commands',  index: 'commands',  width: 60,  align: 'center'}
+                {name: 'name',      index: 'name',      width: 60,  editable: true},
+                {name: 'link',      index: 'link',      width: 300, editable: true},
+                {name: 'commands',  index: 'commands',  width: 60,  editable: false, align: 'center'}
             ],
-            pager: $('#pager-instances'),
+            pager: $('#pager-repos'),
             rowNum: 100,
             rowList: [20, 50, 100],
             sortname: "id",
             sortorder: "desc",
-            viewrecords: true,
+            ondblClickRow: function (rowid) {
+                var id = rowid.substring('repo_'.length);
+                $('.repo-edit-submit').hide();
+                $('.repo-delete-submit').hide();
+                $('.repo-ok-submit[data-repo-id="' + id + '"]').show();
+                $('.repo-cancel-submit[data-repo-id="' + id + '"]').show();
+                $gridRepo.jqGrid('editRow', rowid, {"url":"clientArray"});
+            },
+            viewrecords: false,
+            pgbuttons: false,
+            pginput: false,
+            pgtext: false,
             caption: _('ioBroker repositories'),
-            ignoreCase: true,
-            onSelectRow: function (id, e) {
-                /*$('#del-instance').removeClass('ui-state-disabled');
-                $('#edit-instance').removeClass('ui-state-disabled');
-                $('#config-instance').removeClass('ui-state-disabled');
-                $('#reload-instance').removeClass('ui-state-disabled');
-                */
-            },
-            ondblClickRow: configRepo,
-            gridComplete: function () {
-                /*$('#del-instance').addClass('ui-state-disabled');
-                $('#edit-instance').addClass('ui-state-disabled');
-                $('#config-instance').addClass('ui-state-disabled');
-                $('#reload-instance').addClass('ui-state-disabled');
-                */
-            }
+            ignoreCase: true
+        }).navGrid('#pager-repos', {
+            search: false,
+            edit: false,
+            add: false,
+            del: false,
+            refresh: false
         }).jqGrid('navButtonAdd', '#pager-repos', {
             caption: '',
-            buttonicon: 'ui-icon-trash',
+            buttonicon: 'ui-icon-plus',
             onClickButton: function () {
-                var objSelected = $gridRepo.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-objects"][id$="_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
+                // Find last id;
+                var id = 1;
+                var ids = $gridRepo.jqGrid('getDataIDs');
+                while (ids.indexOf('repo_' + id) != -1) id++;
+                // Find new unique name
+                var found;
+                var newText = _("New");
+                var idx = 1;
+                do {
+                    found = true;
+                    for (var _id = 0; _id < ids.length; _id++) {
+                        var obj = $gridRepo.jqGrid('getRowData', ids[_id]);
+                        if (obj && obj.name == newText + idx)  {
+                            idx++;
+                            found = false;
+                            break;
                         }
+                    }
+                } while (!found);
+
+                $gridRepo.jqGrid('addRowData', 'repo_' + id, {
+                    _id:     id,
+                    name:    newText + idx,
+                    link:    '',
+                    commands:
+                        '<button data-repo-id="' + id + '" class="repo-edit-submit">'   + _('edit')   + '</button>' +
+                        '<button data-repo-id="' + id + '" class="repo-delete-submit">' + _('delete') + '</button>' +
+                        '<button data-repo-id="' + id + '" class="repo-ok-submit" style="display:none">' + _('ok') + '</button>' +
+                        '<button data-repo-id="' + id + '" class="repo-cancel-submit" style="display:none">' + _('cancel') + '</button>'
                     });
-                }
-                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                if (confirm('Are you sure?')) {
-                    cmdExec(host, 'del ' + id.replace('system.adapter.', ''), function (exitCode) {
-                        if (!exitCode) initAdapters(true);
-                    });
-                }
+
+                initRepoButtons();
             },
             position: 'first',
-            id: 'del-instance',
-            title: _('delete instance'),
+            id: 'add-repo',
+            title: _('add repository'),
             cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-repos', {
-             caption: '',
-             buttonicon: 'ui-icon-plus',
-             onClickButton: function () {
-                 var objSelected = $gridRepo.jqGrid('getGridParam', 'selrow');
-                 if (!objSelected) {
-                     $('[id^="grid-objects"][id$="_t"]').each(function () {
-                         if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                         }
-                     });
-                 }
-                 var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                 editObject(id);
-             },
-             position: 'first',
-             id: 'add-repo',
-             title: _('add repository'),
-             cursor: 'pointer'
-         });
-         /*.jqGrid('navButtonAdd', '#pager-repos', {
-            caption: '',
-            buttonicon: 'ui-icon-gear',
-            onClickButton: function () {
-                var objSelected = $gridRepo.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-objects"][id$="_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                editObject(id);
-            },
-            position: 'first',
-            id: 'edit-instance',
-            title: _('edit instance'),
-            cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-repos', {
-            caption: '',
-            buttonicon: 'ui-icon-pencil',
-            onClickButton: function () {
-                configRepo($gridRepo.jqGrid('getGridParam', 'selrow'));
-            },
-            position: 'first',
-            id: 'config-instance',
-            title: _('config instance'),
-            cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-repos', {
-            caption: '',
-            buttonicon: 'ui-icon-refresh',
-            onClickButton: function () {
-                var objSelected = $gridRepo.jqGrid('getGridParam', 'selrow');
-                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                socket.emit('extendObject', id, {});
-            },
-            position: 'first',
-            id: 'reload-instance',
-            title: _('reload instance'),
-            cursor: 'pointer'
-        });*/
-
-
-        function configRepo(id, e) {
-            var rowData = $gridInstance.jqGrid('getRowData', id);
-            rowData.ack = false;
-            rowData.from = '';
-            $gridInstance.jqGrid('setRowData', id, rowData);
-
-            if (id && id !== instanceLastSelected) {
-                $gridInstance.restoreRow(instanceLastSelected);
-                instanceLastSelected = id;
-            }
-            $gridInstance.editRow(id, true, function () {
-                // onEdit
-                instanceEdit = true;
-            }, function (obj) {
-                // success
-            }, "clientArray", null, function () {
-                // afterSave
-                instanceEdit = false;
-                var obj = {common:{}};
-                obj.common.host     = $gridInstance.jqGrid("getCell", instanceLastSelected, "host");
-                obj.common.loglevel = $gridInstance.jqGrid("getCell", instanceLastSelected, "loglevel");
-                obj.common.schedule = $gridInstance.jqGrid("getCell", instanceLastSelected, "schedule");
-                obj.common.enabled  = $gridInstance.jqGrid("getCell", instanceLastSelected, "enabled");
-                if (obj.common.enabled === 'true') obj.common.enabled = true;
-                if (obj.common.enabled === 'false') obj.common.enabled = false;
-
-                var id = $('tr[id="' + instanceLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
-
-                socket.emit('extendObject', id, obj);
-            });
-        }
+        });
     }
 
     // Grids content
@@ -2092,16 +2029,83 @@ $(document).ready(function () {
                     _id:     id,
                     name:    repo,
                     link:    systemConfig.common.listRepo[repo],
-                    command:
+                    commands:
                         '<button data-repo-id="' + id + '" class="repo-edit-submit">'   + _('edit')   + '</button>' +
-                        '<button data-repo-id="' + id + '" class="repo-delete-submit">' + _('delete') + '</button>'
+                        '<button data-repo-id="' + id + '" class="repo-delete-submit">' + _('delete') + '</button>' +
+                        '<button data-repo-id="' + id + '" class="repo-ok-submit" style="display:none">' + _('ok') + '</button>' +
+                        '<button data-repo-id="' + id + '" class="repo-cancel-submit" style="display:none">' + _('cancel') + '</button>'
                 });
                 id++;
             }
+
+            initRepoButtons();
         }
 
 
         $gridAdapter.trigger('reloadGrid');
+    }
+
+    function updateRepoListSelect() {
+        var selectedRepo = $('#system_activeRepo').val();
+        var isFound = false;
+        $('#system_activeRepo').html('');
+        var data = $gridRepo.jqGrid('getRowData');
+        for (var i = 0; i < data.length; i++) {
+            $('#system_activeRepo').append('<option value="' + data[i].name + '">' + data[i].name + '</option>');
+            if (selectedRepo == data[i].name) {
+                isFound = true;
+            }
+        }
+        if (isFound) $('#system_activeRepo').val(selectedRepo);
+    }
+
+    function initRepoButtons() {
+        var editedId = null;
+
+        $('.repo-edit-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-pencil'},
+            text:  false
+        }).click(function () {
+            var id = $(this).attr('data-repo-id');
+            $('.repo-edit-submit').hide();
+            $('.repo-delete-submit').hide();
+            $('.repo-ok-submit[data-repo-id="' + id + '"]').show();
+            $('.repo-cancel-submit[data-repo-id="' + id + '"]').show();
+            $gridRepo.jqGrid('editRow', 'repo_' + id, {"url":"clientArray"});
+        });
+
+        $('.repo-delete-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-trash'},
+            text:  false
+        }).click(function () {
+            var id = $(this).attr('data-repo-id');
+            $gridRepo.jqGrid('delRowData', 'repo_' + id);
+            updateRepoListSelect();
+        });
+
+        $('.repo-ok-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-check'},
+            text:  false
+        }).click(function () {
+            var id = $(this).attr('data-repo-id');
+            $('.repo-edit-submit').show();
+            $('.repo-delete-submit').show();
+            $('.repo-ok-submit').hide();
+            $('.repo-cancel-submit').hide();
+            $gridRepo.jqGrid('saveRow', 'repo_' + id, {"url":"clientArray"});
+            updateRepoListSelect();
+        });
+        $('.repo-cancel-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-close'},
+            text:  false
+        }).click(function () {
+            var id = $(this).attr('data-repo-id');
+            $('.repo-edit-submit').show();
+            $('.repo-delete-submit').show();
+            $('.repo-ok-submit').hide();
+            $('.repo-cancel-submit').hide();
+            $gridRepo.jqGrid('restoreRow', 'repo_' + id, false);
+        });
     }
 
 
