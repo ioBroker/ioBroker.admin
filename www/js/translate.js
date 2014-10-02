@@ -8,10 +8,10 @@ function translateWord(text, lang, dictionary) {
 
     if (dictionary[text]) {
         var newText = dictionary[text][lang];
-        if (newText){
+        if (newText) {
             return newText;
         } else if (lang != 'en') {
-            newText = dictionary[text]['en'];
+            newText = dictionary[text].en;
             if (newText) {
                 return newText;
             }

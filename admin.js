@@ -312,11 +312,11 @@ function initWebServer(settings) {
                 url = url.replace(/\/admin\//, __dirname + '/admin/');
                 url = url.replace(/\?[0-9]*/, '');
 
-                try{
+                try {
                     fs.createReadStream(url).pipe(res);
                 } catch (e) {
                     var s = new Stream();
-                    s.pipe = function(dest) {
+                    s.pipe = function (dest) {
                         dest.write('File not found: ' + e);
                     };
 

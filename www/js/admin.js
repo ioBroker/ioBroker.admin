@@ -7,7 +7,10 @@
 //if (typeof Worker === 'undefined') alert('your browser does not support WebWorkers :-(');
 
 Array.prototype.remove = function() {
-    var what, a = arguments, L = a.length, ax;
+    var what;
+    var a = arguments;
+    var L = a.length;
+    var ax;
     while (L && this.length) {
         what = a[--L];
         while ((ax = this.indexOf(what)) !== -1) {
@@ -205,7 +208,7 @@ $(document).ready(function () {
                     }
                     // Check if the active repository still exist in the list
                     if (!first) {
-                        if (common.activeRepo != '') {
+                        if (common.activeRepo) {
                             activeRepoChanged = true;
                             common.activeRepo = '';
                         }
@@ -269,7 +272,9 @@ $(document).ready(function () {
         width:         920,
         height:        480,
         closeOnEscape: false,
-        open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog || ui).hide(); }
+        open: function (event, ui) {
+            $(".ui-dialog-titlebar-close", ui.dialog || ui).hide();
+        }
     });
 
     $dialogConfig.dialog({
@@ -278,7 +283,7 @@ $(document).ready(function () {
         width:      830, //$(window).width() > 920 ? 920: $(window).width(),
         height:     536, //$(window).height() - 100, // 480
         closeOnEscape: false,
-        open: function(event, ui) {
+        open: function (event, ui) {
             $('#dialog-config').css('padding', '2px 0px');
         },
         close: function () {
@@ -324,7 +329,7 @@ $(document).ready(function () {
                 }
             }
         ],
-        open: function(event, ui) {
+        open: function (event, ui) {
 
         },
         close: function () {
@@ -458,7 +463,7 @@ $(document).ready(function () {
                 var id = $('tr[id="' + memberSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 var obj = objects[enumEdit];
                 if (obj.common.members.indexOf(id) === -1) {
-                    obj.common.members.push(id)
+                    obj.common.members.push(id);
                 }
                 objects[enumEdit] = obj;
                 socket.emit('setObject', enumEdit, obj, function () {
@@ -823,7 +828,7 @@ $(document).ready(function () {
                 $('#enum-parent').html('');
                 for (var i = 0; i < enums.length; i++) {
                     if (!objects[enums[i]].parent) {
-                        $('#enum-parent').append('<option value="' + enums[i] + '">' + objects[enums[i]].common.name + ' (' + enums[i] + ')</option>')
+                        $('#enum-parent').append('<option value="' + enums[i] + '">' + objects[enums[i]].common.name + ' (' + enums[i] + ')</option>');
 
                     }
                 }
@@ -1108,10 +1113,12 @@ $(document).ready(function () {
                     });
                 }
                 var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                if (confirm('Are you sure?')) {
-                    cmdExec(host, 'del ' + id.replace('system.adapter.', ''), function (exitCode) {
-                        if (!exitCode) initAdapters(true);
-                    });
+                if (objects[id] && objects[id].common && objects[id].common.host) {
+                    if (confirm(_('Are you sure?'))) {
+                        cmdExec(objects[id].common.host, 'del ' + id.replace('system.adapter.', ''), function (exitCode) {
+                            if (!exitCode) initAdapters(true);
+                        });
+                    }
                 }
             },
             position: 'first',
@@ -1237,7 +1244,7 @@ $(document).ready(function () {
                 $('#del-user').addClass('ui-state-disabled');
                 $('#edit-user').addClass('ui-state-disabled');
                 $(".user-groups-edit").multiselect({
-                    selectedList: 4,
+                            selectedList: 4,
                     close: function () {
                         synchronizeUser($(this).attr('data-id'), $(this).val());
                     },
@@ -1746,7 +1753,9 @@ $(document).ready(function () {
                 // Find last id;
                 var id = 1;
                 var ids = $gridRepo.jqGrid('getDataIDs');
-                while (ids.indexOf('repo_' + id) != -1) id++;
+                while (ids.indexOf('repo_' + id) != -1) {
+                    id++;
+                }
                 // Find new unique name
                 var found;
                 var newText = _("New");
@@ -1793,12 +1802,12 @@ $(document).ready(function () {
             var id = 1;
             // list of the installed adapters
             for (var adapter in installedList) {
-
                 var obj = installedList[adapter];
                 if (!obj || obj.controller || adapter == 'hosts') continue;
                 var installed = '';
                 var version =   '';
                 var icon =      obj.icon;
+                var tmp;
                 if (repository[adapter] && repository[adapter].version) {
                     version = repository[adapter].version;
                 }
@@ -1807,7 +1816,7 @@ $(document).ready(function () {
 
                 if (obj.version) {
                     installed = obj.version;
-                    var tmp = installed.split('.');
+                    tmp = installed.split('.');
                     if (!upToDate(version, installed)) {
                         installed += ' <button class="adapter-update-submit" data-adapter-name="' + adapter + '">' + _('update') + '</button>';
                         version = version.replace('class="', 'class="updateReady ');
@@ -1815,7 +1824,7 @@ $(document).ready(function () {
                     }
                 }
                 if (version) {
-                    var tmp = version.split('.');
+                    tmp = version.split('.');
                     if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
                         version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
                     } else if (tmp[0] === '0' && tmp[1] === '0') {
@@ -1838,21 +1847,21 @@ $(document).ready(function () {
                     installed: installed,
                     install:  '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
                         '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
-                        '<button ' + (installed ? '' : 'disabled="disabled" ')+ 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
+                        '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
                     platform: obj.platform
                 });
             }
 
             // List of adapters for repository
-            for (var adapter in repository) {
-                var obj = repository[adapter];
+            for (adapter in repository) {
+                obj = repository[adapter];
                 if (!obj || obj.controller) continue;
-                var version =   '';
+                version =   '';
                 if (installedList[adapter]) continue;
 
                 if (repository[adapter] && repository[adapter].version) {
                     version = repository[adapter].version;
-                    var tmp = version.split('.');
+                    tmp = version.split('.');
                     if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
                         version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
                     } else if (tmp[0] === '0' && tmp[1] === '0') {
@@ -1976,18 +1985,21 @@ $(document).ready(function () {
                 primary: 'ui-icon-plusthick'
             }
         }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
-            var obj = objects['system.adapter.' + $(this).attr('data-adapter-name')];
-            if (!obj) return;
-            if (obj.common && obj.common.license && obj.common.license !== 'MIT') {
-                // TODO Show license dialog!
-                cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'), function (exitCode) {
-                    if (!exitCode) initAdapters(true);
-                });
-            } else {
-                cmdExec(currentHost, 'add ' + $(this).attr('data-adapter-name'), function (exitCode) {
-                    if (!exitCode) initAdapters(true);
-                });
-            }
+            var adapter = $(this).attr('data-adapter-name');
+            getAdaptersInfo(currentHost, false, function (repo) {
+                var obj = repo[adapter];
+                if (!obj) return;
+                if (obj.license && obj.license !== 'MIT') {
+                    // TODO Show license dialog!
+                    cmdExec(currentHost, 'add ' + adapter, function (exitCode) {
+                        if (!exitCode) initAdapters(true);
+                    });
+                } else {
+                    cmdExec(currentHost, 'add ' + adapter, function (exitCode) {
+                        if (!exitCode) initAdapters(true);
+                    });
+                }
+            });
         });
 
         $(".adapter-delete-submit").button({
@@ -2007,8 +2019,8 @@ $(document).ready(function () {
         });
 
         $(".adapter-update-submit").button({
-            icons: {primary: 'ui-icon-refresh'}
-            //text:  false
+            icons: {primary: 'ui-icon-refresh'},
+            text:  false
         }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
             cmdExec(currentHost, 'upgrade ' + $(this).attr('data-adapter-name'), function (exitCode) {
                 if (!exitCode) initAdapters(true);
@@ -2132,9 +2144,9 @@ $(document).ready(function () {
                 selHosts.remove(i);
             }
         }
-        for (var i = 0; i < hosts.length; i++) {
-            var found = false;
-            for (var j = 0; j < myOpts.length; j++) {
+        for (i = 0; i < hosts.length; i++) {
+            found = false;
+            for (j = 0; j < myOpts.length; j++) {
                 if (hosts[i].name == myOpts[j].value) {
                     found = true;
                     break;
@@ -2148,7 +2160,7 @@ $(document).ready(function () {
             currentHost = $selHosts.val();
             initAdapters(true);
         }
-        $selHosts.unbind('change').change(function() {
+        $selHosts.unbind('change').change(function () {
             currentHost = $(this).val();
             initAdapters(true);
         });
@@ -2368,7 +2380,7 @@ $(document).ready(function () {
 
     function getAdaptersInfo(host, update, callback) {
         if (!callback) throw 'Callback cannot be null or undefined';
-        if (update){
+        if (update) {
             curRepository = null;
             curInstalled  = null;
         }
@@ -2384,7 +2396,7 @@ $(document).ready(function () {
                 if (curRepository && curInstalled) callback(curRepository, curInstalled);
             });
         }
-        if (curInstalled && curRepository) callback(curRepository, curInstalled)
+        if (curInstalled && curRepository) callback(curRepository, curInstalled);
     }
 
     function getObjects(callback) {
@@ -2467,7 +2479,7 @@ $(document).ready(function () {
                         name: objects[toplevel[i]].common ? (objects[toplevel[i]].common.name || '') : '',
                         type: objects[toplevel[i]].type
                     });
-                } catch(e){
+                } catch (e) {
                     console.log(e.toString());
                 }
             }
@@ -2533,7 +2545,7 @@ $(document).ready(function () {
                 if (obj.ts) obj.ts = formatDate(new Date(obj.ts * 1000));
                 if (obj.lc) obj.lc = formatDate(new Date(obj.lc * 1000));
                 obj.history = '<button data-id="' + obj._id + '" class="history" id="history_' + obj._id + '">history</button>';
-                obj.gridId = 'state_' + key.replace(/ /g, '_')
+                obj.gridId = 'state_' + key.replace(/ /g, '_');
                 gridData.push(obj);
                 //$gridStates.jqGrid('addRowData', obj.gridId, obj);
             }
@@ -2549,7 +2561,7 @@ $(document).ready(function () {
                         changesOnly:    false,
                         minLength:      480, // TODO use default value from history-adadpter config
                         retention:      ''
-                    }
+                    };
                 }
                 if (objects[id].common.history.enabled) {
                     $('#edit-history-enabled').attr('checked', true);
@@ -2958,7 +2970,7 @@ $(document).ready(function () {
         // Update hosts
         if (id.substring(0, "system.host.".length) == "system.host.") {
             var found = false;
-            for (var i = 0; i < hosts.length; i++) {
+            for (i = 0; i < hosts.length; i++) {
                 if (hosts[i].id == id) {
                     found = true;
                     break;
@@ -3020,7 +3032,7 @@ $(document).ready(function () {
         stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
         $stdout.val(stdout);
         $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
-        if (exitCode == 0) {
+        if (!exitCode) {
             setTimeout(function () {
                 $dialogCommand.dialog('close');
             }, 1500);
@@ -3050,12 +3062,12 @@ $(document).ready(function () {
                         var language = systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
                         if (language != 'en' && language != 'de' && language != 'ru') language = 'en';
 
-                        $('#license_text').html(license[language] || license['en']);
+                        $('#license_text').html(license[language] || license.en);
                         $('#license_language').val(language).show();
 
                         $('#license_language').change(function () {
                             language = $(this).val();
-                            $('#license_text').html(license[language] || license['en']);
+                            $('#license_text').html(license[language] || license.en);
                         });
 
                         $dialogLicense.css({'z-index': 200});
@@ -3166,8 +3178,8 @@ $(document).ready(function () {
 
     // Helper methods
     function upToDate(a, b) {
-        var a = a.split('.');
-        var b = b.split('.');
+        a = a.split('.');
+        b = b.split('.');
         a[0] = parseInt(a[0], 10);
         b[0] = parseInt(b[0], 10);
         if (a[0] > b[0]) {
@@ -3182,7 +3194,7 @@ $(document).ready(function () {
                 b[2] = parseInt(b[2], 10);
                 if (a[2] > b[2]) {
                     return false;
-                } else  {
+                } else {
                     return true;
                 }
             }
@@ -3228,6 +3240,9 @@ $(document).ready(function () {
             var tab = 'tab-' + window.location.hash.slice(1);
             var index = $('#tabs a[href="#' + tab + '"]').parent().index() - 1;
             $('#tabs').tabs('option', 'active', index);
+            if (tab == 'tab-hosts') initHosts();
+        } else {
+            initHosts();
         }
     }
 
