@@ -40,6 +40,7 @@ $(document).ready(function () {
     var updateTimers =          {};
     var hosts =                 [];
     var states =                {};
+    var enumExpanded =          [];
 
     var systemConfig;
 
@@ -124,6 +125,10 @@ $(document).ready(function () {
                 
                 case '#tab-groups':
                     initGroups();
+                    break;
+
+                case '#tab-enums':
+                    initEnums();
                     break;
             }
         },
@@ -337,8 +342,6 @@ $(document).ready(function () {
         }
     });
 
-
-
     // Grids and Dialog inits
     function prepareHistory() {
         $gridHistory.jqGrid({
@@ -430,8 +433,36 @@ $(document).ready(function () {
             modal:      true,
             width:      800,
             height:     500,
-            buttons: []
+            buttons:    [],
+            resize:     function () {
+                $gridEnumMembers.setGridHeight($(this).height() - 100).setGridWidth($(this).width() - 5);
+            },
+            open: function () {
+                $gridEnumMembers.setGridHeight($(this).height() - 100).setGridWidth($(this).width() - 5);
+                var name = $dialogEnumMembers.dialog('option', 'title');
+                $('#enum-name-button').button({icons:{primary: 'ui-icon-check'}, text: false});
+                $('#enum-name-button').hide().unbind('click').click(function () {
+                    socket.emit('extendObject', name, {common: {name: $('#enum-name-edit').val()}}, function () {
+                        $('#enum-name-button').hide();
+                    });
+                });
+                $('#enum-name-edit').val(objects[name].common.name).unbind('change').change(function() {
+                    if (objects[name].common.name != $(this).val()) {
+                        $('#enum-name-button').show();
+                    } else {
+                        $('#enum-name-button').hide();
+                    }
+                }).keyup(function() {
+                    if (objects[name].common.name != $(this).val()) {
+                        $('#enum-name-button').show();
+                    } else {
+                        $('#enum-name-button').hide();
+                    }
+                });
+            }
         });
+
+        $dialogEnumMembers.trigger('resize');
 
         $gridSelectMember.jqGrid({
             datatype: 'local',
@@ -707,7 +738,7 @@ $(document).ready(function () {
         if (children[id]) {
             for (var i = 0; i < children[id].length; i++) {
                 $subgrid.jqGrid('addRowData', 'object_' + objects[children[id][i]]._id.replace(/ /g, '_'), {
-                    _id: objects[children[id][i]]._id,
+                    _id:  objects[children[id][i]]._id,
                     name: objects[children[id][i]].common ? objects[children[id][i]].common.name : '',
                     type: objects[children[id][i]].type
                 });
@@ -758,6 +789,10 @@ $(document).ready(function () {
             },
             subGridRowColapsed: function (grid, id) {
                 var objSelected = $gridEnums.jqGrid('getGridParam', 'selrow');
+                var pos = enumExpanded.indexOf(id);
+                if (pos != -1) {
+                    enumExpanded.splice(pos, 1);
+                }
                 if (!objSelected) {
                     $('[id^="grid-enums"][id$="_t"]').not('[id="' + grid + '_t"]').each(function () {
                         if ($(this).jqGrid('getGridParam', 'selrow')) {
@@ -844,6 +879,8 @@ $(document).ready(function () {
     }
     function subGridEnums(grid, row, level) {
         var id = $('tr[id="' + row + '"]').find('td[aria-describedby$="_id"]').html();
+        if (enumExpanded.indexOf(id) == -1) enumExpanded.push(id);
+
         var subgridTableId = grid + '_t';
         $('[id="' + grid + '"]').html('<table class="subgrid-level-' + level + '" id="' + subgridTableId + '"></table>');
         var $subgrid = $('table[id="' + subgridTableId + '"]');
@@ -915,11 +952,14 @@ $(document).ready(function () {
                 _id: objects[children[id][i]]._id,
                 name: objects[children[id][i]].common ? objects[children[id][i]].common.name : '',
                 members: objects[children[id][i]].common.members ? objects[children[id][i]].common.members.length : '',
-                buttons: '<button data-enum-id="' + objects[children[id][i]]._id + '" class="enum-members">members</button>'
+                buttons: '<button data-enum-id="' + objects[children[id][i]]._id + '" class="enum-members">'      + _('members')  + '</button>' +
+                         '<button data-enum-id="' + objects[children[id][i]]._id + '" class="enum-del">'          + _('delete')   + '</button>' +
+                         '<button data-enum-id="' + objects[children[id][i]]._id + '" class="enum-add-children">' + _('children') + '</button>'
 
             });
         }
         $subgrid.trigger('reloadGrid');
+        initEnumButtons();
     }
 
     function prepareStates() {
@@ -2374,18 +2414,8 @@ $(document).ready(function () {
             }
             $gridInstance.jqGrid('setColProp', 'host', {editoptions: {value: tmp}});
 
-            var gridEnumsData = [];
             var gridObjectsData = [];
             for (var i = 0; i < toplevel.length; i++) {
-                if (objects[toplevel[i]].type === 'enum') {
-                    gridEnumsData.push({
-                        gridId: 'enum_' + toplevel[i].replace(/ /g, '_'),
-                        _id:  objects[toplevel[i]]._id,
-                        name: objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
-                        members: objects[toplevel[i]].common.members ? objects[toplevel[i]].common.members.length : '',
-                        buttons: '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-members">members</button>'
-                    });
-                }
                 try {
                     gridObjectsData.push({
                         gridId: 'object_' + toplevel[i].replace(/ /g, '_'),
@@ -2397,24 +2427,158 @@ $(document).ready(function () {
                     console.log(e.toString());
                 }
             }
-            $gridEnums.jqGrid('addRowData', 'gridId', gridEnumsData);
-            $gridEnums.trigger('reloadGrid');
-
             $gridObjects.jqGrid('addRowData', 'gridId', gridObjectsData);
             $gridObjects.trigger('reloadGrid');
 
-
             $gridSelectMember.trigger('reloadGrid');
-
-
-            $(document).unbind('click.enum-members').on('click', '.enum-members', function () {
-                enumMembers($(this).attr('data-enum-id'));
-            });
 
             if (typeof callback === 'function') callback();
 
             // Show if update available
             initHostsList();
+        });
+    }
+
+    function initEnums(update, expandId) {
+        if (!objectsLoaded) {
+            setTimeout(initEnums, 250);
+            return;
+        }
+
+        if (typeof $gridEnums !== 'undefined' && (!$gridEnums[0]._isInited || update)) {
+            var gridEnumsData = [];
+            $gridEnums.jqGrid('clearGridData');
+            $gridEnums[0]._isInited = true;
+            for (var i = 0; i < toplevel.length; i++) {
+                if (objects[toplevel[i]].type === 'enum') {
+                    gridEnumsData.push({
+                        gridId:  'enum_' + toplevel[i].replace(/ /g, '_'),
+                        _id:     objects[toplevel[i]]._id,
+                        name:    objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
+                        members: objects[toplevel[i]].common.members ? objects[toplevel[i]].common.members.length : '',
+                        buttons: '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-members">' + _('members')  + '</button>' +
+                            '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-del">'          + _('delete')   + '</button>' +
+                            '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-add-children">' + _('children') + '</button>'
+                    });
+                }
+            }
+            $gridEnums.jqGrid('addRowData', 'gridId', gridEnumsData);
+            $gridEnums.trigger('reloadGrid');
+            if (expandId) {
+                $gridEnums.jqGrid('expandSubGridRow', 'enum_' + expandId)
+            }
+            for (var i = 0; i < enumExpanded.length; i++) {
+                $gridEnums.jqGrid('expandSubGridRow', 'enum_' + enumExpanded[i]);
+            };
+
+            initEnumButtons();
+        }
+    }
+
+    function initEnumButtons() {
+        $('.enum-members').button({icons: {primary: 'ui-icon-pencil'}, text: false}).unbind('click')
+            .click(function () {
+                enumMembers($(this).attr('data-enum-id'));
+            });
+        $('.enum-add-children').button({icons: {primary: 'ui-icon-plus'}, text: false}).unbind('click')
+            .click(function () {
+                enumAddChild($(this).attr('data-enum-id'));
+            });
+
+        $('.enum-del').button({icons: {primary: 'ui-icon-trash'}, text: false}).unbind('click')
+            .click(function () {
+                var id = $(this).attr('data-enum-id');
+                enumDelete(id, function (parent) {
+                    initEnums(true, parent);
+                });
+            });
+    }
+
+    function enumDelete(id, callback, hideConfirm) {
+        if (hideConfirm || confirm(_('Are you sure? ' + id))) {
+            if (objects[id] && objects[id].children && objects[id].children.length) {
+                if (objects[objects[id].children[0]]) {
+                    enumDelete(objects[id].children[0], function () {
+                        enumDelete(id, callback, true);
+                    }, true);
+                } else {
+                    objects[id].children.splice(0, 1);
+                    enumDelete(id, callback, true);
+                }
+            } else {
+                var pos;
+                var parent;
+                if (objects[id]){
+                    parent = objects[id].parent;
+
+                    if (objects[id].common.nondeletable) {
+                        alert(_('Cannot delete ' + id + ' because not allowed'));
+                        if (callback) callback(parent);
+                        return;
+                    }
+
+                    if (parent) {
+                        pos = objects[parent].children.indexOf(id);
+                        if (pos != -1) {
+                            objects[parent].children.splice(pos, 1);
+                        }
+
+                        if (children[parent]) {
+                            pos = children[parent].indexOf(id);
+                            if (pos != -1) {
+                                children[parent].splice(pos, 1);
+                            }
+                            if (!children[parent].length) delete children[parent];
+                        }
+
+                        socket.emit('setObject', parent, objects[parent]);
+                    }
+                }
+
+                pos = enums.indexOf(id);
+                if (pos != -1) {
+                    enums.splice(pos, 1);
+                }
+
+                delete objects[id];
+                socket.emit('delObject', id, function () {
+                    if (callback) callback(parent);
+                });
+            }
+        }
+    }
+
+    function enumAddChild(id) {
+        // Find unused name
+        var name = _('enum');
+        var idx = 0;
+        var found;
+        var newId;
+        do {
+            idx++;
+            newId = id + '.' + name + idx;
+        } while(objects[newId]);
+
+        enums.push(newId);
+        objects[newId] = {
+            _id: newId,
+            children: [],
+            parent: id,
+            common: {
+                name: name + idx,
+                members: []
+            },
+            type: "enum"
+        };
+        children[id] = children[id] || [];
+        children[id].push(newId);
+
+        socket.emit('setObject', newId, objects[newId], function () {
+            objects[id].children = objects[id].children || [];
+            objects[id].children.push(newId);
+            socket.emit('setObject', id, objects[id], function () {
+                initEnums(true, id);
+            })
         });
     }
 
@@ -2458,7 +2622,11 @@ $(document).ready(function () {
                 obj.type = objects[obj._id] && objects[obj._id].common ? objects[obj._id].common.type : '';
                 if (obj.ts) obj.ts = formatDate(new Date(obj.ts * 1000));
                 if (obj.lc) obj.lc = formatDate(new Date(obj.lc * 1000));
-                obj.history = '<button data-id="' + obj._id + '" class="history" id="history_' + obj._id + '">history</button>';
+                if (objects[key] && key.substring(key.length - '.messagebox'.length) != '.messagebox') {
+                    obj.history = '<button data-id="' + obj._id + '" class="history" id="history_' + obj._id + '">' + _('history') + '</button>';
+                } else {
+                    obj.history = '';
+                }
                 obj.gridId = 'state_' + key.replace(/ /g, '_');
                 gridData.push(obj);
                 //$gridStates.jqGrid('addRowData', obj.gridId, obj);
@@ -2466,9 +2634,14 @@ $(document).ready(function () {
             $gridStates.jqGrid('addRowData', 'gridId', gridData);
 //benchmark('finished getStates loop');
             $gridStates.trigger('reloadGrid');
-            $(document).unbind('click.history').on('click', '.history', function () {
+            $('.history').button({icons: {primary:'ui-icon-clock'}}).unbind('click').click(function () {
                 var id = $(this).attr('data-id');
                 $('#edit-history-id').val(id);
+                if (!objects[id]) {
+                    $(this).button( "option", "disabled", true );
+                    return;
+                }
+
                 if (!objects[id].common.history) {
                     objects[id].common.history = {
                         enabled:        false,
@@ -2832,11 +3005,16 @@ $(document).ready(function () {
     });
 
     socket.on('objectChange', function (id, obj) {
-
+        var changed = false;
         // update objects cache
         if (obj) {
-            objects[id] = obj;
-        } else {
+            if (obj._rev && objects[id]) objects[id]._rev = obj._rev;
+            if (!objects[id] || JSON.stringify(objects[id]) != JSON.stringify(obj)) {
+                objects[id] = obj;
+                changed = true;
+            }
+        } else if (objects[id]) {
+            changed = true;
             delete objects[id];
         }
 
@@ -2844,8 +3022,9 @@ $(document).ready(function () {
         var row = '<tr><td>objectChange</td><td>' + id + '</td><td>' + JSON.stringify(obj) + '</td></tr>';
         $('#events').prepend(row);
 
-        // TODO update gridObjects
+        if (!changed) return;
 
+        // TODO update gridObjects
 
         // Update Instance Table
         if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.[0-9]+$/)) {
@@ -2942,6 +3121,28 @@ $(document).ready(function () {
                 updateTimers.initUsersGroups = null;
                 initGroups(true);
                 initUsers(true);
+            }, 200);
+        }
+
+        //Update enums
+        if (id.substring(0, 'enum.'.length) == 'enum.') {
+            if (obj) {
+                if (enums.indexOf(id) == -1) enums.push(id);
+            } else {
+                var j = enums.indexOf(id);
+                if (j != -1) {
+                    enums.splice(j, 1);
+                }
+            }
+            setTimeout(function () {
+                initEnums(true);
+            }, 0);
+            if (updateTimers.initEnums) {
+                clearTimeout(updateTimers.initEnums);
+            }
+            updateTimers.initEnums = setTimeout(function () {
+                updateTimers.initEnums = null;
+                initEnums(true);
             }, 200);
         }
     });

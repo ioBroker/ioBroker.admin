@@ -465,6 +465,10 @@ function socketEvents(socket, user) {
         adapter.setForeignObject(id, obj, callback);
     });
 
+    socket.on('delObject', function (id, obj, callback) {
+        adapter.delForeignObject(id, obj, callback);
+    });
+
     socket.on('extendObject', function (id, obj, callback) {
         adapter.extendForeignObject(id, obj, callback);
     });

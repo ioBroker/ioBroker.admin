@@ -187,12 +187,12 @@
     <input type="hidden" id="edit-object-id">
     <input type="hidden" id="edit-object-parent-old">
 </div>
-<div id="dialog-enum" title="edit enum" style="display:none">
+<div id="dialog-enum" class="translateT" title="edit enum" style="display:none">
     <table>
-        <tr>
+        <!--tr>
             <td><label for="enum-parent">Parent</label></td>
             <td><select id="enum-parent"></select></td>
-        </tr>
+        </tr-->
         <tr>
             <td><label for="enum-name">Name</label></td>
             <td><input id="enum-name" type="text" size="50"/></td>
@@ -252,6 +252,7 @@
     <input type="hidden" id="edit-group-id">
 </div>
 <div id="dialog-enum-members" style="display:none">
+    <span class="translate">Name:</span><input id="enum-name-edit" size="20"/><button id="enum-name-button"></button>
     <table id="grid-enum-members"></table>
     <div id="pager-enum-members"></div>
 </div>
