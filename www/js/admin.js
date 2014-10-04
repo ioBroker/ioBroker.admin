@@ -787,6 +787,9 @@ $(document).ready(function () {
                 $('#del-enum').addClass('ui-state-disabled');
                 $('#edit-enum').addClass('ui-state-disabled');
             },
+            loadComplete: function () {
+                initEnumButtons();
+            },
             subGridRowColapsed: function (grid, id) {
                 var objSelected = $gridEnums.jqGrid('getGridParam', 'selrow');
                 var pos = enumExpanded.indexOf(id);
@@ -876,6 +879,18 @@ $(document).ready(function () {
         });
 
 
+        $(document).on('click', '.enum-members', function () {
+            enumMembers($(this).attr('data-enum-id'));
+        });
+        $(document).on('click', '.enum-add-children', function () {
+            enumAddChild($(this).attr('data-enum-id'));
+        });
+        $(document).on('click', '.enum-del', function () {
+            var id = $(this).attr('data-enum-id');
+            enumDelete(id, function (parent) {
+                initEnums(true, parent);
+            });
+        });
     }
     function subGridEnums(grid, row, level) {
         var id = $('tr[id="' + row + '"]').find('td[aria-describedby$="_id"]').html();
@@ -2469,29 +2484,18 @@ $(document).ready(function () {
             }
             for (var i = 0; i < enumExpanded.length; i++) {
                 $gridEnums.jqGrid('expandSubGridRow', 'enum_' + enumExpanded[i]);
-            };
+            }
 
             initEnumButtons();
         }
     }
 
     function initEnumButtons() {
-        $('.enum-members').button({icons: {primary: 'ui-icon-pencil'}, text: false}).unbind('click')
-            .click(function () {
-                enumMembers($(this).attr('data-enum-id'));
-            });
-        $('.enum-add-children').button({icons: {primary: 'ui-icon-plus'}, text: false}).unbind('click')
-            .click(function () {
-                enumAddChild($(this).attr('data-enum-id'));
-            });
+        $('.enum-members').button({icons: {primary: 'ui-icon-pencil'}, text: false}).css('width', '22px').css('height', '18px');
 
-        $('.enum-del').button({icons: {primary: 'ui-icon-trash'}, text: false}).unbind('click')
-            .click(function () {
-                var id = $(this).attr('data-enum-id');
-                enumDelete(id, function (parent) {
-                    initEnums(true, parent);
-                });
-            });
+        $('.enum-add-children').button({icons: {primary: 'ui-icon-plus'}, text: false}).css('width', '22px').css('height', '18px');
+
+        $('.enum-del').button({icons: {primary: 'ui-icon-trash'}, text: false}).css('width', '22px').css('height', '18px');
     }
 
     function enumDelete(id, callback, hideConfirm) {
