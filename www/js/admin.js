@@ -366,6 +366,66 @@ $(document).ready(function () {
             ignoreCase: true
 
         });
+
+        $(document).on('click', '.history', function () {
+            var id = $(this).attr('data-id');
+            $('#edit-history-id').val(id);
+            if (!objects[id]) {
+                $(this).button( "option", "disabled", true );
+                return;
+            }
+
+            if (!objects[id].common.history) {
+                objects[id].common.history = {
+                    enabled:        false,
+                    changesOnly:    false,
+                    minLength:      480, // TODO use default value from history-adadpter config
+                    retention:      ''
+                };
+            }
+            if (objects[id].common.history.enabled) {
+                $('#edit-history-enabled').attr('checked', true);
+            } else {
+                $('#edit-history-enabled').removeAttr('checked');
+            }
+            if (objects[id].common.history.changesOnly) {
+                $('#edit-history-changesOnly').attr('checked', true);
+            } else {
+                $('#edit-history-changesOnly').removeAttr('checked');
+            }
+            $('#edit-history-minLength').val(objects[id].common.history.minLength);
+            $('#edit-history-retention').val(objects[id].common.history.retention);
+            $dialogHistory.dialog('option', 'title', 'history ' + id);
+            $dialogHistory.dialog('open');
+            $gridHistory.jqGrid('clearGridData');
+            $("#load_grid-history").show();
+            var start = Math.round((new Date()).getTime() / 1000) - historyMaxAge;
+            var end =   Math.round((new Date()).getTime() / 1000) + 5000;
+            //console.log('getStateHistory', id, start, end)
+            socket.emit('getStateHistory', id, start, end, function (err, res) {
+                if (!err) {
+                    var rows = [];
+                    //console.log('got ' + res.length + ' history datapoints for ' + id);
+                    for (var i = 0; i < res.length; i++) {
+                        rows.push({
+                            gid: i,
+                            id: res[i].id,
+                            ack: res[i].ack,
+                            val: res[i].val,
+                            ts: formatDate(new Date(res[i].ts * 1000)),
+                            lc: formatDate(new Date(res[i].lc * 1000))
+                        });
+                    }
+                    $gridHistory.jqGrid('addRowData', 'gid', rows);
+                    $gridHistory.trigger('reloadGrid');
+                } else {
+                    console.log(err);
+                }
+            });
+
+
+        });
+
     }
 
     function prepareEnumMembers() {
@@ -1004,6 +1064,9 @@ $(document).ready(function () {
             viewrecords: true,
             caption: _('ioBroker States'),
             ignoreCase: true,
+            loadComplete: function () {
+                $('.history').button({text: false, icons: {primary:'ui-icon-clock'}}).css('height', '18px').css('width', '22px');
+            },
             ondblClickRow: function (id) {
                 var rowData = $gridStates.jqGrid('getRowData', id);
                 rowData.ack = false;
@@ -2607,6 +2670,7 @@ $(document).ready(function () {
         $dialogEnumMembers.dialog('open');
     }
 
+
     function getStates(callback) {
         $gridStates.jqGrid('clearGridData');
         socket.emit('getStates', function (err, res) {
@@ -2638,66 +2702,8 @@ $(document).ready(function () {
             $gridStates.jqGrid('addRowData', 'gridId', gridData);
 //benchmark('finished getStates loop');
             $gridStates.trigger('reloadGrid');
-            $('.history').button({text: false, icons: {primary:'ui-icon-clock'}}).css('height', '18px').css('width', '22px');
-
-            $(document).on('click', '.history', function () {
-                var id = $(this).attr('data-id');
-                $('#edit-history-id').val(id);
-                if (!objects[id]) {
-                    $(this).button( "option", "disabled", true );
-                    return;
-                }
-
-                if (!objects[id].common.history) {
-                    objects[id].common.history = {
-                        enabled:        false,
-                        changesOnly:    false,
-                        minLength:      480, // TODO use default value from history-adadpter config
-                        retention:      ''
-                    };
-                }
-                if (objects[id].common.history.enabled) {
-                    $('#edit-history-enabled').attr('checked', true);
-                } else {
-                    $('#edit-history-enabled').removeAttr('checked');
-                }
-                if (objects[id].common.history.changesOnly) {
-                    $('#edit-history-changesOnly').attr('checked', true);
-                } else {
-                    $('#edit-history-changesOnly').removeAttr('checked');
-                }
-                $('#edit-history-minLength').val(objects[id].common.history.minLength);
-                $('#edit-history-retention').val(objects[id].common.history.retention);
-                $dialogHistory.dialog('option', 'title', 'history ' + id);
-                $dialogHistory.dialog('open');
-                $gridHistory.jqGrid('clearGridData');
-                $("#load_grid-history").show();
-                var start = Math.round((new Date()).getTime() / 1000) - historyMaxAge;
-                var end =   Math.round((new Date()).getTime() / 1000) + 5000;
-                //console.log('getStateHistory', id, start, end)
-                socket.emit('getStateHistory', id, start, end, function (err, res) {
-                    if (!err) {
-                        var rows = [];
-                        //console.log('got ' + res.length + ' history datapoints for ' + id);
-                        for (var i = 0; i < res.length; i++) {
-                            rows.push({
-                                gid: i,
-                                id: res[i].id,
-                                ack: res[i].ack,
-                                val: res[i].val,
-                                ts: formatDate(new Date(res[i].ts * 1000)),
-                                lc: formatDate(new Date(res[i].lc * 1000))
-                            });
-                        }
-                        $gridHistory.jqGrid('addRowData', 'gid', rows);
-                        $gridHistory.trigger('reloadGrid');
-                    } else {
-                        console.log(err);
-                    }
-                });
 
 
-            });
             if (typeof callback === 'function') callback();
         });
     }
