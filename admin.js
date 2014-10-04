@@ -299,7 +299,7 @@ function initWebServer(settings) {
         server.app.use('/', express.static(__dirname + '/www', appOptions));
 
         // reverse proxy with url rewrite for couchdb attachments in <adapter-name>.admin
-        server.app.use('/adapter/', function(req, res) {
+        server.app.use('/adapter/', function (req, res) {
 
             // Example: /example/?0
             var url = req.url;
@@ -312,11 +312,11 @@ function initWebServer(settings) {
                 url = url.replace(/\/admin\//, __dirname + '/admin/');
                 url = url.replace(/\?[0-9]*/, '');
 
-                try{
+                try {
                     fs.createReadStream(url).pipe(res);
                 } catch (e) {
                     var s = new Stream();
-                    s.pipe = function(dest) {
+                    s.pipe = function (dest) {
                         dest.write('File not found: ' + e);
                     };
 
@@ -463,6 +463,10 @@ function socketEvents(socket, user) {
 
     socket.on('setObject', function (id, obj, callback) {
         adapter.setForeignObject(id, obj, callback);
+    });
+
+    socket.on('delObject', function (id, obj, callback) {
+        adapter.delForeignObject(id, obj, callback);
     });
 
     socket.on('extendObject', function (id, obj, callback) {

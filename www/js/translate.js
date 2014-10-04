@@ -8,10 +8,10 @@ function translateWord(text, lang, dictionary) {
 
     if (dictionary[text]) {
         var newText = dictionary[text][lang];
-        if (newText){
+        if (newText) {
             return newText;
         } else if (lang != 'en') {
-            newText = dictionary[text]['en'];
+            newText = dictionary[text].en;
             if (newText) {
                 return newText;
             }
@@ -27,6 +27,7 @@ function translateAll(lang, dictionary) {
     dictionary = dictionary || systemDictionary;
 
 
+    // translate <div class="translate">textToTranslate</div>
     $(".translate").each(function (idx) {
         var text = $(this).attr('data-lang');
         if (!text) {
@@ -39,7 +40,7 @@ function translateAll(lang, dictionary) {
             $(this).html(transText);
         }
     });
-    // translate <input type="button>
+    // translate <input type="button" class="translateV" value="textToTranslate">
     $(".translateV").each(function (idx) {
         var text = $(this).attr('data-lang');
         if (!text) {
@@ -53,7 +54,7 @@ function translateAll(lang, dictionary) {
         }
     });
     $(".translateB").each(function (idx) {
-        //<span class="ui-button-text">Save</span>
+        //<span class="ui-button-text" >Save</span>
         var text = $(this).attr('data-lang');
         if (!text) {
             text = $(this).html().replace('<span class="ui-button-text">', '').replace('</span>', '');
@@ -65,7 +66,7 @@ function translateAll(lang, dictionary) {
         }
     });
     $(".translateT").each(function (idx) {
-        //<span class="ui-button-text">Save</span>
+        //<span class="ui-button-text translateT" title="TextToTranslate">Save</span>
         var text = $(this).attr('data-lang');
         if (!text) {
             text = $(this).attr('title');

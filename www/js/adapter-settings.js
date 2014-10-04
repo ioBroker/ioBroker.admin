@@ -11,7 +11,7 @@ $(document).ready(function () {
 
     // Extend dictionary with standard words for adapter
     if (typeof systemDictionary === 'undefined') systemDictionary = {};
-    systemDictionary["save"] = {"en": "Save", "de": "Speichern", "ru": "Сохранить"};
+    systemDictionary.save = {"en": "Save", "de": "Speichern", "ru": "Сохранить"};
 
 
     loadSystemConfig(function () {

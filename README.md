@@ -9,6 +9,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+#### 0.0.14
+* (bluefox) add repositories editor
+
 #### 0.0.13
 * (hobbyquaker) gridAdapter style
 * (hobbyquaker) moved system settings to dialog

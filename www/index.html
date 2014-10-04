@@ -50,9 +50,9 @@
     </div>
     <div id="tab-events">
         <div id="grid-events" class="ui-jqgrid" style="display: block;">
-            <div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">
+            <div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix" style="height:23">
                 <div class="">
-                    <span class="ui-jqgrid-title translate">Events</span>
+                    <span class="ui-jqgrid-title translate" style="padding-top:3">Events</span> <button id="event-clear" style="position:absolute; right: 10; top: 1">clear</button>
                 </div>
 
             </div>
@@ -187,12 +187,12 @@
     <input type="hidden" id="edit-object-id">
     <input type="hidden" id="edit-object-parent-old">
 </div>
-<div id="dialog-enum" title="edit enum" style="display:none">
+<div id="dialog-enum" class="translateT" title="edit enum" style="display:none">
     <table>
-        <tr>
+        <!--tr>
             <td><label for="enum-parent">Parent</label></td>
             <td><select id="enum-parent"></select></td>
-        </tr>
+        </tr-->
         <tr>
             <td><label for="enum-name">Name</label></td>
             <td><input id="enum-name" type="text" size="50"/></td>
@@ -252,6 +252,7 @@
     <input type="hidden" id="edit-group-id">
 </div>
 <div id="dialog-enum-members" style="display:none">
+    <span class="translate">Name:</span><input id="enum-name-edit" size="20"/><button id="enum-name-button"></button>
     <table id="grid-enum-members"></table>
     <div id="pager-enum-members"></div>
 </div>
@@ -299,64 +300,76 @@
 <div title="adater configuration" id="dialog-config" style="display:none">
     <iframe style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%; height: 100%" id="config-iframe"></iframe>
 </div>
-<div title="license agreement" id="dialog-license" style="display:none">
-    <h3>Select language</h3>
+<div title="license agreement" id="dialog-license" class="translateT" style="display:none">
+    <h3 class="translate">Select language</h3>
     <select id="license_language">
         <option value="en">English</option>
         <option value="de">Deutsch</option>
         <option value="ru">русский</option>
     </select>
-    <h3>License terms</h3>
+    <h3 class="translate">License terms</h3>
     <div id="license_text" style="width: 100%"></div>
 </div>
 <div id="connecting" style="left:50%; top:50%;position: fixed;"><img src="img/gear.png"/></div>
-<div title="System settings" id="dialog-system" style="display:none">
-    <table>
-        <tr><td class="translate">System language:</td>
-            <td>
-                <select id="system_language" class="system-settings value">
-                    <option value="en">English</option>
-                    <option value="de">Deutsch</option>
-                    <option value="ru">русский</option>
-                </select>
-            </td>
-        </tr>
-        <tr><td class="translate">Temperature units:</td>
-            <td>
-                <select id="system_tempUnit" class="system-settings value">
-                    <option value="C°">C°</option>
-                    <option value="F°">F°</option>
-                </select>
-            </td>
-        </tr>
-        <tr><td class="translate">Currency:</td>
-            <td>
-                <input type="text" size="5" maxlength="5" id="system_currency" class="system-settings value"/>
-            </td>
-        </tr>
-        <tr><td class="translate">Date format:</td>
-            <td>
-                <select id="system_dateFormat" class="system-settings value">
-                    <option value="DD.MM.YYYY" class="translate">DD.MM.YYYY</option>
-                    <option value="DD.MM.YY"   class="translate">DD.MM.YY</option>
-                    <option value="DD/MM/YYYY" class="translate">DD/MM/YYYY</option>
-                </select>
-            </td>
-        </tr>
-        <tr><td class="translate">Float divider:</td>
-        <td>
-            <select id="system_isFloatComma" class="system-settings value">
-                <option value="true"  class="translate">comma</option>
-                <option value="false" class="translate">point</option>
-            </select>
-        </td>
-        <tr><td class="translate">Active repository:</td>
-            <td>
-                <select id="system_activeRepo" class="system-settings value">
-                </select>
-            </td>
-        </tr>
-    </table>
+<div title="System settings" id="dialog-system"  class="translateT" style="display:none">
+    <div id="tabs-system">
+        <ul>
+            <li><a href="#tab-system-main" class="translate">Main settings</a></li>
+            <li><a href="#tab-system-repo" class="translate">Repositories</a></li>
+        </ul>
+        <div id="tab-system-main">
+            <table>
+                <tr><td class="translate">System language:</td>
+                    <td>
+                        <select id="system_language" class="system-settings value">
+                            <option value="en">English</option>
+                            <option value="de">Deutsch</option>
+                            <option value="ru">русский</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td class="translate">Temperature units:</td>
+                    <td>
+                        <select id="system_tempUnit" class="system-settings value">
+                            <option value="C°">C°</option>
+                            <option value="F°">F°</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td class="translate">Currency:</td>
+                    <td>
+                        <input type="text" size="5" maxlength="5" id="system_currency" class="system-settings value"/>
+                    </td>
+                </tr>
+                <tr><td class="translate">Date format:</td>
+                    <td>
+                        <select id="system_dateFormat" class="system-settings value">
+                            <option value="DD.MM.YYYY" class="translate">DD.MM.YYYY</option>
+                            <option value="DD.MM.YY"   class="translate">DD.MM.YY</option>
+                            <option value="DD/MM/YYYY" class="translate">DD/MM/YYYY</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td class="translate">Float divider:</td>
+                    <td>
+                        <select id="system_isFloatComma" class="system-settings value">
+                            <option value="true"  class="translate">comma</option>
+                            <option value="false" class="translate">point</option>
+                        </select>
+                    </td>
+                <tr><td class="translate">Active repository:</td>
+                    <td>
+                        <select id="system_activeRepo" class="system-settings value">
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="tab-system-repo">
+            <table id="grid-repos"></table>
+            <div id="pager-repos"></div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
