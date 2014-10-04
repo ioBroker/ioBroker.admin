@@ -2634,7 +2634,9 @@ $(document).ready(function () {
             $gridStates.jqGrid('addRowData', 'gridId', gridData);
 //benchmark('finished getStates loop');
             $gridStates.trigger('reloadGrid');
-            $('.history').button({icons: {primary:'ui-icon-clock'}}).unbind('click').click(function () {
+            $('.history').button({text: false, icons: {primary:'ui-icon-clock'}}).css('height', '18px').css('width', '22px');
+
+            $(document).on('click', '.history', function () {
                 var id = $(this).attr('data-id');
                 $('#edit-history-id').val(id);
                 if (!objects[id]) {
