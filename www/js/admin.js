@@ -1200,16 +1200,17 @@ $(document).ready(function () {
 
         $gridInstance.jqGrid({
             datatype: 'local',
-            colNames: ['id', '', _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('alive'), _('connected')],
+            colNames: ['id', 'availableModes',  '', _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('alive'), _('connected')],
             colModel: [
                 {name: '_id',       index: '_id',       hidden: true},
+                {name: 'availableModes', index:'availableModes', hidden: true},
                 {name: 'image',     index: 'image',     width: 22,   editable: false, sortable: false, search: false, align: 'center'},
                 {name: 'name',      index: 'name',      width: 130,  editable: true},
                 {name: 'instance',  index: 'instance',  width: 70},
                 {name: 'title',     index: 'title',     width: 220},
                 {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}, align: 'center'},
                 {name: 'host',      index: 'host',      width: 100,  editable: true, edittype: 'select', editoptions: ''},
-                {name: 'mode',      index: 'mode',      width: 80,   align: 'center'},
+                {name: 'mode',      index: 'mode',      width: 80,   editable: true, edittype: 'select', editoptions: {value: null/*{'daemon':'daemon', 'subscribe':'subscribe'}*/}, align: 'center'},
                 {name: 'schedule',  index: 'schedule',  width: 80,   align: 'center', editable: true},
                 {name: 'config',    index: 'config',    width: 60,   align: 'center', sortable: false, search: false},
                 {name: 'platform',  index: 'platform',  width: 60,   hidden: true},
@@ -1230,7 +1231,6 @@ $(document).ready(function () {
                 $('#edit-instance').removeClass('ui-state-disabled');
                 $('#config-instance').removeClass('ui-state-disabled');
                 $('#reload-instance').removeClass('ui-state-disabled');
-
             },
             ondblClickRow: configInstance,
             gridComplete: function () {
@@ -1324,6 +1324,26 @@ $(document).ready(function () {
             rowData.from = '';
             $gridInstance.jqGrid('setRowData', id, rowData);
 
+            if (rowData.availableModes) {
+                var list = {};
+                var modes = rowData.availableModes.split(',');
+                for (var i = 0; i < modes.length; i++) {
+                    list[modes[i]] = _(modes[i]);
+                }
+                $gridInstance.setColProp('mode', {
+                    editable: true,
+                    edittype: 'select',
+                    editoptions: {value: list},
+                    align: 'center'
+                });
+            } else {
+                $gridInstance.setColProp('mode', {
+                    editable: false,
+                    align: 'center'
+                });
+
+            }
+
             if (id && id !== instanceLastSelected) {
                 $gridInstance.restoreRow(instanceLastSelected);
                 instanceLastSelected = id;
@@ -1341,7 +1361,8 @@ $(document).ready(function () {
                 obj.common.loglevel = $gridInstance.jqGrid("getCell", instanceLastSelected, "loglevel");
                 obj.common.schedule = $gridInstance.jqGrid("getCell", instanceLastSelected, "schedule");
                 obj.common.enabled  = $gridInstance.jqGrid("getCell", instanceLastSelected, "enabled");
-                if (obj.common.enabled === 'true') obj.common.enabled = true;
+                obj.common.mode     = $gridInstance.jqGrid("getCell", instanceLastSelected, "mode");
+                if (obj.common.enabled === 'true')  obj.common.enabled = true;
                 if (obj.common.enabled === 'false') obj.common.enabled = false;
 
                 var id = $('tr[id="' + instanceLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
@@ -2252,6 +2273,7 @@ $(document).ready(function () {
                 var instance = tmp[3];
                 $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
                     _id:       obj._id,
+                    availableModes: obj.common ? obj.common.availableModes : null,
                     image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px"/>' : '',
                     name:      obj.common ? obj.common.name : '',
                     instance:  obj._id.slice(15),
