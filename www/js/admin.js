@@ -1,7 +1,17 @@
-/* jshint -W097 */// jshint strict:false
+/* jshint -W097 */// jshint strict:true
+/* jslint vars: true */
 /* global io:false */
 /* global jQuery:false */
 /* jslint browser:true */
+/* jshint browser:true */
+/*global _ */
+/*global ace */
+/*global console */
+/*global alert */
+/*global confirm */
+/*global systemLang: true */
+/*global license */
+/*global translateAll */
 'use strict';
 
 //if (typeof Worker === 'undefined') alert('your browser does not support WebWorkers :-(');
@@ -388,7 +398,7 @@ $(document).ready(function () {
             var id = $(this).attr('data-id');
             $('#edit-history-id').val(id);
             if (!objects[id]) {
-                $(this).button( "option", "disabled", true );
+                $(this).button("option", "disabled", true);
                 return;
             }
 
@@ -524,13 +534,13 @@ $(document).ready(function () {
                     }
                     $('#enum-name-button').hide();
                 });
-                $('#enum-name-edit').val(objects[name].common.name).unbind('change').change(function() {
+                $('#enum-name-edit').val(objects[name].common.name).unbind('change').change(function () {
                     if (objects[name].common.name != $(this).val()) {
                         $('#enum-name-button').show();
                     } else {
                         $('#enum-name-button').hide();
                     }
-                }).keyup(function() {
+                }).keyup(function () {
                     if (objects[name].common.name != $(this).val()) {
                         $('#enum-name-button').show();
                     } else {
@@ -948,7 +958,7 @@ $(document).ready(function () {
                 do {
                     idx++;
                     newId = (enumCurrentParent || 'enum')  + '.' + name + idx;
-                } while(objects[newId]);
+                } while (objects[newId]);
 
                 $('#enum-name').val(name + idx);
                 $('#enum-gen-id').html(newId);
@@ -2593,7 +2603,7 @@ $(document).ready(function () {
                 do {
                     idx++;
                     newId = (enumCurrentParent || 'enum')  + '.' + name + idx;
-                } while(objects[newId]);
+                } while (objects[newId]);
 
                 $('#enum-name').val(name + idx);
                 $('#enum-gen-id').html(newId);
@@ -2624,7 +2634,7 @@ $(document).ready(function () {
             } else {
                 var pos;
                 var parent;
-                if (objects[id]){
+                if (objects[id]) {
                     parent = objects[id].parent;
 
                     if (objects[id].common.nondeletable) {
@@ -3033,6 +3043,7 @@ $(document).ready(function () {
     });
 
     socket.on('stateChange', function (id, obj) {
+        var rowData;
         if (id && id.length > '.messagebox'.length && id.substring(id.length - '.messagebox'.length) == '.messagebox') {
             var time = new Date();
             time =        time.getFullYear()           + '-' +
@@ -3046,12 +3057,11 @@ $(document).ready(function () {
                 '</td><td class="event-column-3">' + obj.command +
                 '</td><td class="event-column-4">' + (obj.callback ? obj.callback.ack : '') + '</td>' +
                 '<td class="event-column-5">' + obj.from + '</td><td class="event-column-6">' + time + '</td><td class="event-column-7"></td></tr>');
-        }
-        else {
+        } else {
             if (!$gridStates) return;
 
             // Update gridStates
-            var rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
+            rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
             rowData.val = obj.val;
             rowData.ack = obj.ack;
             if (obj.ts) rowData.ts = formatDate(new Date(obj.ts * 1000));
@@ -3069,7 +3079,6 @@ $(document).ready(function () {
         if ($gridAdapter) {
             var parts = id.split('.');
             var last = parts.pop();
-            var rowData;
             id = parts.join('.');
             if (last === 'alive' && instances.indexOf(id) !== -1) {
                 rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
@@ -3086,6 +3095,8 @@ $(document).ready(function () {
 
     socket.on('objectChange', function (id, obj) {
         var changed = false;
+        var i;
+        var j;
         // update objects cache
         if (obj) {
             if (obj._rev && objects[id]) objects[id]._rev = obj._rev;
@@ -3111,7 +3122,7 @@ $(document).ready(function () {
             if (obj) {
                 if (instances.indexOf(id) == -1) instances.push(id);
             } else {
-                var i = instances.indexOf(id);
+                i = instances.indexOf(id);
                 if (i != -1) {
                     instances.splice(i, 1);
                 }
@@ -3160,7 +3171,7 @@ $(document).ready(function () {
         // Update hosts
         if (id.substring(0, "system.host.".length) == "system.host.") {
             var found = false;
-            for (var i = 0; i < hosts.length; i++) {
+            for (i = 0; i < hosts.length; i++) {
                 if (hosts[i].id == id) {
                     found = true;
                     break;
@@ -3186,7 +3197,7 @@ $(document).ready(function () {
             if (obj) {
                 if (groups.indexOf(id) == -1) groups.push(id);
             } else {
-                var j = groups.indexOf(id);
+                j = groups.indexOf(id);
                 if (j != -1) {
                     groups.splice(j, 1);
                 }
@@ -3207,7 +3218,7 @@ $(document).ready(function () {
             if (obj) {
                 if (enums.indexOf(id) == -1) enums.push(id);
             } else {
-                var j = enums.indexOf(id);
+                j = enums.indexOf(id);
                 if (j != -1) {
                     enums.splice(j, 1);
                 }

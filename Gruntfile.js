@@ -8,7 +8,7 @@
 module.exports = function (grunt) {
 
     var srcDir    = __dirname + '/';
-    var dstDir    = srcDir + 'build/';
+    var dstDir    = srcDir + '.build/';
     var pkg       = grunt.file.readJSON('package.json');
     var iopackage = grunt.file.readJSON('io-package.json');
 
@@ -16,7 +16,8 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: pkg,
         clean: {
-            all: ['tmp/*.json', 'tmp/*.zip', 'tmp/*.jpg', 'tmp/*.jpeg', 'tmp/*.png']
+            all: ['tmp/*.json', 'tmp/*.zip', 'tmp/*.jpg', 'tmp/*.jpeg', 'tmp/*.png',
+                  dstDir + '*.json', dstDir + '*.zip', dstDir + '*.jpg', dstDir + '*.jpeg', dstDir + '*.png']
         },
         replace: {
             core: {
@@ -67,6 +68,22 @@ module.exports = function (grunt) {
                     url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.nodejs/master/tasks/jscsRules.js'
                 },
                 dest: 'tasks/jscsRules.js'
+            },
+            get_iconOnline: {
+                options: {
+                    encoding: null,
+                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.nodejs/master/adapter/example/admin/example.png'
+                },
+                dest: dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.png'
+
+            },
+            get_iconOffline: {
+                options: {
+                    encoding: null,
+                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.nodejs/master/adapter/example/admin/example.png'
+                },
+                dest: dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.png'
+
             }
         },
         compress: {
@@ -80,6 +97,54 @@ module.exports = function (grunt) {
                         src: ['**', '!tasks/*', '!Gruntfile.js', '!node_modules/**/*', '!build/**/*'],
                         dest: '/',
                         cwd: srcDir
+                    }
+                ]
+            },
+            adapterOffline: {
+                options: {
+                    archive: dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.zip'
+                },
+                files: [
+                    {
+                        expand: true,
+                        src: ['**',
+                            '!tasks/*',
+                            '!Gruntfile.js',
+                            '!build/**/*',
+                            '!node_modules/grunt/**/*',
+                            '!node_modules/grunt*/**/*'
+                        ],
+                        dest: '/',
+                        cwd: srcDir
+                    }
+                ]
+            }
+        },
+        exec: {
+            npm: {
+                cmd: 'npm install'
+            }
+        },
+        copy: {
+            json: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: srcDir,
+                        src: ['io-package.json'],
+                        dest: dstDir,
+                        rename: function (dest, src) {
+                            return dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.json';
+                        }
+                    },
+                    {
+                        expand: true,
+                        cwd: srcDir,
+                        src: ['io-package.json'],
+                        dest: dstDir,
+                        rename: function (dest, src) {
+                            return dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.json';
+                        }
                     }
                 ]
             }
@@ -114,14 +179,18 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-http');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-compress');
+    grunt.loadNpmTasks('grunt-exec');
+    grunt.loadNpmTasks('grunt-contrib-copy');
 
     grunt.registerTask('default', [
-//        'http',
+        'exec',
+        //'http',
         'clean',
         'replace',
         'updateReadme',
-        'compress'
-        //'jshint',
-        //'jscs',
+        'compress',
+        'copy',
+        'jshint',
+        'jscs'
     ]);
 };
