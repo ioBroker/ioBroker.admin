@@ -8,6 +8,11 @@ user interface for configuration and administration
 
 
 ## Changelog
+#### 0.0.15 (2014-10-09)
+* (bluefox) make possible availableModes for adapter
+* (bluefox) add auto changelog
+* (bluefox) improve Grunt
+* (bluefox) by default enabled.
 
 #### 0.0.14
 * (bluefox) add repositories editor
