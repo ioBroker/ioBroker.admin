@@ -32,57 +32,60 @@ var adapter = require(__dirname + '/../../lib/adapter.js')({
     name:           'admin',
     install: function (callback) {
         if (typeof callback === 'function') callback();
-    },
-    objectChange: function (id, obj) {
-        objects[id] = obj;
-        if (webServer) webServer.io.sockets.emit('objectChange', id, obj);
-    },
-    stateChange: function (id, state) {
-        states[id] = state;
-        if (webServer) webServer.io.sockets.emit('stateChange', id, state);
-    },
-    unload: function (callback) {
-        try {
-            adapter.log.info("terminating http" + (webServer.settings.secure ? "s" : "") + " server on port " + webServer.settings.port);
-            webServer.server.close();
+    }
+});
 
-            callback();
-        } catch (e) {
-            callback();
-        }
-    },
-    ready: function () {
-        adapter.getForeignObject("system.adapter.admin", function (err, obj) {
-            if (!err && obj) {
-                if (!obj.native.secret) {
-                    require('crypto').randomBytes(24, function (ex, buf) {
-                        secret = buf.toString('hex');
-                        adapter.extendForeignObject("system.adapter.admin", {native: {secret: secret}});
-                        main();
-                    });
-                } else {
-                    secret = obj.native.secret;
+adapter.on('objectChange', function (id, obj) {
+    objects[id] = obj;
+    if (webServer) webServer.io.sockets.emit('objectChange', id, obj);
+});
+
+adapter.on('stateChange', function (id, state) {
+    states[id] = state;
+    if (webServer) webServer.io.sockets.emit('stateChange', id, state);
+});
+
+adapter.on('ready', function () {
+    adapter.getForeignObject("system.adapter.admin", function (err, obj) {
+        if (!err && obj) {
+            if (!obj.native.secret) {
+                require('crypto').randomBytes(24, function (ex, buf) {
+                    secret = buf.toString('hex');
+                    adapter.extendForeignObject("system.adapter.admin", {native: {secret: secret}});
                     main();
-                }
+                });
             } else {
-                adapter.logger.error("Cannot find object system.adapter.admin");
+                secret = obj.native.secret;
+                main();
             }
-        });
-    },
-
-    // New message arrived. obj is array with current messages
-    message: function (obj) {
-        if (!obj)
-            return false;
-
-        if (cmdSessions[obj.message.id]) {
-            cmdSessions[obj.message.id].socket.emit(obj.command, obj.message.id, obj.message.data);
-            if (obj.command == 'cmdExit') {
-                delete cmdSessions[obj.message.id];
-            }
+        } else {
+            adapter.logger.error("Cannot find object system.adapter.admin");
         }
+    });
+});
 
-        return true;
+adapter.on('message', function (obj) {
+    if (!obj)
+        return false;
+
+    if (cmdSessions[obj.message.id]) {
+        cmdSessions[obj.message.id].socket.emit(obj.command, obj.message.id, obj.message.data);
+        if (obj.command == 'cmdExit') {
+            delete cmdSessions[obj.message.id];
+        }
+    }
+
+    return true;
+});
+
+adapter.on('unload', function (callback) {
+    try {
+        adapter.log.info("terminating http" + (webServer.settings.secure ? "s" : "") + " server on port " + webServer.settings.port);
+        webServer.server.close();
+
+        callback();
+    } catch (e) {
+        callback();
     }
 });
 
