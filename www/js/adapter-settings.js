@@ -2,6 +2,7 @@ var socket =     io.connect();
 var instance =   window.location.search.slice(1);
 var common =     null; // common information of adapter
 var host =       null; // host object on which the adapter runs
+var changed =    false;
 
 $(document).ready(function () {
 

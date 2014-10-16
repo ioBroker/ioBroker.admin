@@ -314,6 +314,12 @@ $(document).ready(function () {
         open: function (event, ui) {
             $('#dialog-config').css('padding', '2px 0px');
         },
+        beforeClose: function () {
+            if (window.frames['config-iframe'].changed) {
+                return confirm(_('Are you sure? Changes are not saved.'));
+            }
+            return true;
+        },
         close: function () {
             // Clear iframe
             $configFrame.attr('src', '');
