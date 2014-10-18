@@ -87,6 +87,7 @@ $(document).ready(function () {
     var $gridHosts =            $('#grid-hosts');
     var $gridHistory =          $('#grid-history');
     var $gridRepo =             $('#grid-repos');
+    var $gridCerts =            $('#grid-certs');
 
     var socket =                io.connect();
     var firstConnect =          true;
@@ -188,6 +189,51 @@ $(document).ready(function () {
         }
     });
 
+    function string2cert(name, str) {
+        // expected format: -----BEGIN CERTIFICATE-----certif...icate==-----END CERTIFICATE-----
+        if (str.length < '-----BEGIN CERTIFICATE-----==-----END CERTIFICATE-----'.length) {
+            alert(_('Invalid certificate "%s". To short.', name));
+            return '';
+        }
+        var lines = [];
+        if (str.substring(0, '-----BEGIN RSA PRIVATE KEY-----'.length) == '-----BEGIN RSA PRIVATE KEY-----') {
+            if (str.substring(str.length -  '-----END RSA PRIVATE KEY-----'.length) != '-----END RSA PRIVATE KEY-----') {
+                alert(_('Certificate "%s" must end with "-----END RSA PRIVATE KEY-----".', name));
+                return '';
+            }
+            str = str.substring('-----BEGIN RSA PRIVATE KEY-----'.length);
+            str = str.substring(0, str.length - '-----END RSA PRIVATE KEY-----'.length);
+            str = str.replace(/ /g, '');
+            while (str.length) {
+                lines.push(str.substring(0, 64));
+                str = str.substring(64);
+            }
+            return '-----BEGIN RSA PRIVATE KEY-----\r\n' + lines.join('\r\n') + '\r\n-----END RSA PRIVATE KEY-----\r\n';
+        } else {
+            if (str.substring(0, '-----BEGIN CERTIFICATE-----'.length) != '-----BEGIN CERTIFICATE-----') {
+                alert(_('Certificate "%s" must start with "-----BEGIN CERTIFICATE-----".', name));
+                return '';
+            }
+            if (str.substring(str.length -  '-----END CERTIFICATE-----'.length) != '-----END CERTIFICATE-----') {
+                alert(_('Certificate "%s" must end with "-----END CERTIFICATE-----".', name));
+                return '';
+            }
+            str = str.substring('-----BEGIN CERTIFICATE-----'.length);
+            str = str.substring(0, str.length - '-----END CERTIFICATE-----'.length);
+            str = str.replace(/ /g, '');
+            while (str.length) {
+                lines.push(str.substring(0, 64));
+                str = str.substring(64);
+            }
+            return '-----BEGIN CERTIFICATE-----\r\n' + lines.join('\r\n') + '\r\n-----END CERTIFICATE-----\r\n';
+        }
+    }
+
+    function cert2string(cert) {
+        var res = cert.replace(/(?:\\[rn]|[\r\n]+)+/g, "");
+        return res;
+    }
+
     $dialogSystem.dialog({
         autoOpen:   false,
         modal:      true,
@@ -233,6 +279,13 @@ $(document).ready(function () {
                         common.activeRepo = first;
                     }
 
+                    // Fill the certificates list
+                    common.certificates = {};
+                    data = $gridCerts.jqGrid('getRowData');
+                    for (var j = 0; j < data.length; j++) {
+                        common.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
+                    }
+
                     socket.emit('extendObject', 'system.config', {common: common}, function (err) {
                         if (!err) {
                             if (languageChanged) {
@@ -254,10 +307,13 @@ $(document).ready(function () {
         ],
         open: function (event, ui) {
             $gridRepo.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
+            $gridCerts.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
             initRepoGrid();
+            initCertsGrid();
         },
         resize: function () {
             $gridRepo.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
+            $gridCerts.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
         }
     });
 
@@ -375,6 +431,13 @@ $(document).ready(function () {
         $('#enum-gen-id').html('enum.' + $(this).val().replace(/ /, '_').toLowerCase());
     });
 
+    // detect type of state
+    function getType(val) {
+        if (val === true || val === 'true' || val === false || val === 'false') return 'bool';
+        if (parseFloat(val).toString() == val) return 'number';
+        return typeof val;
+    }
+
     // Grids and Dialog inits
     function prepareHistory() {
         $gridHistory.jqGrid({
@@ -404,18 +467,29 @@ $(document).ready(function () {
             var id = $(this).attr('data-id');
             $('#edit-history-id').val(id);
             if (!objects[id]) {
-                $(this).button("option", "disabled", true);
-                return;
+                var p = id.split('.');
+                p.splice(2);
+                objects[id] = {
+                    type: 'state',
+                    parent: p.join('.'),
+                    common: {
+                        // TODO define role somehow
+                        type: states[id] ? getType(states[id].val) : 'mixed',
+                        name: id
+                    }
+                };
             }
 
             if (!objects[id].common.history) {
                 objects[id].common.history = {
                     enabled:        false,
                     changesOnly:    false,
-                    minLength:      480, // TODO use default value from history-adadpter config
+                    // use default value from history-adadpter config
+                    minLength:      (objects['system.adapter.history.0'] && objects['system.adapter.history.0'].native) ? objects['system.adapter.history.0'].native.minLength || 480 : 480,
                     retention:      ''
                 };
             }
+
             if (objects[id].common.history.enabled) {
                 $('#edit-history-enabled').attr('checked', true);
             } else {
@@ -1075,6 +1149,19 @@ $(document).ready(function () {
         initEnumButtons();
     }
 
+    function prepareHistoryButton(btn) {
+        $(btn).button({
+            text: false,
+            icons: {
+                primary:'ui-icon-clock'
+            }
+        })
+            .css({
+                'height':     '18px',
+                'width':      '22px'});
+
+        if ($(btn).hasClass('history-enabled')) $(btn).css({'background': 'lightgreen'});
+    }
     function prepareStates() {
         var stateEdit = false;
         var stateLastSelected;
@@ -1103,7 +1190,9 @@ $(document).ready(function () {
             caption: _('ioBroker States'),
             ignoreCase: true,
             loadComplete: function () {
-                $('.history').button({text: false, icons: {primary:'ui-icon-clock'}}).css('height', '18px').css('width', '22px');
+                $('.history').each(function (id) {
+                    prepareHistoryButton(this);
+                });
             },
             ondblClickRow: function (id) {
                 var rowData = $gridStates.jqGrid('getRowData', id);
@@ -1123,11 +1212,11 @@ $(document).ready(function () {
                 }, "clientArray", null, function () {
                     // afterSave
                     stateEdit = false;
-                    var val = $gridStates.jqGrid("getCell", stateLastSelected, "val");
+                    var val = $gridStates.jqGrid('getCell', stateLastSelected, "val");
                     if (val === 'true') val = true;
                     if (val === 'false') val = false;
                     if (parseFloat(val) == val) val = parseFloat(val);
-                    var ack = $gridStates.jqGrid("getCell", stateLastSelected, "ack");
+                    var ack = $gridStates.jqGrid('getCell', stateLastSelected, "ack");
                     if (ack === 'true') ack = true;
                     if (ack === 'false') ack = false;
                     var id = $('tr[id="' + stateLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
@@ -1301,27 +1390,27 @@ $(document).ready(function () {
             title: _('edit instance'),
             cursor: 'pointer'
         }).jqGrid('navButtonAdd', '#pager-instances', {
-            caption: '',
+            caption:    '',
             buttonicon: 'ui-icon-pencil',
             onClickButton: function () {
                 configInstance($gridInstance.jqGrid('getGridParam', 'selrow'));
             },
             position: 'first',
-            id: 'config-instance',
-            title: _('config instance'),
-            cursor: 'pointer'
+            id:       'config-instance',
+            title:    _('config instance'),
+            cursor:   'pointer'
         }).jqGrid('navButtonAdd', '#pager-instances', {
-            caption: '',
+            caption:    '',
             buttonicon: 'ui-icon-refresh',
             onClickButton: function () {
                 var objSelected = $gridInstance.jqGrid('getGridParam', 'selrow');
                 var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 socket.emit('extendObject', id, {});
             },
-            position: 'first',
-            id: 'reload-instance',
-            title: _('reload instance'),
-            cursor: 'pointer'
+            position:   'first',
+            id:         'reload-instance',
+            title:      _('reload instance'),
+            cursor:     'pointer'
         });
 
         function configInstance(id, e) {
@@ -1363,11 +1452,11 @@ $(document).ready(function () {
                 // afterSave
                 instanceEdit = false;
                 var obj = {common:{}};
-                obj.common.host     = $gridInstance.jqGrid("getCell", instanceLastSelected, "host");
-                obj.common.loglevel = $gridInstance.jqGrid("getCell", instanceLastSelected, "loglevel");
-                obj.common.schedule = $gridInstance.jqGrid("getCell", instanceLastSelected, "schedule");
-                obj.common.enabled  = $gridInstance.jqGrid("getCell", instanceLastSelected, "enabled");
-                obj.common.mode     = $gridInstance.jqGrid("getCell", instanceLastSelected, "mode");
+                obj.common.host     = $gridInstance.jqGrid('getCell', instanceLastSelected, "host");
+                obj.common.loglevel = $gridInstance.jqGrid('getCell', instanceLastSelected, "loglevel");
+                obj.common.schedule = $gridInstance.jqGrid('getCell', instanceLastSelected, "schedule");
+                obj.common.enabled  = $gridInstance.jqGrid('getCell', instanceLastSelected, "enabled");
+                obj.common.mode     = $gridInstance.jqGrid('getCell', instanceLastSelected, "mode");
                 if (obj.common.enabled === 'true')  obj.common.enabled = true;
                 if (obj.common.enabled === 'false') obj.common.enabled = false;
 
@@ -1737,8 +1826,8 @@ $(document).ready(function () {
                     // afterSave
                     scriptEdit = false;
                     var obj = {common:{}};
-                    obj.common.engine = $gridScripts.jqGrid("getCell", scriptLastSelected, "engine");
-                    obj.common.enabled = $gridScripts.jqGrid("getCell", scriptLastSelected, "enabled");
+                    obj.common.engine = $gridScripts.jqGrid('getCell', scriptLastSelected, "engine");
+                    obj.common.enabled = $gridScripts.jqGrid('getCell', scriptLastSelected, "enabled");
                     if (obj.common.enabled === 'true') obj.common.enabled = true;
                     if (obj.common.enabled === 'false') obj.common.enabled = false;
                     var id = $('tr[id="' + scriptLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
@@ -1918,10 +2007,10 @@ $(document).ready(function () {
             caption: _('ioBroker repositories'),
             ignoreCase: true
         }).navGrid('#pager-repos', {
-            search: false,
-            edit: false,
-            add: false,
-            del: false,
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
             refresh: false
         }).jqGrid('navButtonAdd', '#pager-repos', {
             caption: '',
@@ -1963,9 +2052,90 @@ $(document).ready(function () {
                 initRepoButtons();
             },
             position: 'first',
-            id: 'add-repo',
-            title: _('add repository'),
-            cursor: 'pointer'
+            id:       'add-repo',
+            title:    _('add repository'),
+            cursor:   'pointer'
+        });
+    }
+
+    function prepareCerts() {
+        $gridCerts.jqGrid({
+            datatype: 'local',
+            colNames: ['id', _('name'), _('certificate'), ''],
+            colModel: [
+                {name: '_id',         index: '_id',         hidden: true},
+                {name: 'name',        index: 'name',        width: 60,  editable: true},
+                {name: 'certificate', index: 'certificate', width: 300, editable: true},
+                {name: 'commands',    index: 'commands',    width: 60,  editable: false, align: 'center'}
+            ],
+            pager:     $('#pager-certs'),
+            rowNum:    100,
+            rowList:   [20, 50, 100],
+            sortname:  "id",
+            sortorder: "desc",
+            ondblClickRow: function (rowid) {
+                var id = rowid.substring('cert_'.length);
+                $('.cert-edit-submit').hide();
+                $('.cert-delete-submit').hide();
+                $('.cert-ok-submit[data-cert-id="' + id + '"]').show();
+                $('.cert-cancel-submit[data-cert-id="' + id + '"]').show();
+                $gridCerts.jqGrid('editRow', rowid, {"url": "clientArray"});
+            },
+            viewrecords: false,
+            pgbuttons: false,
+            pginput: false,
+            pgtext: false,
+            caption: _('ioBroker certificates'),
+            ignoreCase: true
+        }).navGrid('#pager-certs', {
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
+            refresh: false
+        }).jqGrid('navButtonAdd', '#pager-certs', {
+            caption: '',
+            buttonicon: 'ui-icon-plus',
+            onClickButton: function () {
+                // Find last id;
+                var id = 1;
+                var ids = $gridCerts.jqGrid('getDataIDs');
+                while (ids.indexOf('cert_' + id) != -1) {
+                    id++;
+                }
+                // Find new unique name
+                var found;
+                var newText = _("New");
+                var idx = 1;
+                do {
+                    found = true;
+                    for (var _id = 0; _id < ids.length; _id++) {
+                        var obj = $gridCerts.jqGrid('getRowData', ids[_id]);
+                        if (obj && obj.name == newText + idx)  {
+                            idx++;
+                            found = false;
+                            break;
+                        }
+                    }
+                } while (!found);
+
+                $gridCerts.jqGrid('addRowData', 'cert_' + id, {
+                    _id:         id,
+                    name:        newText + idx,
+                    certificate: '',
+                    commands:
+                        '<button data-cert-id="' + id + '" class="cert-edit-submit">'   + _('edit')   + '</button>' +
+                        '<button data-cert-id="' + id + '" class="cert-delete-submit">' + _('delete') + '</button>' +
+                        '<button data-cert-id="' + id + '" class="cert-ok-submit" style="display:none">' + _('ok') + '</button>' +
+                        '<button data-cert-id="' + id + '" class="cert-cancel-submit" style="display:none">' + _('cancel') + '</button>'
+                });
+
+                initCertButtons();
+            },
+            position: 'first',
+            id:       'add-cert',
+            title:    _('new certificate'),
+            cursor:   'pointer'
         });
     }
 
@@ -2165,6 +2335,39 @@ $(document).ready(function () {
         if (isFound) $('#system_activeRepo').val(selectedRepo);
     }
 
+    function initCertsGrid(update) {
+        $gridCerts.jqGrid('clearGridData');
+        if (systemConfig.common.certificates) {
+            var id = 1;
+            // list of the repositories
+            for (var cert in systemConfig.common.certificates) {
+
+                var obj = systemConfig.common.certificates[cert];
+
+                $gridCerts.jqGrid('addRowData', 'cert_' + id, {
+                    _id:         id,
+                    name:        cert,
+                    certificate: cert2string(systemConfig.common.certificates[cert]),
+                    commands:
+                        '<button data-cert-id="' + id + '" class="cert-edit-submit">'   + _('edit')   + '</button>' +
+                        '<button data-cert-id="' + id + '" class="cert-delete-submit">' + _('delete') + '</button>' +
+                        '<button data-cert-id="' + id + '" class="cert-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
+                        '<button data-cert-id="' + id + '" class="cert-cancel-submit" style="display:none">' + _('cancel') + '</button>'
+                });
+                id++;
+            }
+
+            initCertButtons();
+        }
+
+
+        $gridAdapter.trigger('reloadGrid');
+    }
+
+    function updateCertListSelect() {
+        // todo
+    }
+
     function initRepoButtons() {
         var editedId = null;
 
@@ -2211,6 +2414,55 @@ $(document).ready(function () {
             $('.repo-ok-submit').hide();
             $('.repo-cancel-submit').hide();
             $gridRepo.jqGrid('restoreRow', 'repo_' + id, false);
+        });
+    }
+
+    function initCertButtons() {
+        var editedId = null;
+
+        $('.cert-edit-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-pencil'},
+            text:  false
+        }).click(function () {
+            var id = $(this).attr('data-cert-id');
+            $('.cert-edit-submit').hide();
+            $('.cert-delete-submit').hide();
+            $('.cert-ok-submit[data-cert-id="' + id + '"]').show();
+            $('.cert-cancel-submit[data-cert-id="' + id + '"]').show();
+            $gridCerts.jqGrid('editRow', 'cert_' + id, {"url": "clientArray"});
+        });
+
+        $('.cert-delete-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-trash'},
+            text:  false
+        }).click(function () {
+            var id = $(this).attr('data-cert-id');
+            $gridCerts.jqGrid('delRowData', 'cert_' + id);
+            updateCertListSelect();
+        });
+
+        $('.cert-ok-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-check'},
+            text:  false
+        }).click(function () {
+            var id = $(this).attr('data-cert-id');
+            $('.cert-edit-submit').show();
+            $('.cert-delete-submit').show();
+            $('.cert-ok-submit').hide();
+            $('.cert-cancel-submit').hide();
+            $gridCerts.jqGrid('saveRow', 'cert_' + id, {"url": "clientArray"});
+            updateCertListSelect();
+        });
+        $('.cert-cancel-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-close'},
+            text:  false
+        }).click(function () {
+            var id = $(this).attr('data-cert-id');
+            $('.cert-edit-submit').show();
+            $('.cert-delete-submit').show();
+            $('.cert-ok-submit').hide();
+            $('.cert-cancel-submit').hide();
+            $gridCerts.jqGrid('restoreRow', 'cert_' + id, false);
         });
     }
 
@@ -2786,23 +3038,44 @@ $(document).ready(function () {
             for (var key in res) {
                 var obj = res[key];
                 obj._id = key;
-                obj.name = objects[obj._id] ? objects[obj._id].common.name : '';
+                obj.name = objects[obj._id] ? (objects[obj._id].common.name || obj._id) : obj._id;
 
                 if (objects[key] && objects[key].parent && objects[objects[key].parent]) {
                     obj.pname = objects[objects[key].parent].common.name;
+                    // Add instance
+                    var parts = objects[key].parent.split('.');
+                    if (obj.pname.indexOf('.' + parts[parts.length - 1]) == -1) {
+                        obj.pname += '.' + parts[parts.length - 1];
+                    }
+                } else if (obj.name.indexOf('.messagebox') != -1) {
+                    var p = obj.name.split('.');
+                    p.splice(-1);
+                    obj.pname = p.join('.');
+                } else {
+                    var b = obj.name.split('.');
+                    b.splice(2);
+                    obj.pname = b.join('.');
                 }
 
                 obj.type = objects[obj._id] && objects[obj._id].common ? objects[obj._id].common.type : '';
                 if (obj.ts) obj.ts = formatDate(new Date(obj.ts * 1000));
                 if (obj.lc) obj.lc = formatDate(new Date(obj.lc * 1000));
-                if (objects[key] && key.substring(key.length - '.messagebox'.length) != '.messagebox') {
-                    obj.history = '<button data-id="' + obj._id + '" class="history" id="history_' + obj._id + '">' + _('history') + '</button>';
+
+                // Show history button only if history adapter enabled
+                if (/*objects[key] && */
+                    objects['system.adapter.history.0'] && objects['system.adapter.history.0'].common.enabled &&
+                    key.substring(key.length - '.messagebox'.length) != '.messagebox') {
+
+                    // Check if history enabled
+                    var historyEnabled = '';
+                    if (objects[key] && objects[key].common && objects[key].common.history && objects[key].common.history.enabled) historyEnabled = ' history-enabled';
+                    obj.history = '<button data-id="' + obj._id + '" class="history' + historyEnabled + '" id="history_' + obj._id + '">' + _('history') + '</button>';
+
                 } else {
                     obj.history = '';
                 }
                 obj.gridId = 'state_' + key.replace(/ /g, '_');
                 gridData.push(obj);
-                //$gridStates.jqGrid('addRowData', obj.gridId, obj);
             }
             $gridStates.jqGrid('addRowData', 'gridId', gridData);
 //benchmark('finished getStates loop');
@@ -3097,8 +3370,12 @@ $(document).ready(function () {
             rowData.from = obj.from;
             $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), rowData);
 
+            var value = JSON.stringify(obj.val);
+            if (value.length > 30)
+                value = '<div title="' + value.replace(/"/g, '') + '">' + value.substring(0, 30) + '...</div>';
+
             $('#event-table').prepend('<tr><td class="event-column-1">stateChange</td><td class="event-column-2">' + id +
-                '</td><td class="event-column-3">' + obj.val +
+                '</td><td class="event-column-3">' + value +
                 '</td><td class="event-column-4">' + obj.ack + '</td>' +
                 '<td class="event-column-5">' + obj.from + '</td><td class="event-column-6">' + rowData.ts + '</td><td class="event-column-7">' +
                 rowData.lc + '</td></tr>');
@@ -3138,7 +3415,9 @@ $(document).ready(function () {
         }
 
         // prepend to event table
-        var row = '<tr><td>objectChange</td><td>' + id + '</td><td>' + JSON.stringify(obj) + '</td></tr>';
+        var value = JSON.stringify(obj);
+        if (value.length > 30) value = '<span title="' + value + '">' + value.substring(0, 30) + '...</span>';
+        var row = '<tr><td>objectChange</td><td>' + id + '</td><td>' + value + '</td></tr>';
         $('#events').prepend(row);
 
         //if (!changed) return;
@@ -3220,6 +3499,7 @@ $(document).ready(function () {
                 initHostsList();
             }, 200);
         }
+
         // Update groups
         if (id.substring(0, "system.group.".length) == "system.group.") {
             if (obj) {
@@ -3259,6 +3539,27 @@ $(document).ready(function () {
                 updateTimers.initEnums = null;
                 initEnums(true);
             }, 200);
+        }
+
+        // Update states
+        if (obj.type == 'state') {
+            // Update history button
+            var rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
+            if (/*objects[key] && */
+                objects['system.adapter.history.0'] && objects['system.adapter.history.0'].common.enabled &&
+                    id.substring(id.length - '.messagebox'.length) != '.messagebox') {
+
+                // Check if history enabled
+                var historyEnabled = '';
+                if (obj && obj.common && obj.common.history && obj.common.history.enabled) historyEnabled = ' history-enabled';
+                rowData.history = '<button data-id="' + id + '" class="history' + historyEnabled + '" id="history_' + id + '">' + _('history') + '</button>';
+            } else {
+                rowData.history = '';
+            }
+            $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), rowData);
+            $('.history').each(function (id) {
+                prepareHistoryButton(this);
+            });
         }
     });
 
@@ -3365,6 +3666,7 @@ $(document).ready(function () {
                     systemConfig = {
                         type: 'config',
                         common: {
+                            name:            'system.config',
                             language:        '',           // Default language for adapters. Adapters can use different values.
                             tempUnit:        '°C',         // Default temperature units.
                             currency:        '€',          // Default currency sign.
@@ -3396,6 +3698,7 @@ $(document).ready(function () {
                 prepareScripts();
                 prepareHistory();
                 prepareRepos();
+                prepareCerts();
                 resizeGrids();
 
                 $("#load_grid-select-member").show();

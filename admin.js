@@ -29,7 +29,7 @@ var userKey =     'connect.sid';
 var cmdSessions = {};
 
 var adapter = require(__dirname + '/../../lib/adapter.js')({
-    name:           'admin',
+    name:    'admin',
     install: function (callback) {
         if (typeof callback === 'function') callback();
     }
