@@ -80,5 +80,28 @@ function translateAll(lang, dictionary) {
 }
 
 // make possible _('words to translate')
-var _ = translateWord;
+var _ = function (text, arg1, arg2, arg3) {
+    text = translateWord(text);
+
+    var pos = text.indexOf('%s');
+    if (pos != -1) {
+        text = text.replace('%s', arg1);
+    } else {
+        return text;
+    }
+
+    pos = text.indexOf('%s');
+    if (pos != -1)  {
+        text = text.replace('%s', arg2);
+    } else {
+        return text;
+    }
+
+    pos = text.indexOf('%s');
+    if (pos != -1)  {
+        text = text.replace('%s', arg3);
+    }
+
+    return text;
+};
 

@@ -1,7 +1,9 @@
-var socket =     io.connect();
-var instance =   window.location.search.slice(1);
-var common =     null; // common information of adapter
-var host =       null; // host object on which the adapter runs
+var socket =   io.connect();
+var instance = window.location.search.slice(1);
+var common =   null; // common information of adapter
+var host =     null; // host object on which the adapter runs
+var changed =  false;
+var certs =    [];
 
 $(document).ready(function () {
 
@@ -64,6 +66,12 @@ $(document).ready(function () {
     function loadSystemConfig(callback) {
         socket.emit('getObject', 'system.config', function (err, res) {
             if (!err && res && res.common) {
+                if (res.common.certificates) {
+                    certs = [];
+                    for (var c in res.common.certificates) {
+                        certs.push(c);
+                    }
+                }
                 systemLang = res.common.language || systemLang;
             }
             if (callback) callback();
@@ -144,6 +152,16 @@ function sendTo(adapter, command, message, callback) {
 
 function showMessage(message, lang) {
     alert(message);
+}
+
+// fills select with names of the certificates and preselect it
+function fillSelectCertificates(id, value) {
+    var str = '';
+    for (var i = 0; i < certs.length; i++) {
+        str += '<option value="' + certs[i] + '" ' + ((certs[i] == value) ? 'selected' : '') + '>' + certs[i] + '</option>';
+    }
+
+    $(id).html(str);
 }
 
 

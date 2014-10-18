@@ -162,3 +162,6 @@ table#events {
     font-weight: bold;
     color: green !important;
 }
+.history-enabled {
+    color: red;
+}

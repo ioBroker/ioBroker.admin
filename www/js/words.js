@@ -146,5 +146,28 @@ systemDictionary = {
     "alpha":                {"en": "alpha",                 "de": "alpha",                  "ru": "alpha"},
     "update":               {"en": "update",                "de": "update",                 "ru": "обновить"},
     "beta":                 {"en": "beta",                  "de": "beta",                   "ru": "beta"},
-    "planned":              {"en": "planned",               "de": "geplannt",               "ru": "в планах"}
+    "planned":              {"en": "planned",               "de": "geplannt",               "ru": "в планах"},
+    "clear":                {"en": "clear",                 "de": "löschen",                "ru": "очистить"},
+    "Name:":                {"en": "Name:",                 "de": "Name:",                  "ru": "Name:"},
+    "Select language":      {"en": "Select language",       "de": "Select language",        "ru": "Select language"},
+    "License terms":        {"en": "License terms",         "de": "License terms",          "ru": "License terms"},
+    "Main settings":        {"en": "Main settings",         "de": "Main settings",          "ru": "Main settings"},
+    "Repositories":         {"en": "Repositories",          "de": "Repositories",           "ru": "Repositories"},
+    "Active repository:":   {"en": "Active repository:",    "de": "Active repository:",     "ru": "Active repository:"},
+    "Generated&nbsp;ID:":   {"en": "Generated&nbsp;ID:",    "de": "Generated&nbsp;ID:",     "ru": "Generated&nbsp;ID:"},
+    "license agreement":    {"en": "license agreement",     "de": "license agreement",      "ru": "license agreement"},
+    "description":          {"en": "description",           "de": "description",            "ru": "description"},
+    "link":                 {"en": "link",                  "de": "link",                   "ru": "link"},
+    "ioBroker repositories": {"en": "ioBroker repositories", "de": "ioBroker repositories", "ru": "ioBroker repositories"},
+    "add repository":       {"en": "add repository",        "de": "add repository",         "ru": "add repository"},
+    "Name":                 {"en": "Name",                  "de": "Name",                   "ru": "Name"},
+    "edit":                 {"en": "edit",                  "de": "edit",                   "ru": "edit"},
+    "delete":               {"en": "delete",                "de": "delete",                 "ru": "delete"},
+    "ok":                   {"en": "ok",                    "de": "ok",                     "ru": "ok"},
+    "cancel":               {"en": "cancel",                "de": "cancel",                 "ru": "cancel"},
+    "Are you sure? Changes are not saved.": {
+        "en": "Are you sure? Changes are not saved.",
+        "de": "Änderungen sind nicht gespeichert. Sicher?",
+        "ru": "Изменения не сохранены. Всё равно закрыть?"
+    }
 };
