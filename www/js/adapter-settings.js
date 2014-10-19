@@ -30,7 +30,7 @@ $(document).ready(function () {
 
     $('input[type="button"]').button();
     $('input#save').click(function () {
-        if (!save) {
+        if (typeof save == 'undefined') {
             alert("Please implement save function in your admin/index.html");
             return;
         }
@@ -85,7 +85,7 @@ $(document).ready(function () {
                 $('.adapter-config').html('system.adapter.' + adapter + '.' + instance);
                 common = res.common;
                 if (res.common && res.common.name) $('.adapter-name').html(res.common.name);
-                if (!load) {
+                if (typeof load == 'undefined') {
                     alert("Please implement save function in your admin/index.html");
                 } else {
                     load(res.native);
@@ -125,15 +125,15 @@ function getIPs(callback) {
     socket.emit('getHostByIp', common.host, function (ip, _host) {
         if (_host) {
             host = _host;
-            var IPs4 = [{name: '[IPv4] 0.0.0.0', address: '0.0.0.0'}];
-            var IPs6 = [{name: '[IPv6] ::',      address: '::'}];
+            var IPs4 = [{name: '[IPv4] 0.0.0.0', address: '0.0.0.0', family: 'ipv4'}];
+            var IPs6 = [{name: '[IPv6] ::',      address: '::',      family: 'ipv6'}];
             if (host.native.hardware && host.native.hardware.networkInterfaces) {
                 for (var eth in host.native.hardware.networkInterfaces) {
                     for (var num = 0; num < host.native.hardware.networkInterfaces[eth].length; num++) {
                         if (host.native.hardware.networkInterfaces[eth][num].family != "IPv6") {
-                            IPs4.push({name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address});
+                            IPs4.push({name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv4'});
                         } else {
-                            IPs6.push({name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address});
+                            IPs6.push({name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv6'});
                         }
                     }
                 }
@@ -146,6 +146,19 @@ function getIPs(callback) {
     });
 }
 
+function fillSelectIPs(id, actualAddr, noIPv4, noIPv6) {
+    getIPs(function(ips) {
+        var str = '';
+        for (var i = 0; i < ips.length; i++) {
+            if (noIPv4 && ips[i].family == 'ipv4') continue;
+            if (noIPv6 && ips[i].family == 'ipv6') continue;
+            str += '<option value="' + ips[i].address + '" ' + ((ips[i].address == actualAddr) ? 'selected' : '') + '>' + ips[i].name + '</option>';
+        }
+
+        $(id).html(str);
+    });
+}
+
 function sendTo(adapter, command, message, callback) {
     socket.emit('sendTo', adapter, command, message, callback);
 }
@@ -155,10 +168,10 @@ function showMessage(message, lang) {
 }
 
 // fills select with names of the certificates and preselect it
-function fillSelectCertificates(id, value) {
+function fillSelectCertificates(id, actualValued) {
     var str = '';
     for (var i = 0; i < certs.length; i++) {
-        str += '<option value="' + certs[i] + '" ' + ((certs[i] == value) ? 'selected' : '') + '>' + certs[i] + '</option>';
+        str += '<option value="' + certs[i] + '" ' + ((certs[i] == actualValued) ? 'selected' : '') + '>' + certs[i] + '</option>';
     }
 
     $(id).html(str);
