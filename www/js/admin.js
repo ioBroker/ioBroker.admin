@@ -2151,8 +2151,30 @@ $(document).ready(function () {
             var obj;
             var version;
             var tmp;
-            // list of the installed adapters
+
+            var listInstalled    = [];
+            var listUnsinstalled = [];
+
             for (var adapter in installedList) {
+                obj = installedList[adapter];
+                if (!obj || obj.controller || adapter == 'hosts') continue;
+                listInstalled.push(adapter);
+            }
+            listInstalled.sort();
+
+            // List of adapters for repository
+            for (adapter in repository) {
+                obj = repository[adapter];
+                if (!obj || obj.controller) continue;
+                version = '';
+                if (installedList[adapter]) continue;
+                listUnsinstalled.push(adapter);
+            }
+            listUnsinstalled.sort();
+
+            // list of the installed adapters
+            for (var i = 0; i < listInstalled.length; i++) {
+                adapter = listInstalled[i]
                 obj = installedList[adapter];
                 if (!obj || obj.controller || adapter == 'hosts') continue;
                 var installed = '';
@@ -2202,8 +2224,9 @@ $(document).ready(function () {
                 });
             }
 
-            // List of adapters for repository
-            for (adapter in repository) {
+            for (i = 0; i < listUnsinstalled.length; i++) {
+                adapter = listUnsinstalled[i];
+
                 obj = repository[adapter];
                 if (!obj || obj.controller) continue;
                 version =   '';
@@ -2525,7 +2548,9 @@ $(document).ready(function () {
             $gridInstance[0]._isInited = true;
             $gridInstance.jqGrid('clearGridData');
 
-            for (var i = 0; i < instances.length; i++) {
+            instances.sort();
+
+            for (i = 0; i < instances.length; i++) {
                 var obj = objects[instances[i]];
                 var tmp = obj._id.split('.');
                 var adapter = tmp[2];
