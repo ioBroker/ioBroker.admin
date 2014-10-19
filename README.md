@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+#### 0.0.17 (2014-10-19)
+* (bluefox) fix delete of adapter
+
 #### 0.0.16 (2014-10-19)
 * (bluefox) support of certificate list
 
