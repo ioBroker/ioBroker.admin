@@ -55,8 +55,9 @@ $(document).ready(function () {
 
     var systemConfig;
 
-    var cmdCallback = null;
+    var cmdCallback =           null;
     var stdout;
+    var activeCmdId =           null;
 
     var $stdout =               $('#stdout');
     var $configFrame =          $('#config-iframe');
@@ -158,8 +159,8 @@ $(document).ready(function () {
                 text: false
             }).click(function () {
                 $('#system_activeRepo').html('');
-                if (systemConfig.common.listRepo) {
-                    for (var repo in systemConfig.common.listRepo) {
+                if (systemConfig.common.repositories) {
+                    for (var repo in systemConfig.common.repositories) {
                         $('#system_activeRepo').append('<option value="' + repo + '">' + repo + '</option>');
                     }
                 }
@@ -261,11 +262,11 @@ $(document).ready(function () {
                     });
 
                     // Fill the repositories list
-                    common.listRepo = {};
+                    common.repositories = {};
                     var data = $gridRepo.jqGrid('getRowData');
                     var first = null;
                     for (var i = 0; i < data.length; i++) {
-                        common.listRepo[data[i].name] = data[i].link;
+                        common.repositories[data[i].name] = data[i].link;
                         if (!first) first = data[i].name;
                     }
                     // Check if the active repository still exist in the list
@@ -274,7 +275,7 @@ $(document).ready(function () {
                             activeRepoChanged = true;
                             common.activeRepo = '';
                         }
-                    } else if (!common.listRepo[common.activeRepo]) {
+                    } else if (!common.repositories[common.activeRepo]) {
                         activeRepoChanged = true;
                         common.activeRepo = first;
                     }
@@ -2294,17 +2295,17 @@ $(document).ready(function () {
 
     function initRepoGrid(update) {
         $gridRepo.jqGrid('clearGridData');
-        if (systemConfig.common.listRepo) {
+        if (systemConfig.common.repositories) {
             var id = 1;
             // list of the repositories
-            for (var repo in systemConfig.common.listRepo) {
+            for (var repo in systemConfig.common.repositories) {
 
-                var obj = systemConfig.common.listRepo[repo];
+                var obj = systemConfig.common.repositories[repo];
 
                 $gridRepo.jqGrid('addRowData', 'repo_' + id, {
                     _id:     id,
                     name:    repo,
-                    link:    systemConfig.common.listRepo[repo],
+                    link:    systemConfig.common.repositories[repo],
                     commands:
                         '<button data-repo-id="' + id + '" class="repo-edit-submit">'   + _('edit')   + '</button>' +
                         '<button data-repo-id="' + id + '" class="repo-delete-submit">' + _('delete') + '</button>' +
@@ -2720,9 +2721,9 @@ $(document).ready(function () {
         stdout = '$ ./iobroker ' + cmd;
         $stdout.val(stdout);
         // genereate the unique id to coordinate the outputs
-        var id = Math.floor(Math.random() * 0xFFFFFFE) + 1;
+        activeCmdId = Math.floor(Math.random() * 0xFFFFFFE) + 1;
         cmdCallback = callback;
-        socket.emit('cmdExec', host, id, cmd);
+        socket.emit('cmdExec', host, activeCmdId, cmd);
     }
 
     function getAdaptersInfo(host, update, callback) {
@@ -2732,7 +2733,7 @@ $(document).ready(function () {
             curInstalled  = null;
         }
         if (!curRepository) {
-            socket.emit('sendToHost', host, 'getRepository', systemConfig.common.listRepo ? systemConfig.common.listRepo[systemConfig.common.activeRepo] : null, function (_repository) {
+            socket.emit('sendToHost', host, 'getRepository', systemConfig.common.activeRepo, function (_repository) {
                 curRepository = _repository;
                 if (curRepository && curInstalled) callback(curRepository, curInstalled);
             });
@@ -3564,30 +3565,36 @@ $(document).ready(function () {
     });
 
     socket.on('cmdStdout', function (_id, text) {
-        stdout += '\n' + text;
-        $stdout.val(stdout);
-        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+        if (activeCmdId == _id) {
+            stdout += '\n' + text;
+            $stdout.val(stdout);
+            $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+        }
     });
 
     socket.on('cmdStderr', function (_id, text) {
-        stdout += '\nERROR: ' + text;
-        $stdout.val(stdout);
-        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+        if (activeCmdId == _id) {
+            stdout += '\nERROR: ' + text;
+            $stdout.val(stdout);
+            $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+        }
     });
 
     socket.on('cmdExit', function (_id, exitCode) {
-        exitCode = parseInt(exitCode, 10);
-        stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
-        $stdout.val(stdout);
-        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
-        if (!exitCode) {
-            setTimeout(function () {
-                $dialogCommand.dialog('close');
-            }, 1500);
-        }
-        if (cmdCallback) {
-            cmdCallback(exitCode);
-            cmdCallback = null;
+        if (activeCmdId == _id) {
+            exitCode = parseInt(exitCode, 10);
+            stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
+            $stdout.val(stdout);
+            $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+            if (!exitCode) {
+                setTimeout(function () {
+                    $dialogCommand.dialog('close');
+                }, 1500);
+            }
+            if (cmdCallback) {
+                cmdCallback(exitCode);
+                cmdCallback = null;
+            }
         }
     });
 

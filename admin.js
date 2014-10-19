@@ -69,7 +69,9 @@ adapter.on('message', function (obj) {
         return false;
 
     if (cmdSessions[obj.message.id]) {
-        cmdSessions[obj.message.id].socket.emit(obj.command, obj.message.id, obj.message.data);
+        if (webServer) webServer.io.sockets.emit(obj.command, obj.message.id, obj.message.data);
+        // we cannot save the socket, because if it takes a bit time, the socket will be invalid
+        //cmdSessions[obj.message.id].socket.emit(obj.command, obj.message.id, obj.message.data);
         if (obj.command == 'cmdExit') {
             delete cmdSessions[obj.message.id];
         }
@@ -96,7 +98,6 @@ function main() {
     webServer = initWebServer(adapter.config);
 
     getData();
-
 }
 
 function getAdapterUI() {
