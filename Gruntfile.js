@@ -175,7 +175,7 @@ module.exports = function (grunt) {
                     }
                 }
 
-                grunt.file.write('README.md', readmeStart + '#### ' + iopackage.common.version + ' (' + date + ')\r\n' + (news ? news + '\r\n\r\n' : '\r\n') + readmeEnd);
+                grunt.file.write('README.md', readmeStart + '### ' + iopackage.common.version + ' (' + date + ')\r\n' + (news ? news + '\r\n\r\n' : '\r\n') + readmeEnd);
             }
         }
     });
