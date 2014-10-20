@@ -2550,7 +2550,7 @@ $(document).ready(function () {
 
             instances.sort();
 
-            for (i = 0; i < instances.length; i++) {
+            for (var i = 0; i < instances.length; i++) {
                 var obj = objects[instances[i]];
                 var tmp = obj._id.split('.');
                 var adapter = tmp[2];
@@ -3768,26 +3768,28 @@ $(document).ready(function () {
 
 
     // Helper methods
-    function upToDate(a, b) {
-        a = a.split('.');
-        b = b.split('.');
-        a[0] = parseInt(a[0], 10);
-        b[0] = parseInt(b[0], 10);
-        if (a[0] > b[0]) {
+    function upToDate(_new, old) {
+        _new = _new.split('.');
+        old = old.split('.');
+        _new[0] = parseInt(_new[0], 10);
+        old[0] = parseInt(old[0], 10);
+        if (_new[0] > old[0]) {
             return false;
-        } else if (a[0] === b[0]) {
-            a[1] = parseInt(a[1], 10);
-            b[1] = parseInt(b[1], 10);
-            if (a[1] > b[1]) {
+        } else if (_new[0] === old[0]) {
+            _new[1] = parseInt(_new[1], 10);
+            old[1] = parseInt(old[1], 10);
+            if (_new[1] > old[1]) {
                 return false;
-            } else if (a[1] === b[1]) {
-                a[2] = parseInt(a[2], 10);
-                b[2] = parseInt(b[2], 10);
-                if (a[2] > b[2]) {
+            } else if (_new[1] === old[1]) {
+                _new[2] = parseInt(_new[2], 10);
+                old[2] = parseInt(old[2], 10);
+                if (_new[2] > old[2]) {
                     return false;
                 } else {
                     return true;
                 }
+            } else {
+                return true;
             }
         } else {
             return true;
