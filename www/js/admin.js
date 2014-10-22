@@ -1277,7 +1277,7 @@ $(document).ready(function () {
             caption:       '',
             buttonicon:    'ui-icon-refresh',
             onClickButton: function () {
-                initAdapters(true);
+                initAdapters(true, true);
             },
             position:      'first',
             id:            'add-object',
@@ -2141,12 +2141,12 @@ $(document).ready(function () {
     }
 
     // Grids content
-    function initAdapters(update) {
+    function initAdapters(update, updateRepo) {
         $gridAdapter.jqGrid('clearGridData');
         $("#load_grid-adapters").show();
         $('a[href="#tab-adapters"]').removeClass('updateReady');
 
-        getAdaptersInfo(currentHost, update, function (repository, installedList) {
+        getAdaptersInfo(currentHost, update, updateRepo, function (repository, installedList) {
             var id = 1;
             var obj;
             var version;
@@ -2274,7 +2274,7 @@ $(document).ready(function () {
             }
         }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
             var adapter = $(this).attr('data-adapter-name');
-            getAdaptersInfo(currentHost, false, function (repo) {
+            getAdaptersInfo(currentHost, false, false, function (repo) {
                 var obj = repo[adapter];
                 if (!obj) return;
                 if (obj.license && obj.license !== 'MIT') {
@@ -2696,7 +2696,7 @@ $(document).ready(function () {
 
             $gridHosts.jqGrid('clearGridData');
 
-            getAdaptersInfo(currentHost, update, function (repository, installedList) {
+            getAdaptersInfo(currentHost, update, false, function (repository, installedList) {
 
                 $gridHosts[0]._isInited = true;
                 for (var i = 0; i < hosts.length; i++) {
@@ -2751,14 +2751,14 @@ $(document).ready(function () {
         socket.emit('cmdExec', host, activeCmdId, cmd);
     }
 
-    function getAdaptersInfo(host, update, callback) {
+    function getAdaptersInfo(host, update, updateRepo, callback) {
         if (!callback) throw 'Callback cannot be null or undefined';
         if (update) {
             curRepository = null;
             curInstalled  = null;
         }
         if (!curRepository) {
-            socket.emit('sendToHost', host, 'getRepository', systemConfig.common.activeRepo, function (_repository) {
+            socket.emit('sendToHost', host, 'getRepository', {repo: systemConfig.common.activeRepo, update: updateRepo}, function (_repository) {
                 curRepository = _repository;
                 if (curRepository && curInstalled) callback(curRepository, curInstalled);
             });
