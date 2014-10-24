@@ -53,26 +53,26 @@ module.exports = function (grunt) {
         http: {
             get_hjscs: {
                 options: {
-                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.nodejs/master/tasks/jscs.js'
+                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jscs.js'
                 },
                 dest: 'tasks/jscs.js'
             },
             get_jshint: {
                 options: {
-                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.nodejs/master/tasks/jshint.js'
+                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jshint.js'
                 },
                 dest: 'tasks/jshint.js'
             },
             get_jscsRules: {
                 options: {
-                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.nodejs/master/tasks/jscsRules.js'
+                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jscsRules.js'
                 },
                 dest: 'tasks/jscsRules.js'
             },
             get_iconOnline: {
                 options: {
                     encoding: null,
-                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.nodejs/master/adapter/example/admin/example.png'
+                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png'
                 },
                 dest: dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.png'
 
@@ -80,7 +80,7 @@ module.exports = function (grunt) {
             get_iconOffline: {
                 options: {
                     encoding: null,
-                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.nodejs/master/adapter/example/admin/example.png'
+                    url: iopackage.common.extIcon || 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/adapter/example/admin/example.png'
                 },
                 dest: dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.png'
 
