@@ -147,7 +147,7 @@ function getIPs(callback) {
 }
 
 function fillSelectIPs(id, actualAddr, noIPv4, noIPv6) {
-    getIPs(function(ips) {
+    getIPs(function (ips) {
         var str = '';
         for (var i = 0; i < ips.length; i++) {
             if (noIPv4 && ips[i].family == 'ipv4') continue;

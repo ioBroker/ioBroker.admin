@@ -2,13 +2,12 @@
 /*jslint node: true */
 "use strict";
 
-var express =               require('express');
-var socketio =              require('socket.io');
-var request =               require('request');
-var fs =                    require('fs');
-var Stream =                require('stream');
-var config =                JSON.parse(fs.readFileSync(__dirname + '/../../conf/iobroker.json'));
-
+var express =  require('express');
+var socketio = require('socket.io');
+var request =  require('request');
+var fs =       require('fs');
+var Stream =   require('stream');
+var config =   JSON.parse(fs.readFileSync(__dirname + '/../../conf/iobroker.json'));
 
 var session;
 var cookieParser;

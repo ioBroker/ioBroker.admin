@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.0.19 (2014-10-24)
+* (bluefox) fix error with repository edition
+
 ### 0.0.18 (2014-10-20)
 * (bluefox) fix error with "up to date"
 
