@@ -176,7 +176,11 @@ $(document).ready(function () {
                         if ($this.attr('type') == 'checkbox') {
                             $this.prop('checked', systemConfig.common[id]);
                         } else {
-                            $this.val(systemConfig.common[id]);
+                            if (id == 'isFloatComma') {
+                                $this.val(systemConfig.common[id] ? "true" : "false");
+                            } else {
+                                $this.val(systemConfig.common[id]);
+                            }
                         }
 
                     });
@@ -258,15 +262,23 @@ $(document).ready(function () {
                             if (id == 'language'   && common.language   != $this.val()) languageChanged   = true;
                             if (id == 'activeRepo' && common.activeRepo != $this.val()) activeRepoChanged = true;
                             common[id] = $this.val();
+                            if (id == 'isFloatComma') common[id] = (common[id] === "true" || common[id] === true);
                         }
                     });
 
                     // Fill the repositories list
+                    var links = {};
+                    for (var r in common.repositories) {
+                        if (typeof common.repositories[r] == 'object' && common.repositories[r].json) {
+                            links[common.repositories[r].link] = common.repositories[r].json;
+                        }
+                    }
                     common.repositories = {};
                     var data = $gridRepo.jqGrid('getRowData');
                     var first = null;
                     for (var i = 0; i < data.length; i++) {
-                        common.repositories[data[i].name] = data[i].link;
+                        common.repositories[data[i].name] = {link: data[i].link, json: null};
+                        if (links[data[i].link]) common.repositories[data[i].name].json = links[data[i].link];
                         if (!first) first = data[i].name;
                     }
                     // Check if the active repository still exist in the list
@@ -2174,7 +2186,7 @@ $(document).ready(function () {
 
             // list of the installed adapters
             for (var i = 0; i < listInstalled.length; i++) {
-                adapter = listInstalled[i]
+                adapter = listInstalled[i];
                 obj = installedList[adapter];
                 if (!obj || obj.controller || adapter == 'hosts') continue;
                 var installed = '';
@@ -2328,7 +2340,7 @@ $(document).ready(function () {
                 $gridRepo.jqGrid('addRowData', 'repo_' + id, {
                     _id:     id,
                     name:    repo,
-                    link:    systemConfig.common.repositories[repo],
+                    link:    (typeof systemConfig.common.repositories[repo] == 'object') ? systemConfig.common.repositories[repo].link : systemConfig.common.repositories[repo],
                     commands:
                         '<button data-repo-id="' + id + '" class="repo-edit-submit">'   + _('edit')   + '</button>' +
                         '<button data-repo-id="' + id + '" class="repo-delete-submit">' + _('delete') + '</button>' +
