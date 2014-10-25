@@ -54,6 +54,8 @@ $(document).ready(function () {
     var enumCurrentParent =     '';
 
     var systemConfig;
+    var systemRepos;
+    var systemCerts;
 
     var cmdCallback =           null;
     var stdout;
@@ -159,8 +161,8 @@ $(document).ready(function () {
                 text: false
             }).click(function () {
                 $('#system_activeRepo').html('');
-                if (systemConfig.common.repositories) {
-                    for (var repo in systemConfig.common.repositories) {
+                if (systemRepos.repositories) {
+                    for (var repo in systemRepos.repositories) {
                         $('#system_activeRepo').append('<option value="' + repo + '">' + repo + '</option>');
                     }
                 }
@@ -268,17 +270,17 @@ $(document).ready(function () {
 
                     // Fill the repositories list
                     var links = {};
-                    for (var r in common.repositories) {
-                        if (typeof common.repositories[r] == 'object' && common.repositories[r].json) {
-                            links[common.repositories[r].link] = common.repositories[r].json;
+                    for (var r in systemRepos.repositories) {
+                        if (typeof systemRepos.repositories[r] == 'object' && systemRepos.repositories[r].json) {
+                            links[systemRepos.repositories[r].link] = systemRepos.repositories[r].json;
                         }
                     }
-                    common.repositories = {};
+                    systemRepos.repositories = {};
                     var data = $gridRepo.jqGrid('getRowData');
                     var first = null;
                     for (var i = 0; i < data.length; i++) {
-                        common.repositories[data[i].name] = {link: data[i].link, json: null};
-                        if (links[data[i].link]) common.repositories[data[i].name].json = links[data[i].link];
+                        systemRepos.repositories[data[i].name] = {link: data[i].link, json: null};
+                        if (links[data[i].link]) systemRepos.repositories[data[i].name].json = links[data[i].link];
                         if (!first) first = data[i].name;
                     }
                     // Check if the active repository still exist in the list
@@ -287,16 +289,16 @@ $(document).ready(function () {
                             activeRepoChanged = true;
                             common.activeRepo = '';
                         }
-                    } else if (!common.repositories[common.activeRepo]) {
+                    } else if (!systemRepos.repositories[common.activeRepo]) {
                         activeRepoChanged = true;
                         common.activeRepo = first;
                     }
 
                     // Fill the certificates list
-                    common.certificates = {};
+                    systemCerts.certificates = {};
                     data = $gridCerts.jqGrid('getRowData');
                     for (var j = 0; j < data.length; j++) {
-                        common.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
+                        systemCerts.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
                     }
 
                     socket.emit('extendObject', 'system.config', {common: common}, function (err) {
@@ -307,7 +309,14 @@ $(document).ready(function () {
                                 if (activeRepoChanged) initAdapters(true);
                             }
                         }
-                        $dialogSystem.dialog('close');
+
+                        socket.emit('extendObject', 'system.repositories', systemRepos, function (err) {
+                            if (activeRepoChanged) initAdapters(true);
+
+                            socket.emit('extendObject', 'system.certificates', systemCerts, function (err) {
+                                $dialogSystem.dialog('close');
+                            });
+                        });
                     });
                 }
             },
@@ -1297,7 +1306,7 @@ $(document).ready(function () {
             cursor:        'pointer'
         });
 
-        $('#gview_grid-adapters .ui-jqgrid-titlebar').append('<div style="margin-top: -3px; padding-left: 120px; margin-bottom: -3px;"><span class="translate">Host: </span><select id="host-adapters"></select></div>');
+        $('#gview_grid-adapters .ui-jqgrid-titlebar').append('<div style="padding-left: 120px; margin-bottom: -3px;"><span class="translate">Host: </span><select id="host-adapters"></select></div>');
 
     }
 
@@ -2330,17 +2339,17 @@ $(document).ready(function () {
 
     function initRepoGrid(update) {
         $gridRepo.jqGrid('clearGridData');
-        if (systemConfig.common.repositories) {
+        if (systemRepos.repositories) {
             var id = 1;
             // list of the repositories
-            for (var repo in systemConfig.common.repositories) {
+            for (var repo in systemRepos.repositories) {
 
-                var obj = systemConfig.common.repositories[repo];
+                var obj = systemRepos.repositories[repo];
 
                 $gridRepo.jqGrid('addRowData', 'repo_' + id, {
                     _id:     id,
                     name:    repo,
-                    link:    (typeof systemConfig.common.repositories[repo] == 'object') ? systemConfig.common.repositories[repo].link : systemConfig.common.repositories[repo],
+                    link:    (typeof systemRepos.repositories[repo] == 'object') ? systemRepos.repositories[repo].link : systemRepos.repositories[repo],
                     commands:
                         '<button data-repo-id="' + id + '" class="repo-edit-submit">'   + _('edit')   + '</button>' +
                         '<button data-repo-id="' + id + '" class="repo-delete-submit">' + _('delete') + '</button>' +
@@ -2373,17 +2382,17 @@ $(document).ready(function () {
 
     function initCertsGrid(update) {
         $gridCerts.jqGrid('clearGridData');
-        if (systemConfig.common.certificates) {
+        if (systemCerts.certificates) {
             var id = 1;
             // list of the repositories
-            for (var cert in systemConfig.common.certificates) {
+            for (var cert in systemCerts.certificates) {
 
-                var obj = systemConfig.common.certificates[cert];
+                var obj = systemCerts.certificates[cert];
 
                 $gridCerts.jqGrid('addRowData', 'cert_' + id, {
                     _id:         id,
                     name:        cert,
-                    certificate: cert2string(systemConfig.common.certificates[cert]),
+                    certificate: cert2string(systemCerts.certificates[cert]),
                     commands:
                         '<button data-cert-id="' + id + '" class="cert-edit-submit">'   + _('edit')   + '</button>' +
                         '<button data-cert-id="' + id + '" class="cert-delete-submit">' + _('delete') + '</button>' +
@@ -3440,6 +3449,7 @@ $(document).ready(function () {
         var changed = false;
         var i;
         var j;
+        var oldObj = null;
         // update objects cache
         if (obj) {
             if (obj._rev && objects[id]) objects[id]._rev = obj._rev;
@@ -3449,6 +3459,7 @@ $(document).ready(function () {
             }
         } else if (objects[id]) {
             changed = true;
+            oldObj = {_id: id, type: objects[id].type};
             delete objects[id];
         }
 
@@ -3580,9 +3591,13 @@ $(document).ready(function () {
         }
 
         // Update states
-        if (obj.type == 'state') {
+        if (obj && obj.type == 'state') {
             // Update history button
             var rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
+            if (!rowData) {
+                // TODO
+                console.log('TO do add state ' + id);
+            }
             if (/*objects[key] && */
                 objects['system.adapter.history.0'] && objects['system.adapter.history.0'].common.enabled &&
                     id.substring(id.length - '.messagebox'.length) != '.messagebox') {
@@ -3598,6 +3613,9 @@ $(document).ready(function () {
             $('.history').each(function (id) {
                 prepareHistoryButton(this);
             });
+        } else if (oldObj && oldObj.type == 'state') {
+            // Delete state button
+            $gridStates.jqGrid('delRowData', 'state_' + id);
         }
     });
 
@@ -3647,125 +3665,130 @@ $(document).ready(function () {
             // Read system configuration
             socket.emit('getObject', 'system.config', function (err, data) {
                 systemConfig = data;
-                if (!err && systemConfig && systemConfig.common) {
-                    systemLang = systemConfig.common.language || systemLang;
-                    if (!systemConfig.common.licenseConfirmed) {
-                        // Show license agreement
-                        var language = systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
-                        if (language != 'en' && language != 'de' && language != 'ru') language = 'en';
+                socket.emit('getObject', 'system.repositories', function (err, repo) {
+                    systemRepos = repo;
+                    socket.emit('getObject', 'system.certificates', function (err, certs) {
+                        systemCerts = certs;
+                        if (!err && systemConfig && systemConfig.common) {
+                            systemLang = systemConfig.common.language || systemLang;
+                            if (!systemConfig.common.licenseConfirmed) {
+                                // Show license agreement
+                                var language = systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
+                                if (language != 'en' && language != 'de' && language != 'ru') language = 'en';
 
-                        $('#license_text').html(license[language] || license.en);
-                        $('#license_language').val(language).show();
+                                $('#license_text').html(license[language] || license.en);
+                                $('#license_language').val(language).show();
 
-                        $('#license_language').change(function () {
-                            language = $(this).val();
-                            $('#license_text').html(license[language] || license.en);
-                        });
+                                $('#license_language').change(function () {
+                                    language = $(this).val();
+                                    $('#license_text').html(license[language] || license.en);
+                                });
 
-                        $dialogLicense.css({'z-index': 200});
-                        $dialogLicense.dialog({
-                            autoOpen: true,
-                            modal:    true,
-                            width:    600,
-                            height:   400,
-                            buttons:  [
-                                {
-                                    text: _('agree'),
-                                    click: function () {
-                                        socket.emit('extendObject', 'system.config', {
-                                            common: {
-                                                licenseConfirmed: true,
-                                                language: language
+                                $dialogLicense.css({'z-index': 200});
+                                $dialogLicense.dialog({
+                                    autoOpen: true,
+                                    modal: true,
+                                    width: 600,
+                                    height: 400,
+                                    buttons: [
+                                        {
+                                            text: _('agree'),
+                                            click: function () {
+                                                socket.emit('extendObject', 'system.config', {
+                                                    common: {
+                                                        licenseConfirmed: true,
+                                                        language: language
+                                                    }
+                                                }, function () {
+                                                    $dialogLicense.dialog('close');
+                                                    $('#license_language').hide();
+                                                });
+
                                             }
-                                        }, function () {
-                                            $dialogLicense.dialog('close');
-                                            $('#license_language').hide();
-                                        });
+                                        },
+                                        {
+                                            text: _('not agree'),
+                                            click: function () {
+                                                location.reload();
+                                            }
+                                        }
+                                    ],
+                                    close: function () {
 
                                     }
-                                },
-                                {
-                                    text: _('not agree'),
-                                    click: function () {
-                                        location.reload();
-                                    }
-                                }
-                            ],
-                            close: function () {
+                                });
+                                $('#edit-user-name').keydown(function (event) {
+                                    if (event.which == 13) $('#edit-user-pass').focus();
+                                });
+                                $('#edit-user-pass').keydown(function (event) {
+                                    if (event.which == 13) $('#edit-user-passconf').focus();
+                                });
+                                $('#edit-user-passconf').keydown(function (event) {
+                                    if (event.which == 13) saveUser();
+                                });
 
                             }
-                        });
-                        $('#edit-user-name').keydown(function (event) {
-                            if (event.which == 13) $('#edit-user-pass').focus();
-                        });
-                        $('#edit-user-pass').keydown(function (event) {
-                            if (event.which == 13) $('#edit-user-passconf').focus();
-                        });
-                        $('#edit-user-passconf').keydown(function (event) {
-                            if (event.which == 13) saveUser();
-                        });
+                        } else {
+                            systemConfig = {
+                                type: 'config',
+                                common: {
+                                    name: 'system.config',
+                                    language: '',           // Default language for adapters. Adapters can use different values.
+                                    tempUnit: '°C',         // Default temperature units.
+                                    currency: '€',          // Default currency sign.
+                                    dateFormat: 'DD.MM.YYYY', // Default date format.
+                                    isFloatComma: true,         // Default float divider ('.' - false, ',' - true)
+                                    licenseConfirmed: false         // If license agreement confirmed
+                                }
+                            };
+                            systemConfig.common.language = window.navigator.userLanguage || window.navigator.language;
 
-                    }
-                } else {
-                    systemConfig = {
-                        type: 'config',
-                        common: {
-                            name:            'system.config',
-                            language:        '',           // Default language for adapters. Adapters can use different values.
-                            tempUnit:        '°C',         // Default temperature units.
-                            currency:        '€',          // Default currency sign.
-                            dateFormat:      'DD.MM.YYYY', // Default date format.
-                            isFloatComma:     true,         // Default float divider ('.' - false, ',' - true)
-                            licenseConfirmed: false         // If license agreement confirmed
+                            if (systemConfig.common.language !== 'en' && systemConfig.common.language !== 'de' && systemConfig.common.language !== 'ru') {
+                                systemConfig.common.language = 'en';
+                            }
                         }
-                    };
-                    systemConfig.common.language = window.navigator.userLanguage || window.navigator.language;
 
-                    if (systemConfig.common.language !== 'en' && systemConfig.common.language !== 'de' && systemConfig.common.language !== 'ru') {
-                        systemConfig.common.language = 'en';
-                    }
-                }
+                        translateAll();
 
-                translateAll();
+                        // Here we go!
+                        $('#tabs').show();
+                        prepareEnumMembers();
+                        prepareHosts();
+                        prepareObjects();
+                        prepareEnums();
+                        prepareStates();
+                        prepareAdapters();
+                        prepareInstances();
+                        prepareUsers();
+                        prepareGroups();
+                        prepareScripts();
+                        prepareHistory();
+                        prepareRepos();
+                        prepareCerts();
+                        resizeGrids();
 
-                // Here we go!
-                $('#tabs').show();
-                prepareEnumMembers();
-                prepareHosts();
-                prepareObjects();
-                prepareEnums();
-                prepareStates();
-                prepareAdapters();
-                prepareInstances();
-                prepareUsers();
-                prepareGroups();
-                prepareScripts();
-                prepareHistory();
-                prepareRepos();
-                prepareCerts();
-                resizeGrids();
+                        $("#load_grid-select-member").show();
+                        $("#load_grid-objects").show();
+                        $("#load_grid-enums").show();
+                        $("#load_grid-states").show();
+                        $("#load_grid-scripts").show();
+                        $("#load_grid-adapters").show();
+                        $("#load_grid-instances").show();
+                        $("#load_grid-users").show();
+                        $("#load_grid-groups").show();
 
-                $("#load_grid-select-member").show();
-                $("#load_grid-objects").show();
-                $("#load_grid-enums").show();
-                $("#load_grid-states").show();
-                $("#load_grid-scripts").show();
-                $("#load_grid-adapters").show();
-                $("#load_grid-instances").show();
-                $("#load_grid-users").show();
-                $("#load_grid-groups").show();
+                        // bind "clear events" button
+                        $('#event-clear').button({
+                            icons: {
+                                primary: 'ui-icon-trash'
+                            }
+                        }).unbind('click').click(function () {
+                            $('#event-table').html('');
+                        });
 
-                // bind "clear events" button
-                $('#event-clear').button({
-                    icons: {
-                        primary:'ui-icon-trash'
-                    }
-                }).unbind('click').click(function () {
-                    $('#event-table').html('');
+                        getStates(getObjects());
+                    });
                 });
-
-                getStates(getObjects());
-
             });
         }
     });

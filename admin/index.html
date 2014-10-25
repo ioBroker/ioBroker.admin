@@ -46,6 +46,7 @@
     // the function loadSettings has to exist ...
     function load(settings) {
         if (!settings) return;
+        changed = false;
 
         getIPs(function(ips) {
             for (var i = 0; i < ips.length; i++) {
@@ -63,8 +64,25 @@
             } else {
                 $('#' + key + '.value').val(settings[key]).change(function() {
                     $('#save').button("enable");
+                    changed = true;
                 }).keyup(function() {
                     $('#save').button("enable");
+                    changed = true;
+                    // Chack that only numbers entered
+                    if ($(this).hasClass('number')) {
+                        var val = $(this).val();
+                        if (val) {
+                            var newVal = '';
+                            for (var i = 0; i < val.length; i++) {
+                                if (val[i] >= '0' && val[i] <= '9') {
+                                    newVal += val[i];
+                                }
+                            }
+
+                            if (val != newVal) $(this).val(newVal);
+                        }
+                    }
+
                 });
             }
         }
@@ -85,6 +103,7 @@
             }
         });
         $('#save').button("disable");
+        changed = false;
         callback(obj);
     }
 </script>
@@ -96,7 +115,7 @@
 
     <table>
         <tr><td class="translate">IP:</td><td>            <select class="value" id="bind"></select></td></tr>
-        <tr><td class="translate">Port:</td><td>          <input  class="value" id="port" size="5"  maxlength="5"/></td></tr>
+        <tr><td class="translate">Port:</td><td>          <input  class="value number" id="port" size="5"  maxlength="5"/></td></tr>
         <tr><td class="translate">Secure(HTTPS):</td><td> <input  class="value" id="secure" type="checkbox" /></td></tr>
         <tr><td class="translate">Authentication:</td><td><input  class="value" id="auth"   type="checkbox" /></td></tr>
         <tr><td class="translate">Cache:</td><td>         <input  class="value" id="cache"  type="checkbox" /></td></tr>

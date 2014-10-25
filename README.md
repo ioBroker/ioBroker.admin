@@ -5,7 +5,8 @@
 user interface for configuration and administration
 
 ## Todo
-
+- log output
+- edit instances like certificates
 
 ## Changelog
 ### 0.0.19 (2014-10-24)

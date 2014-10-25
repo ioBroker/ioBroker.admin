@@ -66,15 +66,23 @@ $(document).ready(function () {
     function loadSystemConfig(callback) {
         socket.emit('getObject', 'system.config', function (err, res) {
             if (!err && res && res.common) {
-                if (res.common.certificates) {
-                    certs = [];
-                    for (var c in res.common.certificates) {
-                        certs.push(c);
-                    }
-                }
                 systemLang = res.common.language || systemLang;
             }
-            if (callback) callback();
+            socket.emit('getObject', 'system.certificates', function (err, res) {
+                if (!err && res) {
+                    if (res.certificates) {
+                        certs = [];
+                        for (var c in res.certificates) {
+                            if (!res.certificates[c]) continue;
+                            certs.push({
+                                name: c,
+                                type: (res.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) == '-----BEGIN RSA PRIVATE KEY') ? 'private' : 'public'
+                            });
+                        }
+                    }
+                }
+                if (callback) callback();
+            });
         });
     }
 
@@ -168,13 +176,31 @@ function showMessage(message, lang) {
 }
 
 // fills select with names of the certificates and preselect it
-function fillSelectCertificates(id, actualValued) {
-    var str = '';
+function fillSelectCertificates(id, type, actualValued) {
+    var str = '<option value="">' +_('none') + '</option>';
     for (var i = 0; i < certs.length; i++) {
-        str += '<option value="' + certs[i] + '" ' + ((certs[i] == actualValued) ? 'selected' : '') + '>' + certs[i] + '</option>';
+        if (certs[i].type != type) continue;
+        str += '<option value="' + certs[i].name + '" ' + ((certs[i].name == actualValued) ? 'selected' : '') + '>' + certs[i].name + '</option>';
     }
 
     $(id).html(str);
 }
 
+function getAdapterInstances(adapter, callback) {
+    socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.' + adapter, endkey: 'system.adapter.' + adapter + '.\u9999'}, function (err, doc) {
+        if (err) {
+            if (callback) callback ([]);
+        } else {
+            if (doc.rows.length === 0) {
+                if (callback) callback ([]);
+            } else {
+                var res = [];
+                for (var i = 0; i < doc.rows.length; i++) {
+                    res.push(doc.rows[i].value);
+                }
+                if (callback) callback (res);
+            }
+        }
 
+    });
+}
