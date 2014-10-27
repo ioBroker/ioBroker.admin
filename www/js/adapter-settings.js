@@ -70,13 +70,13 @@ $(document).ready(function () {
             }
             socket.emit('getObject', 'system.certificates', function (err, res) {
                 if (!err && res) {
-                    if (res.certificates) {
+                    if (res.native && res.native.certificates) {
                         certs = [];
-                        for (var c in res.certificates) {
-                            if (!res.certificates[c]) continue;
+                        for (var c in res.native.certificates) {
+                            if (!res.native.certificates[c]) continue;
                             certs.push({
                                 name: c,
-                                type: (res.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) == '-----BEGIN RSA PRIVATE KEY') ? 'private' : 'public'
+                                type: (res.native.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) == '-----BEGIN RSA PRIVATE KEY') ? 'private' : 'public'
                             });
                         }
                     }

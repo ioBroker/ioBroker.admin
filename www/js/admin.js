@@ -161,8 +161,8 @@ $(document).ready(function () {
                 text: false
             }).click(function () {
                 $('#system_activeRepo').html('');
-                if (systemRepos.repositories) {
-                    for (var repo in systemRepos.repositories) {
+                if (systemRepos.native.repositories) {
+                    for (var repo in systemRepos.native.repositories) {
                         $('#system_activeRepo').append('<option value="' + repo + '">' + repo + '</option>');
                     }
                 }
@@ -270,17 +270,17 @@ $(document).ready(function () {
 
                     // Fill the repositories list
                     var links = {};
-                    for (var r in systemRepos.repositories) {
-                        if (typeof systemRepos.repositories[r] == 'object' && systemRepos.repositories[r].json) {
-                            links[systemRepos.repositories[r].link] = systemRepos.repositories[r].json;
+                    for (var r in systemRepos.native.repositories) {
+                        if (typeof systemRepos.native.repositories[r] == 'object' && systemRepos.native.repositories[r].json) {
+                            links[systemRepos.native.repositories[r].link] = systemRepos.native.repositories[r].json;
                         }
                     }
-                    systemRepos.repositories = {};
+                    systemRepos.native.repositories = {};
                     var data = $gridRepo.jqGrid('getRowData');
                     var first = null;
                     for (var i = 0; i < data.length; i++) {
-                        systemRepos.repositories[data[i].name] = {link: data[i].link, json: null};
-                        if (links[data[i].link]) systemRepos.repositories[data[i].name].json = links[data[i].link];
+                        systemRepos.native.repositories[data[i].name] = {link: data[i].link, json: null};
+                        if (links[data[i].link]) systemRepos.native.repositories[data[i].name].json = links[data[i].link];
                         if (!first) first = data[i].name;
                     }
                     // Check if the active repository still exist in the list
@@ -289,16 +289,16 @@ $(document).ready(function () {
                             activeRepoChanged = true;
                             common.activeRepo = '';
                         }
-                    } else if (!systemRepos.repositories[common.activeRepo]) {
+                    } else if (!systemRepos.native.repositories[common.activeRepo]) {
                         activeRepoChanged = true;
                         common.activeRepo = first;
                     }
 
                     // Fill the certificates list
-                    systemCerts.certificates = {};
+                    systemCerts.native.certificates = {};
                     data = $gridCerts.jqGrid('getRowData');
                     for (var j = 0; j < data.length; j++) {
-                        systemCerts.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
+                        systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
                     }
 
                     socket.emit('extendObject', 'system.config', {common: common}, function (err) {
@@ -2339,17 +2339,17 @@ $(document).ready(function () {
 
     function initRepoGrid(update) {
         $gridRepo.jqGrid('clearGridData');
-        if (systemRepos.repositories) {
+        if (systemRepos.native.repositories) {
             var id = 1;
             // list of the repositories
-            for (var repo in systemRepos.repositories) {
+            for (var repo in systemRepos.native.repositories) {
 
-                var obj = systemRepos.repositories[repo];
+                var obj = systemRepos.native.repositories[repo];
 
                 $gridRepo.jqGrid('addRowData', 'repo_' + id, {
                     _id:     id,
                     name:    repo,
-                    link:    (typeof systemRepos.repositories[repo] == 'object') ? systemRepos.repositories[repo].link : systemRepos.repositories[repo],
+                    link:    (typeof systemRepos.native.repositories[repo] == 'object') ? systemRepos.native.repositories[repo].link : systemRepos.native.repositories[repo],
                     commands:
                         '<button data-repo-id="' + id + '" class="repo-edit-submit">'   + _('edit')   + '</button>' +
                         '<button data-repo-id="' + id + '" class="repo-delete-submit">' + _('delete') + '</button>' +
@@ -2382,17 +2382,17 @@ $(document).ready(function () {
 
     function initCertsGrid(update) {
         $gridCerts.jqGrid('clearGridData');
-        if (systemCerts.certificates) {
+        if (systemCerts.native.certificates) {
             var id = 1;
             // list of the repositories
-            for (var cert in systemCerts.certificates) {
+            for (var cert in systemCerts.native.certificates) {
 
-                var obj = systemCerts.certificates[cert];
+                var obj = systemCerts.native.certificates[cert];
 
                 $gridCerts.jqGrid('addRowData', 'cert_' + id, {
                     _id:         id,
                     name:        cert,
-                    certificate: cert2string(systemCerts.certificates[cert]),
+                    certificate: cert2string(systemCerts.native.certificates[cert]),
                     commands:
                         '<button data-cert-id="' + id + '" class="cert-edit-submit">'   + _('edit')   + '</button>' +
                         '<button data-cert-id="' + id + '" class="cert-delete-submit">' + _('delete') + '</button>' +
