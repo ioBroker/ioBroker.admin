@@ -167,6 +167,14 @@ $(document).ready(function () {
                     }
                 }
 
+                $('#diagMode').val(systemConfig.common.diag).change(function () {
+                    socket.emit('sendToHost', currentHost, 'getDiagData', $(this).val(), function (obj) {
+                        $('#diagSample').html(JSON.stringify(obj, null, 2));
+                    });
+                });
+                $('#diagMode').trigger('change');
+
+
                 $('.system-settings.value').each(function () {
                     var $this = $(this);
                     var id = $this.attr('id').substring('system_'.length);
@@ -293,6 +301,7 @@ $(document).ready(function () {
                         activeRepoChanged = true;
                         common.activeRepo = first;
                     }
+                    common.diag = $('#diagMode').val();
 
                     // Fill the certificates list
                     systemCerts.native.certificates = {};

@@ -503,6 +503,10 @@ function socketEvents(socket, user) {
         });
     });
 
+    socket.on('getDiagData', function (mode, callback) {
+        adapter.sendToHost(host, 'getDiagData', mode, callback);
+    });
+
     /*
      *      states
      */

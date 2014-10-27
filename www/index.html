@@ -314,9 +314,10 @@
 <div title="System settings" id="dialog-system"  class="translateT" style="display:none">
     <div id="tabs-system">
         <ul>
-            <li><a href="#tab-system-main" class="translate">Main settings</a></li>
-            <li><a href="#tab-system-repo" class="translate">Repositories</a></li>
+            <li><a href="#tab-system-main"  class="translate">Main settings</a></li>
+            <li><a href="#tab-system-repo"  class="translate">Repositories</a></li>
             <li><a href="#tab-system-certs" class="translate">Certificates</a></li>
+            <li><a href="#tab-system-diag"  class="translate">Statistics</a></li>
         </ul>
         <div id="tab-system-main">
             <table>
@@ -373,6 +374,26 @@
         <div id="tab-system-certs">
             <table id="grid-certs"></table>
             <div id="pager-certs"></div>
+        </div>
+        <div id="tab-system-diag">
+            <table id="table-diag">
+                <tr>
+                    <td class="translate">Note:</td>
+                    <td class="translate">diag-note</td>
+                </tr>
+                <tr>
+                    <td class="translate">Statistics:</td>
+                    <td><select id="diagMode">
+                        <option value="none" class="translate">none</option>
+                        <option value="normal" class="translate">normal</option>
+                        <option value="extended" class="translate">extended</option>
+                    </select></td>
+                </tr>
+                <tr>
+                    <td class="translate" style="vertical-align: top">Sent data:</td>
+                    <td><pre id="diagSample" style="font-size: 10px"></pre></td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>
