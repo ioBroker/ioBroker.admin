@@ -9,6 +9,9 @@ user interface for configuration and administration
 - edit instances like certificates
 
 ## Changelog
+### 0.1.0 (2014-10-29)
+* (bluefox) update states if some adapter added or deleted. Update states if history enabled or disabled.
+
 ### 0.0.19 (2014-10-24)
 * (bluefox) fix error with repository edition
 

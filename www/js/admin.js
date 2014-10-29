@@ -3084,54 +3084,57 @@ $(document).ready(function () {
         $dialogEnumMembers.dialog('open');
     }
 
+    function convertState(key, _obj) {
+        var obj = JSON.parse(JSON.stringify(_obj));
+        obj._id = key;
+        obj.name = objects[obj._id] ? (objects[obj._id].common.name || obj._id) : obj._id;
+
+        if (objects[key] && objects[key].parent && objects[objects[key].parent]) {
+            obj.pname = objects[objects[key].parent].common.name;
+            // Add instance
+            var parts = objects[key].parent.split('.');
+            if (obj.pname.indexOf('.' + parts[parts.length - 1]) == -1) {
+                obj.pname += '.' + parts[parts.length - 1];
+            }
+        } else if (obj.name.indexOf('.messagebox') != -1) {
+            var p = obj.name.split('.');
+            p.splice(-1);
+            obj.pname = p.join('.');
+        } else {
+            var b = obj.name.split('.');
+            b.splice(2);
+            obj.pname = b.join('.');
+        }
+
+        obj.type = objects[obj._id] && objects[obj._id].common ? objects[obj._id].common.type : '';
+        if (obj.ts) obj.ts = formatDate(new Date(obj.ts * 1000));
+        if (obj.lc) obj.lc = formatDate(new Date(obj.lc * 1000));
+
+        // Show history button only if history adapter enabled
+        if (/*objects[key] && */
+            objects['system.adapter.history.0'] && objects['system.adapter.history.0'].common.enabled &&
+            key.substring(key.length - '.messagebox'.length) != '.messagebox') {
+
+            // Check if history enabled
+            var historyEnabled = '';
+            if (objects[key] && objects[key].common && objects[key].common.history && objects[key].common.history.enabled) historyEnabled = ' history-enabled';
+            obj.history = '<button data-id="' + obj._id + '" class="history' + historyEnabled + '" id="history_' + obj._id + '">' + _('history') + '</button>';
+
+        } else {
+            obj.history = '';
+        }
+        obj.gridId = 'state_' + key.replace(/ /g, '_');
+        return obj;
+    }
+
     function getStates(callback) {
         $gridStates.jqGrid('clearGridData');
         socket.emit('getStates', function (err, res) {
-            var i = 0;
             states = res;
 //benchmark('starting getStates loop');
             var gridData = [];
             for (var key in res) {
-                var obj = res[key];
-                obj._id = key;
-                obj.name = objects[obj._id] ? (objects[obj._id].common.name || obj._id) : obj._id;
-
-                if (objects[key] && objects[key].parent && objects[objects[key].parent]) {
-                    obj.pname = objects[objects[key].parent].common.name;
-                    // Add instance
-                    var parts = objects[key].parent.split('.');
-                    if (obj.pname.indexOf('.' + parts[parts.length - 1]) == -1) {
-                        obj.pname += '.' + parts[parts.length - 1];
-                    }
-                } else if (obj.name.indexOf('.messagebox') != -1) {
-                    var p = obj.name.split('.');
-                    p.splice(-1);
-                    obj.pname = p.join('.');
-                } else {
-                    var b = obj.name.split('.');
-                    b.splice(2);
-                    obj.pname = b.join('.');
-                }
-
-                obj.type = objects[obj._id] && objects[obj._id].common ? objects[obj._id].common.type : '';
-                if (obj.ts) obj.ts = formatDate(new Date(obj.ts * 1000));
-                if (obj.lc) obj.lc = formatDate(new Date(obj.lc * 1000));
-
-                // Show history button only if history adapter enabled
-                if (/*objects[key] && */
-                    objects['system.adapter.history.0'] && objects['system.adapter.history.0'].common.enabled &&
-                    key.substring(key.length - '.messagebox'.length) != '.messagebox') {
-
-                    // Check if history enabled
-                    var historyEnabled = '';
-                    if (objects[key] && objects[key].common && objects[key].common.history && objects[key].common.history.enabled) historyEnabled = ' history-enabled';
-                    obj.history = '<button data-id="' + obj._id + '" class="history' + historyEnabled + '" id="history_' + obj._id + '">' + _('history') + '</button>';
-
-                } else {
-                    obj.history = '';
-                }
-                obj.gridId = 'state_' + key.replace(/ /g, '_');
-                gridData.push(obj);
+                gridData.push(convertState(key, res[key]));
             }
             $gridStates.jqGrid('addRowData', 'gridId', gridData);
 //benchmark('finished getStates loop');
@@ -3458,6 +3461,7 @@ $(document).ready(function () {
         var changed = false;
         var i;
         var j;
+        var historyEnabled;
         var oldObj = null;
         // update objects cache
         if (obj) {
@@ -3492,6 +3496,29 @@ $(document).ready(function () {
                     instances.splice(i, 1);
                 }
             }
+            if (obj && id.match(/^system\.adapter\.history\.[0-9]+$/)) {
+                // Update all states if history enabled or disabled
+                // Update history button
+                var enabled = obj.common.enabled;
+                var rowsData = $gridStates.jqGrid('getRowData');
+                for (i = 0; i < rowsData.length; i++) {
+                    if (enabled && id.substring(id.length - '.messagebox'.length) != '.messagebox') {
+                        // Check if history enabled
+                        historyEnabled = '';
+                        if (objects[rowsData[i]._id] &&
+                            objects[rowsData[i]._id].common &&
+                            objects[rowsData[i]._id].common.history &&
+                            objects[rowsData[i]._id].common.history.enabled) historyEnabled = ' history-enabled';
+                        rowsData[i].history = '<button data-id="' + id + '" class="history' + historyEnabled + '" id="history_' + rowsData[i]._id + '">' + _('history') + '</button>';
+                    } else {
+                        rowsData[i].history = '';
+                    }
+                    $gridStates.jqGrid('setRowData', 'state_' + rowsData[i]._id.replace(/ /g, '_'), rowsData[i]);
+                }
+                $('.history').each(function (id) {
+                    prepareHistoryButton(this);
+                });
+            }
 
             if (typeof $gridInstance !== 'undefined' && $gridInstance[0]._isInited) {
                 initInstances(true);
@@ -3512,7 +3539,6 @@ $(document).ready(function () {
                 initAdapters(true);
             }
         }*/
-
         // Update users
         if (id.substring(0, "system.user.".length) == "system.user.") {
             if (obj) {
@@ -3603,27 +3629,26 @@ $(document).ready(function () {
         if (obj && obj.type == 'state') {
             // Update history button
             var rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
-            if (!rowData) {
-                // TODO
-                console.log('TO do add state ' + id);
-            }
-            if (/*objects[key] && */
-                objects['system.adapter.history.0'] && objects['system.adapter.history.0'].common.enabled &&
+            if (!rowData || !rowData._id) {
+                $gridStates.jqGrid('addRowData', 'state_' + id.replace(/ /g, '_'), convertState(id, obj));
+            } else {
+                if (objects['system.adapter.history.0'] && objects['system.adapter.history.0'].common.enabled &&
                     id.substring(id.length - '.messagebox'.length) != '.messagebox') {
 
-                // Check if history enabled
-                var historyEnabled = '';
-                if (obj && obj.common && obj.common.history && obj.common.history.enabled) historyEnabled = ' history-enabled';
-                rowData.history = '<button data-id="' + id + '" class="history' + historyEnabled + '" id="history_' + id + '">' + _('history') + '</button>';
-            } else {
-                rowData.history = '';
+                    // Check if history enabled
+                    historyEnabled = '';
+                    if (obj && obj.common && obj.common.history && obj.common.history.enabled) historyEnabled = ' history-enabled';
+                    rowData.history = '<button data-id="' + id + '" class="history' + historyEnabled + '" id="history_' + id + '">' + _('history') + '</button>';
+                } else {
+                    rowData.history = '';
+                }
+                $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), rowData);
             }
-            $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), rowData);
             $('.history').each(function (id) {
                 prepareHistoryButton(this);
             });
         } else if (oldObj && oldObj.type == 'state') {
-            // Delete state button
+            // Delete state line
             $gridStates.jqGrid('delRowData', 'state_' + id);
         }
     });

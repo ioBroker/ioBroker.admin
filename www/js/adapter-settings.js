@@ -177,7 +177,7 @@ function showMessage(message, lang) {
 
 // fills select with names of the certificates and preselect it
 function fillSelectCertificates(id, type, actualValued) {
-    var str = '<option value="">' +_('none') + '</option>';
+    var str = '<option value="">' + _('none') + '</option>';
     for (var i = 0; i < certs.length; i++) {
         if (certs[i].type != type) continue;
         str += '<option value="' + certs[i].name + '" ' + ((certs[i].name == actualValued) ? 'selected' : '') + '>' + certs[i].name + '</option>';
