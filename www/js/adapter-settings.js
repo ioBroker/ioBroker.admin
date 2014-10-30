@@ -171,6 +171,10 @@ function sendTo(adapter, command, message, callback) {
     socket.emit('sendTo', adapter, command, message, callback);
 }
 
+function sendToHost(host, command, message, callback) {
+    socket.emit('sendToHost', host || common.host, command, message, callback);
+}
+
 function showMessage(message, lang) {
     alert(message);
 }
