@@ -169,5 +169,27 @@ systemDictionary = {
         "en": "Are you sure? Changes are not saved.",
         "de": "Änderungen sind nicht gespeichert. Sicher?",
         "ru": "Изменения не сохранены. Всё равно закрыть?"
-    }
+    },
+    "Certificates":         {"en": "Certificates",          "de": "Zertifikate",            "ru": "Сертификаты"},
+    "Statistics":           {"en": "Statistics",            "de": "Statistik",              "ru": "Статистика"},
+    "none":                 {"en": "none",                  "de": "nichts",                 "ru": "none"},
+    "normal":               {"en": "normal",                "de": "normal",                 "ru": "normal"},
+    "extended":             {"en": "extended",              "de": "erweitert",              "ru": "extended"},
+    "certificate":          {"en": "certificate",           "de": "Zertifikate",            "ru": "cертификаты"},
+    "ioBroker certificates": {"en": "ioBroker certificates", "de": "ioBroker Zertifikate",  "ru": "ioBroker cертификаты"},
+    "new certificate":      {"en": "new certificate",       "de": "new certificate",        "ru": "новый cертификат"},
+    "Note:":                {"en": "Note:",                 "de": "Notiz:",                  "ru": "Замечание:"},
+    "diag-note":            {
+        "en": "We worked hard to create this project. As equivalent we expect from you some statistics about the usage.<br>\n" +
+              "No private information will be sent to ioBroker.org. Every time you press update adapter list the anonymized statistics will be sent.<br>\n" +
+              "Thank you!",
+        "de": "Wir haben hart gearbeitet um dieses Projekt auf die Beine zu stelln. Als Gegenleistung bitten wir Sie uns die Statistik über die Benutzung an uns zu schicken.<br>\n" +
+              "Keine private Information wird zu ioBroker.org gesendet. Jedes Mal wenn Adapterliste upgedated wird, wird die anonymisierte Statistik gesendet.<br>\n" +
+              "Vielen Dank!",
+        "ru": "Мы долго работали над этим проектом. Мы просим вас переслать нам статистику использования, как компенсацию.<br>\n" +
+              "Никакой приватной информации не отсылается в ioBroker.org. Каждый раз, когда список адаптеров обновляется, будет отсылатся анонимная статистика.<br>\n" +
+              "Большое спасибо!"
+    },
+    "Statistics:":          {"en": "Statistics:",           "de": "Statistik:",             "ru": "Статистика:"},
+    "Sent data:":           {"en": "Sent data:",            "de": "Gesendete Daten:",                 "ru": "Отсылаемые данные:"}
 };
