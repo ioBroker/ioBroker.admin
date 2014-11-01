@@ -9,6 +9,9 @@ user interface for configuration and administration
 - edit instances like certificates
 
 ## Changelog
+### 0.1.2 (2014-11-01)
+* (bluefox) add functions to edit lists in adapter config
+
 ### 0.1.1 (2014-10-30)
 * (bluefox) support of sendToHost command for adapter config.
 
