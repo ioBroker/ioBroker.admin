@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "admin",
-        "version":                  "0.1.2",
+        "version":                  "0.1.3",
         "title":                    "ioBroker Admin",
         "desc": {
             "en":                   "opens a webserver for the ioBroker admin UI",
@@ -21,7 +21,8 @@
             "hobbyquaker <hq@ccu.io>",
             "bluefox <bluefox@ccu.io>"
         ],
-        "license":                  "MIT"
+        "license":                  "MIT",
+        "localLink":                "http://localhost:5984/_utils"
     },
     "native": {
         "port":                     8081,

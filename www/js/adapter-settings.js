@@ -35,8 +35,8 @@ $(document).ready(function () {
             alert("Please implement save function in your admin/index.html");
             return;
         }
-        save(function (obj) {
-            saveSettings(obj);
+        save(function (obj, common) {
+            saveSettings(obj, common);
         });
     });
     $('input#saveclose').click(function () {
@@ -59,8 +59,10 @@ $(document).ready(function () {
         }
     });
 
-    function saveSettings(obj) {
-        socket.emit('extendObject', id, {native: obj});
+    function saveSettings(obj, common) {
+        var newObj = {native: obj};
+        if (common) newObj.common = common;
+        socket.emit('extendObject', id, newObj);
     }
 
     // Read language settings
