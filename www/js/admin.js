@@ -100,6 +100,7 @@ $(document).ready(function () {
     var currentHost =           '';
     var curRepository =         null;
     var curInstalled =          null;
+    var currentHistory =        null; // Id of the currently shown history dialog
 
     // TODO hide tab scripts and don't initialize ace if no instance of adapter javascript enabled
     var editor = ace.edit("script-editor");
@@ -414,10 +415,10 @@ $(document).ready(function () {
     });
 
     $dialogHistory.dialog({
-        autoOpen:   false,
-        modal:      true,
-        width:      830,
-        height:     575,
+        autoOpen:      false,
+        modal:         true,
+        width:         830,
+        height:        575,
         closeOnEscape: false,
         buttons: [
             {
@@ -430,12 +431,14 @@ $(document).ready(function () {
                     var retention =     parseInt($('#edit-history-retention').val(), 10) || 0;
 
                     objects[id].common.history = {
-                        enabled:            enabled,
-                        changesOnly:        changesOnly,
-                        minLength:          minLength,
-                        maxLength:          minLength * 2,
-                        retention:          retention
+                        enabled:     enabled,
+                        changesOnly: changesOnly,
+                        minLength:   minLength,
+                        maxLength:   minLength * 2,
+                        retention:   retention
                     };
+
+                    currentHistory =    null;
 
                     socket.emit('setObject', id, objects[id], function () {
                         $dialogHistory.dialog('close');
@@ -520,17 +523,11 @@ $(document).ready(function () {
                     retention:      ''
                 };
             }
+            currentHistory = objects[id].common.history.enabled ? id: null;
 
-            if (objects[id].common.history.enabled) {
-                $('#edit-history-enabled').attr('checked', true);
-            } else {
-                $('#edit-history-enabled').removeAttr('checked');
-            }
-            if (objects[id].common.history.changesOnly) {
-                $('#edit-history-changesOnly').attr('checked', true);
-            } else {
-                $('#edit-history-changesOnly').removeAttr('checked');
-            }
+            $('#edit-history-enabled').prop('checked', objects[id].common.history.enabled);
+            $('#edit-history-changesOnly').prop('checked', objects[id].common.history.changesOnly);
+
             $('#edit-history-minLength').val(objects[id].common.history.minLength);
             $('#edit-history-retention').val(objects[id].common.history.retention);
             $dialogHistory.dialog('option', 'title', 'history ' + id);
@@ -554,6 +551,7 @@ $(document).ready(function () {
                             lc:  formatDate(new Date(res[i].lc * 1000))
                         });
                     }
+                    $gridHistory[0]._maxGid = res.length;
                     $gridHistory.jqGrid('addRowData', 'gid', rows);
                     $gridHistory.trigger('reloadGrid');
                 } else {
@@ -3410,6 +3408,18 @@ $(document).ready(function () {
 
     socket.on('stateChange', function (id, obj) {
         var rowData;
+        if (currentHistory == id) {
+            var gid = $gridHistory[0]._maxGid++;
+            $gridHistory.jqGrid('addRowData', gid, {
+                gid: gid,
+                id:  id,
+                ack: obj.ack,
+                val: obj.val,
+                ts:  formatDate(new Date(obj.ts * 1000)),
+                lc:  formatDate(new Date(obj.lc * 1000))
+            });
+        }
+
         if (id && id.length > '.messagebox'.length && id.substring(id.length - '.messagebox'.length) == '.messagebox') {
             var time = new Date();
             time =        time.getFullYear()           + '-' +

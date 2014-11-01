@@ -9,6 +9,9 @@ user interface for configuration and administration
 - edit instances like certificates
 
 ## Changelog
+### 0.1.4 (2014-11-01)
+* (bluefox) update history dialog live (add new values on the fly to history table)
+
 ### 0.1.3 (2014-11-01)
 * (bluefox) add link to web service of adapter instance
 
