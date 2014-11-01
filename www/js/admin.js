@@ -2586,14 +2586,18 @@ $(document).ready(function () {
                 var tmp = obj._id.split('.');
                 var adapter = tmp[2];
                 var instance = tmp[3];
+                var title = obj.common ? obj.common.title : '';
+                var link  = obj.common.localLink || '';
+                if (link && link.indexOf('%ip%') != -1) link = link.replace('%ip%', location.hostname);
+
                 $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
                     _id:       obj._id,
                     availableModes: obj.common ? obj.common.availableModes : null,
                     image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px"/>' : '',
                     name:      obj.common ? obj.common.name : '',
                     instance:  obj._id.slice(15),
-                    title:     obj.common ? obj.common.title : '',
-                    enabled:   obj.common ? obj.common.enabled : '',
+                    title:     obj.common ? (link ? '<a href="' + link + '" target="_blank">' + title + '</a>': title): '',
+                    enabled:   obj.common ? (obj.common.enabled ? '<span style="color:green;font-weight:bold">true</span>' : '<span style="color:red">false</span>') : '',
                     host:      obj.common ? obj.common.host : '',
                     mode:      obj.common.mode,
                     schedule:  obj.common.mode === 'schedule' ? obj.common.schedule : '',
