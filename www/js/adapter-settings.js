@@ -4,11 +4,12 @@ var common =   null; // common information of adapter
 var host =     null; // host object on which the adapter runs
 var changed =  false;
 var certs =    [];
+var adapter =  '';
 
 $(document).ready(function () {
 
     var tmp = window.location.pathname.split('/');
-    var adapter = tmp[2];
+    adapter = tmp[2];
     var id = 'system.adapter.' + adapter + '.' + instance;
 
     // Extend dictionary with standard words for adapter
@@ -125,12 +126,34 @@ function getState(id, callback) {
     });
 }
 
-function getEnums(enums, callback) {
-   if (callback) callback(null, ['Whonzimmer', 'Küche', 'WC']);
+function getEnums(_enum, callback) {
+    getObject('enum.' + _enum, function (err, obj) {
+        if (err || !obj || !obj.children) callback(err, []);
+        // collect all information
+        var count = 0;
+        var res   = {};
+
+        for (var i = 0; i < obj.children.length; i++) {
+            count++;
+            getObject(obj.children[i], function (err, obj) {
+                if (!err && obj) {
+                    res[obj._id] = obj;
+                }
+
+                count--;
+                if (!count) callback(err, res);
+            });
+        }
+    });
 }
 
-function getIPs(callback) {
-    socket.emit('getHostByIp', common.host, function (ip, _host) {
+function getIPs(host, callback) {
+    if (typeof host == 'function') {
+        callback = host;
+        host = null;
+    }
+
+    socket.emit('getHostByIp', host || common.host, function (ip, _host) {
         if (_host) {
             host = _host;
             var IPs4 = [{name: '[IPv4] 0.0.0.0', address: '0.0.0.0', family: 'ipv4'}];
@@ -167,8 +190,8 @@ function fillSelectIPs(id, actualAddr, noIPv4, noIPv6) {
     });
 }
 
-function sendTo(adapter, command, message, callback) {
-    socket.emit('sendTo', adapter, command, message, callback);
+function sendTo(_adapter_instance, command, message, callback) {
+    socket.emit('sendTo', (_adapter_instance || adapter + '.' + instance), command, message, callback);
 }
 
 function sendToHost(host, command, message, callback) {
@@ -190,8 +213,13 @@ function fillSelectCertificates(id, type, actualValued) {
     $(id).html(str);
 }
 
-function getAdapterInstances(adapter, callback) {
-    socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.' + adapter, endkey: 'system.adapter.' + adapter + '.\u9999'}, function (err, doc) {
+function getAdapterInstances(_adapter, callback) {
+    if (typeof _adapter == 'function') {
+        callback = _adapter;
+        _adapter = null;
+    }
+
+    socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.' + (_adapter || adapter), endkey: 'system.adapter.' + (_adapter || adapter) + '.\u9999'}, function (err, doc) {
         if (err) {
             if (callback) callback ([]);
         } else {
@@ -207,4 +235,306 @@ function getAdapterInstances(adapter, callback) {
         }
 
     });
+}
+
+function getIsAdapterAlive(_adapter, callback) {
+    if (typeof _adapter == 'function') {
+        callback = _adapter;
+        _adapter = null;
+    }
+    getState('system.adapter.' + (_adapter || adapter) + '.' + instance + '.alive', function (err, obj) {
+        if (!obj || !obj.val) {
+            callback(false);
+        } else {
+            callback(true);
+        }
+    });
+}
+
+// Adds one entry to the created with editTable table
+//  tabId - the id of the table used by editTable
+//  value - is one object to add in form {ip: '3.3.3.3', room: 'enum.room.bla3', desc: 'Bla3'}
+// $grid  - [optional] - object returned by editTable to speed up the addition
+function addToTable(tabId, value, $grid) {
+    $grid = $grid || $('#' + tabId);
+    var obj  = {_id: $grid[0]._maxIdx++};
+    var cols = $grid[0]._cols;
+
+    for (var i = 0; i < cols.length; i++) {
+        if (cols[i] == 'room') {
+            obj[cols[i]] = ($grid[0]._rooms[value[cols[i]]]) ? $grid[0]._rooms[value[cols[i]]].common.name : value[cols[i]];
+        } else {
+            obj[cols[i]] = value[cols[i]];
+        }
+    }
+    obj._commands =
+        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-edit-submit">'                        + _('edit')   + '</button>' +
+        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-delete-submit">'                      + _('delete') + '</button>' +
+        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-ok-submit" style="display:none">'     + _('ok')     + '</button>' +
+        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-cancel-submit" style="display:none">' + _('cancel') + '</button>'
+
+    $grid.jqGrid('addRowData', tabId + '_' + obj._id, obj);
+
+    $('.' + tabId + '-edit-submit[data-' + tabId + '-id="' + obj._id + '"]').unbind('click').button({
+        icons: {primary: 'ui-icon-pencil'},
+        text:  false
+    }).click(function () {
+        var id = $(this).attr('data-' + tabId + '-id');
+
+        $('.' + tabId + '-edit-submit').hide();
+        $('.' + tabId + '-delete-submit').hide();
+        $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + id + '"]').show();
+        $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
+
+        $grid.jqGrid('editRow', tabId + '_' + id, {"url": "clientArray"});
+        if ($grid[0]._edited.indexOf(id) == -1) {
+            $grid[0]._edited.push(id);
+        }
+    }).css('height', '18px');
+
+    $('.' + tabId + '-delete-submit[data-' + tabId + '-id="' + obj._id + '"]').unbind('click').button({
+        icons: {primary: 'ui-icon-trash'},
+        text:  false
+    }).click(function () {
+        var id = $(this).attr('data-' + tabId + '-id');
+        $grid.jqGrid('delRowData', tabId + '_' + id);
+        changed = true;
+        $('#save').button("enable");
+        var pos = $grid[0]._edited.indexOf(id);
+        if (pos != -1) {
+            $grid[0]._edited.splice(pos, 1);
+        }
+    }).css('height', '18px');
+
+    $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + obj._id + '"]').unbind('click').button({
+        icons: {primary: 'ui-icon-check'},
+        text:  false
+    }).click(function () {
+        var id = $(this).attr('data-' + tabId + '-id');
+
+        $('.' + tabId + '-edit-submit').show();
+        $('.' + tabId + '-delete-submit').show();
+        $('.' + tabId + '-ok-submit').hide();
+        $('.' + tabId + '-cancel-submit').hide();
+
+        $grid.jqGrid('saveRow', tabId + '_' + id, {"url": "clientArray"});
+        changed = true;
+        $('#save').button("enable");
+        var pos = $grid[0]._edited.indexOf(id);
+        if (pos != -1) {
+            $grid[0]._edited.splice(pos, 1);
+        }
+    }).css('height', '18px');
+    $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + obj._id + '"]').unbind('click').button({
+        icons: {primary: 'ui-icon-close'},
+        text:  false
+    }).click(function () {
+        var id = $(this).attr('data-' + tabId + '-id');
+
+        $('.' + tabId + '-edit-submit').show();
+        $('.' + tabId + '-delete-submit').show();
+        $('.' + tabId + '-ok-submit').hide();
+        $('.' + tabId + '-cancel-submit').hide();
+
+        $grid.jqGrid('restoreRow', tabId + '_' + id, false);
+        var pos = $grid[0]._edited.indexOf(id);
+        if (pos != -1) {
+            $grid[0]._edited.splice(pos, 1);
+        }
+    }).css('height', '18px');
+}
+
+function _editTable(tabId, cols, values, rooms, top){
+    var colNames = [];
+    var colModel = [];
+    var $grid = $('#' + tabId);
+
+    colNames.push('id');
+    colModel.push({
+        name:    '_id',
+        index:   '_id',
+        hidden:  true
+    });
+    for (var i = 0; i < cols.length; i++) {
+        colNames.push(_(cols[i]));
+        var _obj = {
+            name:     cols[i],
+            index:    cols[i],
+//                width:    160,
+            editable: true
+        };
+        if (cols[i] == 'room') {
+            var list = {};
+            for (var room in rooms) {
+                list[room] = _(rooms[room].common.name);
+            }
+            _obj.stype =         'select';
+            _obj.edittype =      'select';
+            _obj.editoptions =   {value: list};
+            _obj.searchoptions = {
+                sopt:  ['eq'],
+                value: ':' + _('all')
+            };
+            for (var room in rooms) {
+                _obj.searchoptions.value += ';' + room + ':' + _(rooms[room].common.name);
+            }
+        }
+        colModel.push(_obj);
+    }
+    colNames.push('');
+    colModel.push({name: '_commands',    index: '_commands',    width: 60,  editable: false, align: 'center', search:false});
+
+    $grid[0]._cols   = cols;
+    $grid[0]._rooms  = rooms;
+    $grid[0]._maxIdx = 0;
+    $grid[0]._top    = top;
+    $grid[0]._edited = [];
+
+    $grid.jqGrid({
+        datatype:  'local',
+        colNames:  colNames,
+        colModel:  colModel,
+        width:     800,
+        height:    330,
+        pager:     $('#pager-' + tabId),
+        rowNum:    20,
+        rowList:   [20, 50, 100],
+        ondblClickRow: function (rowid) {
+            var id = rowid.substring((tabId + '_').length);
+            $('.' + tabId + '-edit-submit').hide();
+            $('.' + tabId + '-delete-submit').hide();
+            $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + id + '"]').show();
+            $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
+            $grid.jqGrid('editRow', rowid, {"url": "clientArray"});
+            if ($grid[0]._edited.indexOf(id) == -1) {
+                $grid[0]._edited.push(id);
+            }
+        },
+        sortname:  "id",
+        sortorder: "desc",
+        viewrecords: false,
+        pgbuttons: false,
+        pginput: false,
+        pgtext: false,
+        caption: _('Device list'),
+        ignoreCase: true
+    }).jqGrid('filterToolbar', {
+        defaultSearch: 'cn',
+        autosearch:    true,
+        searchOnEnter: false,
+        enableClear:   false
+    });
+    if ($('#pager-' + tabId).length) {
+        $grid.navGrid('#pager-' + tabId, {
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
+            refresh: false
+        }).jqGrid('navButtonAdd', '#pager-' + tabId, {
+            caption: '',
+            buttonicon: 'ui-icon-plus',
+            onClickButton: function () {
+                // Find new unique name
+                var found;
+                var newText = _("New");
+                var ids = $grid.jqGrid('getDataIDs');
+                var idx = 1;
+                var obj;
+                do {
+                    found = true;
+                    for (var _id = 0; _id < ids.length; _id++) {
+                        obj = $grid.jqGrid('getRowData', ids[_id]);
+                        if (obj && obj[$grid[0]._cols[0]] == newText + idx)  {
+                            idx++;
+                            found = false;
+                            break;
+                        }
+                    }
+                } while (!found);
+
+                obj = {};
+                for (var t = 0; t < $grid[0]._cols.length; t++) {
+                    obj[$grid[0]._cols[t]] = '';
+                }
+                obj[$grid[0]._cols[0]] = newText + idx;
+
+                changed = true;
+                $('#save').button("enable");
+                addToTable(tabId, obj, $grid);
+            },
+            position: 'first',
+            id:       'add-cert',
+            title:    _('new device'),
+            cursor:   'pointer'
+        });
+    }
+
+    if (values) {
+        for (var i = 0; i < values.length; i++) {
+            addToTable(tabId, values[i], $grid);
+        }
+    }
+    $(window).resize(function () {
+        $grid.setGridHeight($(this).height() - top).setGridWidth($(this).width() - 10);
+    });
+    $(window).trigger('resize');
+
+    return $grid;
+}
+
+// converts "enum.room.Sleeping_room" to "Sleeping room"
+// As input gets the list from getEnum
+function enumName2Id(enums, name) {
+    for (var enumId in enums) {
+        if (enums[enumId].common.name == name) return enumId;
+        if (enums[enumId].name && enums[enumId].name == name) return enumId;
+    }
+    return '';
+}
+
+// Creates edit table for any configuration array
+//   tabId  - is id of table where the jqGrid must be created. E.g: <table id="devices"></table><div id="pager-devices"></div>
+//   cols   - array with names of the properties of entry. E.g: ['ip', 'room', 'desc']
+//           if column has name room, for that will be automatically the room enums loaded and shown
+//   values - array with values in form [{ip: '1.1.1.1', room: 'enum.room.bla1', desc: 'Bla1'},  {ip: '2.2.2.2', room: 'enum.room.bla2', desc: 'Bla2'}
+//   top    - top position of the table to set the height of the table automatically. Table must be always as last on the page.
+//
+// returns the jquery object of $('#tabId')
+// To extract data from table
+function editTable(tabId, cols, values, top) {
+    if (cols.indexOf('room') != -1) {
+        getEnums("rooms", function (err, list) {
+            return _editTable(tabId, cols, values, list, top);
+        });
+    } else {
+        return _editTable(tabId, cols, values, null, top);
+    }
+}
+
+// Extract edited array from table
+//   tabId  - is id of table where the jqGrid must be created. E.g: <table id="devices"></table><div id="pager-devices"></div>
+//   cols   - array with names of the properties of entry. E.g: ['ip', 'room', 'desc']
+//
+// Returns array with values
+function getTableResult(tabId, cols) {
+    var $grid = $('#' + tabId);
+    for (var j = 0; j < $grid[0]._edited; j++) {
+        $grid.jqGrid('saveRow', tabId + '_' + $grid[0]._edited[j], {"url": "clientArray"});
+    }
+
+    var data = $grid.jqGrid('getRowData');
+    var res = [];
+    for (var i = 0; i < data.length; i++) {
+        var obj = {};
+        for (var z = 0; z < cols.length; z++) {
+            if (cols[z] == 'room') {
+                obj[cols[z]] = enumName2Id($grid[0]._rooms, data[i][cols[z]]);
+            } else {
+                obj[cols[z]] = data[i][cols[z]];
+            }
+        }
+        res.push(obj);
+    }
+    return res;
 }

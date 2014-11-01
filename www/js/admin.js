@@ -475,11 +475,11 @@ $(document).ready(function () {
             datatype: 'local',
             colNames: [_('val'), _('ack'), _('from'), _('ts'), _('lc')],
             colModel: [
-                {name: 'val', index: 'ack', width: 160, editable: true},
-                {name: 'ack', index: 'ack', width: 60, fixed: false},
-                {name: 'from', index: 'from', width: 80, fixed: false},
-                {name: 'ts', index: 'ts', width: 140, fixed: false},
-                {name: 'lc', index: 'lc', width: 140, fixed: false}
+                {name: 'val',  index: 'val',  width: 160, editable: true},
+                {name: 'ack',  index: 'ack',  width: 60,  fixed: false},
+                {name: 'from', index: 'from', width: 80,  fixed: false},
+                {name: 'ts',   index: 'ts',   width: 140, fixed: false},
+                {name: 'lc',   index: 'lc',   width: 140, fixed: false}
             ],
             width: 800,
             height: 330,
@@ -547,11 +547,11 @@ $(document).ready(function () {
                     for (var i = 0; i < res.length; i++) {
                         rows.push({
                             gid: i,
-                            id: res[i].id,
+                            id:  res[i].id,
                             ack: res[i].ack,
                             val: res[i].val,
-                            ts: formatDate(new Date(res[i].ts * 1000)),
-                            lc: formatDate(new Date(res[i].lc * 1000))
+                            ts:  formatDate(new Date(res[i].ts * 1000)),
+                            lc:  formatDate(new Date(res[i].lc * 1000))
                         });
                     }
                     $gridHistory.jqGrid('addRowData', 'gid', rows);
@@ -571,7 +571,7 @@ $(document).ready(function () {
             datatype: 'local',
             colNames: ['id', _('name'), _('type')],
             colModel: [
-                {name: '_id',  index:'_id', width: 240},
+                {name: '_id',  index:'_id',  width: 240},
                 {name: 'name', index:'name', width: 400},
                 {name: 'type', index:'type', width: 100, fixed: true}
             ],
@@ -667,7 +667,7 @@ $(document).ready(function () {
             datatype: 'local',
             colNames: ['id', _('name'), _('type')],
             colModel: [
-                {name: '_id',  index:'_id', width: 240},
+                {name: '_id',  index:'_id',  width: 240},
                 {name: 'name', index:'name', width: 400},
                 {name: 'type', index:'type', width: 100, fixed: true,
                     stype: 'select',
@@ -704,9 +704,9 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            autosearch: true,
+            autosearch:    true,
             searchOnEnter: false,
-            enableClear: false
+            enableClear:   false
         });
 
         $dialogSelectMember.dialog({
@@ -748,10 +748,11 @@ $(document).ready(function () {
 
         $gridObjects.jqGrid({
             datatype: 'local',
-            colNames: ['id', _('name'), _('type')],
+            colNames: ['id', _('name'), _('role'), _('type')],
             colModel: [
-                {name: '_id',  index:'_id', width: 450, fixed: true},
+                {name: '_id',  index:'_id',  width: 450, fixed: true},
                 {name: 'name', index:'name'},
+                {name: 'role', index:'role', width: 120, fixed: true},
                 {name: 'type', index:'type', width: 120, fixed: true,
                     //formatter:'select',
                     stype: 'select',
@@ -874,11 +875,12 @@ $(document).ready(function () {
         var $subgrid = $('table[id="' + subgridTableId + '"]');
         var gridConf = {
             datatype: 'local',
-            colNames: ['id', _('name'), _('type')],
+            colNames: ['id', _('name'), _('role'), _('type')],
             colModel: [
-                {name: '_id',  index: '_id', width: 450 - (level * 27), fixed: true},
+                {name: '_id',  index: '_id',  width: 450 - (level * 27), fixed: true},
                 {name: 'name', index: 'name'},
-                {name: 'type', index: 'type', width: 120 - (level * 2), fixed: true}
+                {name: 'role', index: 'role', width: 120 - (level * 2),  fixed: true},
+                {name: 'type', index: 'type', width: 120 - (level * 2),  fixed: true}
             ],
             rowNum: 1000000,
             autowidth: true,
@@ -1340,7 +1342,7 @@ $(document).ready(function () {
                 {name: 'schedule',  index: 'schedule',  width: 80,   align: 'center', editable: true},
                 {name: 'config',    index: 'config',    width: 60,   align: 'center', sortable: false, search: false},
                 {name: 'platform',  index: 'platform',  width: 60,   hidden: true},
-                {name: 'loglevel',  index: 'loglevel',  width: 60,   align: 'center',   editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}},
+                {name: 'loglevel',  index: 'loglevel',  width: 60,   align: 'center', editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}},
                 {name: 'alive',     index: 'alive',     width: 60,   align: 'center'},
                 {name: 'connected', index: 'connected', width: 60,   align: 'center'}
             ],
@@ -1457,17 +1459,16 @@ $(document).ready(function () {
                     list[modes[i]] = _(modes[i]);
                 }
                 $gridInstance.setColProp('mode', {
-                    editable: true,
-                    edittype: 'select',
+                    editable:    true,
+                    edittype:    'select',
                     editoptions: {value: list},
-                    align: 'center'
+                    align:       'center'
                 });
             } else {
                 $gridInstance.setColProp('mode', {
                     editable: false,
                     align: 'center'
                 });
-
             }
 
             if (id && id !== instanceLastSelected) {
@@ -2870,6 +2871,7 @@ $(document).ready(function () {
                         gridId: 'object_' + toplevel[i].replace(/ /g, '_'),
                         _id:  objects[toplevel[i]]._id,
                         name: objects[toplevel[i]].common ? (objects[toplevel[i]].common.name || '') : '',
+                        role: objects[toplevel[i]].common ? (objects[toplevel[i]].common.role || '') : '',
                         type: objects[toplevel[i]].type
                     });
                 } catch (e) {
