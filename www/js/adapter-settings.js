@@ -146,6 +146,7 @@ function getEnums(_enum, callback) {
                 if (!count) callback(err, res);
             });
         }
+        if (!count) callback(err, res);
     });
 }
 
