@@ -27,7 +27,6 @@ systemDictionary = {
     "val":                  {"en": "val",                   "de": "Wert",                   "ru": "val"},
     "ack":                  {"en": "ack",                   "de": "Bestätigt",              "ru": "ack"},
     "from":                 {"en": "from",                  "de": "Quelle",                 "ru": "from"},
-    "ts":                   {"en": "ts",                    "de": "Aktualisiert",           "ru": "ts"},
     "lc":                   {"en": "lc",                    "de": "Geändert",               "ru": "lc"},
     "title":                {"en": "title",                 "de": "Titel",                  "ru": "Заголовок"},
     "desc":                 {"en": "desc",                  "de": "Beschreibung",           "ru": "Описание"},
@@ -108,7 +107,7 @@ systemDictionary = {
     "Save":                 {"en": "Save",                  "de": "Speichern",              "ru": "Сохранить"},
     "Cancel":               {"en": "Cancel",                "de": "Abbrechen",              "ru": "Отмена"},
     "Log":                  {"en": "Log",                   "de": "Log",                    "ru": "Лог"},
-    "severity":             {"en": "severity",              "de": "Schweregrad",            "ru": "выжность"},
+    "severity":             {"en": "severity",              "de": "Schweregrad",            "ru": "важность"},
     "message":              {"en": "message",               "de": "Nachricht",              "ru": "Сообщение"},
     "log changes only":     {"en": "log changes only",      "de": "Nur Änderungen aufzeichnen", "ru": "Только изменения"},
     "minimum datapoint count in Redis": {
@@ -178,7 +177,7 @@ systemDictionary = {
     "certificate":          {"en": "certificate",           "de": "Zertifikate",            "ru": "cертификаты"},
     "ioBroker certificates": {"en": "ioBroker certificates", "de": "ioBroker Zertifikate",  "ru": "ioBroker cертификаты"},
     "new certificate":      {"en": "new certificate",       "de": "new certificate",        "ru": "новый cертификат"},
-    "Note:":                {"en": "Note:",                 "de": "Notiz:",                  "ru": "Замечание:"},
+    "Note:":                {"en": "Note:",                 "de": "Notiz:",                 "ru": "Замечание:"},
     "diag-note":            {
         "en": "We worked hard to create this project. As equivalent we expect from you some statistics about the usage.<br>\n" +
               "No private information will be sent to ioBroker.org. Every time you press update adapter list the anonymized statistics will be sent.<br>\n" +
@@ -190,6 +189,12 @@ systemDictionary = {
               "Никакой приватной информации не отсылается в ioBroker.org. Каждый раз, когда список адаптеров обновляется, будет отсылатся анонимная статистика.<br>\n" +
               "Большое спасибо!"
     },
+    "ts":                   {"en": "Timestamp",             "de": "Zeit",                   "ru": "Время"},
     "Statistics:":          {"en": "Statistics:",           "de": "Statistik:",             "ru": "Статистика:"},
-    "Sent data:":           {"en": "Sent data:",            "de": "Gesendete Daten:",                 "ru": "Отсылаемые данные:"}
+    "Sent data:":           {"en": "Sent data:",            "de": "Gesendete Daten:",       "ru": "Отсылаемые данные:"},
+    "copy note": {
+        "en": "Press Ctrl+A and Ctrl+C to copy log to clipboard and click with mouse anywhere to close.",
+        "de": "Drucke Strg+A und danach Strg+C um inhalt in den Zwischenpufer zu kopiere. Klicke irgendwo um das Fenster zu machen.",
+        "ru": "Нажмите Ctrl+A и Ctrl+C, что бы скопировать в буффер обмена и после этого нажмите мышкой в любом месте."
+    }
 };

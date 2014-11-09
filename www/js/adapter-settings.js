@@ -146,6 +146,7 @@ function getEnums(_enum, callback) {
                 if (!count) callback(err, res);
             });
         }
+        if (!count) callback(err, res);
     });
 }
 
@@ -257,7 +258,8 @@ function getIsAdapterAlive(_adapter, callback) {
 //  tabId - the id of the table used by editTable
 //  value - is one object to add in form {ip: '3.3.3.3', room: 'enum.room.bla3', desc: 'Bla3'}
 // $grid  - [optional] - object returned by editTable to speed up the addition
-function addToTable(tabId, value, $grid) {
+// _isInitial - [optional] - if it is initial fill of the table. To not trigger the onChange
+function addToTable(tabId, value, $grid, _isInitial) {
     $grid = $grid || $('#' + tabId);
     var obj  = {_id: $grid[0]._maxIdx++};
     var cols = $grid[0]._cols;
@@ -273,7 +275,7 @@ function addToTable(tabId, value, $grid) {
         '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-edit-submit">'                        + _('edit')   + '</button>' +
         '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-delete-submit">'                      + _('delete') + '</button>' +
         '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-ok-submit" style="display:none">'     + _('ok')     + '</button>' +
-        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-cancel-submit" style="display:none">' + _('cancel') + '</button>'
+        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-cancel-submit" style="display:none">' + _('cancel') + '</button>';
 
     $grid.jqGrid('addRowData', tabId + '_' + obj._id, obj);
 
@@ -292,6 +294,8 @@ function addToTable(tabId, value, $grid) {
         if ($grid[0]._edited.indexOf(id) == -1) {
             $grid[0]._edited.push(id);
         }
+        changed = true;
+        $('#save').button("enable");
     }).css('height', '18px');
 
     $('.' + tabId + '-delete-submit[data-' + tabId + '-id="' + obj._id + '"]').unbind('click').button({
@@ -306,6 +310,7 @@ function addToTable(tabId, value, $grid) {
         if (pos != -1) {
             $grid[0]._edited.splice(pos, 1);
         }
+        if ($grid[0]._onChange) $grid[0]._onChange('del', id);
     }).css('height', '18px');
 
     $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + obj._id + '"]').unbind('click').button({
@@ -320,12 +325,15 @@ function addToTable(tabId, value, $grid) {
         $('.' + tabId + '-cancel-submit').hide();
 
         $grid.jqGrid('saveRow', tabId + '_' + id, {"url": "clientArray"});
+
         changed = true;
         $('#save').button("enable");
+
         var pos = $grid[0]._edited.indexOf(id);
         if (pos != -1) {
             $grid[0]._edited.splice(pos, 1);
         }
+        if($grid[0]._onChange) $grid[0]._onChange('changed', $grid.jqGrid('getRowData', tabId + '_' + id));
     }).css('height', '18px');
     $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + obj._id + '"]').unbind('click').button({
         icons: {primary: 'ui-icon-close'},
@@ -344,12 +352,15 @@ function addToTable(tabId, value, $grid) {
             $grid[0]._edited.splice(pos, 1);
         }
     }).css('height', '18px');
+
+    if (!_isInitial && $grid[0]._onChange) $grid[0]._onChange('add', value);
 }
 
-function _editTable(tabId, cols, values, rooms, top){
+function _editTable(tabId, cols, values, rooms, top, onChange) {
     var colNames = [];
     var colModel = [];
     var $grid = $('#' + tabId);
+    var room;
 
     colNames.push('id');
     colModel.push({
@@ -367,7 +378,7 @@ function _editTable(tabId, cols, values, rooms, top){
         };
         if (cols[i] == 'room') {
             var list = {};
-            for (var room in rooms) {
+            for (room in rooms) {
                 list[room] = _(rooms[room].common.name);
             }
             _obj.stype =         'select';
@@ -377,7 +388,7 @@ function _editTable(tabId, cols, values, rooms, top){
                 sopt:  ['eq'],
                 value: ':' + _('all')
             };
-            for (var room in rooms) {
+            for (room in rooms) {
                 _obj.searchoptions.value += ';' + room + ':' + _(rooms[room].common.name);
             }
         }
@@ -386,11 +397,12 @@ function _editTable(tabId, cols, values, rooms, top){
     colNames.push('');
     colModel.push({name: '_commands',    index: '_commands',    width: 60,  editable: false, align: 'center', search:false});
 
-    $grid[0]._cols   = cols;
-    $grid[0]._rooms  = rooms;
-    $grid[0]._maxIdx = 0;
-    $grid[0]._top    = top;
-    $grid[0]._edited = [];
+    $grid[0]._cols     = cols;
+    $grid[0]._rooms    = rooms;
+    $grid[0]._maxIdx   = 0;
+    $grid[0]._top      = top;
+    $grid[0]._edited   = [];
+    $grid[0]._onChange = onChange;
 
     $grid.jqGrid({
         datatype:  'local',
@@ -411,6 +423,8 @@ function _editTable(tabId, cols, values, rooms, top){
             if ($grid[0]._edited.indexOf(id) == -1) {
                 $grid[0]._edited.push(id);
             }
+            changed = true;
+            $('#save').button("enable");
         },
         sortname:  "id",
         sortorder: "desc",
@@ -473,8 +487,8 @@ function _editTable(tabId, cols, values, rooms, top){
     }
 
     if (values) {
-        for (var i = 0; i < values.length; i++) {
-            addToTable(tabId, values[i], $grid);
+        for (var u = 0; u < values.length; u++) {
+            addToTable(tabId, values[u], $grid, true);
         }
     }
     $(window).resize(function () {
@@ -501,16 +515,17 @@ function enumName2Id(enums, name) {
 //           if column has name room, for that will be automatically the room enums loaded and shown
 //   values - array with values in form [{ip: '1.1.1.1', room: 'enum.room.bla1', desc: 'Bla1'},  {ip: '2.2.2.2', room: 'enum.room.bla2', desc: 'Bla2'}
 //   top    - top position of the table to set the height of the table automatically. Table must be always as last on the page.
+//   onChange - callback called if something is changed in the table
 //
 // returns the jquery object of $('#tabId')
 // To extract data from table
-function editTable(tabId, cols, values, top) {
+function editTable(tabId, cols, values, top, onChange) {
     if (cols.indexOf('room') != -1) {
         getEnums("rooms", function (err, list) {
-            return _editTable(tabId, cols, values, list, top);
+            return _editTable(tabId, cols, values, list, top, onChange);
         });
     } else {
-        return _editTable(tabId, cols, values, null, top);
+        return _editTable(tabId, cols, values, null, top, onChange);
     }
 }
 
@@ -521,9 +536,14 @@ function editTable(tabId, cols, values, top) {
 // Returns array with values
 function getTableResult(tabId, cols) {
     var $grid = $('#' + tabId);
-    for (var j = 0; j < $grid[0]._edited; j++) {
+    for (var j = 0; j < $grid[0]._edited.length; j++) {
         $grid.jqGrid('saveRow', tabId + '_' + $grid[0]._edited[j], {"url": "clientArray"});
     }
+
+    $('.' + tabId + '-edit-submit').show();
+    $('.' + tabId + '-delete-submit').show();
+    $('.' + tabId + '-ok-submit').hide();
+    $('.' + tabId + '-cancel-submit').hide();
 
     var data = $grid.jqGrid('getRowData');
     var res = [];

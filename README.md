@@ -7,8 +7,19 @@ user interface for configuration and administration
 ## Todo
 - log output
 - edit instances like certificates
+- update states on the fly (added, deleted)
+- update objects on the fly (added, delited)
 
 ## Changelog
+### 0.1.7 (2014-11-09)
+* (bluefox) add log pane
+
+### 0.1.6 (2014-11-07)
+* (bluefox) fix edit list in configuration
+
+### 0.1.5 (2014-11-03)
+* (bluefox) support of tables in edit configuration
+
 ### 0.1.4 (2014-11-01)
 * (bluefox) update history dialog live (add new values on the fly to history table)
 
