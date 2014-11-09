@@ -81,6 +81,8 @@ adapter.on('message', function (obj) {
 });
 
 adapter.on('unload', function (callback) {
+    adapter.requireLog(false);
+
     try {
         adapter.log.info("terminating http" + (webServer.settings.secure ? "s" : "") + " server on port " + webServer.settings.port);
         webServer.server.close();
