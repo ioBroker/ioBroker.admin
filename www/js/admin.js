@@ -61,6 +61,10 @@ $(document).ready(function () {
     var stdout;
     var activeCmdId =           null;
 
+    var logLinesCount =         0;
+    var logLinesStart =         0;
+    var logHosts =              [];
+
     var $stdout =               $('#stdout');
     var $configFrame =          $('#config-iframe');
 
@@ -464,6 +468,61 @@ $(document).ready(function () {
     $('#enum-name').keyup(function () {
         $('#enum-gen-id').html('enum.' + $(this).val().replace(/ /, '_').toLowerCase());
     });
+
+    function filterLog() {
+        var filterSev  = $('#log-filter-severity').val();
+        var filterHost = $('#log-filter-host').val();
+        if (filterSev == 'error') {
+            $('.log-severity-debug').hide();
+            $('.log-severity-info').hide();
+            $('.log-severity-warn').hide();
+            $('.log-severity-error').show();
+        } else
+        if (filterSev == 'warn') {
+            $('.log-severity-debug').hide();
+            $('.log-severity-info').hide();
+            $('.log-severity-warn').show();
+            $('.log-severity-error').show();
+        }else
+        if (filterSev == 'info') {
+            $('.log-severity-debug').hide();
+            $('.log-severity-info').show();
+            $('.log-severity-warn').show();
+            $('.log-severity-error').show();
+        } else {
+            $('.log-severity-debug').show();
+            $('.log-severity-info').show();
+            $('.log-severity-warn').show();
+            $('.log-severity-error').show();
+        }
+        if (filterHost) {
+            $('.log-line').each(function (index) {
+                if (!$(this).hasClass('log-from-' + filterHost)) $(this).hide();
+            });
+        }
+    }
+
+    $('#log-filter-severity').change(filterLog);
+    $('#log-filter-host').change(filterLog);
+
+    $('#log-clear').button({icons:{primary: 'ui-icon-trash'}, text: false}).click(function () {
+        $('#log-table').html('');
+    }).css({width: 20, height: 20});
+    $('#log-copy-text').click(function () {
+        $('#log-copy-text').hide().html('');
+        $('#tabs').show();
+    });
+    $('#log-copy').button({icons:{primary: 'ui-icon-copy'}, text: false}).click(function () {
+        var text = '<span style="color: red">' + _('copy note') + '</span>';
+        $('#tabs').hide();
+        $('#log-copy-text').show().html(text + '<br><table style="width: 100%; font-size:12px" id="log-copy-table">' + $('#log-table').html() + '</table>');
+        var lines = $('#log-copy-table .log-column-4');
+        for (var t = 0; t < lines.length; t++) {
+            var q = $(lines[t]);
+            q.html(q.attr('title'));
+            q.attr('title', '');
+        }
+    }).css({width: 20, height: 20});
 
     // detect type of state
     function getType(val) {
@@ -3396,14 +3455,50 @@ $(document).ready(function () {
         }
     }
 
-
     // Socket.io methods
-    socket.on('log', function (host, ts, severity, message) {
-        $('#log-table').prepend('<tr class="log-severity-' + severity + '">' +
-            '<td class="log-column-1">' + host + '</td>' +
-            '<td class="log-column-2">' + ts + '</td>' +
-            '<td class="log-column-3">' + severity + '</td>' +
-            '<td class="log-column-4">' + message + '</td></tr>');
+    socket.on('log', function (message) {
+        //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
+
+        if (logLinesCount >= 2000) {
+            var line = document.getElementById('log-line-' + (logLinesStart + 1));
+            if (line) line.outerHTML = '';
+            logLinesStart++;
+        } else {
+            logLinesCount++;
+        }
+
+        var hostFilter = $('#log-filter-host').val();
+
+        if (logHosts.indexOf(message.from) == -1) {
+            logHosts.push(message.from);
+            logHosts.sort();
+            $('#log-filter-host').html('<option value="">' + _('all') + '</option>');
+            for (var i = 0; i < logHosts.length; i++) {
+                $('#log-filter-host').append('<option value="' + logHosts[i] + '" ' + ((logHosts[i] == hostFilter) ? 'selected' : '') + '">' + logHosts[i] + '</option>');
+            }
+        }
+        var visible = '';
+        if (hostFilter && hostFilter != message.from) {
+            visible = 'display: none';
+        }
+        var sevFilter = $('#log-filter-severity').val();
+        if (!visible && sevFilter) {
+            if (sevFilter == 'info' && message.severity == 'debug') {
+                visible = 'display: none';
+            } else if (sevFilter == 'warn' && message.severity != 'warn' && message.severity != 'error') {
+                visible = 'display: none';
+            } else if (sevFilter == 'error' && message.severity != 'error') {
+                visible = 'display: none';
+            }
+        }
+
+        var text = '<tr id="log-line-' + (logLinesStart + logLinesCount) + '" class="log-line log-severity-' + message.severity + ' log-from-' + message.from + '" style="' + visible + '">';
+        text += '<td class="log-column-1">' + message.from + '</td>';
+        text += '<td class="log-column-2">' + formatDate(new Date(message.ts)) + '</td>';
+        text += '<td class="log-column-3">' + message.severity + '</td>';
+        text += '<td class="log-column-4" title="' + message.message.replace(/"/g, "'") + '">' + message.message.substring(0, 200) + '</td></tr>';
+
+        $('#log-table').prepend(text);
     });
 
     socket.on('stateChange', function (id, obj) {

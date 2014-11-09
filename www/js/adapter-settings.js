@@ -275,7 +275,7 @@ function addToTable(tabId, value, $grid, _isInitial) {
         '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-edit-submit">'                        + _('edit')   + '</button>' +
         '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-delete-submit">'                      + _('delete') + '</button>' +
         '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-ok-submit" style="display:none">'     + _('ok')     + '</button>' +
-        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-cancel-submit" style="display:none">' + _('cancel') + '</button>'
+        '<button data-' + tabId + '-id="' + obj._id + '" class="' + tabId + '-cancel-submit" style="display:none">' + _('cancel') + '</button>';
 
     $grid.jqGrid('addRowData', tabId + '_' + obj._id, obj);
 
@@ -310,7 +310,7 @@ function addToTable(tabId, value, $grid, _isInitial) {
         if (pos != -1) {
             $grid[0]._edited.splice(pos, 1);
         }
-        if($grid[0]._onChange) $grid[0]._onChange('del', id);
+        if ($grid[0]._onChange) $grid[0]._onChange('del', id);
     }).css('height', '18px');
 
     $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + obj._id + '"]').unbind('click').button({
@@ -356,10 +356,11 @@ function addToTable(tabId, value, $grid, _isInitial) {
     if (!_isInitial && $grid[0]._onChange) $grid[0]._onChange('add', value);
 }
 
-function _editTable(tabId, cols, values, rooms, top, onChange){
+function _editTable(tabId, cols, values, rooms, top, onChange) {
     var colNames = [];
     var colModel = [];
     var $grid = $('#' + tabId);
+    var room;
 
     colNames.push('id');
     colModel.push({
@@ -377,7 +378,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange){
         };
         if (cols[i] == 'room') {
             var list = {};
-            for (var room in rooms) {
+            for (room in rooms) {
                 list[room] = _(rooms[room].common.name);
             }
             _obj.stype =         'select';
@@ -387,7 +388,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange){
                 sopt:  ['eq'],
                 value: ':' + _('all')
             };
-            for (var room in rooms) {
+            for (room in rooms) {
                 _obj.searchoptions.value += ';' + room + ':' + _(rooms[room].common.name);
             }
         }
@@ -486,8 +487,8 @@ function _editTable(tabId, cols, values, rooms, top, onChange){
     }
 
     if (values) {
-        for (var i = 0; i < values.length; i++) {
-            addToTable(tabId, values[i], $grid, true);
+        for (var u = 0; u < values.length; u++) {
+            addToTable(tabId, values[u], $grid, true);
         }
     }
     $(window).resize(function () {

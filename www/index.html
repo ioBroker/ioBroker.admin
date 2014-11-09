@@ -34,7 +34,7 @@
         <li><a href="#tab-scripts"      class="translate">Scripts</a></li>
         <li><a href="#tab-users"        class="translate">Users</a></li>
         <li><a href="#tab-groups"       class="translate">Groups</a></li>
-       <!-- <li><a href="#tab-log"          class="translate">Log</a></li> -->
+        <li><a href="#tab-log"          class="translate">Log</a></li>
     </ul>
     <div id="tab-hosts">
         <table id="grid-hosts"></table>
@@ -103,25 +103,47 @@
         <table id="grid-groups"></table>
         <div id="pager-groups"></div>
     </div>
-    <!--
     <div id="tab-log">
         <div id="grid-log" class="ui-jqgrid" style="display: block;">
             <div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">
-                <div class="">
-                    <span class="ui-jqgrid-title translate">Log</span>
-                </div>
-
+                <table style="padding: 0; margin: 0; border-spacing: 0" class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix"><tr>
+                    <td width="100%"><span class="ui-jqgrid-title translate">Log</span></td>
+                    <td ><button id="log-copy" class="translateT" title="Copy log">Copy</button></td>
+                    <td ><button id="log-clear">Clear</button></td>
+                </tr></table>
             </div>
             <table style="width: 100%; border-collapse: collapse;" class="ui-widget ui-state-default ui-corner-bottom">
                 <thead>
                 <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
-                    <th class="log-column-1 ui-state-default ui-th-column ui-th-ltr translate">host</th>
-                    <th class="log-column-2 ui-state-default ui-th-column ui-th-ltr translate">ts</th>
-                    <th class="log-column-3 ui-state-default ui-th-column ui-th-ltr translate">severity</th>
-                    <th class="log-column-4 ui-state-default ui-th-column ui-th-ltr translate">message</th>
+                    <th class="log-column-1-header ui-state-default ui-th-column ui-th-ltr translate" style="text-align: right"><select id="log-filter-host"></select></th>
+                    <th class="log-column-2-header ui-state-default ui-th-column ui-th-ltr translate">ts</th>
+                    <th class="log-column-3-header ui-state-default ui-th-column ui-th-ltr translate"><select id="log-filter-severity">
+                        <option value=""      class="translate">debug</option>
+                        <option value="info"  class="translate">info</option>
+                        <option value="warn"  class="translate">warn</option>
+                        <option value="error" class="translate">error</option>
+                    </select></th>
+                    <th class="log-column-4-header ui-state-default ui-th-column ui-th-ltr translate">message</th>
                 </tr>
                 </thead>
             </table>
+            <!--table style="width: 100%; border-collapse: collapse;" class="ui-widget ui-state-default ui-corner-bottom">
+                <thead>
+                <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
+                    <th class="log-column-1-header ui-state-default ui-th-column ui-th-ltr">
+                        <select id="log-filter-host"></select>
+                    </th>
+                    <th class="log-column-2-header ui-state-default ui-th-column ui-th-ltr"></th>
+                    <th class="log-column-3-header ui-state-default ui-th-column ui-th-ltr"><select id="log-filter-severity">
+                        <option value=""      class="translate">debug</option>
+                        <option value="info"  class="translate">info</option>
+                        <option value="warn"  class="translate">warn</option>
+                        <option value="error" class="translate">error</option>
+                    </select></th>
+                    <th class="log-column-4-header ui-state-default ui-th-column ui-th-ltr"></th>
+                </tr>
+                </thead>
+            </table-->
             <div id="grid-log-inner" style="width: 100%; overflow-y: scroll;">
                 <table id="log-outer" style="width: 100%; border-collapse: collapse; margin-top: -1px" class="ui-widget ui-state-default ui-corner-bottom">
                     <tbody id="log-table">
@@ -132,7 +154,6 @@
             </div>
         </div>
     </div>
-    -->
 </div>
 <div id="dialog-object" style="display:none">
     <table>
@@ -310,7 +331,7 @@
     <h3 class="translate">License terms</h3>
     <div id="license_text" style="width: 100%"></div>
 </div>
-<div id="connecting" style="left:50%; top:50%;position: fixed;"><img src="img/gear.png"/></div>
+<div id="connecting" style="left:50%; top:50%;position: fixed;"><img class="wait-rotate" src="img/gear.png"/></div>
 <div title="System settings" id="dialog-system"  class="translateT" style="display:none">
     <div id="tabs-system">
         <ul>
@@ -397,5 +418,9 @@
         </div>
     </div>
 </div>
+
+<div title="Copy log" id="log-copy-text" style="display:none; width:100%; height: 100%; background: white; top:0; left:0; position: absolute; z-index:2000">
+</div>
+
 </body>
 </html>

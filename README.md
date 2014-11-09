@@ -11,6 +11,9 @@ user interface for configuration and administration
 - update objects on the fly (added, delited)
 
 ## Changelog
+### 0.1.7 (2014-11-09)
+* (bluefox) add log pane
+
 ### 0.1.6 (2014-11-07)
 * (bluefox) fix edit list in configuration
 

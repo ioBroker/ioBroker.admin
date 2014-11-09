@@ -29,6 +29,7 @@ var cmdSessions = {};
 
 var adapter = require(__dirname + '/../../lib/adapter.js')({
     name:    'admin',
+    logTransporter: true, // receive the logs
     install: function (callback) {
         if (typeof callback === 'function') callback();
     }
@@ -90,6 +91,11 @@ adapter.on('unload', function (callback) {
     }
 });
 
+adapter.on('log', function (obj) {
+    // obj = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
+    if (webServer && webServer.io && webServer.io.sockets)
+        webServer.io.sockets.emit('log', obj);
+});
 function main() {
     adapter.subscribeForeignStates('*');
     adapter.subscribeForeignObjects('*');
@@ -448,6 +454,8 @@ function socketEvents(socket, user) {
 
     // TODO Check if user may create and delete objects and so on
 
+    // Enable logging, while some browser is connected
+    adapter.requireLog(true);
 
     /*
      *      objects
@@ -579,6 +587,11 @@ function socketEvents(socket, user) {
 
     socket.on('authEnabled', function (callback) {
         callback(adapter.config.auth);
+    });
+
+    socket.on('disconnect', function () {
+        // Disable logging if no one browser is connected
+        adapter.requireLog(!!webServer.io.sockets.sockets.length);
     });
 }
 
