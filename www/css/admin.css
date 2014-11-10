@@ -25,7 +25,6 @@ table#events {
     margin: 0;
     border: none;
     border-radius: 0;
-
 }
 
 .header {
@@ -158,6 +157,10 @@ table#events {
     display: block;
 }
 
+.errorLog {
+    font-weight: bold;
+    color: red !important;
+}
 .updateReady {
     font-weight: bold;
     color: green !important;

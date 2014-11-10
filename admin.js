@@ -81,7 +81,7 @@ adapter.on('message', function (obj) {
 });
 
 adapter.on('unload', function (callback) {
-    adapter.requireLog(false);
+    if (adapter.requireLog) adapter.requireLog(false);
 
     try {
         adapter.log.info("terminating http" + (webServer.settings.secure ? "s" : "") + " server on port " + webServer.settings.port);
@@ -457,7 +457,7 @@ function socketEvents(socket, user) {
     // TODO Check if user may create and delete objects and so on
 
     // Enable logging, while some browser is connected
-    adapter.requireLog(true);
+    if (adapter.requireLog) adapter.requireLog(true);
 
     /*
      *      objects
@@ -593,7 +593,7 @@ function socketEvents(socket, user) {
 
     socket.on('disconnect', function () {
         // Disable logging if no one browser is connected
-        adapter.requireLog(!!webServer.io.sockets.sockets.length);
+        if (adapter.requireLog) adapter.requireLog(!!webServer.io.sockets.sockets.length);
     });
 }
 

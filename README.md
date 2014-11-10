@@ -11,6 +11,9 @@ user interface for configuration and administration
 - update objects on the fly (added, delited)
 
 ## Changelog
+### 0.1.8 (2014-11-10)
+* (bluefox) fix problem if js-controller does not hav the most actual version 
+
 ### 0.1.7 (2014-11-09)
 * (bluefox) add log pane
 
