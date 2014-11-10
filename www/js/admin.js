@@ -64,6 +64,7 @@ $(document).ready(function () {
     var logLinesCount =         0;
     var logLinesStart =         0;
     var logHosts =              [];
+    var logFilterTimeout =      null;
 
     var $stdout =               $('#stdout');
     var $configFrame =          $('#config-iframe');
@@ -470,8 +471,13 @@ $(document).ready(function () {
     });
 
     function filterLog() {
+        if (logFilterTimeout) {
+            clearTimeout(logFilterTimeout);
+            logFilterTimeout = null;
+        }
         var filterSev  = $('#log-filter-severity').val();
         var filterHost = $('#log-filter-host').val();
+        var filterMsg  = $('#log-filter-message').val();
         if (filterSev == 'error') {
             $('.log-severity-debug').hide();
             $('.log-severity-info').hide();
@@ -495,18 +501,32 @@ $(document).ready(function () {
             $('.log-severity-warn').show();
             $('.log-severity-error').show();
         }
-        if (filterHost) {
+        if (filterHost || filterMsg) {
             $('.log-line').each(function (index) {
-                if (!$(this).hasClass('log-from-' + filterHost)) $(this).hide();
+                if (filterHost && !$(this).hasClass('log-from-' + filterHost)) $(this).hide();
+                if (filterMsg && $(this).html().indexOf(filterMsg) == -1)$(this).hide();
             });
         }
     }
 
     $('#log-filter-severity').change(filterLog);
     $('#log-filter-host').change(filterLog);
+    $('#log-filter-message').change(function () {
+        if (logFilterTimeout) clearTimeout(logFilterTimeout);
+        logFilterTimeout = setTimeout(filterLog, 1000);
+    }).keyup(function (e){
+        if (e.which == 13) {
+            filterLog();
+        } else {
+            $(this).trigger('change');
+        }
+    });
 
     $('#log-clear').button({icons:{primary: 'ui-icon-trash'}, text: false}).click(function () {
         $('#log-table').html('');
+        logLinesCount = 0;
+        logLinesStart = 0;
+        $('a[href="#tab-log"]').removeClass('errorLog');
     }).css({width: 20, height: 20});
     $('#log-copy-text').click(function () {
         $('#log-copy-text').hide().html('');
@@ -3491,6 +3511,8 @@ $(document).ready(function () {
                 visible = 'display: none';
             }
         }
+
+        if (message.severity == 'error')         $('a[href="#tab-log"]').addClass('errorLog');
 
         var text = '<tr id="log-line-' + (logLinesStart + logLinesCount) + '" class="log-line log-severity-' + message.severity + ' log-from-' + message.from + '" style="' + visible + '">';
         text += '<td class="log-column-1">' + message.from + '</td>';

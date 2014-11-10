@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "admin",
-        "version":                  "0.1.7",
+        "version":                  "0.1.8",
         "title":                    "ioBroker Admin",
         "desc": {
             "en":                   "opens a webserver for the ioBroker admin UI",
@@ -22,7 +22,8 @@
             "bluefox <bluefox@ccu.io>"
         ],
         "license":                  "MIT",
-        "localLink":                "http://%ip%:5984/_utils"
+        "localLink":                "http://%ip%:5984/_utils",
+        "logTransporter":           true
     },
     "native": {
         "port":                     8081,
