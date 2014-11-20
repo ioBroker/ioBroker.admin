@@ -220,6 +220,11 @@
         </tr>
     </table>
 </div>
+<div id="dialog-enum-members" style="display:none">
+    <span class="translate" style="padding-right: 10">Name:</span><input id="enum-name-edit" size="20" disabled/>
+    <table id="grid-enum-members"></table>
+    <div id="pager-enum-members"></div>
+</div>
 <div id="dialog-script" style="display:none">
     <table>
         <tr>
@@ -229,10 +234,7 @@
         <tr>
             <td>platform</td>
             <td>
-                <select id="edit-script-platform">
-                    <option>Javascript/Node.js</option>
-                    <option>CoffeeScript/Node.js</option>
-                </select>
+                <select id="edit-script-engine-type"></select>
             </td>
         </tr>
     </table><br/>
@@ -271,11 +273,6 @@
         </tr>
     </table><br/>
     <input type="hidden" id="edit-group-id">
-</div>
-<div id="dialog-enum-members" style="display:none">
-    <span class="translate">Name:</span><input id="enum-name-edit" size="20"/><button id="enum-name-button"></button>
-    <table id="grid-enum-members"></table>
-    <div id="pager-enum-members"></div>
 </div>
 <div id="dialog-select-member" style="display:none">
     <table id="grid-select-member"></table>
