@@ -333,7 +333,7 @@ function addToTable(tabId, value, $grid, _isInitial) {
         if (pos != -1) {
             $grid[0]._edited.splice(pos, 1);
         }
-        if($grid[0]._onChange) $grid[0]._onChange('changed', $grid.jqGrid('getRowData', tabId + '_' + id));
+        if ($grid[0]._onChange) $grid[0]._onChange('changed', $grid.jqGrid('getRowData', tabId + '_' + id));
     }).css('height', '18px');
     $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + obj._id + '"]').unbind('click').button({
         icons: {primary: 'ui-icon-close'},

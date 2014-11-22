@@ -38,7 +38,7 @@ $(document).ready(function () {
     // Todo put this in adapter instance config
     var historyMaxAge =         86400; // Maxmimum datapoint age to be shown in gridHistory (seconds)
 
-    var toplevel  =             [];
+    var objectTree =            {name: '', children:{}, count: 0};
     var instances =             [];
     var enums =                 [];
     var scripts =               [];
@@ -72,7 +72,6 @@ $(document).ready(function () {
     var $dialogCommand =        $('#dialog-command');
     var $dialogEnumMembers =    $('#dialog-enum-members');
     var $dialogEnum =           $('#dialog-enum');
-    var $dialogSelectMember =   $('#dialog-select-member');
     var $dialogConfig =         $('#dialog-config');
     var $dialogScript =         $('#dialog-script');
     var $dialogObject =         $('#dialog-object');
@@ -86,7 +85,6 @@ $(document).ready(function () {
     var $gridGroups =           $('#grid-groups');
     var $gridEnums =            $('#grid-enums');
     var $gridEnumMembers =      $('#grid-enum-members');
-    var $gridSelectMember =     $('#grid-select-member');
     var $gridObjects =          $('#grid-objects');
     var $gridStates =           $('#grid-states');
     var $gridAdapter =          $('#grid-adapters');
@@ -107,11 +105,9 @@ $(document).ready(function () {
     var curInstalled =          null;
     var currentHistory =        null; // Id of the currently shown history dialog
 
-    // TODO hide tab scripts and don't initialize ace if no instance of adapter javascript enabled
-    var editor = ace.edit("script-editor");
-    //editor.setTheme("ace/theme/monokai");
-    editor.getSession().setMode("ace/mode/javascript");
-    editor.resize();
+    var treeExtended =          []; // List of extended object leafs
+
+    var editor =                null;
 
     // jQuery UI initializations
     $('#tabs').tabs({
@@ -119,6 +115,7 @@ $(document).ready(function () {
             window.location.hash = '#' + ui.newPanel.selector.slice(5);
             switch (ui.newPanel.selector) {
                 case '#tab-objects':
+                    initObjects();
                     break;
 
                 case '#tab-hosts':
@@ -126,6 +123,7 @@ $(document).ready(function () {
                     break;
 
                 case '#tab-states':
+                    initStates();
                     break;
 
                 case '#tab-scripts':
@@ -467,7 +465,8 @@ $(document).ready(function () {
     });
 
     $('#enum-name').keyup(function () {
-        $('#enum-gen-id').html('enum.' + $(this).val().replace(/ /, '_').toLowerCase());
+        var t = $('#enum-gen-id');
+        t.html(t[0]._original + '.' + $(this).val().replace(/ /, '_').toLowerCase());
     });
 
     function filterLog() {
@@ -514,7 +513,7 @@ $(document).ready(function () {
     $('#log-filter-message').change(function () {
         if (logFilterTimeout) clearTimeout(logFilterTimeout);
         logFilterTimeout = setTimeout(filterLog, 1000);
-    }).keyup(function (e){
+    }).keyup(function (e) {
         if (e.which == 13) {
             filterLog();
         } else {
@@ -551,7 +550,132 @@ $(document).ready(function () {
         return typeof val;
     }
 
-    // Grids and Dialog inits
+    function showDialogSelectId(_objects, currentId, title, callback) {
+        var $gridSelectMember   = $('#grid-select-member');
+        var $dialogSelectMember = $('#dialog-select-member');
+
+        if (typeof title == 'function') {
+            callback = title;
+            title = undefined;
+        }
+
+        if (typeof currentId == 'function') {
+            callback = currentId;
+            currentId = undefined;
+        }
+
+        if (typeof _objects != 'object') { // Clear table
+            if ($gridSelectMember[0]._buttons) $gridSelectMember.jqGrid('clearGridData');
+            return;
+        }
+
+        if (!$gridSelectMember[0]._buttons) {
+            $gridSelectMember[0]._buttons = [
+                {
+                    id:   "dialog-member-button-ok",
+                    text: _('Select'),
+                    click: function () {
+                        var obj = $gridSelectMember.jqGrid('getRowData', $gridSelectMember.jqGrid('getGridParam', 'selrow'));
+                        var id = obj._id;
+                        if (callback) callback(id, currentId);
+                        $dialogSelectMember.dialog('close');
+                    }
+                },
+                {
+                    id:   "dialog-member-button-cancel",
+                    text: _('Cancel'),
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }
+            ];
+
+            $gridSelectMember.jqGrid({
+                datatype: 'local',
+                colNames: ['id', _('name'), _('type')],
+                colModel: [
+                    {name: '_id',  index:'_id',  width: 240},
+                    {name: 'name', index:'name', width: 400},
+                    {name: 'type', index:'type', width: 100, fixed: true,
+                        stype: 'select',
+                        searchoptions: {
+                            sopt: ['eq'], value: ':' + _('all') + ';device:' + _('device') + ';channel:' + _('channel') + ';state:' + _('state')
+                        }
+                    }
+                ],
+                width:       768,
+                height:      370,
+                rowNum:      1000000,
+                sortname:    "id",
+                sortorder:   "desc",
+                viewrecords: true,
+                caption:     _('select member by double click'),
+                ignoreCase:  true,
+                onSelectRow: function (rowid, e) {
+                    var obj = $gridSelectMember.jqGrid('getRowData', rowid);
+                    $dialogSelectMember.dialog('option', 'title', _('Select ID') +  ' - ' + (_objects[obj._id].common.name || ' '));
+                    $('#dialog-member-button-ok').removeClass('ui-state-disabled');
+                },
+                ondblClickRow: function (rowid, e) {
+                    // Click first button of the dialog
+                    $('#dialog-member-button-ok').trigger('click');
+                }
+            }).jqGrid('filterToolbar', {
+                defaultSearch: 'cn',
+                autosearch:    true,
+                searchOnEnter: false,
+                enableClear:   false
+            });
+
+            $dialogSelectMember.dialog({
+                autoOpen: false,
+                modal:    true,
+                width:    800,
+                height:   500,
+                buttons:  $gridSelectMember[0]._buttons,
+                resize:     function () {
+                    $gridSelectMember.setGridHeight($(this).height() - 80).setGridWidth($(this).width() - 5);
+                },
+                open: function () {
+                    $gridSelectMember.setGridHeight($(this).height() - 80).setGridWidth($(this).width() - 5);
+                }
+            });
+        }
+
+        $dialogSelectMember.dialog('option', 'title', _('Select ID') +  ' - ' + (title || ' '));
+
+        var ids = $gridSelectMember.jqGrid('getDataIDs');
+        if (!ids || !ids.length) {
+            var obj;
+            for (var id in _objects) {
+                obj = _objects[id];
+                if (obj.type === 'device' || obj.type === 'channel' || obj.type === 'state') {
+                    $gridSelectMember.jqGrid('addRowData', 'select_obj_' + id.replace(/ /g, '_'), {
+                        _id:  id,
+                        name: obj.common.name,
+                        type: obj.type
+                    });
+                }
+            }
+            $gridSelectMember.trigger('reloadGrid');
+        }
+
+        $gridSelectMember.jqGrid('resetSelection');
+        if (currentId) {
+            if (_objects[currentId] && _objects[currentId].common && _objects[currentId].common.name) {
+                $dialogSelectMember.dialog('option', 'title', _('Select ID') +  ' - ' + (_objects[currentId].common.name || ' '));
+            } else {
+                $dialogSelectMember.dialog('option', 'title', _('Select ID') +  ' - ' + (currentId || ' '));
+            }
+            $gridSelectMember.jqGrid('setSelection', 'select_obj_' + currentId.replace(/ /g, '_'), false);
+        } else {
+            $('#dialog-member-button-ok').addClass('ui-state-disabled');
+        }
+
+        $dialogSelectMember.dialog('open');
+    }
+
+    // ----------------------------- Grids and Dialog inits ------------------------------------------------
     function prepareHistory() {
         $gridHistory.jqGrid({
             datatype: 'local',
@@ -665,27 +789,26 @@ $(document).ready(function () {
                 $('#del-member').removeClass('ui-state-disabled');
             }
         }).navGrid('#pager-enum-members', {
-            search: false,
-            edit: false,
-            add: false,
-            del: false,
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
             refresh: false
         }).jqGrid('navButtonAdd', '#pager-enum-members', {
             caption: '',
             buttonicon: 'ui-icon-trash',
             onClickButton: function () {
-                var memberSelected = $gridEnumMembers.jqGrid('getGridParam', 'selrow');
-                var id = $('tr[id="' + memberSelected + '"]').find('td[aria-describedby$="_id"]').html();
+                var _obj = $gridEnumMembers.jqGrid('getRowData', $gridEnumMembers.jqGrid('getGridParam', 'selrow'));
+                var id = _obj._id;
                 var obj = objects[enumEdit];
                 var idx = obj.common.members.indexOf(id);
                 if (idx !== -1) {
                     obj.common.members.splice(idx, 1);
+                    objects[enumEdit] = obj;
+                    socket.emit('setObject', enumEdit, obj, function () {
+                        enumMembers(enumEdit);
+                    });
                 }
-                objects[enumEdit] = obj;
-                socket.emit('setObject', enumEdit, obj, function () {
-                    enumMembers(enumEdit);
-                    // TODO update member count in subGridEnum
-                });
             },
             position: 'first',
             id: 'del-member',
@@ -695,104 +818,44 @@ $(document).ready(function () {
             caption: '',
             buttonicon: 'ui-icon-plus',
             onClickButton: function () {
-                $dialogSelectMember.dialog('open');
+                showDialogSelectId(objects, null, null, function (newId, oldId) {
+                    var obj = objects[enumEdit];
+
+                    if (obj.common.members.indexOf(newId) === -1) {
+                        obj.common.members.push(newId);
+
+                        socket.emit('setObject', enumEdit, obj, function () {
+                            enumMembers(enumEdit);
+                        });
+                    }
+                });
             },
             position: 'first',
-            id: 'add-member',
-            title: _('Add member'),
-            cursor: 'pointer'
+            id:       'add-member',
+            title:    _('Add member'),
+            cursor:   'pointer'
         });
+
+        var _dialogEnumMembersButtons = {};
+        _dialogEnumMembersButtons[_('Ok')] = function () {
+            $(this).dialog('close');
+        };
 
         $dialogEnumMembers.dialog({
             autoOpen:   false,
             modal:      true,
             width:      800,
             height:     500,
-            buttons:    [],
+            buttons:    _dialogEnumMembersButtons,
             resize:     function () {
                 $gridEnumMembers.setGridHeight($(this).height() - 100).setGridWidth($(this).width() - 5);
             },
             open: function () {
                 $gridEnumMembers.setGridHeight($(this).height() - 100).setGridWidth($(this).width() - 5);
-                var name = $dialogEnumMembers.dialog('option', 'title');
-                $('#enum-name-button').button({icons:{primary: 'ui-icon-check'}, text: false});
-                $('#enum-name-button').hide().unbind('click').click(function () {
-                    if (!enumRename(name, $('#enum-name-edit').val())) {
-                        $('#enum-name-edit').val(objects[name].common.name);
-                    }
-                    $('#enum-name-button').hide();
-                });
-                $('#enum-name-edit').val(objects[name].common.name).unbind('change').change(function () {
-                    if (objects[name].common.name != $(this).val()) {
-                        $('#enum-name-button').show();
-                    } else {
-                        $('#enum-name-button').hide();
-                    }
-                }).keyup(function () {
-                    if (objects[name].common.name != $(this).val()) {
-                        $('#enum-name-button').show();
-                    } else {
-                        $('#enum-name-button').hide();
-                    }
-                });
             }
         });
 
         $dialogEnumMembers.trigger('resize');
-
-        $gridSelectMember.jqGrid({
-            datatype: 'local',
-            colNames: ['id', _('name'), _('type')],
-            colModel: [
-                {name: '_id',  index:'_id',  width: 240},
-                {name: 'name', index:'name', width: 400},
-                {name: 'type', index:'type', width: 100, fixed: true,
-                    stype: 'select',
-                    searchoptions: {
-                        sopt: ['eq'], value: ':' + _('all') + ';device:' + _('device') + ';channel:' + _('channel') + ';state:' + _('state')
-                    }
-                }
-
-            ],
-            width: 768,
-            height: 370,
-            rowNum: 1000000,
-            sortname: "id",
-            sortorder: "desc",
-            viewrecords: true,
-            caption: _('select member by double click'),
-            ignoreCase: true,
-            onSelectRow: function (rowid, e) {
-                $('#del-member').removeClass('ui-state-disabled');
-            },
-            ondblClickRow: function (rowid, e) {
-                var memberSelected = rowid;
-                var id = $('tr[id="' + memberSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                var obj = objects[enumEdit];
-                if (obj.common.members.indexOf(id) === -1) {
-                    obj.common.members.push(id);
-                }
-                objects[enumEdit] = obj;
-                socket.emit('setObject', enumEdit, obj, function () {
-                    $dialogSelectMember.dialog('close');
-                    enumMembers(enumEdit);
-                    // TODO update member count in subGridEnum
-                });
-            }
-        }).jqGrid('filterToolbar', {
-            defaultSearch: 'cn',
-            autosearch:    true,
-            searchOnEnter: false,
-            enableClear:   false
-        });
-
-        $dialogSelectMember.dialog({
-            autoOpen:   false,
-            modal:      true,
-            width:      800,
-            height:     500,
-            buttons: []
-        });
     }
 
     function prepareObjects() {
@@ -853,10 +916,10 @@ $(document).ready(function () {
             afterInsertRow: function (rowid) {
                 // Remove icon and click handler if no children available
                 var id = $('tr[id="' + rowid + '"]').find('td[aria-describedby$="_id"]').html();
-                if (!children[id]) {
+                var leaf = treeFindLeaf(id);
+                if (!leaf || !leaf.count) {
                     $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
-
             },
             onSelectRow: function (rowid, e) {
                 // unselect other subgrids but not myself
@@ -881,7 +944,14 @@ $(document).ready(function () {
                     $('#del-object').addClass('ui-state-disabled');
                     $('#edit-object').addClass('ui-state-disabled');
                 }
+
+                var pos = treeExtended.indexOf(id.substring(7));
+                if (pos != -1) treeExtended.splice(pos, 1);
+
                 return true;
+            },
+            onPaging: function (pgButton) {
+                treeExtended = [];
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
@@ -889,10 +959,10 @@ $(document).ready(function () {
             searchOnEnter: false,
             enableClear: false
         }).navGrid('#pager-objects', {
-            search: false,
-            edit: false,
-            add: false,
-            del: false,
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
             refresh: false
         })/* TODO .jqGrid('navButtonAdd', '#pager-objects', {
             caption: '',
@@ -932,6 +1002,16 @@ $(document).ready(function () {
             id: 'edit-object',
             title: _('Edit object'),
             cursor: 'pointer'
+        }).jqGrid('navButtonAdd', '#pager-objects', {
+                caption: '',
+                buttonicon: 'ui-icon-refresh',
+                onClickButton: function () {
+                    initObjects(true);
+                },
+                position: 'first',
+                id:       'update-object',
+                title:    _('Update objects'),
+                cursor:   'pointer'
         })/*.jqGrid('navButtonAdd', '#pager-objects', {
             caption: '',
             buttonicon: 'ui-icon-plus',
@@ -946,7 +1026,9 @@ $(document).ready(function () {
 
     }
     function subGridObjects(grid, row, level) {
-        var id = $('tr[id="' + row + '"]').find('td[aria-describedby$="_id"]').html();
+        var id = row.substring(7);//$('tr[id="' + row + '"]').find('td[aria-describedby$="_id"]').html();
+        if (treeExtended.indexOf(treeExtended) == -1) treeExtended.push(id);
+
         var subgridTableId = grid + '_t';
         $('[id="' + grid + '"]').html('<table class="subgrid-level-' + level + '" id="' + subgridTableId + '"></table>');
         var $subgrid = $('table[id="' + subgridTableId + '"]');
@@ -987,11 +1069,16 @@ $(document).ready(function () {
                     $('#del-object').addClass('ui-state-disabled');
                     $('#edit-object').addClass('ui-state-disabled');
                 }
+
+                var pos = treeExtended.indexOf(id.substring(7));
+                if (pos != -1) treeExtended.splice(pos, 1);
+
                 return true;
             },
             afterInsertRow: function (rowid) {
+                var leaf = treeFindLeaf(rowid.slice(7));
                 // Remove icon and click handler if no children available
-                if (!children[rowid.slice(7)]) {
+                if (!leaf || !leaf.count) {
                     $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
             },
@@ -1013,13 +1100,23 @@ $(document).ready(function () {
         };
         $subgrid.jqGrid(gridConf);
 
-        if (children[id]) {
-            for (var i = 0; i < children[id].length; i++) {
-                $subgrid.jqGrid('addRowData', 'object_' + objects[children[id][i]]._id.replace(/ /g, '_'), {
-                    _id:  objects[children[id][i]]._id,
-                    name: objects[children[id][i]].common ? objects[children[id][i]].common.name : '',
-                    type: objects[children[id][i]].type
-                });
+        var leaf = treeFindLeaf(id);
+
+        if (leaf && leaf.count) {
+            for (var i in leaf.children) {
+                if (leaf.children[i].id) {
+                    $subgrid.jqGrid('addRowData', 'object_' + leaf.children[i].fullName.replace(/ /g, '_'), {
+                        _id:  objects[leaf.children[i].id]._id,
+                        name: objects[leaf.children[i].id].common ? objects[leaf.children[i].id].common.name : '',
+                        type: objects[leaf.children[i].id].type
+                    });
+                } else {
+                    $subgrid.jqGrid('addRowData', 'object_' + leaf.children[i].fullName.replace(/ /g, '_'), {
+                        _id:  i,
+                        name: i,
+                        type: ''
+                    });
+                }
             }
         }
         $subgrid.trigger('reloadGrid');
@@ -1030,8 +1127,8 @@ $(document).ready(function () {
             datatype: 'local',
             colNames: ['id', _('name'), _('members'), ''],
             colModel: [
-                {name: '_id',       index: '_id', width: 450, fixed: true},
-                {name: 'name',      index: 'name'},
+                {name: '_id',       index: '_id', width: 450, fixed: true, editable: true},
+                {name: 'name',      index: 'name', editable: true},
                 {name: 'count',     index: 'count'},
                 {name: 'buttons',   index: 'buttons'}
             ],
@@ -1049,12 +1146,11 @@ $(document).ready(function () {
             },
             afterInsertRow: function (rowid) {
                 // Remove icon and click handler if no children available
-                var id = $('tr[id="' + rowid + '"]').find('td[aria-describedby$="_id"]').html();
-                if (!children[id]) {
+                var leaf = treeFindLeaf(rowid.substring(5));//"enum.".length
+                if (!leaf || !leaf.count) {
                     $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
-
-            },
+            },/*
             onSelectRow: function (rowid, e) {
                 // unselect other subgrids but not myself
                 $('[id^="grid-enums"][id$="_t"]').not('[id="' + this.id + '"]').jqGrid('resetSelection');
@@ -1064,10 +1160,13 @@ $(document).ready(function () {
             gridComplete: function () {
                 $('#del-enum').addClass('ui-state-disabled');
                 $('#edit-enum').addClass('ui-state-disabled');
-            },
+            },*/
             loadComplete: function () {
                 initEnumButtons();
             },
+            ondblClickRow: function (rowid) {
+                onEditEnum($gridEnums, rowid.substring('enum_'.length));
+            }/*,
             subGridRowColapsed: function (grid, id) {
                 var objSelected = $gridEnums.jqGrid('getGridParam', 'selrow');
                 var pos = enumExpanded.indexOf(id);
@@ -1086,19 +1185,19 @@ $(document).ready(function () {
                     $('#edit-enum').addClass('ui-state-disabled');
                 }
                 return true;
-            }
+            }*/
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
         }).navGrid('#pager-enums', {
-            search: false,
-            edit: false,
-            add: false,
-            del: false,
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
             refresh: false
-        }).jqGrid('navButtonAdd', '#pager-enums', {
+        })/*.jqGrid('navButtonAdd', '#pager-enums', {
             caption: '',
             buttonicon: 'ui-icon-trash',
             onClickButton: function () {
@@ -1117,7 +1216,7 @@ $(document).ready(function () {
             id: 'del-enum',
             title: _('Delete enum'),
             cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-enums', {
+        })*/.jqGrid('navButtonAdd', '#pager-enums', {
             caption: '',
             buttonicon: 'ui-icon-gear',
             onClickButton: function () {
@@ -1151,31 +1250,20 @@ $(document).ready(function () {
                 } while (objects[newId]);
 
                 $('#enum-name').val(name + idx);
-                $('#enum-gen-id').html(newId);
+                var t = $('#enum-gen-id');
+                t[0]._original = (enumCurrentParent || 'enum');
+                t.html(newId);
                 $dialogEnum.dialog('open');
             },
             position: 'first',
-            id: 'add-enum',
-            title: _('New enum'),
-            cursor: 'pointer'
-        });
-
-
-        $(document).on('click', '.enum-members', function () {
-            enumMembers($(this).attr('data-enum-id'));
-        });
-        $(document).on('click', '.enum-add-children', function () {
-            enumAddChild($(this).attr('data-enum-id'));
-        });
-        $(document).on('click', '.enum-del', function () {
-            var id = $(this).attr('data-enum-id');
-            enumDelete(id, function (parent) {
-                initEnums(true, parent);
-            });
+            id:       'add-enum',
+            title:    _('New enum'),
+            cursor:  'pointer'
         });
     }
+
     function subGridEnums(grid, row, level) {
-        var id = $('tr[id="' + row + '"]').find('td[aria-describedby$="_id"]').html();
+        var id = row.substring(5);
         if (enumExpanded.indexOf(id) == -1) enumExpanded.push(id);
 
         var subgridTableId = grid + '_t';
@@ -1185,8 +1273,8 @@ $(document).ready(function () {
             datatype: 'local',
             colNames: ['id', _('name'), _('members'), ''],
             colModel: [
-                {name: '_id',  index: '_id', width: 450 - (level * 27), fixed: true},
-                {name: 'name', index: 'name'},
+                {name: '_id',     index: '_id', width: 450 - (level * 27), fixed: true, editable: true},
+                {name: 'name',    index: 'name', editable: true},
                 {name: 'members', index: 'members'},
                 {name: 'buttons', index: 'buttons'}
             ],
@@ -1203,9 +1291,9 @@ $(document).ready(function () {
             subGridRowExpanded: function (grid, row) {
                 subGridEnums(grid, row, level + 1);
             },
-            subGridRowColapsed: function (grid, id) {
+           /* subGridRowColapsed: function (grid, id) {
                 // Check if there is still a row selected
-                var objSelected = $gridObjects.jqGrid('getGridParam', 'selrow');
+                var objSelected = $gridEnums.jqGrid('getGridParam', 'selrow');
                 if (!objSelected) {
                     $('[id^="grid-enum"][id$="_t"]').not('[id="' + grid + '_t"]').each(function () {
                         if ($(this).jqGrid('getGridParam', 'selrow')) {
@@ -1219,16 +1307,20 @@ $(document).ready(function () {
                     $('#edit-enum').addClass('ui-state-disabled');
                 }
                 return true;
-            },
+            },*/
             afterInsertRow: function (rowid) {
                 // Remove icon and click handler if no children available
-                if (!children[rowid.slice(5)]) {
+                var leaf = treeFindLeaf(rowid.substring(5));//"enum.".length
+                if (!leaf || !leaf.count) {
                     $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
             },
             gridComplete: function () {
                 // Hide header
                 $subgrid.parent().parent().parent().find('table.ui-jqgrid-htable').hide();
+            },
+            ondblClickRow: function (rowid) {
+                onEditEnum($subgrid, rowid.substring('enum_'.length));
             },
             onSelectRow: function (rowid, e) {
                 // unselect other subgrids but not myself
@@ -1244,16 +1336,31 @@ $(document).ready(function () {
         };
         $subgrid.jqGrid(gridConf);
 
-        for (var i = 0; i < children[id].length; i++) {
-            $subgrid.jqGrid('addRowData', 'enum_' + objects[children[id][i]]._id.replace(/ /g, '_'), {
-                _id: objects[children[id][i]]._id,
-                name: objects[children[id][i]].common ? objects[children[id][i]].common.name : '',
-                members: objects[children[id][i]].common.members ? objects[children[id][i]].common.members.length : '',
-                buttons: '<button data-enum-id="' + objects[children[id][i]]._id + '" class="enum-members">'      + _('members')  + '</button>' +
-                         '<button data-enum-id="' + objects[children[id][i]]._id + '" class="enum-del">'          + _('delete')   + '</button>' +
-                         '<button data-enum-id="' + objects[children[id][i]]._id + '" class="enum-add-children">' + _('children') + '</button>'
+        var leaf = treeFindLeaf(id);
+        if (leaf && leaf.count) {
+            for (var i in leaf.children) {
+                if (leaf.children[i].id) {
+                    $subgrid.jqGrid('addRowData', 'enum_' + leaf.children[i].id.replace(/ /g, '_'), {
+                        _id:     leaf.children[i].id,
+                        name:    objects[leaf.children[i].id].common ? objects[leaf.children[i].id].common.name : '',
+                        members: objects[leaf.children[i].id].common.members ? objects[leaf.children[i].id].common.members.length : '',
+                        buttons: '<button data-enum-id="' + leaf.children[i].id + '" data-enum-subgrid="' + subgridTableId + '" class="enum-edit">'         + _('edit')         + '</button>' +
+                                 '<button data-enum-id="' + leaf.children[i].id + '" data-enum-subgrid="' + subgridTableId + '" class="enum-members">'      + _('members')      + '</button>' +
+                                 '<button data-enum-id="' + leaf.children[i].id + '" data-enum-subgrid="' + subgridTableId + '" class="enum-del">'          + _('delete')       + '</button>' +
+                                 '<button data-enum-id="' + leaf.children[i].id + '" data-enum-subgrid="' + subgridTableId + '" class="enum-add-children">' + _('add children') + '</button>' +
+                                 '<button data-enum-id="' + leaf.children[i].id + '" data-enum-subgrid="' + subgridTableId + '" class="enum-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
+                                 '<button data-enum-id="' + leaf.children[i].id + '" data-enum-subgrid="' + subgridTableId + '" class="enum-cancel-submit" style="display:none">' + _('cancel') + '</button>'
 
-            });
+                    });
+                } else {
+                    $subgrid.jqGrid('addRowData', 'enum_' + leaf.children[i].fullName.replace(/ /g, '_'), {
+                        _id:     leaf.children[i].fullName,
+                        name:    i,
+                        members: '',
+                        buttons: ''
+                    });
+                }
+            }
         }
         $subgrid.trigger('reloadGrid');
         initEnumButtons();
@@ -1338,6 +1445,22 @@ $(document).ready(function () {
             autosearch: true,
             searchOnEnter: false,
             enableClear: false
+        }).navGrid('#pager-states', {
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
+            refresh: false
+        }).jqGrid('navButtonAdd', '#pager-states', {
+            caption: '',
+            buttonicon: 'ui-icon-refresh',
+            onClickButton: function () {
+                initStates(true);
+            },
+            position: 'first',
+            id:       'update-states',
+            title:    _('Update states'),
+            cursor:   'pointer'
         });
     }
 
@@ -1399,10 +1522,6 @@ $(document).ready(function () {
     }
 
     function prepareInstances() {
-        var instanceLastSelected;
-        var instanceEdit;
-
-
         $gridInstance.jqGrid({
             datatype: 'local',
             colNames: ['id', 'availableModes',  '', _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('alive'), _('connected')],
@@ -1413,11 +1532,11 @@ $(document).ready(function () {
                 {name: 'name',      index: 'name',      width: 130,  editable: true},
                 {name: 'instance',  index: 'instance',  width: 70},
                 {name: 'title',     index: 'title',     width: 220},
-                {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}, align: 'center'},
+                {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: 'true:false'}, align: 'center'},
                 {name: 'host',      index: 'host',      width: 100,  editable: true, edittype: 'select', editoptions: ''},
                 {name: 'mode',      index: 'mode',      width: 80,   editable: true, edittype: 'select', editoptions: {value: null}, align: 'center'},
                 {name: 'schedule',  index: 'schedule',  width: 80,   align: 'center', editable: true},
-                {name: 'config',    index: 'config',    width: 60,   align: 'center', sortable: false, search: false},
+                {name: 'buttons',   index: 'buttons',   width: 80,   align: 'center', sortable: false, search: false},
                 {name: 'platform',  index: 'platform',  width: 60,   hidden: true},
                 {name: 'loglevel',  index: 'loglevel',  width: 60,   align: 'center', editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}},
                 {name: 'alive',     index: 'alive',     width: 60,   align: 'center'},
@@ -1431,18 +1550,9 @@ $(document).ready(function () {
             viewrecords: true,
             caption: _('ioBroker adapter instances'),
             ignoreCase: true,
-            onSelectRow: function (id, e) {
-                $('#del-instance').removeClass('ui-state-disabled');
-                $('#edit-instance').removeClass('ui-state-disabled');
-                $('#config-instance').removeClass('ui-state-disabled');
-                $('#reload-instance').removeClass('ui-state-disabled');
-            },
-            ondblClickRow: configInstance,
-            gridComplete: function () {
-                $('#del-instance').addClass('ui-state-disabled');
-                $('#edit-instance').addClass('ui-state-disabled');
-                $('#config-instance').addClass('ui-state-disabled');
-                $('#reload-instance').addClass('ui-state-disabled');
+            ondblClickRow: function (rowId, e) {
+                var rowData = $gridInstance.jqGrid('getRowData', rowId);
+                onEditInstance(rowData._id);
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
@@ -1455,7 +1565,7 @@ $(document).ready(function () {
             add: false,
             del: false,
             refresh: false
-        }).jqGrid('navButtonAdd', '#pager-instances', {
+        })/*.jqGrid('navButtonAdd', '#pager-instances', {
             caption: '',
             buttonicon: 'ui-icon-trash',
             onClickButton: function () {
@@ -1480,7 +1590,7 @@ $(document).ready(function () {
             id: 'del-instance',
             title: _('delete instance'),
             cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-instances', {
+        })*/.jqGrid('navButtonAdd', '#pager-instances', {
             caption: '',
             buttonicon: 'ui-icon-gear',
             onClickButton: function () {
@@ -1492,90 +1602,34 @@ $(document).ready(function () {
                         }
                     });
                 }
-                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                editObject(id);
+                var obj = $gridInstance.jqGrid('getRowData', objSelected);
+                editObject(obj._id);
             },
             position: 'first',
             id: 'edit-instance',
             title: _('edit instance'),
             cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-instances', {
+        })/*.jqGrid('navButtonAdd', '#pager-instances', {
             caption:    '',
             buttonicon: 'ui-icon-pencil',
             onClickButton: function () {
-                configInstance($gridInstance.jqGrid('getGridParam', 'selrow'));
+                onEditInstance($gridInstance.jqGrid('getGridParam', 'selrow'));
             },
             position: 'first',
             id:       'config-instance',
             title:    _('config instance'),
             cursor:   'pointer'
-        }).jqGrid('navButtonAdd', '#pager-instances', {
+        })*/.jqGrid('navButtonAdd', '#pager-instances', {
             caption:    '',
             buttonicon: 'ui-icon-refresh',
             onClickButton: function () {
-                var objSelected = $gridInstance.jqGrid('getGridParam', 'selrow');
-                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                socket.emit('extendObject', id, {});
+                initInstances(true);
             },
             position:   'first',
-            id:         'reload-instance',
+            id:         'reload-instances',
             title:      _('reload instance'),
             cursor:     'pointer'
         });
-
-        function configInstance(id, e) {
-            var rowData = $gridInstance.jqGrid('getRowData', id);
-            rowData.ack = false;
-            rowData.from = '';
-            $gridInstance.jqGrid('setRowData', id, rowData);
-
-            if (rowData.availableModes) {
-                var list = {};
-                var modes = rowData.availableModes.split(',');
-                for (var i = 0; i < modes.length; i++) {
-                    list[modes[i]] = _(modes[i]);
-                }
-                $gridInstance.setColProp('mode', {
-                    editable:    true,
-                    edittype:    'select',
-                    editoptions: {value: list},
-                    align:       'center'
-                });
-            } else {
-                $gridInstance.setColProp('mode', {
-                    editable: false,
-                    align: 'center'
-                });
-            }
-
-            if (id && id !== instanceLastSelected) {
-                $gridInstance.restoreRow(instanceLastSelected);
-                instanceLastSelected = id;
-            }
-            $gridInstance.editRow(id, true, function () {
-                // onEdit
-                instanceEdit = true;
-            }, function (obj) {
-                // success
-            }, "clientArray", null, function () {
-                // afterSave
-                instanceEdit = false;
-                var obj = {common:{}};
-                obj.common.host     = $gridInstance.jqGrid('getCell', instanceLastSelected, "host");
-                obj.common.loglevel = $gridInstance.jqGrid('getCell', instanceLastSelected, "loglevel");
-                obj.common.schedule = $gridInstance.jqGrid('getCell', instanceLastSelected, "schedule");
-                obj.common.enabled  = $gridInstance.jqGrid('getCell', instanceLastSelected, "enabled");
-                obj.common.mode     = $gridInstance.jqGrid('getCell', instanceLastSelected, "mode");
-                if (obj.common.enabled === 'true')  obj.common.enabled = true;
-                if (obj.common.enabled === 'false') obj.common.enabled = false;
-
-                var id = $('tr[id="' + instanceLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
-
-                socket.emit('extendObject', id, obj);
-            });
-        }
-
-
     }
 
     function prepareUsers() {
@@ -1893,15 +1947,15 @@ $(document).ready(function () {
     function prepareScripts() {
         $gridScripts.jqGrid({
             datatype: 'local',
-            colNames: ['_id', 'id', _('name'), _('platform'), _('enabled'), _('engine'), ''],
+            colNames: ['_id', 'id', _('name'), _('engine type'), _('enabled'), _('engine'), ''],
             colModel: [
-                {name: '_id',       index: '_id', hidden: true},
-                {name: '_obj_id',   index: '_obj_id'},
-                {name: 'name',      index: 'name',     editable: true},
-                {name: 'platform',  index: 'platform'},
-                {name: 'enabled',   index: 'enabled',  editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
-                {name: 'engine',    index: 'engine',   editable: true, edittype: 'select', editoptions: ''},
-                {name: 'commands',  index: 'commands', editable: false, width: 60, align: 'center'}
+                {name: '_id',        index: '_id', hidden: true},
+                {name: '_obj_id',    index: '_obj_id'},
+                {name: 'name',       index: 'name',     editable: true},
+                {name: 'engineType', index: 'engineType'},
+                {name: 'enabled',    index: 'enabled',  editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
+                {name: 'engine',     index: 'engine',   editable: true, edittype: 'select', editoptions: ''},
+                {name: 'commands',   index: 'commands', editable: false, width: 80, align: 'center'}
             ],
             pager: $('#pager-scripts'),
             rowNum: 100,
@@ -2019,21 +2073,28 @@ $(document).ready(function () {
                     } while (!found);
                     var name = newText + idx;
                     var instance = '';
+                    var engineType = '';
 
                     // find first instance
                     for (var i = 0; i < instances.length; i++) {
-                        if (instances[i].indexOf('.javascript.') != -1) {
+                        if (objects[instances[i]] && objects[instances[i]] && objects[instances[i]].common.engineTypes) {
                             instance = instances[i];
+                            if (typeof objects[instances[i]].common.engineTypes == 'string') {
+                                engineType = objects[instances[i]].common.engineTypes;
+                            } else {
+                                engineType = objects[instances[i]].common.engineTypes[0];
+                            }
                             break;
                         }
                     }
+
                     socket.emit('setObject', 'script.js.' + name.replace(/ /g, '_').replace(/\./g, '_'), {
                         common: {
-                            name:     name,
-                            platform: 'Javascript/Node.js',
-                            source:   '',
-                            enabled:  false,
-                            engine:   instance
+                            name:       name,
+                            engineType: engineType,
+                            source:     '',
+                            enabled:    false,
+                            engine:     instance
                         },
                         type: 'script'
                     });
@@ -2268,6 +2329,7 @@ $(document).ready(function () {
     }
 
     // Grids content
+    // ----------------------------- Adpaters show and Edit ------------------------------------------------
     function initAdapters(update, updateRepo) {
         $gridAdapter.jqGrid('clearGridData');
         $("#load_grid-adapters").show();
@@ -2392,7 +2454,6 @@ $(document).ready(function () {
             $gridAdapter.trigger('reloadGrid');
         });
     }
-
     function initAdapterButtons() {
         $(".adapter-install-submit").button({
             text: false,
@@ -2443,6 +2504,7 @@ $(document).ready(function () {
         });
     }
 
+    // ----------------------------- Repositories show and Edit ------------------------------------------------
     function initRepoGrid(update) {
         $gridRepo.jqGrid('clearGridData');
         if (systemRepos.native.repositories) {
@@ -2471,54 +2533,6 @@ $(document).ready(function () {
 
         $gridAdapter.trigger('reloadGrid');
     }
-
-    function updateRepoListSelect() {
-        var selectedRepo = $('#system_activeRepo').val();
-        var isFound = false;
-        $('#system_activeRepo').html('');
-        var data = $gridRepo.jqGrid('getRowData');
-        for (var i = 0; i < data.length; i++) {
-            $('#system_activeRepo').append('<option value="' + data[i].name + '">' + data[i].name + '</option>');
-            if (selectedRepo == data[i].name) {
-                isFound = true;
-            }
-        }
-        if (isFound) $('#system_activeRepo').val(selectedRepo);
-    }
-
-    function initCertsGrid(update) {
-        $gridCerts.jqGrid('clearGridData');
-        if (systemCerts.native.certificates) {
-            var id = 1;
-            // list of the repositories
-            for (var cert in systemCerts.native.certificates) {
-
-                var obj = systemCerts.native.certificates[cert];
-
-                $gridCerts.jqGrid('addRowData', 'cert_' + id, {
-                    _id:         id,
-                    name:        cert,
-                    certificate: cert2string(systemCerts.native.certificates[cert]),
-                    commands:
-                        '<button data-cert-id="' + id + '" class="cert-edit-submit">'   + _('edit')   + '</button>' +
-                        '<button data-cert-id="' + id + '" class="cert-delete-submit">' + _('delete') + '</button>' +
-                        '<button data-cert-id="' + id + '" class="cert-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
-                        '<button data-cert-id="' + id + '" class="cert-cancel-submit" style="display:none">' + _('cancel') + '</button>'
-                });
-                id++;
-            }
-
-            initCertButtons();
-        }
-
-
-        $gridAdapter.trigger('reloadGrid');
-    }
-
-    function updateCertListSelect() {
-        // todo
-    }
-
     function initRepoButtons() {
         $('.repo-edit-submit').unbind('click').button({
             icons: {primary: 'ui-icon-pencil'},
@@ -2565,7 +2579,49 @@ $(document).ready(function () {
             $gridRepo.jqGrid('restoreRow', 'repo_' + id, false);
         });
     }
+    function updateRepoListSelect() {
+        var selectedRepo = $('#system_activeRepo').val();
+        var isFound = false;
+        $('#system_activeRepo').html('');
+        var data = $gridRepo.jqGrid('getRowData');
+        for (var i = 0; i < data.length; i++) {
+            $('#system_activeRepo').append('<option value="' + data[i].name + '">' + data[i].name + '</option>');
+            if (selectedRepo == data[i].name) {
+                isFound = true;
+            }
+        }
+        if (isFound) $('#system_activeRepo').val(selectedRepo);
+    }
 
+    // ----------------------------- Certificates show and Edit ------------------------------------------------
+    function initCertsGrid(update) {
+        $gridCerts.jqGrid('clearGridData');
+        if (systemCerts.native.certificates) {
+            var id = 1;
+            // list of the repositories
+            for (var cert in systemCerts.native.certificates) {
+
+                var obj = systemCerts.native.certificates[cert];
+
+                $gridCerts.jqGrid('addRowData', 'cert_' + id, {
+                    _id:         id,
+                    name:        cert,
+                    certificate: cert2string(systemCerts.native.certificates[cert]),
+                    commands:
+                        '<button data-cert-id="' + id + '" class="cert-edit-submit">'   + _('edit')   + '</button>' +
+                        '<button data-cert-id="' + id + '" class="cert-delete-submit">' + _('delete') + '</button>' +
+                        '<button data-cert-id="' + id + '" class="cert-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
+                        '<button data-cert-id="' + id + '" class="cert-cancel-submit" style="display:none">' + _('cancel') + '</button>'
+                });
+                id++;
+            }
+
+            initCertButtons();
+        }
+
+
+        $gridAdapter.trigger('reloadGrid');
+    }
     function initCertButtons() {
         $('.cert-edit-submit').unbind('click').button({
             icons: {primary: 'ui-icon-pencil'},
@@ -2612,7 +2668,36 @@ $(document).ready(function () {
             $gridCerts.jqGrid('restoreRow', 'cert_' + id, false);
         });
     }
+    function updateCertListSelect() {
+        // todo
+    }
 
+    // ----------------------------- Scripts show and Edit ------------------------------------------------
+
+    // Find all script engines
+    function fillEngines(id) {
+        var engines = [];
+        for (var t = 0; t < instances.length; t++) {
+            if (objects[instances[t]] && objects[instances[t]].common && objects[instances[t]].common.engineTypes) {
+                var engineTypes = objects[instances[t]].common.engineTypes;
+                if (typeof engineTypes == 'string') {
+                    if (engines.indexOf(engineTypes) == -1) engines.push(engineTypes);
+                } else {
+                    for (var z = 0; z < engineTypes.length; z++) {
+                        if (engines.indexOf(engineTypes[z]) == -1) engines.push(engineTypes[z]);
+                    }
+                }
+            }
+        }
+        if (id) {
+            var text = '';
+            for (var u = 0; u < engines.length; u++) {
+                text += '<option value="' + engines[u] + '">' + engines[u] + '</option>';
+            }
+            $('#' + id).html(text);
+        }
+        return engines;
+    }
     function onEditScript(id) {
         $('#add-script').addClass('ui-state-disabled');
         $('.script-edit-submit').hide();
@@ -2637,7 +2722,6 @@ $(document).ready(function () {
 
         $gridScripts.jqGrid('editRow', 'script_' + id, {"url": "clientArray"});
     }
-
     function updateScript(id, newCommon) {
         socket.emit('getObject', id, function (err, _obj) {
             var obj = {common: {}};
@@ -2650,18 +2734,15 @@ $(document).ready(function () {
 
             if (newCommon.source !== undefined) obj.common.source = newCommon.source;
 
-            if (_obj && _obj.common && newCommon.name == _obj.common.name && newCommon.platform == _obj.common.platform) {
+            if (_obj && _obj.common && newCommon.name == _obj.common.name && (newCommon.engineType === undefined || newCommon.engineType == _obj.common.engineType)) {
                 socket.emit('extendObject', id, obj);
             } else {
-                var prefix = '';
+                var prefix;
 
-                _obj.common.platform = newCommon.platform || _obj.common.platform || 'Javascript/Node.js';
+                _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
+                var parts = _obj.common.engineType.split('/');
 
-                if (_obj.common.platform.match(/^javascript/i)) {
-                    prefix = 'script.js.';
-                } else if (_obj.common.platform.match(/^coffeescript/i)) {
-                    prefix = 'script.coffee.';
-                }
+                prefix = 'script.' + (parts[1] || parts[0]) + '.';
 
                 if (_obj) {
                     socket.emit('delObject', _obj._id);
@@ -2677,11 +2758,61 @@ $(document).ready(function () {
                 _obj.common.name = newCommon.name;
 
                 _obj._id = prefix + newCommon.name.replace(/ /g, '_').replace(/\./g, '_');
-                socket.emit('setObject', _obj._id, _obj)
+                socket.emit('setObject', _obj._id, _obj);
             }
         });
     }
+    function initScripts(update) {
 
+        if (!objectsLoaded) {
+            setTimeout(initScripts, 250);
+            return;
+        }
+        if (!editor) {
+            editor = ace.edit("script-editor");
+            //editor.setTheme("ace/theme/monokai");
+            editor.getSession().setMode("ace/mode/javascript");
+            editor.resize();
+            $('#edit-insert-id').button({
+                icons: {primary: 'ui-icon-note'}
+            }).css('height', '30px').click(function () {
+                showDialogSelectId(objects, function (newId) {
+                    editor.insert('"' + newId + '"');
+                });
+            });
+        }
+
+        if (update || typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
+            $gridScripts[0]._isInited = true;
+            $gridScripts.jqGrid('clearGridData');
+            var id = 1;
+
+            scripts.sort();
+            for (var i = 0; i < scripts.length; i++) {
+                var obj = objects[scripts[i]];
+                if (!obj) continue;
+
+                $gridScripts.jqGrid('addRowData', 'script_' + id, {
+                    _id:        id,
+                    _obj_id:    obj._id,
+                    name:       obj.common ? obj.common.name     : '',
+                    engineType: obj.common ? obj.common.engineType : '',
+                    enabled:    obj.common ? obj.common.enabled  : '',
+                    engine:     obj.common ? obj.common.engine   : '',
+                    commands:
+                        '<button data-script-id="' + id + '" class="script-edit-submit">'      + _('edit')   + '</button>' +
+                        '<button data-script-id="' + id + '" class="script-edit-file-submit">' + _('edit file') + '</button>' +
+                        '<button data-script-id="' + id + '" class="script-reload-submit">'    + _('restart script') + '</button>' +
+                        '<button data-script-id="' + id + '" class="script-delete-submit">'    + _('delete') + '</button>' +
+                        '<button data-script-id="' + id + '" class="script-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
+                        '<button data-script-id="' + id + '" class="script-cancel-submit" style="display:none">' + _('cancel') + '</button>'
+                });
+                id++;
+            }
+            $gridScripts.trigger('reloadGrid');
+            initScriptButtons();
+        }
+    }
     function initScriptButtons() {
         $('.script-edit-submit').unbind('click').button({
             icons: {primary: 'ui-icon-pencil'},
@@ -2699,6 +2830,15 @@ $(document).ready(function () {
             if (objSelected) {
                 editScript(objSelected._obj_id);
             }
+        });
+
+        $('.script-reload-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-refresh'},
+            text:  false
+        }).click(function () {
+            var id = $(this).attr('data-script-id');
+            var objSelected = $gridScripts.jqGrid('getRowData', 'script_' + id);
+            socket.emit('extendObject', objSelected._obj_id, {});
         });
 
         $('.script-delete-submit').unbind('click').button({
@@ -2775,7 +2915,52 @@ $(document).ready(function () {
             $gridScripts.jqGrid('restoreRow', 'script_' + id, false);
         });
     }
+    function editScript(id) {
 
+        var engines = fillEngines('edit-script-engine-type');
+
+        if (id) {
+            var obj = objects[id];
+            $dialogScript.dialog('option', 'title', id);
+            $('#edit-script-id').val(obj._id);
+            $('#edit-script-name').val(obj.common.name);
+            // Add engine even if it is not installed
+            if (engines.indexOf(obj.common.engineType) == -1) $('#edit-script-engine-type').append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
+            $('#edit-script-engine-type').val(obj.common.engineType);
+
+            if (obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
+                editor.getSession().setMode("ace/mode/javascript");
+            } else if (obj.common.engineType.match(/^[cC]offee[sS]cript/)) {
+                editor.getSession().setMode("ace/mode/coffee");
+            }
+            //$('#edit-script-source').val(obj.common.source);
+            editor.setValue(obj.common.source);
+            $dialogScript.dialog('open');
+        } else {
+            alert('This should never come!');
+             /*// Should never come
+             $dialogScript.dialog('option', 'title', 'new script');
+             $('#edit-script-id').val('');
+             $('#edit-script-name').val('');
+             $('#edit-script-engine-type').val('Javascript');
+             //$('#edit-script-source').val('');
+             editor.setValue('');
+             $dialogScript.dialog('open');*/
+         }
+    }
+    function saveScript() {
+        var obj = {};
+
+        obj._id        = $('#edit-script-id').val();
+        obj.name       = $('#edit-script-name').val();
+        obj.source     = editor.getValue();
+        obj.engineType = $('#edit-script-engine-type').val() || '';
+
+        updateScript(obj._id, obj);
+        $dialogScript.dialog('close');
+    }
+
+    // ----------------------------- Hosts show and Edit ------------------------------------------------
     function initHostsList() {
 
         if (!objectsLoaded) {
@@ -2801,6 +2986,14 @@ $(document).ready(function () {
                 selHosts.remove(i);
             }
         }
+
+        // Change editoptions for gridInstances column host
+        var tmp = '';
+        for (var k = 0; k < hosts.length; k++) {
+            tmp += (k > 0 ? ';' : '') + hosts[k].name + ':' + hosts[k].name;
+        }
+        $gridInstance.jqGrid('setColProp', 'host', {editoptions: {value: tmp}});
+
         for (i = 0; i < hosts.length; i++) {
             found = false;
             for (j = 0; j < myOpts.length; j++) {
@@ -2822,170 +3015,6 @@ $(document).ready(function () {
             initAdapters(true);
         });
     }
-
-    function initInstances(update) {
-
-        if (!objectsLoaded) {
-            setTimeout(initInstances, 250);
-            return;
-        }
-
-        if (typeof $gridInstance !== 'undefined' && (!$gridInstance[0]._isInited || update)) {
-            $gridInstance[0]._isInited = true;
-            $gridInstance.jqGrid('clearGridData');
-
-            instances.sort();
-
-            for (var i = 0; i < instances.length; i++) {
-                var obj = objects[instances[i]];
-                var tmp = obj._id.split('.');
-                var adapter = tmp[2];
-                var instance = tmp[3];
-                var title = obj.common ? obj.common.title : '';
-                var link  = obj.common.localLink || '';
-                if (link && link.indexOf('%ip%') != -1) link = link.replace('%ip%', location.hostname);
-
-                $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
-                    _id:       obj._id,
-                    availableModes: obj.common ? obj.common.availableModes : null,
-                    image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px"/>' : '',
-                    name:      obj.common ? obj.common.name : '',
-                    instance:  obj._id.slice(15),
-                    title:     obj.common ? (link ? '<a href="' + link + '" target="_blank">' + title + '</a>': title): '',
-                    enabled:   obj.common ? (obj.common.enabled ? '<span style="color:green;font-weight:bold">true</span>' : '<span style="color:red">false</span>') : '',
-                    host:      obj.common ? obj.common.host : '',
-                    mode:      obj.common.mode,
-                    schedule:  obj.common.mode === 'schedule' ? obj.common.schedule : '',
-                    config:    '<button data-adapter-href="/adapter/' + adapter + '/?' + instance + '" data-adapter-name="' + adapter + '.' + instance + '" class="adapter-settings">' + _('config') + '</button>',
-                    platform:  obj.common ? obj.common.platform : '',
-                    loglevel:  obj.common ? obj.common.loglevel : '',
-                    alive:     states[obj._id + '.alive'] ? states[obj._id + '.alive'].val : '',
-                    connected: states[obj._id + '.connected'] ? states[obj._id + '.connected'].val : ''
-                });
-            }
-            $gridInstance.trigger('reloadGrid');
-
-            $('.host-selector').each(function () {
-                var id = $(this).attr('data-id');
-                $(this).val((objects[id] && objects[id].common) ? obj.common.host || '': '').
-                    change(function () {
-                        socket.emit('extendObject', $(this).attr('data-id'), {common:{host: $(this).val()}});
-                    });
-            });
-
-            $(document).unbind('click.adapter-settings').on('click', '.adapter-settings', function () {
-                $iframeDialog = $dialogConfig;
-                $configFrame.attr('src', $(this).attr('data-adapter-href'));
-                $dialogConfig.dialog('option', 'title', _('Adapter configuration') + ': ' + $(this).attr('data-adapter-name')).dialog('open');
-
-                return false;
-            });
-        }
-
-
-    }
-
-    function initUsers(update) {
-
-        if (!objectsLoaded) {
-            setTimeout(initUsers, 500);
-            return;
-        }
-
-        if (typeof $gridUsers != 'undefined' && (update || !$gridUsers[0]._isInited)) {
-            $gridUsers[0]._isInited = true;
-            $gridUsers.jqGrid('clearGridData');
-            for (var i = 0; i < users.length; i++) {
-                var obj = objects[users[i]];
-                var select = '<select class="user-groups-edit" multiple="multiple" data-id="' + users[i] + '">';
-                for (var j = 0; j < groups.length; j++) {
-                    var name = groups[j].substring('system.group.'.length);
-                    name = name.substring(0, 1).toUpperCase() + name.substring(1);
-                    select += '<option value="' + groups[j] + '"';
-                    if (objects[groups[j]].common && objects[groups[j]].common.members && objects[groups[j]].common.members.indexOf(users[i]) != -1) select += ' selected';
-                    select += '>' + name + '</option>';
-                }
-
-                $gridUsers.jqGrid('addRowData', 'user_' + users[i].replace(/ /g, '_'), {
-                    _id:     obj._id,
-                    name:    obj.common ? obj.common.name : '',
-                    enabled: '<input class="user-enabled-edit" type="checkbox" data-id="' + users[i] + '" ' + (obj.common && obj.common.enabled ? 'checked' : '') + '/>',
-                    groups:  select
-                });
-            }
-            $gridUsers.trigger('reloadGrid');
-        }
-    }
-
-    function initGroups(update) {
-
-        if (!objectsLoaded) {
-            setTimeout(initGroups, 500);
-            return;
-        }
-
-        if (typeof $gridGroups != 'undefined' && (update || !$gridGroups[0]._isInited)) {
-            $gridGroups[0]._isInited = true;
-            $gridGroups.jqGrid('clearGridData');
-            for (var i = 0; i < groups.length; i++) {
-                var obj = objects[groups[i]];
-                var select = '<select class="group-users-edit" multiple="multiple" data-id="' + groups[i] + '">';
-                for (var j = 0; j < users.length; j++) {
-                    var name = users[j].substring('system.user.'.length);
-                    select += '<option value="' + users[j] + '"';
-                    if (obj.common && obj.common.members && obj.common.members.indexOf(users[j]) != -1) select += ' selected';
-                    select += '>' + name + '</option>';
-                }
-
-                $gridGroups.jqGrid('addRowData', 'group_' + groups[i].replace(/ /g, '_'), {
-                    _id:         obj._id,
-                    name:        obj.common ? obj.common.name : '',
-                    description: obj.common ? obj.common.desc : '',
-                    users:       select
-                });
-            }
-            $gridGroups.trigger('reloadGrid');
-        }
-    }
-
-    function initScripts(update) {
-
-        if (!objectsLoaded) {
-            setTimeout(initScripts, 250);
-            return;
-        }
-
-        if (update || typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
-            $gridScripts[0]._isInited = true;
-            $gridScripts.jqGrid('clearGridData');
-            var id = 1;
-
-            scripts.sort();
-            for (var i = 0; i < scripts.length; i++) {
-                var obj = objects[scripts[i]];
-                if (!obj) continue;
-
-                $gridScripts.jqGrid('addRowData', 'script_' + id, {
-                    _id:      id,
-                    _obj_id:  obj._id,
-                    name:     obj.common ? obj.common.name     : '',
-                    platform: obj.common ? obj.common.platform : '',
-                    enabled:  obj.common ? obj.common.enabled  : '',
-                    engine:   obj.common ? obj.common.engine   : '',
-                    commands:
-                        '<button data-script-id="' + id + '" class="script-edit-submit">'      + _('edit')   + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-edit-file-submit">' + _('edit file') + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-delete-submit">'    + _('delete') + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-cancel-submit" style="display:none">' + _('cancel') + '</button>'
-                });
-                id++;
-            }
-            $gridScripts.trigger('reloadGrid');
-            initScriptButtons();
-        }
-    }
-
     function initHosts(update) {
 
         if (!objectsLoaded) {
@@ -3041,6 +3070,408 @@ $(document).ready(function () {
         }
     }
 
+    // ----------------------------- Instances show and Edit ------------------------------------------------
+    function onEditInstance(id, e) {
+        var rowData = $gridInstance.jqGrid('getRowData', 'instance_' + id);
+
+        $('.instance-edit').hide();
+        $('.instance-settings').hide();
+        $('.instance-reload').hide();
+        $('.instance-del').hide();
+        $('.instance-ok-submit[data-instance-id="' + id + '"]').show();
+        $('.instance-cancel-submit[data-instance-id="' + id + '"]').show();
+        $('#reload-instances').addClass('ui-state-disabled');
+        $('#edit-instance').addClass('ui-state-disabled');
+
+        // Set the colors
+        var a = $('td[aria-describedby="grid-instances_enabled"]');
+        a.each(function(index) {
+            var text = $(this).html();
+            if (text == '<span style="color:green;font-weight:bold">true</span>') {
+                $(this).html('true');
+            } else if(text == '<span style="color:red">false</span>') {
+                $(this).html('false');
+            }
+        });
+
+        if (rowData.availableModes) {
+            var list = {};
+            var modes = rowData.availableModes.split(',');
+            for (var i = 0; i < modes.length; i++) {
+                list[modes[i]] = _(modes[i]);
+            }
+            $gridInstance.setColProp('mode', {
+                editable:    true,
+                edittype:    'select',
+                editoptions: {value: list},
+                align:       'center'
+            });
+        } else {
+            $gridInstance.setColProp('mode', {
+                editable: false,
+                align: 'center'
+            });
+        }
+        $gridInstance.jqGrid('editRow', 'instance_' + id, {"url": "clientArray"});
+    }
+    function initInstances(update) {
+
+        if (!objectsLoaded) {
+            setTimeout(initInstances, 250);
+            return;
+        }
+
+        if (typeof $gridInstance !== 'undefined' && (!$gridInstance[0]._isInited || update)) {
+            $gridInstance[0]._isInited = true;
+            $gridInstance.jqGrid('clearGridData');
+
+            instances.sort();
+
+            for (var i = 0; i < instances.length; i++) {
+                var obj = objects[instances[i]];
+                var tmp = obj._id.split('.');
+                var adapter = tmp[2];
+                var instance = tmp[3];
+                var title = obj.common ? obj.common.title : '';
+                var link  = obj.common.localLink || '';
+                if (link && link.indexOf('%ip%') != -1) link = link.replace('%ip%', location.hostname);
+
+                $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
+                    _id:       obj._id,
+                    availableModes: obj.common ? obj.common.availableModes : null,
+                    image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px"/>' : '',
+                    name:      obj.common ? obj.common.name : '',
+                    instance:  obj._id.slice(15),
+                    title:     obj.common ? (link ? '<a href="' + link + '" target="_blank">' + title + '</a>': title): '',
+                    enabled:   obj.common ? (obj.common.enabled ? "true": "false") : "false",//'<span style="color:green;font-weight:bold">true</span>' : '<span style="color:red">false</span>') : '',
+                    host:      obj.common ? obj.common.host : '',
+                    mode:      obj.common.mode,
+                    schedule:  obj.common.mode === 'schedule' ? obj.common.schedule : '',
+                    buttons:   '<button data-instance-id="' + instances[i] + '" class="instance-edit">'   + _('edit')   + '</button>' +
+                               '<button data-instance-id="' + instances[i] + '" class="instance-settings" data-instance-href="/adapter/' + adapter + '/?' + instance + '" >' + _('config') + '</button>' +
+                               '<button data-instance-id="' + instances[i] + '" class="instance-reload">' + _('reload') + '</button>' +
+                               '<button data-instance-id="' + instances[i] + '" class="instance-del">'    + _('delete') + '</button>' +
+                               '<button data-instance-id="' + instances[i] + '" class="instance-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
+                               '<button data-instance-id="' + instances[i] + '" class="instance-cancel-submit" style="display:none">' + _('cancel') + '</button>',
+                    platform:  obj.common ? obj.common.platform : '',
+                    loglevel:  obj.common ? obj.common.loglevel : '',
+                    alive:     states[obj._id + '.alive'] ? states[obj._id + '.alive'].val : '',
+                    connected: states[obj._id + '.connected'] ? states[obj._id + '.connected'].val : ''
+                });
+            }
+            $gridInstance.trigger('reloadGrid');
+
+            // Set the colors
+            var a = $('td[aria-describedby="grid-instances_enabled"]');
+            a.each(function(index) {
+                var text = $(this).html();
+                if (text == 'true') {
+                    $(this).html('<span style="color:green;font-weight:bold">true</span>');
+                } else if (text == 'false') {
+                    $(this).html('<span style="color:red">false</span>');
+                }
+            });
+
+            $('.host-selector').each(function () {
+                var id = $(this).attr('data-id');
+                $(this).val((objects[id] && objects[id].common) ? obj.common.host || '': '').
+                    change(function () {
+                        socket.emit('extendObject', $(this).attr('data-id'), {common:{host: $(this).val()}});
+                    });
+            });
+
+            initInstanceButtons();
+        }
+    }
+    function initInstanceButtons() {
+        $('.instance-edit').unbind('click').button({
+            icons: {primary: 'ui-icon-pencil'},
+            text:  false
+        }).css('width', '22px').css('height', '18px').click(function () {
+            onEditInstance($(this).attr('data-instance-id'));
+        });
+
+        $('.instance-settings').button({icons: {primary: 'ui-icon-note'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
+            .click(function () {
+                $iframeDialog = $dialogConfig;
+                $configFrame.attr('src', $(this).attr('data-instance-href'));
+                var name = $(this).attr('data-instance-id').replace(/^system\.adapter\./, '');
+                $dialogConfig.dialog('option', 'title', _('Adapter configuration') + ': ' + name).dialog('open');
+            });
+
+        $('.instance-reload').button({icons: {primary: 'ui-icon-refresh'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
+            .click(function () {
+                socket.emit('extendObject', $(this).attr('data-instance-id'), {});
+            });
+
+        $('.instance-del').button({icons: {primary: 'ui-icon-trash'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
+            .click(function () {
+                var id = $(this).attr('data-instance-id');
+                if (objects[id] && objects[id].common && objects[id].common.host) {
+                    if (confirm(_('Are you sure?'))) {
+                        cmdExec(objects[id].common.host, 'del ' + id.replace('system.adapter.', ''), function (exitCode) {
+                            if (!exitCode) initAdapters(true);
+                        });
+                    }
+                }
+            });
+
+        $('.instance-ok-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-check'},
+            text:  false
+        }).css('width', '22px').css('height', '18px').click(function () {
+            var id = $(this).attr('data-instance-id');
+            $('.instance-edit').show();
+            $('.instance-settings').show();
+            $('.instance-reload').show();
+            $('.instance-del').show();
+            $('.instance-ok-submit').hide();
+            $('.instance-cancel-submit').hide();
+            $('#reload-instances').removeClass('ui-state-disabled');
+            $('#edit-instance').removeClass('ui-state-disabled');
+
+            $gridInstance.jqGrid('saveRow', 'instance_' + id, {"url": "clientArray"});
+            // afterSave
+            setTimeout(function () {
+                var _obj = $gridInstance.jqGrid('getRowData', 'instance_' + id);
+
+                var obj = {common:{}};
+                obj.common.host     = _obj.host;
+                obj.common.loglevel = _obj.loglevel;
+                obj.common.schedule = _obj.schedule;
+                obj.common.enabled  = _obj.enabled;
+                obj.common.mode     = _obj.mode;
+
+                if (obj.common.enabled === 'true')  obj.common.enabled = true;
+                if (obj.common.enabled === 'false') obj.common.enabled = false;
+
+                socket.emit('extendObject', _obj._id, obj);
+            }, 100);
+        });
+
+        $('.instance-cancel-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-close'},
+            text:  false
+        }).css('width', '22px').css('height', '18px').click(function () {
+            var id = $(this).attr('data-instance-id');
+            $('.instance-edit').show();
+            $('.instance-settings').show();
+            $('.instance-reload').show();
+            $('.instance-del').show();
+            $('.instance-ok-submit').hide();
+            $('.instance-cancel-submit').hide();
+            $('#reload-instances').removeClass('ui-state-disabled');
+            $('#edit-instance').removeClass('ui-state-disabled');
+            $gridInstance.jqGrid('restoreRow', 'instance_' + id, false);
+
+            // Set the colors
+            var a = $('td[aria-describedby="grid-instances_enabled"]');
+            a.each(function(index) {
+                var text = $(this).html();
+                if (text == 'true') {
+                    $(this).html('<span style="color:green;font-weight:bold">true</span>');
+                } else if (text == 'false') {
+                    $(this).html('<span style="color:red">false</span>');
+                }
+            });
+        });
+    }
+
+    // ----------------------------- Users show and Edit ------------------------------------------------
+    function initUsers(update) {
+
+        if (!objectsLoaded) {
+            setTimeout(initUsers, 500);
+            return;
+        }
+
+        if (typeof $gridUsers != 'undefined' && (update || !$gridUsers[0]._isInited)) {
+            $gridUsers[0]._isInited = true;
+            $gridUsers.jqGrid('clearGridData');
+            for (var i = 0; i < users.length; i++) {
+                var obj = objects[users[i]];
+                var select = '<select class="user-groups-edit" multiple="multiple" data-id="' + users[i] + '">';
+                for (var j = 0; j < groups.length; j++) {
+                    var name = groups[j].substring('system.group.'.length);
+                    name = name.substring(0, 1).toUpperCase() + name.substring(1);
+                    select += '<option value="' + groups[j] + '"';
+                    if (objects[groups[j]].common && objects[groups[j]].common.members && objects[groups[j]].common.members.indexOf(users[i]) != -1) select += ' selected';
+                    select += '>' + name + '</option>';
+                }
+
+                $gridUsers.jqGrid('addRowData', 'user_' + users[i].replace(/ /g, '_'), {
+                    _id:     obj._id,
+                    name:    obj.common ? obj.common.name : '',
+                    enabled: '<input class="user-enabled-edit" type="checkbox" data-id="' + users[i] + '" ' + (obj.common && obj.common.enabled ? 'checked' : '') + '/>',
+                    groups:  select
+                });
+            }
+            $gridUsers.trigger('reloadGrid');
+        }
+    }
+    function editUser(id) {
+        if (id) {
+            var obj = objects[id];
+            $dialogUser.dialog('option', 'title', id);
+            $('#edit-user-id').val(obj._id);
+            $('#edit-user-name').val(obj.common.name);
+            $('#edit-user-name').prop('disabled', true);
+            $('#edit-user-pass').val('__pass_not_set__');
+            $('#edit-user-passconf').val('__pass_not_set__');
+            $dialogUser.dialog('open');
+        } else {
+            $dialogUser.dialog('option', 'title', 'new user');
+            $('#edit-user-id').val('');
+            $('#edit-user-name').val('');
+            $('#edit-user-name').prop('disabled', false);
+            $('#edit-user-pass').val('');
+            $('#edit-user-passconf').val('');
+            $dialogUser.dialog('open');
+        }
+    }
+    function saveUser() {
+        var pass = $('#edit-user-pass').val();
+        var passconf = $('#edit-user-passconf').val();
+
+        if (pass != passconf) {
+            window.alert("Password and confirmation are not equal!");
+            return;
+        }
+        var id = $('#edit-user-id').val();
+        var user = $('#edit-user-name').val();
+
+        if (!id) {
+            socket.emit('addUser', user, pass, function (err) {
+                if (err) {
+                    window.alert("Cannot set password: " + err);
+                } else {
+                    $dialogUser.dialog('close');
+                    initUsers(true);
+                }
+            });
+        } else {
+            // If password changed
+            if (pass != '__pass_not_set__') {
+                socket.emit('changePassword', user, pass, function (err) {
+                    if (err) {
+                        window.alert("Cannot set password: " + err);
+                    } else {
+                        $dialogUser.dialog('close');
+                    }
+                });
+            }
+        }
+    }
+    function synchronizeUser(userId, userGroups) {
+        var obj;
+        userGroups = userGroups || [];
+        for (var i = 0; i < groups.length; i++) {
+            // If user has no group, but group has user => delete user from group
+            if (userGroups.indexOf(groups[i]) == -1 &&
+                objects[groups[i]].common.members && objects[groups[i]].common.members.indexOf(userId) != -1) {
+                objects[groups[i]].common.members.splice(objects[groups[i]].common.members.indexOf(userId), 1);
+                obj = {common: {members: objects[groups[i]].common.members}};
+                socket.emit('extendObject', groups[i], obj);
+            }
+            if (userGroups.indexOf(groups[i]) != -1 &&
+                (!objects[groups[i]].common.members || objects[groups[i]].common.members.indexOf(userId) == -1)) {
+                objects[groups[i]].common.members = objects[groups[i]].common.members || [];
+                objects[groups[i]].common.members.push(userId);
+                obj = {common: {members: objects[groups[i]].common.members}};
+                socket.emit('extendObject', groups[i], obj);
+            }
+        }
+    }
+    function delUser(id) {
+        for (var i = 0; i < groups.length; i++) {
+            // If user has no group, but group has user => delete user from group
+            if (objects[groups[i]].common.members && objects[groups[i]].common.members.indexOf(id) != -1) {
+                objects[groups[i]].common.members.splice(objects[groups[i]].common.members.indexOf(id), 1);
+                socket.emit('extendObject', groups[i], {
+                    common: {
+                        members: objects[groups[i]].common.members
+                    }
+                });
+            }
+        }
+    }
+
+    // ----------------------------- Groups show and Edit ------------------------------------------------
+    function initGroups(update) {
+
+        if (!objectsLoaded) {
+            setTimeout(initGroups, 500);
+            return;
+        }
+
+        if (typeof $gridGroups != 'undefined' && (update || !$gridGroups[0]._isInited)) {
+            $gridGroups[0]._isInited = true;
+            $gridGroups.jqGrid('clearGridData');
+            for (var i = 0; i < groups.length; i++) {
+                var obj = objects[groups[i]];
+                var select = '<select class="group-users-edit" multiple="multiple" data-id="' + groups[i] + '">';
+                for (var j = 0; j < users.length; j++) {
+                    var name = users[j].substring('system.user.'.length);
+                    select += '<option value="' + users[j] + '"';
+                    if (obj.common && obj.common.members && obj.common.members.indexOf(users[j]) != -1) select += ' selected';
+                    select += '>' + name + '</option>';
+                }
+
+                $gridGroups.jqGrid('addRowData', 'group_' + groups[i].replace(/ /g, '_'), {
+                    _id:         obj._id,
+                    name:        obj.common ? obj.common.name : '',
+                    description: obj.common ? obj.common.desc : '',
+                    users:       select
+                });
+            }
+            $gridGroups.trigger('reloadGrid');
+        }
+    }
+    function editGroup(id) {
+        if (id) {
+            var obj = objects[id];
+            $dialogGroup.dialog('option', 'title', id);
+            $('#edit-group-id').val(obj._id);
+            $('#edit-group-name').val(obj.common.name);
+            $('#edit-group-name').prop('disabled', true);
+            $('#edit-group-desc').val(obj.common.desc);
+            $dialogGroup.dialog('open');
+        } else {
+            $dialogGroup.dialog('option', 'title', 'new group');
+            $('#edit-group-id').val('');
+            $('#edit-group-name').val('');
+            $('#edit-group-name').prop('disabled', false);
+            $('#edit-group-desc').val('');
+            $dialogGroup.dialog('open');
+        }
+    }
+    function saveGroup() {
+        var id    = $('#edit-group-id').val();
+        var group = $('#edit-group-name').val();
+        var desc  = $('#edit-group-desc').val();
+
+        if (!id) {
+            socket.emit('addGroup', group, desc, function (err) {
+                if (err) {
+                    window.alert("Cannot create group: " + err);
+                } else {
+                    $dialogGroup.dialog('close');
+                    initGroups(true);
+                }
+            });
+        } else {
+            var obj = {common: {desc: desc}};
+            // If description changed
+            socket.emit('extendObject', id, obj, function (err, res) {
+                if (err) {
+                    window.alert("Cannot change group: " + err);
+                } else {
+                    $dialogGroup.dialog('close');
+                }
+            });
+        }
+    }
+
     // Methods
     function cmdExec(host, cmd, callback) {
         $stdout.val('');
@@ -3074,131 +3505,476 @@ $(document).ready(function () {
         if (curInstalled && curRepository) callback(curRepository, curInstalled);
     }
 
+    var regexSystemAdapter = new RegExp('^system.adapter.');
+    var regexSystemHost = new RegExp('^system.host.');
+
+    function treeSplit(id) {
+        if (!id) {
+            console.log('AAAA');
+            return null;
+        }
+        var parts = id.split('.');
+        if (regexSystemAdapter.test(id)) {
+            if (parts.length > 3) {
+                parts[0] = 'system.adapter.' + parts[2] + '.' + parts[3];
+                parts.splice(1, 3);
+            } else {
+                parts[0] = 'system.adapter.' + parts[2];
+                parts.splice(1, 2);
+            }
+        } else if (regexSystemHost.test(id)) {
+            parts[0] = 'system.host.' + parts[2];
+            parts.splice(1, 2);
+        } else if (parts.length > 1) {
+            parts[0] = parts[0] + '.' + parts[1];
+            parts.splice(1, 1);
+        }
+        return parts;
+    }
+
+    function treeInsert(id) {
+        var parts = treeSplit(id);
+        var isUpdate = false
+        if (objectTree.children[parts[0]]) isUpdate = true;
+        _treeInsert(objectTree, parts, id, 0);
+        return isUpdate;
+    }
+    function _treeInsert(tree, parts, id, index) {
+        if (!index) index = 0;
+
+        if (!tree.children[parts[index]]) {
+            tree.count++;
+            var fullName = '';
+            for (var i = 0; i <= index; i++) {
+                fullName += ((fullName) ? '.' : '') + parts[i];
+            }
+            tree.children[parts[index]] = {name: parts[index], children: {}, count: 0, parent: tree, fullName: fullName};
+        }
+        if (parts.length - 1 == index) {
+            tree.children[parts[index]].id = id;
+        } else {
+            _treeInsert(tree.children[parts[index]], parts, id, index + 1);
+        }
+    }
+
+    function treeFindLeaf(id) {
+        return _treeFindLeaf(objectTree, treeSplit(id), 0);
+    }
+    function _treeFindLeaf(tree, parts, index) {
+        if (!index) index = 0;
+
+        if (tree.children[parts[index]]) {
+            if (parts.length - 1 == index) return tree.children[parts[index]];
+
+            return _treeFindLeaf(tree.children[parts[index]], parts, index + 1);
+        } else {
+            return null;
+        }
+    }
+
+    function treeRemove(id) {
+        return _treeRemove(objectTree, treeSplit(id));
+    }
+    function _treeRemove(tree, parts) {
+        var leaf = _treeFindLeaf(tree, parts, 0);
+        if (leaf) {
+            var parent = leaf.parent;
+            delete parent.children[leaf.name];
+            parent.count--;
+            if (parent.parent)
+            treeOptimize(parent.parent);
+        }
+    }
+
+    // Remove empty leafs with only one child leaf
+    function treeOptimize(tree) {
+        var modified;
+        var i;
+        if (!tree) tree = objectTree;
+        do {
+            modified = false;
+            for (i in tree.children) {
+                if (!tree.children[i].id) {
+                    if (!tree.children[i].count) {
+                        console.log('Dead leaf ' + tree.children[i].fullName);
+                        delete tree.children[i];
+                        modified = true;
+                    } else if (tree.children[i].count == 1) {
+                        for (var t in tree.children[i].children) {
+                            tree.children[i].name     += '.' + t;
+                            tree.children[i].fullName += '.' + t;
+                            tree.children[i].id        = tree.children[i].children[t].id;
+                            tree.children[i].count     = tree.children[i].children[t].count;
+                            tree.children[i].children  = tree.children[i].children[t].children;
+                        }
+                        for (t in tree.children[i].children) {
+                            tree.children[i].children[t].parent = tree.children[i];
+                        }
+                        modified = true;
+                    }
+                }
+            }
+        } while (modified);
+
+        //Sort attributes
+        var arr = [];
+        for (i in tree.children) {
+            arr.push(i);
+        }
+        arr.sort();
+        var children = tree.children;
+        tree.children = {};
+
+        for (i = 0; i < arr.length; i++) {
+            tree.children[arr[i]] = children[arr[i]];
+        }
+
+        // optimize children
+        for (i in tree.children) {
+            treeOptimize(tree.children[i]);
+        }
+    }
+
+    // ----------------------------- Objects show and Edit ------------------------------------------------
     function getObjects(callback) {
-        $gridObjects.jqGrid('clearGridData');
         socket.emit('getObjects', function (err, res) {
             var obj;
             objects = res;
-//benchmark('starting getObjects loop');
             for (var id in objects) {
                 if (id.slice(0, 7) === '_design') continue;
 
                 obj = objects[id];
 
-                if (obj.type === 'device' || obj.type === 'channel' || obj.type === 'state') {
-                    $gridSelectMember.jqGrid('addRowData', 'select_obj_' + id.replace(/ /g, '_'), {
-                        _id: id,
-                        name: obj.common.name,
-                        type: obj.type
-                    });
-                }
-
-                if (obj.parent) {
-                    if (!children[obj.parent]) children[obj.parent] = [];
-                    children[obj.parent].push(id);
-                    if (obj.type === 'instance')    instances.push(id);
-                    if (obj.type === 'enum')        enums.push(id);
-                } else {
-                    toplevel.push(id);
-                    if (obj.type === 'script')      scripts.push(id);
-                    if (obj.type === 'user')        users.push(id);
-                    if (obj.type === 'group')       groups.push(id);
-                    if (obj.type === 'adapter')     adapters.push(id);
-                    if (obj.type === 'enum')        enums.push(id);
-                    if (obj.type === 'host') {
-                        var addr = null;
-                        // Find first non internal IP and use it as identifier
-                        if (obj.native.hardware && obj.native.hardware.networkInterfaces) {
-                            for (var eth in obj.native.hardware.networkInterfaces) {
-                                for (var num = 0; num < obj.native.hardware.networkInterfaces[eth].length; num++) {
-                                    if (!obj.native.hardware.networkInterfaces[eth][num].internal) {
-                                        addr = obj.native.hardware.networkInterfaces[eth][num].address;
-                                        break;
-                                    }
+                if (obj.type === 'instance') instances.push(id);
+                if (obj.type === 'enum')     enums.push(id);
+                if (obj.type === 'script')   scripts.push(id);
+                if (obj.type === 'user')     users.push(id);
+                if (obj.type === 'group')    groups.push(id);
+                if (obj.type === 'adapter')  adapters.push(id);
+                if (obj.type === 'enum')     enums.push(id);
+                if (obj.type === 'host') {
+                    var addr = null;
+                    // Find first non internal IP and use it as identifier
+                    if (obj.native.hardware && obj.native.hardware.networkInterfaces) {
+                        for (var eth in obj.native.hardware.networkInterfaces) {
+                            for (var num = 0; num < obj.native.hardware.networkInterfaces[eth].length; num++) {
+                                if (!obj.native.hardware.networkInterfaces[eth][num].internal) {
+                                    addr = obj.native.hardware.networkInterfaces[eth][num].address;
+                                    break;
                                 }
-                                if (addr) break;
                             }
+                            if (addr) break;
                         }
-                        if (addr) hosts.push({name: obj.common.hostname, address: addr, id: obj._id});
                     }
+                    if (addr) hosts.push({name: obj.common.hostname, address: addr, id: obj._id});
                 }
-
-
+                treeInsert(id);
             }
             //benchmark('finished getObjects loop');
             objectsLoaded = true;
 
-            // Change editoptions for gridInstances column host
-            var tmp = '';
-            for (var j = 0; j < hosts.length; j++) {
-                tmp += (j > 0 ? ';' : '') + hosts[j].name + ':' + hosts[j].name;
-            }
-            $gridInstance.jqGrid('setColProp', 'host', {editoptions: {value: tmp}});
+            // Remove empty leafs and sub-leafs
+            treeOptimize();
+
+            // Detect if some script engine instance installed
+            var engines = fillEngines();
+
+            // Disable scripts tab if no one script engine instance found
+            if (!engines || !engines.length) $('#tabs').tabs('option', 'disabled', [7]);
+
+            // Show if update available
+            initHostsList();
+
+            if (typeof callback === 'function') callback();
+        });
+    }
+    function initObjects(update) {
+        if (!objectsLoaded) {
+            setTimeout(initObjects, 250);
+            return;
+        }
+
+        if (typeof $gridObjects !== 'undefined' && (!$gridObjects[0]._isInited || update)) {
+            $gridObjects.jqGrid('clearGridData');
+            $gridObjects[0]._isInited = true;
+            treeOptimize();
 
             var gridObjectsData = [];
-            for (var i = 0; i < toplevel.length; i++) {
-                try {
+
+            for (var i in objectTree.children) {
+                if (objectTree.children[i].id) {
+                    try {
+                        gridObjectsData.push({
+                            gridId: 'object_' + objectTree.children[i].id.replace(/ /g, '_'),
+                            _id:  objects[objectTree.children[i].id]._id,
+                            name: objects[objectTree.children[i].id].common ? (objects[objectTree.children[i].id].common.name || '') : '',
+                            role: objects[objectTree.children[i].id].common ? (objects[objectTree.children[i].id].common.role || '') : '',
+                            type: objects[objectTree.children[i].id].type
+                        });
+                    } catch (e) {
+                        console.log(e.toString());
+                    }
+                } else {
                     gridObjectsData.push({
-                        gridId: 'object_' + toplevel[i].replace(/ /g, '_'),
-                        _id:  objects[toplevel[i]]._id,
-                        name: objects[toplevel[i]].common ? (objects[toplevel[i]].common.name || '') : '',
-                        role: objects[toplevel[i]].common ? (objects[toplevel[i]].common.role || '') : '',
-                        type: objects[toplevel[i]].type
+                        gridId: 'object_' + objectTree.children[i].fullName.replace(/ /g, '_'),
+                        _id: i,
+                        name: '',
+                        role: '',
+                        type: ''
                     });
-                } catch (e) {
-                    console.log(e.toString());
                 }
             }
             $gridObjects.jqGrid('addRowData', 'gridId', gridObjectsData);
             $gridObjects.trigger('reloadGrid');
 
-            $gridSelectMember.trigger('reloadGrid');
+            // Open all extended leafs
+            treeExtended.sort();
+            for (i = 0; i < treeExtended.length; i++) {
+                $gridObjects.expandSubGridRow('object_' + treeExtended[i]);
+            }
+            var x = $(window).width();
+            var y = $(window).height();
+            if (x < 720) x = 720;
+            if (y < 480) y = 480;
+            $('.subgrid-level-1').setGridWidth(x - 67);
+            $('.subgrid-level-2').setGridWidth(x - 94);
+            $('.subgrid-level-3').setGridWidth(x - 121);
+            $('.subgrid-level-4').setGridWidth(x - 148);
 
-            if (typeof callback === 'function') callback();
-
-            // Show if update available
-            initHostsList();
-        });
+        }
     }
+    function editObject(id) {
+        var obj = objects[id];
+        console.log(obj);
+        $dialogObject.dialog('option', 'title', id);
+        $('#edit-object-id').val(obj._id);
+        $('#edit-object-parent-old').val(obj.parent);
+        $('#edit-object-name').val(obj.common.name);
+        $('#edit-object-type').val(obj.type);
+        $('#edit-object-parent').val(obj.parent);
+        $('#jump-parent').attr('data-jump-to', obj.parent);
+        var childs = '<div style="font-size: 10px">';
+        // childs += '<table style="font-size: 11px">';
+        if (obj.children) {
 
-    function initEnums(update, expandId) {
-        if (!objectsLoaded) {
-            setTimeout(initEnums, 250);
-            return;
+            for (var i = 0; i < obj.children.length; i++) {
+                //childs += '<tr><td>' + obj.children[i] + '</td><td><button data-jump-to="' + obj.children[i] + '" class="jump">-></button></td></tr>';
+                childs += '<a style="text-decoration: underline; cursor: pointer;" class="jump" data-jump-to="' + obj.children[i] + '">' + obj.children[i] + '</a><br>';
+            }
         }
 
-        if (typeof $gridEnums !== 'undefined' && (!$gridEnums[0]._isInited || update)) {
-            var gridEnumsData = [];
-            $gridEnums.jqGrid('clearGridData');
-            $gridEnums[0]._isInited = true;
-            for (var i = 0; i < toplevel.length; i++) {
-                if (objects[toplevel[i]] && objects[toplevel[i]].type === 'enum') {
-                    gridEnumsData.push({
-                        gridId:  'enum_' + toplevel[i].replace(/ /g, '_'),
-                        _id:     objects[toplevel[i]]._id,
-                        name:    objects[toplevel[i]].common ? objects[toplevel[i]].common.name : '',
-                        members: objects[toplevel[i]].common.members ? objects[toplevel[i]].common.members.length : '',
-                        buttons: '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-members">' + _('members')  + '</button>' +
-                            '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-del">'          + _('delete')   + '</button>' +
-                            '<button data-enum-id="' + objects[toplevel[i]]._id + '" class="enum-add-children">' + _('children') + '</button>'
+        childs += '</div>';
+        //childs += '</table>';
+        $('#edit-object-children').html(childs);
+        $('#edit-object-common').val(JSON.stringify(obj.common, null, '  '));
+        $('#edit-object-native').val(JSON.stringify(obj.native, null, '  '));
+        $dialogObject.dialog('open');
+    }
+    function saveObject() {
+        var obj = {common: {}, native: {}};
+        obj._id = $('#edit-object-id').val();
+        obj.parent = $('#edit-object-parent-old').val();
+        obj.common.name = $('#edit-object-name').val();
+        obj.type = $('#edit-object-type').val();
+        obj.parent = $('#edit-object-parent').val();
+
+        try {
+            obj.common = JSON.parse($('#edit-object-common').val());
+        } catch (e) {
+            window.alert('common ' + e);
+            return false;
+        }
+        try {
+            obj.native = JSON.parse($('#edit-object-native').val());
+        } catch (e) {
+            window.alert('native ' + e);
+            return false;
+        }
+
+        socket.emit('extendObject', obj._id, obj);
+
+
+        $dialogObject.dialog('close');
+    }
+
+    // ----------------------------- Enum show and Edit ------------------------------------------------
+    var tasks = [];
+    function enumRename(oldId, newId, newName, callback) {
+        if (tasks.length) {
+            var task = tasks.shift();
+            if (task.name == 'delObject') {
+                socket.emit(task.name, task.id, function () {
+                    setTimeout(enumRename, 0, undefined, undefined, undefined, callback);
+                });
+            } else {
+                socket.emit(task.name, task.id, task.obj, function () {
+                    setTimeout(enumRename, 0, undefined, undefined, undefined, callback);
+                });
+            }
+        } else {
+            _enumRename(oldId, newId, newName, function () {
+                if (tasks.length) {
+                    enumRename(undefined, undefined, undefined, callback);
+                } else {
+                    if (callback) callback();
+                }
+            });
+        }
+    }
+    function _enumRename(oldId, newId, newName, callback) {
+        //Check if this name exists
+        if (oldId != newId && objects[newId]) {
+            alert(_('Name yet exists!'));
+            initEnums(true);
+            if (callback) callback();
+        } else {
+            if (oldId == newId) {
+                if (newName !== undefined) {
+                    tasks.push({name: 'extendObject', id:  oldId, obj: {common: {name: newName}}});
+                    if (callback) callback();
+                }
+            } else if (objects[oldId] && objects[oldId].common && objects[oldId].common.nondeletable) {
+                alert(_('Change of enum\'s id ' + oldId + ' is not allowed!'));
+                initEnums(true);
+                if (callback) callback();
+            } else {
+                var leaf = treeFindLeaf(oldId);
+                if (leaf && leaf.count) {
+                    socket.emit('getObject', oldId, function (err, obj) {
+                        if (obj) {
+                            obj._id = newId;
+                            if (obj._rev) delete obj._rev;
+                            if (newName !== undefined) obj.common.name = newName;
+                            tasks.push({name: 'delObject', id: oldId});
+                            tasks.push({name: 'setObject', id: newId, obj: obj});
+                            // Rename all children
+                            var count = 0;
+                            for (var i in leaf.children) {
+                                var n = leaf.children[i].id.replace(oldId, newId);
+                                count++;
+                                _enumRename(leaf.children[i].id, n, undefined, function () {
+                                    count--;
+                                    if (!count && callback) callback();
+                                });
+                            }
+
+                        }
+                    });
+                } else {
+                    socket.emit('getObject', oldId, function (err, obj) {
+                        if (obj) {
+                            obj._id = newId;
+                            if (obj._rev) delete obj._rev;
+                            if (newName !== undefined) obj.common.name = newName;
+                            tasks.push({name: 'delObject', id: oldId});
+                            tasks.push({name: 'setObject', id: newId, obj: obj});
+                            if (callback) callback();
+                        }
                     });
                 }
             }
-            $gridEnums.jqGrid('addRowData', 'gridId', gridEnumsData);
-            $gridEnums.trigger('reloadGrid');
-            if (expandId) {
-                $gridEnums.jqGrid('expandSubGridRow', 'enum_' + expandId);
-            }
-            for (i = 0; i < enumExpanded.length; i++) {
-                $gridEnums.jqGrid('expandSubGridRow', 'enum_' + enumExpanded[i]);
-            }
-
-            initEnumButtons();
         }
     }
+    function enumDelete(id, callback, hideConfirm) {
+        if (hideConfirm || confirm(_('Are you sure? ' + id))) {
+            var leaf = treeFindLeaf(id);
+            if (leaf && leaf.count) {
+                for (var e in leaf.children) {
+                    enumDelete(leaf.children[e].id, function () {
+                        enumDelete(id, callback, true);
+                    }, true);
+                    break;
+                }
+            } else {
+                if (objects[id] && objects[id].common && objects[id].common.nondeletable) {
+                    alert(_('Cannot delete ' + id + ' because not allowed'));
+                    if (callback) callback(id);
+                } else {
+                    treeRemove(id);
+                    socket.emit('delObject', id, function () {
+                        if (callback) callback(id);
+                    });
+                }
+            }
+        }
+    }
+    function enumAddChild(parent, newId, name) {
+        if (objects[newId]) {
+            alert(_('Name yet exists!'));
+            return false;
+        }
 
+        socket.emit('setObject', newId, {
+            _id: newId,
+            common:   {
+                name: name,
+                members: []
+            },
+            type: "enum"
+        });
+        return true;
+    }
+    function enumMembers(id) {
+        enumEdit = id;
+        $dialogEnumMembers.dialog('option', 'title', id);
+        $('#enum-name-edit').val(objects[id].common.name);
+        var members = objects[id].common.members || [];
+        $gridEnumMembers.jqGrid('clearGridData');
+        for (var i = 0; i < members.length; i++) {
+            if (objects[members[i]]) {
+                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {_id: members[i], name: objects[members[i]].common.name, type: objects[members[i]].type});
+            } else {
+                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {
+                    _id: members[i],
+                    name: '<span style="color:red; font-weight:bold; font-style:italic;">object missing</span>',
+                    type: ''
+                });
+            }
+        }
+        $('#del-member').addClass('ui-state-disabled');
+        $dialogEnumMembers.dialog('open');
+    }
+    function onEditEnum($grid, id) {
+        var obj = $grid.jqGrid('getRowData', 'enum_' + id);
+        if (obj && obj._id) {
+            var full;
+            var original;
+            var pos = obj._id.lastIndexOf('.');
+            if (pos != -1) {
+                full = obj._id;
+                original = obj._id.substring(0, pos);
+                obj._id  = obj._id.substring(pos + 1);
+            }
+
+            $grid.jqGrid('setRowData', 'enum_' + id, obj);
+            initEnumButtons();
+            if (pos != -1) {
+                var o = $('.enum-ok-submit[data-enum-id="' + id + '"]')[0];
+                o._full = full;
+                o._original = original;
+            }
+            $('.enum-edit').hide();
+            $('.enum-members').hide();
+            $('.enum-add-children').hide();
+            $('.enum-del').hide();
+            $('.enum-ok-submit[data-enum-id="' + id + '"]').show();
+            $('.enum-cancel-submit[data-enum-id="' + id + '"]').show();
+            $('#add-enum').addClass('ui-state-disabled');
+            $('#edit-enum').addClass('ui-state-disabled');
+
+            $grid.jqGrid('editRow', 'enum_' + id, {"url": "clientArray"});
+        }
+    }
     function initEnumButtons() {
-        $('.enum-members').button({icons: {primary: 'ui-icon-pencil'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
+        $('.enum-edit').unbind('click').button({
+            icons: {primary: 'ui-icon-pencil'},
+            text:  false
+        }).css('width', '22px').css('height', '18px').click(function () {
+            var subgrid = $(this).attr('data-enum-subgrid');
+            onEditEnum(subgrid ? $(document.getElementById(subgrid)) : $gridEnums, $(this).attr('data-enum-id'));
+        });
+
+        $('.enum-members').button({icons: {primary: 'ui-icon-note'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
             .click(function () {
                 enumMembers($(this).attr('data-enum-id'));
             });
@@ -3215,146 +3991,121 @@ $(document).ready(function () {
                 } while (objects[newId]);
 
                 $('#enum-name').val(name + idx);
-                $('#enum-gen-id').html(newId);
+                // Store prefix in DOM to show generated ID
+                var t = $('#enum-gen-id');
+                t[0]._original = (enumCurrentParent || 'enum');
+                t.html(newId);
 
                 $dialogEnum.dialog('open');
             });
 
         $('.enum-del').button({icons: {primary: 'ui-icon-trash'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
             .click(function () {
-                var id = $(this).attr('data-enum-id');
-                enumDelete(id, function (parent) {
-                    //initEnums(true, parent);
-                });
+                enumDelete($(this).attr('data-enum-id'));
             });
-    }
 
-    function enumDelete(id, callback, hideConfirm) {
-        if (hideConfirm || confirm(_('Are you sure? ' + id))) {
-            if (objects[id] && objects[id].children && objects[id].children.length) {
-                if (objects[objects[id].children[0]]) {
-                    enumDelete(objects[id].children[0], function () {
-                        enumDelete(id, callback, true);
-                    }, true);
-                } else {
-                    objects[id].children.splice(0, 1);
-                    enumDelete(id, callback, true);
-                }
-            } else {
-                var pos;
-                var parent;
-                if (objects[id]) {
-                    parent = objects[id].parent;
+        $('.enum-ok-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-check'},
+            text:  false
+        }).css('width', '22px').css('height', '18px').click(function () {
+            var id = $(this).attr('data-enum-id');
+            $('.enum-edit').show();
+            $('.enum-members').show();
+            $('.enum-add-children').show();
+            $('.enum-del').show();
+            $('.enum-ok-submit').hide();
+            $('.enum-cancel-submit').hide();
+            $('#add-enum').removeClass('ui-state-disabled');
+            $('#edit-enum').removeClass('ui-state-disabled');
 
-                    if (objects[id].common.nondeletable) {
-                        alert(_('Cannot delete ' + id + ' because not allowed'));
-                        if (callback) callback(parent);
-                        return;
-                    }
+            var subgrid = $(this).attr('data-enum-subgrid');
+            var $grid = subgrid ? $(document.getElementById(subgrid)) : $gridEnums;
 
-                    if (parent) {
-                        pos = objects[parent].children.indexOf(id);
-                        if (pos != -1) {
-                            objects[parent].children.splice(pos, 1);
-                        }
-
-                        if (children[parent]) {
-                            pos = children[parent].indexOf(id);
-                            if (pos != -1) {
-                                children[parent].splice(pos, 1);
-                            }
-                            if (!children[parent].length) delete children[parent];
-                        }
-
-                        socket.emit('setObject', parent, objects[parent]);
-                    }
-                }
-
-                pos = enums.indexOf(id);
-                if (pos != -1) {
-                    enums.splice(pos, 1);
-                }
-
-                if (toplevel[id]) {
-                    pos = toplevel.indexOf(id);
-                    if (pos != -1) {
-                        toplevel.splice(pos, 1);
-                    }
-                }
-
-                delete objects[id];
-                socket.emit('delObject', id, function () {
-                    if (callback) callback(parent);
-                });
-            }
-        }
-    }
-
-    function enumAddChild(parent, newId, name) {
-        if (objects[newId]) {
-            alert(_('Name yet exists!'));
-            return false;
-        }
-
-        enums.push(newId);
-        objects[newId] = {
-            _id: newId,
-            children: [],
-            parent:   parent,
-            common:   {
-                name: name,
-                members: []
-            },
-            type:     "enum"
-        };
-        if (parent) {
-            children[parent] = children[parent] || [];
-            children[parent].push(newId);
-        } else {
-            toplevel.push(newId);
-        }
-
-        socket.emit('setObject', newId, objects[newId], function () {
-            if (parent) {
-                objects[parent].children = objects[parent].children || [];
-                objects[parent].children.push(newId);
-                socket.emit('setObject', parent, objects[parent]);
-            }
-        });
-        return true;
-    }
-
-    function enumRename(oldId, newName) {
-        var newId = newName.replace(/ /g, '_').toLowerCase();
-        //Check if this name exists
-        if (objects[newName]) {
-            alert(_('Name yet exists!'));
-            return false;
-        }
-        socket.emit('extendObject', oldId, {common: {name: newId}}, function () {
-            $('#enum-name-button').hide();
+            $grid.jqGrid('saveRow', 'enum_' + id, {"url": "clientArray"});
+            // afterSave
+            setTimeout(function () {
+                var obj = $grid.jqGrid('getRowData', 'enum_' + id);
+                var o = $('.enum-ok-submit[data-enum-id="' + id + '"]')[0];
+                obj._id = o._original + '.' + obj._id.replace(/ /g, '_').toLowerCase();
+                // rename all children
+                enumRename(o._full, obj._id, obj.name);
+                delete o._full;
+                delete o._original;
+            }, 100);
         });
 
+        $('.enum-cancel-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-close'},
+            text:  false
+        }).css('width', '22px').css('height', '18px').click(function () {
+            var id = $(this).attr('data-enum-id');
+            $('.enum-members').show();
+            $('.enum-edit').show();
+            $('.enum-add-children').show();
+            $('.enum-del').show();
+            $('.enum-ok-submit').hide();
+            $('.enum-cancel-submit').hide();
+            $('#add-enum').removeClass('ui-state-disabled');
+            $('#edit-enum').removeClass('ui-state-disabled');
+            var subgrid = $(this).attr('data-enum-subgrid');
+            var $grid = subgrid ? $(document.getElementById(subgrid)) : $gridEnums;
+            $grid.jqGrid('restoreRow', 'enum_' + id, false);
+            var obj = $grid.jqGrid('getRowData', 'enum_' + id);
+            var o = $('.enum-ok-submit[data-enum-id="' + id + '"]')[0];
+            obj._id = o._full;
+
+            $grid.jqGrid('setRowData', 'enum_' + id, obj);
+
+            delete o._full;
+            delete o._original;
+
+        });
     }
-    function enumMembers(id) {
-        enumEdit = id;
-        $dialogEnumMembers.dialog('option', 'title', id);
-        $dialogSelectMember.dialog('option', 'title', id);
-        var members = objects[id].common.members || [];
-        $gridEnumMembers.jqGrid('clearGridData');
-        for (var i = 0; i < members.length; i++) {
-            if (objects[members[i]]) {
-                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {_id: members[i], name: objects[members[i]].common.name, type: objects[members[i]].type});
-            } else {
-                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {
-                    _id: members[i],
-                    name: '<span style="color:red; font-weight:bold; font-style:italic;">object missing</span>',
-                    type: ''
-                });
-            }
+    function initEnums(update, expandId) {
+        if (!objectsLoaded) {
+            setTimeout(initEnums, 250);
+            return;
         }
-        $('#del-member').addClass('ui-state-disabled');
-        $dialogEnumMembers.dialog('open');
+
+        if (typeof $gridEnums !== 'undefined' && (!$gridEnums[0]._isInited || update)) {
+            var gridEnumsData = [];
+            var i;
+            $gridEnums.jqGrid('clearGridData');
+            $gridEnums[0]._isInited = true;
+            var tree = objectTree.children.enum;
+            if (!tree) {
+                tree = objectTree;
+            }
+            if (tree && tree.count) {
+                for (i in tree.children) {
+                    var id = tree.children[i].id;
+                    if (id && objects[id].type === 'enum') {
+                        if (!objects[id].common) objects[id].common = {};
+                        gridEnumsData.push({
+                            gridId:  'enum_' + id.replace(/ /g, '_'),
+                            _id:     objects[id]._id,
+                            name:    objects[id].common.name || '',
+                            members: objects[id].common.members ? objects[id].common.members.length : '',
+                            buttons: '<button data-enum-id="' + objects[id]._id + '" class="enum-edit">'         + _('edit')         + '</button>' +
+                                //'<button data-enum-id="' + objects[id]._id + '" class="enum-members">'      + _('members')      + '</button>' +
+                                (objects[id].common.nondeletable ? '' : '<button data-enum-id="' + objects[id]._id + '" class="enum-del">' + _('delete') + '</button>') +
+                                '<button data-enum-id="' + objects[id]._id + '" class="enum-add-children">' + _('add children') + '</button>' +
+                                '<button data-enum-id="' + objects[id]._id + '" class="enum-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
+                                '<button data-enum-id="' + objects[id]._id + '" class="enum-cancel-submit" style="display:none">' + _('cancel') + '</button>'
+                        });
+                    }
+                }
+            }
+            $gridEnums.jqGrid('addRowData', 'gridId', gridEnumsData);
+            $gridEnums.trigger('reloadGrid');
+            if (expandId) $gridEnums.jqGrid('expandSubGridRow', 'enum_' + expandId);
+
+            for (i = 0; i < enumExpanded.length; i++) {
+                $gridEnums.jqGrid('expandSubGridRow', 'enum_' + enumExpanded[i]);
+            }
+
+            initEnumButtons();
+        }
     }
 
     function convertState(key, _obj) {
@@ -3399,252 +4150,30 @@ $(document).ready(function () {
         obj.gridId = 'state_' + key.replace(/ /g, '_');
         return obj;
     }
+    function initStates(update) {
+        if (!objectsLoaded || !states) {
+            setTimeout(initStates, 250);
+            return;
+        }
 
+        if (typeof $gridStates !== 'undefined' && (!$gridStates[0]._isInited || update)) {
+            $gridStates.jqGrid('clearGridData');
+            $gridStates[0]._isInited = true;
+
+            var gridData = [];
+            for (var key in states) {
+                gridData.push(convertState(key, states[key]));
+            }
+            $gridStates.jqGrid('addRowData', 'gridId', gridData);
+            $gridStates.trigger('reloadGrid');
+        }
+    }
     function getStates(callback) {
         $gridStates.jqGrid('clearGridData');
         socket.emit('getStates', function (err, res) {
             states = res;
-//benchmark('starting getStates loop');
-            var gridData = [];
-            for (var key in res) {
-                gridData.push(convertState(key, res[key]));
-            }
-            $gridStates.jqGrid('addRowData', 'gridId', gridData);
-//benchmark('finished getStates loop');
-            $gridStates.trigger('reloadGrid');
-
-
             if (typeof callback === 'function') callback();
         });
-    }
-
-    function editObject(id) {
-        var obj = objects[id];
-        console.log(obj);
-        $dialogObject.dialog('option', 'title', id);
-        $('#edit-object-id').val(obj._id);
-        $('#edit-object-parent-old').val(obj.parent);
-        $('#edit-object-name').val(obj.common.name);
-        $('#edit-object-type').val(obj.type);
-        $('#edit-object-parent').val(obj.parent);
-        $('#jump-parent').attr('data-jump-to', obj.parent);
-        var childs = '<div style="font-size: 10px">';
-        // childs += '<table style="font-size: 11px">';
-        if (obj.children) {
-
-            for (var i = 0; i < obj.children.length; i++) {
-                //childs += '<tr><td>' + obj.children[i] + '</td><td><button data-jump-to="' + obj.children[i] + '" class="jump">-></button></td></tr>';
-                childs += '<a style="text-decoration: underline; cursor: pointer;" class="jump" data-jump-to="' + obj.children[i] + '">' + obj.children[i] + '</a><br>';
-            }
-        }
-
-        childs += '</div>';
-        //childs += '</table>';
-        $('#edit-object-children').html(childs);
-        $('#edit-object-common').val(JSON.stringify(obj.common, null, '  '));
-        $('#edit-object-native').val(JSON.stringify(obj.native, null, '  '));
-        $dialogObject.dialog('open');
-    }
-
-    function editScript(id) {
-        if (id) {
-            var obj = objects[id];
-            $dialogScript.dialog('option', 'title', id);
-            $('#edit-script-id').val(obj._id);
-            $('#edit-script-name').val(obj.common.name);
-            $('#edit-script-platform').val(obj.common.platform);
-            if (obj.common.platform.match(/^[jJ]ava[sS]cript/)) {
-                editor.getSession().setMode("ace/mode/javascript");
-            } else if (obj.common.platform.match(/^[cC]offee[sS]cript/)) {
-                editor.getSession().setMode("ace/mode/coffee");
-            }
-            //$('#edit-script-source').val(obj.common.source);
-            editor.setValue(obj.common.source);
-            $dialogScript.dialog('open');
-        } else {
-            $dialogScript.dialog('option', 'title', 'new script');
-            $('#edit-script-id').val('');
-            $('#edit-script-name').val('');
-            $('#edit-script-platform').val('Javascript/Node.js');
-            //$('#edit-script-source').val('');
-            editor.setValue('');
-            $dialogScript.dialog('open');
-        }
-    }
-
-    function saveScript() {
-        var obj = {};
-
-        obj._id      = $('#edit-script-id').val();
-        obj.name     = $('#edit-script-name').val();
-        obj.source   = editor.getValue();
-        obj.platform = $('#edit-script-platform').val() || '';
-
-        updateScript(obj._id, obj);
-        $dialogScript.dialog('close');
-    }
-
-    function editUser(id) {
-        if (id) {
-            var obj = objects[id];
-            $dialogUser.dialog('option', 'title', id);
-            $('#edit-user-id').val(obj._id);
-            $('#edit-user-name').val(obj.common.name);
-            $('#edit-user-name').prop('disabled', true);
-            $('#edit-user-pass').val('__pass_not_set__');
-            $('#edit-user-passconf').val('__pass_not_set__');
-            $dialogUser.dialog('open');
-        } else {
-            $dialogUser.dialog('option', 'title', 'new user');
-            $('#edit-user-id').val('');
-            $('#edit-user-name').val('');
-            $('#edit-user-name').prop('disabled', false);
-            $('#edit-user-pass').val('');
-            $('#edit-user-passconf').val('');
-            $dialogUser.dialog('open');
-        }
-    }
-    
-    function saveUser() {
-        var pass = $('#edit-user-pass').val();
-        var passconf = $('#edit-user-passconf').val();
-
-        if (pass != passconf) {
-            window.alert("Password and confirmation are not equal!");
-            return;
-        }
-        var id = $('#edit-user-id').val();
-        var user = $('#edit-user-name').val();
-
-        if (!id) {
-            socket.emit('addUser', user, pass, function (err) {
-                if (err) {
-                    window.alert("Cannot set password: " + err);
-                } else {
-                    $dialogUser.dialog('close');
-                    initUsers(true);
-                }
-            });
-        } else {
-            // If password changed
-            if (pass != '__pass_not_set__') {
-                socket.emit('changePassword', user, pass, function (err) {
-                    if (err) {
-                        window.alert("Cannot set password: " + err);
-                    } else {
-                        $dialogUser.dialog('close');
-                    }
-                });
-            }
-        }
-    }
-
-    function editGroup(id) {
-        if (id) {
-            var obj = objects[id];
-            $dialogGroup.dialog('option', 'title', id);
-            $('#edit-group-id').val(obj._id);
-            $('#edit-group-name').val(obj.common.name);
-            $('#edit-group-name').prop('disabled', true);
-            $('#edit-group-desc').val(obj.common.desc);
-            $dialogGroup.dialog('open');
-        } else {
-            $dialogGroup.dialog('option', 'title', 'new group');
-            $('#edit-group-id').val('');
-            $('#edit-group-name').val('');
-            $('#edit-group-name').prop('disabled', false);
-            $('#edit-group-desc').val('');
-            $dialogGroup.dialog('open');
-        }
-    }
-
-    function saveGroup() {
-        var id    = $('#edit-group-id').val();
-        var group = $('#edit-group-name').val();
-        var desc  = $('#edit-group-desc').val();
-
-        if (!id) {
-            socket.emit('addGroup', group, desc, function (err) {
-                if (err) {
-                    window.alert("Cannot create group: " + err);
-                } else {
-                    $dialogGroup.dialog('close');
-                    initGroups(true);
-                }
-            });
-        } else {
-            var obj = {common: {desc: desc}};
-            // If description changed
-            socket.emit('extendObject', id, obj, function (err, res) {
-                if (err) {
-                    window.alert("Cannot change group: " + err);
-                } else {
-                    $dialogGroup.dialog('close');
-                }
-            });
-        }
-    }
-    
-    function saveObject() {
-        var obj = {common: {}, native: {}};
-        obj._id = $('#edit-object-id').val();
-        obj.parent = $('#edit-object-parent-old').val();
-        obj.common.name = $('#edit-object-name').val();
-        obj.type = $('#edit-object-type').val();
-        obj.parent = $('#edit-object-parent').val();
-
-        try {
-            obj.common = JSON.parse($('#edit-object-common').val());
-        } catch (e) {
-            window.alert('common ' + e);
-            return false;
-        }
-        try {
-            obj.native = JSON.parse($('#edit-object-native').val());
-        } catch (e) {
-            window.alert('native ' + e);
-            return false;
-        }
-
-        socket.emit('extendObject', obj._id, obj);
-
-
-        $dialogObject.dialog('close');
-    }
-
-    function synchronizeUser(userId, userGroups) {
-        var obj;
-        userGroups = userGroups || [];
-        for (var i = 0; i < groups.length; i++) {
-            // If user has no group, but group has user => delete user from group
-            if (userGroups.indexOf(groups[i]) == -1 &&
-                objects[groups[i]].common.members && objects[groups[i]].common.members.indexOf(userId) != -1) {
-                objects[groups[i]].common.members.splice(objects[groups[i]].common.members.indexOf(userId), 1);
-                obj = {common: {members: objects[groups[i]].common.members}};
-                socket.emit('extendObject', groups[i], obj);
-            }
-            if (userGroups.indexOf(groups[i]) != -1 &&
-                (!objects[groups[i]].common.members || objects[groups[i]].common.members.indexOf(userId) == -1)) {
-                objects[groups[i]].common.members = objects[groups[i]].common.members || [];
-                objects[groups[i]].common.members.push(userId);
-                obj = {common: {members: objects[groups[i]].common.members}};
-                socket.emit('extendObject', groups[i], obj);
-            }
-        }
-    }
-
-    function delUser(id) {
-        for (var i = 0; i < groups.length; i++) {
-            // If user has no group, but group has user => delete user from group
-            if (objects[groups[i]].common.members && objects[groups[i]].common.members.indexOf(id) != -1) {
-                objects[groups[i]].common.members.splice(objects[groups[i]].common.members.indexOf(id), 1);
-                socket.emit('extendObject', groups[i], {
-                    common: {
-                        members: objects[groups[i]].common.members
-                    }
-                });
-            }
-        }
     }
 
     // Socket.io methods
@@ -3694,7 +4223,6 @@ $(document).ready(function () {
 
         $('#log-table').prepend(text);
     });
-
     socket.on('stateChange', function (id, obj) {
         var rowData;
         if (currentHistory == id) {
@@ -3761,18 +4289,23 @@ $(document).ready(function () {
             }
         }
     });
-
     socket.on('objectChange', function (id, obj) {
         var changed = false;
         var i;
         var j;
         var historyEnabled;
         var oldObj = null;
+        var isNew = false;
+        var isUpdate = false;
 
         // update objects cache
         if (obj) {
             if (obj._rev && objects[id]) objects[id]._rev = obj._rev;
-            if (!objects[id] || JSON.stringify(objects[id]) != JSON.stringify(obj)) {
+            if (!objects[id]) {
+                isNew = true;
+                isUpdate = treeInsert(id);
+            }
+            if (isNew || JSON.stringify(objects[id]) != JSON.stringify(obj)) {
                 objects[id] = obj;
                 changed = true;
             }
@@ -3780,6 +4313,7 @@ $(document).ready(function () {
             changed = true;
             oldObj = {_id: id, type: objects[id].type};
             delete objects[id];
+            isUpdate = treeRemove(id);
         }
 
         // prepend to event table
@@ -3788,9 +4322,42 @@ $(document).ready(function () {
         var row = '<tr><td>objectChange</td><td>' + id + '</td><td>' + value + '</td></tr>';
         $('#events').prepend(row);
 
+        // Update select Id Dialog
+        if ((obj    && (obj.type    === 'device' || obj.type    === 'channel' || obj.type    === 'state')) ||
+            (oldObj && (oldObj.type === 'device' || oldObj.type === 'channel' || oldObj.type === 'state'))) {
+            showDialogSelectId('__clear__');
+        }
+
         //if (!changed) return;
 
-        // TODO update gridObjects
+        // update gridObjects
+        // If new or deleted
+        if (isNew || oldObj) {
+            var parts = treeSplit(id);
+            var _id = parts[0];
+            // if root object or extended object
+            if (parts.length > 1) {
+                for (var z = 1; z < parts.length - 1; z++) {
+                    _id += '.' + parts[z];
+                }
+            }
+
+            if (1 || isUpdate || parts.length == 1 || treeExtended.indexOf(id) != -1 || treeExtended.indexOf(_id) != -1) {
+                if (updateTimers.initObjects) {
+                    clearTimeout(updateTimers.initObjects);
+                }
+                updateTimers.initObjects = setTimeout(function () {
+                    updateTimers.initObjects = null;
+                    initObjects(true);
+                }, 200);
+            }
+        } else {
+            var rowData = $gridObjects.jqGrid('getRowData', 'object_' + id);
+            rowData.name = obj.common ? (obj.common.name || '') : '',
+            rowData.role = obj.common ? (obj.common.role || '') : '',
+            rowData.type = obj.type;
+            $gridObjects.jqGrid('setRowData', 'object_' + id, rowData);
+        }
 
         // Update Instance Table
         if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.[0-9]+$/)) {
@@ -3798,9 +4365,7 @@ $(document).ready(function () {
                 if (instances.indexOf(id) == -1) instances.push(id);
             } else {
                 i = instances.indexOf(id);
-                if (i != -1) {
-                    instances.splice(i, 1);
-                }
+                if (i != -1) instances.splice(i, 1);
             }
             if (obj && id.match(/^system\.adapter\.history\.[0-9]+$/)) {
                 // Update all states if history enabled or disabled
@@ -3826,8 +4391,18 @@ $(document).ready(function () {
                 });
             }
 
+            // Disable scripts tab if no one script engine instance found
+            var engines = fillEngines();
+            $('#tabs').tabs('option', 'disabled', (engines && engines.length) ? [] : [7]);
+
             if (typeof $gridInstance !== 'undefined' && $gridInstance[0]._isInited) {
-                initInstances(true);
+                if (updateTimers.initInstances) {
+                    clearTimeout(updateTimers.initInstances);
+                }
+                updateTimers.initInstances = setTimeout(function () {
+                    updateTimers.initInstances = null;
+                    initInstances(true);
+                }, 200);
             }
         }
 
@@ -3846,14 +4421,12 @@ $(document).ready(function () {
             }
         }*/
         // Update users
-        if (id.substring(0, "system.user.".length) == "system.user.") {
+        if (id.match(/^system\.user\./)) {
             if (obj) {
                 if (users.indexOf(id) == -1) users.push(id);
             } else {
                 var k = users.indexOf(id);
-                if (k != -1) {
-                    users.splice(k, 1);
-                }
+                if (k != -1) users.splice(k, 1);
             }
             if (updateTimers.initUsersGroups) {
                 clearTimeout(updateTimers.initUsersGroups);
@@ -3866,7 +4439,7 @@ $(document).ready(function () {
         }
 
         // Update hosts
-        if (id.substring(0, "system.host.".length) == "system.host.") {
+        if (id.match(/^system\.host\./)) {
             var found = false;
             for (i = 0; i < hosts.length; i++) {
                 if (hosts[i].id == id) {
@@ -3909,7 +4482,7 @@ $(document).ready(function () {
         }
 
         // Update groups
-        if (id.substring(0, "system.group.".length) == "system.group.") {
+        if (id.match(/^system\.group\./)) {
             if (obj) {
                 if (groups.indexOf(id) == -1) groups.push(id);
             } else {
@@ -3928,14 +4501,12 @@ $(document).ready(function () {
         }
 
         //Update enums
-        if (id.substring(0, 'enum.'.length) == 'enum.') {
+        if (id.match(/^enum\./)) {
             if (obj) {
                 if (enums.indexOf(id) == -1) enums.push(id);
             } else {
                 j = enums.indexOf(id);
-                if (j != -1) {
-                    enums.splice(j, 1);
-                }
+                if (j != -1) enums.splice(j, 1);
             }
 
             if (updateTimers.initEnums) {
@@ -3950,8 +4521,8 @@ $(document).ready(function () {
         // Update states
         if (obj && obj.type == 'state') {
             // Update history button
-            var rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
-            if (!rowData || !rowData._id) {
+            var _rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
+            if (!_rowData || !_rowData._id) {
                 $gridStates.jqGrid('addRowData', 'state_' + id.replace(/ /g, '_'), convertState(id, obj));
             } else {
                 if (objects['system.adapter.history.0'] && objects['system.adapter.history.0'].common.enabled &&
@@ -3960,11 +4531,11 @@ $(document).ready(function () {
                     // Check if history enabled
                     historyEnabled = '';
                     if (obj && obj.common && obj.common.history && obj.common.history.enabled) historyEnabled = ' history-enabled';
-                    rowData.history = '<button data-id="' + id + '" class="history' + historyEnabled + '" id="history_' + id + '">' + _('history') + '</button>';
+                    _rowData.history = '<button data-id="' + id + '" class="history' + historyEnabled + '" id="history_' + id + '">' + _('history') + '</button>';
                 } else {
-                    rowData.history = '';
+                    _rowData.history = '';
                 }
-                $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), rowData);
+                $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), _rowData);
             }
             $('.history').each(function (id) {
                 prepareHistoryButton(this);
@@ -3974,7 +4545,6 @@ $(document).ready(function () {
             $gridStates.jqGrid('delRowData', 'state_' + id);
         }
     });
-
     socket.on('cmdStdout', function (_id, text) {
         if (activeCmdId == _id) {
             stdout += '\n' + text;
@@ -3982,7 +4552,6 @@ $(document).ready(function () {
             $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
         }
     });
-
     socket.on('cmdStderr', function (_id, text) {
         if (activeCmdId == _id) {
             stdout += '\nERROR: ' + text;
@@ -3990,7 +4559,6 @@ $(document).ready(function () {
             $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
         }
     });
-
     socket.on('cmdExit', function (_id, exitCode) {
         if (activeCmdId == _id) {
             exitCode = parseInt(exitCode, 10);
@@ -4008,7 +4576,6 @@ $(document).ready(function () {
             }
         }
     });
-
     socket.on('connect', function () {
         $('#connecting').hide();
         if (firstConnect) {
@@ -4142,21 +4709,18 @@ $(document).ready(function () {
                             $('#event-table').html('');
                         });
 
-                        getStates(getObjects());
+                        getStates(getObjects);
                     });
                 });
             });
         }
     });
-
     socket.on('disconnect', function () {
         $('#connecting').show();
     });
-
     socket.on('reconnect', function () {
         $('#connecting').hide();
     });
-
 
     // Helper methods
     function upToDate(_new, old) {
@@ -4186,7 +4750,6 @@ $(document).ready(function () {
             return true;
         }
     }
-
     function formatDate(dateObj) {
         return dateObj.getFullYear() + '-' +
             ("0" + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
@@ -4195,7 +4758,6 @@ $(document).ready(function () {
             ("0" + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
             ("0" + (dateObj.getSeconds()).toString(10)).slice(-2);
     }
-
     function resizeGrids() {
         var x = $(window).width();
         var y = $(window).height();
@@ -4217,8 +4779,9 @@ $(document).ready(function () {
         $gridHosts.setGridHeight(y - 150).setGridWidth(x - 20);
         $('.subgrid-level-1').setGridWidth(x - 67);
         $('.subgrid-level-2').setGridWidth(x - 94);
+        $('.subgrid-level-3').setGridWidth(x - 121);
+        $('.subgrid-level-4').setGridWidth(x - 148);
     }
-
     function navigation() {
         if (window.location.hash) {
             var tab = 'tab-' + window.location.hash.slice(1);

@@ -10,6 +10,11 @@ user interface for configuration and administration
 - Show scripts panel only if some javascript adapter installed
 
 ## Changelog
+### 0.2.0 (2014-11-20)
+* (bluefox) support of no-"io." schema
+* (bluefox) better enum editing
+* (bluefox) update of object tree online
+
 ### 0.1.9 (2014-11-15)
 * (bluefox) fix scripts editor
 
