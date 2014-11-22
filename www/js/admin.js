@@ -107,11 +107,7 @@ $(document).ready(function () {
 
     var treeExtended =          []; // List of extended object leafs
 
-    // TODO hide tab scripts and don't initialize ace if no instance of adapter javascript enabled
-    var editor = ace.edit("script-editor");
-    //editor.setTheme("ace/theme/monokai");
-    editor.getSession().setMode("ace/mode/javascript");
-    editor.resize();
+    var editor =                null;
 
     // jQuery UI initializations
     $('#tabs').tabs({
@@ -1959,7 +1955,7 @@ $(document).ready(function () {
                 {name: 'engineType', index: 'engineType'},
                 {name: 'enabled',    index: 'enabled',  editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
                 {name: 'engine',     index: 'engine',   editable: true, edittype: 'select', editoptions: ''},
-                {name: 'commands',   index: 'commands', editable: false, width: 60, align: 'center'}
+                {name: 'commands',   index: 'commands', editable: false, width: 80, align: 'center'}
             ],
             pager: $('#pager-scripts'),
             rowNum: 100,
@@ -2677,6 +2673,7 @@ $(document).ready(function () {
     }
 
     // ----------------------------- Scripts show and Edit ------------------------------------------------
+
     // Find all script engines
     function fillEngines(id) {
         var engines = [];
@@ -2687,7 +2684,7 @@ $(document).ready(function () {
                     if (engines.indexOf(engineTypes) == -1) engines.push(engineTypes);
                 } else {
                     for (var z = 0; z < engineTypes.length; z++) {
-                        if (engines.indexOf(engineTypes[z]) == -1) engines.push(engineTypes);
+                        if (engines.indexOf(engineTypes[z]) == -1) engines.push(engineTypes[z]);
                     }
                 }
             }
@@ -2737,10 +2734,10 @@ $(document).ready(function () {
 
             if (newCommon.source !== undefined) obj.common.source = newCommon.source;
 
-            if (_obj && _obj.common && newCommon.name == _obj.common.name && newCommon.engineType == _obj.common.engineType) {
+            if (_obj && _obj.common && newCommon.name == _obj.common.name && (newCommon.engineType === undefined || newCommon.engineType == _obj.common.engineType)) {
                 socket.emit('extendObject', id, obj);
             } else {
-                var prefix = '';
+                var prefix;
 
                 _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
                 var parts = _obj.common.engineType.split('/');
@@ -2771,6 +2768,19 @@ $(document).ready(function () {
             setTimeout(initScripts, 250);
             return;
         }
+        if (!editor) {
+            editor = ace.edit("script-editor");
+            //editor.setTheme("ace/theme/monokai");
+            editor.getSession().setMode("ace/mode/javascript");
+            editor.resize();
+            $('#edit-insert-id').button({
+                icons: {primary: 'ui-icon-note'}
+            }).css('height', '30px').click(function () {
+                showDialogSelectId(objects, function (newId) {
+                    editor.insert('"' + newId + '"');
+                });
+            });
+        }
 
         if (update || typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
             $gridScripts[0]._isInited = true;
@@ -2792,6 +2802,7 @@ $(document).ready(function () {
                     commands:
                         '<button data-script-id="' + id + '" class="script-edit-submit">'      + _('edit')   + '</button>' +
                         '<button data-script-id="' + id + '" class="script-edit-file-submit">' + _('edit file') + '</button>' +
+                        '<button data-script-id="' + id + '" class="script-reload-submit">'    + _('restart script') + '</button>' +
                         '<button data-script-id="' + id + '" class="script-delete-submit">'    + _('delete') + '</button>' +
                         '<button data-script-id="' + id + '" class="script-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
                         '<button data-script-id="' + id + '" class="script-cancel-submit" style="display:none">' + _('cancel') + '</button>'
@@ -2819,6 +2830,15 @@ $(document).ready(function () {
             if (objSelected) {
                 editScript(objSelected._obj_id);
             }
+        });
+
+        $('.script-reload-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-refresh'},
+            text:  false
+        }).click(function () {
+            var id = $(this).attr('data-script-id');
+            var objSelected = $gridScripts.jqGrid('getRowData', 'script_' + id);
+            socket.emit('extendObject', objSelected._obj_id, {});
         });
 
         $('.script-delete-submit').unbind('click').button({
@@ -2906,7 +2926,7 @@ $(document).ready(function () {
             $('#edit-script-name').val(obj.common.name);
             // Add engine even if it is not installed
             if (engines.indexOf(obj.common.engineType) == -1) $('#edit-script-engine-type').append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
-            $('#edit-script-engine-type').val(obj.common.engine);
+            $('#edit-script-engine-type').val(obj.common.engineType);
 
             if (obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
                 editor.getSession().setMode("ace/mode/javascript");
@@ -2916,24 +2936,25 @@ $(document).ready(function () {
             //$('#edit-script-source').val(obj.common.source);
             editor.setValue(obj.common.source);
             $dialogScript.dialog('open');
-        } /*else {
-         // Should never come
-         $dialogScript.dialog('option', 'title', 'new script');
-         $('#edit-script-id').val('');
-         $('#edit-script-name').val('');
-         $('#edit-script-engine-type').val('Javascript');
-         //$('#edit-script-source').val('');
-         editor.setValue('');
-         $dialogScript.dialog('open');
-         }*/
+        } else {
+            alert('This should never come!');
+             /*// Should never come
+             $dialogScript.dialog('option', 'title', 'new script');
+             $('#edit-script-id').val('');
+             $('#edit-script-name').val('');
+             $('#edit-script-engine-type').val('Javascript');
+             //$('#edit-script-source').val('');
+             editor.setValue('');
+             $dialogScript.dialog('open');*/
+         }
     }
     function saveScript() {
         var obj = {};
 
-        obj._id    = $('#edit-script-id').val();
-        obj.name   = $('#edit-script-name').val();
-        obj.source = editor.getValue();
-        obj.engine = $('#edit-script-engine-type').val() || '';
+        obj._id        = $('#edit-script-id').val();
+        obj.name       = $('#edit-script-name').val();
+        obj.source     = editor.getValue();
+        obj.engineType = $('#edit-script-engine-type').val() || '';
 
         updateScript(obj._id, obj);
         $dialogScript.dialog('close');
@@ -3057,8 +3078,8 @@ $(document).ready(function () {
         $('.instance-settings').hide();
         $('.instance-reload').hide();
         $('.instance-del').hide();
-        $('.instance-ok-submit').show();
-        $('.instance-cancel-submit').show();
+        $('.instance-ok-submit[data-instance-id="' + id + '"]').show();
+        $('.instance-cancel-submit[data-instance-id="' + id + '"]').show();
         $('#reload-instances').addClass('ui-state-disabled');
         $('#edit-instance').addClass('ui-state-disabled');
 
@@ -4029,6 +4050,15 @@ $(document).ready(function () {
             var subgrid = $(this).attr('data-enum-subgrid');
             var $grid = subgrid ? $(document.getElementById(subgrid)) : $gridEnums;
             $grid.jqGrid('restoreRow', 'enum_' + id, false);
+            var obj = $grid.jqGrid('getRowData', 'enum_' + id);
+            var o = $('.enum-ok-submit[data-enum-id="' + id + '"]')[0];
+            obj._id = o._full;
+
+            $grid.jqGrid('setRowData', 'enum_' + id, obj);
+
+            delete o._full;
+            delete o._original;
+
         });
     }
     function initEnums(update, expandId) {
@@ -4359,11 +4389,11 @@ $(document).ready(function () {
                 $('.history').each(function (id) {
                     prepareHistoryButton(this);
                 });
-
-                // Disable scripts tab if no one script engine instance found
-                var engines = fillEngines();
-                $('#tabs').tabs('option', 'disabled', (engines && engines.length) ? [] : [7]);
             }
+
+            // Disable scripts tab if no one script engine instance found
+            var engines = fillEngines();
+            $('#tabs').tabs('option', 'disabled', (engines && engines.length) ? [] : [7]);
 
             if (typeof $gridInstance !== 'undefined' && $gridInstance[0]._isInited) {
                 if (updateTimers.initInstances) {

@@ -226,20 +226,23 @@
     <div id="pager-enum-members"></div>
 </div>
 <div id="dialog-script" style="display:none">
-    <table>
+    <table style="width: 100%">
         <tr>
-            <td>name</td>
-            <td><input size="60" id="edit-script-name"></td>
+            <td class="translate" style="width:100">name</td>
+            <td colspan="2"><input size="60" id="edit-script-name"></td>
         </tr>
         <tr>
-            <td>platform</td>
-            <td>
+            <td class="translate">engine type</td>
+            <td style="width:100">
                 <select id="edit-script-engine-type"></select>
+            </td>
+            <td style="text-align:right">
+                <button id="edit-insert-id" class="translate">Insert</button>
             </td>
         </tr>
     </table><br/>
     <!--<textarea id="edit-script-source"></textarea>-->
-   <div id="script-editor">Test!</div>
+    <div id="script-editor">Test!</div>
     <input type="hidden" id="edit-script-id">
 
 
