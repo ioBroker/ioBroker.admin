@@ -3114,6 +3114,14 @@ $(document).ready(function () {
         }
         $gridInstance.jqGrid('editRow', 'instance_' + id, {"url": "clientArray"});
     }
+    function replaceLink(vars, adapter, instance) {
+        // like web_port
+        var parts = vars.split('_');
+        socket.emit('getObject', 'system.adapter.' + parts[0] + '.0', function (err, obj) {
+            var link = $('#a_' + adapter + '_' + instance).attr('href').replace('%' + vars + '%', obj.native[parts[1]]);
+            $('#a_' + adapter + '_' + instance).attr('href', link);
+        });
+    }
     function initInstances(update) {
 
         if (!objectsLoaded) {
@@ -3135,6 +3143,11 @@ $(document).ready(function () {
                 var title = obj.common ? obj.common.title : '';
                 var link  = obj.common.localLink || '';
                 if (link && link.indexOf('%ip%') != -1) link = link.replace('%ip%', location.hostname);
+                if (link && link.indexOf('%') != -1) {
+                    // TODO Get vars
+                    var vars = 'web_port';
+                    replaceLink(vars, adapter, instance);
+                }
 
                 $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
                     _id:       obj._id,
@@ -3142,13 +3155,13 @@ $(document).ready(function () {
                     image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px"/>' : '',
                     name:      obj.common ? obj.common.name : '',
                     instance:  obj._id.slice(15),
-                    title:     obj.common ? (link ? '<a href="' + link + '" target="_blank">' + title + '</a>': title): '',
+                    title:     obj.common ? (link ? '<a href="' + link + '" id="a_' + adapter + '_' + instance + '" target="_blank">' + title + '</a>': title): '',
                     enabled:   obj.common ? (obj.common.enabled ? "true": "false") : "false",//'<span style="color:green;font-weight:bold">true</span>' : '<span style="color:red">false</span>') : '',
                     host:      obj.common ? obj.common.host : '',
                     mode:      obj.common.mode,
                     schedule:  obj.common.mode === 'schedule' ? obj.common.schedule : '',
-                    buttons:   '<button data-instance-id="' + instances[i] + '" class="instance-edit">'   + _('edit')   + '</button>' +
-                               '<button data-instance-id="' + instances[i] + '" class="instance-settings" data-instance-href="/adapter/' + adapter + '/?' + instance + '" >' + _('config') + '</button>' +
+                    buttons:   '<button data-instance-id="' + instances[i] + '" class="instance-settings" data-instance-href="/adapter/' + adapter + '/?' + instance + '" >' + _('config') + '</button>' +
+                               '<button data-instance-id="' + instances[i] + '" class="instance-edit">'   + _('edit')   + '</button>' +
                                '<button data-instance-id="' + instances[i] + '" class="instance-reload">' + _('reload') + '</button>' +
                                '<button data-instance-id="' + instances[i] + '" class="instance-del">'    + _('delete') + '</button>' +
                                '<button data-instance-id="' + instances[i] + '" class="instance-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
