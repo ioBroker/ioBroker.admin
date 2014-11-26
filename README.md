@@ -10,6 +10,11 @@ user interface for configuration and administration
 - Show scripts panel only if some javascript adapter installed
 
 ## Changelog
+### 0.2.1 (2014-11-26)
+* (bluefox) Charts in history dialog
+* (bluefox) filter states by history
+* (bluefox) show only 500 events
+
 ### 0.2.0 (2014-11-20)
 * (bluefox) support of no-"io." schema
 * (bluefox) better enum editing
