@@ -310,10 +310,21 @@
                 </select>
             </td>
         </tr>
-    </table><br/>
-    <input type="hidden" id="edit-history-id">
-    <table id="grid-history"></table>
-    <div id="pager-history"></div>
+    </table>
+    <div id="tabs-history">
+        <ul>
+            <li><a href="#tab-history-table" class="translate">Table</a></li>
+            <li><a href="#tab-history-chart" class="translate">Chart</a></li>
+        </ul>
+        <div id="tab-history-table">
+            <input type="hidden" id="edit-history-id">
+            <table id="grid-history"></table>
+            <div id="pager-history"></div>
+        </div>
+        <div id="tab-history-chart">
+            <iframe id="iframe-history-chart"></iframe>
+        </div>
+    </div>
 </div>
 <div title="command execution" id="dialog-command" style="display:none">
     <textarea style="font-family: courier, monospace; font-size: 11px;" id="stdout" disabled="disabled" cols="120" rows="30"></textarea>

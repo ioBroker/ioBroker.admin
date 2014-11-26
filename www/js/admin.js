@@ -61,6 +61,9 @@ $(document).ready(function () {
     var stdout;
     var activeCmdId =           null;
 
+    var eventsLinesCount =      0;
+    var eventsLinesStart =      0;
+
     var logLinesCount =         0;
     var logLinesStart =         0;
     var logHosts =              [];
@@ -347,8 +350,8 @@ $(document).ready(function () {
             initCertsGrid();
         },
         resize: function () {
-            $gridRepo.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
-            $gridCerts.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
+            $gridRepo.setGridHeight($(this).height() - 160).setGridWidth($(this).width() - 40);
+            $gridCerts.setGridHeight($(this).height() - 160).setGridWidth($(this).width() - 40);
         }
     });
 
@@ -457,10 +460,15 @@ $(document).ready(function () {
             }
         ],
         open: function (event, ui) {
-
+            $gridHistory.setGridHeight($(this).height() - 180).setGridWidth($(this).width() - 30);
+            $('#iframe-history-chart').css({height: $(this).height() - 115, width: $(this).width() - 30});
         },
         close: function () {
-
+            $('#iframe-history-chart').attr('src', '');
+        },
+        resize: function () {
+            $gridHistory.setGridHeight($(this).height() - 180).setGridWidth($(this).width() - 30);
+            $('#iframe-history-chart').css({height: $(this).height() - 115, width: $(this).width() - 30});
         }
     });
 
@@ -687,8 +695,8 @@ $(document).ready(function () {
                 {name: 'ts',   index: 'ts',   width: 140, fixed: false},
                 {name: 'lc',   index: 'lc',   width: 140, fixed: false}
             ],
-            width: 800,
-            height: 330,
+            width: 750,
+            height: 300,
             pager: $('#pager-history'),
             rowNum: 100,
             rowList: [15, 100, 1000],
@@ -737,9 +745,57 @@ $(document).ready(function () {
             $dialogHistory.dialog('open');
             $gridHistory.jqGrid('clearGridData');
             $("#load_grid-history").show();
+
             var start = Math.round((new Date()).getTime() / 1000) - historyMaxAge;
             var end =   Math.round((new Date()).getTime() / 1000) + 5000;
             //console.log('getStateHistory', id, start, end)
+            var tabs = $('#tabs-history');
+            if (!tabs[0]._inited) {
+                tabs[0]._inited = true;
+                tabs.tabs({
+                    activate: function (event, ui) {
+                        switch (ui.newPanel.selector) {
+                            case '#tab-history-table':
+                                $('#iframe-history-chart').attr('src', '');
+                                break;
+
+                            case '#tab-history-chart':
+                                var port = 0;
+                                var chart = false;
+                                for (var i = 0; i < instances.length; i++) {
+                                    if (objects[instances[i]].common.name == 'rickshaw' && objects[instances[i]].common.enabled) {
+                                        chart = 'rickshaw';
+                                    } else
+                                    if (objects[instances[i]].common.name == 'web' && objects[instances[i]].common.enabled) {
+                                        port = objects[instances[i]].native.port;
+                                    }
+                                    if (chart && port) break;
+                                }
+                                var $chart = $('#iframe-history-chart');
+
+                                $chart.attr('src', 'http://' + location.hostname + ':' + port + '/' + chart + '/index.html?axeX=lines&axeY=inside&_ids=' + escape(id) + '&width=' + ($chart.width() - 10) + '&height=' + ($chart.height() - 10));
+                                break;
+
+                        }
+                    },
+                    create: function () {
+                    }
+                });
+            }
+
+            var port = 0;
+            var chart = false;
+            for (var i = 0; i < instances.length; i++) {
+                if (objects[instances[i]].common.name == 'rickshaw' && objects[instances[i]].common.enabled) {
+                    chart = 'rickshaw';
+                } else
+                if (objects[instances[i]].common.name == 'web' && objects[instances[i]].common.enabled) {
+                    port = objects[instances[i]].native.port;
+                }
+                if (chart && port) break;
+            }
+            tabs.tabs('option', 'disabled', (port && chart) ? [] : [1]);
+
             socket.emit('getStateHistory', id, start, end, function (err, res) {
                 if (!err) {
                     var rows = [];
@@ -761,7 +817,6 @@ $(document).ready(function () {
                     console.log(err);
                 }
             });
-
 
         });
 
@@ -1396,7 +1451,11 @@ $(document).ready(function () {
                 {name: 'from',      index: 'from',      width: 80,  fixed: false},
                 {name: 'ts',        index: 'ts',        width: 140, fixed: false},
                 {name: 'lc',        index: 'lc',        width: 140, fixed: false},
-                {name: 'history',   index: 'history',   width: 80, fixed: false}
+                {name: 'history',   index: 'history',   width: 80,  fixed: false, stype: 'select', searchoptions: {
+                    sopt: ['cn'],
+                    value: ':' + _('All') + ';history-enabled:' + _('With') + ';history-disabled:' + _('Without'),
+                    defaultValue: "-1"
+                } }
             ],
             pager: $('#pager-states'),
             rowNum: 100,
@@ -4121,6 +4180,7 @@ $(document).ready(function () {
         }
     }
 
+    // ----------------------------- States show and Edit ------------------------------------------------
     function convertState(key, _obj) {
         var obj = JSON.parse(JSON.stringify(_obj));
         obj._id = key;
@@ -4153,7 +4213,7 @@ $(document).ready(function () {
             key.substring(key.length - '.messagebox'.length) != '.messagebox') {
 
             // Check if history enabled
-            var historyEnabled = '';
+            var historyEnabled = ' history-disabled';
             if (objects[key] && objects[key].common && objects[key].common.history && objects[key].common.history.enabled) historyEnabled = ' history-enabled';
             obj.history = '<button data-id="' + obj._id + '" class="history' + historyEnabled + '" id="history_' + obj._id + '">' + _('history') + '</button>';
 
@@ -4258,8 +4318,14 @@ $(document).ready(function () {
                    ("0" + time.getHours()).slice(-2)   + ':' +
                    ("0" + time.getMinutes()).slice(-2) + ':' +
                    ("0" + time.getSeconds()).slice(-2);
+            if (eventsLinesCount >= 500) {
+                eventsLinesStart++;
+                document.getElementById('event_' + eventsLinesStart).outerHTML = '';
+            } else {
+                eventsLinesCount++;
+            }
 
-            $('#event-table').prepend('<tr><td class="event-column-1">message</td><td class="event-column-2">' + id +
+            $('#event-table').prepend('<tr id="event_' + (eventsLinesStart + eventsLinesCount) + '"><td class="event-column-1">message</td><td class="event-column-2">' + id +
                 '</td><td class="event-column-3">' + obj.command +
                 '</td><td class="event-column-4">' + (obj.callback ? obj.callback.ack : '') + '</td>' +
                 '<td class="event-column-5">' + obj.from + '</td><td class="event-column-6">' + time + '</td><td class="event-column-7"></td></tr>');
@@ -4276,10 +4342,16 @@ $(document).ready(function () {
             $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), rowData);
 
             var value = JSON.stringify(obj.val);
-            if (value.length > 30)
-                value = '<div title="' + value.replace(/"/g, '') + '">' + value.substring(0, 30) + '...</div>';
+            if (value.length > 30) value = '<div title="' + value.replace(/"/g, '') + '">' + value.substring(0, 30) + '...</div>';
 
-            $('#event-table').prepend('<tr><td class="event-column-1">stateChange</td><td class="event-column-2">' + id +
+            if (eventsLinesCount >= 500) {
+                eventsLinesStart++;
+                document.getElementById('event_' + eventsLinesStart).outerHTML = '';
+            } else {
+                eventsLinesCount++;
+            }
+
+            $('#event-table').prepend('<tr id="event_' + (eventsLinesStart + eventsLinesCount) + '"><td class="event-column-1">stateChange</td><td class="event-column-2">' + id +
                 '</td><td class="event-column-3">' + value +
                 '</td><td class="event-column-4">' + obj.ack + '</td>' +
                 '<td class="event-column-5">' + obj.from + '</td><td class="event-column-6">' + rowData.ts + '</td><td class="event-column-7">' +
@@ -4719,6 +4791,8 @@ $(document).ready(function () {
                                 primary: 'ui-icon-trash'
                             }
                         }).unbind('click').click(function () {
+                            eventsLinesCount = 0;
+                            eventsLinesStart = 0;
                             $('#event-table').html('');
                         });
 
