@@ -23,7 +23,8 @@
         ],
         "license":                  "MIT",
         "localLink":                "http://%ip%:5984/_utils",
-        "logTransporter":           true
+        "logTransporter":           true,
+        "wwwDontUpload":            true
     },
     "native": {
         "port":                     8081,
