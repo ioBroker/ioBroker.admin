@@ -11,6 +11,7 @@
 /*global confirm */
 /*global systemLang: true */
 /*global license */
+/*global escape */
 /*global translateAll */
 'use strict';
 
@@ -1452,10 +1453,11 @@ $(document).ready(function () {
                 {name: 'ts',        index: 'ts',        width: 140, fixed: false},
                 {name: 'lc',        index: 'lc',        width: 140, fixed: false},
                 {name: 'history',   index: 'history',   width: 80,  fixed: false, stype: 'select', searchoptions: {
-                    sopt: ['cn'],
-                    value: ':' + _('All') + ';history-enabled:' + _('With') + ';history-disabled:' + _('Without'),
-                    defaultValue: "-1"
-                } }
+                        sopt: ['cn'],
+                        value: ':' + _('All') + ';history-enabled:' + _('With') + ';history-disabled:' + _('Without'),
+                        defaultValue: "-1"
+                    }
+                }
             ],
             pager: $('#pager-states'),
             rowNum: 100,
@@ -3144,11 +3146,11 @@ $(document).ready(function () {
 
         // Set the colors
         var a = $('td[aria-describedby="grid-instances_enabled"]');
-        a.each(function(index) {
+        a.each(function (index) {
             var text = $(this).html();
             if (text == '<span style="color:green;font-weight:bold">true</span>') {
                 $(this).html('true');
-            } else if(text == '<span style="color:red">false</span>') {
+            } else if (text == '<span style="color:red">false</span>') {
                 $(this).html('false');
             }
         });
@@ -3235,7 +3237,7 @@ $(document).ready(function () {
 
             // Set the colors
             var a = $('td[aria-describedby="grid-instances_enabled"]');
-            a.each(function(index) {
+            a.each(function (index) {
                 var text = $(this).html();
                 if (text == 'true') {
                     $(this).html('<span style="color:green;font-weight:bold">true</span>');
@@ -3338,7 +3340,7 @@ $(document).ready(function () {
 
             // Set the colors
             var a = $('td[aria-describedby="grid-instances_enabled"]');
-            a.each(function(index) {
+            a.each(function (index) {
                 var text = $(this).html();
                 if (text == 'true') {
                     $(this).html('<span style="color:green;font-weight:bold">true</span>');
@@ -3606,7 +3608,7 @@ $(document).ready(function () {
 
     function treeInsert(id) {
         var parts = treeSplit(id);
-        var isUpdate = false
+        var isUpdate = false;
         if (objectTree.children[parts[0]]) isUpdate = true;
         _treeInsert(objectTree, parts, id, 0);
         return isUpdate;
@@ -4438,11 +4440,22 @@ $(document).ready(function () {
             }
         } else {
             var rowData = $gridObjects.jqGrid('getRowData', 'object_' + id);
-            rowData.name = obj.common ? (obj.common.name || '') : '',
-            rowData.role = obj.common ? (obj.common.role || '') : '',
+            rowData.name = obj.common ? (obj.common.name || '') : '';
+            rowData.role = obj.common ? (obj.common.role || '') : '';
             rowData.type = obj.type;
             $gridObjects.jqGrid('setRowData', 'object_' + id, rowData);
         }
+
+        // If system config updated
+        if (id == 'system.config') {
+            // Check language
+            if (systemConfig.common.language != obj.common.language) {
+                window.location.reload();
+            }
+
+            systemConfig = obj;
+        }
+
 
         // Update Instance Table
         if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.[0-9]+$/)) {
@@ -4734,7 +4747,6 @@ $(document).ready(function () {
                                 $('#edit-user-passconf').keydown(function (event) {
                                     if (event.which == 13) saveUser();
                                 });
-
                             }
                         } else {
                             systemConfig = {

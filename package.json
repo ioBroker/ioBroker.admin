@@ -1,6 +1,24 @@
 {
-  "name": "ioBroker.admin",
-  "private": true,
+  "name": "iobroker.admin",
+  "description": "The adapter opens a webserver for the ioBroker admin UI.",
+  "version": "0.2.2",
+  "contributirs": [
+      "bluefox <bluefox@ccu.io>",
+      "hobbyquaker <hq@ccu.io>"
+  ],
+  "homepage": "https://github.com/ioBroker/ioBroker.admin",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/ioBroker/ioBroker.admin"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/ioBroker/ioBroker.admin/blob/master/LICENSE"
+    }
+  ],
+  "keywords":  ["ioBroker", "setup", "config", "update", "upgrade", "system", "konfiguration", "administration", "einrichtung", "wartung"],
+  "readmeFilename": "README.md",
   "dependencies": {
     "express": "~4.4.4",
     "socket.io": "~1.0.6",
