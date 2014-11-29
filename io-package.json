@@ -1,10 +1,10 @@
 {
     "common": {
         "name":                     "admin",
-        "version":                  "0.2.1",
+        "version": "0.2.2",
         "title":                    "ioBroker Admin",
         "desc": {
-            "en":                   "opens a webserver for the ioBroker admin UI",
+            "en":                   "Opens a webserver for the ioBroker admin UI",
             "de":                   "Stellt Webserver für 'ioBroker Admin UI' zur Verfügung",
             "ru":                   "Запускает веб сервер с 'ioBroker admin UI' для удобной настройки через веб интерфейс"
         },
@@ -23,7 +23,8 @@
         ],
         "license":                  "MIT",
         "localLink":                "http://%ip%:5984/_utils",
-        "logTransporter":           true
+        "logTransporter":           true,
+        "wwwDontUpload":            true
     },
     "native": {
         "port":                     8081,

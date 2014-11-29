@@ -367,7 +367,7 @@ function initWebServer(settings) {
             }
             server.server.listen(port);
             adapter.log.info('http' + (settings.secure ? 's' : '') + ' server listening on port ' + port);
-            adapter.log.info('Use link "http"' + (settings.secure ? 's' : '') + '://localhost:' + port + '" to configure.');
+            adapter.log.info('Use link "http' + (settings.secure ? 's' : '') + '://localhost:' + port + '" to configure.');
 
             server.io = socketio.listen(server.server, (settings.bind && settings.bind != "0.0.0.0") ? settings.bind : undefined);
 
