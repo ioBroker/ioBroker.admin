@@ -11,7 +11,6 @@
 /*global confirm */
 /*global systemLang: true */
 /*global license */
-/*global escape */
 /*global translateAll */
 'use strict';
 

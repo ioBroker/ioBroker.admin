@@ -36,7 +36,11 @@ var adapter = require(__dirname + '/../../lib/adapter.js')({
 });
 
 adapter.on('objectChange', function (id, obj) {
+    if (obj) {
     objects[id] = obj;
+    } else {
+        delete objects[id];
+    }
     if (webServer) webServer.io.sockets.emit('objectChange', id, obj);
 });
 
@@ -105,12 +109,6 @@ function main() {
     webServer = initWebServer(adapter.config);
 
     getData();
-}
-
-function getAdapterUI() {
-    adapter.objects.getObjectView('system', 'adapterUI', {}, function (err, res) {
-
-    });
 }
 
 function addUser(user, pw, callback) {
@@ -335,17 +333,24 @@ function initWebServer(settings) {
                 }
                 return;
             }
-
-            // add .admin to adapter name
-            url = url.replace(/^\/([a-zA-Z0-9-_]+)\//, '/$1.admin/');
-
-
-            // TODO use user and pass
-            url = 'http://' + config.couch.host + ':' + config.couch.port + '/iobroker' + url;
-                // Example: http://127.0.0.1:5984/iobroker/example.admin/index.html?0
-
-            // TODO own 404/500 Page? possible with pipe?
-            req.pipe(request(url)).pipe(res);
+            url = url.split('/', 3);
+            // Skip first /
+            url.shift();
+            // Get ID
+            var id = url.shift() + '.admin';
+            var pos = url[0].indexOf('?');
+            if (pos != -1) {
+                url[0] = url[0].substring(0, pos);
+            }
+            adapter.readFile(id, url[0], null, function (err, buffer, mimeType) {
+                if (!buffer || err) {
+                    res.contentType('text/html');
+                    res.send('File ' + url + ' not found', 404);
+                } else {
+                    res.contentType(mimeType);
+                    res.send(buffer);
+                }
+            });
         });
 
         if (settings.secure) {
