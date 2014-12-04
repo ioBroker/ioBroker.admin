@@ -784,7 +784,7 @@ $(document).ready(function () {
                     }
                 });
             } else {
-                tabs.tabs({ active: 0 });
+                tabs.tabs({active: 0});
             }
 
             var port = 0;
