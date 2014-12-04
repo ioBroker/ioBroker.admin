@@ -333,16 +333,17 @@ function initWebServer(settings) {
                 }
                 return;
             }
-            url = url.split('/', 3);
+            url = url.split('/');
             // Skip first /
             url.shift();
             // Get ID
             var id = url.shift() + '.admin';
-            var pos = url[0].indexOf('?');
+            url = url.join('/');
+            var pos = url.indexOf('?');
             if (pos != -1) {
-                url[0] = url[0].substring(0, pos);
+                url = url.substring(0, pos);
             }
-            adapter.readFile(id, url[0], null, function (err, buffer, mimeType) {
+            adapter.readFile(id, url, null, function (err, buffer, mimeType) {
                 if (!buffer || err) {
                     res.contentType('text/html');
                     res.send('File ' + url + ' not found', 404);

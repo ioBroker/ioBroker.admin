@@ -4329,7 +4329,7 @@ $(document).ready(function () {
             $('#event-table').prepend('<tr id="event_' + (eventsLinesStart + eventsLinesCount) + '"><td class="event-column-1">message</td><td class="event-column-2">' + id +
                 '</td><td class="event-column-3">' + obj.command +
                 '</td><td class="event-column-4">' + (obj.callback ? obj.callback.ack : '') + '</td>' +
-                '<td class="event-column-5">' + obj.from + '</td><td class="event-column-6">' + time + '</td><td class="event-column-7"></td></tr>');
+                '<td class="event-column-5">' + ((obj.from ? obj.from.replace('system.adapter.', '') : '') || '') + '</td><td class="event-column-6">' + time + '</td><td class="event-column-7"></td></tr>');
         } else {
             if (!$gridStates) return;
 
@@ -4355,7 +4355,7 @@ $(document).ready(function () {
             $('#event-table').prepend('<tr id="event_' + (eventsLinesStart + eventsLinesCount) + '"><td class="event-column-1">stateChange</td><td class="event-column-2">' + id +
                 '</td><td class="event-column-3">' + value +
                 '</td><td class="event-column-4">' + obj.ack + '</td>' +
-                '<td class="event-column-5">' + obj.from + '</td><td class="event-column-6">' + rowData.ts + '</td><td class="event-column-7">' +
+                '<td class="event-column-5">' + ((obj.from ? obj.from.replace('system.adapter.', '') : '') || '') + '</td><td class="event-column-6">' + rowData.ts + '</td><td class="event-column-7">' +
                 rowData.lc + '</td></tr>');
         }
 
