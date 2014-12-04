@@ -750,6 +750,7 @@ $(document).ready(function () {
             var end =   Math.round((new Date()).getTime() / 1000) + 5000;
             //console.log('getStateHistory', id, start, end)
             var tabs = $('#tabs-history');
+            tabs[0]._id = id;
             if (!tabs[0]._inited) {
                 tabs[0]._inited = true;
                 tabs.tabs({
@@ -762,6 +763,7 @@ $(document).ready(function () {
                             case '#tab-history-chart':
                                 var port = 0;
                                 var chart = false;
+                                var _id = this._id;
                                 for (var i = 0; i < instances.length; i++) {
                                     if (objects[instances[i]].common.name == 'rickshaw' && objects[instances[i]].common.enabled) {
                                         chart = 'rickshaw';
@@ -773,7 +775,7 @@ $(document).ready(function () {
                                 }
                                 var $chart = $('#iframe-history-chart');
 
-                                $chart.attr('src', 'http://' + location.hostname + ':' + port + '/' + chart + '/index.html?axeX=lines&axeY=inside&_ids=' + escape(id) + '&width=' + ($chart.width() - 10) + '&height=' + ($chart.height() - 10));
+                                $chart.attr('src', 'http://' + location.hostname + ':' + port + '/' + chart + '/index.html?axeX=lines&axeY=inside&_ids=' + encodeURI(_id) + '&width=' + ($chart.width() - 10) + '&height=' + ($chart.height() - 10));
                                 break;
 
                         }
@@ -781,6 +783,8 @@ $(document).ready(function () {
                     create: function () {
                     }
                 });
+            } else {
+                tabs.tabs({ active: 0 });
             }
 
             var port = 0;
