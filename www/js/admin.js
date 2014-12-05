@@ -66,6 +66,7 @@ $(document).ready(function () {
 
     var logLinesCount =         0;
     var logLinesStart =         0;
+    var logInited =             false;
     var logHosts =              [];
     var logFilterTimeout =      null;
 
@@ -151,6 +152,10 @@ $(document).ready(function () {
 
                 case '#tab-enums':
                     initEnums();
+                    break;
+
+                case '#tab-log':
+                    initLogs();
                     break;
             }
         },
@@ -775,7 +780,7 @@ $(document).ready(function () {
                                 }
                                 var $chart = $('#iframe-history-chart');
 
-                                $chart.attr('src', 'http://' + location.hostname + ':' + port + '/' + chart + '/index.html?axeX=lines&axeY=inside&_ids=' + encodeURI(_id) + '&width=' + ($chart.width() - 10) + '&height=' + ($chart.height() - 10));
+                                $chart.attr('src', 'http://' + location.hostname + ':' + port + '/' + chart + '/index.html?axeX=lines&axeY=inside&_ids=' + encodeURI(_id) + '&width=' + ($chart.width() - 10) + '&hoverDetail=true&height=' + ($chart.height() - 10));
                                 break;
 
                         }
@@ -2393,6 +2398,7 @@ $(document).ready(function () {
     }
 
     // Grids content
+
     // ----------------------------- Adpaters show and Edit ------------------------------------------------
     function initAdapters(update, updateRepo) {
         $gridAdapter.jqGrid('clearGridData');
@@ -2736,6 +2742,79 @@ $(document).ready(function () {
         // todo
     }
 
+    // -------------------------------- Logs ------------------------------------------------------------
+    function initLogs() {
+        if (!currentHost) {
+            setTimeout(initLogs, 500);
+            return;
+        }
+
+        socket.emit('sendToHost', currentHost, 'getLogs', 200, function (lines) {
+            var message = {message: '', severity: 'debug', from: '', ts: ''};
+
+            for (var i = 0; i < lines.length; i++) {
+                if (!lines[i]) continue;
+                // 2014-12-05 14:47:10.739  - [32minfo[39m: iobroker  ERR! network In most cases you are behind a proxy or have bad network settings.npm ERR! network
+                if (lines[i][4] == '-' && lines[i][7] == '-') {
+                    message.ts = lines[i].substring(0, 23);
+                    var pos = lines[i].indexOf('[39m:');
+                    message.severity = lines[i].substring(32, pos);
+                    lines[i] = lines[i].substring(pos + 6);
+                    pos = lines[i].indexOf(' ');
+                    message.from = lines[i].substring(0, pos);
+                    message.message = lines[i].substring(pos);
+                } else {
+                    message.message = lines[i];
+                }
+                addMessageLog(message);
+            }
+        });
+    }
+    function addMessageLog(message) {
+        //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
+        if (logLinesCount >= 2000) {
+            var line = document.getElementById('log-line-' + (logLinesStart + 1));
+            if (line) line.outerHTML = '';
+            logLinesStart++;
+        } else {
+            logLinesCount++;
+        }
+
+        var hostFilter = $('#log-filter-host').val();
+
+        if (logHosts.indexOf(message.from) == -1) {
+            logHosts.push(message.from);
+            logHosts.sort();
+            $('#log-filter-host').html('<option value="">' + _('all') + '</option>');
+            for (var i = 0; i < logHosts.length; i++) {
+                $('#log-filter-host').append('<option value="' + logHosts[i] + '" ' + ((logHosts[i] == hostFilter) ? 'selected' : '') + '">' + logHosts[i] + '</option>');
+            }
+        }
+        var visible = '';
+        if (hostFilter && hostFilter != message.from) {
+            visible = 'display: none';
+        }
+        var sevFilter = $('#log-filter-severity').val();
+        if (!visible && sevFilter) {
+            if (sevFilter == 'info' && message.severity == 'debug') {
+                visible = 'display: none';
+            } else if (sevFilter == 'warn' && message.severity != 'warn' && message.severity != 'error') {
+                visible = 'display: none';
+            } else if (sevFilter == 'error' && message.severity != 'error') {
+                visible = 'display: none';
+            }
+        }
+
+        if (message.severity == 'error')         $('a[href="#tab-log"]').addClass('errorLog');
+
+        var text = '<tr id="log-line-' + (logLinesStart + logLinesCount) + '" class="log-line log-severity-' + message.severity + ' log-from-' + (message.from || '') + '" style="' + visible + '">';
+        text += '<td class="log-column-1">' + (message.from || '') + '</td>';
+        text += '<td class="log-column-2">' + (message.ts ? formatDate(new Date(message.ts)) : '')+ '</td>';
+        text += '<td class="log-column-3">' + message.severity + '</td>';
+        text += '<td class="log-column-4" title="' + message.message.replace(/"/g, "'") + '">' + message.message.substring(0, 200) + '</td></tr>';
+
+        $('#log-table').prepend(text);
+    }
     // ----------------------------- Scripts show and Edit ------------------------------------------------
 
     // Find all script engines
@@ -2767,6 +2846,7 @@ $(document).ready(function () {
         $('.script-edit-submit').hide();
         $('.script-edit-file-submit').hide();
         $('.script-delete-submit').hide();
+        $('.script-reload-submit').hide();
         $('.script-ok-submit[data-script-id="' + id + '"]').show();
         $('.script-cancel-submit[data-script-id="' + id + '"]').show();
 
@@ -2924,6 +3004,7 @@ $(document).ready(function () {
             $('.script-edit-submit').show();
             $('.script-edit-file-submit').show();
             $('.script-delete-submit').show();
+            $('.script-reload-submit').show();
             $('.script-ok-submit').hide();
             $('.script-cancel-submit').hide();
             $('#add-script').removeClass('ui-state-disabled');
@@ -2972,6 +3053,7 @@ $(document).ready(function () {
             var id = $(this).attr('data-script-id');
             $('.script-edit-submit').show();
             $('.script-edit-file-submit').show();
+            $('.script-reload-submit').show();
             $('.script-delete-submit').show();
             $('.script-ok-submit').hide();
             $('.script-cancel-submit').hide();
@@ -4257,49 +4339,7 @@ $(document).ready(function () {
     // Socket.io methods
     socket.on('log', function (message) {
         //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
-
-        if (logLinesCount >= 2000) {
-            var line = document.getElementById('log-line-' + (logLinesStart + 1));
-            if (line) line.outerHTML = '';
-            logLinesStart++;
-        } else {
-            logLinesCount++;
-        }
-
-        var hostFilter = $('#log-filter-host').val();
-
-        if (logHosts.indexOf(message.from) == -1) {
-            logHosts.push(message.from);
-            logHosts.sort();
-            $('#log-filter-host').html('<option value="">' + _('all') + '</option>');
-            for (var i = 0; i < logHosts.length; i++) {
-                $('#log-filter-host').append('<option value="' + logHosts[i] + '" ' + ((logHosts[i] == hostFilter) ? 'selected' : '') + '">' + logHosts[i] + '</option>');
-            }
-        }
-        var visible = '';
-        if (hostFilter && hostFilter != message.from) {
-            visible = 'display: none';
-        }
-        var sevFilter = $('#log-filter-severity').val();
-        if (!visible && sevFilter) {
-            if (sevFilter == 'info' && message.severity == 'debug') {
-                visible = 'display: none';
-            } else if (sevFilter == 'warn' && message.severity != 'warn' && message.severity != 'error') {
-                visible = 'display: none';
-            } else if (sevFilter == 'error' && message.severity != 'error') {
-                visible = 'display: none';
-            }
-        }
-
-        if (message.severity == 'error')         $('a[href="#tab-log"]').addClass('errorLog');
-
-        var text = '<tr id="log-line-' + (logLinesStart + logLinesCount) + '" class="log-line log-severity-' + message.severity + ' log-from-' + message.from + '" style="' + visible + '">';
-        text += '<td class="log-column-1">' + message.from + '</td>';
-        text += '<td class="log-column-2">' + formatDate(new Date(message.ts)) + '</td>';
-        text += '<td class="log-column-3">' + message.severity + '</td>';
-        text += '<td class="log-column-4" title="' + message.message.replace(/"/g, "'") + '">' + message.message.substring(0, 200) + '</td></tr>';
-
-        $('#log-table').prepend(text);
+        addMessageLog(message);
     });
     socket.on('stateChange', function (id, obj) {
         var rowData;

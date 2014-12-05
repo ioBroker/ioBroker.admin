@@ -5,15 +5,18 @@
 user interface for configuration and administration
 
 ## Todo
-- edit instances like certificates
-- update objects on the fly (added, delited)
-- Show scripts panel only if some javascript adapter installed
+
 
 ## Changelog
+### 0.2.4 (2014-12-05)
+* (bluefox) preload last 200 lines from iobroker.log
+
+### 0.2.3 (2014-12-04)
+* (bluefox) install adapter with npm
+
 ### 0.2.2 (2014-11-29)
 * (bluefox) Set language settings after license confirmed
 * (bluefox) try to use npm installer for this adapter
-
 
 ### 0.2.1 (2014-11-26)
 * (bluefox) Charts in history dialog
