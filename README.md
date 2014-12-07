@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.2.5 (2014-12-07)
+* (bluefox) fix object tree (some nodes was hidden)
+
 ### 0.2.4 (2014-12-05)
 * (bluefox) preload last 200 lines from iobroker.log
 

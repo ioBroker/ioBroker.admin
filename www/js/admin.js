@@ -979,7 +979,7 @@ $(document).ready(function () {
             },
             afterInsertRow: function (rowid) {
                 // Remove icon and click handler if no children available
-                var id = $('tr[id="' + rowid + '"]').find('td[aria-describedby$="_id"]').html();
+                var id = rowid.substring(7);//"object_"
                 var leaf = treeFindLeaf(id);
                 if (!leaf || !leaf.count) {
                     $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
@@ -3667,7 +3667,32 @@ $(document).ready(function () {
     var regexSystemAdapter = new RegExp('^system.adapter.');
     var regexSystemHost = new RegExp('^system.host.');
 
-    function treeSplit(id) {
+    function treeOptimizePath(parts, tree, index) {
+        if (!tree) tree = objectTree;
+        if (index === undefined) index = 0;
+        if (tree.children[parts[index]]) {
+            if (index == parts.length - 1) {
+                return parts;
+            } else {
+                return treeOptimizePath(parts, tree.children[parts[index]], index + 1);
+            }
+        } else {
+            var i = index + 1;
+            var name = parts[index] + '.' + parts[i];
+            while (!tree.children[name] && i < parts.length) {
+                i++;
+                name += '.' + parts[i];
+            }
+            parts[index] = name;
+            parts.splice(i, i - index);
+            if (index == parts.length - 1) {
+                return parts;
+            } else {
+                return treeOptimizePath(parts, tree.children[parts[index]], index + 1);
+            }
+        }
+    }
+    function treeSplit(id, optimized) {
         if (!id) {
             console.log('AAAA');
             return null;
@@ -3688,11 +3713,16 @@ $(document).ready(function () {
             parts[0] = parts[0] + '.' + parts[1];
             parts.splice(1, 1);
         }
+
+        if (optimized) {
+            parts = treeOptimizePath(parts);
+        }
+
         return parts;
     }
 
     function treeInsert(id) {
-        var parts = treeSplit(id);
+        var parts = treeSplit(id, false);
         var isUpdate = false;
         if (objectTree.children[parts[0]]) isUpdate = true;
         _treeInsert(objectTree, parts, id, 0);
@@ -3717,7 +3747,7 @@ $(document).ready(function () {
     }
 
     function treeFindLeaf(id) {
-        return _treeFindLeaf(objectTree, treeSplit(id), 0);
+        return _treeFindLeaf(objectTree, treeSplit(id, true), 0);
     }
     function _treeFindLeaf(tree, parts, index) {
         if (!index) index = 0;
@@ -3732,7 +3762,7 @@ $(document).ready(function () {
     }
 
     function treeRemove(id) {
-        return _treeRemove(objectTree, treeSplit(id));
+        return _treeRemove(objectTree, treeSplit(id, true));
     }
     function _treeRemove(tree, parts) {
         var leaf = _treeFindLeaf(tree, parts, 0);
@@ -3759,16 +3789,20 @@ $(document).ready(function () {
                         delete tree.children[i];
                         modified = true;
                     } else if (tree.children[i].count == 1) {
+                        var p;
                         for (var t in tree.children[i].children) {
-                            tree.children[i].name     += '.' + t;
-                            tree.children[i].fullName += '.' + t;
-                            tree.children[i].id        = tree.children[i].children[t].id;
-                            tree.children[i].count     = tree.children[i].children[t].count;
-                            tree.children[i].children  = tree.children[i].children[t].children;
+                            p = tree.children[i].name + '.' + t;
+                            tree.children[p] = {};
+                            tree.children[p].name      = p;
+                            tree.children[p].fullName  = tree.children[i].fullName + '.' + t;
+                            tree.children[p].id        = tree.children[i].children[t].id;
+                            tree.children[p].count     = tree.children[i].children[t].count;
+                            tree.children[p].children  = tree.children[i].children[t].children;
                         }
-                        for (t in tree.children[i].children) {
-                            tree.children[i].children[t].parent = tree.children[i];
+                        for (t in tree.children[p].children) {
+                            tree.children[p].children[t].parent = tree.children[p];
                         }
+                        delete tree.children[i];
                         modified = true;
                     }
                 }
