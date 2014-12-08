@@ -563,10 +563,13 @@ $(document).ready(function () {
         return typeof val;
     }
 
-    function showDialogSelectId(_objects, currentId, title, callback) {
-        //var $gridSelectMember   = $('#grid-select-member');
+    function showDialogSelectId(_objects, _states, currentId, title, filter, callback) {
+        if (_objects == '__clear__') {
+            selectID('__clear__');
+            return;
+        }
+
         var $dialogSelectMember = $('#dialog-select-member');
-        //$gridSelectMember.hide();
         if (typeof title == 'function') {
             callback = title;
             title = undefined;
@@ -577,11 +580,6 @@ $(document).ready(function () {
             currentId = undefined;
         }
 
-        //if (0 && typeof _objects != 'object') { // Clear table
-        //    if ($gridSelectMember[0]._buttons) $gridSelectMember.jqGrid('clearGridData');
-        //    return;
-        //}
-
         var selectedID = currentId;
 
         if (!$dialogSelectMember[0]._buttons) {
@@ -590,8 +588,6 @@ $(document).ready(function () {
                     id:   "dialog-member-button-ok",
                     text: _('Select'),
                     click: function () {
-                        //var obj = $gridSelectMember.jqGrid('getRowData', $gridSelectMember.jqGrid('getGridParam', 'selrow'));
-                        //var id = obj._id;
                         if (callback) callback(selectedID, currentId);
                         $dialogSelectMember.dialog('close');
                     }
@@ -605,61 +601,18 @@ $(document).ready(function () {
                 }
             ];
 
-            /*$gridSelectMember.jqGrid({
-                datatype: 'local',
-                colNames: ['id', _('name'), _('type')],
-                colModel: [
-                    {name: '_id',  index:'_id',  width: 240},
-                    {name: 'name', index:'name', width: 400},
-                    {name: 'type', index:'type', width: 100, fixed: true,
-                        stype: 'select',
-                        searchoptions: {
-                            sopt: ['eq'], value: ':' + _('all') + ';device:' + _('device') + ';channel:' + _('channel') + ';state:' + _('state')
-                        }
-                    }
-                ],
-                width:       768,
-                height:      370,
-                rowNum:      1000000,
-                sortname:    "id",
-                sortorder:   "desc",
-                viewrecords: true,
-                caption:     _('select member by double click'),
-                ignoreCase:  true,
-                onSelectRow: function (rowid, e) {
-                    var obj = $gridSelectMember.jqGrid('getRowData', rowid);
-                    $dialogSelectMember.dialog('option', 'title', _('Select ID') +  ' - ' + (_objects[obj._id].common.name || ' '));
-                    $('#dialog-member-button-ok').removeClass('ui-state-disabled');
-                },
-                ondblClickRow: function (rowid, e) {
-                    // Click first button of the dialog
-                    $('#dialog-member-button-ok').trigger('click');
-                }
-            }).jqGrid('filterToolbar', {
-                defaultSearch: 'cn',
-                autosearch:    true,
-                searchOnEnter: false,
-                enableClear:   false
-            });*/
-
             $dialogSelectMember.dialog({
                 autoOpen: false,
                 modal:    true,
-                width:    '80%',
+                width:    '90%',
                 height:   500,
-                buttons:  $dialogSelectMember[0]._buttons,
-                resize:     function () {
-                    //$gridSelectMember.setGridHeight($(this).height() - 80).setGridWidth($(this).width() - 5);
-                },
-                open: function () {
-                    //$gridSelectMember.setGridHeight($(this).height() - 80).setGridWidth($(this).width() - 5);
-                }
+                buttons:  $dialogSelectMember[0]._buttons
             });
         }
 
         $dialogSelectMember.dialog('option', 'title', _('Select ID') +  ' - ' + (title || ' '));
 
-        selectID('tree-select-member', currentId, _objects, states, function (newId) {
+        selectID('tree-select-member', currentId, _objects, states, filter, function (newId) {
             // On change
             selectedID = newId;
             if (_objects[selectedID] && _objects[selectedID].common && _objects[selectedID].common.name) {
@@ -667,37 +620,19 @@ $(document).ready(function () {
             } else {
                 $dialogSelectMember.dialog('option', 'title', _('Select ID') +  ' - ' + (selectedID || ' '));
             }
-            if (_objects[selectedID].type == 'state') {
+            if (_objects[selectedID] && _objects[selectedID].type == 'state') {
                 $('#dialog-member-button-ok').removeClass('ui-state-disabled');
             } else {
                 $('#dialog-member-button-ok').addClass('ui-state-disabled');
             }
         });
 
-        //var ids = $gridSelectMember.jqGrid('getDataIDs');
-        /*if (!ids || !ids.length) {
-            var obj;
-            for (var id in _objects) {
-                obj = _objects[id];
-                if (obj.type === 'device' || obj.type === 'channel' || obj.type === 'state') {
-                    $gridSelectMember.jqGrid('addRowData', 'select_obj_' + id.replace(/ /g, '_'), {
-                        _id:  id,
-                        name: obj.common.name,
-                        type: obj.type
-                    });
-                }
-            }
-            $gridSelectMember.trigger('reloadGrid');
-        }
-
-        $gridSelectMember.jqGrid('resetSelection');*/
         if (currentId) {
             if (_objects[currentId] && _objects[currentId].common && _objects[currentId].common.name) {
                 $dialogSelectMember.dialog('option', 'title', _('Select ID') +  ' - ' + (_objects[currentId].common.name || ' '));
             } else {
                 $dialogSelectMember.dialog('option', 'title', _('Select ID') +  ' - ' + (currentId || ' '));
             }
-            //$gridSelectMember.jqGrid('setSelection', 'select_obj_' + currentId.replace(/ /g, '_'), false);
         } else {
             $('#dialog-member-button-ok').addClass('ui-state-disabled');
         }
@@ -899,7 +834,7 @@ $(document).ready(function () {
             caption: '',
             buttonicon: 'ui-icon-plus',
             onClickButton: function () {
-                showDialogSelectId(objects, null, null, function (newId, oldId) {
+                showDialogSelectId(objects, states, null, null, null, function (newId, oldId) {
                     var obj = objects[enumEdit];
 
                     if (obj.common.members.indexOf(newId) === -1) {
@@ -2937,8 +2872,8 @@ $(document).ready(function () {
             $('#edit-insert-id').button({
                 icons: {primary: 'ui-icon-note'}
             }).css('height', '30px').click(function () {
-                showDialogSelectId(objects, function (newId) {
-                    editor.insert('"' + newId + '"');
+                showDialogSelectId(objects, states, null, null, null, function (newId) {
+                    editor.insert('"' + newId + '"' + ((objects[newId] && objects[newId].common && objects[newId].common.name) ? ('/*' + objects[newId].common.name + '*/') : ''));
                 });
             });
         }
