@@ -11,6 +11,7 @@ function selectID(elem, currentId, objects, states, filter, onChange) {
     }
     if (elem == '__clear__') {
         _objTree = {title: '', children: [], count: 0, inited: false};
+        _enums   = [];
         return;
     }
     function _getAllStates(objects) {
