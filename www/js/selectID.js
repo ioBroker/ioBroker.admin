@@ -3,6 +3,7 @@ var _enums = [];
 var _regexSystemAdapter = new RegExp('^system.adapter.');
 var _regexSystemHost    = new RegExp('^system.host.');
 var _regexEnumRooms     = new RegExp('^enum.rooms.');
+var _imgPath = 'lib/css/fancytree/';
 
 function selectID(elem, currentId, objects, states, filter, onChange) {
     var dom = document.getElementById(elem);
@@ -109,6 +110,7 @@ function selectID(elem, currentId, objects, states, filter, onChange) {
         text += '<colgroup>';
         text += '            <col width="1px"/>';
         text += '            <col width="400px"/>';
+        text += '            <col width="20px"/>';
         text += '            <col width="*"/>';
         text += '            <col width="150px"/>';
         text += '            <col width="150px"/>';
@@ -116,7 +118,7 @@ function selectID(elem, currentId, objects, states, filter, onChange) {
         text += '            <col width="18px"/>'; // TODO calculate width of scrollbar
         text += '        </colgroup>';
         text += '        <thead>';
-        text += '            <tr><th></th><th>ID</th><th>Name</th><th>Role</th><th>Room</th><th>Value</th><th></th></tr>';
+        text += '            <tr><th></th><th>ID</th><th></th><th>Name</th><th>Role</th><th>Room</th><th>Value</th><th></th></tr>';
         text += '        </thead>';
         text += '    </table>';
 
@@ -125,13 +127,14 @@ function selectID(elem, currentId, objects, states, filter, onChange) {
         text += '        <colgroup>';
         text += '            <col width="1px"/>';
         text += '            <col width="400px"/>';
+        text += '            <col width="20px"/>';
         text += '            <col width="*"/>';
         text += '            <col width="150px"/>';
         text += '            <col width="150px"/>';
         text += '            <col width="150px"/>';
         text += '        </colgroup>';
         text += '        <thead>';
-        text += '            <tr><th></th><th></th><th></th><th></th><th></th><th></th></tr>';
+        text += '            <tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr>';
         text += '        </thead>';
         text += '        <tbody>';
         text += '        </tbody>';
@@ -148,7 +151,6 @@ function selectID(elem, currentId, objects, states, filter, onChange) {
             quicksearch: true,
             source: _objTree.children,
 
-            // extensions: ["edit", "table", "gridnav"],
             extensions: ["table", "gridnav"],
 
             table: {
@@ -156,7 +158,7 @@ function selectID(elem, currentId, objects, states, filter, onChange) {
                 nodeColumnIdx: 1
             },
             gridnav: {
-                autofocusInput: false,
+                autofocusInput:   false,
                 handleCursorKeys: true
             },
             activate: function(event, data){
@@ -168,6 +170,7 @@ function selectID(elem, currentId, objects, states, filter, onChange) {
                 var $tdList = $(node.tr).find(">td");
 
                 var rooms = [];
+                var isCommon = objects[node.key] && objects[node.key].common;
                 // Try to find room
                 for (var i = 0; i < _enums.length; i++) {
                     if (objects[_enums[i]].common.members.indexOf(node.key) != -1) {
@@ -175,26 +178,43 @@ function selectID(elem, currentId, objects, states, filter, onChange) {
                     }
                 }
 
-                $tdList.eq(4).text(rooms.join(', '));
+                $tdList.eq(5).text(rooms.join(', '));
+                if (isCommon) {
+                    if (objects[node.key].common.icon) {
+                        if (objects[node.key].type == 'instance') {
+                            $tdList.eq(2).html('<img width=20 height=20 src="/adapter/' + objects[node.key].common.name + '/' + objects[node.key].common.icon + '" alt="device"/>');
+                        }
+                        else {
+                            $tdList.eq(2).html('<img width=20 height=20 src="' + objects[node.key].common.icon + '" alt="device"/>');
+                        }
+                    } else if (objects[node.key].type == 'device') {
+                        $tdList.eq(2).html('<img width=20 height=20 src="' + _imgPath + 'device.png" alt="device"/>');
+                    } else if (objects[node.key].type == 'channel') {
+                        $tdList.eq(2).html('<img width=20 height=30 src="' + _imgPath + 'channel.png" alt="device"/>');
+                    } else if (objects[node.key].type == 'state') {
+                        $tdList.eq(2).html('<img width=20 height=20 src="' + _imgPath + 'state.png" alt="device"/>');
+                    } else if (objects[node.key].type == 'device') {
 
+                    }
+                }
                 // (index #0 is rendered by fancytree by adding the checkbox)
-                if( node.isFolder() ) {
+                if(node.isFolder()) {
                     // make the title cell span the remaining columns, if it is a folder:
-                    if (objects[node.key] && objects[node.key].common) {
-                        $tdList.eq(3).text(objects[node.key].common.role);
+                    if (isCommon) {
+                        $tdList.eq(4).text(objects[node.key].common.role);
                     }
                 } else {
                     // (index #1 is rendered by fancytree)
-                    if (objects[node.key] && objects[node.key].common) {
-                        $tdList.eq(2).text(objects[node.key].common.name);
-                        $tdList.eq(3).text(objects[node.key].common.role);
+                    if (isCommon) {
+                        $tdList.eq(3).text(objects[node.key].common.name);
+                        $tdList.eq(4).text(objects[node.key].common.role);
                     }
                     if (states[node.key]) {
                         var val = states[node.key].val;
                         if (val === undefined) val = '';
-                        if (objects[node.key].common.unit) val += ' ' + objects[node.key].common.unit;
-                        $tdList.eq(5).text(val);
-                        $tdList.eq(5).attr('title', val);
+                        if (isCommon && objects[node.key].common.unit) val += ' ' + objects[node.key].common.unit;
+                        $tdList.eq(6).text(val);
+                        $tdList.eq(6).attr('title', val);
                     }
                 }
             }
