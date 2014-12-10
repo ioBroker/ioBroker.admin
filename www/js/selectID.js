@@ -5,16 +5,22 @@ var _regexSystemHost    = new RegExp('^system.host.');
 var _regexEnumRooms     = new RegExp('^enum.rooms.');
 var _imgPath = 'lib/css/fancytree/';
 
+// TODO Convert seconds to Hours/days
+// translate seconds
+// use , or . for numbers
+
 function selectID(elem, currentId, objects, states, filter, onChange) {
-    var dom = document.getElementById(elem);
-    if (!dom) {
-        throw 'selectID: Cannot find ' + elem;
-    }
     if (elem == '__clear__') {
         _objTree = {title: '', children: [], count: 0, inited: false};
         _enums   = [];
         return;
     }
+
+    var dom = document.getElementById(elem);
+    if (!dom) {
+        throw 'selectID: Cannot find ' + elem;
+    }
+
     function _getAllStates(objects) {
         var states = [];
         for (var id in objects) {
@@ -118,12 +124,12 @@ function selectID(elem, currentId, objects, states, filter, onChange) {
         text += '            <col width="18px"/>'; // TODO calculate width of scrollbar
         text += '        </colgroup>';
         text += '        <thead>';
-        text += '            <tr><th></th><th>ID</th><th></th><th>Name</th><th>Role</th><th>Room</th><th>Value</th><th></th></tr>';
+        text += '            <tr><th></th><th>' + _('ID') + '</th><th></th><th>' + _('Name') + '</th><th>' + _('Role') + '</th><th>' + _('Room') + '</th><th>' + _('Value') + '</th><th></th></tr>';
         text += '        </thead>';
         text += '    </table>';
 
         text += '<div style="width: 100%; height: 90%;padding:0; overflow-y: scroll">';
-        text +=' <table id="selectID_' + elem + '" style="width: 100%;padding:0;table-layout:fixed; border:1px solid #f00;overflow:hidden;white-space:nowrap" cellspacing="0" cellpadding="0">';
+        text +=' <table id="selectID_' + elem + '" style="width: 100%;padding:0;table-layout:fixed; overflow:hidden;white-space:nowrap" cellspacing="0" cellpadding="0">';
         text += '        <colgroup>';
         text += '            <col width="1px"/>';
         text += '            <col width="400px"/>';
@@ -185,14 +191,15 @@ function selectID(elem, currentId, objects, states, filter, onChange) {
                             $tdList.eq(2).html('<img width=20 height=20 src="/adapter/' + objects[node.key].common.name + '/' + objects[node.key].common.icon + '" alt="device"/>');
                         }
                         else {
-                            $tdList.eq(2).html('<img width=20 height=20 src="' + objects[node.key].common.icon + '" alt="device"/>');
+                            var instance = node.key.split(2);
+                            $tdList.eq(2).html('<img width=20 height=20 src="/adapter/' + instance[0] + '/' + objects[node.key].common.icon + '" alt="device"/>');
                         }
                     } else if (objects[node.key].type == 'device') {
                         $tdList.eq(2).html('<img width=20 height=20 src="' + _imgPath + 'device.png" alt="device"/>');
                     } else if (objects[node.key].type == 'channel') {
-                        $tdList.eq(2).html('<img width=20 height=30 src="' + _imgPath + 'channel.png" alt="device"/>');
+                        $tdList.eq(2).html('<img width=20 height=30 src="' + _imgPath + 'channel.png" alt="channel"/>');
                     } else if (objects[node.key].type == 'state') {
-                        $tdList.eq(2).html('<img width=20 height=20 src="' + _imgPath + 'state.png" alt="device"/>');
+                        $tdList.eq(2).html('<img width=20 height=20 src="' + _imgPath + 'state.png" alt="state"/>');
                     } else if (objects[node.key].type == 'device') {
 
                     }

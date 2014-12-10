@@ -477,7 +477,6 @@ function socketEvents(socket, user) {
     });
 
     socket.on('getObjectView', function (design, search, params, callback) {
-        console.log('getObjectView', design, search, params);
         adapter.objects.getObjectView(design, search, params, callback);
     });
 

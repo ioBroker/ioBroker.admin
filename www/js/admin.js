@@ -261,221 +261,224 @@ $(document).ready(function () {
         return res;
     }
 
-    $dialogSystem.dialog({
-        autoOpen:   false,
-        modal:      true,
-        width:      800,
-        height:     480,
-        buttons: [
-            {
-                text: _('Save'),
-                click: function () {
-                    var common = systemConfig.common;
-                    var languageChanged   = false;
-                    var activeRepoChanged = false;
+    // Use the function for this because it must be done after the language was read
+    function initAllDialogs() {
+        $dialogSystem.dialog({
+            autoOpen:   false,
+            modal:      true,
+            width:      800,
+            height:     480,
+            buttons: [
+                {
+                    text: _('Save'),
+                    click: function () {
+                        var common = systemConfig.common;
+                        var languageChanged   = false;
+                        var activeRepoChanged = false;
 
-                    $('.system-settings.value').each(function () {
-                        var $this = $(this);
-                        var id = $this.attr('id').substring('system_'.length);
+                        $('.system-settings.value').each(function () {
+                            var $this = $(this);
+                            var id = $this.attr('id').substring('system_'.length);
 
-                        if ($this.attr('type') == 'checkbox') {
-                            common[id] = $this.prop('checked');
-                        } else {
-                            if (id == 'language'   && common.language   != $this.val()) languageChanged   = true;
-                            if (id == 'activeRepo' && common.activeRepo != $this.val()) activeRepoChanged = true;
-                            common[id] = $this.val();
-                            if (id == 'isFloatComma') common[id] = (common[id] === "true" || common[id] === true);
-                        }
-                    });
-
-                    // Fill the repositories list
-                    var links = {};
-                    for (var r in systemRepos.native.repositories) {
-                        if (typeof systemRepos.native.repositories[r] == 'object' && systemRepos.native.repositories[r].json) {
-                            links[systemRepos.native.repositories[r].link] = systemRepos.native.repositories[r].json;
-                        }
-                    }
-                    systemRepos.native.repositories = {};
-                    var data = $gridRepo.jqGrid('getRowData');
-                    var first = null;
-                    for (var i = 0; i < data.length; i++) {
-                        systemRepos.native.repositories[data[i].name] = {link: data[i].link, json: null};
-                        if (links[data[i].link]) systemRepos.native.repositories[data[i].name].json = links[data[i].link];
-                        if (!first) first = data[i].name;
-                    }
-                    // Check if the active repository still exist in the list
-                    if (!first) {
-                        if (common.activeRepo) {
-                            activeRepoChanged = true;
-                            common.activeRepo = '';
-                        }
-                    } else if (!systemRepos.native.repositories[common.activeRepo]) {
-                        activeRepoChanged = true;
-                        common.activeRepo = first;
-                    }
-                    common.diag = $('#diagMode').val();
-
-                    // Fill the certificates list
-                    systemCerts.native.certificates = {};
-                    data = $gridCerts.jqGrid('getRowData');
-                    for (var j = 0; j < data.length; j++) {
-                        systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
-                    }
-
-                    socket.emit('extendObject', 'system.config', {common: common}, function (err) {
-                        if (!err) {
-                            if (languageChanged) {
-                                window.location.reload();
+                            if ($this.attr('type') == 'checkbox') {
+                                common[id] = $this.prop('checked');
                             } else {
-                                if (activeRepoChanged) initAdapters(true);
+                                if (id == 'language'   && common.language   != $this.val()) languageChanged   = true;
+                                if (id == 'activeRepo' && common.activeRepo != $this.val()) activeRepoChanged = true;
+                                common[id] = $this.val();
+                                if (id == 'isFloatComma') common[id] = (common[id] === "true" || common[id] === true);
+                            }
+                        });
+
+                        // Fill the repositories list
+                        var links = {};
+                        for (var r in systemRepos.native.repositories) {
+                            if (typeof systemRepos.native.repositories[r] == 'object' && systemRepos.native.repositories[r].json) {
+                                links[systemRepos.native.repositories[r].link] = systemRepos.native.repositories[r].json;
                             }
                         }
+                        systemRepos.native.repositories = {};
+                        var data = $gridRepo.jqGrid('getRowData');
+                        var first = null;
+                        for (var i = 0; i < data.length; i++) {
+                            systemRepos.native.repositories[data[i].name] = {link: data[i].link, json: null};
+                            if (links[data[i].link]) systemRepos.native.repositories[data[i].name].json = links[data[i].link];
+                            if (!first) first = data[i].name;
+                        }
+                        // Check if the active repository still exist in the list
+                        if (!first) {
+                            if (common.activeRepo) {
+                                activeRepoChanged = true;
+                                common.activeRepo = '';
+                            }
+                        } else if (!systemRepos.native.repositories[common.activeRepo]) {
+                            activeRepoChanged = true;
+                            common.activeRepo = first;
+                        }
+                        common.diag = $('#diagMode').val();
 
-                        socket.emit('extendObject', 'system.repositories', systemRepos, function (err) {
-                            if (activeRepoChanged) initAdapters(true);
+                        // Fill the certificates list
+                        systemCerts.native.certificates = {};
+                        data = $gridCerts.jqGrid('getRowData');
+                        for (var j = 0; j < data.length; j++) {
+                            systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
+                        }
 
-                            socket.emit('extendObject', 'system.certificates', systemCerts, function (err) {
-                                $dialogSystem.dialog('close');
+                        socket.emit('extendObject', 'system.config', {common: common}, function (err) {
+                            if (!err) {
+                                if (languageChanged) {
+                                    window.location.reload();
+                                } else {
+                                    if (activeRepoChanged) initAdapters(true);
+                                }
+                            }
+
+                            socket.emit('extendObject', 'system.repositories', systemRepos, function (err) {
+                                if (activeRepoChanged) initAdapters(true);
+
+                                socket.emit('extendObject', 'system.certificates', systemCerts, function (err) {
+                                    $dialogSystem.dialog('close');
+                                });
                             });
                         });
-                    });
-                }
-            },
-            {
-                text: _('Cancel'),
-                click: function () {
-                    $dialogSystem.dialog('close');
-                }
-            }
-        ],
-        open: function (event, ui) {
-            $gridRepo.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
-            $gridCerts.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
-            initRepoGrid();
-            initCertsGrid();
-        },
-        resize: function () {
-            $gridRepo.setGridHeight($(this).height() - 160).setGridWidth($(this).width() - 40);
-            $gridCerts.setGridHeight($(this).height() - 160).setGridWidth($(this).width() - 40);
-        }
-    });
-
-    $dialogEnum.dialog({
-        autoOpen:   false,
-        modal:      true,
-        width:      500,
-        height:     300,
-        buttons: [
-            {
-                text: _('Save'),
-                click: function () {
-                    $dialogEnum.dialog('close');
-
-                    var name = $('#enum-name').val().replace(/ /g, '_').toLowerCase();
-                    if (!name) {
-                        alert(_('Invalid name!'));
-                        return;
                     }
-                    if (objects[(enumCurrentParent || 'enum') + '.' + name]) {
-                        alert(_('Name yet exists!'));
-                        return;
+                },
+                {
+                    text: _('Cancel'),
+                    click: function () {
+                        $dialogSystem.dialog('close');
                     }
-
-                    enumAddChild(enumCurrentParent,  (enumCurrentParent || 'enum') + '.' + name, $('#enum-name').val());
                 }
+            ],
+            open: function (event, ui) {
+                $gridRepo.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
+                $gridCerts.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
+                initRepoGrid();
+                initCertsGrid();
             },
-            {
-                text: _('Cancel'),
-                click: function () {
-                    $dialogEnum.dialog('close');
+            resize: function () {
+                $gridRepo.setGridHeight($(this).height() - 160).setGridWidth($(this).width() - 40);
+                $gridCerts.setGridHeight($(this).height() - 160).setGridWidth($(this).width() - 40);
+            }
+        });
+
+        $dialogEnum.dialog({
+            autoOpen:   false,
+            modal:      true,
+            width:      500,
+            height:     300,
+            buttons: [
+                {
+                    text: _('Save'),
+                    click: function () {
+                        $dialogEnum.dialog('close');
+
+                        var name = $('#enum-name').val().replace(/ /g, '_').toLowerCase();
+                        if (!name) {
+                            alert(_('Invalid name!'));
+                            return;
+                        }
+                        if (objects[(enumCurrentParent || 'enum') + '.' + name]) {
+                            alert(_('Name yet exists!'));
+                            return;
+                        }
+
+                        enumAddChild(enumCurrentParent,  (enumCurrentParent || 'enum') + '.' + name, $('#enum-name').val());
+                    }
+                },
+                {
+                    text: _('Cancel'),
+                    click: function () {
+                        $dialogEnum.dialog('close');
+                    }
                 }
+            ]
+        });
+
+        $dialogCommand.dialog({
+            autoOpen:      false,
+            modal:         true,
+            width:         920,
+            height:        480,
+            closeOnEscape: false,
+            open: function (event, ui) {
+                $(".ui-dialog-titlebar-close", ui.dialog || ui).hide();
             }
-        ]
-    });
+        });
 
-    $dialogCommand.dialog({
-        autoOpen:      false,
-        modal:         true,
-        width:         920,
-        height:        480,
-        closeOnEscape: false,
-        open: function (event, ui) {
-            $(".ui-dialog-titlebar-close", ui.dialog || ui).hide();
-        }
-    });
-
-    $dialogConfig.dialog({
-        autoOpen:   false,
-        modal:      true,
-        width:      830, //$(window).width() > 920 ? 920: $(window).width(),
-        height:     536, //$(window).height() - 100, // 480
-        closeOnEscape: false,
-        open: function (event, ui) {
-            $('#dialog-config').css('padding', '2px 0px');
-        },
-        beforeClose: function () {
-            if (window.frames['config-iframe'].changed) {
-                return confirm(_('Are you sure? Changes are not saved.'));
+        $dialogConfig.dialog({
+            autoOpen:   false,
+            modal:      true,
+            width:      830, //$(window).width() > 920 ? 920: $(window).width(),
+            height:     536, //$(window).height() - 100, // 480
+            closeOnEscape: false,
+            open: function (event, ui) {
+                $('#dialog-config').css('padding', '2px 0px');
+            },
+            beforeClose: function () {
+                if (window.frames['config-iframe'].changed) {
+                    return confirm(_('Are you sure? Changes are not saved.'));
+                }
+                return true;
+            },
+            close: function () {
+                // Clear iframe
+                $configFrame.attr('src', '');
             }
-            return true;
-        },
-        close: function () {
-            // Clear iframe
-            $configFrame.attr('src', '');
-        }
-    });
+        });
 
-    $dialogHistory.dialog({
-        autoOpen:      false,
-        modal:         true,
-        width:         830,
-        height:        575,
-        closeOnEscape: false,
-        buttons: [
-            {
-                text: 'Save',
-                click: function () {
-                    var id =            $('#edit-history-id').val();
-                    var enabled =       $('#edit-history-enabled').is(':checked');
-                    var changesOnly =   $('#edit-history-changesOnly').is(':checked');
-                    var minLength =     parseInt($('#edit-history-minLength').val(), 10) || 480;
-                    var retention =     parseInt($('#edit-history-retention').val(), 10) || 0;
+        $dialogHistory.dialog({
+            autoOpen:      false,
+            modal:         true,
+            width:         830,
+            height:        575,
+            closeOnEscape: false,
+            buttons: [
+                {
+                    text: _('Save'),
+                    click: function () {
+                        var id =            $('#edit-history-id').val();
+                        var enabled =       $('#edit-history-enabled').is(':checked');
+                        var changesOnly =   $('#edit-history-changesOnly').is(':checked');
+                        var minLength =     parseInt($('#edit-history-minLength').val(), 10) || 480;
+                        var retention =     parseInt($('#edit-history-retention').val(), 10) || 0;
 
-                    objects[id].common.history = {
-                        enabled:     enabled,
-                        changesOnly: changesOnly,
-                        minLength:   minLength,
-                        maxLength:   minLength * 2,
-                        retention:   retention
-                    };
+                        objects[id].common.history = {
+                            enabled:     enabled,
+                            changesOnly: changesOnly,
+                            minLength:   minLength,
+                            maxLength:   minLength * 2,
+                            retention:   retention
+                        };
 
-                    currentHistory =    null;
+                        currentHistory =    null;
 
-                    socket.emit('setObject', id, objects[id], function () {
+                        socket.emit('setObject', id, objects[id], function () {
+                            $dialogHistory.dialog('close');
+                        });
+
+                    }
+                },
+                {
+                    text: _('Cancel'),
+                    click: function () {
                         $dialogHistory.dialog('close');
-                    });
-
+                    }
                 }
+            ],
+            open: function (event, ui) {
+                $gridHistory.setGridHeight($(this).height() - 180).setGridWidth($(this).width() - 30);
+                $('#iframe-history-chart').css({height: $(this).height() - 115, width: $(this).width() - 30});
             },
-            {
-                text: 'Cancel',
-                click: function () {
-                    $dialogHistory.dialog('close');
-                }
+            close: function () {
+                $('#iframe-history-chart').attr('src', '');
+            },
+            resize: function () {
+                $gridHistory.setGridHeight($(this).height() - 180).setGridWidth($(this).width() - 30);
+                $('#iframe-history-chart').css({height: $(this).height() - 115, width: $(this).width() - 30});
             }
-        ],
-        open: function (event, ui) {
-            $gridHistory.setGridHeight($(this).height() - 180).setGridWidth($(this).width() - 30);
-            $('#iframe-history-chart').css({height: $(this).height() - 115, width: $(this).width() - 30});
-        },
-        close: function () {
-            $('#iframe-history-chart').attr('src', '');
-        },
-        resize: function () {
-            $gridHistory.setGridHeight($(this).height() - 180).setGridWidth($(this).width() - 30);
-            $('#iframe-history-chart').css({height: $(this).height() - 115, width: $(this).width() - 30});
-        }
-    });
+        });
+    }
 
     $('#enum-name').keyup(function () {
         var t = $('#enum-gen-id');
@@ -565,7 +568,7 @@ $(document).ready(function () {
 
     function showDialogSelectId(_objects, _states, currentId, title, filter, callback) {
         if (_objects == '__clear__') {
-            selectID('__clear__');
+            if (typeof selectID == 'function') selectID('__clear__');
             return;
         }
 
@@ -612,7 +615,7 @@ $(document).ready(function () {
 
         $dialogSelectMember.dialog('option', 'title', _('Select ID') +  ' - ' + (title || ' '));
 
-        selectID('tree-select-member', currentId, _objects, states, filter, function (newId) {
+        if (typeof selectID == 'function') selectID('tree-select-member', currentId, _objects, states, filter, function (newId) {
             // On change
             selectedID = newId;
             if (_objects[selectedID] && _objects[selectedID].common && _objects[selectedID].common.name) {
@@ -883,11 +886,11 @@ $(document).ready(function () {
             height: 540,
             buttons: [
                 {
-                    text: 'Save',
+                    text: _('Save'),
                     click: saveObject
                 },
                 {
-                    text: 'Cancel',
+                    text: _('Cancel'),
                     click: function () {
                         $dialogObject.dialog('close');
                         $('#json-object').val('');
@@ -940,8 +943,15 @@ $(document).ready(function () {
             onSelectRow: function (rowid, e) {
                 // unselect other subgrids but not myself
                 $('[id^="grid-objects"][id$="_t"]').not('[id="' + this.id + '"]').jqGrid('resetSelection');
-                $('#del-object').removeClass('ui-state-disabled');
-                $('#edit-object').removeClass('ui-state-disabled');
+                rowid = rowid.substring(7); //'object_'
+
+                if (objects[rowid]) {
+                    $('#del-object').removeClass('ui-state-disabled');
+                    $('#edit-object').removeClass('ui-state-disabled');
+                } else {
+                    $('#del-object').addClass('ui-state-disabled');
+                    $('#edit-object').addClass('ui-state-disabled');
+                }
             },
             gridComplete: function () {
                 $('#del-object').addClass('ui-state-disabled');
@@ -971,16 +981,19 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            autosearch: true,
+            autosearch:    true,
             searchOnEnter: false,
-            enableClear: false
+            enableClear:   false,
+            afterSearch: function () {
+                //initObjectButtons();
+            }
         }).navGrid('#pager-objects', {
             search:  false,
             edit:    false,
             add:     false,
             del:     false,
             refresh: false
-        })/* TODO .jqGrid('navButtonAdd', '#pager-objects', {
+        }).jqGrid('navButtonAdd', '#pager-objects', {
             caption: '',
             buttonicon: 'ui-icon-trash',
             onClickButton: function () {
@@ -993,13 +1006,15 @@ $(document).ready(function () {
                     });
                 }
                 var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
-                alert('TODO delete ' + id); //TODO
+                if (id && confirm(_('Are you sure to delete') + ' ' + id)) {
+                    socket.emit('delObject', id);
+                }
             },
             position: 'first',
-            id: 'del-object',
-            title: 'Delete object',
-            cursor: 'pointer'
-        })*/.jqGrid('navButtonAdd', '#pager-objects', {
+            id:       'del-object',
+            title:    _('Delete object'),
+            cursor:   'pointer'
+        }).jqGrid('navButtonAdd', '#pager-objects', {
             caption: '',
             buttonicon: 'ui-icon-gear',
             onClickButton: function () {
@@ -1015,9 +1030,9 @@ $(document).ready(function () {
                 editObject(id);
             },
             position: 'first',
-            id: 'edit-object',
-            title: _('Edit object'),
-            cursor: 'pointer'
+            id:       'edit-object',
+            title:    _('Edit object'),
+            cursor:   'pointer'
         }).jqGrid('navButtonAdd', '#pager-objects', {
                 caption: '',
                 buttonicon: 'ui-icon-refresh',
@@ -1081,7 +1096,12 @@ $(document).ready(function () {
                     });
                 }
                 // Disable buttons if no row is selected
-                if (!objSelected) {
+                objSelected = objSelected.substring(7); //'object_'
+                // enable buttons
+                if (objects[objSelected]) {
+                    $('#del-object').removeClass('ui-state-disabled');
+                    $('#edit-object').removeClass('ui-state-disabled');
+                } else {
                     $('#del-object').addClass('ui-state-disabled');
                     $('#edit-object').addClass('ui-state-disabled');
                 }
@@ -1109,9 +1129,15 @@ $(document).ready(function () {
                 // unselect objects grid
                 $gridObjects.jqGrid('resetSelection');
 
+                rowid = rowid.substring(7); //'object_'
                 // enable buttons
-                $('#del-object').removeClass('ui-state-disabled');
-                $('#edit-object').removeClass('ui-state-disabled');
+                if (objects[rowid]) {
+                    $('#del-object').removeClass('ui-state-disabled');
+                    $('#edit-object').removeClass('ui-state-disabled');
+                } else {
+                    $('#del-object').addClass('ui-state-disabled');
+                    $('#edit-object').addClass('ui-state-disabled');
+                }
             }
         };
         $subgrid.jqGrid(gridConf);
@@ -1204,9 +1230,12 @@ $(document).ready(function () {
             }*/
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            autosearch: true,
-            searchOnEnter: false,
-            enableClear: false
+            autosearch:     true,
+            searchOnEnter:  false,
+            enableClear:    false,
+            afterSearch: function () {
+                initEnumButtons();
+            }
         }).navGrid('#pager-enums', {
             search:  false,
             edit:    false,
@@ -1463,9 +1492,12 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            autosearch: true,
+            autosearch:    true,
             searchOnEnter: false,
-            enableClear: false
+            enableClear:   false,
+            afterSearch:   function () {
+                //initStateButtons();
+            }
         }).navGrid('#pager-states', {
             search:  false,
             edit:    false,
@@ -1517,14 +1549,17 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            autosearch: true,
+            autosearch:    true,
             searchOnEnter: false,
-            enableClear: false
+            enableClear:   false,
+            afterSearch:   function () {
+                initAdapterButtons();
+            }
         }).navGrid('#pager-adapters', {
-            search: false,
-            edit: false,
-            add: false,
-            del: false,
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
             refresh: false
         }).jqGrid('navButtonAdd', '#pager-adapters', {
             caption:       '',
@@ -1577,14 +1612,17 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            autosearch: true,
+            autosearch:    true,
             searchOnEnter: false,
-            enableClear: false
+            enableClear:   false,
+            afterSearch:   function () {
+                initInstanceButtons();
+            }
         }).navGrid('#pager-instances', {
-            search: false,
-            edit: false,
-            add: false,
-            del: false,
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
             refresh: false
         })/*.jqGrid('navButtonAdd', '#pager-instances', {
             caption: '',
@@ -1710,14 +1748,17 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            autosearch: true,
+            autosearch:    true,
             searchOnEnter: false,
-            enableClear: false
+            enableClear:   false,
+            afterSearch:   function () {
+                //initUserButtons();
+            }
         }).navGrid('#pager-users', {
-            search: false,
-            edit: false,
-            add: false,
-            del: false,
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
             refresh: false
         }).jqGrid('navButtonAdd', '#pager-users', {
             caption: '',
@@ -1788,11 +1829,11 @@ $(document).ready(function () {
             height:   220,
             buttons:  [
                 {
-                    text: 'Save',
+                    text: _('Save'),
                     click: saveUser
                 },
                 {
-                    text: 'Cancel',
+                    text: _('Cancel'),
                     click: function () {
                         $dialogUser.dialog('close');
 
@@ -1869,14 +1910,17 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            autosearch: true,
+            autosearch:    true,
             searchOnEnter: false,
-            enableClear: false
+            enableClear:   false,
+            afterSearch:   function () {
+                //initGroupButtons();
+            }
         }).navGrid('#pager-groups', {
-            search: false,
-            edit: false,
-            add: false,
-            del: false,
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
             refresh: false
         }).jqGrid('navButtonAdd', '#pager-groups', {
             caption: '',
@@ -1945,11 +1989,11 @@ $(document).ready(function () {
             height:   205,
             buttons:  [
                 {
-                    text: 'Save',
+                    text: _('Save'),
                     click: saveGroup
                 },
                 {
-                    text: 'Cancel',
+                    text: _('Cancel'),
                     click: function () {
                         $dialogGroup.dialog('close');
 
@@ -1995,14 +2039,17 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            autosearch: true,
+            autosearch:    true,
             searchOnEnter: false,
-            enableClear: false
+            enableClear:   false,
+            afterSearch:   function () {
+                initScriptButtons();
+            }
         }).navGrid('#pager-scripts', {
-            search: false,
-            edit: false,
-            add: false,
-            del: false,
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
             refresh: false
         })/*.jqGrid('navButtonAdd', '#pager-scripts', {
             caption: '',
@@ -2133,11 +2180,11 @@ $(document).ready(function () {
             height: 540,
             buttons: [
                 {
-                    text: 'Save',
+                    text: _('Save'),
                     click: saveScript
                 },
                 {
-                    text: 'Cancel',
+                    text: _('Cancel'),
                     click: function () {
                         $dialogScript.dialog('close');
                     }
@@ -2175,15 +2222,30 @@ $(document).ready(function () {
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
-            autosearch: true,
+            autosearch:    true,
             searchOnEnter: false,
-            enableClear: false
+            enableClear:   false,
+            afterSearch:   function () {
+                //initHostButtons();
+            }
         }).navGrid('#pager-hosts', {
-            search: false,
-            edit: false,
-            add: false,
-            del: false,
+            search:  false,
+            edit:    false,
+            add:     false,
+            del:     false,
             refresh: false
+        }).jqGrid('navButtonAdd', '#pager-hosts', {
+            caption:       '',
+            buttonicon:    'ui-icon-refresh',
+            onClickButton: function () {
+                initHosts(true, true, function () {
+                    initAdapters(true, false);
+                });
+            },
+            position:      'first',
+            id:            'add-object',
+            title:         _('update adapter information'),
+            cursor:        'pointer'
         });
     }
 
@@ -2710,7 +2772,7 @@ $(document).ready(function () {
                 if (lines[i][4] == '-' && lines[i][7] == '-') {
                     message.ts = lines[i].substring(0, 23);
                     var pos = lines[i].indexOf('[39m:');
-                    message.severity = lines[i].substring(32, pos);
+                    message.severity = lines[i].substring(32, pos - 1);
                     lines[i] = lines[i].substring(pos + 6);
                     pos = lines[i].indexOf(' ');
                     message.from = lines[i].substring(0, pos);
@@ -3113,7 +3175,7 @@ $(document).ready(function () {
             initAdapters(true);
         });
     }
-    function initHosts(update) {
+    function initHosts(update, updateRepo, callback) {
 
         if (!objectsLoaded) {
             setTimeout(initHosts, 250);
@@ -3125,7 +3187,7 @@ $(document).ready(function () {
 
             $gridHosts.jqGrid('clearGridData');
 
-            getAdaptersInfo(currentHost, update, false, function (repository, installedList) {
+            getAdaptersInfo(currentHost, update, updateRepo, function (repository, installedList) {
 
                 $gridHosts[0]._isInited = true;
                 for (var i = 0; i < hosts.length; i++) {
@@ -3134,9 +3196,12 @@ $(document).ready(function () {
                     var version = obj.common ? (repository[obj.common.type] ? repository[obj.common.type].version : '') : '';
                     if (installedList && installedList.hosts && installedList.hosts[obj.common.hostname]) {
                         installed = installedList.hosts[obj.common.hostname].version;
+                        if (installed != installedList.hosts[obj.common.hostname].runningVersion) installed += '(' + _('Running: ') + installedList.hosts[obj.common.hostname].runningVersion + ')';
                     }
 
-                    if (!installed && obj.common && obj.common.installedVersion) installed = obj.common.installedVersion;
+                    if (!installed && obj.common && obj.common.installedVersion) {
+                        installed = obj.common.installedVersion;
+                    }
 
                     if (installed && version) {
                         if (!upToDate(version, installed)) {
@@ -3164,6 +3229,7 @@ $(document).ready(function () {
                         if (!exitCode) initHosts(true);
                     });
                 });
+                if (callback) callback();
             });
         }
     }
@@ -3890,7 +3956,7 @@ $(document).ready(function () {
     }
     function editObject(id) {
         var obj = objects[id];
-        console.log(obj);
+        if (!obj) return;
         $dialogObject.dialog('option', 'title', id);
         $('#edit-object-id').val(obj._id);
         $('#edit-object-parent-old').val(obj.parent);
@@ -3917,11 +3983,11 @@ $(document).ready(function () {
     }
     function saveObject() {
         var obj = {common: {}, native: {}};
-        obj._id = $('#edit-object-id').val();
-        obj.parent = $('#edit-object-parent-old').val();
+        obj._id =         $('#edit-object-id').val();
+        obj.parent =      $('#edit-object-parent-old').val();
         obj.common.name = $('#edit-object-name').val();
-        obj.type = $('#edit-object-type').val();
-        obj.parent = $('#edit-object-parent').val();
+        obj.type =        $('#edit-object-type').val();
+        obj.parent =      $('#edit-object-parent').val();
 
         try {
             obj.common = JSON.parse($('#edit-object-common').val());
@@ -4781,12 +4847,12 @@ $(document).ready(function () {
                             systemConfig = {
                                 type: 'config',
                                 common: {
-                                    name: 'system.config',
-                                    language: '',           // Default language for adapters. Adapters can use different values.
-                                    tempUnit: '°C',         // Default temperature units.
-                                    currency: '€',          // Default currency sign.
-                                    dateFormat: 'DD.MM.YYYY', // Default date format.
-                                    isFloatComma: true,         // Default float divider ('.' - false, ',' - true)
+                                    name:             'system.config',
+                                    language:         '',           // Default language for adapters. Adapters can use different values.
+                                    tempUnit:         '°C',         // Default temperature units.
+                                    currency:         '€',          // Default currency sign.
+                                    dateFormat:       'DD.MM.YYYY', // Default date format.
+                                    isFloatComma:     true,         // Default float divider ('.' - false, ',' - true)
                                     licenseConfirmed: false         // If license agreement confirmed
                                 }
                             };
@@ -4801,6 +4867,7 @@ $(document).ready(function () {
 
                         // Here we go!
                         $('#tabs').show();
+                        initAllDialogs();
                         prepareEnumMembers();
                         prepareHosts();
                         prepareObjects();

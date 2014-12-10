@@ -14,7 +14,15 @@ $(document).ready(function () {
 
     // Extend dictionary with standard words for adapter
     if (typeof systemDictionary === 'undefined') systemDictionary = {};
-    systemDictionary.save = {"en": "Save", "de": "Speichern", "ru": "Сохранить"};
+    systemDictionary.save =           {"en": "Save",        "de": "Speichern",   "ru": "Сохранить"};
+    systemDictionary.none =           {"en": "none",        "de": "keins",       "ru": ""};
+    systemDictionary.all =            {"en": "all",         "de": "alle",        "ru": "все"};
+    systemDictionary['Device list'] = {"en": "Device list", "de": "Gerätelist",  "ru": "Список устройств"};
+    systemDictionary['new device'] =  {"en": "new device",  "de": "Neues Gerät", "ru": "Новое устройство"};
+    systemDictionary.edit =           {"en": "edit",        "de": "Ändern",      "ru": "Изменить"};
+    systemDictionary.delete =         {"en": "delete",      "de": "Löschen",     "ru": "Удалить"};
+    systemDictionary.ok =             {"en": "Ok",          "de": "Ok",          "ru": "Ok"};
+    systemDictionary.cancel =         {"en": "Cancel",      "de": "Abbrechen",   "ru": "Отмена"};
 
 
     loadSystemConfig(function () {
@@ -129,24 +137,17 @@ function getState(id, callback) {
 }
 
 function getEnums(_enum, callback) {
-    getObject('enum.' + _enum, function (err, obj) {
-        if (err || !obj || !obj.children) callback(err, []);
-        // collect all information
-        var count = 0;
-        var res   = {};
-
-        for (var i = 0; i < obj.children.length; i++) {
-            count++;
-            getObject(obj.children[i], function (err, obj) {
-                if (!err && obj) {
-                    res[obj._id] = obj;
-                }
-
-                count--;
-                if (!count) callback(err, res);
-            });
+    socket.emit('getObjectView', 'system', 'enum', {startkey: 'enum.' + _enum, endkey: 'enum.' + _enum + '.\u9999'}, function (err, res) {
+        if (!err && res) {
+            var _res   = {};
+            for (var i = 0; i < res.rows.length; i++) {
+                if (res.rows[i].id == 'enum.' + _enum) continue;
+                _res[res.rows[i].id] = res.rows[i].value;
+            }
+            if (callback) callback(null, _res);
+        } else {
+            if (callback) callback(err, []);
         }
-        if (!count) callback(err, res);
     });
 }
 
@@ -279,7 +280,15 @@ function addToTable(tabId, value, $grid, _isInitial) {
 
     $grid.jqGrid('addRowData', tabId + '_' + obj._id, obj);
 
-    $('.' + tabId + '-edit-submit[data-' + tabId + '-id="' + obj._id + '"]').unbind('click').button({
+    _editInitButtons($grid, tabId, obj._id);
+
+    if (!_isInitial && $grid[0]._onChange) $grid[0]._onChange('add', value);
+}
+
+function _editInitButtons($grid, tabId, objId) {
+    var search = objId ? '[data-' + tabId + '-id="' + objId + '"]' : '';
+
+    $('.' + tabId + '-edit-submit' + search).unbind('click').button({
         icons: {primary: 'ui-icon-pencil'},
         text:  false
     }).click(function () {
@@ -298,7 +307,7 @@ function addToTable(tabId, value, $grid, _isInitial) {
         $('#save').button("enable");
     }).css('height', '18px');
 
-    $('.' + tabId + '-delete-submit[data-' + tabId + '-id="' + obj._id + '"]').unbind('click').button({
+    $('.' + tabId + '-delete-submit' + search).unbind('click').button({
         icons: {primary: 'ui-icon-trash'},
         text:  false
     }).click(function () {
@@ -313,7 +322,7 @@ function addToTable(tabId, value, $grid, _isInitial) {
         if ($grid[0]._onChange) $grid[0]._onChange('del', id);
     }).css('height', '18px');
 
-    $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + obj._id + '"]').unbind('click').button({
+    $('.' + tabId + '-ok-submit' + search).unbind('click').button({
         icons: {primary: 'ui-icon-check'},
         text:  false
     }).click(function () {
@@ -335,7 +344,8 @@ function addToTable(tabId, value, $grid, _isInitial) {
         }
         if ($grid[0]._onChange) $grid[0]._onChange('changed', $grid.jqGrid('getRowData', tabId + '_' + id));
     }).css('height', '18px');
-    $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + obj._id + '"]').unbind('click').button({
+
+    $('.' + tabId + '-cancel-submit' + search).unbind('click').button({
         icons: {primary: 'ui-icon-close'},
         text:  false
     }).click(function () {
@@ -352,8 +362,6 @@ function addToTable(tabId, value, $grid, _isInitial) {
             $grid[0]._edited.splice(pos, 1);
         }
     }).css('height', '18px');
-
-    if (!_isInitial && $grid[0]._onChange) $grid[0]._onChange('add', value);
 }
 
 function _editTable(tabId, cols, values, rooms, top, onChange) {
@@ -377,7 +385,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             editable: true
         };
         if (cols[i] == 'room') {
-            var list = {};
+            var list = {'': _('none')};
             for (room in rooms) {
                 list[room] = _(rooms[room].common.name);
             }
@@ -389,7 +397,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
                 value: ':' + _('all')
             };
             for (room in rooms) {
-                _obj.searchoptions.value += ';' + room + ':' + _(rooms[room].common.name);
+                _obj.searchoptions.value += ';' + _(rooms[room].common.name) + ':' + _(rooms[room].common.name);
             }
         }
         colModel.push(_obj);
@@ -438,7 +446,10 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         defaultSearch: 'cn',
         autosearch:    true,
         searchOnEnter: false,
-        enableClear:   false
+        enableClear:   false,
+        afterSearch:   function () {
+            _editInitButtons($grid, tabId);
+        }
     });
     if ($('#pager-' + tabId).length) {
         $grid.navGrid('#pager-' + tabId, {
