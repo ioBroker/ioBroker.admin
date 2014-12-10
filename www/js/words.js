@@ -222,6 +222,12 @@ systemDictionary = {
     "System settings":      {"en": "System settings",       "de": "Systemeinstellungen",    "ru": "Системные настройки"},
     "reload":               {"en": "reload",                "de": "Neu laden",              "ru": "Перезагрузить"},
     "Delete object":        {"en": "Delete object",         "de": "Object löschen",         "ru": "Удалить объект"},
+    "Refresh log":          {"en": "Refresh log",           "de": "Log updaten",            "ru": "Обновить протокол"},
+    "Clear log":            {"en": "Clear log",             "de": "Log löschen",            "ru": "Очистить протокол на экране"},
+    "Clear on disk permanent": {"en": "Clear on disk permanent", "de": "Löschen log auf dem host", "ru": "Удалить протокол на сервере"},
+    "daemon":               {"en": "daemon",                "de": "daemon",                 "ru": "Демон"},
+    "subscribe":            {"en": "subscribe",             "de": "abonieren",              "ru": "Подписка"},
+    "Are you sure?":        {"en": "Are you sure?",         "de": "Sind sie sicher?",       "ru": "Вы уверены?"},
 
     "ID":                   {"en": "ID",                    "de": "ID",                     "ru": "ID"},
     "Role":                 {"en": "Role",                  "de": "Rolle",                  "ru": "Роль"},

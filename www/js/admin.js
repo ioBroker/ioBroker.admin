@@ -3299,8 +3299,10 @@ $(document).ready(function () {
         if (rowData.availableModes) {
             var list = {};
             var modes = rowData.availableModes.split(',');
+            var editable = false;
             for (var i = 0; i < modes.length; i++) {
                 list[modes[i]] = _(modes[i]);
+                if (modes[i] == 'schedule') editable = true;
             }
             $gridInstance.setColProp('mode', {
                 editable:    true,
@@ -3308,10 +3310,18 @@ $(document).ready(function () {
                 editoptions: {value: list},
                 align:       'center'
             });
+            $gridInstance.setColProp('schedule', {
+                editable:    editable,
+                align:       'center'
+            });
         } else {
             $gridInstance.setColProp('mode', {
                 editable: false,
-                align: 'center'
+                align:    'center'
+            });
+            $gridInstance.setColProp('schedule', {
+                editable:    rowData.mode == 'schedule',
+                align:       'center'
             });
         }
         $gridInstance.jqGrid('editRow', 'instance_' + id, {"url": "clientArray"});

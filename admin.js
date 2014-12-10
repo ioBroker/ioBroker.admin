@@ -37,10 +37,14 @@ var adapter = require(__dirname + '/../../lib/adapter.js')({
 
 adapter.on('objectChange', function (id, obj) {
     if (obj) {
-    objects[id] = obj;
+        //console.log('objectChange: ' + id);
+        objects[id] = obj;
     } else {
+        //console.log('objectDeleted: ' + id);
         delete objects[id];
     }
+    // TODO Build in some threshold
+
     if (webServer) webServer.io.sockets.emit('objectChange', id, obj);
 });
 
@@ -99,8 +103,10 @@ adapter.on('unload', function (callback) {
 
 adapter.on('log', function (obj) {
     // obj = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
-    if (webServer && webServer.io && webServer.io.sockets)
+    if (webServer && webServer.io && webServer.io.sockets) {
+        // TODO Build in some threshold
         webServer.io.sockets.emit('log', obj);
+    }
 });
 function main() {
     adapter.subscribeForeignStates('*');
