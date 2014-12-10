@@ -263,6 +263,9 @@ $(document).ready(function () {
 
     // Use the function for this because it must be done after the language was read
     function initAllDialogs() {
+
+        initGridLanguage(systemConfig.common.language);
+
         $dialogSystem.dialog({
             autoOpen:   false,
             modal:      true,
@@ -566,8 +569,13 @@ $(document).ready(function () {
         return typeof val;
     }
 
-    function showDialogSelectId(_objects, _states, currentId, title, filter, callback) {
+    function showDialogSelectId(_objects, _states, currentId, title, _filter, callback) {
         if (_objects == '__clear__') {
+            selectID('__clear__');
+        } else {
+            selectID(null, {currentId: currentId, objects: _objects, states: _states, filter: _filter}, callback);
+        }
+        /*if (_objects == '__clear__') {
             if (typeof selectID == 'function') selectID('__clear__');
             return;
         }
@@ -575,15 +583,17 @@ $(document).ready(function () {
         var $dialogSelectMember = $('#dialog-select-member');
         if (typeof title == 'function') {
             callback = title;
-            title = undefined;
+            title    = undefined;
         }
 
         if (typeof currentId == 'function') {
-            callback = currentId;
+            callback  = currentId;
             currentId = undefined;
         }
 
-        var selectedID = currentId;
+        $dialogSelectMember[0]._callback   = callback;
+        $dialogSelectMember[0]._currentId  = currentId;
+        $dialogSelectMember[0]._selectedID = currentId;
 
         if (!$dialogSelectMember[0]._buttons) {
             $dialogSelectMember[0]._buttons = [
@@ -591,7 +601,8 @@ $(document).ready(function () {
                     id:   "dialog-member-button-ok",
                     text: _('Select'),
                     click: function () {
-                        if (callback) callback(selectedID, currentId);
+                        var $dlg = $('#dialog-select-member');
+                        if ($dlg[0] && $dlg[0]._callback) $dlg[0]._callback($dlg[0]._selectedID, currentId);
                         $dialogSelectMember.dialog('close');
                     }
                 },
@@ -615,20 +626,23 @@ $(document).ready(function () {
 
         $dialogSelectMember.dialog('option', 'title', _('Select ID') +  ' - ' + (title || ' '));
 
-        if (typeof selectID == 'function') selectID('tree-select-member', currentId, _objects, states, filter, function (newId) {
-            // On change
-            selectedID = newId;
-            if (_objects[selectedID] && _objects[selectedID].common && _objects[selectedID].common.name) {
-                $dialogSelectMember.dialog('option', 'title', _('Select ID') +  ' - ' + (_objects[selectedID].common.name || ' '));
-            } else {
-                $dialogSelectMember.dialog('option', 'title', _('Select ID') +  ' - ' + (selectedID || ' '));
-            }
-            if (_objects[selectedID] && _objects[selectedID].type == 'state') {
-                $('#dialog-member-button-ok').removeClass('ui-state-disabled');
-            } else {
-                $('#dialog-member-button-ok').addClass('ui-state-disabled');
-            }
-        });
+        if (typeof selectID == 'function') {
+            selectID('tree-select-member', {currentId: currentId, objects: _objects, states: _states, filter: _filter}, function (newId) {
+                // On change
+                var $dlg = $('#dialog-select-member');
+                $dlg[0]._selectedID = newId;
+                if (_objects[newId] && _objects[newId].common && _objects[newId].common.name) {
+                    $dlg.dialog('option', 'title', _('Select ID') +  ' - ' + (_objects[newId].common.name || ' '));
+                } else {
+                    $dlg.dialog('option', 'title', _('Select ID') +  ' - ' + (newId || ' '));
+                }
+                if (_objects[newId] && _objects[newId].type == 'state') {
+                    $('#dialog-member-button-ok').removeClass('ui-state-disabled');
+                } else {
+                    $('#dialog-member-button-ok').addClass('ui-state-disabled');
+                }
+            });
+        }
 
         if (currentId) {
             if (_objects[currentId] && _objects[currentId].common && _objects[currentId].common.name) {
@@ -640,7 +654,7 @@ $(document).ready(function () {
             $('#dialog-member-button-ok').addClass('ui-state-disabled');
         }
 
-        $dialogSelectMember.dialog('open');
+        $dialogSelectMember.dialog('open');*/
     }
 
     // ----------------------------- Grids and Dialog inits ------------------------------------------------
@@ -4131,12 +4145,19 @@ $(document).ready(function () {
         $('#enum-name-edit').val(objects[id].common.name);
         var members = objects[id].common.members || [];
         $gridEnumMembers.jqGrid('clearGridData');
-        for (var i = 0; i < members.length; i++) {
+        // Remove empty entries
+        for (var i = members.length - 1; i >= 0; i--) {
+            if (!members[i]) {
+                members.splice(i, 1);
+            }
+        }
+
+        for (i = 0; i < members.length; i++) {
             if (objects[members[i]]) {
                 $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {_id: members[i], name: objects[members[i]].common.name, type: objects[members[i]].type});
-            } else {
+            } else if (members[i]) {
                 $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {
-                    _id: members[i],
+                    _id:  members[i],
                     name: '<span style="color:red; font-weight:bold; font-style:italic;">object missing</span>',
                     type: ''
                 });
@@ -4505,8 +4526,8 @@ $(document).ready(function () {
         $('#events').prepend(row);
 
         // Update select Id Dialog
-        if ((obj    && (obj.type    === 'device' || obj.type    === 'channel' || obj.type    === 'state')) ||
-            (oldObj && (oldObj.type === 'device' || oldObj.type === 'channel' || oldObj.type === 'state'))) {
+        if ((obj    && (obj.type    === 'device' || obj.type    === 'channel' || obj.type    === 'state' || obj.type    === 'enum')) ||
+            (oldObj && (oldObj.type === 'device' || oldObj.type === 'channel' || oldObj.type === 'state' || oldObj.type === 'enum'))) {
             showDialogSelectId('__clear__');
         }
 
