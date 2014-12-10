@@ -365,6 +365,7 @@ function _editInitButtons($grid, tabId, objId) {
 }
 
 function _editTable(tabId, cols, values, rooms, top, onChange) {
+    initGridLanguage(systemLang);
     var colNames = [];
     var colModel = [];
     var $grid = $('#' + tabId);

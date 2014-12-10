@@ -540,6 +540,26 @@ $(document).ready(function () {
         }
     });
 
+    $('#log-clear-on-disk').button({icons:{primary: 'ui-icon-trash'}, text: false}).click(function () {
+        if (confirm(_('Log file will be deleted. Are you sure?'))) {
+            socket.emit('sendToHost', currentHost, 'delLogs', null, function () {
+                $('#log-table').html('');
+                logLinesCount = 0;
+                logLinesStart = 0;
+                $('a[href="#tab-log"]').removeClass('errorLog');
+                initLogs();
+            });
+        }
+    }).css({width: 20, height: 20}).addClass("ui-state-error");;
+
+    $('#log-refresh').button({icons:{primary: 'ui-icon-refresh'}, text: false}).click(function () {
+        $('#log-table').html('');
+        logLinesCount = 0;
+        logLinesStart = 0;
+        $('a[href="#tab-log"]').removeClass('errorLog');
+        initLogs();
+    }).css({width: 20, height: 20});
+
     $('#log-clear').button({icons:{primary: 'ui-icon-trash'}, text: false}).click(function () {
         $('#log-table').html('');
         logLinesCount = 0;
@@ -2779,7 +2799,11 @@ $(document).ready(function () {
 
         socket.emit('sendToHost', currentHost, 'getLogs', 200, function (lines) {
             var message = {message: '', severity: 'debug', from: '', ts: ''};
-
+            var size = lines ? lines.pop() : -1;
+            if (size != -1) {
+                size = parseInt(size);
+                $('#log-size').html((_('Log size:') + ' ' + ((size / (1024 * 1024)).toFixed(2) + ' MB ')).replace(/ /g,'&nbsp;'));
+            }
             for (var i = 0; i < lines.length; i++) {
                 if (!lines[i]) continue;
                 // 2014-12-05 14:47:10.739  - [32minfo[39m: iobroker  ERR! network In most cases you are behind a proxy or have bad network settings.npm ERR! network

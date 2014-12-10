@@ -109,12 +109,16 @@ function selectID(elem, options, onChange) {
         throw 'selectID: Cannot find ' + elem;
     }
 
-    function _getAllStates(objects) {
+    function _getAllStates(objects, currentId, filter) {
         var states = [];
         for (var id in objects) {
             if (objects[id].type == 'state') {
                 states.push(id);
-                __treeInsert(id, options.currentId == id);
+                if (filter && filter.common && filter.common.history && filter.common.history.enabled) {
+                    if (!objects[id].common || !objects[id].common.history || !objects[id].common.history.enabled) continue;
+                }
+
+                __treeInsert(id, currentId == id);
             } else if (objects[id].type == 'enum' && _regexEnumRooms.test(id)) {
                 _enums.push(id);
             }
@@ -202,16 +206,22 @@ function selectID(elem, options, onChange) {
     var $tree = $('#selectID_' + elem);
     if ($tree.length) {
         // Re-init tree if filter or selectedID changed
-        if (!$tree[0]._options || $tree[0]._options.filter    != options.filter)    _objTree.inited = false;
-        if (!$tree[0]._options || $tree[0]._options.currentId != options.currentId) _objTree.inited = false;
+        if (!$tree[0]._options || ($tree[0]._options.filter && !options.filter) ||
+            (!$tree[0]._options.filter && options.filter) ||
+            ($tree[0]._options.filter && options.filter && JSON.stringify($tree[0]._options.filter) != JSON.stringify(options.filter))) {
+            _objTree.inited = false;
+        }
+        if (_objTree.inited && (!$tree[0]._options || $tree[0]._options.currentId != options.currentId)) _objTree.inited = false;
 
         $tree[0]._onChange = onChange;
         $tree[0]._options  = options;
+    } else {
+        _objTree.inited = false;
     }
 
     if (!_objTree.inited) {
         // Get all states
-        _getAllStates(options.objects);
+        _getAllStates(options.objects, options.currentId, options.filter);
 
         var rooms = [];
         var textRooms = '<select id="filter_room_' + elem + '" class="filter_' + elem + '"><option value="">' + _('All') + '</option>';
@@ -271,6 +281,7 @@ function selectID(elem, options, onChange) {
 
         $tree = $('#selectID_' + elem);
         $tree[0]._onChange = onChange;
+        $tree[0]._options  = options;
 
         $tree.fancytree({
             titlesTabbable: true,     // Add all node titles to TAB chain
@@ -316,26 +327,39 @@ function selectID(elem, options, onChange) {
                 }
 
                 $tdList.eq(5).text(rooms.join(', '));
-
+                var icon = '';
+                var alt = '';
                 if (isCommon) {
                     if (options.objects[node.key].common.icon) {
                         if (options.objects[node.key].type == 'instance') {
-                            $tdList.eq(2).html('<img width=20 height=20 src="/adapter/' + options.objects[node.key].common.name + '/' + options.objects[node.key].common.icon + '" alt="device"/>');
+                            icon = '/adapter/' + options.objects[node.key].common.name + '/' + options.objects[node.key].common.icon;
                         }
                         else {
-                            var instance = node.key.split(2);
-                            $tdList.eq(2).html('<img width=20 height=20 src="/adapter/' + instance[0] + '/' + options.objects[node.key].common.icon + '" alt="device"/>');
+                            var instance = node.key.split('.', 2);
+                            if (options.objects[node.key].common.icon[0] == '/') {
+                                instance[0] += options.objects[node.key].common.icon;
+                            } else {
+                                instance[0] += '/' + options.objects[node.key].common.icon;
+                            }
+                            icon = '/adapter/' + instance[0];
                         }
                     } else if (options.objects[node.key].type == 'device') {
-                        $tdList.eq(2).html('<img width=20 height=20 src="' + _imgPath + 'device.png" alt="device"/>');
+                        icon = _imgPath + 'device.png';
+                        alt  = 'device';
                     } else if (options.objects[node.key].type == 'channel') {
-                        $tdList.eq(2).html('<img width=20 height=30 src="' + _imgPath + 'channel.png" alt="channel"/>');
+                        icon = _imgPath + 'channel.png';
+                        alt  = 'channel';
                     } else if (options.objects[node.key].type == 'state') {
-                        $tdList.eq(2).html('<img width=20 height=20 src="' + _imgPath + 'state.png" alt="state"/>');
-                    } else if (options.objects[node.key].type == 'device') {
-
+                        icon = _imgPath + 'state.png';
+                        alt  = 'state';
                     }
                 }
+                var _id_ = 'system.adapter.' + node.key;
+                if (options.objects[_id_] && options.objects[_id_].common && options.objects[_id_].common.icon) {
+                    icon = '/adapter/' + options.objects[_id_].common.name + '/' + options.objects[_id_].common.icon;
+                }
+                if (icon) $tdList.eq(2).html('<img width=20 height=20 src="' + icon + '" alt="' + alt + '"/>');
+
                 // (index #1 is rendered by fancytree)
                 if (isCommon) {
                     $tdList.eq(3).text(options.objects[node.key].common.name);
@@ -416,7 +440,7 @@ function selectID(elem, options, onChange) {
 
         function customFilter(node) {
             var id = $('#filter_ID_' + elem).val();
-            if (id !== '' && node.title.indexOf(id) == -1) return false;
+            if (id !== '' && node.key.indexOf(id) == -1) return false;
             var value = $('#filter_name_' + elem).val();
             if (value !== '' && (!options.objects[node.key] || !options.objects[node.key].common || options.objects[node.key].common.name === undefined || options.objects[node.key].common.name.indexOf(value) == -1)) return false;
             value = $('#filter_role_' + elem).val();
