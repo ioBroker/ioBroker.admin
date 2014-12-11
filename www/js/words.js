@@ -228,7 +228,12 @@ systemDictionary = {
     "daemon":               {"en": "daemon",                "de": "daemon",                 "ru": "Демон"},
     "subscribe":            {"en": "subscribe",             "de": "abonieren",              "ru": "Подписка"},
     "Are you sure?":        {"en": "Are you sure?",         "de": "Sind sie sicher?",       "ru": "Вы уверены?"},
-
+    "Log size:":            {"en": "Log size:",             "de": "Log-Größe:",             "ru": "Размер файла протокола:"},
+    "Log file will be deleted. Are you sure?": {
+        "en": "Log file will be deleted. Are you sure?",
+        "de": "Log/Datei wird gelöscht. Sind Sie sicher?",
+        "ru": "Файл протокола будет удален. Вы уверены?"
+    },
     "ID":                   {"en": "ID",                    "de": "ID",                     "ru": "ID"},
     "Role":                 {"en": "Role",                  "de": "Rolle",                  "ru": "Роль"},
     "Room":                 {"en": "Room",                  "de": "Raum",                   "ru": "Комната"},

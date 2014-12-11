@@ -72,6 +72,7 @@ $(document).ready(function () {
 
     var $stdout =               $('#stdout');
     var $configFrame =          $('#config-iframe');
+    var $selectId =             null;
 
     var $dialogCommand =        $('#dialog-command');
     var $dialogEnumMembers =    $('#dialog-enum-members');
@@ -591,9 +592,12 @@ $(document).ready(function () {
 
     function showDialogSelectId(_objects, _states, currentId, title, _filter, callback) {
         if (_objects == '__clear__') {
-            selectID('__clear__');
+            if ($selectId) $selectId.selectId('clear');
         } else {
-            selectID(null, {currentId: currentId, objects: _objects, states: _states, filter: _filter}, callback);
+            if (!$selectId) $selectId = $('#dialog-select-member').selectId('init',
+                {objects: _objects, states: _states});
+
+            $selectId.selectId('show', currentId, _filter, callback);
         }
         /*if (_objects == '__clear__') {
             if (typeof selectID == 'function') selectID('__clear__');
@@ -3927,6 +3931,13 @@ $(document).ready(function () {
                     }
                     if (addr) hosts.push({name: obj.common.hostname, address: addr, id: obj._id});
                 }
+
+                if (id.match(/^system\.adapter\.node-red\.[0-9]+$/) && obj && obj.common && obj.common.enabled) {
+                    $("#a-tab-node-red").show();
+                    $("#tab-node-red").show();
+                    $('#iframe-node-red').height($(window).height() - 55);
+                    $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
+                }
                 treeInsert(id);
             }
             //benchmark('finished getObjects loop');
@@ -4615,10 +4626,10 @@ $(document).ready(function () {
                 i = instances.indexOf(id);
                 if (i != -1) instances.splice(i, 1);
             }
-            if (obj && id.match(/^system\.adapter\.history\.[0-9]+$/)) {
+            if (id.match(/^system\.adapter\.history\.[0-9]+$/)) {
                 // Update all states if history enabled or disabled
                 // Update history button
-                var enabled = obj.common.enabled;
+                var enabled = obj && obj.common.enabled;
                 var rowsData = $gridStates.jqGrid('getRowData');
                 for (i = 0; i < rowsData.length; i++) {
                     if (enabled && id.substring(id.length - '.messagebox'.length) != '.messagebox') {
@@ -4637,6 +4648,19 @@ $(document).ready(function () {
                 $('.history').each(function (id) {
                     prepareHistoryButton(this);
                 });
+            }
+
+            if (id.match(/^system\.adapter\.node-red\.[0-9]+$/)) {
+                var enabled = obj && obj.common.enabled;
+                if (enabled) {
+                    $("#a-tab-node-red").show();
+                    $("#tab-node-red").show();
+                    $('#iframe-node-red').height($(window).height() - 55);
+                    $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
+                } else {
+                    $("#a-tab-node-red").hide();
+                    $("#tab-node-red").hide();
+                }
             }
 
             // Disable scripts tab if no one script engine instance found
@@ -5031,6 +5055,7 @@ $(document).ready(function () {
         $('.subgrid-level-2').setGridWidth(x - 94);
         $('.subgrid-level-3').setGridWidth(x - 121);
         $('.subgrid-level-4').setGridWidth(x - 148);
+        $('#iframe-node-red').height(y - 55);
     }
     function navigation() {
         if (window.location.hash) {
