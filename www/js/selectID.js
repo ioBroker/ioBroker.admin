@@ -20,6 +20,11 @@
  <link rel="stylesheet" type="text/css" href="lib/css/fancytree/ui.fancytree.min.css"/>
  <script type="text/javascript" src="lib/js/jquery.fancytree-all.min.js"></script>
  <script type="text/javascript" src="js/selectID.js"></script>
+
+ Interface:
+ +  init -
+ +  show(currentId, filter, callback) - all arguments are optional if set by "init"
+ +  clear - clear object tree to read and buildit anew (used only if objects set by "init")
  */
 (function( $ ) {
     var instance = 0;
@@ -115,6 +120,7 @@
         if (parts.length - 1 == index) {
             tree.children[num].id = id;
         } else {
+            tree.children[num].expanded = tree.expanded || isExpanded;
             _treeInsert(tree.children[num], parts, id, index + 1, isExpanded);
         }
     }
@@ -132,6 +138,7 @@
                     click: function () {
                         var _data = $dlg.data('selectId');
                         if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId);
+                        _data.currentId = _data.selectedID;
                         $dlg.dialog('close');
                     }
                 },
@@ -206,7 +213,7 @@
         text += '        </tbody>';
         text += '    </table></div></div>';
 
-        $dlg.append(text);
+        $dlg.html(text);
 
         data.$tree = $('#selectID_' + data.instance);
         data.$tree[0]._onChange = data.onSuccess;
@@ -489,12 +496,12 @@
                 }
                 if (data.inited) {
                     // Re-init tree if filter or selectedID changed
-                    if ((data.filter && !settings.filter) ||
+                    if ((data.filter && !settings.filter && settings.filter !== undefined) ||
                         (!data.filter && settings.filter) ||
                         (data.filter && settings.filter && JSON.stringify(data.filter) != JSON.stringify(settings.filter))) {
                         data.inited = false;
                     }
-                    if (data.inited && (data.currentId != settings.currentId)) data.inited = false;
+                    if (data.inited && settings.currentId !== undefined && (data.currentId != settings.currentId)) data.inited = false;
 
                     data.currentId = settings.currentId;
                     data.filter =    JSON.parse(JSON.stringify(filter));
@@ -548,12 +555,12 @@
 
                 if (data.inited) {
                     // Re-init tree if filter or selectedID changed
-                    if ((data.filter && !filter) ||
+                    if ((data.filter && !filter && filter !== undefined) ||
                         (!data.filter && filter) ||
                         (data.filter &&  filter && JSON.stringify(data.filter) != JSON.stringify(filter))) {
                         data.inited = false;
                     }
-                    if (data.inited && (data.currentId != currentId)) data.inited = false;
+                    if (data.inited && currentId !== undefined && (data.currentId != currentId)) data.inited = false;
                 }
                 if (currentId !== undefined) data.currentId = currentId;
                 if (filter    !== undefined) data.filter    = JSON.parse(JSON.stringify(filter));
