@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.2.6 (2014-12-16)
+* (bluefox) replace jqGrid with fancytree by objects
+
 ### 0.2.5 (2014-12-07)
 * (bluefox) fix object tree (some nodes was hidden)
 
