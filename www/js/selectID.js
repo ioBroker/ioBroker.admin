@@ -22,11 +22,35 @@
  <script type="text/javascript" src="js/selectID.js"></script>
 
  Interface:
- +  init -
+ +  init(options) - init select ID dialog. Following options are supported
+         {
+             currentId:  '',       // Current ID or empty if nothing preselected
+             objects:    null,     // All objects that should be shown. It can be empty if connCfg used.
+             states:     null,     // All states of objects. It can be empty if connCfg used. If objects are set and no states, states will no be shown.
+             filter:     null,     // filter
+             imgPath:    'lib/css/fancytree/', // Path to images device.png, channel.png and state.png
+             connCfg:    null,     // configuration for dialog, ti read objects itself: {socketUrl: socketUrl, socketSession: socketSession}
+             onSuccess:  null,     // callback function to be called if user press "Select". Can be overwritten in "show"
+             noImg:      false,    // do not show column with images
+             texts: {
+                 select:   'Select',
+                 cancel:   'Cancel',
+                 all:      'All',
+                 id:       'ID',
+                 name:     'Name',
+                 role:     'Role',
+                 room:     'Room',
+                 value:    'Value',
+                 selectid: 'Select ID'
+             }
+         }
  +  show(currentId, filter, callback) - all arguments are optional if set by "init"
- +  clear - clear object tree to read and buildit anew (used only if objects set by "init")
+ +  clear() - clear object tree to read and buildit anew (used only if objects set by "init")
+ +  getInfo (id) - get information about ID
  */
 (function( $ ) {
+    if ($.fn.selectId) return;
+
     var instance = 0;
     function getAllStates(data) {
         var objects = data.objects;
@@ -120,13 +144,14 @@
         if (parts.length - 1 == index) {
             tree.children[num].id = id;
         } else {
-            tree.children[num].expanded = tree.expanded || isExpanded;
+            tree.children[num].expanded = tree.children[num].expanded || isExpanded;
             _treeInsert(tree.children[num], parts, id, index + 1, isExpanded);
         }
     }
 
     function initTreeDialog($dlg) {
         var data = $dlg.data('selectId');
+        var noStates = (data.objects && !data.states);
         // Get all states
         getAllStates(data);
 
@@ -134,7 +159,7 @@
             data.buttons = [
                 {
                     id:   data.instance + '-button-ok',
-                    text: _('Select'),
+                    text: data.texts.select,
                     click: function () {
                         var _data = $dlg.data('selectId');
                         if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId);
@@ -144,7 +169,7 @@
                 },
                 {
                     id:   data.instance + '-button-cancel',
-                    text: _('Cancel'),
+                    text: data.texts.cancel,
                     click: function () {
                         $(this).dialog('close');
                     }
@@ -161,7 +186,7 @@
         }
 
         var rooms = [];
-        var textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '"><option value="">' + _('All') + '</option>';
+        var textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
         for (var i = 0; i < data.enums.length; i++) {
             rooms.push({title: data.objects[data.enums[i]].common.name, key: data.enums[i]});
             textRooms += '<option value="' + data.objects[data.enums[i]].common.name + '">' + data.objects[data.enums[i]].common.name + '</option>';
@@ -173,24 +198,36 @@
         text += '<colgroup>';
         text += '            <col width="1px"/>';
         text += '            <col width="400px"/>';
-        text += '            <col width="20px"/>';
+        if (data.noImg) {
+            text += '            <col width="1px"/>';
+        } else {
+            text += '            <col width="20px"/>';
+        }
         text += '            <col width="*"/>';
         text += '            <col width="150px"/>';
         text += '            <col width="150px"/>';
-        text += '            <col width="150px"/>';
+        if (!noStates) {
+            text += '        <col width="150px"/>';
+        }
         text += '            <col width="18px"/>'; // TODO calculate width of scroll bar
         text += '        </colgroup>';
         text += '        <thead>';
-        text += '            <tr><th></th><th><table style="width: 100%; padding:0" cellspacing="0" cellpadding="0"><tr><td><button id="btn_collapse_' + data.instance + '"></button></td><td><button id="btn_expand_' + data.instance + '"></button></td><td style="width: 100%; text-align: center; font-weight: bold">' + _('ID') + '</td></tr></table></th><th></th><th>' + _('Name') + '</th><th>' + _('Role') + '</th><th>' + _('Room') + '</th><th>' + _('Value') + '</th><th></th></tr>';
+        text += '            <tr><th></th><th><table style="width: 100%; padding:0" cellspacing="0" cellpadding="0"><tr><td><button id="btn_collapse_' + data.instance + '"></button></td><td><button id="btn_expand_' + data.instance + '"></button></td><td style="width: 100%; text-align: center; font-weight: bold">' + data.texts.id + '</td></tr></table></th><th></th><th>' + data.texts.name + '</th><th>' + data.texts.role + '</th><th>' + data.texts.room + '</th>';
+        if (!noStates) {
+            text += '<th>' + data.texts.value + '</th>';
+        }
+        text += '<th></th></tr>';
         text += '        </thead>';
         text += '        <tbody>';
         text += '            <tr><td></td>';
-        text += '               <td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%" type="text" id="filter_ID_'    + data.instance + '" class="filter_' + data.instance + '"/></td><td><button data-id="filter_ID_'    + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
+        text += '               <td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%;padding:0" type="text" id="filter_ID_'    + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_ID_'    + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
         text += '               <td></td>';
-        text += '               <td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%" type="text" id="filter_name_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td><button data-id="filter_name_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
-        text += '               <td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%" type="text" id="filter_role_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td><button data-id="filter_role_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
+        text += '               <td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%;padding:0" type="text" id="filter_name_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_name_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
+        text += '               <td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%;padding:0" type="text" id="filter_role_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_role_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
         text += '               <td>' + textRooms /*<table style="width:100%"><tr><td style="width:100%"><input style="width:100%" type="text" id="filter_room_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td><button data-id="filter_room_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table>*/ + '</td>';
-        text += '               <td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%" type="text" id="filter_value_' + data.instance + '" class="filter_' + data.instance + '"/></td><td><button data-id="filter_value_' + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
+        if (!noStates) {
+            text += '           <td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%;padding:0" type="text" id="filter_value_' + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_value_' + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
+        }
         text += '               <td></td></tr>';
         text += '        </tbody>';
         text += '    </table>';
@@ -200,14 +237,24 @@
         text += '        <colgroup>';
         text += '            <col width="1px"/>';
         text += '            <col width="400px"/>';
-        text += '            <col width="20px"/>';
+        if (data.noImg) {
+            text += '            <col width="1px"/>';
+        } else {
+            text += '            <col width="20px"/>';
+        }
         text += '            <col width="*"/>';
         text += '            <col width="150px"/>';
-        text += '            <col width="150px"/>';
+        if (!noStates) {
+            text += '        <col width="150px"/>';
+        }
         text += '            <col width="150px"/>';
         text += '        </colgroup>';
         text += '        <thead>';
-        text += '            <tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr>';
+        text += '            <tr><th></th><th></th><th></th><th></th><th></th>';
+        if (!noStates) {
+            text += '         <th></th>';
+        }
+        text += '             <th></th></tr>';
         text += '        </thead>';
         text += '        <tbody>';
         text += '        </tbody>';
@@ -245,9 +292,9 @@
                 var newId = data.node.key;
                 _data.selectedID = newId;
                 if (_data.objects[newId] && _data.objects[newId].common && _data.objects[newId].common.name) {
-                    $dlg.dialog('option', 'title', _('Select ID') +  ' - ' + (_data.objects[newId].common.name || ' '));
+                    $dlg.dialog('option', 'title', _data.texts.selectid +  ' - ' + (_data.objects[newId].common.name || ' '));
                 } else {
-                    $dlg.dialog('option', 'title', _('Select ID') +  ' - ' + (newId || ' '));
+                    $dlg.dialog('option', 'title', _data.texts.selectid +  ' - ' + (newId || ' '));
                 }
                 if (_data.objects[newId] && _data.objects[newId].type == 'state') {
                     $('#' + _data.instance + '-button-ok').removeClass('ui-state-disabled');
@@ -277,7 +324,7 @@
                 $tdList.eq(5).text(rooms.join(', '));
                 var icon = '';
                 var alt = '';
-                if (isCommon) {
+                if (isCommon && !data.noImg) {
                     if (data.objects[node.key].common.icon) {
                         if (data.objects[node.key].type == 'instance') {
                             icon = '/adapter/' + data.objects[node.key].common.name + '/' + data.objects[node.key].common.icon;
@@ -303,7 +350,7 @@
                     }
                 }
                 var _id_ = 'system.adapter.' + node.key;
-                if (data.objects[_id_] && data.objects[_id_].common && data.objects[_id_].common.icon) {
+                if (!data.noImg && data.objects[_id_] && data.objects[_id_].common && data.objects[_id_].common.icon) {
                     icon = '/adapter/' + data.objects[_id_].common.name + '/' + data.objects[_id_].common.icon;
                 }
                 if (icon) $tdList.eq(2).html('<img width=20 height=20 src="' + icon + '" alt="' + alt + '"/>');
@@ -315,7 +362,7 @@
                 }
 
                 // (index #0 is rendered by fancytree by adding the checkbox)
-                if(data.states[node.key]) {
+                if(data.states && data.states[node.key]) {
                     var val = data.states[node.key].val;
                     if (val === undefined) val = '';
                     if (isCommon && data.objects[node.key].common.unit) val += ' ' + data.objects[node.key].common.unit;
@@ -387,14 +434,16 @@
         });
 
         function customFilter(node) {
-            var id = $('#filter_ID_' + data.instance).val();
+            var id = $('#filter_ID_' + data.instance).val().toLowerCase();
             if (id !== '' && node.key.indexOf(id) == -1) return false;
-            var value = $('#filter_name_' + data.instance).val();
-            if (value !== '' && (!data.objects[node.key] || !data.objects[node.key].common || data.objects[node.key].common.name === undefined || data.objects[node.key].common.name.indexOf(value) == -1)) return false;
-            value = $('#filter_role_' + data.instance).val();
-            if (value !== '' && (!data.objects[node.key] || !data.objects[node.key].common || data.objects[node.key].common.role === undefined || data.objects[node.key].common.role.indexOf(value) == -1)) return false;
-            value = $('#filter_value_' + data.instance).val();
-            if (value !== '' && (!options.states[node.key] || options.states[node.key].val === undefined || options.states[node.key].val.toString().indexOf(value) == -1)) return false;
+            var value = $('#filter_name_' + data.instance).val().toLowerCase();
+            if (value !== '' && (!data.objects[node.key] || !data.objects[node.key].common || data.objects[node.key].common.name === undefined || data.objects[node.key].common.name.toLowerCase().indexOf(value) == -1)) return false;
+            value = $('#filter_role_' + data.instance).val().toLowerCase();
+            if (value !== '' && (!data.objects[node.key] || !data.objects[node.key].common || data.objects[node.key].common.role === undefined || data.objects[node.key].common.role.toLowerCase().indexOf(value) == -1)) return false;
+            if (data.states) {
+                value = $('#filter_value_' + data.instance).val().toLowerCase();
+                if (value !== '' && (!data.states[node.key] || data.states[node.key].val === undefined || data.states[node.key].val.toString().toLowerCase().indexOf(value) == -1)) return false;
+            }
             value = $('#filter_room_' + data.instance).val();
             if (value !== '') {
                 if (!data.objects[node.key]) return false;
@@ -412,7 +461,6 @@
                 }
                 if (rooms.indexOf(value) == -1) return false;
             }
-
 
             return true;
         }
@@ -446,16 +494,17 @@
     }
 
     var methods = {
-        init: function (options) {
+        "init": function (options) {
             // done, just to show possible settings, this is not required
             var settings = $.extend({
-                currentId: '',
-                objects:   null,
-                states:    null,
-                filter:    null,
-                imgPath:   'lib/css/fancytree/',
-                connCfg:   null,
+                currentId:  '',
+                objects:    null,
+                states:     null,
+                filter:     null,
+                imgPath:    'lib/css/fancytree/',
+                connCfg:    null,
                 onSuccess:  null,
+                noImg:      false,
                 texts: {
                     select:   'Select',
                     cancel:   'Cancel',
@@ -482,16 +531,17 @@
                         regexSystemAdapter: new RegExp('^system.adapter.'),
                         regexSystemHost:    new RegExp('^system.host.'),
                         regexEnumRooms:     new RegExp('^enum.rooms.'),
+                        /*                        filter:             JSON.parse(JSON.stringify(settings.filter)),
+                      objects:            settings.objects,
                         currentId:          settings.currentId,
-                        filter:             JSON.parse(JSON.stringify(settings.filter)),
-                        objects:            settings.objects,
                         states:             settings.states,
                         imgPath:            settings.imgPath,
                         connCfg:            settings.connCfg,
-                        onSuccess:           settings.onSuccess,
+                        noImg:              settings.noImg,
+                        onSuccess:          settings.onSuccess,*/
                         instance:           instance++,
                         inited:             false
-                    }
+                    };
                     $dlg.data('selectId', data);
                 }
                 if (data.inited) {
@@ -503,14 +553,10 @@
                     }
                     if (data.inited && settings.currentId !== undefined && (data.currentId != settings.currentId)) data.inited = false;
 
-                    data.currentId = settings.currentId;
-                    data.filter =    JSON.parse(JSON.stringify(filter));
-                    data.objects =   settings.objects;
-                    data.states =    settings.states;
-                    data.imgPath =   settings.imgPath;
-                    data.connCfg =   settings.connCfg;
-                    data.onSuccess =  settings.onSuccess;
                 }
+                data = $.extend(data, settings);
+                // make a copy of filter
+                data.filter = JSON.parse(JSON.stringify(data.filter));
 
                 if (!data.objects && data.connCfg) {
                     // Read objects and states
@@ -519,7 +565,7 @@
                     if (typeof data.connCfg.socketUrl != 'undefined') {
                         data.socketURL = data.connCfg.socketUrl;
                         if (data.socketURL && data.socketURL[0] == ':') {
-                            data.socketURL = 'http://' + location.hostname + data.socketURL;
+                            data.socketURL = jQuery(location).attr('protocol') + '://' + location.hostname + data.socketURL;
                         }
                         data.socketSESSION = data.connCfg.socketSession;
                     }
@@ -547,7 +593,7 @@
 
             return this;
         },
-        show: function (currentId, filter, onSuccess) {
+        "show": function (currentId, filter, onSuccess) {
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
                 var $dlg = $(dlg);
@@ -573,12 +619,12 @@
                 if (!data.inited) {
                     initTreeDialog($dlg);
                 }
-                $dlg.dialog('option', 'title', _('Select ID') +  ' - ' + (data.currentId || ' '));
+                $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + (data.currentId || ' '));
                 if (data.currentId) {
                     if (data.objects[data.currentId] && data.objects[data.currentId].common && data.objects[data.currentId].common.name) {
-                        $dlg.dialog('option', 'title', _('Select ID') +  ' - ' + (data.objects[data.currentId].common.name || ' '));
+                        $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + (data.objects[data.currentId].common.name || ' '));
                     } else {
-                        $dlg.dialog('option', 'title', _('Select ID') +  ' - ' + (data.currentId || ' '));
+                        $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + (data.currentId || ' '));
                     }
                 } else {
                     $('#' + data.instance + '-button-ok').addClass('ui-state-disabled');
@@ -590,7 +636,7 @@
 
             return this;
         },
-        hide: function () {
+        "hide": function () {
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
                 var $dlg = $(dlg);
@@ -598,7 +644,7 @@
             }
             return this;
         },
-        clear: function () {
+        "clear": function () {
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
                 var $dlg = $(dlg);
@@ -612,7 +658,18 @@
             }
             return this;
         },
-        destroy: function () {
+        "getInfo": function (id) {
+            for (var i = 0; i < this.length; i++) {
+                var dlg = this[i];
+                var $dlg = $(dlg);
+                var data = $dlg.data('selectId');
+                if (data.objects) {
+                    return data.objects[id];
+                }
+            }
+            return null;
+        },
+        "destroy": function () {
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
                 var $dlg = $(dlg);

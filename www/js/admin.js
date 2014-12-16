@@ -595,7 +595,20 @@ $(document).ready(function () {
             if ($selectId) $selectId.selectId('clear');
         } else {
             if (!$selectId) $selectId = $('#dialog-select-member').selectId('init',
-                {objects: _objects, states: _states});
+                {objects: _objects,
+                    states: _states,
+                    texts: {
+                        select:   _('Select'),
+                        cancel:   _('Cancel'),
+                        all:      _('All'),
+                        id:       _('ID'),
+                        name:     _('Name'),
+                        role:     _('Role'),
+                        room:     _('Room'),
+                        value:    _('Value'),
+                        selectid: _('Select ID')
+                    }
+                });
 
             $selectId.selectId('show', currentId, _filter, callback);
         }
@@ -2584,9 +2597,15 @@ $(document).ready(function () {
             }
         }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
             var adapter = $(this).attr('data-adapter-name');
-            getAdaptersInfo(currentHost, false, false, function (repo) {
+            getAdaptersInfo(currentHost, false, false, function (repo, installed) {
                 var obj = repo[adapter];
+
+                if (!obj) {
+                    obj = installed[adapter];
+                };
+
                 if (!obj) return;
+
                 if (obj.license && obj.license !== 'MIT') {
                     // TODO Show license dialog!
                     cmdExec(currentHost, 'add ' + adapter, function (exitCode) {
@@ -3934,7 +3953,7 @@ $(document).ready(function () {
 
                 if (id.match(/^system\.adapter\.node-red\.[0-9]+$/) && obj && obj.common && obj.common.enabled) {
                     $("#a-tab-node-red").show();
-                    $("#tab-node-red").show();
+                    if ($('#tabs').tabs("option", "active") == 8) $("#tab-node-red").show();
                     $('#iframe-node-red').height($(window).height() - 55);
                     $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
                 }
@@ -4654,7 +4673,7 @@ $(document).ready(function () {
                 var enabled = obj && obj.common.enabled;
                 if (enabled) {
                     $("#a-tab-node-red").show();
-                    $("#tab-node-red").show();
+                    if ($('#tabs').tabs("option", "active") == 8) $("#tab-node-red").show();
                     $('#iframe-node-red').height($(window).height() - 55);
                     $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
                 } else {

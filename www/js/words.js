@@ -234,6 +234,10 @@ systemDictionary = {
         "de": "Log/Datei wird gelöscht. Sind Sie sicher?",
         "ru": "Файл протокола будет удален. Вы уверены?"
     },
+    "Are you sure to delete": {
+        "en": "Are you sure to delete?",
+        "de": "Wolen Sie wirklich löschen?",
+        "ru": "Удалить?"},
     "ID":                   {"en": "ID",                    "de": "ID",                     "ru": "ID"},
     "Role":                 {"en": "Role",                  "de": "Rolle",                  "ru": "Роль"},
     "Room":                 {"en": "Room",                  "de": "Raum",                   "ru": "Комната"},
