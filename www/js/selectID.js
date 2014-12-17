@@ -31,7 +31,9 @@
              imgPath:    'lib/css/fancytree/', // Path to images device.png, channel.png and state.png
              connCfg:    null,     // configuration for dialog, ti read objects itself: {socketUrl: socketUrl, socketSession: socketSession}
              onSuccess:  null,     // callback function to be called if user press "Select". Can be overwritten in "show"
-             noImg:      false,    // do not show column with images
+             onChange:   null,     // called every time the new object selected
+             noDialog:   false,    // do not make dialog
+             buttons:    null      // array with buttons, that should be shown in last column
              texts: {
                  select:   'Select',
                  cancel:   'Cancel',
@@ -39,11 +41,20 @@
                  id:       'ID',
                  name:     'Name',
                  role:     'Role',
+                 type:     'Type,
                  room:     'Room',
                  value:    'Value',
-                 selectid: 'Select ID'
-             }
-         }
+                 selectid: 'Select ID',
+                 from:     'From: ',
+                 lc:       'Last changed: ',
+                 ts:       'Time stamp: ',
+                 ack:      'Acknowledged: ',
+                 enums:    'Members'
+             },
+             columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'value', 'button'],
+             widths:  null // array with width for every column
+
+ }
  +  show(currentId, filter, callback) - all arguments are optional if set by "init"
  +  clear() - clear object tree to read and buildit anew (used only if objects set by "init")
  +  getInfo (id) - get information about ID
@@ -52,25 +63,80 @@
     if ($.fn.selectId) return;
 
     var instance = 0;
+
+    function formatDate(dateObj) {
+        //return dateObj.getFullYear() + '-' +
+        //    ("0" + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
+        //    ("0" + (dateObj.getDate()).toString(10)).slice(-2) + ' ' +
+        //    ("0" + (dateObj.getHours()).toString(10)).slice(-2) + ':' +
+        //    ("0" + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
+        //    ("0" + (dateObj.getSeconds()).toString(10)).slice(-2);
+        // Following implementation is 5 times faster
+
+
+        var text = dateObj.getFullYear();
+        var v = dateObj.getMonth() + 1;
+        if (v < 10) {
+            text += '-0' + v;
+        } else {
+            text += '-' + v;
+        }
+
+        v = dateObj.getDate() + 1;
+        if (v < 10) {
+            text += '-0' + v;
+        } else {
+            text += '-' + v;
+        }
+
+        v = dateObj.getHours() + 1;
+        if (v < 10) {
+            text += ' 0' + v;
+        } else {
+            text += ' ' + v;
+        }
+        v = dateObj.getMinutes() + 1;
+        if (v < 10) {
+            text += ':0' + v;
+        } else {
+            text += ':' + v;
+        }
+
+        v = dateObj.getSeconds() + 1;
+        if (v < 10) {
+            text += ':0' + v;
+        } else {
+            text += ':' + v;
+        }
+
+        return text;
+    }
+
     function getAllStates(data) {
         var objects = data.objects;
         var filter  = data.filter;
+        var isType  = data.columns.indexOf('type') != -1;
+        var isRoom  = data.columns.indexOf('room') != -1;
+        var isRole  = data.columns.indexOf('role') != -1;
+
         for (var id in objects) {
-            if (data.onChange || objects[id].type == 'state') {
-                if (filter && filter.common &&
-                    filter.common.history && filter.common.history.enabled) {
+            if (filter) {
+                if (filter.type && filter.type != objects[id].type) continue;
+
+                if (filter.common && filter.common.history && filter.common.history.enabled) {
                     if (!objects[id].common ||
                         !objects[id].common.history ||
                         !objects[id].common.history.enabled) continue;
                 }
-
-                treeInsert(data, id, data.currentId == id);
             }
-            if (objects[id].type == 'enum' && data.regexEnumRooms.test(id)) data.enums.push(id);
 
-            if (data.types.indexOf(objects[id].type) == -1) data.types.push(objects[id].type);
+            treeInsert(data, id, data.currentId == id);
 
-            if (objects[id].common && objects[id].common.role) {
+            if (isRoom && objects[id].type == 'enum' && data.regexEnumRooms.test(id)) data.enums.push(id);
+
+            if (isType && data.types.indexOf(objects[id].type) == -1) data.types.push(objects[id].type);
+
+            if (isRole && objects[id].common && objects[id].common.role) {
                 var parts = objects[id].common.role.split('.');
                 var role = '';
                 for (var u = 0; u < parts.length; u++) {
@@ -82,6 +148,7 @@
         data.inited = true;
         data.roles.sort();
         data.types.sort();
+        data.enums.sort();
     }
 
     function treeSplit(data, id) {
@@ -214,7 +281,7 @@
         // Get all states
         getAllStates(data);
 
-        if (!data.onChange && !data.buttonsDlg) {
+        if (!data.noDialog && !data.buttonsDlg) {
             data.buttonsDlg = [
                 {
                     id:   data.instance + '-button-ok',
@@ -244,96 +311,138 @@
             });
         }
 
-        //var rooms = [];
-        var textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-        for (var i = 0; i < data.enums.length; i++) {
-            //rooms.push({title: data.objects[data.enums[i]].common.name, key: data.enums[i]});
-            textRooms += '<option value="' + data.objects[data.enums[i]].common.name + '">' + data.objects[data.enums[i]].common.name + '</option>';
+        // Store current filter
+        var filter = {ID:      $('#filter_ID_' + data.instance).val()};
+        for (var c = 0; c < data.columns.length; c++) {
+            filter[data.columns[c]] = $('#filter_' + data.columns[c] +'_' + data.instance).val();
         }
-        textRooms += '</select>';
 
-        var textRoles = '<select id="filter_role_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-        for (i = 0; i < data.roles.length; i++) {
-            textRoles += '<option value="' + data.roles[i] + '">' + data.roles[i] + '</option>';
+        var textRooms;
+        if (data.columns.indexOf('room') != -1) {
+            textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
+            for (var i = 0; i < data.enums.length; i++) {
+                textRooms += '<option value="' + data.objects[data.enums[i]].common.name + '">' + data.objects[data.enums[i]].common.name + '</option>';
+            }
+            textRooms += '</select>';
+        } else {
+            if (data.rooms) delete data.rooms;
         }
-        textRoles += '</select>';
 
-        var textTypes = '<select id="filter_type_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-        for (i = 0; i < data.types.length; i++) {
-            textTypes += '<option value="' + data.types[i] + '">' + data.types[i] + '</option>';
+        var textRoles;
+        if (data.columns.indexOf('role') != -1) {
+            textRoles = '<select id="filter_role_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
+            for (i = 0; i < data.roles.length; i++) {
+                textRoles += '<option value="' + data.roles[i] + '">' + data.roles[i] + '</option>';
+            }
+            textRoles += '</select>';
         }
-        textTypes += '</select>';
+
+        var textTypes;
+        if (data.columns.indexOf('type') != -1) {
+            textTypes = '<select id="filter_type_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
+            for (i = 0; i < data.types.length; i++) {
+                textTypes += '<option value="' + data.types[i] + '">' + data.types[i] + '</option>';
+            }
+            textTypes += '</select>';
+        }
 
         var text = '<div id="'+ data.instance + '-div" style="width:100%; height:100%"><table id="selectID_header_' + data.instance + '" style="width: 100%;padding:0; height: 50" cellspacing="0" cellpadding="0">';
         text += '<colgroup>';
         text += '            <col width="1px"/>';
         text += '            <col width="400px"/>';
-        if (data.noImg) {
-            text += '            <col width="1px"/>';
-        } else {
-            text += '            <col width="20px"/>';
+
+        for (var c = 0; c < data.columns.length; c++) {
+            if (data.columns[c] == 'image') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '20px') + '"/>';
+            } else if (data.columns[c] == 'name') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
+            } else if (data.columns[c] == 'type') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
+            } else if (data.columns[c] == 'role') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
+            } else if (data.columns[c] == 'room') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
+            } else if (data.columns[c] == 'value') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
+            } else if (data.columns[c] == 'button') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '100px') + '"/>';
+            } else if (data.columns[c] == 'enum') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
+            }
         }
-        text += '            <col width="*"/>';
-        if (data.showTypes) text += '            <col width="150px"/>';
-        text += '            <col width="150px"/>';
-        text += '            <col width="150px"/>';
-        if (!noStates)  text += '        <col width="150px"/>';
-        if (data.buttons) text += '<col width="100px"/>';
+
         text += '            <col width="18px"/>'; // TODO calculate width of scroll bar
         text += '        </colgroup>';
         text += '        <thead>';
-        text += '            <tr><th></th><th><table style="width: 100%; padding:0" cellspacing="0" cellpadding="0"><tr><td><button id="btn_collapse_' + data.instance + '"></button></td><td><button id="btn_expand_' + data.instance + '"></button></td><td><button id="btn_refresh_' + data.instance + '"></button></td><td style="width: 100%; text-align: center; font-weight: bold">' + data.texts.id + '</td></tr></table></th><th></th><th>' + data.texts.name + '</th>';
-        if (data.showTypes) text += '<th>' + data.texts.type + '</th>';
-        text += '<th>' + data.texts.role + '</th><th>' + data.texts.room + '</th>';
-        if (!noStates) text += '<th>' + data.texts.value + '</th>';
-        if (data.buttons) text += '<th></th>';
+        text += '            <tr><th></th><th><table style="width: 100%; padding:0" cellspacing="0" cellpadding="0"><tr>';
+        text += '                <td><button id="btn_collapse_' + data.instance + '"></button></td>';
+        text += '<td><button id="btn_expand_' + data.instance + '"></button></td>';
+        text += '<td><button id="btn_refresh_' + data.instance + '"></button></td>';
+        text += '<td style="width: 100%; text-align: center; font-weight: bold">' + data.texts.id + '</td></tr></table></th>';
+
+        for (c = 0; c < data.columns.length; c++) {
+            text += '<th>' + (data.texts[data.columns[c]] || '') + '</th>';
+        }
+
         text += '<th></th></tr>';
         text += '        </thead>';
         text += '        <tbody>';
         text += '            <tr><td></td>';
         text += '               <td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%;padding:0" type="text" id="filter_ID_'    + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_ID_'    + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
-        text += '               <td></td>';
-        text += '               <td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%;padding:0" type="text" id="filter_name_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_name_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
-        if (data.showTypes) text += '               <td>' + textTypes + '</td>';
-        text += '               <td>' + textRoles /* + '<table style="width:100%"><tr><td style="width:100%"><input style="width:100%;padding:0" type="text" id="filter_role_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_role_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table>'*/ + '</td>';
-        text += '               <td>' + textRooms /* + '<table style="width:100%"><tr><td style="width:100%"><input style="width:100%" type="text" id="filter_room_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td><button data-id="filter_room_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table>'*/ + '</td>';
-        if (!noStates) text += '           <td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%;padding:0" type="text" id="filter_value_' + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_value_' + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
-        if (data.buttons) text += '<td></td>';
+
+        for (var c = 0; c < data.columns.length; c++) {
+            if (data.columns[c] == 'image') {
+                text += '<td></td>';
+            } else if (data.columns[c] == 'name' || data.columns[c] == 'value' || data.columns[c] == 'enum') {
+                text += '<td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%;padding:0" type="text" id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
+            } else if (data.columns[c] == 'type') {
+                text += '<td>' + textTypes + '</td>';
+            } else if (data.columns[c] == 'role') {
+                text += '<td>' + textRoles + '</td>';
+            } else if (data.columns[c] == 'room') {
+                text += '<td>' + textRooms + '</td>';
+            } else if (data.columns[c] == 'button') {
+                text += '<td></td>';
+            }
+        }
+
         text += '               <td></td></tr>';
         text += '        </tbody>';
         text += '    </table>';
 
-        text += '<div style="width: 100%; ';
-         if (data.buttons) {
-            text +=   'height: 100%; ';
-        } else {
-            text +=   'height: 85%; ';
-        }
-        text +=   'padding:0; overflow-y: scroll">';
-
+        text += '<div style="width: 100%; height: ' + (data.buttons ? 100 : 85) + '%;padding:0; overflow-y: scroll">';
         text +=' <table id="selectID_' + data.instance + '" style="width: 100%;padding:0;table-layout:fixed; overflow:hidden;white-space:nowrap" cellspacing="0" cellpadding="0">';
         text += '        <colgroup>';
         text += '            <col width="1px"/>';
         text += '            <col width="400px"/>';
-        if (data.noImg) {
-            text += '            <col width="1px"/>';
-        } else {
-            text += '            <col width="20px"/>';
+
+        for (var c = 0; c < data.columns.length; c++) {
+            if (data.columns[c] == 'image') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '20px') + '"/>';
+            } else if (data.columns[c] == 'name') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
+            } else if (data.columns[c] == 'type') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
+            } else if (data.columns[c] == 'role') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
+            } else if (data.columns[c] == 'room') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
+            } else if (data.columns[c] == 'value') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
+            } else if (data.columns[c] == 'button') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '100px') + '"/>';
+            } else if (data.columns[c] == 'enum') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
+            }
         }
-        text += '            <col width="*"/>';
-        if (data.showTypes) text += '        <col width="150px"/>';
-        text += '            <col width="150px"/>';
-        if (!noStates) text += '        <col width="150px"/>';
-        text += '            <col width="150px"/>';
-        if (data.buttons) text += '<col width="100px"/>';
+
         text += '        </colgroup>';
         text += '        <thead>';
-        text += '            <tr><th></th><th></th><th></th>';
-        if (data.showTypes) text += '         <th></th>';
-        text += '<th></th><th></th>';
-        if (!noStates) text += '         <th></th>';
-        if (data.buttons) text += '<th></th>';
-        text += '             <th></th></tr>';
+        text += '            <tr><th></th><th></th>';
+        for (var c = 0; c < data.columns.length; c++) {
+            text += '<th></th>';
+        }
+        text += '</tr>';
         text += '        </thead>';
         text += '        <tbody>';
         text += '        </tbody>';
@@ -368,126 +477,164 @@
                 var _data = $dlg.data('selectId');
                 var newId = data.node.key;
                 if (_data.onChange) _data.onChange(newId, _data.selectedID);
+
                 _data.selectedID = newId;
-                if (!_data.onChange) {
-                    // Set title of dialog box
-                if (_data.objects[newId] && _data.objects[newId].common && _data.objects[newId].common.name) {
-                    $dlg.dialog('option', 'title', _data.texts.selectid +  ' - ' + (_data.objects[newId].common.name || ' '));
-                } else {
-                    $dlg.dialog('option', 'title', _data.texts.selectid +  ' - ' + (newId || ' '));
-                }
-                    // Enable/ disable "Select" button
-                if (_data.objects[newId] && _data.objects[newId].type == 'state') {
-                    $('#' + _data.instance + '-button-ok').removeClass('ui-state-disabled');
-                } else {
-                    $('#' + _data.instance + '-button-ok').addClass('ui-state-disabled');
-                }
+
+                if (!_data.noDialog) {
+                        // Set title of dialog box
+                    if (_data.objects[newId] && _data.objects[newId].common && _data.objects[newId].common.name) {
+                        $dlg.dialog('option', 'title', _data.texts.selectid +  ' - ' + (_data.objects[newId].common.name || ' '));
+                    } else {
+                        $dlg.dialog('option', 'title', _data.texts.selectid +  ' - ' + (newId || ' '));
+                    }
+                        // Enable/ disable "Select" button
+                    if (_data.objects[newId] && _data.objects[newId].type == 'state') {
+                        $('#' + _data.instance + '-button-ok').removeClass('ui-state-disabled');
+                    } else {
+                        $('#' + _data.instance + '-button-ok').addClass('ui-state-disabled');
+                    }
                 }
             },
             renderColumns: function(event, _data) {
                 var node = _data.node;
                 var $tdList = $(node.tr).find(">td");
 
-                var rooms = [];
                 var isCommon = data.objects[node.key] && data.objects[node.key].common;
 
-                // Try to find room
-                if (!data.rooms[node.key]) {
-                    for (var i = 0; i < data.enums.length; i++) {
-                        if (data.objects[data.enums[i]].common.members.indexOf(node.key) != -1) {
-                            rooms.push(data.objects[data.enums[i]].common.name);
-                        }
-                        data.rooms[node.key] = rooms;
-                    }
-                } else {
-                    rooms = data.rooms[node.key];
-                }
-                var base = 4;
-                if (data.showTypes) {
-                    base ++;
-                    $tdList.eq(4).text(data.objects[node.key] ? data.objects[node.key].type: '');
-                }
+                var base = 2;
 
-                $tdList.eq(base + 1).text(rooms.join(', '));
-                var icon = '';
-                var alt = '';
-                if (isCommon && !data.noImg) {
-                    if (data.objects[node.key].common.icon) {
-                        if (data.objects[node.key].type == 'instance') {
-                            icon = '/adapter/' + data.objects[node.key].common.name + '/' + data.objects[node.key].common.icon;
-                        } else if (node.key.match(/^system\.adapter\./)) {
-                            var instance = node.key.split('.', 3);
-                            if (data.objects[node.key].common.icon[0] == '/') {
-                                instance[2] += data.objects[node.key].common.icon;
-                            } else {
-                                instance[2] += '/' + data.objects[node.key].common.icon;
+                for (var c = 0; c < data.columns.length; c++) {
+                    if (data.columns[c] == 'image') {
+                        var icon = '';
+                        var alt = '';
+                        var _id_ = 'system.adapter.' + node.key;
+                        if (data.objects[_id_] && data.objects[_id_].common && data.objects[_id_].common.icon) {
+                            icon = '/adapter/' + data.objects[_id_].common.name + '/' + data.objects[_id_].common.icon;
+                        } else
+                        if (isCommon) {
+                            if (data.objects[node.key].common.icon) {
+                                if (data.objects[node.key].type == 'instance') {
+                                    icon = '/adapter/' + data.objects[node.key].common.name + '/' + data.objects[node.key].common.icon;
+                                } else if (node.key.match(/^system\.adapter\./)) {
+                                    var instance = node.key.split('.', 3);
+                                    if (data.objects[node.key].common.icon[0] == '/') {
+                                        instance[2] += data.objects[node.key].common.icon;
+                                    } else {
+                                        instance[2] += '/' + data.objects[node.key].common.icon;
+                                    }
+                                    icon = '/adapter/' + instance[2];
+                                } else {
+                                    var instance = node.key.split('.', 2);
+                                    if (data.objects[node.key].common.icon[0] == '/') {
+                                        instance[0] += data.objects[node.key].common.icon;
+                                    } else {
+                                        instance[0] += '/' + data.objects[node.key].common.icon;
+                                    }
+                                    icon = '/adapter/' + instance[0];
+                                }
+                            } else if (data.objects[node.key].type == 'device') {
+                                icon = data.imgPath + 'device.png';
+                                alt  = 'device';
+                            } else if (data.objects[node.key].type == 'channel') {
+                                icon = data.imgPath + 'channel.png';
+                                alt  = 'channel';
+                            } else if (data.objects[node.key].type == 'state') {
+                                icon = data.imgPath + 'state.png';
+                                alt  = 'state';
                             }
-                            icon = '/adapter/' + instance[2];
+                        }
+                        if (icon) {
+                            $tdList.eq(base).html('<img width=20 height=20 src="' + icon + '" alt="' + alt + '"/>');
                         } else {
-                            var instance = node.key.split('.', 2);
-                            if (data.objects[node.key].common.icon[0] == '/') {
-                                instance[0] += data.objects[node.key].common.icon;
-                            } else {
-                                instance[0] += '/' + data.objects[node.key].common.icon;
+                            $tdList.eq(base).text('');
+                        }
+                        base++;
+                    } else
+                    if (data.columns[c] == 'name') {
+                        $tdList.eq(base++).text(isCommon ? data.objects[node.key].common.name : '');
+                    } else
+                    if (data.columns[c] == 'type') {
+                        $tdList.eq(base++).text(data.objects[node.key] ? data.objects[node.key].type: '');
+                    } else
+                    if (data.columns[c] == 'role') {
+                        $tdList.eq(base++).text(isCommon ? data.objects[node.key].common.role : '');
+                    } else
+                    if (data.columns[c] == 'room') {
+                        // Try to find room
+                        if (data.rooms) {
+                            var rooms = data.rooms[node.key];
+                            if (!rooms) {
+                                rooms = [];
+                                for (var i = 0; i < data.enums.length; i++) {
+                                    if (data.objects[data.enums[i]].common.members.indexOf(node.key) != -1 &&
+                                        rooms.indexOf(data.objects[data.enums[i]].common.name) == -1) rooms.push(data.objects[data.enums[i]].common.name);
+                                }
+                                data.rooms[node.key] = rooms;
                             }
-                            icon = '/adapter/' + instance[0];
                         }
-                    } else if (data.objects[node.key].type == 'device') {
-                        icon = data.imgPath + 'device.png';
-                        alt  = 'device';
-                    } else if (data.objects[node.key].type == 'channel') {
-                        icon = data.imgPath + 'channel.png';
-                        alt  = 'channel';
-                    } else if (data.objects[node.key].type == 'state') {
-                        icon = data.imgPath + 'state.png';
-                        alt  = 'state';
-                    }
-                }
-                var _id_ = 'system.adapter.' + node.key;
-                if (!data.noImg && data.objects[_id_] && data.objects[_id_].common && data.objects[_id_].common.icon) {
-                    icon = '/adapter/' + data.objects[_id_].common.name + '/' + data.objects[_id_].common.icon;
-                }
-                if (icon) {
-                    $tdList.eq(2).html('<img width=20 height=20 src="' + icon + '" alt="' + alt + '"/>');
-                } else {
-                    $tdList.eq(2).text('');
-                }
 
-                // (index #1 is rendered by fancytree)
-                if (isCommon) {
-                    $tdList.eq(3).text(data.objects[node.key].common.name);
-                    $tdList.eq(base).text(data.objects[node.key].common.role);
-                } else {
-                    $tdList.eq(3).text('');
-                    $tdList.eq(base).text('');
-                }
+                        $tdList.eq(base++).text(rooms.join(', '));
+                    } else
+                    if (data.columns[c] == 'value') {
+                        if(data.states && data.states[node.key]) {
+                            var val = data.states[node.key].val;
+                            var fullVal;
+                            if (val === undefined) {
+                                val = '';
+                            } else {
+                                if (isCommon && data.objects[node.key].common.unit) val += ' ' + data.objects[node.key].common.unit;
+                                fullVal = data.texts.value + ': ' + val;
+                                fullVal += '\x0A' + data.texts.ack  + ': ' + data.states[node.key].ack;
+                                fullVal += '\x0A' + data.texts.ts   + ': ' + formatDate(new Date(data.states[node.key].ts * 1000));
+                                fullVal += '\x0A' + data.texts.lc   + ': ' + formatDate(new Date(data.states[node.key].lc * 1000));
+                                fullVal += '\x0A' + data.texts.from + ': ' + (data.states[node.key].from || '');
+                            }
+                            $tdList.eq(base).text(val);
+                            $tdList.eq(base).attr('title', fullVal);
+                        } else {
+                            $tdList.eq(base).text('');
+                            $tdList.eq(base).attr('title', '');
+                        }
+                        base++;
+                    } else
+                    if (data.columns[c] == 'button') {
+                        // Show buttons
+                        if (data.buttons) {
+                            if (data.objects[node.key]) {
+                                var text = '';
+                                for(var j = 0; j < data.buttons.length; j++) {
+                                    text += '<button data-id="' + node.key + '" class="button-' + j + '"></button>';
+                                }
 
-                // (index #0 is rendered by fancytree by adding the checkbox)
-                if(data.states && data.states[node.key]) {
-                    var val = data.states[node.key].val;
-                    if (val === undefined) val = '';
-                    if (isCommon && data.objects[node.key].common.unit) val += ' ' + data.objects[node.key].common.unit;
-                    $tdList.eq(base + 2).text(val);
-                    $tdList.eq(base + 2).attr('title', val);
-                } else {
-                    $tdList.eq(base + 2).text('');
-                    $tdList.eq(base + 2).attr('title', '');
-                }
-                if (data.buttons) {
-                    if (data.objects[node.key]) {
-                        var text = '';
-                        for(var i = 0; i < data.buttons.length; i++) {
-                            text += '<button data-id="' + node.key + '" class="button-' + i + '"></button>';
+                                $tdList.eq(base++).html(text);
+
+                                for(var i = 0; i < data.buttons.length; i++) {
+                                    var btn = $('.button-' + i + '[data-id="' + node.key + '"]').button(data.buttons[i]).click(function () {
+                                        var cb = $(this).data('callback');
+                                        if (cb) cb($(this).attr('data-id'));
+                                    }).data('callback', data.buttons[i].click);
+                                    if (data.buttons[i].width) btn.css({width: data.buttons[i].width});
+                                    if (data.buttons[i].height) btn.css({height: data.buttons[i].height});
+                                    if (data.buttons[i].match) data.buttons[i].match.call(btn, node.key);
+                                }
+                            } else {
+                                $tdList.eq(base++).text('');
+                            }
                         }
-                        $tdList.eq(base + 3).html(text);
-                        for(var i = 0; i < data.buttons.length; i++) {
-                            $('.button-' + i + '[data-id="' + node.key + '"]').button(data.buttons[i]).click(function () {
-                                var cb = $(this).data('callback');
-                                if (cb) cb($(this).attr('data-id'));
-                            }).data('callback', data.buttons[i].click);
+                    } else
+                    if (data.columns[c] == 'enum') {
+                        if (isCommon && data.objects[node.key].common.members && data.objects[node.key].common.members.length > 0) {
+                            if (data.objects[node.key].common.members.length < 2) {
+                                $tdList.eq(base).text(data.objects[node.key].common.members.join(', '));
+                            } else {
+                                $tdList.eq(base).text(data.objects[node.key].common.members.length);
+                            }
+                            $tdList.eq(base).attr('title', data.objects[node.key].common.members.join('\x0A'));
+                        } else {
+                            $tdList.eq(base).text('');
+                            $tdList.eq(base).attr('title', '');
                         }
-                    } else {
-                        $tdList.eq(base + 3).text('');
+                        base++;
                     }
                 }
             }
@@ -555,50 +702,92 @@
         });
 
         function customFilter(node) {
-            var id = $('#filter_ID_' + data.instance).val().toLowerCase();
-            if (id !== '' && node.key.indexOf(id) == -1) return false;
+            if (node.parent && node.parent.match) return true;
 
-            var value = $('#filter_name_' + data.instance).val().toLowerCase();
-            if (value !== '' && (!data.objects[node.key] || !data.objects[node.key].common || data.objects[node.key].common.name === undefined || data.objects[node.key].common.name.toLowerCase().indexOf(value) == -1)) return false;
+            // Read all filter settings
+            if (data.filterVals == null) {
+                data.filterVals = {length: 0};
+                var value = $('#filter_ID_' + data.instance).val().toLowerCase();
+                if (value) data.filterVals['ID'] = value;
 
-            value = $('#filter_role_' + data.instance).val();
-            if (value !== '' && (!data.objects[node.key] || !data.objects[node.key].common || data.objects[node.key].common.role === undefined || data.objects[node.key].common.role.indexOf(value) == -1)) return false;
-
-            if (data.showTypes) {
-                value = $('#filter_type_' + data.instance).val();
-                if (value !== '' && (!data.objects[node.key] || data.objects[node.key].type === undefined || data.objects[node.key].type != value)) return false;
-            }
-
-            if (data.states) {
-                value = $('#filter_value_' + data.instance).val().toLowerCase();
-                if (value !== '' && (!data.states[node.key] || data.states[node.key].val === undefined || data.states[node.key].val.toString().toLowerCase().indexOf(value) == -1)) return false;
-            }
-
-            value = $('#filter_room_' + data.instance).val();
-            if (value !== '') {
-                if (!data.objects[node.key]) return false;
-                var rooms = [];
-                // Try to find room
-                if (!data.rooms[node.key]) {
-                    for (var i = 0; i < data.enums.length; i++) {
-                        if (data.objects[data.enums[i]].common.members.indexOf(node.key) != -1) {
-                            rooms.push(data.objects[data.enums[i]].common.name);
+                for (var c = 0; c < data.columns.length; c++) {
+                    if (data.columns[c] == 'image') {
+                        continue;
+                    } else if (data.columns[c] == 'role' || data.columns[c] == 'type' || data.columns[c] == 'room') {
+                        value = $('#filter_' + data.columns[c] +'_' + data.instance).val();
+                        if (value) {
+                            data.filterVals[data.columns[c]] = value;
+                            data.filterVals.length++;
                         }
-                        data.rooms[node.key] = rooms;
+                    } else {
+                        value = $('#filter_' + data.columns[c] +'_' + data.instance).val();
+                        if (value) {
+                            value = value.toLowerCase();
+                            data.filterVals[data.columns[c]] = value;
+                            data.filterVals.length++;
+                        }
                     }
-                } else {
-                    rooms = data.rooms[node.key];
                 }
-                if (rooms.indexOf(value) == -1) return false;
+            }
+
+            var isCommon = null;
+
+            for (var f in data.filterVals) {
+                if (f == 'length') continue;
+
+                if (isCommon === null) isCommon = data.objects[node.key] && data.objects[node.key].common;
+
+                if (f == 'ID') {
+                    if (node.key.indexOf(data.filterVals[f]) == -1) return false;
+                } else
+                if (f == 'name' || f == 'enum') {
+                    if (!isCommon || data.objects[node.key].common[f] === undefined || data.objects[node.key].common[f].toLowerCase().indexOf(data.filterVals[f]) == -1) return false;
+                } else
+                if (f == 'role') {
+                    if (!isCommon || data.objects[node.key].common[f] === undefined || data.objects[node.key].common[f].indexOf(data.filterVals[f]) == -1) return false;
+                } else
+                if (f == 'type') {
+                    if (!data.objects[node.key] || data.objects[node.key][f] === undefined || data.objects[node.key][f] != data.filterVals[f]) return false;
+                } else
+                if (f == 'value') {
+                    if (!data.states[node.key] || data.states[node.key].val === undefined || data.states[node.key].val.toString().toLowerCase().indexOf(data.filterVals[f]) == -1) return false;
+                } else
+                if (f == 'button') {
+                    if (data.filterVals[f] === 'true') {
+                        if (!isCommon || !data.objects[node.key].common.history || !data.objects[node.key].common.history.enabled) return false;
+                    } else if (data.filterVals[f] === 'false') {
+                        if (!isCommon || (data.objects[node.key].common.history && data.objects[node.key].common.history.enabled)) return false;
+                    }
+                } else
+                if (f == 'room') {
+                    if (!data.objects[node.key]) return false;
+
+                    // Try to find room
+                    var rooms = data.rooms[node.key];
+                    if (!data.rooms[node.key]) {
+                        rooms = [];
+
+                        for (var i = 0; i < data.enums.length; i++) {
+                            if (data.objects[data.enums[i]].common.members.indexOf(node.key) != -1 &&
+                                rooms.indexOf(data.objects[data.enums[i]].common.name) == -1) {
+                                rooms.push(data.objects[data.enums[i]].common.name);
+                            }
+                            data.rooms[node.key] = rooms;
+                        }
+                    }
+
+                    if (rooms.indexOf(data.filterVals[f]) == -1) return false;
+                }
             }
 
             return true;
         }
 
         $('.filter_' + data.instance).change(function() {
-            $('#selectID_' + data.instance).fancytree("getTree").filterNodes(customFilter, false);
+            data.filterVals = null;
+            data.$tree.fancytree("getTree").filterNodes(customFilter, false);
         }).keyup(function(){
-            var tree = $('#selectID_' + data.instance)[0];
+            var tree = data.$tree[0];
             if (tree._timer) {
                 tree._timer = clearTimeout(tree._timer);
             }
@@ -612,19 +801,23 @@
             $('#' + $(this).attr('data-id')).val('').trigger('change');
         });
         $('#btn_collapse_' + data.instance).button({icons:{primary: 'ui-icon-folder-collapsed'}, text: false}).css({width: 18, height: 18}).click(function() {
-            $('#selectID_' + data.instance).fancytree("getRootNode").visit(function(node){
-                node.setExpanded(false);
+            data.$tree.fancytree("getRootNode").visit(function(node){
+                if (!data.filterVals.length || node.match || node.subMatch) node.setExpanded(false);
             });
         });
         $('#btn_expand_' + data.instance).button({icons:{primary: 'ui-icon-folder-open'}, text: false}).css({width: 18, height: 18}).click(function() {
-            $('#selectID_' + data.instance).fancytree("getRootNode").visit(function(node){
-                node.setExpanded(true);
+            data.$tree.fancytree("getRootNode").visit(function(node){
+                if (!data.filterVals.length || node.match || node.subMatch) node.setExpanded(true);
             });
         });
         $('#btn_refresh_' + data.instance).button({icons:{primary: 'ui-icon-refresh'}, text: false}).css({width: 18, height: 18}).click(function() {
             data.inited = false;
             initTreeDialog(data.$dlg);
         });
+
+        for (var f in filter) {
+            if (f) $('#filter_' + f + '_' + data.instance).val(filter[f]).trigger('change');
+        }
     }
 
     var methods = {
@@ -639,19 +832,27 @@
                 connCfg:    null,
                 onSuccess:  null,
                 onChange:   null,
-                noImg:      false,
-                texts: {
-                    select:   'Select',
-                    cancel:   'Cancel',
-                    all:      'All',
-                    id:       'ID',
-                    name:     'Name',
-                    role:     'Role',
-                    room:     'Room',
-                    value:    'Value',
-                    selectid: 'Select ID'
-                }
+                columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'value', 'button']
             }, options);
+
+            settings.texts = settings.texts || {};
+            settings.texts = $.extend({
+                select:   'Select',
+                cancel:   'Cancel',
+                all:      'All',
+                id:       'ID',
+                name:     'Name',
+                role:     'Role',
+                type:     'Type',
+                room:     'Room',
+                enum:     'Members',
+                value:    'Value',
+                selectid: 'Select ID',
+                from:     'From',
+                lc:       'Last changed',
+                ts:       'Time stamp',
+                ack:      'Acknowledged'
+            }, settings.texts);
 
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
@@ -723,14 +924,21 @@
                     });
                 }
 
-
                 $dlg.data('selectId', data);
-
             }
 
             return this;
         },
         "show": function (currentId, filter, onSuccess) {
+            if (typeof filter == 'function') {
+                onSuccess = filter;
+                filter = undefined;
+            }
+            if (typeof currentId == 'function') {
+                onSuccess = currentId;
+                currentId = undefined;
+            }
+
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
                 var $dlg = $(dlg);
@@ -757,7 +965,7 @@
                     data.$dlg = $dlg;
                     initTreeDialog($dlg);
                 }
-                if (!data.onChange) {
+                if (!data.noDialog) {
                     $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + (data.currentId || ' '));
                     if (data.currentId) {
                         if (data.objects[data.currentId] && data.objects[data.currentId].common && data.objects[data.currentId].common.name) {
@@ -822,6 +1030,16 @@
             }
             return this;
         },
+        "reinit": function () {
+            for (var i = 0; i < this.length; i++) {
+                var dlg = this[i];
+                var $dlg = $(dlg);
+                var data = $dlg.data('selectId');
+                data.inited = false;
+                initTreeDialog(data.$dlg);
+            }
+            return this;
+        },
         // update states
         "state": function (id, state) {
             for (var i = 0; i < this.length; i++) {
@@ -850,6 +1068,10 @@
                 var $dlg = $(dlg);
                 var data = $dlg.data('selectId');
                 if (!data || !data.objects) continue;
+
+                if (id.match(/^enum\.rooms/)) {
+                    data.rooms = {};
+                }
 
                 var tree = data.$tree.fancytree("getTree")
                 var node = null;
@@ -902,7 +1124,6 @@
                     deleteTree(data, id);
                     if (node) {
                         if (node.children) {
-                            //node.setTitle('');
                             node.render(true);
                         } else {
                             node.remove();

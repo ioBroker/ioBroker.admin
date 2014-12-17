@@ -241,6 +241,10 @@ systemDictionary = {
     "ID":                   {"en": "ID",                    "de": "ID",                     "ru": "ID"},
     "Role":                 {"en": "Role",                  "de": "Rolle",                  "ru": "Роль"},
     "Room":                 {"en": "Room",                  "de": "Raum",                   "ru": "Комната"},
-    "Value":                {"en": "Value",                 "de": "Wert",                   "ru": "Значение"}
-
+    "Value":                {"en": "Value",                 "de": "Wert",                   "ru": "Значение"},
+    "Type":                 {"en": "Type",                  "de": "Typ",                    "ru": "Тип"},
+    "From":                 {"en": "From: ",                "de": "Von",                    "ru": "От"},
+    "Last changed":         {"en": "Last changed",          "de": "Lätze Änderung",         "ru": "Изменён"},
+    "Time stamp":           {"en": "Time stamp",            "de": "Zeitstempel",            "ru": "Время"},
+    "Acknowledged":         {"en": "Acknowledged",          "de": "Bestätigt",              "ru": "Подтверждён"}
 };
