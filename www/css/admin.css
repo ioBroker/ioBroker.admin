@@ -62,7 +62,17 @@ table#events {
     box-shadow: none;
     resize:none;
 }
-
+#view-object-full {
+    font-size: 12px;
+    width: 100%;
+    height: 200px;
+    padding:0;
+    margin:0;
+    border: 1px solid grey;
+    outline: none;
+    box-shadow: none;
+    resize:none;
+}
 #edit-script-source {
     font-size: 12px;
     width: 600px;

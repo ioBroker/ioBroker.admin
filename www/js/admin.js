@@ -50,7 +50,6 @@ $(document).ready(function () {
     var updateTimers =          {};
     var hosts =                 [];
     var states =                {};
-    var enumExpanded =          [];
     var enumCurrentParent =     '';
 
     var systemConfig;
@@ -66,7 +65,6 @@ $(document).ready(function () {
 
     var logLinesCount =         0;
     var logLinesStart =         0;
-    var logInited =             false;
     var logHosts =              [];
     var logFilterTimeout =      null;
 
@@ -109,8 +107,6 @@ $(document).ready(function () {
     var curRepository =         null;
     var curInstalled =          null;
     var currentHistory =        null; // Id of the currently shown history dialog
-
-    //var treeExtended =          []; // List of extended object leafs
 
     var editor =                null;
 
@@ -718,8 +714,8 @@ $(document).ready(function () {
                         id:  res[i].id,
                         ack: res[i].ack,
                         val: res[i].val,
-                        ts:  formatDate(new Date(res[i].ts * 1000)),
-                        lc:  formatDate(new Date(res[i].lc * 1000))
+                        ts:  formatDate(res[i].ts, true),
+                        lc:  formatDate(res[i].lc, true)
                     });
                 }
                 $gridHistory[0]._maxGid = res.length;
@@ -853,12 +849,11 @@ $(document).ready(function () {
     }
 
     function prepareObjects() {
-
         $dialogObject.dialog({
             autoOpen:   false,
             modal:      true,
             width: 800,
-            height: 540,
+            height: 640,
             buttons: [
                 {
                     text: _('Save'),
@@ -879,269 +874,10 @@ $(document).ready(function () {
             e.preventDefault();
             return false;
         });
-
-        /*$gridObjects.jqGrid({
-            datatype: 'local',
-            colNames: ['id', _('name'), _('role'), _('type')],
-            colModel: [
-                {name: '_id',  index:'_id',  width: 450, fixed: true},
-                {name: 'name', index:'name'},
-                {name: 'role', index:'role', width: 120, fixed: true},
-                {name: 'type', index:'type', width: 120, fixed: true,
-                    //formatter:'select',
-                    stype: 'select',
-                    searchoptions: {
-                        sopt: ['eq'], value: ":All;device:device;channel:channel;state:state;enum:enum;host:host;adapter:adapter;meta:meta;config:config"
-                    }
-                }
-            ],
-            pager: $('#pager-objects'),
-            rowNum: 100,
-            rowList: [20, 50, 100],
-            sortname: "id",
-            sortorder: "desc",
-            viewrecords: true,
-            caption: 'ioBroker Objects',
-            subGrid: true,
-            ignoreCase: true,
-            subGridRowExpanded: function (grid, row) {
-                subGridObjects(grid, row, 1);
-            },
-            afterInsertRow: function (rowid) {
-                // Remove icon and click handler if no children available
-                var id = rowid.substring(7);//"object_"
-                var leaf = treeFindLeaf(id);
-                if (!leaf || !leaf.count) {
-                    $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
-                }
-            },
-            onSelectRow: function (rowid, e) {
-                // unselect other subgrids but not myself
-                $('[id^="grid-objects"][id$="_t"]').not('[id="' + this.id + '"]').jqGrid('resetSelection');
-                rowid = rowid.substring(7); //'object_'
-
-                if (objects[rowid]) {
-                    $('#del-object').removeClass('ui-state-disabled');
-                    $('#edit-object').removeClass('ui-state-disabled');
-                } else {
-                    $('#del-object').addClass('ui-state-disabled');
-                    $('#edit-object').addClass('ui-state-disabled');
-                }
-            },
-            gridComplete: function () {
-                $('#del-object').addClass('ui-state-disabled');
-                $('#edit-object').addClass('ui-state-disabled');
-            },
-            subGridRowColapsed: function (grid, id) {
-                var objSelected = $gridObjects.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-objects"][id$="_t"]').not('[id="' + grid + '_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                if (!objSelected) {
-                    $('#del-object').addClass('ui-state-disabled');
-                    $('#edit-object').addClass('ui-state-disabled');
-                }
-
-                var pos = treeExtended.indexOf(id.substring(7));
-                if (pos != -1) treeExtended.splice(pos, 1);
-
-                return true;
-            },
-            onPaging: function (pgButton) {
-                treeExtended = [];
-            }
-        }).jqGrid('filterToolbar', {
-            defaultSearch: 'cn',
-            autosearch:    true,
-            searchOnEnter: false,
-            enableClear:   false,
-            afterSearch: function () {
-                //initObjectButtons();
-            }
-        }).navGrid('#pager-objects', {
-            search:  false,
-            edit:    false,
-            add:     false,
-            del:     false,
-            refresh: false
-        }).jqGrid('navButtonAdd', '#pager-objects', {
-            caption: '',
-            buttonicon: 'ui-icon-trash',
-            onClickButton: function () {
-                var objSelected = $gridObjects.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-objects"][id$="_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                var id = $('tr#' + objSelected.replace(/\./g, '\\.').replace(/\:/g, '\\:')).find('td[aria-describedby$="_id"]').html();
-                if (id && confirm(_('Are you sure to delete') + ' ' + id)) {
-                    socket.emit('delObject', id);
-                }
-            },
-            position: 'first',
-            id:       'del-object',
-            title:    _('Delete object'),
-            cursor:   'pointer'
-        }).jqGrid('navButtonAdd', '#pager-objects', {
-            caption: '',
-            buttonicon: 'ui-icon-gear',
-            onClickButton: function () {
-                var objSelected = $gridObjects.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-objects"][id$="_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                editObject(id);
-            },
-            position: 'first',
-            id:       'edit-object',
-            title:    _('Edit object'),
-            cursor:   'pointer'
-        }).jqGrid('navButtonAdd', '#pager-objects', {
-                caption: '',
-                buttonicon: 'ui-icon-refresh',
-                onClickButton: function () {
-                    initObjects(true);
-                },
-                position: 'first',
-                id:       'update-object',
-                title:    _('Update objects'),
-                cursor:   'pointer'
-        })//.jqGrid('navButtonAdd', '#pager-objects', {
-         //   caption: '',
-         //   buttonicon: 'ui-icon-plus',
-         //   onClickButton: function () {
-         //       alert('TODO add object'); //TODO
-        //    },
-         //   position: 'first',
-         //   id: 'add-object',
-         //   title: _('New object'),
-         //   cursor: 'pointer'
-        //})
-        ;
-        */
     }
-    /*function subGridObjects(grid, row, level) {
-        var id = row.substring(7);//$('tr[id="' + row + '"]').find('td[aria-describedby$="_id"]').html();
-        if (treeExtended.indexOf(treeExtended) == -1) treeExtended.push(id);
-
-        var subgridTableId = grid + '_t';
-        $('[id="' + grid + '"]').html('<table class="subgrid-level-' + level + '" id="' + subgridTableId + '"></table>');
-        var $subgrid = $('table[id="' + subgridTableId + '"]');
-        var gridConf = {
-            datatype: 'local',
-            colNames: ['id', _('name'), _('role'), _('type')],
-            colModel: [
-                {name: '_id',  index: '_id',  width: 450 - (level * 27), fixed: true},
-                {name: 'name', index: 'name'},
-                {name: 'role', index: 'role', width: 120 - (level * 2),  fixed: true},
-                {name: 'type', index: 'type', width: 120 - (level * 2),  fixed: true}
-            ],
-            rowNum: 1000000,
-            autowidth: true,
-            height: 'auto',
-            width: 1200,
-            //sortname: '_id',
-            //sortorder: 'desc',
-            viewrecords: true,
-            sortorder: 'desc',
-            ignoreCase: true,
-            subGrid: true,
-            subGridRowExpanded: function (grid, row) {
-                subGridObjects(grid, row, level + 1);
-            },
-            subGridRowColapsed: function (grid, id) {
-                // Check if there is still a row selected
-                var objSelected = $gridObjects.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-objects"][id$="_t"]').not('[id="' + grid + '_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                // Disable buttons if no row is selected
-                objSelected = objSelected.substring(7); //'object_'
-                // enable buttons
-                if (objects[objSelected]) {
-                    $('#del-object').removeClass('ui-state-disabled');
-                    $('#edit-object').removeClass('ui-state-disabled');
-                } else {
-                    $('#del-object').addClass('ui-state-disabled');
-                    $('#edit-object').addClass('ui-state-disabled');
-                }
-
-                var pos = treeExtended.indexOf(id.substring(7));
-                if (pos != -1) treeExtended.splice(pos, 1);
-
-                return true;
-            },
-            afterInsertRow: function (rowid) {
-                var leaf = treeFindLeaf(rowid.slice(7));
-                // Remove icon and click handler if no children available
-                if (!leaf || !leaf.count) {
-                    $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
-                }
-            },
-            gridComplete: function () {
-                // Hide header
-                $subgrid.parent().parent().parent().find('table.ui-jqgrid-htable').hide();
-            },
-            onSelectRow: function (rowid, e) {
-                // unselect other subgrids but not myself
-                $('[id^="grid-objects"][id$="_t"]').not('[id="' + this.id + '"]').jqGrid('resetSelection');
-
-                // unselect objects grid
-                $gridObjects.jqGrid('resetSelection');
-
-                rowid = rowid.substring(7); //'object_'
-                // enable buttons
-                if (objects[rowid]) {
-                    $('#del-object').removeClass('ui-state-disabled');
-                    $('#edit-object').removeClass('ui-state-disabled');
-                } else {
-                    $('#del-object').addClass('ui-state-disabled');
-                    $('#edit-object').addClass('ui-state-disabled');
-                }
-            }
-        };
-        $subgrid.jqGrid(gridConf);
-
-        var leaf = treeFindLeaf(id);
-
-        if (leaf && leaf.count) {
-            for (var i in leaf.children) {
-                if (leaf.children[i].id) {
-                    $subgrid.jqGrid('addRowData', 'object_' + leaf.children[i].fullName.replace(/ /g, '_'), {
-                        _id:  objects[leaf.children[i].id]._id,
-                        name: objects[leaf.children[i].id].common ? objects[leaf.children[i].id].common.name : '',
-                        type: objects[leaf.children[i].id].type
-                    });
-                } else {
-                    $subgrid.jqGrid('addRowData', 'object_' + leaf.children[i].fullName.replace(/ /g, '_'), {
-                        _id:  i,
-                        name: i,
-                        type: ''
-                    });
-                }
-            }
-        }
-        $subgrid.trigger('reloadGrid');
-    }*/
 
     function prepareEnums() {
-        $gridEnums.jqGrid({
+        /*$gridEnums.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('members'), ''],
             colModel: [
@@ -1168,42 +904,13 @@ $(document).ready(function () {
                 if (!leaf || !leaf.count) {
                     $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
                 }
-            },/*
-            onSelectRow: function (rowid, e) {
-                // unselect other subgrids but not myself
-                $('[id^="grid-enums"][id$="_t"]').not('[id="' + this.id + '"]').jqGrid('resetSelection');
-                $('#del-enum').removeClass('ui-state-disabled');
-                $('#edit-enum').removeClass('ui-state-disabled');
             },
-            gridComplete: function () {
-                $('#del-enum').addClass('ui-state-disabled');
-                $('#edit-enum').addClass('ui-state-disabled');
-            },*/
             loadComplete: function () {
                 initEnumButtons();
             },
             ondblClickRow: function (rowid) {
                 onEditEnum($gridEnums, rowid.substring('enum_'.length));
-            }/*,
-            subGridRowColapsed: function (grid, id) {
-                var objSelected = $gridEnums.jqGrid('getGridParam', 'selrow');
-                var pos = enumExpanded.indexOf(id);
-                if (pos != -1) {
-                    enumExpanded.splice(pos, 1);
-                }
-                if (!objSelected) {
-                    $('[id^="grid-enums"][id$="_t"]').not('[id="' + grid + '_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                if (!objSelected) {
-                    $('#del-enum').addClass('ui-state-disabled');
-                    $('#edit-enum').addClass('ui-state-disabled');
-                }
-                return true;
-            }*/
+            }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
             autosearch:     true,
@@ -1218,26 +925,7 @@ $(document).ready(function () {
             add:     false,
             del:     false,
             refresh: false
-        })/*.jqGrid('navButtonAdd', '#pager-enums', {
-            caption: '',
-            buttonicon: 'ui-icon-trash',
-            onClickButton: function () {
-                var objSelected = $gridEnums.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-enums"][id$="_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                alert('TODO delete ' + id); //TODO
-            },
-            position: 'first',
-            id: 'del-enum',
-            title: _('Delete enum'),
-            cursor: 'pointer'
-        })*/.jqGrid('navButtonAdd', '#pager-enums', {
+        }).jqGrid('navButtonAdd', '#pager-enums', {
             caption: '',
             buttonicon: 'ui-icon-gear',
             onClickButton: function () {
@@ -1280,10 +968,10 @@ $(document).ready(function () {
             id:       'add-enum',
             title:    _('New enum'),
             cursor:  'pointer'
-        });
+        });*/
     }
 
-    function subGridEnums(grid, row, level) {
+    /*function subGridEnums(grid, row, level) {
         var id = row.substring(5);
         if (enumExpanded.indexOf(id) == -1) enumExpanded.push(id);
 
@@ -1312,23 +1000,6 @@ $(document).ready(function () {
             subGridRowExpanded: function (grid, row) {
                 subGridEnums(grid, row, level + 1);
             },
-           /* subGridRowColapsed: function (grid, id) {
-                // Check if there is still a row selected
-                var objSelected = $gridEnums.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-enum"][id$="_t"]').not('[id="' + grid + '_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                // Disable buttons if no row is selected
-                if (!objSelected) {
-                    $('#del-enum').addClass('ui-state-disabled');
-                    $('#edit-enum').addClass('ui-state-disabled');
-                }
-                return true;
-            },*/
             afterInsertRow: function (rowid) {
                 // Remove icon and click handler if no children available
                 var leaf = treeFindLeaf(rowid.substring(5));//"enum.".length
@@ -1385,7 +1056,7 @@ $(document).ready(function () {
         }
         $subgrid.trigger('reloadGrid');
         initEnumButtons();
-    }
+    }*/
 
     function prepareHistoryButton(btn) {
         $(btn).button({
@@ -2746,7 +2417,7 @@ $(document).ready(function () {
 
         var text = '<tr id="log-line-' + (logLinesStart + logLinesCount) + '" class="log-line log-severity-' + message.severity + ' log-from-' + (message.from || '') + '" style="' + visible + '">';
         text += '<td class="log-column-1">' + (message.from || '') + '</td>';
-        text += '<td class="log-column-2">' + (message.ts ? formatDate(new Date(message.ts)) : '')+ '</td>';
+        text += '<td class="log-column-2">' + (message.ts ? formatDate(message.ts) : '')+ '</td>';
         text += '<td class="log-column-3">' + message.severity + '</td>';
         text += '<td class="log-column-4" title="' + message.message.replace(/"/g, "'") + '">' + message.message.substring(0, 200) + '</td></tr>';
 
@@ -3616,7 +3287,493 @@ $(document).ready(function () {
         if (curInstalled && curRepository) callback(curRepository, curInstalled);
     }
 
-    var regexSystemAdapter = new RegExp('^system.adapter.');
+    // ----------------------------- Objects show and Edit ------------------------------------------------
+    function getObjects(callback) {
+        socket.emit('getObjects', function (err, res) {
+            var obj;
+            objects = res;
+            for (var id in objects) {
+                if (id.slice(0, 7) === '_design') continue;
+
+                obj = objects[id];
+
+                if (obj.type === 'instance') instances.push(id);
+                if (obj.type === 'enum')     enums.push(id);
+                if (obj.type === 'script')   scripts.push(id);
+                if (obj.type === 'user')     users.push(id);
+                if (obj.type === 'group')    groups.push(id);
+                if (obj.type === 'adapter')  adapters.push(id);
+                if (obj.type === 'enum')     enums.push(id);
+                if (obj.type === 'host') {
+                    var addr = null;
+                    // Find first non internal IP and use it as identifier
+                    if (obj.native.hardware && obj.native.hardware.networkInterfaces) {
+                        for (var eth in obj.native.hardware.networkInterfaces) {
+                            for (var num = 0; num < obj.native.hardware.networkInterfaces[eth].length; num++) {
+                                if (!obj.native.hardware.networkInterfaces[eth][num].internal) {
+                                    addr = obj.native.hardware.networkInterfaces[eth][num].address;
+                                    break;
+                                }
+                            }
+                            if (addr) break;
+                        }
+                    }
+                    if (addr) hosts.push({name: obj.common.hostname, address: addr, id: obj._id});
+                }
+
+                if (id.match(/^system\.adapter\.node-red\.[0-9]+$/) && obj && obj.common && obj.common.enabled) {
+                    $("#a-tab-node-red").show();
+                    if ($('#tabs').tabs("option", "active") == 8) $("#tab-node-red").show();
+                    $('#iframe-node-red').height($(window).height() - 55);
+                    $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
+                }
+                //treeInsert(id);
+            }
+            //benchmark('finished getObjects loop');
+            objectsLoaded = true;
+
+            // Remove empty leafs and sub-leafs
+            //treeOptimize();
+
+            // Detect if some script engine instance installed
+            var engines = fillEngines();
+
+            // Disable scripts tab if no one script engine instance found
+            if (!engines || !engines.length) $('#tabs').tabs('option', 'disabled', [7]);
+
+            // Show if update available
+            initHostsList();
+
+            if (typeof callback === 'function') callback();
+        });
+    }
+    function initObjects(update) {
+        if (!objectsLoaded) {
+            setTimeout(initObjects, 250);
+            return;
+        }
+
+        if (typeof $gridObjects !== 'undefined' && (!$gridObjects[0]._isInited || update)) {
+            //$gridObjects.jqGrid('clearGridData');
+            $gridObjects[0]._isInited = true;
+
+            var x = $(window).width();
+            var y = $(window).height();
+            if (x < 720) x = 720;
+            if (y < 480) y = 480;
+
+            $gridObjects.height(y - 100).width(x - 20);
+
+            $gridObjects.selectId('init', {
+                objects: objects,
+                states: states,
+                noDialog: true,
+                texts: {
+                    select:   _('Select'),
+                    cancel:   _('Cancel'),
+                    all:      _('All'),
+                    id:       _('ID'),
+                    name:     _('Name'),
+                    role:     _('Role'),
+                    room:     _('Room'),
+                    value:    _('Value'),
+                    type:     _('Type'),
+                    selectid: _('Select ID'),
+                    from:     _('From'),
+                    lc:       _('Last changed'),
+                    ts:       _('Time stamp'),
+                    ack:      _('Acknowledged'),
+                    edit:     _('Edit'),
+                    ok:       _('Ok')
+                },
+                columns: ['image', 'name', 'type', 'role', 'room', 'value', 'button'],
+                buttons: [
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-gear'
+                        },
+                        click: function (id) {
+                            editObject(id);
+                        },
+                        width: 26,
+                        height: 20
+                    },
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-trash'
+                        },
+                        click: function (id) {
+                            // Delete all children
+                            if (id) delObject($gridObjects, id);
+                        },
+                        width: 26,
+                        height: 20
+                    },
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-clock'
+                        },
+                        click: function (id) {
+                            openHistoryDlg(id);
+                        },
+                        width: 26,
+                        height: 20,
+                        match: function (id) {
+                            // Show history button only if history adapter enabled
+                            if (objects[id] && objects['system.adapter.history.0'] && objects['system.adapter.history.0'].common.enabled && !id.match(/\.messagebox$/) &&
+                                objects[id].type == 'state') {
+                                // Check if history enabled
+                                if (objects[id] && objects[id].common && objects[id].common.history && objects[id].common.history.enabled) {
+                                    this.addClass('history-enabled').removeClass('history-disabled').css({'background': 'lightgreen'});
+                                }
+                                else {
+                                    this.addClass('history-disabled').removeClass('history-enabled').css({'background': ''});
+                                }
+                            } else {
+                                this.hide();
+                            }
+                        }
+                    }
+                ]
+            }).selectId('show');
+        }
+    }
+    function editObject(id) {
+        var obj = objects[id];
+        if (!obj) return;
+        $dialogObject.dialog('option', 'title', id);
+        $('#edit-object-id').val(obj._id);
+        $('#edit-object-parent-old').val(obj.parent);
+        $('#edit-object-name').val(obj.common ? obj.common.name : id);
+        $('#edit-object-type').val(obj.type);
+        //$('#edit-object-parent').val(obj.parent);
+        $('#jump-parent').attr('data-jump-to', obj.parent);
+        /*var childs = '<div style="font-size: 10px">';
+        // childs += '<table style="font-size: 11px">';
+        if (obj.children) {
+            for (var i = 0; i < obj.children.length; i++) {
+                //childs += '<tr><td>' + obj.children[i] + '</td><td><button data-jump-to="' + obj.children[i] + '" class="jump">-></button></td></tr>';
+                childs += '<a style="text-decoration: underline; cursor: pointer;" class="jump" data-jump-to="' + obj.children[i] + '">' + obj.children[i] + '</a><br>';
+            }
+        }
+
+        childs += '</div>';*/
+        //childs += '</table>';
+        //$('#edit-object-children').html(childs);
+        $('#edit-object-common').val(JSON.stringify(obj.common, null, '  '));
+        $('#edit-object-native').val(JSON.stringify(obj.native, null, '  '));
+        var _obj = JSON.parse(JSON.stringify(obj));
+        if (_obj._id)    delete _obj._id;
+        if (_obj.common) delete _obj.common;
+        if (_obj.type)   delete _obj.type;
+        if (_obj.native) delete _obj.native;
+        $('#view-object-full').val(JSON.stringify(_obj, null, '  '));
+        $dialogObject.dialog('open');
+    }
+    function saveObject() {
+        var obj = {common: {}, native: {}};
+        obj._id =         $('#edit-object-id').val();
+        obj.parent =      $('#edit-object-parent-old').val();
+        obj.common.name = $('#edit-object-name').val();
+        obj.type =        $('#edit-object-type').val();
+        obj.parent =      $('#edit-object-parent').val();
+
+        try {
+            obj.common = JSON.parse($('#edit-object-common').val());
+        } catch (e) {
+            window.alert('common ' + e);
+            return false;
+        }
+        try {
+            obj.native = JSON.parse($('#edit-object-native').val());
+        } catch (e) {
+            window.alert('native ' + e);
+            return false;
+        }
+
+        socket.emit('extendObject', obj._id, obj);
+
+
+        $dialogObject.dialog('close');
+    }
+    function delObject($tree, id, callback, hideConfirm) {
+        if (hideConfirm || confirm(_('Are you sure to delete %s and all children?', id))) {
+            var leaf = $tree.selectId('getTreeInfo', id);
+            //var leaf = treeFindLeaf(id);
+            if (leaf && leaf.children) {
+                for (var e = 0; e < leaf.children.length; e++) {
+                    delObject($tree, leaf.children[e], function () {
+                        delObject($tree, id, callback, true);
+                    }, true);
+                    break;
+                }
+            } else {
+                if (objects[id] && objects[id].common && objects[id].common['object-non-deletable']) {
+                    alert(_('Cannot delete ' + id + ' because not allowed'));
+                    if (callback) callback(id);
+                } else {
+                    socket.emit('delObject', id, function () {
+                        if (callback) callback(id);
+                    });
+                }
+            }
+        }
+    }
+    // ----------------------------- Enum show and Edit ------------------------------------------------
+    var tasks = [];
+    function enumRename(oldId, newId, newName, callback) {
+        if (tasks.length) {
+            var task = tasks.shift();
+            if (task.name == 'delObject') {
+                socket.emit(task.name, task.id, function () {
+                    setTimeout(enumRename, 0, undefined, undefined, undefined, callback);
+                });
+            } else {
+                socket.emit(task.name, task.id, task.obj, function () {
+                    setTimeout(enumRename, 0, undefined, undefined, undefined, callback);
+                });
+            }
+        } else {
+            _enumRename(oldId, newId, newName, function () {
+                if (tasks.length) {
+                    enumRename(undefined, undefined, undefined, callback);
+                } else {
+                    if (callback) callback();
+                }
+            });
+        }
+    }
+    function _enumRename(oldId, newId, newName, callback) {
+        //Check if this name exists
+        if (oldId != newId && objects[newId]) {
+            alert(_('Name yet exists!'));
+            initEnums(true);
+            if (callback) callback();
+        } else {
+            if (oldId == newId) {
+                if (newName !== undefined) {
+                    tasks.push({name: 'extendObject', id:  oldId, obj: {common: {name: newName}}});
+                    if (callback) callback();
+                }
+            } else if (objects[oldId] && objects[oldId].common && objects[oldId].common.nondeletable) {
+                alert(_('Change of enum\'s id ' + oldId + ' is not allowed!'));
+                initEnums(true);
+                if (callback) callback();
+            } else {
+                var leaf = $gridEnums.selectId('getTreeInfo', oldId);
+                //var leaf = treeFindLeaf(oldId);
+                if (leaf && leaf.children) {
+                    socket.emit('getObject', oldId, function (err, obj) {
+                        if (obj) {
+                            obj._id = newId;
+                            if (obj._rev) delete obj._rev;
+                            if (newName !== undefined) obj.common.name = newName;
+                            tasks.push({name: 'delObject', id: oldId});
+                            tasks.push({name: 'setObject', id: newId, obj: obj});
+                            // Rename all children
+                            var count = 0;
+                            for (var i = 0; i < leaf.children.length; i++) {
+                                var n = leaf.children[i].replace(oldId, newId);
+                                count++;
+                                _enumRename(leaf.children[i], n, undefined, function () {
+                                    count--;
+                                    if (!count && callback) callback();
+                                });
+                            }
+
+                        }
+                    });
+                } else {
+                    socket.emit('getObject', oldId, function (err, obj) {
+                        if (obj) {
+                            obj._id = newId;
+                            if (obj._rev) delete obj._rev;
+                            if (newName !== undefined) obj.common.name = newName;
+                            tasks.push({name: 'delObject', id: oldId});
+                            tasks.push({name: 'setObject', id: newId, obj: obj});
+                            if (callback) callback();
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+
+    function enumAddChild(parent, newId, name) {
+        if (objects[newId]) {
+            alert(_('Name yet exists!'));
+            return false;
+        }
+
+        socket.emit('setObject', newId, {
+            _id: newId,
+            common:   {
+                name: name,
+                members: []
+            },
+            type: "enum"
+        });
+        return true;
+    }
+    function enumMembers(id) {
+        enumEdit = id;
+        $dialogEnumMembers.dialog('option', 'title', id);
+        $('#enum-name-edit').val(objects[id].common.name);
+        var members = objects[id].common.members || [];
+        $gridEnumMembers.jqGrid('clearGridData');
+        // Remove empty entries
+        for (var i = members.length - 1; i >= 0; i--) {
+            if (!members[i]) {
+                members.splice(i, 1);
+            }
+        }
+
+        for (i = 0; i < members.length; i++) {
+            if (objects[members[i]]) {
+                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {_id: members[i], name: objects[members[i]].common.name, type: objects[members[i]].type});
+            } else if (members[i]) {
+                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {
+                    _id:  members[i],
+                    name: '<span style="color:red; font-weight:bold; font-style:italic;">object missing</span>',
+                    type: ''
+                });
+            }
+        }
+        $('#del-member').addClass('ui-state-disabled');
+        $dialogEnumMembers.dialog('open');
+    }
+    /*function onEditEnum($grid, id) {
+        var obj = $grid.jqGrid('getRowData', 'enum_' + id);
+        if (obj && obj._id) {
+            var full;
+            var original;
+            var pos = obj._id.lastIndexOf('.');
+            if (pos != -1) {
+                full = obj._id;
+                original = obj._id.substring(0, pos);
+                obj._id  = obj._id.substring(pos + 1);
+            }
+
+            $grid.jqGrid('setRowData', 'enum_' + id, obj);
+            initEnumButtons();
+            if (pos != -1) {
+                var o = $('.enum-ok-submit[data-enum-id="' + id + '"]')[0];
+                o._full = full;
+                o._original = original;
+            }
+            $('.enum-edit').hide();
+            $('.enum-members').hide();
+            $('.enum-add-children').hide();
+            $('.enum-del').hide();
+            $('.enum-ok-submit[data-enum-id="' + id + '"]').show();
+            $('.enum-cancel-submit[data-enum-id="' + id + '"]').show();
+            $('#add-enum').addClass('ui-state-disabled');
+            $('#edit-enum').addClass('ui-state-disabled');
+
+            $grid.jqGrid('editRow', 'enum_' + id, {"url": "clientArray"});
+        }
+    }
+    function initEnumButtons() {
+        $('.enum-edit').unbind('click').button({
+            icons: {primary: 'ui-icon-pencil'},
+            text:  false
+        }).css('width', '22px').css('height', '18px').click(function () {
+            var subgrid = $(this).attr('data-enum-subgrid');
+            onEditEnum(subgrid ? $(document.getElementById(subgrid)) : $gridEnums, $(this).attr('data-enum-id'));
+        });
+
+        $('.enum-members').button({icons: {primary: 'ui-icon-note'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
+            .click(function () {
+                enumMembers($(this).attr('data-enum-id'));
+            });
+        $('.enum-add-children').button({icons: {primary: 'ui-icon-plus'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
+            .click(function () {
+                enumCurrentParent = $(this).attr('data-enum-id');
+                // Find unused name
+                var name = _('enum');
+                var idx = 0;
+                var newId;
+                do {
+                    idx++;
+                    newId = (enumCurrentParent || 'enum')  + '.' + name + idx;
+                } while (objects[newId]);
+
+                $('#enum-name').val(name + idx);
+                // Store prefix in DOM to show generated ID
+                var t = $('#enum-gen-id');
+                t[0]._original = (enumCurrentParent || 'enum');
+                t.html(newId);
+
+                $dialogEnum.dialog('open');
+            });
+
+        $('.enum-del').button({icons: {primary: 'ui-icon-trash'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
+            .click(function () {
+     delObject($(this).attr('data-enum-id'));
+            });
+
+        $('.enum-ok-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-check'},
+            text:  false
+        }).css('width', '22px').css('height', '18px').click(function () {
+            var id = $(this).attr('data-enum-id');
+            $('.enum-edit').show();
+            $('.enum-members').show();
+            $('.enum-add-children').show();
+            $('.enum-del').show();
+            $('.enum-ok-submit').hide();
+            $('.enum-cancel-submit').hide();
+            $('#add-enum').removeClass('ui-state-disabled');
+            $('#edit-enum').removeClass('ui-state-disabled');
+
+            var subgrid = $(this).attr('data-enum-subgrid');
+            var $grid = subgrid ? $(document.getElementById(subgrid)) : $gridEnums;
+
+            $grid.jqGrid('saveRow', 'enum_' + id, {"url": "clientArray"});
+            // afterSave
+            setTimeout(function () {
+                var obj = $grid.jqGrid('getRowData', 'enum_' + id);
+                var o = $('.enum-ok-submit[data-enum-id="' + id + '"]')[0];
+                obj._id = o._original + '.' + obj._id.replace(/ /g, '_').toLowerCase();
+                // rename all children
+                enumRename(o._full, obj._id, obj.name);
+                delete o._full;
+                delete o._original;
+            }, 100);
+        });
+
+        $('.enum-cancel-submit').unbind('click').button({
+            icons: {primary: 'ui-icon-close'},
+            text:  false
+        }).css('width', '22px').css('height', '18px').click(function () {
+            var id = $(this).attr('data-enum-id');
+            $('.enum-members').show();
+            $('.enum-edit').show();
+            $('.enum-add-children').show();
+            $('.enum-del').show();
+            $('.enum-ok-submit').hide();
+            $('.enum-cancel-submit').hide();
+            $('#add-enum').removeClass('ui-state-disabled');
+            $('#edit-enum').removeClass('ui-state-disabled');
+            var subgrid = $(this).attr('data-enum-subgrid');
+            var $grid = subgrid ? $(document.getElementById(subgrid)) : $gridEnums;
+            $grid.jqGrid('restoreRow', 'enum_' + id, false);
+            var obj = $grid.jqGrid('getRowData', 'enum_' + id);
+            var o = $('.enum-ok-submit[data-enum-id="' + id + '"]')[0];
+            obj._id = o._full;
+
+            $grid.jqGrid('setRowData', 'enum_' + id, obj);
+
+            delete o._full;
+            delete o._original;
+
+        });
+    }*/
+    /*var regexSystemAdapter = new RegExp('^system.adapter.');
     var regexSystemHost = new RegExp('^system.host.');
 
     function treeOptimizePath(parts, tree, index) {
@@ -3723,7 +3880,7 @@ $(document).ready(function () {
             delete parent.children[leaf.name];
             parent.count--;
             if (parent.parent)
-            treeOptimize(parent.parent);
+                treeOptimize(parent.parent);
         }
     }
 
@@ -3778,558 +3935,8 @@ $(document).ready(function () {
         for (i in tree.children) {
             treeOptimize(tree.children[i]);
         }
-    }
+    }*/
 
-    // ----------------------------- Objects show and Edit ------------------------------------------------
-    function getObjects(callback) {
-        socket.emit('getObjects', function (err, res) {
-            var obj;
-            objects = res;
-            for (var id in objects) {
-                if (id.slice(0, 7) === '_design') continue;
-
-                obj = objects[id];
-
-                if (obj.type === 'instance') instances.push(id);
-                if (obj.type === 'enum')     enums.push(id);
-                if (obj.type === 'script')   scripts.push(id);
-                if (obj.type === 'user')     users.push(id);
-                if (obj.type === 'group')    groups.push(id);
-                if (obj.type === 'adapter')  adapters.push(id);
-                if (obj.type === 'enum')     enums.push(id);
-                if (obj.type === 'host') {
-                    var addr = null;
-                    // Find first non internal IP and use it as identifier
-                    if (obj.native.hardware && obj.native.hardware.networkInterfaces) {
-                        for (var eth in obj.native.hardware.networkInterfaces) {
-                            for (var num = 0; num < obj.native.hardware.networkInterfaces[eth].length; num++) {
-                                if (!obj.native.hardware.networkInterfaces[eth][num].internal) {
-                                    addr = obj.native.hardware.networkInterfaces[eth][num].address;
-                                    break;
-                                }
-                            }
-                            if (addr) break;
-                        }
-                    }
-                    if (addr) hosts.push({name: obj.common.hostname, address: addr, id: obj._id});
-                }
-
-                if (id.match(/^system\.adapter\.node-red\.[0-9]+$/) && obj && obj.common && obj.common.enabled) {
-                    $("#a-tab-node-red").show();
-                    if ($('#tabs').tabs("option", "active") == 8) $("#tab-node-red").show();
-                    $('#iframe-node-red').height($(window).height() - 55);
-                    $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
-                }
-                treeInsert(id);
-            }
-            //benchmark('finished getObjects loop');
-            objectsLoaded = true;
-
-            // Remove empty leafs and sub-leafs
-            treeOptimize();
-
-            // Detect if some script engine instance installed
-            var engines = fillEngines();
-
-            // Disable scripts tab if no one script engine instance found
-            if (!engines || !engines.length) $('#tabs').tabs('option', 'disabled', [7]);
-
-            // Show if update available
-            initHostsList();
-
-            if (typeof callback === 'function') callback();
-        });
-    }
-    function initObjects(update) {
-        if (!objectsLoaded) {
-            setTimeout(initObjects, 250);
-            return;
-        }
-
-        if (typeof $gridObjects !== 'undefined' && (!$gridObjects[0]._isInited || update)) {
-            $gridObjects.jqGrid('clearGridData');
-            $gridObjects[0]._isInited = true;
-
-            var x = $(window).width();
-            var y = $(window).height();
-            if (x < 720) x = 720;
-            if (y < 480) y = 480;
-
-            $gridObjects.height(y - 100).width(x - 20);
-
-            $gridObjects.selectId('init', {
-                objects: objects,
-                states: states,
-                noDialog: true,
-                texts: {
-                    select:   _('Select'),
-                    cancel:   _('Cancel'),
-                    all:      _('All'),
-                    id:       _('ID'),
-                    name:     _('Name'),
-                    role:     _('Role'),
-                    room:     _('Room'),
-                    value:    _('Value'),
-                    type:     _('Type'),
-                    selectid: _('Select ID'),
-                    from:     _('From'),
-                    lc:       _('Last changed'),
-                    ts:       _('Time stamp'),
-                    ack:      _('Acknowledged')
-                },
-                columns: ['image', 'name', 'type', 'role', 'room', 'value', 'button'],
-                buttons: [
-                    {
-                        text: false,
-                        icons: {
-                            primary:'ui-icon-gear'
-                        },
-                        click: function (id) {
-                            editObject(id);
-                        },
-                        width: 26,
-                        height: 20
-                    },
-                    {
-                        text: false,
-                        icons: {
-                            primary:'ui-icon-trash'
-                        },
-                        click: function (id) {
-                            if (id && confirm(_('Are you sure to delete') + ' ' + id)) {
-                                // Delete all children
-                                socket.emit('delObject', id);
-                            }
-                        },
-                        width: 26,
-                        height: 20
-                    },
-                    {
-                        text: false,
-                        icons: {
-                            primary:'ui-icon-clock'
-                        },
-                        click: function (id) {
-                            openHistoryDlg(id);
-                        },
-                        width: 26,
-                        height: 20,
-                        match: function (id) {
-                            // Show history button only if history adapter enabled
-                            if (objects[id] && objects['system.adapter.history.0'] && objects['system.adapter.history.0'].common.enabled && !id.match(/\.messagebox$/) &&
-                                objects[id].type == 'state') {
-                                // Check if history enabled
-                                if (objects[id] && objects[id].common && objects[id].common.history && objects[id].common.history.enabled) {
-                                    this.addClass('history-enabled').removeClass('history-disabled').css({'background': 'lightgreen'});
-                                }
-                                else {
-                                    this.addClass('history-disabled').removeClass('history-enabled').css({'background': ''});
-                                }
-                            } else {
-                                this.hide();
-                            }
-                        }
-                    }
-                ]
-              /*  filter: {type: 'enum'},
-                columns: ['name', 'enum', 'button'],
-                widths:  ['150', '*', '120'],
-                buttons: [
-                    {
-                        text: false,
-                        icons: {
-                            primary:'ui-icon-pencil'
-                        },
-                        click: function (id) {
-                            console.log('edit' + id);
-                        },
-                        width: 26,
-                        height: 20
-                    },
-                    {
-                        text: false,
-                        icons: {
-                            primary:'ui-icon-note'
-                        },
-                        click: function (id) {
-                            enumMembers(id);
-                        },
-                        match: function (id) {
-                            if (id.split('.').length <= 2) this.hide();
-                        },
-                        width: 26,
-                        height: 20
-                    },
-                    {
-                        text: false,
-                        icons: {
-                            primary:'ui-icon-trash'
-                        },
-                        click: function (id) {
-                            enumDelete(id);
-                        },
-                        match: function (id) {
-                            if (!objects[id] || !objects[id].common || objects[id].common.nondeletable) this.hide();
-                        },
-                        width: 26,
-                        height: 20
-                    },
-                    {
-                        text: false,
-                        icons: {
-                            primary:'ui-icon-plus'
-                        },
-                        click: function (id) {
-                            enumCurrentParent = id;
-                            // Find unused name
-                            var name = _('enum');
-                            var idx = 0;
-                            var newId;
-                            do {
-                                idx++;
-                                newId = (enumCurrentParent || 'enum')  + '.' + name + idx;
-                            } while (objects[newId]);
-
-                            $('#enum-name').val(name + idx);
-                            // Store prefix in DOM to show generated ID
-                            var t = $('#enum-gen-id');
-                            t[0]._original = (enumCurrentParent || 'enum');
-                            t.html(newId);
-
-                            $dialogEnum.dialog('open');
-                        },
-                        width: 26,
-                        height: 20
-                    }
-                ]*/
-            }).selectId('show');
-        }
-    }
-    function editObject(id) {
-        var obj = objects[id];
-        if (!obj) return;
-        $dialogObject.dialog('option', 'title', id);
-        $('#edit-object-id').val(obj._id);
-        $('#edit-object-parent-old').val(obj.parent);
-        $('#edit-object-name').val(obj.common ? obj.common.name : id);
-        $('#edit-object-type').val(obj.type);
-        $('#edit-object-parent').val(obj.parent);
-        $('#jump-parent').attr('data-jump-to', obj.parent);
-        var childs = '<div style="font-size: 10px">';
-        // childs += '<table style="font-size: 11px">';
-        if (obj.children) {
-
-            for (var i = 0; i < obj.children.length; i++) {
-                //childs += '<tr><td>' + obj.children[i] + '</td><td><button data-jump-to="' + obj.children[i] + '" class="jump">-></button></td></tr>';
-                childs += '<a style="text-decoration: underline; cursor: pointer;" class="jump" data-jump-to="' + obj.children[i] + '">' + obj.children[i] + '</a><br>';
-            }
-        }
-
-        childs += '</div>';
-        //childs += '</table>';
-        $('#edit-object-children').html(childs);
-        $('#edit-object-common').val(JSON.stringify(obj.common, null, '  '));
-        $('#edit-object-native').val(JSON.stringify(obj.native, null, '  '));
-        $dialogObject.dialog('open');
-    }
-    function saveObject() {
-        var obj = {common: {}, native: {}};
-        obj._id =         $('#edit-object-id').val();
-        obj.parent =      $('#edit-object-parent-old').val();
-        obj.common.name = $('#edit-object-name').val();
-        obj.type =        $('#edit-object-type').val();
-        obj.parent =      $('#edit-object-parent').val();
-
-        try {
-            obj.common = JSON.parse($('#edit-object-common').val());
-        } catch (e) {
-            window.alert('common ' + e);
-            return false;
-        }
-        try {
-            obj.native = JSON.parse($('#edit-object-native').val());
-        } catch (e) {
-            window.alert('native ' + e);
-            return false;
-        }
-
-        socket.emit('extendObject', obj._id, obj);
-
-
-        $dialogObject.dialog('close');
-    }
-
-    // ----------------------------- Enum show and Edit ------------------------------------------------
-    var tasks = [];
-    function enumRename(oldId, newId, newName, callback) {
-        if (tasks.length) {
-            var task = tasks.shift();
-            if (task.name == 'delObject') {
-                socket.emit(task.name, task.id, function () {
-                    setTimeout(enumRename, 0, undefined, undefined, undefined, callback);
-                });
-            } else {
-                socket.emit(task.name, task.id, task.obj, function () {
-                    setTimeout(enumRename, 0, undefined, undefined, undefined, callback);
-                });
-            }
-        } else {
-            _enumRename(oldId, newId, newName, function () {
-                if (tasks.length) {
-                    enumRename(undefined, undefined, undefined, callback);
-                } else {
-                    if (callback) callback();
-                }
-            });
-        }
-    }
-    function _enumRename(oldId, newId, newName, callback) {
-        //Check if this name exists
-        if (oldId != newId && objects[newId]) {
-            alert(_('Name yet exists!'));
-            initEnums(true);
-            if (callback) callback();
-        } else {
-            if (oldId == newId) {
-                if (newName !== undefined) {
-                    tasks.push({name: 'extendObject', id:  oldId, obj: {common: {name: newName}}});
-                    if (callback) callback();
-                }
-            } else if (objects[oldId] && objects[oldId].common && objects[oldId].common.nondeletable) {
-                alert(_('Change of enum\'s id ' + oldId + ' is not allowed!'));
-                initEnums(true);
-                if (callback) callback();
-            } else {
-                var leaf = treeFindLeaf(oldId);
-                if (leaf && leaf.count) {
-                    socket.emit('getObject', oldId, function (err, obj) {
-                        if (obj) {
-                            obj._id = newId;
-                            if (obj._rev) delete obj._rev;
-                            if (newName !== undefined) obj.common.name = newName;
-                            tasks.push({name: 'delObject', id: oldId});
-                            tasks.push({name: 'setObject', id: newId, obj: obj});
-                            // Rename all children
-                            var count = 0;
-                            for (var i in leaf.children) {
-                                var n = leaf.children[i].id.replace(oldId, newId);
-                                count++;
-                                _enumRename(leaf.children[i].id, n, undefined, function () {
-                                    count--;
-                                    if (!count && callback) callback();
-                                });
-                            }
-
-                        }
-                    });
-                } else {
-                    socket.emit('getObject', oldId, function (err, obj) {
-                        if (obj) {
-                            obj._id = newId;
-                            if (obj._rev) delete obj._rev;
-                            if (newName !== undefined) obj.common.name = newName;
-                            tasks.push({name: 'delObject', id: oldId});
-                            tasks.push({name: 'setObject', id: newId, obj: obj});
-                            if (callback) callback();
-                        }
-                    });
-                }
-            }
-        }
-    }
-    function enumDelete(id, callback, hideConfirm) {
-        if (hideConfirm || confirm(_('Are you sure? ' + id))) {
-            var leaf = treeFindLeaf(id);
-            if (leaf && leaf.count) {
-                for (var e in leaf.children) {
-                    enumDelete(leaf.children[e].id, function () {
-                        enumDelete(id, callback, true);
-                    }, true);
-                    break;
-                }
-            } else {
-                if (objects[id] && objects[id].common && objects[id].common.nondeletable) {
-                    alert(_('Cannot delete ' + id + ' because not allowed'));
-                    if (callback) callback(id);
-                } else {
-                    treeRemove(id);
-                    socket.emit('delObject', id, function () {
-                        if (callback) callback(id);
-                    });
-                }
-            }
-        }
-    }
-    function enumAddChild(parent, newId, name) {
-        if (objects[newId]) {
-            alert(_('Name yet exists!'));
-            return false;
-        }
-
-        socket.emit('setObject', newId, {
-            _id: newId,
-            common:   {
-                name: name,
-                members: []
-            },
-            type: "enum"
-        });
-        return true;
-    }
-    function enumMembers(id) {
-        enumEdit = id;
-        $dialogEnumMembers.dialog('option', 'title', id);
-        $('#enum-name-edit').val(objects[id].common.name);
-        var members = objects[id].common.members || [];
-        $gridEnumMembers.jqGrid('clearGridData');
-        // Remove empty entries
-        for (var i = members.length - 1; i >= 0; i--) {
-            if (!members[i]) {
-                members.splice(i, 1);
-            }
-        }
-
-        for (i = 0; i < members.length; i++) {
-            if (objects[members[i]]) {
-                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {_id: members[i], name: objects[members[i]].common.name, type: objects[members[i]].type});
-            } else if (members[i]) {
-                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {
-                    _id:  members[i],
-                    name: '<span style="color:red; font-weight:bold; font-style:italic;">object missing</span>',
-                    type: ''
-                });
-            }
-        }
-        $('#del-member').addClass('ui-state-disabled');
-        $dialogEnumMembers.dialog('open');
-    }
-    function onEditEnum($grid, id) {
-        var obj = $grid.jqGrid('getRowData', 'enum_' + id);
-        if (obj && obj._id) {
-            var full;
-            var original;
-            var pos = obj._id.lastIndexOf('.');
-            if (pos != -1) {
-                full = obj._id;
-                original = obj._id.substring(0, pos);
-                obj._id  = obj._id.substring(pos + 1);
-            }
-
-            $grid.jqGrid('setRowData', 'enum_' + id, obj);
-            initEnumButtons();
-            if (pos != -1) {
-                var o = $('.enum-ok-submit[data-enum-id="' + id + '"]')[0];
-                o._full = full;
-                o._original = original;
-            }
-            $('.enum-edit').hide();
-            $('.enum-members').hide();
-            $('.enum-add-children').hide();
-            $('.enum-del').hide();
-            $('.enum-ok-submit[data-enum-id="' + id + '"]').show();
-            $('.enum-cancel-submit[data-enum-id="' + id + '"]').show();
-            $('#add-enum').addClass('ui-state-disabled');
-            $('#edit-enum').addClass('ui-state-disabled');
-
-            $grid.jqGrid('editRow', 'enum_' + id, {"url": "clientArray"});
-        }
-    }
-    function initEnumButtons() {
-        $('.enum-edit').unbind('click').button({
-            icons: {primary: 'ui-icon-pencil'},
-            text:  false
-        }).css('width', '22px').css('height', '18px').click(function () {
-            var subgrid = $(this).attr('data-enum-subgrid');
-            onEditEnum(subgrid ? $(document.getElementById(subgrid)) : $gridEnums, $(this).attr('data-enum-id'));
-        });
-
-        $('.enum-members').button({icons: {primary: 'ui-icon-note'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
-            .click(function () {
-                enumMembers($(this).attr('data-enum-id'));
-            });
-        $('.enum-add-children').button({icons: {primary: 'ui-icon-plus'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
-            .click(function () {
-                enumCurrentParent = $(this).attr('data-enum-id');
-                // Find unused name
-                var name = _('enum');
-                var idx = 0;
-                var newId;
-                do {
-                    idx++;
-                    newId = (enumCurrentParent || 'enum')  + '.' + name + idx;
-                } while (objects[newId]);
-
-                $('#enum-name').val(name + idx);
-                // Store prefix in DOM to show generated ID
-                var t = $('#enum-gen-id');
-                t[0]._original = (enumCurrentParent || 'enum');
-                t.html(newId);
-
-                $dialogEnum.dialog('open');
-            });
-
-        $('.enum-del').button({icons: {primary: 'ui-icon-trash'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
-            .click(function () {
-                enumDelete($(this).attr('data-enum-id'));
-            });
-
-        $('.enum-ok-submit').unbind('click').button({
-            icons: {primary: 'ui-icon-check'},
-            text:  false
-        }).css('width', '22px').css('height', '18px').click(function () {
-            var id = $(this).attr('data-enum-id');
-            $('.enum-edit').show();
-            $('.enum-members').show();
-            $('.enum-add-children').show();
-            $('.enum-del').show();
-            $('.enum-ok-submit').hide();
-            $('.enum-cancel-submit').hide();
-            $('#add-enum').removeClass('ui-state-disabled');
-            $('#edit-enum').removeClass('ui-state-disabled');
-
-            var subgrid = $(this).attr('data-enum-subgrid');
-            var $grid = subgrid ? $(document.getElementById(subgrid)) : $gridEnums;
-
-            $grid.jqGrid('saveRow', 'enum_' + id, {"url": "clientArray"});
-            // afterSave
-            setTimeout(function () {
-                var obj = $grid.jqGrid('getRowData', 'enum_' + id);
-                var o = $('.enum-ok-submit[data-enum-id="' + id + '"]')[0];
-                obj._id = o._original + '.' + obj._id.replace(/ /g, '_').toLowerCase();
-                // rename all children
-                enumRename(o._full, obj._id, obj.name);
-                delete o._full;
-                delete o._original;
-            }, 100);
-        });
-
-        $('.enum-cancel-submit').unbind('click').button({
-            icons: {primary: 'ui-icon-close'},
-            text:  false
-        }).css('width', '22px').css('height', '18px').click(function () {
-            var id = $(this).attr('data-enum-id');
-            $('.enum-members').show();
-            $('.enum-edit').show();
-            $('.enum-add-children').show();
-            $('.enum-del').show();
-            $('.enum-ok-submit').hide();
-            $('.enum-cancel-submit').hide();
-            $('#add-enum').removeClass('ui-state-disabled');
-            $('#edit-enum').removeClass('ui-state-disabled');
-            var subgrid = $(this).attr('data-enum-subgrid');
-            var $grid = subgrid ? $(document.getElementById(subgrid)) : $gridEnums;
-            $grid.jqGrid('restoreRow', 'enum_' + id, false);
-            var obj = $grid.jqGrid('getRowData', 'enum_' + id);
-            var o = $('.enum-ok-submit[data-enum-id="' + id + '"]')[0];
-            obj._id = o._full;
-
-            $grid.jqGrid('setRowData', 'enum_' + id, obj);
-
-            delete o._full;
-            delete o._original;
-
-        });
-    }
     function initEnums(update, expandId) {
         if (!objectsLoaded) {
             setTimeout(initEnums, 250);
@@ -4337,11 +3944,18 @@ $(document).ready(function () {
         }
 
         if (typeof $gridEnums !== 'undefined' && (!$gridEnums[0]._isInited || update)) {
-            var gridEnumsData = [];
-            var i;
-            $gridEnums.jqGrid('clearGridData');
+            //var gridEnumsData = [];
+            //var i;
+            //$gridEnums.jqGrid('clearGridData');
             $gridEnums[0]._isInited = true;
-            var tree = objectTree.children.enum;
+
+            var x = $(window).width();
+            var y = $(window).height();
+            if (x < 720) x = 720;
+            if (y < 480) y = 480;
+
+            $gridEnums.height(y - 100).width(x - 20);
+            /*var tree = objectTree.children.enum;
             if (!tree) tree = objectTree;
 
             if (tree && tree.count) {
@@ -4372,7 +3986,129 @@ $(document).ready(function () {
                 $gridEnums.jqGrid('expandSubGridRow', 'enum_' + enumExpanded[i]);
             }
 
-            initEnumButtons();
+            initEnumButtons();*/
+            $gridEnums.selectId('init', {
+                objects: objects,
+                states: states,
+                noDialog: true,
+                texts: {
+                    select:   _('Select'),
+                    cancel:   _('Cancel'),
+                    all:      _('All'),
+                    id:       _('ID'),
+                    name:     _('Name'),
+                    role:     _('Role'),
+                    room:     _('Room'),
+                    value:    _('Value'),
+                    type:     _('Type'),
+                    selectid: _('Select ID'),
+                    from:     _('From'),
+                    lc:       _('Last changed'),
+                    ts:       _('Time stamp'),
+                    ack:      _('Acknowledged'),
+                    edit:     _('Edit'),
+                    ok:       _('Ok'),
+                    enums:    _('Members')
+                },
+                filter: {type: 'enum'},
+                columns: ['name', 'enum', 'button'],
+                widths:  ['150', '*', '120'],
+                buttons: [
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-plus'
+                        },
+                        click: function (id) {
+                            enumCurrentParent = id;
+                            // Find unused name
+                            var name = _('enum');
+                            var idx = 0;
+                            var newId;
+                            do {
+                                idx++;
+                                newId = (enumCurrentParent || 'enum')  + '.' + name + idx;
+                            } while (objects[newId]);
+
+                            $('#enum-name').val(name + idx);
+                            // Store prefix in DOM to show generated ID
+                            var t = $('#enum-gen-id');
+                            t[0]._original = (enumCurrentParent || 'enum');
+                            t.html(newId);
+
+                            $dialogEnum.dialog('open');
+                        },
+                        width: 26,
+                        height: 20
+                    },
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-trash'
+                        },
+                        click: function (id) {
+                            delObject($gridEnums, id);
+                        },
+                        match: function (id) {
+                            if (!objects[id] || !objects[id].common || objects[id].common.nondeletable) this.hide();
+                        },
+                        width: 26,
+                        height: 20
+                    },
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-note'
+                        },
+                        click: function (id) {
+                            enumMembers(id);
+                        },
+                        match: function (id) {
+                            if (id.split('.').length <= 2) this.hide();
+                        },
+                        width: 26,
+                        height: 20
+                    }
+                ],
+                editEnd: function (id, newValues) {
+                    var pos = id.lastIndexOf('.');
+                    if (pos != -1) {
+                        var original = id.substring(0, pos);
+                        // rename all children
+                        enumRename(id, original + '.' + newValues.id.replace(/ /g, '_').toLowerCase(), newValues.name);
+                    }
+                },
+                editStart: function (id, inputs) {
+                    var pos = id.lastIndexOf('.');
+                    if (pos != -1) inputs.id.val(id.substring(pos + 1));
+                },
+                panelButtons: [
+                    {
+                        text: false,
+                        title: _('New enum'),
+                        icons: {
+                            primary:'ui-icon-plus'
+                        },
+                        click: function () {
+                            // Find unused name
+                            enumCurrentParent = '';
+                            var name = _('enum');
+                            var idx = 0;
+                            var newId;
+                            do {
+                                idx++;
+                                newId = (enumCurrentParent || 'enum')  + '.' + name + idx;
+                            } while (objects[newId]);
+
+                            $('#enum-name').val(name + idx);
+                            var t = $('#enum-gen-id');
+                            t[0]._original = (enumCurrentParent || 'enum');
+                            t.html(newId);
+                            $dialogEnum.dialog('open');
+                        }
+                    }
+                ]
+            }).selectId('show');
         }
     }
 
@@ -4400,8 +4136,8 @@ $(document).ready(function () {
         }
 
         obj.type = objects[obj._id] && objects[obj._id].common ? objects[obj._id].common.type : '';
-        if (obj.ts) obj.ts = formatDate(new Date(obj.ts * 1000));
-        if (obj.lc) obj.lc = formatDate(new Date(obj.lc * 1000));
+        if (obj.ts) obj.ts = formatDate(obj.ts, true);
+        if (obj.lc) obj.lc = formatDate(obj.lc, true);
 
         // Show history button only if history adapter enabled
         if (/*objects[key] && */
@@ -4464,8 +4200,8 @@ $(document).ready(function () {
                 id:  id,
                 ack: obj.ack,
                 val: obj.val,
-                ts:  formatDate(new Date(obj.ts * 1000)),
-                lc:  formatDate(new Date(obj.lc * 1000))
+                ts:  formatDate(obj.ts, true),
+                lc:  formatDate(obj.lc, true)
             });
         }
 
@@ -4494,8 +4230,8 @@ $(document).ready(function () {
                 rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
                 rowData.val = obj.val;
                 rowData.ack = obj.ack;
-                if (obj.ts) rowData.ts = formatDate(new Date(obj.ts * 1000));
-                if (obj.lc) rowData.lc = formatDate(new Date(obj.lc * 1000));
+                if (obj.ts) rowData.ts = formatDate(obj.ts, true);
+                if (obj.lc) rowData.lc = formatDate(obj.lc, true);
                 rowData.from = obj.from;
                 $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), rowData);
 
@@ -4535,7 +4271,8 @@ $(document).ready(function () {
             }
         }
     });
-    socket.on('objectChange', function (id, obj) {
+
+    function objectChange (id, obj) {
         var changed = false;
         var i;
         var j;
@@ -4549,7 +4286,7 @@ $(document).ready(function () {
             if (obj._rev && objects[id]) objects[id]._rev = obj._rev;
             if (!objects[id]) {
                 isNew = true;
-                treeInsert(id);
+                //treeInsert(id);
             }
             if (isNew || JSON.stringify(objects[id]) != JSON.stringify(obj)) {
                 objects[id] = obj;
@@ -4559,7 +4296,7 @@ $(document).ready(function () {
             changed = true;
             oldObj = {_id: id, type: objects[id].type};
             delete objects[id];
-            treeRemove(id);
+            //treeRemove(id);
         }
 
         // prepend to event table
@@ -4570,6 +4307,7 @@ $(document).ready(function () {
 
         if ($gridObjects) $gridObjects.selectId('object', id, obj);
         if ($selectId) $selectId.selectId('object', id, obj);
+        if ($gridEnums) $gridEnums.selectId('object', id, obj);
 
         // If system config updated
         if (id == 'system.config') {
@@ -4645,18 +4383,18 @@ $(document).ready(function () {
 
         // Update Adapter Table
         /*if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+$/)) {
-            if (obj) {
-                if (adapters.indexOf(id) == -1) adapters.push(id);
-            } else {
-                var j = adapters.indexOf(id);
-                if (j != -1) {
-                    adapters.splice(j, 1);
-                }
-            }
-            if (typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
-                initAdapters(true);
-            }
-        }*/
+         if (obj) {
+         if (adapters.indexOf(id) == -1) adapters.push(id);
+         } else {
+         var j = adapters.indexOf(id);
+         if (j != -1) {
+         adapters.splice(j, 1);
+         }
+         }
+         if (typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
+         initAdapters(true);
+         }
+         }*/
         // Update users
         if (id.match(/^system\.user\./)) {
             if (obj) {
@@ -4781,6 +4519,10 @@ $(document).ready(function () {
             // Delete state line
             $gridStates.jqGrid('delRowData', 'state_' + id);
         }
+    }
+
+    socket.on('objectChange', function (id, obj) {
+        setTimeout(objectChange, 0, id, obj);
     });
     socket.on('cmdStdout', function (_id, text) {
         if (activeCmdId == _id) {
@@ -4989,7 +4731,7 @@ $(document).ready(function () {
             return true;
         }
     }
-    function formatDate(dateObj) {
+    function formatDate(dateObj, isSeconds) {
         //return dateObj.getFullYear() + '-' +
         //    ("0" + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
         //    ("0" + (dateObj.getDate()).toString(10)).slice(-2) + ' ' +
@@ -4997,9 +4739,15 @@ $(document).ready(function () {
         //    ("0" + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
         //    ("0" + (dateObj.getSeconds()).toString(10)).slice(-2);
         // Following implementation is 5 times faster
+        var text = typeof dateObj;
+        if (text == 'string') {
+            var pos = dateObj.indexOf('.');
+            if (pos != -1) dateObj = dateObj.substring(0, pos);
+            return dateObj;
+        }
+        if (text != 'object') dateObj = isSeconds ? new Date(dateObj * 1000) : new Date(dateObj);
 
-
-        var text = dateObj.getFullYear();
+        text = dateObj.getFullYear();
         var v = dateObj.getMonth() + 1;
         if (v < 10) {
             text += '-0' + v;
@@ -5007,27 +4755,27 @@ $(document).ready(function () {
             text += '-' + v;
         }
 
-        v = dateObj.getDate() + 1;
+        v = dateObj.getDate();
         if (v < 10) {
             text += '-0' + v;
         } else {
             text += '-' + v;
         }
 
-        v = dateObj.getHours() + 1;
+        v = dateObj.getHours();
         if (v < 10) {
             text += ' 0' + v;
         } else {
             text += ' ' + v;
         }
-        v = dateObj.getMinutes() + 1;
+        v = dateObj.getMinutes();
         if (v < 10) {
             text += ':0' + v;
         } else {
             text += ':' + v;
         }
 
-        v = dateObj.getSeconds() + 1;
+        v = dateObj.getSeconds();
         if (v < 10) {
             text += ':0' + v;
         } else {

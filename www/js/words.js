@@ -227,6 +227,11 @@ systemDictionary = {
     "Clear on disk permanent": {"en": "Clear on disk permanent", "de": "Löschen log auf dem host", "ru": "Удалить протокол на сервере"},
     "daemon":               {"en": "daemon",                "de": "daemon",                 "ru": "Демон"},
     "subscribe":            {"en": "subscribe",             "de": "abonieren",              "ru": "Подписка"},
+    "Are you sure to delete %s and all children?": {
+        "en": "Are you sure to delete \"%s\" and all children?",
+        "de": "Sind sie sicher zu löschen \"%s\" und alle unterliegende Objekte?",
+        "ru": "Вы действительно хотите удалить \"%s\" и все нижележащие объекты?"
+    },
     "Are you sure?":        {"en": "Are you sure?",         "de": "Sind sie sicher?",       "ru": "Вы уверены?"},
     "Log size:":            {"en": "Log size:",             "de": "Log-Größe:",             "ru": "Размер файла протокола:"},
     "Log file will be deleted. Are you sure?": {
@@ -246,5 +251,10 @@ systemDictionary = {
     "From":                 {"en": "From: ",                "de": "Von",                    "ru": "От"},
     "Last changed":         {"en": "Last changed",          "de": "Lätze Änderung",         "ru": "Изменён"},
     "Time stamp":           {"en": "Time stamp",            "de": "Zeitstempel",            "ru": "Время"},
-    "Acknowledged":         {"en": "Acknowledged",          "de": "Bestätigt",              "ru": "Подтверждён"}
+    "Acknowledged":         {"en": "Acknowledged",          "de": "Bestätigt",              "ru": "Подтверждён"},
+    "common":               {"en": "common",                "de": "allgemein",              "ru": "Общие параметры"},
+    "native":               {"en": "native",                "de": "nativ",                  "ru": "Уникальные параметры"},
+    "rest":                 {"en": "rest (read only)",      "de": "weitere (nur lesend)",   "ru": "Остальные параметры(только для чтения)"},
+    "Edit":                 {"en": "Edit",                  "de": "Editieren",              "ru": "Edit"},
+    "Members":              {"en": "Members",               "de": "Mitglied",               "ru": "Объекты"}
 };

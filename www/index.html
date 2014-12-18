@@ -22,6 +22,10 @@
     <script type="text/javascript" src="js/license.js"></script>
 
     <script type="text/javascript" src="lib/js/jquery.fancytree-all.min.js"></script>
+    <!--script src="lib/js/jquery.fancytree.js" type="text/javascript"></script>
+    <script src="lib/js/jquery.fancytree.table.js" type="text/javascript"></script>
+    <script src="lib/js/jquery.fancytree.gridnav.js" type="text/javascript"></script>
+    <script src="lib/js/jquery.fancytree.filter.js" type="text/javascript"></script-->
     <script type="text/javascript" src="js/selectID.js"></script>
 
     <script type="text/javascript" src="js/admin.js"></script>
@@ -47,8 +51,6 @@
             <div id="pager-hosts"></div>
         </div>
         <div id="tab-objects">
-            <!--table id="grid-objects"></table>
-            <div id="pager-objects"></div-->
             <div id="grid-objects"></div>
         </div>
         <div id="tab-states">
@@ -95,8 +97,7 @@
             <div id="pager-instances"></div>
         </div>
         <div id="tab-enums">
-            <table id="grid-enums"></table>
-            <div id="pager-enums"></div>
+            <div id="grid-enums"></div>
         </div>
         <div id="tab-scripts">
             <table id="grid-scripts"></table>
@@ -171,9 +172,9 @@
 <div id="dialog-object" style="display:none">
     <table>
         <tr>
-            <td>name</td>
+            <td class="translate">name</td>
             <td><input size="60" id="edit-object-name"></td>
-            <td>type</td>
+            <td class="translate">type</td>
             <td>
                 <select id="edit-object-type" disabled="disabled">
                     <option>device</option>
@@ -193,7 +194,7 @@
                 </select>
             </td>
         </tr>
-        <tr>
+        <!--tr>
             <td>parent</td>
             <td colspan="3">
                 <input size="60" id="edit-object-parent" disabled="disabled">
@@ -203,18 +204,24 @@
         <tr>
             <td>children</td>
             <td colspan="3" id="edit-object-children"></td>
-        </tr>
+        </tr-->
 
     </table><br/>
-    <table width="100%">
+    <table style="width: 100%">
         <tr>
-            <td width="50%">
-                common<br/>
+            <td style="width: 50%">
+                <span class="translate">common</span><br/>
                 <textarea id="edit-object-common"></textarea>
             </td>
-            <td width="50%">
-                native<br/>
+            <td style="width: 50%">
+                <span class="translate">native</span><br/>
                 <textarea id="edit-object-native"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%" colspan="2">
+                <span class="translate">rest</span><br/>
+                <textarea id="view-object-full" readonly></textarea>
             </td>
         </tr>
     </table>
