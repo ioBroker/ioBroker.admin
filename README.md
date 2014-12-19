@@ -8,6 +8,10 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.2.7 (2014-12-19)
+* (bluefox) fix time in log (web)
+* (bluefox) replace enum edit with tree
+
 ### 0.2.6 (2014-12-16)
 * (bluefox) replace jqGrid with fancytree by objects
 
