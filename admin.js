@@ -73,7 +73,7 @@ adapter.on('ready', function () {
 });
 
 adapter.on('message', function (obj) {
-    if (!obj)
+    if (!obj || !obj.message)
         return false;
 
     if (cmdSessions[obj.message.id]) {
