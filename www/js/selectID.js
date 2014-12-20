@@ -41,15 +41,21 @@
                  id:       'ID',
                  name:     'Name',
                  role:     'Role',
-                 type:     'Type,
+                 type:     'Type',
                  room:     'Room',
+                 enum:     'Members',
                  value:    'Value',
                  selectid: 'Select ID',
-                 from:     'From: ',
-                 lc:       'Last changed: ',
-                 ts:       'Time stamp: ',
-                 ack:      'Acknowledged: ',
-                 enums:    'Members'
+                 from:     'From',
+                 lc:       'Last changed',
+                 ts:       'Time stamp',
+                 ack:      'Acknowledged',
+                 expand:   'Expand all nodes',
+                 collapse: 'Collapse all nodes',
+                 refresh:  'Rebuild tree',
+                 edit:     'Edit',
+                 ok:       'Ok',
+                 wait:     'Processing...'
              },
              columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'value', 'button'],
              widths:  null, // array with width for every column
@@ -465,7 +471,7 @@
         text += '        </thead>';
         text += '        <tbody>';
         text += '        </tbody>';
-        text += '    </table></div></div>';
+        text += '    </table></div><div id="process_running_' + data.instance + '" style="position:absolute; top:50%; left:50%; width: 150; height: 25; padding: 12; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5">' + data.texts.wait + '</div>';
 
         $dlg.html(text);
 
@@ -856,7 +862,10 @@
             if (data.filterVals == null) {
                 data.filterVals = {length: 0};
                 var value = $('#filter_ID_' + data.instance).val().toLowerCase();
-                if (value) data.filterVals['ID'] = value;
+                if (value) {
+                    data.filterVals['ID'] = value;
+                    data.filterVals.length++;
+                }
 
                 for (var c = 0; c < data.columns.length; c++) {
                     if (data.columns[c] == 'image') {
@@ -886,7 +895,7 @@
                 if (isCommon === null) isCommon = data.objects[node.key] && data.objects[node.key].common;
 
                 if (f == 'ID') {
-                    if (node.key.indexOf(data.filterVals[f]) == -1) return false;
+                    if (node.key.toLowerCase().indexOf(data.filterVals[f]) == -1) return false;
                 } else
                 if (f == 'name' || f == 'enum') {
                     if (!isCommon || data.objects[node.key].common[f] === undefined || data.objects[node.key].common[f].toLowerCase().indexOf(data.filterVals[f]) == -1) return false;
@@ -933,7 +942,9 @@
 
         $('.filter_' + data.instance).change(function() {
             data.filterVals = null;
+            $('#process_running_' + data.instance).show();
             data.$tree.fancytree("getTree").filterNodes(customFilter, false);
+            $('#process_running_' + data.instance).hide();
         }).keyup(function(){
             var tree = data.$tree[0];
             if (tree._timer) {
@@ -949,18 +960,30 @@
             $('#' + $(this).attr('data-id')).val('').trigger('change');
         }).attr('title', data.texts.collapse);
         $('#btn_collapse_' + data.instance).button({icons:{primary: 'ui-icon-folder-collapsed'}, text: false}).css({width: 18, height: 18}).click(function() {
-            data.$tree.fancytree("getRootNode").visit(function(node){
-                if (!data.filterVals.length || node.match || node.subMatch) node.setExpanded(false);
-            });
+            $('#process_running_' + data.instance).show();
+            setTimeout(function () {
+                data.$tree.fancytree("getRootNode").visit(function(node){
+                    if (!data.filterVals.length || node.match || node.subMatch) node.setExpanded(false);
+                });
+                $('#process_running_' + data.instance).hide();
+            }, 100);
         });
         $('#btn_expand_' + data.instance).button({icons:{primary: 'ui-icon-folder-open'}, text: false}).css({width: 18, height: 18}).click(function() {
-            data.$tree.fancytree("getRootNode").visit(function(node){
-                if (!data.filterVals.length || node.match || node.subMatch) node.setExpanded(true);
-            });
+            $('#process_running_' + data.instance).show();
+            setTimeout(function () {
+                data.$tree.fancytree("getRootNode").visit(function(node){
+                    if (!data.filterVals.length || node.match || node.subMatch)
+                        node.setExpanded(true);
+                });
+                $('#process_running_' + data.instance).hide();
+            }, 100);
         }).attr('title', data.texts.expand);
+
         $('#btn_refresh_' + data.instance).button({icons:{primary: 'ui-icon-refresh'}, text: false}).css({width: 18, height: 18}).click(function() {
+            $('#process_running_' + data.instance).show();
             data.inited = false;
             initTreeDialog(data.$dlg);
+            $('#process_running_' + data.instance).hide();
         }).attr('title', data.texts.refresh);
 
         for (var f in filter) {
@@ -1011,7 +1034,8 @@
                 collapse: 'Collapse all nodes',
                 refresh:  'Rebuild tree',
                 edit:     'Edit',
-                ok:       'Ok'
+                ok:       'Ok',
+                wait:     'Processing...'
             }, settings.texts);
 
             for (var i = 0; i < this.length; i++) {

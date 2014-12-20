@@ -617,6 +617,7 @@ $(document).ready(function () {
                     from:     _('From'),
                     lc:       _('Last changed'),
                     ts:       _('Time stamp'),
+                    wait:     _('Processing...'),
                     ack:      _('Acknowledged')
                 },
                 columns: ['image', 'name', 'role', 'room', 'value']
@@ -1100,7 +1101,7 @@ $(document).ready(function () {
                 {name: '_id',       index: '_id',       width: 250, fixed: false},
                 {name: 'pname',     index: 'pname',     width: 250, fixed: false},
                 {name: 'name',      index: 'name',      width: 250, fixed: false},
-                {name: 'val',       index: 'ack',       width: 160, editable: true},
+                {name: 'val',       index: 'val',       width: 160, editable: true},
                 {name: 'ack',       index: 'ack',       width: 60,  fixed: false, editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
                 {name: 'from',      index: 'from',      width: 80,  fixed: false},
                 {name: 'ts',        index: 'ts',        width: 140, fixed: false},
@@ -1135,6 +1136,30 @@ $(document).ready(function () {
                     $gridStates.restoreRow(stateLastSelected);
                     stateLastSelected = id;
                 }
+                var _id = id.substring(6);//'state_'.length
+                if (objects[_id] && objects[_id].common && objects[_id].common.type == 'boolean') {
+                    $gridStates.setColProp('val', {
+                        editable:    true,
+                        edittype:    'checkbox',
+                        editoptions: {value: 'true:false'}
+                    });
+                } else if (objects[_id] && objects[_id].common && objects[_id].common.type == 'number' && objects[_id].common.states) {
+                    $gridStates.setColProp('val', {
+                        editable:    true,
+                        edittype:    'select',
+                        editoptions: {value: objects[_id].common.states.join(':')},
+                        align:       'center'
+                    });
+                }
+                else {
+                    $gridStates.setColProp('val', {
+                        editable:    true,
+                        edittype:    'text',
+                        editoptions: null,
+                        align:       'center'
+                    });
+                }
+
                 $gridStates.editRow(id, true, function () {
                     // onEdit
                     stateEdit = true;
@@ -1152,6 +1177,7 @@ $(document).ready(function () {
                     if (ack === 'false') ack = false;
                     var id = $('tr[id="' + stateLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
                     socket.emit('setState', id, {val:val, ack:ack});
+                    stateLastSelected = null;
                 });
             }
         }).jqGrid('filterToolbar', {
@@ -2930,10 +2956,12 @@ $(document).ready(function () {
         // like web_port
         var parts = vars.split('_');
         socket.emit('getObject', 'system.adapter.' + parts[0] + '.0', function (err, obj) {
-            setTimeout(function () {
-                var link = $('#a_' + adapter + '_' + instance).attr('href').replace('%' + vars + '%', obj.native[parts[1]]);
-                $('#a_' + adapter + '_' + instance).attr('href', link);
-            }, 0)
+            if (obj) {
+                setTimeout(function () {
+                    var link = $('#a_' + adapter + '_' + instance).attr('href').replace('%' + vars + '%', obj.native[parts[1]]);
+                    $('#a_' + adapter + '_' + instance).attr('href', link);
+                }, 0)
+            }
         });
     }
     function initInstances(update) {
@@ -3445,6 +3473,7 @@ $(document).ready(function () {
                     from:     _('From'),
                     lc:       _('Last changed'),
                     ts:       _('Time stamp'),
+                    wait:     _('Processing...'),
                     ack:      _('Acknowledged'),
                     edit:     _('Edit'),
                     ok:       _('Ok')
@@ -4076,6 +4105,7 @@ $(document).ready(function () {
                     from:     _('From'),
                     lc:       _('Last changed'),
                     ts:       _('Time stamp'),
+                    wait:     _('Processing...'),
                     ack:      _('Acknowledged'),
                     edit:     _('Edit'),
                     ok:       _('Ok'),
@@ -4395,7 +4425,7 @@ $(document).ready(function () {
         }
 
         // Update Instance Table
-        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.[0-9]+$/)) {
+        if (id.match(/^system\.adapter\.[\w]+\.[0-9]+$/)) {
             if (obj) {
                 if (instances.indexOf(id) == -1) instances.push(id);
             } else {
@@ -4489,7 +4519,7 @@ $(document).ready(function () {
         }
 
         // Update hosts
-        if (id.match(/^system\.host\./)) {
+        if (id.match(/^system\.host\.[\w]+$/)) {
             var found = false;
             for (i = 0; i < hosts.length; i++) {
                 if (hosts[i].id == id) {
@@ -4499,7 +4529,7 @@ $(document).ready(function () {
             }
 
             if (obj) {
-                if (!found) hosts.push({id: id, address: obj.common.address[0], name: obj.common.name});
+                if (!found) hosts.push({id: id, address: obj.common.address ? obj.common.address[0]: '', name: obj.common.name});
             } else {
                 if (found) hosts.splice(i, 1);
             }

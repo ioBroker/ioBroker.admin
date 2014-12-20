@@ -257,5 +257,7 @@ systemDictionary = {
     "native":               {"en": "native",                "de": "nativ",                  "ru": "Уникальные параметры"},
     "rest":                 {"en": "rest (read only)",      "de": "weitere (nur lesend)",   "ru": "Остальные параметры(только для чтения)"},
     "Edit":                 {"en": "Edit",                  "de": "Editieren",              "ru": "Edit"},
-    "Members":              {"en": "Members",               "de": "Mitglied",               "ru": "Объекты"}
+    "Members":              {"en": "Members",               "de": "Mitglied",               "ru": "Объекты"},
+    "Loading...":           {"en": "Loading...",            "de": "Lade...",                "ru": "Загрузка..."},
+    "Processing...":        {"en": "Processing...",         "de": "Bearbeite...",           "ru": "Обработка..."}
 };

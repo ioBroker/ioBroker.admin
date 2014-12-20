@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.2.9 (2014-12-20)
+* (bluefox) fix filter of IDs in objects
+
 ### 0.2.8 (2014-12-20)
 * (bluefox) support of controller restart
 
