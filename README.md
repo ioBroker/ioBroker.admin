@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.2.8 (2014-12-20)
+* (bluefox) support of controller restart
+
 ### 0.2.7 (2014-12-19)
 * (bluefox) fix time in log (web)
 * (bluefox) replace enum edit with tree

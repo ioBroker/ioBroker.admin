@@ -144,6 +144,7 @@ systemDictionary = {
     "history data":         {"en": "history data",          "de": "Historische Daten",      "ru": "history data"},
     "alpha":                {"en": "alpha",                 "de": "alpha",                  "ru": "alpha"},
     "update":               {"en": "update",                "de": "update",                 "ru": "обновить"},
+    "restart":              {"en": "restart",               "de": "Neu starten",            "ru": "Перезапустить"},
     "beta":                 {"en": "beta",                  "de": "beta",                   "ru": "beta"},
     "planned":              {"en": "planned",               "de": "geplannt",               "ru": "в планах"},
     "clear":                {"en": "clear",                 "de": "löschen",                "ru": "очистить"},

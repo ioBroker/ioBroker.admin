@@ -30,7 +30,7 @@ Array.prototype.remove = function () {
     return this;
 };
 
-var $iframeDialog = null;
+var $iframeDialog = null; // used in adapter settings window
 
 (function ($) {
 $(document).ready(function () {
@@ -100,6 +100,7 @@ $(document).ready(function () {
 
     var socket =                io.connect();
     var firstConnect =          true;
+    var waitForRestart =        false;
     var objectsLoaded =         false;
 
     var enumEdit =              null;
@@ -329,12 +330,20 @@ $(document).ready(function () {
                                 if (languageChanged) {
                                     window.location.reload();
                                 } else {
-                                    if (activeRepoChanged) initAdapters(true);
+                                    if (activeRepoChanged) {
+                                        setTimeout(function () {
+                                            initAdapters(true);
+                                        }, 0);
+                                    }
                                 }
                             }
 
                             socket.emit('extendObject', 'system.repositories', systemRepos, function (err) {
-                                if (activeRepoChanged) initAdapters(true);
+                                if (activeRepoChanged) {
+                                    setTimeout(function () {
+                                        initAdapters(true);
+                                    }, 0);
+                                }
 
                                 socket.emit('extendObject', 'system.certificates', systemCerts, function (err) {
                                     $dialogSystem.dialog('close');
@@ -544,7 +553,9 @@ $(document).ready(function () {
                 logLinesCount = 0;
                 logLinesStart = 0;
                 $('a[href="#tab-log"]').removeClass('errorLog');
-                initLogs();
+                setTimeout(function () {
+                    initLogs();
+                }, 0);
             });
         }
     }).css({width: 20, height: 20}).addClass("ui-state-error");;
@@ -705,25 +716,27 @@ $(document).ready(function () {
         tabs.tabs('option', 'disabled', (port && chart) ? [] : [1]);
 
         socket.emit('getStateHistory', id, start, end, function (err, res) {
-            if (!err) {
-                var rows = [];
-                //console.log('got ' + res.length + ' history datapoints for ' + id);
-                for (var i = 0; i < res.length; i++) {
-                    rows.push({
-                        gid: i,
-                        id:  res[i].id,
-                        ack: res[i].ack,
-                        val: res[i].val,
-                        ts:  formatDate(res[i].ts, true),
-                        lc:  formatDate(res[i].lc, true)
-                    });
+            setTimeout(function () {
+                if (!err) {
+                    var rows = [];
+                    //console.log('got ' + res.length + ' history datapoints for ' + id);
+                    for (var i = 0; i < res.length; i++) {
+                        rows.push({
+                            gid: i,
+                            id:  res[i].id,
+                            ack: res[i].ack,
+                            val: res[i].val,
+                            ts:  formatDate(res[i].ts, true),
+                            lc:  formatDate(res[i].lc, true)
+                        });
+                    }
+                    $gridHistory[0]._maxGid = res.length;
+                    $gridHistory.jqGrid('addRowData', 'gid', rows);
+                    $gridHistory.trigger('reloadGrid');
+                } else {
+                    console.log(err);
                 }
-                $gridHistory[0]._maxGid = res.length;
-                $gridHistory.jqGrid('addRowData', 'gid', rows);
-                $gridHistory.trigger('reloadGrid');
-            } else {
-                console.log(err);
-            }
+            }, 0);
         });
     }
     function prepareHistory() {
@@ -795,7 +808,9 @@ $(document).ready(function () {
                     obj.common.members.splice(idx, 1);
                     objects[enumEdit] = obj;
                     socket.emit('setObject', enumEdit, obj, function () {
-                        enumMembers(enumEdit);
+                        setTimeout(function () {
+                            enumMembers(enumEdit);
+                        }, 0);
                     });
                 }
             },
@@ -815,7 +830,9 @@ $(document).ready(function () {
                         obj.common.members.push(newId);
 
                         socket.emit('setObject', enumEdit, obj, function () {
-                            enumMembers(enumEdit);
+                            setTimeout(function () {
+                                enumMembers(enumEdit);
+                            }, 0);
                         });
                     }
                 });
@@ -1425,7 +1442,9 @@ $(document).ready(function () {
                         if (err) {
                             window.alert("Cannot delete user: " + err);
                         } else {
-                            delUser(id);
+                            setTimeout(function () {
+                                delUser(id);
+                            }, 0);
                         }
                     });
                 }
@@ -1810,7 +1829,7 @@ $(document).ready(function () {
             searchOnEnter: false,
             enableClear:   false,
             afterSearch:   function () {
-                //initHostButtons();
+                initHostButtons();
             }
         }).navGrid('#pager-hosts', {
             search:  false,
@@ -2003,6 +2022,8 @@ $(document).ready(function () {
         $("#load_grid-adapters").show();
         $('a[href="#tab-adapters"]').removeClass('updateReady');
 
+        $("#load_grid-adapters").show();
+
         getAdaptersInfo(currentHost, update, updateRepo, function (repository, installedList) {
             var id = 1;
             var obj;
@@ -2012,19 +2033,21 @@ $(document).ready(function () {
             var listInstalled    = [];
             var listUnsinstalled = [];
 
-            for (var adapter in installedList) {
-                obj = installedList[adapter];
-                if (!obj || obj.controller || adapter == 'hosts') continue;
-                listInstalled.push(adapter);
+            if (installedList) {
+                for (var adapter in installedList) {
+                    obj = installedList[adapter];
+                    if (!obj || obj.controller || adapter == 'hosts') continue;
+                    listInstalled.push(adapter);
+                }
+                listInstalled.sort();
             }
-            listInstalled.sort();
 
             // List of adapters for repository
             for (adapter in repository) {
                 obj = repository[adapter];
                 if (!obj || obj.controller) continue;
                 version = '';
-                if (installedList[adapter]) continue;
+                if (installedList && installedList[adapter]) continue;
                 listUnsinstalled.push(adapter);
             }
             listUnsinstalled.sort();
@@ -2032,7 +2055,7 @@ $(document).ready(function () {
             // list of the installed adapters
             for (var i = 0; i < listInstalled.length; i++) {
                 adapter = listInstalled[i];
-                obj = installedList[adapter];
+                obj = installedList ? installedList[adapter] : null;
                 if (!obj || obj.controller || adapter == 'hosts') continue;
                 var installed = '';
                 var icon =      obj.icon;
@@ -2087,7 +2110,7 @@ $(document).ready(function () {
                 obj = repository[adapter];
                 if (!obj || obj.controller) continue;
                 version =   '';
-                if (installedList[adapter]) continue;
+                if (installedList && installedList[adapter]) continue;
 
                 if (repository[adapter] && repository[adapter].version) {
                     version = repository[adapter].version;
@@ -2172,7 +2195,10 @@ $(document).ready(function () {
             icons: {primary: 'ui-icon-refresh'},
             text:  false
         }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
-            cmdExec(currentHost, 'upgrade ' + $(this).attr('data-adapter-name'), function (exitCode) {
+            var aName = $(this).attr('data-adapter-name');
+            if (aName == 'admin') waitForRestart = true;
+
+            cmdExec(currentHost, 'upgrade ' + aName, function (exitCode) {
                 if (!exitCode) initAdapters(true);
             });
         });
@@ -2354,28 +2380,30 @@ $(document).ready(function () {
         }
 
         socket.emit('sendToHost', currentHost, 'getLogs', 200, function (lines) {
-            var message = {message: '', severity: 'debug', from: '', ts: ''};
-            var size = lines ? lines.pop() : -1;
-            if (size != -1) {
-                size = parseInt(size);
-                $('#log-size').html((_('Log size:') + ' ' + ((size / (1024 * 1024)).toFixed(2) + ' MB ')).replace(/ /g,'&nbsp;'));
-            }
-            for (var i = 0; i < lines.length; i++) {
-                if (!lines[i]) continue;
-                // 2014-12-05 14:47:10.739  - [32minfo[39m: iobroker  ERR! network In most cases you are behind a proxy or have bad network settings.npm ERR! network
-                if (lines[i][4] == '-' && lines[i][7] == '-') {
-                    message.ts = lines[i].substring(0, 23);
-                    var pos = lines[i].indexOf('[39m:');
-                    message.severity = lines[i].substring(32, pos - 1);
-                    lines[i] = lines[i].substring(pos + 6);
-                    pos = lines[i].indexOf(' ');
-                    message.from = lines[i].substring(0, pos);
-                    message.message = lines[i].substring(pos);
-                } else {
-                    message.message = lines[i];
+            setTimeout(function () {
+                var message = {message: '', severity: 'debug', from: '', ts: ''};
+                var size = lines ? lines.pop() : -1;
+                if (size != -1) {
+                    size = parseInt(size);
+                    $('#log-size').html((_('Log size:') + ' ' + ((size / (1024 * 1024)).toFixed(2) + ' MB ')).replace(/ /g,'&nbsp;'));
                 }
-                addMessageLog(message);
-            }
+                for (var i = 0; i < lines.length; i++) {
+                    if (!lines[i]) continue;
+                    // 2014-12-05 14:47:10.739  - [32minfo[39m: iobroker  ERR! network In most cases you are behind a proxy or have bad network settings.npm ERR! network
+                    if (lines[i][4] == '-' && lines[i][7] == '-') {
+                        message.ts = lines[i].substring(0, 23);
+                        var pos = lines[i].indexOf('[39m:');
+                        message.severity = lines[i].substring(32, pos - 1);
+                        lines[i] = lines[i].substring(pos + 6);
+                        pos = lines[i].indexOf(' ');
+                        message.from = lines[i].substring(0, pos);
+                        message.message = lines[i].substring(pos);
+                    } else {
+                        message.message = lines[i];
+                    }
+                    addMessageLog(message);
+                }
+            }, 0);
         });
     }
     function addMessageLog(message) {
@@ -2476,42 +2504,44 @@ $(document).ready(function () {
     }
     function updateScript(id, newCommon) {
         socket.emit('getObject', id, function (err, _obj) {
-            var obj = {common: {}};
+            setTimeout(function () {
+                var obj = {common: {}};
 
-            if (newCommon.engine  !== undefined) obj.common.engine  = newCommon.engine;
-            if (newCommon.enabled !== undefined) obj.common.enabled = newCommon.enabled;
+                if (newCommon.engine  !== undefined) obj.common.engine  = newCommon.engine;
+                if (newCommon.enabled !== undefined) obj.common.enabled = newCommon.enabled;
 
-            if (obj.common.enabled === 'true')  obj.common.enabled = true;
-            if (obj.common.enabled === 'false') obj.common.enabled = false;
+                if (obj.common.enabled === 'true')  obj.common.enabled = true;
+                if (obj.common.enabled === 'false') obj.common.enabled = false;
 
-            if (newCommon.source !== undefined) obj.common.source = newCommon.source;
+                if (newCommon.source !== undefined) obj.common.source = newCommon.source;
 
-            if (_obj && _obj.common && newCommon.name == _obj.common.name && (newCommon.engineType === undefined || newCommon.engineType == _obj.common.engineType)) {
-                socket.emit('extendObject', id, obj);
-            } else {
-                var prefix;
-
-                _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
-                var parts = _obj.common.engineType.split('/');
-
-                prefix = 'script.' + (parts[1] || parts[0]) + '.';
-
-                if (_obj) {
-                    socket.emit('delObject', _obj._id);
-                    if (obj.common.engine  !== undefined) _obj.common.engine  = obj.common.engine;
-                    if (obj.common.enabled !== undefined) _obj.common.enabled = obj.common.enabled;
-                    if (obj.common.source  !== undefined) _obj.common.source  = obj.common.source;
-                    if (obj.common.name    !== undefined) _obj.common.name    = obj.common.name;
-                    delete _obj._rev;
+                if (_obj && _obj.common && newCommon.name == _obj.common.name && (newCommon.engineType === undefined || newCommon.engineType == _obj.common.engineType)) {
+                    socket.emit('extendObject', id, obj);
                 } else {
-                    _obj = obj;
-                }
-                // Name must always exist
-                _obj.common.name = newCommon.name;
+                    var prefix;
 
-                _obj._id = prefix + newCommon.name.replace(/ /g, '_').replace(/\./g, '_');
-                socket.emit('setObject', _obj._id, _obj);
-            }
+                    _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
+                    var parts = _obj.common.engineType.split('/');
+
+                    prefix = 'script.' + (parts[1] || parts[0]) + '.';
+
+                    if (_obj) {
+                        socket.emit('delObject', _obj._id);
+                        if (obj.common.engine  !== undefined) _obj.common.engine  = obj.common.engine;
+                        if (obj.common.enabled !== undefined) _obj.common.enabled = obj.common.enabled;
+                        if (obj.common.source  !== undefined) _obj.common.source  = obj.common.source;
+                        if (obj.common.name    !== undefined) _obj.common.name    = obj.common.name;
+                        delete _obj._rev;
+                    } else {
+                        _obj = obj;
+                    }
+                    // Name must always exist
+                    _obj.common.name = newCommon.name;
+
+                    _obj._id = prefix + newCommon.name.replace(/ /g, '_').replace(/\./g, '_');
+                    socket.emit('setObject', _obj._id, _obj);
+                }
+            }, 0);
         });
     }
     function initScripts(update) {
@@ -2723,7 +2753,7 @@ $(document).ready(function () {
             return;
         }
 
-        // fill the host list on adapter tab
+        // fill the host list (select) on adapter tab
         var selHosts = document.getElementById('host-adapters');
         var myOpts   = selHosts.options;
         var $selHosts = $(selHosts);
@@ -2770,6 +2800,20 @@ $(document).ready(function () {
             initAdapters(true);
         });
     }
+
+    function initHostButtons() {
+
+        $('.host-update-submit').button({icons: {primary: 'ui-icon-refresh'}}).unbind('click').on('click', function () {
+            cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
+                if (!exitCode) initHosts(true);
+            });
+        });
+
+        $('.host-restart-submit').button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click').on('click', function () {
+            waitForRestart = true;
+            cmdExec($(this).attr('data-host-name'), '_restart');
+        });
+    }
     function initHosts(update, updateRepo, callback) {
 
         if (!objectsLoaded) {
@@ -2781,8 +2825,11 @@ $(document).ready(function () {
             $('a[href="#tab-hosts"]').removeClass('updateReady');
 
             $gridHosts.jqGrid('clearGridData');
+            $("#load_grid-hosts").show();
 
             getAdaptersInfo(currentHost, update, updateRepo, function (repository, installedList) {
+                // Do it one more time
+                $gridHosts.jqGrid('clearGridData');
 
                 $gridHosts[0]._isInited = true;
                 for (var i = 0; i < hosts.length; i++) {
@@ -2794,9 +2841,7 @@ $(document).ready(function () {
                         if (installed != installedList.hosts[obj.common.hostname].runningVersion) installed += '(' + _('Running: ') + installedList.hosts[obj.common.hostname].runningVersion + ')';
                     }
 
-                    if (!installed && obj.common && obj.common.installedVersion) {
-                        installed = obj.common.installedVersion;
-                    }
+                    if (!installed && obj.common && obj.common.installedVersion) installed = obj.common.installedVersion;
 
                     if (installed && version) {
                         if (!upToDate(version, installed)) {
@@ -2806,9 +2851,11 @@ $(document).ready(function () {
                         }
                     }
 
+                    var __hostname = '<table style="width:100%; padding: 0; border: 0; border-spacing: 0; border-color: rgba(0, 0, 0, 0)" cellspacing="0" cellpadding="0"><tr><td style="width:100%">' + obj.common.hostname + '</td><td><button class="host-restart-submit" data-host-name="' + obj.common.hostname + '">' + _('restart') + '</button></td></tr></table>';
+
                     $gridHosts.jqGrid('addRowData', 'host_' + hosts[i].id.replace(/ /g, '_'), {
                         _id:       obj._id,
-                        name:      obj.common.hostname,
+                        name:      __hostname,
                         type:      obj.common.type,
                         title:     obj.common.title,
                         platform:  obj.common.platform,
@@ -2819,11 +2866,7 @@ $(document).ready(function () {
                 }
                 $gridHosts.trigger('reloadGrid');
 
-                $('.host-update-submit').button({icons: {primary: 'ui-icon-refresh'}}).unbind('click').on('click', function () {
-                    cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
-                        if (!exitCode) initHosts(true);
-                    });
-                });
+                initHostButtons();
                 if (callback) callback();
             });
         }
@@ -2887,8 +2930,10 @@ $(document).ready(function () {
         // like web_port
         var parts = vars.split('_');
         socket.emit('getObject', 'system.adapter.' + parts[0] + '.0', function (err, obj) {
-            var link = $('#a_' + adapter + '_' + instance).attr('href').replace('%' + vars + '%', obj.native[parts[1]]);
-            $('#a_' + adapter + '_' + instance).attr('href', link);
+            setTimeout(function () {
+                var link = $('#a_' + adapter + '_' + instance).attr('href').replace('%' + vars + '%', obj.native[parts[1]]);
+                $('#a_' + adapter + '_' + instance).attr('href', link);
+            }, 0)
         });
     }
     function initInstances(update) {
@@ -2981,7 +3026,7 @@ $(document).ready(function () {
                 $dialogConfig.dialog('option', 'title', _('Adapter configuration') + ': ' + name).dialog('open');
             });
 
-        $('.instance-reload').button({icons: {primary: 'ui-icon-refresh'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
+        $('.instance-reload').button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click')
             .click(function () {
                 socket.emit('extendObject', $(this).attr('data-instance-id'), {});
             });
@@ -3128,7 +3173,9 @@ $(document).ready(function () {
                     window.alert("Cannot set password: " + err);
                 } else {
                     $dialogUser.dialog('close');
-                    initUsers(true);
+                    setTimeout(function () {
+                        initUsers(true);
+                    }, 0);
                 }
             });
         } else {
@@ -3238,7 +3285,9 @@ $(document).ready(function () {
                     window.alert("Cannot create group: " + err);
                 } else {
                     $dialogGroup.dialog('close');
-                    initGroups(true);
+                    setTimeout(function () {
+                        initGroups(true);
+                    }, 0);
                 }
             });
         } else {
@@ -3275,76 +3324,90 @@ $(document).ready(function () {
         if (!curRepository) {
             socket.emit('sendToHost', host, 'getRepository', {repo: systemConfig.common.activeRepo, update: updateRepo}, function (_repository) {
                 curRepository = _repository;
-                if (curRepository && curInstalled) callback(curRepository, curInstalled);
+                if (curRepository && curInstalled) {
+                    setTimeout(function () {
+                        callback(curRepository, curInstalled);
+                    }, 0);
+                }
             });
         }
         if (!curInstalled) {
             socket.emit('sendToHost', host, 'getInstalled', null, function (_installed) {
                 curInstalled = _installed;
-                if (curRepository && curInstalled) callback(curRepository, curInstalled);
+                if (curRepository && curInstalled) {
+                    setTimeout(function () {
+                        callback(curRepository, curInstalled);
+                    }, 0);
+                }
             });
         }
-        if (curInstalled && curRepository) callback(curRepository, curInstalled);
+        if (curInstalled && curRepository) {
+            setTimeout(function () {
+                callback(curRepository, curInstalled);
+            }, 0);
+        }
     }
 
     // ----------------------------- Objects show and Edit ------------------------------------------------
     function getObjects(callback) {
         socket.emit('getObjects', function (err, res) {
-            var obj;
-            objects = res;
-            for (var id in objects) {
-                if (id.slice(0, 7) === '_design') continue;
+            setTimeout(function () {
+                var obj;
+                objects = res;
+                for (var id in objects) {
+                    if (id.slice(0, 7) === '_design') continue;
 
-                obj = objects[id];
+                    obj = objects[id];
 
-                if (obj.type === 'instance') instances.push(id);
-                if (obj.type === 'enum')     enums.push(id);
-                if (obj.type === 'script')   scripts.push(id);
-                if (obj.type === 'user')     users.push(id);
-                if (obj.type === 'group')    groups.push(id);
-                if (obj.type === 'adapter')  adapters.push(id);
-                if (obj.type === 'enum')     enums.push(id);
-                if (obj.type === 'host') {
-                    var addr = null;
-                    // Find first non internal IP and use it as identifier
-                    if (obj.native.hardware && obj.native.hardware.networkInterfaces) {
-                        for (var eth in obj.native.hardware.networkInterfaces) {
-                            for (var num = 0; num < obj.native.hardware.networkInterfaces[eth].length; num++) {
-                                if (!obj.native.hardware.networkInterfaces[eth][num].internal) {
-                                    addr = obj.native.hardware.networkInterfaces[eth][num].address;
-                                    break;
+                    if (obj.type === 'instance') instances.push(id);
+                    if (obj.type === 'enum')     enums.push(id);
+                    if (obj.type === 'script')   scripts.push(id);
+                    if (obj.type === 'user')     users.push(id);
+                    if (obj.type === 'group')    groups.push(id);
+                    if (obj.type === 'adapter')  adapters.push(id);
+                    if (obj.type === 'enum')     enums.push(id);
+                    if (obj.type === 'host') {
+                        var addr = null;
+                        // Find first non internal IP and use it as identifier
+                        if (obj.native.hardware && obj.native.hardware.networkInterfaces) {
+                            for (var eth in obj.native.hardware.networkInterfaces) {
+                                for (var num = 0; num < obj.native.hardware.networkInterfaces[eth].length; num++) {
+                                    if (!obj.native.hardware.networkInterfaces[eth][num].internal) {
+                                        addr = obj.native.hardware.networkInterfaces[eth][num].address;
+                                        break;
+                                    }
                                 }
+                                if (addr) break;
                             }
-                            if (addr) break;
                         }
+                        if (addr) hosts.push({name: obj.common.hostname, address: addr, id: obj._id});
                     }
-                    if (addr) hosts.push({name: obj.common.hostname, address: addr, id: obj._id});
+
+                    if (id.match(/^system\.adapter\.node-red\.[0-9]+$/) && obj && obj.common && obj.common.enabled) {
+                        $("#a-tab-node-red").show();
+                        if ($('#tabs').tabs("option", "active") == 8) $("#tab-node-red").show();
+                        $('#iframe-node-red').height($(window).height() - 55);
+                        $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
+                    }
+                    //treeInsert(id);
                 }
+                //benchmark('finished getObjects loop');
+                objectsLoaded = true;
 
-                if (id.match(/^system\.adapter\.node-red\.[0-9]+$/) && obj && obj.common && obj.common.enabled) {
-                    $("#a-tab-node-red").show();
-                    if ($('#tabs').tabs("option", "active") == 8) $("#tab-node-red").show();
-                    $('#iframe-node-red').height($(window).height() - 55);
-                    $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
-                }
-                //treeInsert(id);
-            }
-            //benchmark('finished getObjects loop');
-            objectsLoaded = true;
+                // Remove empty leafs and sub-leafs
+                //treeOptimize();
 
-            // Remove empty leafs and sub-leafs
-            //treeOptimize();
+                // Detect if some script engine instance installed
+                var engines = fillEngines();
 
-            // Detect if some script engine instance installed
-            var engines = fillEngines();
+                // Disable scripts tab if no one script engine instance found
+                if (!engines || !engines.length) $('#tabs').tabs('option', 'disabled', [7]);
 
-            // Disable scripts tab if no one script engine instance found
-            if (!engines || !engines.length) $('#tabs').tabs('option', 'disabled', [7]);
+                // Show if update available
+                initHostsList();
 
-            // Show if update available
-            initHostsList();
-
-            if (typeof callback === 'function') callback();
+                if (typeof callback === 'function') callback();
+            }, 0);
         });
     }
     function initObjects(update) {
@@ -3516,7 +3579,11 @@ $(document).ready(function () {
                     if (callback) callback(id);
                 } else {
                     socket.emit('delObject', id, function () {
-                        if (callback) callback(id);
+                        if (callback) {
+                            setTimeout(function () {
+                                callback(id);
+                            }, 0);
+                        }
                     });
                 }
             }
@@ -3567,34 +3634,38 @@ $(document).ready(function () {
                 //var leaf = treeFindLeaf(oldId);
                 if (leaf && leaf.children) {
                     socket.emit('getObject', oldId, function (err, obj) {
-                        if (obj) {
-                            obj._id = newId;
-                            if (obj._rev) delete obj._rev;
-                            if (newName !== undefined) obj.common.name = newName;
-                            tasks.push({name: 'delObject', id: oldId});
-                            tasks.push({name: 'setObject', id: newId, obj: obj});
-                            // Rename all children
-                            var count = 0;
-                            for (var i = 0; i < leaf.children.length; i++) {
-                                var n = leaf.children[i].replace(oldId, newId);
-                                count++;
-                                _enumRename(leaf.children[i], n, undefined, function () {
-                                    count--;
-                                    if (!count && callback) callback();
-                                });
-                            }
+                        setTimeout(function () {
+                            if (obj) {
+                                obj._id = newId;
+                                if (obj._rev) delete obj._rev;
+                                if (newName !== undefined) obj.common.name = newName;
+                                tasks.push({name: 'delObject', id: oldId});
+                                tasks.push({name: 'setObject', id: newId, obj: obj});
+                                // Rename all children
+                                var count = 0;
+                                for (var i = 0; i < leaf.children.length; i++) {
+                                    var n = leaf.children[i].replace(oldId, newId);
+                                    count++;
+                                    _enumRename(leaf.children[i], n, undefined, function () {
+                                        count--;
+                                        if (!count && callback) callback();
+                                    });
+                                }
 
-                        }
+                            }
+                        }, 0);
                     });
                 } else {
                     socket.emit('getObject', oldId, function (err, obj) {
                         if (obj) {
-                            obj._id = newId;
-                            if (obj._rev) delete obj._rev;
-                            if (newName !== undefined) obj.common.name = newName;
-                            tasks.push({name: 'delObject', id: oldId});
-                            tasks.push({name: 'setObject', id: newId, obj: obj});
-                            if (callback) callback();
+                            setTimeout(function () {
+                                obj._id = newId;
+                                if (obj._rev) delete obj._rev;
+                                if (newName !== undefined) obj.common.name = newName;
+                                tasks.push({name: 'delObject', id: oldId});
+                                tasks.push({name: 'setObject', id: newId, obj: obj});
+                                if (callback) callback();
+                            }, 0);
                         }
                     });
                 }
@@ -4177,7 +4248,11 @@ $(document).ready(function () {
         $gridStates.jqGrid('clearGridData');
         socket.emit('getStates', function (err, res) {
             states = res;
-            if (typeof callback === 'function') callback();
+            if (typeof callback === 'function') {
+                setTimeout(function () {
+                    callback();
+                }, 0);
+            }
         });
     }
 
@@ -4570,130 +4645,136 @@ $(document).ready(function () {
                 socket.emit('getObject', 'system.repositories', function (err, repo) {
                     systemRepos = repo;
                     socket.emit('getObject', 'system.certificates', function (err, certs) {
-                        systemCerts = certs;
-                        if (!err && systemConfig && systemConfig.common) {
-                            systemLang = systemConfig.common.language || systemLang;
-                            if (!systemConfig.common.licenseConfirmed) {
-                                // Show license agreement
-                                var language = systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
-                                if (language != 'en' && language != 'de' && language != 'ru') language = 'en';
+                        setTimeout(function () {
+                            systemCerts = certs;
+                            if (!err && systemConfig && systemConfig.common) {
+                                systemLang = systemConfig.common.language || systemLang;
+                                if (!systemConfig.common.licenseConfirmed) {
+                                    // Show license agreement
+                                    var language = systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
+                                    if (language != 'en' && language != 'de' && language != 'ru') language = 'en';
 
-                                $('#license_text').html(license[language] || license.en);
-                                $('#license_language').val(language).show();
-
-                                $('#license_language').change(function () {
-                                    language = $(this).val();
                                     $('#license_text').html(license[language] || license.en);
-                                });
+                                    $('#license_language').val(language).show();
 
-                                $dialogLicense.css({'z-index': 200});
-                                $dialogLicense.dialog({
-                                    autoOpen: true,
-                                    modal: true,
-                                    width: 600,
-                                    height: 400,
-                                    buttons: [
-                                        {
-                                            text: _('agree'),
-                                            click: function () {
-                                                socket.emit('extendObject', 'system.config', {
-                                                    common: {
-                                                        licenseConfirmed: true,
-                                                        language: language
-                                                    }
-                                                }, function () {
-                                                    $dialogLicense.dialog('close');
-                                                    $('#license_language').hide();
-                                                });
+                                    $('#license_language').change(function () {
+                                        language = $(this).val();
+                                        $('#license_text').html(license[language] || license.en);
+                                    });
 
+                                    $dialogLicense.css({'z-index': 200});
+                                    $dialogLicense.dialog({
+                                        autoOpen: true,
+                                        modal: true,
+                                        width: 600,
+                                        height: 400,
+                                        buttons: [
+                                            {
+                                                text: _('agree'),
+                                                click: function () {
+                                                    socket.emit('extendObject', 'system.config', {
+                                                        common: {
+                                                            licenseConfirmed: true,
+                                                            language: language
+                                                        }
+                                                    }, function () {
+                                                        $dialogLicense.dialog('close');
+                                                        $('#license_language').hide();
+                                                    });
+
+                                                }
+                                            },
+                                            {
+                                                text: _('not agree'),
+                                                click: function () {
+                                                    location.reload();
+                                                }
                                             }
-                                        },
-                                        {
-                                            text: _('not agree'),
-                                            click: function () {
-                                                location.reload();
-                                            }
+                                        ],
+                                        close: function () {
+
                                         }
-                                    ],
-                                    close: function () {
-
-                                    }
-                                });
-                                $('#edit-user-name').keydown(function (event) {
-                                    if (event.which == 13) $('#edit-user-pass').focus();
-                                });
-                                $('#edit-user-pass').keydown(function (event) {
-                                    if (event.which == 13) $('#edit-user-passconf').focus();
-                                });
-                                $('#edit-user-passconf').keydown(function (event) {
-                                    if (event.which == 13) saveUser();
-                                });
-                            }
-                        } else {
-                            systemConfig = {
-                                type: 'config',
-                                common: {
-                                    name:             'system.config',
-                                    language:         '',           // Default language for adapters. Adapters can use different values.
-                                    tempUnit:         '°C',         // Default temperature units.
-                                    currency:         '€',          // Default currency sign.
-                                    dateFormat:       'DD.MM.YYYY', // Default date format.
-                                    isFloatComma:     true,         // Default float divider ('.' - false, ',' - true)
-                                    licenseConfirmed: false         // If license agreement confirmed
+                                    });
+                                    $('#edit-user-name').keydown(function (event) {
+                                        if (event.which == 13) $('#edit-user-pass').focus();
+                                    });
+                                    $('#edit-user-pass').keydown(function (event) {
+                                        if (event.which == 13) $('#edit-user-passconf').focus();
+                                    });
+                                    $('#edit-user-passconf').keydown(function (event) {
+                                        if (event.which == 13) saveUser();
+                                    });
                                 }
-                            };
-                            systemConfig.common.language = window.navigator.userLanguage || window.navigator.language;
+                            } else {
+                                systemConfig = {
+                                    type: 'config',
+                                    common: {
+                                        name:             'system.config',
+                                        language:         '',           // Default language for adapters. Adapters can use different values.
+                                        tempUnit:         '°C',         // Default temperature units.
+                                        currency:         '€',          // Default currency sign.
+                                        dateFormat:       'DD.MM.YYYY', // Default date format.
+                                        isFloatComma:     true,         // Default float divider ('.' - false, ',' - true)
+                                        licenseConfirmed: false         // If license agreement confirmed
+                                    }
+                                };
+                                systemConfig.common.language = window.navigator.userLanguage || window.navigator.language;
 
-                            if (systemConfig.common.language !== 'en' && systemConfig.common.language !== 'de' && systemConfig.common.language !== 'ru') {
-                                systemConfig.common.language = 'en';
+                                if (systemConfig.common.language !== 'en' && systemConfig.common.language !== 'de' && systemConfig.common.language !== 'ru') {
+                                    systemConfig.common.language = 'en';
+                                }
                             }
-                        }
 
-                        translateAll();
+                            translateAll();
 
-                        // Here we go!
-                        $('#tabs').show();
-                        initAllDialogs();
-                        prepareEnumMembers();
-                        prepareHosts();
-                        prepareObjects();
-                        prepareEnums();
-                        prepareStates();
-                        prepareAdapters();
-                        prepareInstances();
-                        prepareUsers();
-                        prepareGroups();
-                        prepareScripts();
-                        prepareHistory();
-                        prepareRepos();
-                        prepareCerts();
-                        resizeGrids();
+                            // Here we go!
+                            $('#tabs').show();
+                            initAllDialogs();
+                            prepareEnumMembers();
+                            prepareHosts();
+                            prepareObjects();
+                            prepareEnums();
+                            prepareStates();
+                            prepareAdapters();
+                            prepareInstances();
+                            prepareUsers();
+                            prepareGroups();
+                            prepareScripts();
+                            prepareHistory();
+                            prepareRepos();
+                            prepareCerts();
+                            resizeGrids();
 
-                        $("#load_grid-select-member").show();
-                        $("#load_grid-objects").show();
-                        $("#load_grid-enums").show();
-                        $("#load_grid-states").show();
-                        $("#load_grid-scripts").show();
-                        $("#load_grid-adapters").show();
-                        $("#load_grid-instances").show();
-                        $("#load_grid-users").show();
-                        $("#load_grid-groups").show();
+                            $("#load_grid-select-member").show();
+                            $("#load_grid-objects").show();
+                            $("#load_grid-hosts").show();
+                            $("#load_grid-enums").show();
+                            $("#load_grid-states").show();
+                            $("#load_grid-scripts").show();
+                            $("#load_grid-adapters").show();
+                            $("#load_grid-instances").show();
+                            $("#load_grid-users").show();
+                            $("#load_grid-groups").show();
 
-                        // bind "clear events" button
-                        $('#event-clear').button({
-                            icons: {
-                                primary: 'ui-icon-trash'
-                            }
-                        }).unbind('click').click(function () {
-                            eventsLinesCount = 0;
-                            eventsLinesStart = 0;
-                            $('#event-table').html('');
-                        });
+                            // bind "clear events" button
+                            $('#event-clear').button({
+                                icons: {
+                                    primary: 'ui-icon-trash'
+                                }
+                            }).unbind('click').click(function () {
+                                    eventsLinesCount = 0;
+                                    eventsLinesStart = 0;
+                                    $('#event-table').html('');
+                                });
 
-                        getStates(getObjects);
+                            getStates(getObjects);
+                        }, 0);
                     });
                 });
             });
+        }
+        if (waitForRestart) {
+            location.reload();
         }
     });
     socket.on('disconnect', function () {
@@ -4701,6 +4782,9 @@ $(document).ready(function () {
     });
     socket.on('reconnect', function () {
         $('#connecting').hide();
+        if (waitForRestart) {
+            location.reload();
+        }
     });
 
     // Helper methods
