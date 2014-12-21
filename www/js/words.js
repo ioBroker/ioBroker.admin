@@ -153,7 +153,7 @@ systemDictionary = {
     "License terms":        {"en": "License terms",         "de": "Lizenzbedingungen",      "ru": "Содержание лицензии"},
     "Main settings":        {"en": "Main settings",         "de": "Haupteinstellungen",     "ru": "Основные настройки"},
     "Repositories":         {"en": "Repositories",          "de": "Verwahrungsorte",        "ru": "Репозитории"},
-    "Active repository:":   {"en": "Active repository:",    "de": "Aktiver Verwahrungsort:","ru": "Активный репозиторий:"},
+    "Active repository:":   {"en": "Active repository:",    "de": "Aktiver Verwahrungsort:", "ru": "Активный репозиторий:"},
     "Generated&nbsp;ID:":   {"en": "Generated&nbsp;ID:",    "de": "Generated&nbsp;ID:",     "ru": "Сгенерированный&nbsp;ID:"},
     "license agreement":    {"en": "license agreement",     "de": "license agreement",      "ru": "Лицензионное соглашение"},
     "description":          {"en": "description",           "de": "Beschreibung",           "ru": "Описание"},

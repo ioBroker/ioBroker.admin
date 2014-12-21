@@ -12,6 +12,7 @@
 /*global systemLang: true */
 /*global license */
 /*global translateAll */
+/*global initGridLanguage */
 'use strict';
 
 //if (typeof Worker === 'undefined') alert('your browser does not support WebWorkers :-(');
@@ -558,7 +559,7 @@ $(document).ready(function () {
                 }, 0);
             });
         }
-    }).css({width: 20, height: 20}).addClass("ui-state-error");;
+    }).css({width: 20, height: 20}).addClass("ui-state-error");
 
     $('#log-refresh').button({icons:{primary: 'ui-icon-refresh'}, text: false}).click(function () {
         $('#log-table').html('');
@@ -765,7 +766,7 @@ $(document).ready(function () {
         });
 
         $(document).on('click', '.history', function () {
-            openHistoryDlg( $(this).attr('data-id'));
+            openHistoryDlg($(this).attr('data-id'));
         });
 
     }
@@ -1150,8 +1151,7 @@ $(document).ready(function () {
                         editoptions: {value: objects[_id].common.states.join(':')},
                         align:       'center'
                     });
-                }
-                else {
+                } else {
                     $gridStates.setColProp('val', {
                         editable:    true,
                         edittype:    'text',
@@ -2055,12 +2055,13 @@ $(document).ready(function () {
             var obj;
             var version;
             var tmp;
+            var adapter;
 
             var listInstalled    = [];
             var listUnsinstalled = [];
 
             if (installedList) {
-                for (var adapter in installedList) {
+                for (adapter in installedList) {
                     obj = installedList[adapter];
                     if (!obj || obj.controller || adapter == 'hosts') continue;
                     listInstalled.push(adapter);
@@ -2182,9 +2183,7 @@ $(document).ready(function () {
             getAdaptersInfo(currentHost, false, false, function (repo, installed) {
                 var obj = repo[adapter];
 
-                if (!obj) {
-                    obj = installed[adapter];
-                };
+                if (!obj) obj = installed[adapter];
 
                 if (!obj) return;
 
@@ -2411,11 +2410,11 @@ $(document).ready(function () {
                 var size = lines ? lines.pop() : -1;
                 if (size != -1) {
                     size = parseInt(size);
-                    $('#log-size').html((_('Log size:') + ' ' + ((size / (1024 * 1024)).toFixed(2) + ' MB ')).replace(/ /g,'&nbsp;'));
+                    $('#log-size').html((_('Log size:') + ' ' + ((size / (1024 * 1024)).toFixed(2) + ' MB ')).replace(/ /g, '&nbsp;'));
                 }
                 for (var i = 0; i < lines.length; i++) {
                     if (!lines[i]) continue;
-                    // 2014-12-05 14:47:10.739  - [32minfo[39m: iobroker  ERR! network In most cases you are behind a proxy or have bad network settings.npm ERR! network
+                    // 2014-12-05 14:47:10.739 - info: iobroker  ERR! network In most cases you are behind a proxy or have bad network settings.npm ERR! network
                     if (lines[i][4] == '-' && lines[i][7] == '-') {
                         message.ts = lines[i].substring(0, 23);
                         var pos = lines[i].indexOf('[39m:');
@@ -2471,7 +2470,7 @@ $(document).ready(function () {
 
         var text = '<tr id="log-line-' + (logLinesStart + logLinesCount) + '" class="log-line log-severity-' + message.severity + ' log-from-' + (message.from || '') + '" style="' + visible + '">';
         text += '<td class="log-column-1">' + (message.from || '') + '</td>';
-        text += '<td class="log-column-2">' + (message.ts ? formatDate(message.ts) : '')+ '</td>';
+        text += '<td class="log-column-2">' + (message.ts ? formatDate(message.ts) : '') + '</td>';
         text += '<td class="log-column-3">' + message.severity + '</td>';
         text += '<td class="log-column-4" title="' + message.message.replace(/"/g, "'") + '">' + message.message.substring(0, 200) + '</td></tr>';
 
@@ -2960,7 +2959,7 @@ $(document).ready(function () {
                 setTimeout(function () {
                     var link = $('#a_' + adapter + '_' + instance).attr('href').replace('%' + vars + '%', obj.native[parts[1]]);
                     $('#a_' + adapter + '_' + instance).attr('href', link);
-                }, 0)
+                }, 0);
             }
         });
     }
@@ -3520,8 +3519,7 @@ $(document).ready(function () {
                                 // Check if history enabled
                                 if (objects[id] && objects[id].common && objects[id].common.history && objects[id].common.history.enabled) {
                                     this.addClass('history-enabled').removeClass('history-disabled').css({'background': 'lightgreen'});
-                                }
-                                else {
+                                } else {
                                     this.addClass('history-disabled').removeClass('history-enabled').css({'background': ''});
                                 }
                             } else {
@@ -4377,7 +4375,7 @@ $(document).ready(function () {
         }
     });
 
-    function objectChange (id, obj) {
+    function objectChange(id, obj) {
         var changed = false;
         var i;
         var j;
@@ -4459,8 +4457,7 @@ $(document).ready(function () {
             }
 
             if (id.match(/^system\.adapter\.node-red\.[0-9]+$/)) {
-                var enabled = obj && obj.common.enabled;
-                if (enabled) {
+                if (obj && obj.common && obj.common.enabled) {
                     $("#a-tab-node-red").show();
                     if ($('#tabs').tabs("option", "active") == 8) $("#tab-node-red").show();
                     $('#iframe-node-red').height($(window).height() - 55);
