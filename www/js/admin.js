@@ -4309,14 +4309,7 @@ $(document).ready(function () {
             });
         }
 
-        if (id && id.length > '.messagebox'.length && id.substring(id.length - '.messagebox'.length) == '.messagebox') {
-            var time = new Date();
-            time =        time.getFullYear()           + '-' +
-                ("0" + time.getMonth()).slice(-2)   + '-' +
-                ("0" + time.getDay()).slice(-2)     + ' ' +
-                ("0" + time.getHours()).slice(-2)   + ':' +
-                ("0" + time.getMinutes()).slice(-2) + ':' +
-                ("0" + time.getSeconds()).slice(-2);
+        if (id && id.match(/\.messagebox$/)) {
             if (eventsLinesCount >= 500) {
                 eventsLinesStart++;
                 document.getElementById('event_' + eventsLinesStart).outerHTML = '';
@@ -4327,7 +4320,7 @@ $(document).ready(function () {
             $('#event-table').prepend('<tr id="event_' + (eventsLinesStart + eventsLinesCount) + '"><td class="event-column-1">message</td><td class="event-column-2">' + id +
                 '</td><td class="event-column-3">' + obj.command +
                 '</td><td class="event-column-4">' + (obj.callback ? obj.callback.ack : '') + '</td>' +
-                '<td class="event-column-5">' + ((obj.from ? obj.from.replace('system.adapter.', '') : '') || '') + '</td><td class="event-column-6">' + time + '</td><td class="event-column-7"></td></tr>');
+                '<td class="event-column-5">' + ((obj.from ? obj.from.replace('system.adapter.', '') : '') || '') + '</td><td class="event-column-6">' + formatDate(new Date()) + '</td><td class="event-column-7"></td></tr>');
         } else {
             if ($gridStates) {
                 // Update gridStates
