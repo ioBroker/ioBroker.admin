@@ -259,5 +259,6 @@ systemDictionary = {
     "Edit":                 {"en": "Edit",                  "de": "Editieren",              "ru": "Edit"},
     "Members":              {"en": "Members",               "de": "Mitglied",               "ru": "Объекты"},
     "Loading...":           {"en": "Loading...",            "de": "Lade...",                "ru": "Загрузка..."},
-    "Processing...":        {"en": "Processing...",         "de": "Bearbeite...",           "ru": "Обработка..."}
+    "Processing...":        {"en": "Processing...",         "de": "Bearbeite...",           "ru": "Обработка..."},
+    "De-bounce interval(ms)": {"en": "De-bounce interval(ms)", "de": "Entprellzeit(ms)",    "ru": "Минимальный интервал(ms)"},
 };

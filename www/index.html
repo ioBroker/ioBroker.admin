@@ -76,6 +76,7 @@
                         <th class="event-column-5 ui-state-default ui-th-column ui-th-ltr translate">from</th>
                         <th class="event-column-6 ui-state-default ui-th-column ui-th-ltr translate">ts</th>
                         <th class="event-column-7 ui-state-default ui-th-column ui-th-ltr translate">lc</th>
+                        <th style="color: rgba(0,0,0,0)">aa</th>
                    </tr>
                     </thead>
                 </table>
@@ -309,10 +310,12 @@
             <td style="width: 40px">&nbsp;</td>
             <td class="translate">log changes only</td>
             <td><input type="checkbox" id="edit-history-changesOnly"></td>
+            <td class="translate">De-bounce interval(ms)</td>
+            <td><input type="number" id="edit-history-debounce"  min="500" max="86400000"></td>
         </tr>
         <tr>
             <td class="translate">minimum datapoint count in Redis</td>
-            <td><input type="number" id="edit-history-minLength"></td>
+            <td><input type="number" id="edit-history-minLength" min="100" max="5000"></td>
             <td style="width: 40px">&nbsp;</td>
             <td class="translate">CouchDB retention</td>
             <td>
@@ -330,6 +333,8 @@
                     <option value="86400"       class="translate">1 day</option>
                 </select>
             </td>
+            <td></td>
+            <td></td>
         </tr>
     </table>
     <div id="tabs-history">
@@ -353,7 +358,7 @@
 <div title="adater configuration" id="dialog-config" style="display:none">
     <iframe style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%; height: 100%" id="config-iframe" name="config-iframe"></iframe>
 </div>
-<div title="license agreement" id="dialog-license" class="translateT" style="display:none">
+<div title="license agreement" id="dialog-license" class="translateT" style="display:none;z-index: 102">
     <h3 class="translate">Select language</h3>
     <select id="license_language">
         <option value="en">English</option>

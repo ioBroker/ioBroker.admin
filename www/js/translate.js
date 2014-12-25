@@ -57,12 +57,22 @@ function translateAll(lang, dictionary) {
         //<span class="ui-button-text" >Save</span>
         var text = $(this).attr('data-lang');
         if (!text) {
-            text = $(this).html().replace('<span class="ui-button-text">', '').replace('</span>', '');
+            text = $(this).html().match(/\>([\w ]+)\</);
+            if (text && text.length > 1) {
+                text = text[1];
+            } else {
+                text = $(this).html();
+                $(this).attr('data-lang-pure', true);
+            }
             $(this).attr('data-lang', text);
         }
         var transText = translateWord(text, lang, dictionary);
         if (transText) {
-            $(this).html('<span class="ui-button-text">' + transText + '</span>');
+            if ($(this).attr('data-lang-pure')) {
+                $(this).html(transText);
+            } else {
+                $(this).html($(this).html().replace(/\>[\w ]+\</, '>'+ transText + '<'));
+            }
         }
     });
     $(".translateT").each(function (idx) {

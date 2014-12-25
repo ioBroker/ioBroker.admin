@@ -448,20 +448,18 @@ $(document).ready(function () {
                     text: _('Save'),
                     click: function () {
                         var id =            $('#edit-history-id').val();
-                        var enabled =       $('#edit-history-enabled').is(':checked');
-                        var changesOnly =   $('#edit-history-changesOnly').is(':checked');
                         var minLength =     parseInt($('#edit-history-minLength').val(), 10) || 480;
-                        var retention =     parseInt($('#edit-history-retention').val(), 10) || 0;
 
                         objects[id].common.history = {
-                            enabled:     enabled,
-                            changesOnly: changesOnly,
+                            enabled:     $('#edit-history-enabled').is(':checked'),
+                            changesOnly: $('#edit-history-changesOnly').is(':checked'),
                             minLength:   minLength,
                             maxLength:   minLength * 2,
-                            retention:   retention
+                            retention:   parseInt($('#edit-history-retention').val(), 10) || 0,
+                            debounce:    parseInt($('#edit-history-debounce').val(), 10) || 1000,
                         };
 
-                        currentHistory =    null;
+                        currentHistory = null;
 
                         socket.emit('setObject', id, objects[id], function () {
                             $dialogHistory.dialog('close');
@@ -645,10 +643,11 @@ $(document).ready(function () {
         if (!objects[id].common.history) {
             objects[id].common.history = {
                 enabled:        false,
-                changesOnly:    false,
+                changesOnly:    true,
+                debounce:       10000, // de-bounce interval
                 // use default value from history-adadpter config
                 minLength:      (objects['system.adapter.history.0'] && objects['system.adapter.history.0'].native) ? objects['system.adapter.history.0'].native.minLength || 480 : 480,
-                retention:      ''
+                retention:      604800 // one week by default
             };
         }
         currentHistory = objects[id].common.history.enabled ? id: null;
@@ -657,6 +656,7 @@ $(document).ready(function () {
         $('#edit-history-changesOnly').prop('checked', objects[id].common.history.changesOnly);
 
         $('#edit-history-minLength').val(objects[id].common.history.minLength);
+        $('#edit-history-debounce').val(objects[id].common.history.debounce);
         $('#edit-history-retention').val(objects[id].common.history.retention);
         $dialogHistory.dialog('option', 'title', 'history ' + id);
         $dialogHistory.dialog('open');
@@ -2470,7 +2470,7 @@ $(document).ready(function () {
 
         var text = '<tr id="log-line-' + (logLinesStart + logLinesCount) + '" class="log-line log-severity-' + message.severity + ' log-from-' + (message.from || '') + '" style="' + visible + '">';
         text += '<td class="log-column-1">' + (message.from || '') + '</td>';
-        text += '<td class="log-column-2">' + (message.ts ? formatDate(message.ts) : '') + '</td>';
+        text += '<td class="log-column-2">' + formatDate(message.ts) + '</td>';
         text += '<td class="log-column-3">' + message.severity + '</td>';
         text += '<td class="log-column-4" title="' + message.message.replace(/"/g, "'") + '">' + message.message.substring(0, 200) + '</td></tr>';
 
@@ -4107,7 +4107,7 @@ $(document).ready(function () {
                     ack:      _('Acknowledged'),
                     edit:     _('Edit'),
                     ok:       _('Ok'),
-                    enums:    _('Members')
+                    enum:     _('Members')
                 },
                 filter: {type: 'enum'},
                 columns: ['name', 'enum', 'button'],
@@ -4294,7 +4294,8 @@ $(document).ready(function () {
         //addMessageLog({message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()});
         console.log(error);
     });
-    socket.on('stateChange', function (id, obj) {
+
+    function stateChange(id, obj) {
         var rowData;
         if (currentHistory == id) {
             var gid = $gridHistory[0]._maxGid++;
@@ -4311,11 +4312,11 @@ $(document).ready(function () {
         if (id && id.length > '.messagebox'.length && id.substring(id.length - '.messagebox'.length) == '.messagebox') {
             var time = new Date();
             time =        time.getFullYear()           + '-' +
-                   ("0" + time.getMonth()).slice(-2)   + '-' +
-                   ("0" + time.getDay()).slice(-2)     + ' ' +
-                   ("0" + time.getHours()).slice(-2)   + ':' +
-                   ("0" + time.getMinutes()).slice(-2) + ':' +
-                   ("0" + time.getSeconds()).slice(-2);
+                ("0" + time.getMonth()).slice(-2)   + '-' +
+                ("0" + time.getDay()).slice(-2)     + ' ' +
+                ("0" + time.getHours()).slice(-2)   + ':' +
+                ("0" + time.getMinutes()).slice(-2) + ':' +
+                ("0" + time.getSeconds()).slice(-2);
             if (eventsLinesCount >= 500) {
                 eventsLinesStart++;
                 document.getElementById('event_' + eventsLinesStart).outerHTML = '';
@@ -4339,7 +4340,7 @@ $(document).ready(function () {
                 $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), rowData);
 
                 var value = JSON.stringify(obj.val);
-                if (value.length > 30) value = '<div title="' + value.replace(/"/g, '') + '">' + value.substring(0, 30) + '...</div>';
+                if (value !== undefined && value.length > 30) value = '<div title="' + value.replace(/"/g, '') + '">' + value.substring(0, 30) + '...</div>';
 
                 if (eventsLinesCount >= 500) {
                     eventsLinesStart++;
@@ -4373,6 +4374,10 @@ $(document).ready(function () {
                 $gridAdapter.jqGrid('setRowData', 'instance_' + id.replace(/ /g, '_'), rowData);
             }
         }
+    }
+
+    socket.on('stateChange', function (id, obj) {
+        setTimeout(stateChange, 0, id, obj);
     });
 
     function objectChange(id, obj) {
@@ -4404,7 +4409,7 @@ $(document).ready(function () {
 
         // prepend to event table
         var value = JSON.stringify(obj);
-        if (value.length > 30) value = '<span title="' + value + '">' + value.substring(0, 30) + '...</span>';
+        if (value !== undefined && value.length > 30) value = '<span title="' + value + '">' + value.substring(0, 30) + '...</span>';
         var row = '<tr><td>objectChange</td><td>' + id + '</td><td>' + value + '</td></tr>';
         $('#events').prepend(row);
 
@@ -4850,6 +4855,7 @@ $(document).ready(function () {
         //    ("0" + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
         //    ("0" + (dateObj.getSeconds()).toString(10)).slice(-2);
         // Following implementation is 5 times faster
+        if (!dateObj) return '';
         var text = typeof dateObj;
         if (text == 'string') {
             var pos = dateObj.indexOf('.');

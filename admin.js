@@ -354,7 +354,11 @@ function initWebServer(settings) {
                     res.contentType('text/html');
                     res.send('File ' + url + ' not found', 404);
                 } else {
-                    res.contentType(mimeType);
+                    if (mimeType){
+                        res.contentType(mimeType['content-type'] || mimeType);
+                    } else {
+                        res.contentType('text/javascript');
+                    }
                     res.send(buffer);
                 }
             });
@@ -591,11 +595,23 @@ function socketEvents(socket, user) {
     });
 
     socket.on('sendTo', function (adapterInstance, command, message, callback) {
-        adapter.sendTo(adapterInstance, command, message, callback);
+        adapter.sendTo(adapterInstance, command, message, function (res) {
+            if (callback) {
+                setTimeout(function () {
+                    callback(res);
+                }, 0);
+            }
+        });
     });
 
     socket.on('sendToHost', function (host, command, message, callback) {
-        adapter.sendToHost(host, command, message, callback);
+        adapter.sendToHost(host, command, message, function (res) {
+            if (callback) {
+                setTimeout(function () {
+                    callback(res);
+                }, 0);
+            }
+        });
     });
 
     socket.on('authEnabled', function (callback) {

@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.0 (2014-12-25)
+* (bluefox) Support of debounce interval for history
+
 ### 0.2.9 (2014-12-20)
 * (bluefox) fix filter of IDs in objects
 
