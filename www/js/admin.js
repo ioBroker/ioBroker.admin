@@ -1165,18 +1165,23 @@ $(document).ready(function () {
                     stateEdit = true;
                 }, function (obj) {
                     // success
-                }, "clientArray", null, function () {
+                }, 'clientArray', null, function () {
                     // afterSave
                     stateEdit = false;
-                    var val = $gridStates.jqGrid('getCell', stateLastSelected, "val");
-                    if (val === 'true') val = true;
+                    var val = $gridStates.jqGrid('getCell', stateLastSelected, 'val');
+
+                    if (val === 'true')  val = true;
                     if (val === 'false') val = false;
+
                     if (parseFloat(val) == val) val = parseFloat(val);
-                    var ack = $gridStates.jqGrid('getCell', stateLastSelected, "ack");
-                    if (ack === 'true') ack = true;
+
+                    var ack = $gridStates.jqGrid('getCell', stateLastSelected, 'ack');
+
+                    if (ack === 'true')  ack = true;
                     if (ack === 'false') ack = false;
+
                     var id = $('tr[id="' + stateLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                    socket.emit('setState', id, {val:val, ack:ack});
+                    socket.emit('setState', id, {val: val, ack: ack});
                     stateLastSelected = null;
                 });
             }
@@ -4251,6 +4256,8 @@ $(document).ready(function () {
         } else {
             obj.history = '';
         }
+        if (typeof obj.val == 'object') obj.val = JSON.stringify(obj.val);
+
         obj.gridId = 'state_' + key.replace(/ /g, '_');
         return obj;
     }
