@@ -58,10 +58,11 @@
                  wait:     'Processing...'
              },
              columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'value', 'button'],
-             widths:  null, // array with width for every column
-             editEnd: null, // function (id, newValues) for edit lines (only id and name can be edited)
-             editStart: null, // function (id, $inputs) called after edit start to correct input fields (inputs are jquery objects)
- }
+             widths:    null,   // array with width for every column
+             editEnd:   null,   // function (id, newValues) for edit lines (only id and name can be edited)
+             editStart: null,   // function (id, $inputs) called after edit start to correct input fields (inputs are jquery objects),
+             zindex:    null    // z-index of dialog or table
+     }
  +  show(currentId, filter, callback) - all arguments are optional if set by "init"
  +  clear() - clear object tree to read and buildit anew (used only if objects set by "init")
  +  getInfo(id) - get information about ID
@@ -329,6 +330,9 @@
                 height:   500,
                 buttons:  data.buttonsDlg
             });
+            if (data.zindex !== null) {
+                $('div[aria-describedby="' + $dlg.attr('id') + '"]').css({'z-index': data.zindex})
+            }
         }
 
         // Store current filter
@@ -483,7 +487,7 @@
             titlesTabbable: true,     // Add all node titles to TAB chain
             quicksearch: true,
             source: data.tree.children,
-            extensions: ["table", "gridnav", "filter"],
+            extensions: ["table", "gridnav", "filter", "themeroller"],
             table: {
                 indentation: 20,
                 nodeColumnIdx: 1
@@ -1016,6 +1020,7 @@
                 connCfg:    null,
                 onSuccess:  null,
                 onChange:   null,
+                zindex:     null,
                 columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'value', 'button']
             }, options);
 
@@ -1085,7 +1090,7 @@
                     if (typeof data.connCfg.socketUrl != 'undefined') {
                         data.socketURL = data.connCfg.socketUrl;
                         if (data.socketURL && data.socketURL[0] == ':') {
-                            data.socketURL = jQuery(location).attr('protocol') + '://' + location.hostname + data.socketURL;
+                            data.socketURL = location.protocol + '//' + location.hostname + data.socketURL;
                         }
                         data.socketSESSION = data.connCfg.socketSession;
                     }
@@ -1252,8 +1257,10 @@
                 var dlg = this[i];
                 var $dlg = $(dlg);
                 var data = $dlg.data('selectId');
-                data.inited = false;
-                initTreeDialog(data.$dlg);
+                if (data) {
+                    data.inited = false;
+                    initTreeDialog(data.$dlg);
+                }
             }
             return this;
         },

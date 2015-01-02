@@ -456,7 +456,7 @@ $(document).ready(function () {
                             minLength:   minLength,
                             maxLength:   minLength * 2,
                             retention:   parseInt($('#edit-history-retention').val(), 10) || 0,
-                            debounce:    parseInt($('#edit-history-debounce').val(), 10) || 1000,
+                            debounce:    parseInt($('#edit-history-debounce').val(),  10) || 1000
                         };
 
                         currentHistory = null;
@@ -2409,6 +2409,7 @@ $(document).ready(function () {
             return;
         }
 
+        $('#log-table').html('');
         socket.emit('sendToHost', currentHost, 'getLogs', 200, function (lines) {
             setTimeout(function () {
                 var message = {message: '', severity: 'debug', from: '', ts: ''};
