@@ -71,6 +71,12 @@ module.exports = function (grunt) {
                 },
                 dest: 'Gruntfile.js'
             },
+            get_utilsfile: {
+                options: {
+                    url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.build/master/adapters/utils.js'
+                },
+                dest: 'lib/utils.js'
+            },
             get_jscsRules: {
                 options: {
                     url: 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/tasks/jscsRules.js'

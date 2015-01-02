@@ -71,7 +71,7 @@ function translateAll(lang, dictionary) {
             if ($(this).attr('data-lang-pure')) {
                 $(this).html(transText);
             } else {
-                $(this).html($(this).html().replace(/\>[\w ]+\</, '>'+ transText + '<'));
+                $(this).html($(this).html().replace(/>[\w ]+</, '>' + transText + '<'));
             }
         }
     });
