@@ -4219,6 +4219,10 @@ $(document).ready(function () {
     // ----------------------------- States show and Edit ------------------------------------------------
     function convertState(key, _obj) {
         var obj = JSON.parse(JSON.stringify(_obj));
+		if (!obj) {
+			console.log(key);
+		}
+		obj = obj || {};
         obj._id = key;
         obj.name = objects[obj._id] ? (objects[obj._id].common.name || obj._id) : obj._id;
 

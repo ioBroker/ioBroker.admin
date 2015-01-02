@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.2 (2015-01-02)
+* (bluefox) fix error if states without object
+
 ### 0.3.1 (2015-01-02)
 * (bluefox) Support of npm install
 
