@@ -2984,6 +2984,7 @@ $(document).ready(function () {
 
             for (var i = 0; i < instances.length; i++) {
                 var obj = objects[instances[i]];
+                if (!obj) continue;
                 var tmp = obj._id.split('.');
                 var adapter = tmp[2];
                 var instance = tmp[3];
@@ -4336,15 +4337,19 @@ $(document).ready(function () {
         } else {
             if ($gridStates) {
                 // Update gridStates
-                rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
-                rowData.val = obj.val;
-                rowData.ack = obj.ack;
-                if (obj.ts) rowData.ts = formatDate(obj.ts, true);
-                if (obj.lc) rowData.lc = formatDate(obj.lc, true);
-                rowData.from = obj.from;
-                $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), rowData);
+                if (obj) {
+                    rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
+                    rowData.val = obj.val;
+                    rowData.ack = obj.ack;
+                    if (obj.ts) rowData.ts = formatDate(obj.ts, true);
+                    if (obj.lc) rowData.lc = formatDate(obj.lc, true);
+                    rowData.from = obj.from;
+                    $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), rowData);
+                } else {
+                    $gridStates.jqGrid('delRowData', 'state_' + id);
+                }
 
-                var value = JSON.stringify(obj.val);
+                var value = obj ? JSON.stringify(obj.val) : 'deleted';
                 if (value !== undefined && value.length > 30) value = '<div title="' + value.replace(/"/g, '') + '">' + value.substring(0, 30) + '...</div>';
 
                 if (eventsLinesCount >= 500) {
@@ -4356,9 +4361,9 @@ $(document).ready(function () {
 
                 $('#event-table').prepend('<tr id="event_' + (eventsLinesStart + eventsLinesCount) + '"><td class="event-column-1">stateChange</td><td class="event-column-2">' + id +
                     '</td><td class="event-column-3">' + value +
-                    '</td><td class="event-column-4">' + obj.ack + '</td>' +
-                    '<td class="event-column-5">' + ((obj.from ? obj.from.replace('system.adapter.', '') : '') || '') + '</td><td class="event-column-6">' + rowData.ts + '</td><td class="event-column-7">' +
-                    rowData.lc + '</td></tr>');
+                    '</td><td class="event-column-4">' + (obj ? obj.ack : 'del') + '</td>' +
+                    '<td class="event-column-5">' + (((obj && obj.from) ? obj.from.replace('system.adapter.', '') : '') || '') + '</td><td class="event-column-6">' + (rowData ? rowData.ts : '') + '</td><td class="event-column-7">' +
+                    (rowData ? rowData.lc : '') + '</td></tr>');
             }
             if ($gridObjects) $gridObjects.selectId('state', id, obj);
             if ($selectId) $selectId.selectId('state', id, obj);
@@ -4433,7 +4438,7 @@ $(document).ready(function () {
         }
 
         // Update Instance Table
-        if (id.match(/^system\.adapter\.[\w]+\.[0-9]+$/)) {
+        if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
             if (obj) {
                 if (instances.indexOf(id) == -1) instances.push(id);
             } else {
@@ -4526,7 +4531,7 @@ $(document).ready(function () {
         }
 
         // Update hosts
-        if (id.match(/^system\.host\.[\w]+$/)) {
+        if (id.match(/^system\.host\.[-\w]+$/)) {
             var found = false;
             for (i = 0; i < hosts.length; i++) {
                 if (hosts[i].id == id) {

@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.4 (2015-01-04)
+* (bluefox) fix error with update adapters with "-" in name, like hm-rpc or hm-rega
+
 ### 0.3.3 (2015-01-03)
 * (bluefox) fix error if states without object
 
