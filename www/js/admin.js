@@ -63,6 +63,9 @@ $(document).ready(function () {
 
     var eventsLinesCount =      0;
     var eventsLinesStart =      0;
+    var eventTypes =            [];
+    var eventFroms =            [];
+    var eventFilterTimeout =    null;
 
     var logLinesCount =         0;
     var logLinesStart =         0;
@@ -493,45 +496,6 @@ $(document).ready(function () {
         t.html(t[0]._original + '.' + $(this).val().replace(/ /, '_').toLowerCase());
     });
 
-    function filterLog() {
-        if (logFilterTimeout) {
-            clearTimeout(logFilterTimeout);
-            logFilterTimeout = null;
-        }
-        var filterSev  = $('#log-filter-severity').val();
-        var filterHost = $('#log-filter-host').val();
-        var filterMsg  = $('#log-filter-message').val();
-        if (filterSev == 'error') {
-            $('.log-severity-debug').hide();
-            $('.log-severity-info').hide();
-            $('.log-severity-warn').hide();
-            $('.log-severity-error').show();
-        } else
-        if (filterSev == 'warn') {
-            $('.log-severity-debug').hide();
-            $('.log-severity-info').hide();
-            $('.log-severity-warn').show();
-            $('.log-severity-error').show();
-        }else
-        if (filterSev == 'info') {
-            $('.log-severity-debug').hide();
-            $('.log-severity-info').show();
-            $('.log-severity-warn').show();
-            $('.log-severity-error').show();
-        } else {
-            $('.log-severity-debug').show();
-            $('.log-severity-info').show();
-            $('.log-severity-warn').show();
-            $('.log-severity-error').show();
-        }
-        if (filterHost || filterMsg) {
-            $('.log-line').each(function (index) {
-                if (filterHost && !$(this).hasClass('log-from-' + filterHost)) $(this).hide();
-                if (filterMsg && $(this).html().indexOf(filterMsg) == -1)$(this).hide();
-            });
-        }
-    }
-
     $('#log-filter-severity').change(filterLog);
     $('#log-filter-host').change(filterLog);
     $('#log-filter-message').change(function () {
@@ -544,7 +508,45 @@ $(document).ready(function () {
             $(this).trigger('change');
         }
     });
+    $('#log-filter-message-clear').button({icons:{primary: 'ui-icon-close'}, text: false}).css({height: 18, width: 18}).click(function () {
+        if ($('#log-filter-message').val() !== '') {
+            $('#log-filter-message').val('').trigger('change');
+        }
+    });
 
+    $('#event-filter-type').change(filterEvents);
+    $('#event-filter-id').change(function () {
+        if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
+        eventFilterTimeout = setTimeout(filterEvents, 1000);
+    }).keyup(function (e) {
+        if (e.which == 13) {
+            filterEvents();
+        } else {
+            $(this).trigger('change');
+        }
+    });
+    $('#event-filter-val').change(function () {
+        if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
+        eventFilterTimeout = setTimeout(filterEvents, 1000);
+    }).keyup(function (e) {
+        if (e.which == 13) {
+            filterEvents();
+        } else {
+            $(this).trigger('change');
+        }
+    });
+    $('#event-filter-ack').change(filterEvents);
+    $('#event-filter-from').change(filterEvents);
+    $('#event-filter-val-clear').button({icons:{primary: 'ui-icon-close'}, text: false}).css({height: 18, width: 18}).click(function () {
+        if ($('#event-filter-val').val() !== '') {
+            $('#event-filter-val').val('').trigger('change');
+        }
+    });
+    $('#event-filter-id-clear').button({icons:{primary: 'ui-icon-close'}, text: false}).css({height: 18, width: 18}).click(function () {
+        if ($('#event-filter-id').val() !== '') {
+            $('#event-filter-id').val('').trigger('change');
+        }
+    });
     $('#log-clear-on-disk').button({icons:{primary: 'ui-icon-trash'}, text: false}).click(function () {
         if (confirm(_('Log file will be deleted. Are you sure?'))) {
             socket.emit('sendToHost', currentHost, 'delLogs', null, function () {
@@ -1319,32 +1321,7 @@ $(document).ready(function () {
             add:     false,
             del:     false,
             refresh: false
-        })/*.jqGrid('navButtonAdd', '#pager-instances', {
-            caption: '',
-            buttonicon: 'ui-icon-trash',
-            onClickButton: function () {
-                var objSelected = $gridInstance.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-objects"][id$="_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                if (objects[id] && objects[id].common && objects[id].common.host) {
-                    if (confirm(_('Are you sure?'))) {
-                        cmdExec(objects[id].common.host, 'del ' + id.replace('system.adapter.', ''), function (exitCode) {
-                            if (!exitCode) initAdapters(true);
-                        });
-                    }
-                }
-            },
-            position: 'first',
-            id: 'del-instance',
-            title: _('delete instance'),
-            cursor: 'pointer'
-        })*/.jqGrid('navButtonAdd', '#pager-instances', {
+        }).jqGrid('navButtonAdd', '#pager-instances', {
             caption: '',
             buttonicon: 'ui-icon-gear',
             onClickButton: function () {
@@ -1363,17 +1340,7 @@ $(document).ready(function () {
             id: 'edit-instance',
             title: _('edit instance'),
             cursor: 'pointer'
-        })/*.jqGrid('navButtonAdd', '#pager-instances', {
-            caption:    '',
-            buttonicon: 'ui-icon-pencil',
-            onClickButton: function () {
-                onEditInstance($gridInstance.jqGrid('getGridParam', 'selrow'));
-            },
-            position: 'first',
-            id:       'config-instance',
-            title:    _('config instance'),
-            cursor:   'pointer'
-        })*/.jqGrid('navButtonAdd', '#pager-instances', {
+        }).jqGrid('navButtonAdd', '#pager-instances', {
             caption:    '',
             buttonicon: 'ui-icon-refresh',
             onClickButton: function () {
@@ -2454,7 +2421,7 @@ $(document).ready(function () {
             logHosts.sort();
             $('#log-filter-host').html('<option value="">' + _('all') + '</option>');
             for (var i = 0; i < logHosts.length; i++) {
-                $('#log-filter-host').append('<option value="' + logHosts[i] + '" ' + ((logHosts[i] == hostFilter) ? 'selected' : '') + '">' + logHosts[i] + '</option>');
+                $('#log-filter-host').append('<option value="' + logHosts[i] + '" ' + ((logHosts[i] == hostFilter) ? 'selected' : '') + '>' + logHosts[i] + '</option>');
             }
         }
         var visible = '';
@@ -2482,6 +2449,50 @@ $(document).ready(function () {
 
         $('#log-table').prepend(text);
     }
+    function filterLog() {
+        if (logFilterTimeout) {
+            clearTimeout(logFilterTimeout);
+            logFilterTimeout = null;
+        }
+        var filterSev  = $('#log-filter-severity').val();
+        var filterHost = $('#log-filter-host').val();
+        var filterMsg  = $('#log-filter-message').val();
+        if (filterSev == 'error') {
+            $('.log-severity-debug').hide();
+            $('.log-severity-info').hide();
+            $('.log-severity-warn').hide();
+            $('.log-severity-error').show();
+        } else
+        if (filterSev == 'warn') {
+            $('.log-severity-debug').hide();
+            $('.log-severity-info').hide();
+            $('.log-severity-warn').show();
+            $('.log-severity-error').show();
+        }else
+        if (filterSev == 'info') {
+            $('.log-severity-debug').hide();
+            $('.log-severity-info').show();
+            $('.log-severity-warn').show();
+            $('.log-severity-error').show();
+        } else {
+            $('.log-severity-debug').show();
+            $('.log-severity-info').show();
+            $('.log-severity-warn').show();
+            $('.log-severity-error').show();
+        }
+        if (filterHost || filterMsg) {
+            $('.log-line').each(function (index) {
+                if (filterHost && !$(this).hasClass('log-from-' + filterHost)) {
+                    $(this).hide();
+                } else 
+                if (filterMsg && $(this).html().indexOf(filterMsg) == -1) {
+                    $(this).hide();
+                }
+            });
+        }
+    }
+
+
     // ----------------------------- Scripts show and Edit ------------------------------------------------
 
     // Find all script engines
@@ -2831,7 +2842,6 @@ $(document).ready(function () {
             initAdapters(true);
         });
     }
-
     function initHostButtons() {
 
         $('.host-update-submit').button({icons: {primary: 'ui-icon-refresh'}}).unbind('click').on('click', function () {
@@ -3613,16 +3623,19 @@ $(document).ready(function () {
                     if (callback) callback(id);
                 } else {
                     socket.emit('delObject', id, function () {
-                        if (callback) {
-                            setTimeout(function () {
-                                callback(id);
-                            }, 0);
-                        }
+                        socket.emit('delState', id, function () {
+                            if (callback) {
+                                setTimeout(function () {
+                                    callback(id);
+                                }, 0);
+                            }
+                        });
                     });
                 }
             }
         }
     }
+
     // ----------------------------- Enum show and Edit ------------------------------------------------
     var tasks = [];
     function enumRename(oldId, newId, newName, callback) {
@@ -4297,7 +4310,140 @@ $(document).ready(function () {
         });
     }
 
-    // Socket.io methods
+    // ----------------------------- Show events ------------------------------------------------
+    function addEventMessage(id, obj, rowData) {
+        var typeFilter = $('#event-filter-type').val();
+        var fromFilter = $('#event-filter-from').val();
+        var type = rowData ? 'stateChange' : 'message';
+        var value;
+        var ack;
+        var from = '';
+        var tc;
+        var lc;
+
+        if (eventTypes.indexOf(type) == -1) {
+            eventTypes.push(type);
+            eventTypes.sort();
+            if (eventTypes.length > 1) {
+                $('#event-filter-type').html('<option value="">' + _('all') + '</option>');
+                for (var i = 0; i < eventTypes.length; i++) {
+                    $('#event-filter-type').append('<option value="' + eventTypes[i] + '" ' + ((eventTypes[i] == typeFilter) ? 'selected' : '') + '>' + eventTypes[i] + '</option>');
+                }
+            }
+        }
+
+        if (obj) {
+            obj.from = obj.from.replace('system.adapter.', '');
+            obj.from = obj.from.replace('system.', '');
+
+            if (eventFroms.indexOf(obj.from) == -1) {
+                eventFroms.push(obj.from);
+                eventFroms.sort();
+                $('#event-filter-from').html('<option value="">' + _('all') + '</option>');
+                for (var i = 0; i < eventFroms.length; i++) {
+                    var e = eventFroms[i].replace('.', '-')
+                    $('#event-filter-from').append('<option value="' + e + '" ' + ((e == fromFilter) ? 'selected' : '') + '>' + eventFroms[i] + '</option>');
+                }
+            }
+            from = obj.from;
+        }
+
+        if (eventsLinesCount >= 500) {
+            eventsLinesStart++;
+            document.getElementById('event_' + eventsLinesStart).outerHTML = '';
+        } else {
+            eventsLinesCount++;
+        }
+
+        if (!rowData) {
+            value = (obj ? obj.command : 'deleted');
+            ack = (obj ? (obj.callback ? obj.callback.ack : '') : 'deleted');
+            tc = formatDate(new Date());
+            lc = '';
+        } else {
+            value = obj ? JSON.stringify(obj.val) : 'deleted';
+            if (value !== undefined && value.length > 30) value = '<div title="' + value.replace(/"/g, '') + '">' + value.substring(0, 30) + '...</div>';
+            ack = (obj ? obj.ack : 'del');
+            tc = rowData ? rowData.ts : '';
+            lc = rowData ? rowData.lc : '';
+        }
+
+        var visible = true;
+        var filterType = $('#event-filter-type').val();
+        var filterId   = $('#event-filter-id').val().toLocaleLowerCase();
+        var filterVal  = $('#event-filter-val').val();
+        var filterAck  = $('#event-filter-ack').val();
+        var filterFrom = $('#event-filter-from').val();
+        if (filterAck === 'true')  filterAck = true;
+        if (filterAck === 'false') filterAck = false;
+
+        if (filterType && filterType != type) {
+            visible = false;
+        } else if (filterId && id.toLocaleLowerCase().indexOf(filterId) == -1) {
+            visible = false;
+        } else if (filterVal !== '' && value.indexOf(filterVal) == -1) {
+            visible = false;
+        } else if (filterAck !== '' && filterAck != ack) {
+            visible = false;
+        } else if (filterFrom && filterFrom != from) {
+            visible = false;
+        }
+
+        var text = '<tr id="event_' + (eventsLinesStart + eventsLinesCount) + '" class="event-line event-type-' + type + ' event-from-' + from.replace('.', '-') + ' event-ack-' + ack + '" style="' + (visible ? '' : 'display:none') + '">';
+        text += '<td class="event-column-1">' + type  + '</td>';
+        text += '<td class="event-column-2 event-column-id">' + id    + '</td>';
+        text += '<td class="event-column-3 event-column-value">' + value + '</td>';
+        text += '<td class="event-column-4">' + ack   + '</td>';
+        text += '<td class="event-column-5">' + from  + '</td>';
+        text += '<td class="event-column-6">' + tc    + '</td>';
+        text += '<td class="event-column-7">' + lc    + '</td>';
+        text += '</tr>';
+
+        $('#event-table').prepend(text);
+    }
+
+    function filterEvents() {
+        if (eventFilterTimeout) {
+            clearTimeout(eventFilterTimeout);
+            eventFilterTimeout = null;
+        }
+        var filterType = $('#event-filter-type').val();
+        var filterId   = $('#event-filter-id').val().toLocaleLowerCase();
+        var filterVal  = $('#event-filter-val').val();
+        var filterAck  = $('#event-filter-ack').val();
+        var filterFrom = $('#event-filter-from').val();
+        if (filterAck === 'true')  filterAck = true;
+        if (filterAck === 'false') filterAck = false;
+
+        $('.event-line').each(function (index) {
+            var isShow = true;
+            var $this = $(this);
+            if (filterType && !$this.hasClass('event-type-' + filterType)) {
+                isShow = false;
+            } else
+            if (filterFrom && !$this.hasClass('event-from-' + filterFrom)) {
+                isShow = false;
+            } else
+            if (filterAck !== '' && !$this.hasClass('event-ack-' + filterAck)) {
+                isShow = false;
+            } else
+            if (filterId && $(this).find('td.event-column-id').text().toLocaleLowerCase().indexOf(filterId) == -1) {
+                isShow = false;
+            } else
+            if (filterVal !== '' && $(this).find('td.event-column-value').text().indexOf(filterVal) == -1) {
+                isShow = false;
+            }
+
+            if (isShow) {
+                $this.show();
+            } else {
+                $this.hide();
+            }
+        });
+    }
+
+
+    // ---------------------------- Socket.io methods ---------------------------------------------
     socket.on('log', function (message) {
         //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
         addMessageLog(message);
@@ -4310,6 +4456,8 @@ $(document).ready(function () {
 
     function stateChange(id, obj) {
         var rowData;
+        id = id ? id.replace(/ /g, '_') : '';
+
         if (currentHistory == id) {
             var gid = $gridHistory[0]._maxGid++;
             $gridHistory.jqGrid('addRowData', gid, {
@@ -4323,17 +4471,7 @@ $(document).ready(function () {
         }
 
         if (id && id.match(/\.messagebox$/)) {
-            if (eventsLinesCount >= 500) {
-                eventsLinesStart++;
-                document.getElementById('event_' + eventsLinesStart).outerHTML = '';
-            } else {
-                eventsLinesCount++;
-            }
-
-            $('#event-table').prepend('<tr id="event_' + (eventsLinesStart + eventsLinesCount) + '"><td class="event-column-1">message</td><td class="event-column-2">' + id +
-                '</td><td class="event-column-3">' + obj.command +
-                '</td><td class="event-column-4">' + (obj.callback ? obj.callback.ack : '') + '</td>' +
-                '<td class="event-column-5">' + ((obj.from ? obj.from.replace('system.adapter.', '') : '') || '') + '</td><td class="event-column-6">' + formatDate(new Date()) + '</td><td class="event-column-7"></td></tr>');
+            addEventMessage(id, obj);
         } else {
             if ($gridStates) {
                 // Update gridStates
@@ -4344,44 +4482,42 @@ $(document).ready(function () {
                     if (obj.ts) rowData.ts = formatDate(obj.ts, true);
                     if (obj.lc) rowData.lc = formatDate(obj.lc, true);
                     rowData.from = obj.from;
-                    $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), rowData);
+                    $gridStates.jqGrid('setRowData', 'state_' + id, rowData);
                 } else {
                     $gridStates.jqGrid('delRowData', 'state_' + id);
                 }
-
-                var value = obj ? JSON.stringify(obj.val) : 'deleted';
-                if (value !== undefined && value.length > 30) value = '<div title="' + value.replace(/"/g, '') + '">' + value.substring(0, 30) + '...</div>';
-
-                if (eventsLinesCount >= 500) {
-                    eventsLinesStart++;
-                    document.getElementById('event_' + eventsLinesStart).outerHTML = '';
-                } else {
-                    eventsLinesCount++;
-                }
-
-                $('#event-table').prepend('<tr id="event_' + (eventsLinesStart + eventsLinesCount) + '"><td class="event-column-1">stateChange</td><td class="event-column-2">' + id +
-                    '</td><td class="event-column-3">' + value +
-                    '</td><td class="event-column-4">' + (obj ? obj.ack : 'del') + '</td>' +
-                    '<td class="event-column-5">' + (((obj && obj.from) ? obj.from.replace('system.adapter.', '') : '') || '') + '</td><td class="event-column-6">' + (rowData ? rowData.ts : '') + '</td><td class="event-column-7">' +
-                    (rowData ? rowData.lc : '') + '</td></tr>');
+                addEventMessage(id, obj, rowData);
             }
+
             if ($gridObjects) $gridObjects.selectId('state', id, obj);
             if ($selectId) $selectId.selectId('state', id, obj);
         }
 
-        if ($gridAdapter) {
+        // Update alive and connecetd of instances
+        if ($gridInstance) {
             var parts = id.split('.');
             var last = parts.pop();
             id = parts.join('.');
             if (last === 'alive' && instances.indexOf(id) !== -1) {
-                rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
-                rowData.alive = obj.val;
-                $gridAdapter.jqGrid('setRowData', 'instance_' + id.replace(/ /g, '_'), rowData);
-
+                rowData = $gridInstance.jqGrid('getRowData', 'instance_' + id);
+                rowData.alive = (rowData.alive === true || rowData.alive === 'true');
+                var newVal = obj ? obj.val : false;
+                newVal = (newVal === true || newVal === 'true');
+                if (rowData.alive != newVal) {
+                    rowData.alive = newVal;
+                    $gridInstance.jqGrid('setRowData', 'instance_' + id, rowData);
+                    initInstanceButtons();
+                }
             } else if (last === 'connected' && instances.indexOf(id) !== -1) {
-                rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
-                rowData.connected = obj.val;
-                $gridAdapter.jqGrid('setRowData', 'instance_' + id.replace(/ /g, '_'), rowData);
+                rowData = $gridInstance.jqGrid('getRowData', 'instance_' + id);
+                rowData.connected = (rowData.connected === true || rowData.connected === 'true');
+                var newVal = obj ? obj.val : false;
+                newVal = (newVal === true || newVal === 'true');
+                if (rowData.connected != newVal) {
+                    rowData.connected = newVal;
+                    $gridInstance.jqGrid('setRowData', 'instance_' + id, rowData);
+                    initInstanceButtons();
+                }
             }
         }
     }
@@ -4804,10 +4940,10 @@ $(document).ready(function () {
                                     primary: 'ui-icon-trash'
                                 }
                             }).unbind('click').click(function () {
-                                    eventsLinesCount = 0;
-                                    eventsLinesStart = 0;
-                                    $('#event-table').html('');
-                                });
+                                eventsLinesCount = 0;
+                                eventsLinesStart = 0;
+                                $('#event-table').html('');
+                            });
 
                             getStates(getObjects);
                         }, 0);

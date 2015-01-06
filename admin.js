@@ -42,7 +42,7 @@ adapter.on('objectChange', function (id, obj) {
         objects[id] = obj;
     } else {
         //console.log('objectDeleted: ' + id);
-        delete objects[id];
+        if (objects[id]) delete objects[id];
     }
     // TODO Build in some threshold of messages
 
@@ -50,7 +50,11 @@ adapter.on('objectChange', function (id, obj) {
 });
 
 adapter.on('stateChange', function (id, state) {
-    states[id] = state;
+    if (!state) {
+        if (states[id]) delete states[id];
+    } else {
+        states[id] = state;
+    }
     if (webServer) webServer.io.sockets.emit('stateChange', id, state);
 });
 
@@ -109,6 +113,7 @@ adapter.on('log', function (obj) {
         webServer.io.sockets.emit('log', obj);
     }
 });
+
 function main() {
     adapter.subscribeForeignStates('*');
     adapter.subscribeForeignObjects('*');
@@ -555,6 +560,9 @@ function socketEvents(socket, user) {
         adapter.setForeignState(id, state, function (err, res) {
             if (typeof callback === 'function') callback(err, res);
         });
+    });
+    socket.on('delState', function (id, obj, callback) {
+        adapter.delForeignState(id, obj, callback);
     });
 
 

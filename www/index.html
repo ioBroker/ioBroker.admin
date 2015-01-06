@@ -68,16 +68,26 @@
                 </div>
                 <table style="width: 100%; border-collapse: collapse;" class="ui-widget ui-state-default ui-corner-bottom">
                     <thead>
-                    <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
-                        <th class="event-column-1 ui-state-default ui-th-column ui-th-ltr translate">Event</th>
-                        <th class="event-column-2 ui-state-default ui-th-column ui-th-ltr">id</th>
-                        <th class="event-column-3 ui-state-default ui-th-column ui-th-ltr translate">val</th>
-                        <th class="event-column-4 ui-state-default ui-th-column ui-th-ltr translate">ack</th>
-                        <th class="event-column-5 ui-state-default ui-th-column ui-th-ltr translate">from</th>
-                        <th class="event-column-6 ui-state-default ui-th-column ui-th-ltr translate">ts</th>
-                        <th class="event-column-7 ui-state-default ui-th-column ui-th-ltr translate">lc</th>
-                        <th style="color: rgba(0,0,0,0)">aa</th>
-                   </tr>
+                        <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
+                            <th class="event-column-1 ui-state-default ui-th-column ui-th-ltr translate">Event</th>
+                            <th class="event-column-2 ui-state-default ui-th-column ui-th-ltr">id</th>
+                            <th class="event-column-3 ui-state-default ui-th-column ui-th-ltr translate">val</th>
+                            <th class="event-column-4 ui-state-default ui-th-column ui-th-ltr translate">ack</th>
+                            <th class="event-column-5 ui-state-default ui-th-column ui-th-ltr translate">from</th>
+                            <th class="event-column-6 ui-state-default ui-th-column ui-th-ltr translate">ts</th>
+                            <th class="event-column-7 ui-state-default ui-th-column ui-th-ltr translate">lc</th>
+                            <th style="color: rgba(0,0,0,0)">aa</th>
+                        </tr>
+                        <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
+                            <th><select id="event-filter-type"></select></th>
+                            <th><table style="border-spacing: 0; border-collapse: collapse; width: 100%" cellspacing="0" cellpadding="1"><tr><td><input  id="event-filter-id" type="text" style="width:100%;font-size: 0.7em"/></td><td><button id="event-filter-id-clear">x</button></td></tr></table></th>
+                            <th><table style="border-spacing: 0; border-collapse: collapse; width: 100%" cellspacing="0" cellpadding="1"><tr><td><input  id="event-filter-val" type="text" style="width:100%;font-size: 0.7em"/></td><td><button id="event-filter-val-clear">x</button></td></tr></table></th>
+                            <th><select id="event-filter-ack"><option value="" class="translate">all</option><option value="true" class="translate">ack</option><option value="false" class="translate">not ack</option></select></th>
+                            <th><select id="event-filter-from"></select></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
                     </thead>
                 </table>
                 <div id="grid-events-inner" style="width: 100%; overflow-y: scroll;">
@@ -139,7 +149,7 @@
                             <option value="warn"  class="translate">warn</option>
                             <option value="error" class="translate">error</option>
                         </select></th>
-                        <th class="log-column-4-header ui-state-default ui-th-column ui-th-ltr" style="text-align: left"><span class="translate" style="padding-right: 10;padding-left: 5">message</span><input id="log-filter-message" type="text" size="10"/></th>
+                        <th class="log-column-4-header ui-state-default ui-th-column ui-th-ltr" style="text-align: left"><span class="translate" style="padding-right: 10;padding-left: 5">message</span><input id="log-filter-message" type="text" size="10"/><button id="log-filter-message-clear">x</button></th>
                     </tr>
                     </thead>
                 </table>

@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.5 (2015-01-06)
+* (bluefox) add events filter. Fix error with alive and connected status.
+
 ### 0.3.4 (2015-01-04)
 * (bluefox) fix error with update adapters with "-" in name, like hm-rpc or hm-rega
 
