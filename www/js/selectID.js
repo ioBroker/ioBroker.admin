@@ -1064,6 +1064,7 @@
                 wait:     'Processing...'
             }, settings.texts);
 
+            var that = this;
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
                 var $dlg = $(dlg);
@@ -1110,20 +1111,36 @@
                         data.socketSESSION = data.connCfg.socketSession;
                     }
 
-                    data.socket = io.connect(data.socketURL, {
-                        'query': 'key=' + data.socketSESSION,
-                        'reconnection limit': 10000,
-                        'max reconnection attempts': Infinity
-                    });
+                    if (data.socketURL){
+                        data.socket = io.connect(data.socketURL, {
+                            'query': 'key=' + data.socketSESSION,
+                            'reconnection limit': 10000,
+                            'max reconnection attempts': Infinity
+                        });
 
-                    data.socket.on('connect', function () {
-                        data.socket.emit('getObjects', function (err, res) {
-                            data.objects = res;
-                            data.socket.emit('getStates', function (err, res) {
-                                data.states = res;
+                        data.socket.on('connect', function () {
+                            data.socket.emit('getObjects', function (err, res) {
+                                data.objects = res;
+                                data.socket.emit('getStates', function (err, res) {
+                                    data.states = res;
+                                });
                             });
                         });
-                    });
+                        data.socket.on('stateChange', function (id, obj) {
+                            that.selectId('state', id, obj);
+                        });
+                        data.socket.on('objectChange', function (id, obj) {
+                            that.selectId('object', id, obj);
+                        });
+                    } else {
+                        console.log('No connection to server');
+                        if ($('#select-id-dialog').length == 0) {
+                            $('body').append('<div id="select-id-dialog"><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span><span>' + (data.texts.noconnection || 'No connection to server') + '</span></div>');
+                        }
+                        $('#select-id-dialog').dialog({
+                            modal: true
+                        });
+                    }
                 }
 
                 $dlg.data('selectId', data);
@@ -1145,7 +1162,7 @@
                 var dlg = this[i];
                 var $dlg = $(dlg);
                 var data = $dlg.data('selectId');
-
+                if (!data) continue;
                 if (data.inited) {
                     // Re-init tree if filter or selectedID changed
                     if ((data.filter && !filter && filter !== undefined) ||
@@ -1191,7 +1208,8 @@
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
                 var $dlg = $(dlg);
-                if (!data.noDialog) {
+                var data = $dlg.data('selectId');
+                if (data && !data.noDialog) {
                     $dlg.dialog('hide');
                 } else {
                     $dlg.hide();
@@ -1220,7 +1238,7 @@
                 var dlg = this[i];
                 var $dlg = $(dlg);
                 var data = $dlg.data('selectId');
-                if (data.objects) {
+                if (data && data.objects) {
                     return data.objects[id];
                 }
             }
@@ -1231,6 +1249,7 @@
                 var dlg = this[i];
                 var $dlg = $(dlg);
                 var data = $dlg.data('selectId');
+                if (!data || !data.$tree) continue;
 
                 var tree = data.$tree.fancytree("getTree");
                 var node = null;
@@ -1285,7 +1304,7 @@
                 var dlg = this[i];
                 var $dlg = $(dlg);
                 var data = $dlg.data('selectId');
-                if (!data || !data.states) continue;
+                if (!data || !data.states || !data.$tree) continue;
                 if (data.states[id] && state && data.states[id].val == state.val) return;
                 data.states[id] = state;
                 var tree = data.$tree.fancytree("getTree");
@@ -1306,7 +1325,7 @@
                 var dlg = this[k];
                 var $dlg = $(dlg);
                 var data = $dlg.data('selectId');
-                if (!data || !data.objects) continue;
+                if (!data || !data.$tree || !data.objects) continue;
 
                 if (id.match(/^enum\.rooms/)) data.rooms = {};
 
@@ -1400,7 +1419,7 @@
                 var dlg = this[k];
                 var $dlg = $(dlg);
                 var data = $dlg.data('selectId');
-                if (!data || !data.objects) continue;
+                if (!data || !data.$tree || !data.objects) continue;
 
                 var tree = data.$tree.fancytree("getTree");
                 var nodes = [];

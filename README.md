@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.7 (2015-01-07)
+* (bluefox) fix errors with history state update.
+
 ### 0.3.6 (2015-01-07)
 * (bluefox) group edit of history settings. Move history settings from states to objects.
 

@@ -510,8 +510,8 @@ function socketEvents(socket, user) {
         adapter.setForeignObject(id, obj, callback);
     });
 
-    socket.on('delObject', function (id, obj, callback) {
-        adapter.delForeignObject(id, obj, callback);
+    socket.on('delObject', function (id, callback) {
+        adapter.delForeignObject(id, callback);
     });
 
     socket.on('extendObject', function (id, obj, callback) {
@@ -561,8 +561,8 @@ function socketEvents(socket, user) {
             if (typeof callback === 'function') callback(err, res);
         });
     });
-    socket.on('delState', function (id, obj, callback) {
-        adapter.delForeignState(id, obj, callback);
+    socket.on('delState', function (id, callback) {
+        adapter.delForeignState(id, callback);
     });
 
 

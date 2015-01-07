@@ -822,13 +822,12 @@ $(document).ready(function () {
                     }
                 }, 0);
             });
-
+            tabs.tabs('option', 'disabled', (port && chart && currentHistory) ? [] : [1]);
         } else {
             $dialogHistory.dialog('option', 'height', 150);
             tabs.hide();
             $dialogHistory.dialog('open');
         }
-        tabs.tabs('option', 'disabled', (port && chart && currentHistory) ? [] : [1]);
     }
     function prepareHistory() {
         $gridHistory.jqGrid({
@@ -1079,106 +1078,6 @@ $(document).ready(function () {
         });*/
     }
 
-    /*function subGridEnums(grid, row, level) {
-        var id = row.substring(5);
-        if (enumExpanded.indexOf(id) == -1) enumExpanded.push(id);
-
-        var subgridTableId = grid + '_t';
-        $('[id="' + grid + '"]').html('<table class="subgrid-level-' + level + '" id="' + subgridTableId + '"></table>');
-        var $subgrid = $('table[id="' + subgridTableId + '"]');
-        var gridConf = {
-            datatype: 'local',
-            colNames: ['id', _('name'), _('members'), ''],
-            colModel: [
-                {name: '_id',     index: '_id', width: 450 - (level * 27), fixed: true, editable: true},
-                {name: 'name',    index: 'name', editable: true},
-                {name: 'members', index: 'members'},
-                {name: 'buttons', index: 'buttons'}
-            ],
-            rowNum: 1000000,
-            autowidth: true,
-            height: 'auto',
-            width: 1200,
-            //sortname: '_id',
-            //sortorder: 'desc',
-            viewrecords: true,
-            sortorder: 'desc',
-            ignoreCase: true,
-            subGrid: true,
-            subGridRowExpanded: function (grid, row) {
-                subGridEnums(grid, row, level + 1);
-            },
-            afterInsertRow: function (rowid) {
-                // Remove icon and click handler if no children available
-                var leaf = treeFindLeaf(rowid.substring(5));//"enum.".length
-                if (!leaf || !leaf.count) {
-                    $('td.sgcollapsed', '[id="' + rowid + '"]').empty().removeClass('ui-sgcollapsed sgcollapsed');
-                }
-            },
-            gridComplete: function () {
-                // Hide header
-                $subgrid.parent().parent().parent().find('table.ui-jqgrid-htable').hide();
-            },
-            ondblClickRow: function (rowid) {
-                onEditEnum($subgrid, rowid.substring('enum_'.length));
-            },
-            onSelectRow: function (rowid, e) {
-                // unselect other subgrids but not myself
-                $('[id^="grid-enums"][id$="_t"]').not('[id="' + this.id + '"]').jqGrid('resetSelection');
-
-                // unselect objects grid
-                $gridEnums.jqGrid('resetSelection');
-
-                // enable buttons
-                $('#del-enum').removeClass('ui-state-disabled');
-                $('#edit-enum').removeClass('ui-state-disabled');
-            }
-        };
-        $subgrid.jqGrid(gridConf);
-
-        var leaf = treeFindLeaf(id);
-        if (leaf && leaf.count) {
-            for (var i in leaf.children) {
-                if (leaf.children[i].id) {
-                    $subgrid.jqGrid('addRowData', 'enum_' + leaf.children[i].id.replace(/ /g, '_'), {
-                        _id:     leaf.children[i].id,
-                        name:    objects[leaf.children[i].id].common ? objects[leaf.children[i].id].common.name : '',
-                        members: objects[leaf.children[i].id].common.members ? objects[leaf.children[i].id].common.members.length : '',
-                        buttons: '<button data-enum-id="' + leaf.children[i].id + '" data-enum-subgrid="' + subgridTableId + '" class="enum-edit">'         + _('edit')         + '</button>' +
-                                 '<button data-enum-id="' + leaf.children[i].id + '" data-enum-subgrid="' + subgridTableId + '" class="enum-members">'      + _('members')      + '</button>' +
-                                 '<button data-enum-id="' + leaf.children[i].id + '" data-enum-subgrid="' + subgridTableId + '" class="enum-del">'          + _('delete')       + '</button>' +
-                                 '<button data-enum-id="' + leaf.children[i].id + '" data-enum-subgrid="' + subgridTableId + '" class="enum-add-children">' + _('add children') + '</button>' +
-                                 '<button data-enum-id="' + leaf.children[i].id + '" data-enum-subgrid="' + subgridTableId + '" class="enum-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
-                                 '<button data-enum-id="' + leaf.children[i].id + '" data-enum-subgrid="' + subgridTableId + '" class="enum-cancel-submit" style="display:none">' + _('cancel') + '</button>'
-
-                    });
-                } else {
-                    $subgrid.jqGrid('addRowData', 'enum_' + leaf.children[i].fullName.replace(/ /g, '_'), {
-                        _id:     leaf.children[i].fullName,
-                        name:    i,
-                        members: '',
-                        buttons: ''
-                    });
-                }
-            }
-        }
-        $subgrid.trigger('reloadGrid');
-        initEnumButtons();
-    }*/
-
-    function prepareHistoryButton(btn) {
-        $(btn).button({
-            text: false,
-            icons: {
-                primary:'ui-icon-clock'
-            }
-        })
-        .css({
-            'height':     '18px',
-            'width':      '22px'});
-
-        if ($(btn).hasClass('history-enabled')) $(btn).css({'background': 'lightgreen'});
-    }
     function prepareStates() {
         var stateEdit = false;
         var stateLastSelected;
@@ -1205,11 +1104,6 @@ $(document).ready(function () {
             viewrecords: true,
             caption: _('ioBroker States'),
             ignoreCase: true,
-            loadComplete: function () {
-                $('.history').each(function (id) {
-                    prepareHistoryButton(this);
-                });
-            },
             ondblClickRow: function (id) {
                 var rowData = $gridStates.jqGrid('getRowData', id);
                 rowData.ack = false;
@@ -3060,6 +2954,17 @@ $(document).ready(function () {
             }
         });
     }
+
+    function htmlBoolean(value) {
+        if (value === 'true' || value === true) {
+            return '<span style="color:green;font-weight:bold">true</span>';
+        } else if (value === 'false' || value === false) {
+            return '<span style="color:red">false</span>';
+        } else {
+            return value;
+        }
+    }
+
     function initInstances(update) {
 
         if (!objectsLoaded) {
@@ -3095,7 +3000,7 @@ $(document).ready(function () {
                     name:      obj.common ? obj.common.name : '',
                     instance:  obj._id.slice(15),
                     title:     obj.common ? (link ? '<a href="' + link + '" id="a_' + adapter + '_' + instance + '" target="_blank">' + title + '</a>': title): '',
-                    enabled:   obj.common ? (obj.common.enabled ? "true": "false") : "false",//'<span style="color:green;font-weight:bold">true</span>' : '<span style="color:red">false</span>') : '',
+                    enabled:   obj.common ? (obj.common.enabled ? "true": "false") : "false",
                     host:      obj.common ? obj.common.host : '',
                     mode:      obj.common.mode,
                     schedule:  obj.common.mode === 'schedule' ? obj.common.schedule : '',
@@ -3107,8 +3012,8 @@ $(document).ready(function () {
                                '<button data-instance-id="' + instances[i] + '" class="instance-cancel-submit" style="display:none">' + _('cancel') + '</button>',
                     platform:  obj.common ? obj.common.platform : '',
                     loglevel:  obj.common ? obj.common.loglevel : '',
-                    alive:     states[obj._id + '.alive'] ? states[obj._id + '.alive'].val : '',
-                    connected: states[obj._id + '.connected'] ? states[obj._id + '.connected'].val : ''
+                    alive:     states[obj._id + '.alive'] ? htmlBoolean(states[obj._id + '.alive'].val) : '',
+                    connected: states[obj._id + '.connected'] ? htmlBoolean(states[obj._id + '.connected'].val) : ''
                 });
             }
             $gridInstance.trigger('reloadGrid');
@@ -3117,10 +3022,8 @@ $(document).ready(function () {
             var a = $('td[aria-describedby="grid-instances_enabled"]');
             a.each(function (index) {
                 var text = $(this).html();
-                if (text == 'true') {
-                    $(this).html('<span style="color:green;font-weight:bold">true</span>');
-                } else if (text == 'false') {
-                    $(this).html('<span style="color:red">false</span>');
+                if (text == 'true' || text == 'false') {
+                    $(this).html(htmlBoolean(text));
                 }
             });
 
@@ -4344,6 +4247,7 @@ $(document).ready(function () {
 		}
 		obj = obj || {};
         obj._id = key;
+        obj.id = key;
         obj.name = objects[obj._id] ? (objects[obj._id].common.name || obj._id) : obj._id;
 
         if (objects[key] && objects[key].parent && objects[objects[key].parent]) {
@@ -4370,6 +4274,7 @@ $(document).ready(function () {
         if (typeof obj.val == 'object') obj.val = JSON.stringify(obj.val);
 
         obj.gridId = 'state_' + key.replace(/ /g, '_');
+        if (obj.from) obj.from = obj.from.replace('system.adapter.', '').replace('system.', '');
         return obj;
     }
     function initStates(update) {
@@ -4382,11 +4287,9 @@ $(document).ready(function () {
             $gridStates.jqGrid('clearGridData');
             $gridStates[0]._isInited = true;
 
-            var gridData = [];
             for (var key in states) {
-                gridData.push(convertState(key, states[key]));
+                $gridStates.jqGrid('addRowData', 'state_' + key, convertState(key, states[key]));
             }
-            $gridStates.jqGrid('addRowData', 'gridId', gridData);
             $gridStates.trigger('reloadGrid');
         }
     }
@@ -4403,7 +4306,7 @@ $(document).ready(function () {
     }
 
     // ----------------------------- Show events ------------------------------------------------
-    function addEventMessage(id, obj, rowData) {
+    function addEventMessage(id, state, rowData, obj) {
         var typeFilter = $('#event-filter-type').val();
         var fromFilter = $('#event-filter-from').val();
         var type = rowData ? 'stateChange' : 'message';
@@ -4413,6 +4316,15 @@ $(document).ready(function () {
         var tc;
         var lc;
 
+        if (obj) {
+            type = 'objectChange';
+            value = JSON.stringify(obj, '\x0A', 2);
+            if (value !== undefined && value.length > 30) value = '<span title="' + value.replace(/"/g, '\'') + '">' + value.substring(0, 30) + '...</span>';
+            ack = '';
+            tc = formatDate(new Date());
+            lc = '';
+        }
+        
         if (eventTypes.indexOf(type) == -1) {
             eventTypes.push(type);
             eventTypes.sort();
@@ -4423,23 +4335,6 @@ $(document).ready(function () {
                 }
             }
         }
-
-        if (obj) {
-            obj.from = obj.from.replace('system.adapter.', '');
-            obj.from = obj.from.replace('system.', '');
-
-            if (eventFroms.indexOf(obj.from) == -1) {
-                eventFroms.push(obj.from);
-                eventFroms.sort();
-                $('#event-filter-from').html('<option value="">' + _('all') + '</option>');
-                for (var i = 0; i < eventFroms.length; i++) {
-                    var e = eventFroms[i].replace('.', '-')
-                    $('#event-filter-from').append('<option value="' + e + '" ' + ((e == fromFilter) ? 'selected' : '') + '>' + eventFroms[i] + '</option>');
-                }
-            }
-            from = obj.from;
-        }
-
         if (eventsLinesCount >= 500) {
             eventsLinesStart++;
             document.getElementById('event_' + eventsLinesStart).outerHTML = '';
@@ -4447,17 +4342,33 @@ $(document).ready(function () {
             eventsLinesCount++;
         }
 
-        if (!rowData) {
-            value = (obj ? obj.command : 'deleted');
-            ack = (obj ? (obj.callback ? obj.callback.ack : '') : 'deleted');
-            tc = formatDate(new Date());
-            lc = '';
-        } else {
-            value = obj ? JSON.stringify(obj.val) : 'deleted';
-            if (value !== undefined && value.length > 30) value = '<div title="' + value.replace(/"/g, '') + '">' + value.substring(0, 30) + '...</div>';
-            ack = (obj ? obj.ack : 'del');
-            tc = rowData ? rowData.ts : '';
-            lc = rowData ? rowData.lc : '';
+        if (state) {
+            state.from = state.from.replace('system.adapter.', '');
+            state.from = state.from.replace('system.', '');
+
+            if (eventFroms.indexOf(state.from) == -1) {
+                eventFroms.push(state.from);
+                eventFroms.sort();
+                $('#event-filter-from').html('<option value="">' + _('all') + '</option>');
+                for (var i = 0; i < eventFroms.length; i++) {
+                    var e = eventFroms[i].replace('.', '-')
+                    $('#event-filter-from').append('<option value="' + e + '" ' + ((e == fromFilter) ? 'selected' : '') + '>' + eventFroms[i] + '</option>');
+                }
+            }
+            from = state.from;
+
+            if (!rowData) {
+                value = (state ? state.command : 'deleted');
+                ack = (state ? (state.callback ? state.callback.ack : '') : 'deleted');
+                tc = formatDate(new Date());
+                lc = '';
+            } else {
+                value = state ? JSON.stringify(state.val) : 'deleted';
+                if (value !== undefined && value.length > 30) value = '<div title="' + value.replace(/"/g, '') + '">' + value.substring(0, 30) + '...</div>';
+                ack = (state ? state.ack : 'del');
+                tc = rowData ? rowData.ts : '';
+                lc = rowData ? rowData.lc : '';
+            }
         }
 
         var visible = true;
@@ -4565,16 +4476,20 @@ $(document).ready(function () {
         if (id && id.match(/\.messagebox$/)) {
             addEventMessage(id, obj);
         } else {
-            if ($gridStates) {
+            if ($gridStates && objectsLoaded) {
                 // Update gridStates
                 if (obj) {
                     rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
-                    rowData.val = obj.val;
-                    rowData.ack = obj.ack;
-                    if (obj.ts) rowData.ts = formatDate(obj.ts, true);
-                    if (obj.lc) rowData.lc = formatDate(obj.lc, true);
-                    rowData.from = obj.from;
-                    $gridStates.jqGrid('setRowData', 'state_' + id, rowData);
+                    if (!rowData || !rowData._id) {
+                        $gridStates.jqGrid('addRowData', 'state_' + id, convertState(id, obj));
+                    } else {
+                        rowData.val = obj.val;
+                        rowData.ack = obj.ack;
+                        if (obj.ts) rowData.ts = formatDate(obj.ts, true);
+                        if (obj.lc) rowData.lc = formatDate(obj.lc, true);
+                        rowData.from = obj.from.replace('system.adapter.', '').replace('system.', '');
+                        $gridStates.jqGrid('setRowData', 'state_' + id, rowData);
+                    }
                 } else {
                     $gridStates.jqGrid('delRowData', 'state_' + id);
                 }
@@ -4596,7 +4511,7 @@ $(document).ready(function () {
                 var newVal = obj ? obj.val : false;
                 newVal = (newVal === true || newVal === 'true');
                 if (rowData.alive != newVal) {
-                    rowData.alive = newVal;
+                    rowData.alive = htmlBoolean(newVal);
                     $gridInstance.jqGrid('setRowData', 'instance_' + id, rowData);
                     initInstanceButtons();
                 }
@@ -4606,7 +4521,7 @@ $(document).ready(function () {
                 var newVal = obj ? obj.val : false;
                 newVal = (newVal === true || newVal === 'true');
                 if (rowData.connected != newVal) {
-                    rowData.connected = newVal;
+                    rowData.connected = htmlBoolean(newVal);
                     $gridInstance.jqGrid('setRowData', 'instance_' + id, rowData);
                     initInstanceButtons();
                 }
@@ -4622,7 +4537,6 @@ $(document).ready(function () {
         var changed = false;
         var i;
         var j;
-        var _historyEnabled;
         var oldObj = null;
         var isNew = false;
         var isUpdate = false;
@@ -4642,14 +4556,10 @@ $(document).ready(function () {
             changed = true;
             oldObj = {_id: id, type: objects[id].type};
             delete objects[id];
-            //treeRemove(id);
         }
 
-        // prepend to event table
-        var value = JSON.stringify(obj);
-        if (value !== undefined && value.length > 30) value = '<span title="' + value + '">' + value.substring(0, 30) + '...</span>';
-        var row = '<tr><td>objectChange</td><td>' + id + '</td><td>' + value + '</td></tr>';
-        $('#events').prepend(row);
+        // update to event table
+        addEventMessage(id, null, null, obj);
 
         if ($gridObjects) $gridObjects.selectId('object', id, obj);
         if ($selectId) $selectId.selectId('object', id, obj);
@@ -4676,26 +4586,6 @@ $(document).ready(function () {
             if (id.match(/^system\.adapter\.history\.[0-9]+$/)) {
                 checkHistory();
                 // Update all states if history enabled or disabled
-                // Update history button
-                var rowsData = $gridStates.jqGrid('getRowData');
-                for (i = 0; i < rowsData.length; i++) {
-                    if (historyEnabled && id.substring(id.length - '.messagebox'.length) != '.messagebox') {
-                        // Check if history enabled
-                        _historyEnabled = '';
-                        if (objects[rowsData[i]._id] &&
-                            objects[rowsData[i]._id].common &&
-                            objects[rowsData[i]._id].common.history &&
-                            objects[rowsData[i]._id].common.history.enabled) _historyEnabled = ' history-enabled';
-                        rowsData[i].history = '<button data-id="' + id + '" class="history' + _historyEnabled + '" id="history_' + rowsData[i]._id + '">' + _('history') + '</button>';
-                    } else {
-                        rowsData[i].history = '';
-                    }
-                    $gridStates.jqGrid('setRowData', 'state_' + rowsData[i]._id.replace(/ /g, '_'), rowsData[i]);
-                }
-                $('.history').each(function (id) {
-                    prepareHistoryButton(this);
-                });
-
                 $gridObjects.selectId('reinit');
             }
 
@@ -4836,32 +4726,6 @@ $(document).ready(function () {
                 updateTimers.initEnums = null;
                 initEnums(true);
             }, 200);
-        }
-
-        // Update states
-        if (obj && obj.type == 'state') {
-            // Update history button
-            var _rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
-            if (!_rowData || !_rowData._id) {
-                $gridStates.jqGrid('addRowData', 'state_' + id.replace(/ /g, '_'), convertState(id, obj));
-            } else {
-                if (historyEnabled && id.substring(id.length - '.messagebox'.length) != '.messagebox') {
-
-                    // Check if history enabled
-                    historyEnabled = '';
-                    if (obj && obj.common && obj.common.history && obj.common.history.enabled) historyEnabled = ' history-enabled';
-                    _rowData.history = '<button data-id="' + id + '" class="history' + historyEnabled + '" id="history_' + id + '">' + _('history') + '</button>';
-                } else {
-                    _rowData.history = '';
-                }
-                $gridStates.jqGrid('setRowData', 'state_' + id.replace(/ /g, '_'), _rowData);
-            }
-            $('.history').each(function (id) {
-                prepareHistoryButton(this);
-            });
-        } else if (oldObj && oldObj.type == 'state') {
-            // Delete state line
-            $gridStates.jqGrid('delRowData', 'state_' + id);
         }
     }
 
