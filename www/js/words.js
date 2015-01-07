@@ -226,6 +226,8 @@ systemDictionary = {
     "Delete object":        {"en": "Delete object",         "de": "Object löschen",         "ru": "Удалить объект"},
     "Refresh log":          {"en": "Refresh log",           "de": "Log updaten",            "ru": "Обновить протокол"},
     "Clear log":            {"en": "Clear log",             "de": "Log löschen",            "ru": "Очистить протокол на экране"},
+    "History of %s":        {"en": "History of %s",         "de": "Historie von %s",        "ru": "Настройки истории для %s"},
+    "History of %s states": {"en": "History of %s states",  "de": "Historie von %s Zuständen", "ru": "Настройки истории для %s состояний"},
     "Clear on disk permanent": {"en": "Clear on disk permanent", "de": "Löschen log auf dem host", "ru": "Удалить протокол на сервере"},
     "daemon":               {"en": "daemon",                "de": "daemon",                 "ru": "Демон"},
     "subscribe":            {"en": "subscribe",             "de": "abonieren",              "ru": "Подписка"},
@@ -262,4 +264,6 @@ systemDictionary = {
     "Loading...":           {"en": "Loading...",            "de": "Lade...",                "ru": "Загрузка..."},
     "Processing...":        {"en": "Processing...",         "de": "Bearbeite...",           "ru": "Обработка..."},
     "De-bounce interval(ms)": {"en": "De-bounce interval(ms)", "de": "Entprellzeit(ms)",    "ru": "Минимальный интервал(ms)"},
+    "No states selected!":  {"en": "No states selected!",   "de": "Keine Zustände ausgewählt!", "ru": "Нечего настраивать!"},
+    "Message":              {"en": "Message",               "de": "Meldung",                "ru": "Сообщение"}
 };

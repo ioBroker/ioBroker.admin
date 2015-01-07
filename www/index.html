@@ -353,7 +353,7 @@
             <li><a href="#tab-history-chart" class="translate">Chart</a></li>
         </ul>
         <div id="tab-history-table">
-            <input type="hidden" id="edit-history-id">
+            <input type="hidden" id="edit-history-ids">
             <table id="grid-history"></table>
             <div id="pager-history"></div>
         </div>
@@ -468,6 +468,11 @@
 
 <div title="Copy log" id="log-copy-text" style="display:none; width:100%; height: 100%; background: white; top:0; left:0; position: absolute; z-index:2000">
 </div>
-
+<div id="dialog-message" title="Message">
+    <p>
+        <span id="dialog-message-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
+        <span id="dialog-message-text"></span>
+    </p>
+</div>
 </body>
 </html>

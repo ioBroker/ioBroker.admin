@@ -61,7 +61,8 @@
              widths:    null,   // array with width for every column
              editEnd:   null,   // function (id, newValues) for edit lines (only id and name can be edited)
              editStart: null,   // function (id, $inputs) called after edit start to correct input fields (inputs are jquery objects),
-             zindex:    null    // z-index of dialog or table
+             zindex:    null,   // z-index of dialog or table
+             customButtonFilter: null // if in the filter over the buttons some specific button must be shown. It has type like {icons:{primary: 'ui-icon-close'}, text: false, callback: function ()}
      }
  +  show(currentId, filter, callback) - all arguments are optional if set by "init"
  +  clear() - clear object tree to read and buildit anew (used only if objects set by "init")
@@ -432,7 +433,17 @@
             } else if (data.columns[c] == 'room') {
                 text += '<td>' + textRooms + '</td>';
             } else if (data.columns[c] == 'button') {
-                text += '<td></td>';
+                text += '<td style="text-align: center">';
+                if (data.customButtonFilter) {
+                    var t = '<select id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_' + data.instance + '">';
+                    t += '<option value="">'      + data.texts.all     + '</option>';
+                    t += '<option value="true">'  + data.texts.with    + '</option>';
+                    t += '<option value="false">' + data.texts.without + '</option>';
+                    t += '</select>';
+
+                    text += '<table cellpadding="0" cellspacing="0" style="border-spacing: collapse"><tr><td>' + t + '</td>' + '<td><button id="filter_' + data.columns[c] + '_'  + data.instance + '_btn"></button></td></tr></table>'
+                }
+                text += '</td>';
             }
         }
 
@@ -924,7 +935,7 @@
                     if (data.filterVals[f] === 'true') {
                         if (!isCommon || !data.objects[node.key].common.history || !data.objects[node.key].common.history.enabled) return false;
                     } else if (data.filterVals[f] === 'false') {
-                        if (!isCommon || (data.objects[node.key].common.history && data.objects[node.key].common.history.enabled)) return false;
+                        if (!isCommon || data.objects[node.key].type != 'state' || (data.objects[node.key].common.history && data.objects[node.key].common.history.enabled)) return false;
                     }
                 } else
                 if (f == 'room') {
@@ -1005,6 +1016,10 @@
                 $('#btn_custom_' + data.instance + '_' + z).button(data.panelButtons[z]).css({width: 18, height: 18}).click(data.panelButtons[z].click).attr('title', data.panelButtons[z].title || '');
                 text += '<td><button id="btn_custom_' + data.instance + '_' + z + '"></button></td>';
             }
+        }
+
+        if (data.customButtonFilter) {
+            $('#filter_button_' + data.instance + '_btn').button(data.customButtonFilter).css({width: 18, height: 18}).click(data.customButtonFilter.callback);
         }
     }
 
@@ -1379,6 +1394,22 @@
                 }
             }
             return this;
+        },
+        "getFilteredIds": function () {
+            for (var k = 0; k < this.length; k++) {
+                var dlg = this[k];
+                var $dlg = $(dlg);
+                var data = $dlg.data('selectId');
+                if (!data || !data.objects) continue;
+
+                var tree = data.$tree.fancytree("getTree");
+                var nodes = [];
+                tree.visit(function (n) {
+                    if (n.match) nodes.push(n.key);
+                });
+                return nodes;
+            }
+            return null;
         }
     };
 

@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.6 (2015-01-07)
+* (bluefox) group edit of history settings. Move history settings from states to objects.
+
 ### 0.3.5 (2015-01-06)
 * (bluefox) add events filter. Fix error with alive and connected status.
 
