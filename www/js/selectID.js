@@ -1119,7 +1119,8 @@
                         });
 
                         data.socket.on('connect', function () {
-                            data.socket.emit('getObjects', function (err, res) {
+                            this.emit('name', data.connCfg.socketName || 'selectId');
+                            this.emit('getObjects', function (err, res) {
                                 data.objects = res;
                                 data.socket.emit('getStates', function (err, res) {
                                     data.states = res;

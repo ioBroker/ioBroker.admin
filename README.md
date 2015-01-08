@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.8 (2015-01-08)
+* (bluefox) fix errors with states update if filtered. Resize command putput window.
+
 ### 0.3.7 (2015-01-07)
 * (bluefox) fix errors with history state update.
 

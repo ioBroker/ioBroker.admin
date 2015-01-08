@@ -433,6 +433,10 @@ $(document).ready(function () {
             closeOnEscape: false,
             open: function (event, ui) {
                 $(".ui-dialog-titlebar-close", ui.dialog || ui).hide();
+                $('#stdout').width($(this).width() - 10).height($(this).height() - 20);
+            },
+            resize: function (event, ui) {
+                $('#stdout').width($(this).width() - 10).height($(this).height() - 20);
             }
         });
 
@@ -4457,7 +4461,7 @@ $(document).ready(function () {
         console.log(error);
     });
 
-    function stateChange(id, obj) {
+    function stateChange(id, state) {
         var rowData;
         id = id ? id.replace(/ /g, '_') : '';
 
@@ -4466,38 +4470,45 @@ $(document).ready(function () {
             $gridHistory.jqGrid('addRowData', gid, {
                 gid: gid,
                 id:  id,
-                ack: obj.ack,
-                val: obj.val,
-                ts:  formatDate(obj.ts, true),
-                lc:  formatDate(obj.lc, true)
+                ack: state.ack,
+                val: state.val,
+                ts:  formatDate(state.ts, true),
+                lc:  formatDate(state.lc, true)
             });
         }
 
         if (id && id.match(/\.messagebox$/)) {
-            addEventMessage(id, obj);
+            addEventMessage(id, state);
         } else {
             if ($gridStates && objectsLoaded) {
                 // Update gridStates
-                if (obj) {
-                    rowData = $gridStates.jqGrid('getRowData', 'state_' + id);
-                    if (!rowData || !rowData._id) {
-                        $gridStates.jqGrid('addRowData', 'state_' + id, convertState(id, obj));
+                if (state) {
+                    if (states[id]) {
+                        var data  = $gridStates.jqGrid('getGridParam', 'data');
+                        var index = $gridStates.jqGrid('getGridParam', '_index');
+                        var rowData = data[index['state_' + id]];
+                        if (rowData) {
+                            rowData.val = state.val;
+                            rowData.ack = state.ack;
+                            if (state.ts) rowData.ts = formatDate(state.ts, true);
+                            if (state.lc) rowData.lc = formatDate(state.lc, true);
+                            rowData.from = state.from.replace('system.adapter.', '').replace('system.', '');
+                            var a = $gridStates.jqGrid('getRowData', 'state_' + id, rowData);
+                            if (a && a._id) $gridStates.jqGrid('setRowData', 'state_' + id, rowData);
+                        } else {
+                            $gridStates.jqGrid('addRowData', 'state_' + id, convertState(id, state));
+                        }
                     } else {
-                        rowData.val = obj.val;
-                        rowData.ack = obj.ack;
-                        if (obj.ts) rowData.ts = formatDate(obj.ts, true);
-                        if (obj.lc) rowData.lc = formatDate(obj.lc, true);
-                        rowData.from = obj.from.replace('system.adapter.', '').replace('system.', '');
-                        $gridStates.jqGrid('setRowData', 'state_' + id, rowData);
+                        $gridStates.jqGrid('addRowData', 'state_' + id, convertState(id, state));
                     }
                 } else {
                     $gridStates.jqGrid('delRowData', 'state_' + id);
                 }
-                addEventMessage(id, obj, rowData);
+                addEventMessage(id, state, rowData);
             }
 
-            if ($gridObjects) $gridObjects.selectId('state', id, obj);
-            if ($selectId) $selectId.selectId('state', id, obj);
+            if ($gridObjects) $gridObjects.selectId('state', id, state);
+            if ($selectId) $selectId.selectId('state', id, state);
         }
 
         // Update alive and connecetd of instances
@@ -4508,7 +4519,7 @@ $(document).ready(function () {
             if (last === 'alive' && instances.indexOf(id) !== -1) {
                 rowData = $gridInstance.jqGrid('getRowData', 'instance_' + id);
                 rowData.alive = (rowData.alive === true || rowData.alive === 'true');
-                var newVal = obj ? obj.val : false;
+                var newVal = state ? state.val : false;
                 newVal = (newVal === true || newVal === 'true');
                 if (rowData.alive != newVal) {
                     rowData.alive = htmlBoolean(newVal);
@@ -4518,7 +4529,7 @@ $(document).ready(function () {
             } else if (last === 'connected' && instances.indexOf(id) !== -1) {
                 rowData = $gridInstance.jqGrid('getRowData', 'instance_' + id);
                 rowData.connected = (rowData.connected === true || rowData.connected === 'true');
-                var newVal = obj ? obj.val : false;
+                var newVal = state ? state.val : false;
                 newVal = (newVal === true || newVal === 'true');
                 if (rowData.connected != newVal) {
                     rowData.connected = htmlBoolean(newVal);
