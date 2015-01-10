@@ -552,7 +552,7 @@ function socketEvents(socket, user) {
     });
 
     socket.on('getState', function (id, callback) {
-        callback(null, states[id]);
+        if (callback) callback(null, states[id]);
     });
 
     socket.on('setState', function (id, state, callback) {

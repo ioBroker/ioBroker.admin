@@ -89,6 +89,7 @@ $(document).ready(function () {
     var $dialogHistory =        $('#dialog-history');
     var $dialogSystem =         $('#dialog-system');
     var $dialogMessage =        $('#dialog-message');
+    var $dialogConfirm =        $('#dialog-confirm');
 
     var $gridUsers =            $('#grid-users');
     var $gridGroups =           $('#grid-groups');
@@ -112,6 +113,7 @@ $(document).ready(function () {
     var enumEdit =              null;
     var currentHost =           '';
     var curRepository =         null;
+    var curRepoLastUpdate =     null;
     var curInstalled =          null;
     var currentHistory =        null; // Id of the currently shown history dialog
     var historyIds =            [];
@@ -525,6 +527,29 @@ $(document).ready(function () {
                 }
             ]
         });
+        $dialogConfirm.dialog({
+            autoOpen: false,
+            modal:    true,
+            buttons: [
+                {
+                    text: _('Ok'),
+                    click: function () {
+                        var cb = $(this).data('callback');
+                        $(this).dialog('close');
+                        if (cb) cb(true);
+                    }
+                },
+                {
+                    text: _('Cancel'),
+                    click: function () {
+                        var cb = $(this).data('callback');
+                        $(this).dialog('close');
+                        if (cb) cb(false);
+                    }
+                }
+
+            ]
+        });
     }
 
     function showMessage(message, title, icon) {
@@ -538,6 +563,20 @@ $(document).ready(function () {
             $('#dialog-message-icon').hide();
         }
         $dialogMessage.dialog('open');
+    }
+
+    function confirmMessage(message, title, icon, callback) {
+        $dialogConfirm.dialog('option', 'title', title || _('Message'));
+        $('#dialog-confirm-text').html(message);
+        if (icon) {
+            $('#dialog-confirm-icon').show();
+            $('#dialog-confirm-icon').attr('class', '');
+            $('#dialog-confirm-icon').addClass('ui-icon ui-icon-' + icon);
+        } else {
+            $('#dialog-confirm-icon').hide();
+        }
+        $dialogConfirm.data('callback', callback);
+        $dialogConfirm.dialog('open');
     }
 
     $('#enum-name').keyup(function () {
@@ -597,17 +636,19 @@ $(document).ready(function () {
         }
     });
     $('#log-clear-on-disk').button({icons:{primary: 'ui-icon-trash'}, text: false}).click(function () {
-        if (confirm(_('Log file will be deleted. Are you sure?'))) {
-            socket.emit('sendToHost', currentHost, 'delLogs', null, function () {
-                $('#log-table').html('');
-                logLinesCount = 0;
-                logLinesStart = 0;
-                $('a[href="#tab-log"]').removeClass('errorLog');
-                setTimeout(function () {
-                    initLogs();
-                }, 0);
-            });
-        }
+        confirmMessage(_('Log file will be deleted. Are you sure?'), null, null, function (result) {
+            if (result) {
+                socket.emit('sendToHost', currentHost, 'delLogs', null, function () {
+                    $('#log-table').html('');
+                    logLinesCount = 0;
+                    logLinesStart = 0;
+                    $('a[href="#tab-log"]').removeClass('errorLog');
+                    setTimeout(function () {
+                        initLogs();
+                    }, 0);
+                });
+            }
+        });
     }).css({width: 20, height: 20}).addClass("ui-state-error");
 
     $('#log-refresh').button({icons:{primary: 'ui-icon-refresh'}, text: false}).click(function () {
@@ -1414,17 +1455,20 @@ $(document).ready(function () {
                     });
                 }
                 var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                if (window.confirm("Are you sure?")) {
-                    socket.emit('delUser', id.replace("system.user.", ""), function (err) {
-                        if (err) {
-                            showMessage(_('Cannot delete user: ') + err, '', 'alert');
-                        } else {
-                            setTimeout(function () {
-                                delUser(id);
-                            }, 0);
-                        }
-                    });
-                }
+                confirmMessage(_('Are you sure?'), null, 'help', function (result) {
+                    if (result) {
+                        socket.emit('delUser', id.replace('system.user.', ''), function (err) {
+                            if (err) {
+                                showMessage(_('Cannot delete user: ') + err, '', 'alert');
+                            } else {
+                                setTimeout(function () {
+                                    delUser(id);
+                                }, 0);
+                            }
+                        });
+
+                    }
+                });
             },
             position: 'first',
             id: 'del-user',
@@ -1578,13 +1622,15 @@ $(document).ready(function () {
                     });
                 }
                 var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                if (window.confirm("Are you sure?")) {
-                    socket.emit('delGroup', id.replace("system.group.", ""), function (err) {
-                        if (err) {
-                            showMessage(_('Cannot delete group: %s', err), '', 'alert');
-                        }
-                    });
-                }
+                confirmMessage(_('Are you sure?'), null, 'help', function (result) {
+                    if (result) {
+                        socket.emit('delGroup', id.replace("system.group.", ""), function (err) {
+                            if (err) {
+                                showMessage(_('Cannot delete group: %s', err), '', 'alert');
+                            }
+                        });
+                    }
+                });
             },
             position: 'first',
             id: 'del-group',
@@ -2767,7 +2813,7 @@ $(document).ready(function () {
     }
 
     // ----------------------------- Hosts show and Edit ------------------------------------------------
-    function initHostsList() {
+    function initHostsList(isUpdate) {
 
         if (!objectsLoaded) {
             setTimeout(initHostsList, 250);
@@ -2778,8 +2824,12 @@ $(document).ready(function () {
         var selHosts = document.getElementById('host-adapters');
         var myOpts   = selHosts.options;
         var $selHosts = $(selHosts);
+        if (!isUpdate && $selHosts.data('inited')) return;
+
+        $selHosts.data('inited', true);
         var found;
         var j;
+        // first remove non-existing hosts
         for (var i = 0; i < myOpts.length; i++) {
             found = false;
             for (j = 0; j < hosts.length; j++) {
@@ -2817,7 +2867,14 @@ $(document).ready(function () {
             initAdapters(true);
         }
         $selHosts.unbind('change').change(function () {
+            if (!states['system.host.' + $(this).val() + '.alive'] || !states['system.host.' + $(this).val() + '.alive'].val) {
+                showMessage(_('Host %s is offline', $(this).val()));
+                $(this).val(currentHost);
+                return;
+            }
+
             currentHost = $(this).val();
+
             initAdapters(true);
         });
     }
@@ -2847,19 +2904,35 @@ $(document).ready(function () {
             $gridHosts.jqGrid('clearGridData');
             $("#load_grid-hosts").show();
 
+            for (var i = 0; i < hosts.length; i++) {
+                var obj = objects[hosts[i].id];
+
+                $gridHosts.jqGrid('addRowData', 'host_' + hosts[i].id.replace(/ /g, '_'), {
+                    _id:       obj._id,
+                    name:      obj.common.hostname,
+                    type:      obj.common.type,
+                    title:     obj.common.title,
+                    platform:  obj.common.platform,
+                    os:        obj.native.os.platform,
+                    available: '',
+                    installed: ''
+                });
+            }
+            $gridHosts.trigger('reloadGrid');
+
             getAdaptersInfo(currentHost, update, updateRepo, function (repository, installedList) {
-                // Do it one more time
-                $gridHosts.jqGrid('clearGridData');
+                var data  = $gridHosts.jqGrid('getGridParam', 'data');
+                var index = $gridHosts.jqGrid('getGridParam', '_index');
 
                 $gridHosts[0]._isInited = true;
-                for (var i = 0; i < hosts.length; i++) {
-                    var obj = objects[hosts[i].id];
+                if (!installedList || !installedList.hosts) return;
+
+                for (var id in installedList.hosts) {
+                    var obj = objects['system.host.' + id];
                     var installed = '';
                     var version = obj.common ? (repository[obj.common.type] ? repository[obj.common.type].version : '') : '';
-                    if (installedList && installedList.hosts && installedList.hosts[obj.common.hostname]) {
-                        installed = installedList.hosts[obj.common.hostname].version;
-                        if (installed != installedList.hosts[obj.common.hostname].runningVersion) installed += '(' + _('Running: ') + installedList.hosts[obj.common.hostname].runningVersion + ')';
-                    }
+                    installed = installedList.hosts[id].version;
+                    if (installed != installedList.hosts[id].runningVersion) installed += '(' + _('Running: ') + installedList.hosts[id].runningVersion + ')';
 
                     if (!installed && obj.common && obj.common.installedVersion) installed = obj.common.installedVersion;
 
@@ -2871,18 +2944,16 @@ $(document).ready(function () {
                         }
                     }
 
-                    var __hostname = '<table style="width:100%; padding: 0; border: 0; border-spacing: 0; border-color: rgba(0, 0, 0, 0)" cellspacing="0" cellpadding="0"><tr><td style="width:100%">' + obj.common.hostname + '</td><td><button class="host-restart-submit" data-host-name="' + obj.common.hostname + '">' + _('restart') + '</button></td></tr></table>';
+                    id = 'system.host.' + id.replace(/ /g, '_');
 
-                    $gridHosts.jqGrid('addRowData', 'host_' + hosts[i].id.replace(/ /g, '_'), {
-                        _id:       obj._id,
-                        name:      __hostname,
-                        type:      obj.common.type,
-                        title:     obj.common.title,
-                        platform:  obj.common.platform,
-                        os:        obj.native.os.platform,
-                        available: version,
-                        installed: installed
-                    });
+                    var rowData = data[index['host_' + id]];
+                    if (rowData) {
+                        rowData.name =      '<table style="width:100%; padding: 0; border: 0; border-spacing: 0; border-color: rgba(0, 0, 0, 0)" cellspacing="0" cellpadding="0"><tr><td style="width:100%">' + obj.common.hostname + '</td><td><button class="host-restart-submit" data-host-name="' + obj.common.hostname + '">' + _('restart') + '</button></td></tr></table>';
+                        rowData.available = version;
+                        rowData.installed = installed;
+                    } else {
+                        console.log('Unknown host found: ' + id);
+                    }
                 }
                 $gridHosts.trigger('reloadGrid');
 
@@ -3067,11 +3138,13 @@ $(document).ready(function () {
             .click(function () {
                 var id = $(this).attr('data-instance-id');
                 if (objects[id] && objects[id].common && objects[id].common.host) {
-                    if (confirm(_('Are you sure?'))) {
-                        cmdExec(objects[id].common.host, 'del ' + id.replace('system.adapter.', ''), function (exitCode) {
-                            if (!exitCode) initAdapters(true);
-                        });
-                    }
+                    confirmMessage(_('Are you sure?'), null, 'help', function (result) {
+                        if (result) {
+                            cmdExec(objects[id].common.host, 'del ' + id.replace('system.adapter.', ''), function (exitCode) {
+                                if (!exitCode) initAdapters(true);
+                            });
+                        }
+                    });
                 }
             });
 
@@ -3350,13 +3423,17 @@ $(document).ready(function () {
     function getAdaptersInfo(host, update, updateRepo, callback) {
         if (!callback) throw 'Callback cannot be null or undefined';
         if (update) {
-            curRepository = null;
-            curInstalled  = null;
+            // Do not update too offten
+            if (!curRepoLastUpdate || ((new Date()).getTime() - curRepoLastUpdate > 1000)) {
+                curRepository = null;
+                curInstalled  = null;
+            }
         }
         if (!curRepository) {
             socket.emit('sendToHost', host, 'getRepository', {repo: systemConfig.common.activeRepo, update: updateRepo}, function (_repository) {
                 curRepository = _repository;
                 if (curRepository && curInstalled) {
+                    curRepoLastUpdate = (new Date()).getTime();
                     setTimeout(function () {
                         callback(curRepository, curInstalled);
                     }, 0);
@@ -3367,6 +3444,7 @@ $(document).ready(function () {
             socket.emit('sendToHost', host, 'getInstalled', null, function (_installed) {
                 curInstalled = _installed;
                 if (curRepository && curInstalled) {
+                    curRepoLastUpdate = (new Date()).getTime();
                     setTimeout(function () {
                         callback(curRepository, curInstalled);
                     }, 0);
@@ -3618,33 +3696,42 @@ $(document).ready(function () {
 
         $dialogObject.dialog('close');
     }
-    function delObject($tree, id, callback, hideConfirm) {
-        if (hideConfirm || confirm(_('Are you sure to delete %s and all children?', id))) {
-            var leaf = $tree.selectId('getTreeInfo', id);
-            //var leaf = treeFindLeaf(id);
-            if (leaf && leaf.children) {
-                for (var e = 0; e < leaf.children.length; e++) {
-                    delObject($tree, leaf.children[e], function () {
-                        delObject($tree, id, callback, true);
-                    }, true);
-                    break;
-                }
-            } else {
-                if (objects[id] && objects[id].common && objects[id].common['object-non-deletable']) {
-                    showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
-                    if (callback) callback(id);
-                } else {
-                    socket.emit('delObject', id, function () {
-                        socket.emit('delState', id, function () {
-                            if (callback) {
-                                setTimeout(function () {
-                                    callback(id);
-                                }, 0);
-                            }
-                        });
-                    });
-                }
+    function _delObject($tree, id, callback) {
+        var leaf = $tree.selectId('getTreeInfo', id);
+        //var leaf = treeFindLeaf(id);
+        if (leaf && leaf.children) {
+            for (var e = 0; e < leaf.children.length; e++) {
+                delObject($tree, leaf.children[e], function () {
+                    delObject($tree, id, callback, true);
+                }, true);
+                break;
             }
+        } else {
+            if (objects[id] && objects[id].common && objects[id].common['object-non-deletable']) {
+                showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
+                if (callback) callback(id);
+            } else {
+                socket.emit('delObject', id, function () {
+                    socket.emit('delState', id, function () {
+                        if (callback) {
+                            setTimeout(function () {
+                                callback(id);
+                            }, 0);
+                        }
+                    });
+                });
+            }
+        }
+    }
+    function delObject($tree, id, callback, hideConfirm) {
+        if (hideConfirm) {
+            _delObject($tree, id, callback);
+        } else {
+            confirmMessage(_('Are you sure to delete %s and all children?', id), null, 'help', function (result) {
+                if (result) {
+                    _delObject($tree, id, callback);
+                }
+            });
         }
     }
 
@@ -4278,7 +4365,7 @@ $(document).ready(function () {
         if (typeof obj.val == 'object') obj.val = JSON.stringify(obj.val);
 
         obj.gridId = 'state_' + key.replace(/ /g, '_');
-        if (obj.from) obj.from = obj.from.replace('system.adapter.', '').replace('system.', '');
+        obj.from = obj.from ? obj.from.replace('system.adapter.', '').replace('system.', '') : '';
         return obj;
     }
     function initStates(update) {
@@ -4486,20 +4573,22 @@ $(document).ready(function () {
                     if (states[id]) {
                         var data  = $gridStates.jqGrid('getGridParam', 'data');
                         var index = $gridStates.jqGrid('getGridParam', '_index');
-                        var rowData = data[index['state_' + id]];
+                        rowData = data[index['state_' + id]];
                         if (rowData) {
                             rowData.val = state.val;
                             rowData.ack = state.ack;
                             if (state.ts) rowData.ts = formatDate(state.ts, true);
                             if (state.lc) rowData.lc = formatDate(state.lc, true);
-                            rowData.from = state.from.replace('system.adapter.', '').replace('system.', '');
+                            rowData.from = state.from ? state.from.replace('system.adapter.', '').replace('system.', '') : '';
                             var a = $gridStates.jqGrid('getRowData', 'state_' + id, rowData);
                             if (a && a._id) $gridStates.jqGrid('setRowData', 'state_' + id, rowData);
                         } else {
-                            $gridStates.jqGrid('addRowData', 'state_' + id, convertState(id, state));
+                            rowData = convertState(id, state);
+                            $gridStates.jqGrid('addRowData', 'state_' + id, rowData);
                         }
                     } else {
-                        $gridStates.jqGrid('addRowData', 'state_' + id, convertState(id, state));
+                        rowData = convertState(id, state);
+                        $gridStates.jqGrid('addRowData', 'state_' + id, rowData);
                     }
                 } else {
                     $gridStates.jqGrid('delRowData', 'state_' + id);
@@ -4680,7 +4769,7 @@ $(document).ready(function () {
             updateTimers.initHosts = setTimeout(function () {
                 updateTimers.initHosts = null;
                 initHosts(true);
-                initHostsList();
+                initHostsList(true);
             }, 200);
         }
 

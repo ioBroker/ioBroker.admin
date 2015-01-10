@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.9 (2015-01-10)
+* (bluefox) support of multiple hosts if one host is down.
+
 ### 0.3.8 (2015-01-08)
 * (bluefox) fix errors with states update if filtered. Resize command putput window.
 

@@ -265,5 +265,7 @@ systemDictionary = {
     "Processing...":        {"en": "Processing...",         "de": "Bearbeite...",           "ru": "Обработка..."},
     "De-bounce interval(ms)": {"en": "De-bounce interval(ms)", "de": "Entprellzeit(ms)",    "ru": "Минимальный интервал(ms)"},
     "No states selected!":  {"en": "No states selected!",   "de": "Keine Zustände ausgewählt!", "ru": "Нечего настраивать!"},
-    "Message":              {"en": "Message",               "de": "Meldung",                "ru": "Сообщение"}
+    "Message":              {"en": "Message",               "de": "Meldung",                "ru": "Сообщение"},
+    "Host %s is offline":   {"en": "Host %s is offline",    "de": "Host %s ist offline",    "ru": "Хост %s недоступен"},
+    "command execution":    {"en": "Command execution",     "de": "Kommando-Ausführung",    "ru": "Выполнение команды"}
 };
