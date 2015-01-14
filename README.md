@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.10 (2015-01-14)
+* (bluefox) fix error with adapter instances with more modes
+
 ### 0.3.9 (2015-01-10)
 * (bluefox) support of multiple hosts if one host is down.
 
