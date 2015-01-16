@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.11 (2015-01-16)
+* (bluefox) fix npm
+
 ### 0.3.10 (2015-01-14)
 * (bluefox) fix error with adapter instances with more modes
 
