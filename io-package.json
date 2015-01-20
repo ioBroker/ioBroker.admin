@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "admin",
-        "version": "0.3.11",
+        "version": "0.3.12",
         "title":                    "ioBroker Admin",
         "desc": {
             "en":                   "Opens a webserver for the ioBroker admin UI",
@@ -30,7 +30,9 @@
         "auth":                     false,
         "secure":                   false,
         "bind":                     "0.0.0.0",
-        "cache":                    false
+        "cache":                    false,
+        "certPublic":               "",
+        "certPrivate":              ""
     },
     "objects": [
 

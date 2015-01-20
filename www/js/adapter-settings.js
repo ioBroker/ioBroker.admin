@@ -23,6 +23,7 @@ $(document).ready(function () {
     systemDictionary.delete =         {"en": "delete",      "de": "Löschen",     "ru": "Удалить"};
     systemDictionary.ok =             {"en": "Ok",          "de": "Ok",          "ru": "Ok"};
     systemDictionary.cancel =         {"en": "Cancel",      "de": "Abbrechen",   "ru": "Отмена"};
+    systemDictionary.Message =        {"en": "Message",     "de": "Mitteilung",  "ru": "Сообщение"};
 
 
     loadSystemConfig(function () {
@@ -116,6 +117,47 @@ $(document).ready(function () {
     }
 });
 
+
+function showMessage(message, title, icon) {
+    var $dialogMessage = $('#dialog-message-settings');
+    if (!$dialogMessage.length) {
+        $('body').append('<div id="dialog-message-settings" title="Message" style="display: none">\n' +
+            '<p>' +
+                '<span id="dialog-message-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
+                '<span id="dialog-message-text-settings"></span>\n' +
+            '</p>\n' +
+        '</div>');
+        $dialogMessage = $('#dialog-message-settings');
+        $dialogMessage.dialog({
+            autoOpen: false,
+            modal:    true,
+            buttons: [
+                {
+                    text: _('Ok'),
+                    click: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            ]
+        });
+    }
+
+    if (typeof _ != 'undefined') {
+        $dialogMessage.dialog('option', 'title', title || _('Message'));
+    } else {
+        $dialogMessage.dialog('option', 'title', title || 'Message');
+    }
+    $('#dialog-message-text-settings').html(message);
+    if (icon) {
+        $('#dialog-message-icon-settings').show();
+        $('#dialog-message-icon-settings').attr('class', '');
+        $('#dialog-message-icon-settings').addClass('ui-icon ui-icon-' + icon);
+    } else {
+        $('#dialog-message-icon-settings').hide();
+    }
+    $dialogMessage.dialog('open');
+}
+
 function getObject(id, callback) {
     socket.emit('getObject', id, function (err, res) {
         if (!err && res) {
@@ -200,10 +242,6 @@ function sendTo(_adapter_instance, command, message, callback) {
 
 function sendToHost(host, command, message, callback) {
     socket.emit('sendToHost', host || common.host, command, message, callback);
-}
-
-function showMessage(message, lang) {
-    alert(message);
 }
 
 // fills select with names of the certificates and preselect it

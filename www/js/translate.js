@@ -16,7 +16,7 @@ function translateWord(text, lang, dictionary) {
                 return newText;
             }
         }
-    } else {
+    } else if (!text.match(/_tooltip$/)) {
         console.log('"' + text + '": {"en": "' + text + '", "de": "' + text + '", "ru": "' + text + '"},');
     }
     return text;

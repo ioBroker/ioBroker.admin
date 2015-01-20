@@ -8,6 +8,10 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.12 (2015-01-20)
+* (bluefox) add selection of certificates to settings of admin
+* (bluefox) make showMessage dialog
+
 ### 0.3.11 (2015-01-16)
 * (bluefox) fix npm
 

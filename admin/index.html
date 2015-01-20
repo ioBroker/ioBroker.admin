@@ -18,18 +18,34 @@
             "de": "Admin adapter Einstellungen",
             "ru": "Настройки драйвера Admin"
         },
-        "IP:":              {"de": "IP:",                     "ru": "IP:"},
-        "Port:":            {"de": "Port:",                   "ru": "Порт:"},
-        "Secure(HTTPS):":   {"de": "Verschlüsselung(HTTPS):", "ru": "Шифрование(HTTPS):"},
-        "Authentication:":  {"de": "Authentifikation:",       "ru": "Аутентификация:"},
-        "Cache:":           {"de": "Puffer:",                 "ru": "Кэш:"},
-        "help_tip":         {
+        "IP:":                    {"en": "IP:",                     "de": "IP:",                     "ru": "IP:"},
+        "Port:":                  {"en": "Port:",                   "de": "Port:",                   "ru": "Порт:"},
+        "Secure(HTTPS):":         {"en": "Secure(HTTPS):",          "de": "Verschlüsselung(HTTPS):", "ru": "Шифрование(HTTPS):"},
+        "Authentication:":        {"en": "Authentication:",         "de": "Authentifikation:",       "ru": "Аутентификация:"},
+        "Cache:":                 {"en": "Cache:",                  "de": "Puffer:",                 "ru": "Кэш:"},
+        "Public certificate:":    {"en": "Public certificate:",     "de": "Publikzertifikat:",       "ru": "'Public' сертификат:"},
+        "Private certificate:":   {"en": "Private certificate:",    "de": "Privatzertifikat:",       "ru": "'Private' сертификат:"},
+        "help_tip":               {
             "en": "On save the adapter restarts with new configuration immediately",
             "de": "Beim Speichern von Einstellungen der Adapter wird sofort neu gestartet.",
             "ru": "Сразу после сохранения настроек драйвер перезапуститься с новыми значениями"
+        },
+        "Set certificates or load it first in the system settings (right top).":    {
+            "en": "Set certificates or load it first in the system settings (right top).",
+            "de": "Setze Zertificate oder lade die erst unter System/Einstellungen (oben rechts).",
+            "ru": "Нужно выбрать сертификаты или сначала загрузить их в системных настройках (вверху справа)."
         }
-
     };
+
+    function showHideSettings() {
+        if ($('#secure').prop('checked')) {
+            $('#_certPublic').show();
+            $('#_certPrivate').show();
+        } else {
+            $('#_certPublic').hide();
+            $('#_certPrivate').hide();
+        }
+    }
 
     // the function loadSettings has to exist ...
     function load(settings) {
@@ -48,6 +64,7 @@
             if ($('#' + key + '.value').attr('type') == 'checkbox') {
                 $('#' + key + '.value').prop('checked', settings[key]).change(function() {
                     $('#save').button("enable");
+                    showHideSettings();
                 });
             } else {
                 $('#' + key + '.value').val(settings[key]).change(function() {
@@ -74,6 +91,11 @@
                 });
             }
         }
+
+        fillSelectCertificates('#certPublic',  'public',  settings.certPublic);
+        fillSelectCertificates('#certPrivate', 'private', settings.certPrivate);
+
+        showHideSettings();
         $('#save').button("disable");
     }
 
@@ -90,6 +112,12 @@
                 obj[$this.attr('id')] = $this.val();
             }
         });
+
+        if ($('#secure').prop('checked') && (!$('#certPrivate').val() || !$('#certPublic').val())) {
+            showMessage(_('Set certificates or load it first in the system settings (right top).'));
+            return;
+        }
+
         $('#save').button("disable");
         changed = false;
         callback(obj);
@@ -103,8 +131,16 @@
 
     <table>
         <tr><td class="translate">IP:</td><td>            <select class="value" id="bind"></select></td></tr>
-        <tr><td class="translate">Port:</td><td>          <input  class="value number" id="port" size="5"  maxlength="5"/></td></tr>
+        <tr><td class="translate">Port:</td><td>          <input  class="value number" id="port" size="5" maxlength="5"/></td></tr>
         <tr><td class="translate">Secure(HTTPS):</td><td> <input  class="value" id="secure" type="checkbox" /></td></tr>
+        <tr id="_certPublic">
+            <td class="translate">Public certificate:</td>
+            <td><select id="certPublic" class="value"></select></td>
+        </tr>
+        <tr id="_certPrivate">
+            <td class="translate">Private certificate:</td>
+            <td><select id="certPrivate" class="value"></select></td>
+        </tr>
         <tr><td class="translate">Authentication:</td><td><input  class="value" id="auth"   type="checkbox" /></td></tr>
         <tr><td class="translate">Cache:</td><td>         <input  class="value" id="cache"  type="checkbox" /></td></tr>
     </table>
