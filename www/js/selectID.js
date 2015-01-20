@@ -1062,9 +1062,11 @@
                 $(this).attr('title', data.texts.tree);
             }
             $('#process_running_' + data.instance).show();
-            data.inited = false;
-            initTreeDialog(data.$dlg);
-            $('#process_running_' + data.instance).hide();
+            setTimeout(function () {
+                data.inited = false;
+                initTreeDialog(data.$dlg);
+                $('#process_running_' + data.instance).hide();
+            }, 200);
         }).attr('title', data.texts.tree)
         if (data.list) {
             $('#btn_list_' + data.instance).addClass('ui-state-error');
