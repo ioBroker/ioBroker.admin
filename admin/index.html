@@ -64,14 +64,17 @@
             if ($('#' + key + '.value').attr('type') == 'checkbox') {
                 $('#' + key + '.value').prop('checked', settings[key]).change(function() {
                     $('#save').button("enable");
+                    $('#saveclose').button("enable");
                     showHideSettings();
                 });
             } else {
                 $('#' + key + '.value').val(settings[key]).change(function() {
                     $('#save').button("enable");
+                    $('#saveclose').button("enable");
                     changed = true;
                 }).keyup(function() {
                     $('#save').button("enable");
+                    $('#saveclose').button("enable");
                     changed = true;
                     // Chack that only numbers entered
                     if ($(this).hasClass('number')) {
@@ -97,6 +100,7 @@
 
         showHideSettings();
         $('#save').button("disable");
+        $('#saveclose').button("disable");
     }
 
     // ... and the function save has to exist.
@@ -119,6 +123,7 @@
         }
 
         $('#save').button("disable");
+        $('#saveclose').button("disable");
         changed = false;
         callback(obj);
     }

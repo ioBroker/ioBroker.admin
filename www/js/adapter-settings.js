@@ -15,6 +15,7 @@ $(document).ready(function () {
     // Extend dictionary with standard words for adapter
     if (typeof systemDictionary === 'undefined') systemDictionary = {};
     systemDictionary.save =           {"en": "Save",        "de": "Speichern",   "ru": "Сохранить"};
+    systemDictionary.saveclose =      {"en": "Save and close", "de": "Speichern", "ru": "Сохранить и выйти"};
     systemDictionary.none =           {"en": "none",        "de": "keins",       "ru": ""};
     systemDictionary.all =            {"en": "all",         "de": "alle",        "ru": "все"};
     systemDictionary['Device list'] = {"en": "Device list", "de": "Gerätelist",  "ru": "Список устройств"};
@@ -32,11 +33,10 @@ $(document).ready(function () {
     });
 
     $('body').prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" >' +
-        '<input type="button" id="save" class="translateV" value="save"/></div>');
-         /*+
-        '<input type="button" id="saveclose" class="translateV" value="save and close"/>' +
-        '<input type="button" id="close" class="translateV" value="close"/>' +
-        '</div>')*/
+        '<input type="button" id="save" class="translateV" value="save"/>' +
+        '<input type="button" id="saveclose" class="translateV" value="saveclose"/>' +
+        '<input type="button" id="close" class="translateV" value="cancel"/>' +
+        '</div>');
 
     $('input[type="button"]').button();
     $('input#save').click(function () {
@@ -343,6 +343,7 @@ function _editInitButtons($grid, tabId, objId) {
         }
         changed = true;
         $('#save').button("enable");
+        $('#saveclose').button("enable");
     }).css('height', '18px');
 
     $('.' + tabId + '-delete-submit' + search).unbind('click').button({
@@ -353,6 +354,7 @@ function _editInitButtons($grid, tabId, objId) {
         $grid.jqGrid('delRowData', tabId + '_' + id);
         changed = true;
         $('#save').button("enable");
+        $('#saveclose').button("enable");
         var pos = $grid[0]._edited.indexOf(id);
         if (pos != -1) {
             $grid[0]._edited.splice(pos, 1);
@@ -375,6 +377,7 @@ function _editInitButtons($grid, tabId, objId) {
 
         changed = true;
         $('#save').button("enable");
+        $('#saveclose').button("enable");
 
         var pos = $grid[0]._edited.indexOf(id);
         if (pos != -1) {
@@ -472,6 +475,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             }
             changed = true;
             $('#save').button("enable");
+            $('#saveclose').button("enable");
         },
         sortname:  "id",
         sortorder: "desc",
@@ -527,6 +531,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
 
                 changed = true;
                 $('#save').button("enable");
+                $('#saveclose').button("enable");
                 addToTable(tabId, obj, $grid);
             },
             position: 'first',
