@@ -1302,10 +1302,10 @@ $(document).ready(function () {
                 {name: '_id',       index: '_id',       hidden: true},
                 {name: 'availableModes', index:'availableModes', hidden: true},
                 {name: 'image',     index: 'image',     width: 22,   editable: false, sortable: false, search: false, align: 'center'},
-                {name: 'name',      index: 'name',      width: 130,  editable: true},
+                {name: 'name',      index: 'name',      width: 130},
                 {name: 'instance',  index: 'instance',  width: 70},
-                {name: 'title',     index: 'title',     width: 220},
-                {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: 'true:false'}, align: 'center'},
+                {name: 'title',     index: 'title',     width: 220,  editable: true},
+                {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: _('true') + ':' + _('false')}, align: 'center'},
                 {name: 'host',      index: 'host',      width: 100,  editable: true, edittype: 'select', editoptions: ''},
                 {name: 'mode',      index: 'mode',      width: 80,   editable: true, edittype: 'select', editoptions: {value: null}, align: 'center'},
                 {name: 'schedule',  index: 'schedule',  width: 80,   align: 'center', editable: true},
@@ -2092,6 +2092,22 @@ $(document).ready(function () {
 
                 if (obj.version) {
                     installed = obj.version;
+
+                    var _instances = 0;
+                    var _enabled = 0;
+                    // Show information about installed and enabled instances
+                    for (var z = 0; z < instances.length; z++) {
+                        if (objects[instances[z]].common.name == adapter) {
+                            _instances++;
+                            if (objects[instances[z]].common.enabled) _enabled++;
+                        }
+                    }
+                    if (_instances) {
+                        installed += '&nbsp;[<span title="' + _('Installed instances') + '">' + _instances + '</span>';
+                        if (_enabled) installed += '/<span title="' + _('Active instances') + '" style="color: green">' + _enabled + '</span>';
+                        installed += ']';
+                    }
+
                     tmp = installed.split('.');
                     if (!upToDate(version, installed)) {
                         installed += ' <button class="adapter-update-submit" data-adapter-name="' + adapter + '">' + _('update') + '</button>';
@@ -2124,7 +2140,7 @@ $(document).ready(function () {
                     install:  '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
                         '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
                         '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
-                    platform: obj.platform
+                    platform:  obj.platform
                 });
             }
 
@@ -2980,10 +2996,10 @@ $(document).ready(function () {
         var a = $('td[aria-describedby="grid-instances_enabled"]');
         a.each(function (index) {
             var text = $(this).html();
-            if (text == '<span style="color:green;font-weight:bold">true</span>') {
-                $(this).html('true');
-            } else if (text == '<span style="color:red">false</span>') {
-                $(this).html('false');
+            if (text == '<span style="color:green;font-weight:bold">' + _('true') + '</span>') {
+                $(this).html(_('true'));
+            } else if (text == '<span style="color:red">' + _('false') + '</span>') {
+                $(this).html( _('false'));
             }
         });
 
@@ -3032,9 +3048,9 @@ $(document).ready(function () {
 
     function htmlBoolean(value) {
         if (value === 'true' || value === true) {
-            return '<span style="color:green;font-weight:bold">true</span>';
+            return '<span style="color:green;font-weight:bold">' + _('true') + '</span>';
         } else if (value === 'false' || value === false) {
-            return '<span style="color:red">false</span>';
+            return '<span style="color:red">' + _('false') + '</span>';
         } else {
             return value;
         }
@@ -3173,9 +3189,10 @@ $(document).ready(function () {
                 obj.common.schedule = _obj.schedule;
                 obj.common.enabled  = _obj.enabled;
                 obj.common.mode     = _obj.mode;
+                obj.common.title    = _obj.title;
 
-                if (obj.common.enabled === 'true')  obj.common.enabled = true;
-                if (obj.common.enabled === 'false') obj.common.enabled = false;
+                if (obj.common.enabled === _('true'))  obj.common.enabled = true;
+                if (obj.common.enabled === _('false')) obj.common.enabled = false;
 
                 socket.emit('extendObject', _obj._id, obj);
             }, 100);
@@ -3200,10 +3217,10 @@ $(document).ready(function () {
             var a = $('td[aria-describedby="grid-instances_enabled"]');
             a.each(function (index) {
                 var text = $(this).html();
-                if (text == 'true') {
-                    $(this).html('<span style="color:green;font-weight:bold">true</span>');
-                } else if (text == 'false') {
-                    $(this).html('<span style="color:red">false</span>');
+                if (text == _('true')) {
+                    $(this).html('<span style="color:green;font-weight:bold">' + _('true') + '</span>');
+                } else if (text == _('false')) {
+                    $(this).html('<span style="color:red">' + _('false') + '</span>');
                 }
             });
         });
@@ -3495,7 +3512,7 @@ $(document).ready(function () {
 
                     if (id.match(/^system\.adapter\.node-red\.[0-9]+$/) && obj && obj.common && obj.common.enabled) {
                         $("#a-tab-node-red").show();
-                        if ($('#tabs').tabs("option", "active") == 8) $("#tab-node-red").show();
+                        if ($('#tabs').tabs('option', 'active') == 5) $("#tab-node-red").show();
                         $('#iframe-node-red').height($(window).height() - 55);
                         $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
                     }
@@ -3511,7 +3528,7 @@ $(document).ready(function () {
                 var engines = fillEngines();
 
                 // Disable scripts tab if no one script engine instance found
-                if (!engines || !engines.length) $('#tabs').tabs('option', 'disabled', [7]);
+                if (!engines || !engines.length) $('#tabs').tabs('option', 'disabled', [4]);
 
                 // Show if update available
                 initHostsList();
@@ -4692,7 +4709,7 @@ $(document).ready(function () {
             if (id.match(/^system\.adapter\.node-red\.[0-9]+$/)) {
                 if (obj && obj.common && obj.common.enabled) {
                     $("#a-tab-node-red").show();
-                    if ($('#tabs').tabs("option", "active") == 8) $("#tab-node-red").show();
+                    if ($('#tabs').tabs('option', 'active') == 5) $("#tab-node-red").show();
                     $('#iframe-node-red').height($(window).height() - 55);
                     $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
                 } else {
@@ -4703,7 +4720,7 @@ $(document).ready(function () {
 
             // Disable scripts tab if no one script engine instance found
             var engines = fillEngines();
-            $('#tabs').tabs('option', 'disabled', (engines && engines.length) ? [] : [7]);
+            $('#tabs').tabs('option', 'disabled', (engines && engines.length) ? [] : [4]);
 
             if (typeof $gridInstance !== 'undefined' && $gridInstance[0]._isInited) {
                 if (updateTimers.initInstances) {

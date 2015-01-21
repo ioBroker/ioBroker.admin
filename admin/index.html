@@ -48,9 +48,8 @@
     }
 
     // the function loadSettings has to exist ...
-    function load(settings) {
+    function load(settings, onChange) {
         if (!settings) return;
-        changed = false;
 
         getIPs(function(ips) {
             for (var i = 0; i < ips.length; i++) {
@@ -63,19 +62,13 @@
             // example: select elements with id=key and class=value and insert value
             if ($('#' + key + '.value').attr('type') == 'checkbox') {
                 $('#' + key + '.value').prop('checked', settings[key]).change(function() {
-                    $('#save').button("enable");
-                    $('#saveclose').button("enable");
+                    onChange();
                     showHideSettings();
+                    changed = true;
                 });
             } else {
-                $('#' + key + '.value').val(settings[key]).change(function() {
-                    $('#save').button("enable");
-                    $('#saveclose').button("enable");
-                    changed = true;
-                }).keyup(function() {
-                    $('#save').button("enable");
-                    $('#saveclose').button("enable");
-                    changed = true;
+                $('#' + key + '.value').val(settings[key]).change(onChange).keyup(function() {
+                    onChange();
                     // Chack that only numbers entered
                     if ($(this).hasClass('number')) {
                         var val = $(this).val();
@@ -90,7 +83,6 @@
                             if (val != newVal) $(this).val(newVal);
                         }
                     }
-
                 });
             }
         }
@@ -99,8 +91,7 @@
         fillSelectCertificates('#certPrivate', 'private', settings.certPrivate);
 
         showHideSettings();
-        $('#save').button("disable");
-        $('#saveclose').button("disable");
+        onChange(false);
     }
 
     // ... and the function save has to exist.
@@ -122,9 +113,6 @@
             return;
         }
 
-        $('#save').button("disable");
-        $('#saveclose').button("disable");
-        changed = false;
         callback(obj);
     }
 </script>

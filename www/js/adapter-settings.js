@@ -9,13 +9,14 @@ var adapter =  '';
 $(document).ready(function () {
 
     var tmp = window.location.pathname.split('/');
+    var onChangeSupported = false;
     adapter = tmp[2];
     var id = 'system.adapter.' + adapter + '.' + instance;
 
     // Extend dictionary with standard words for adapter
     if (typeof systemDictionary === 'undefined') systemDictionary = {};
     systemDictionary.save =           {"en": "Save",        "de": "Speichern",   "ru": "Сохранить"};
-    systemDictionary.saveclose =      {"en": "Save and close", "de": "Speichern", "ru": "Сохранить и выйти"};
+    systemDictionary.saveclose =      {"en": "Save and close", "de": "Speichern und zumachen", "ru": "Сохранить и выйти"};
     systemDictionary.none =           {"en": "none",        "de": "keins",       "ru": ""};
     systemDictionary.all =            {"en": "all",         "de": "alle",        "ru": "все"};
     systemDictionary['Device list'] = {"en": "Device list", "de": "Gerätelist",  "ru": "Список устройств"};
@@ -33,13 +34,12 @@ $(document).ready(function () {
     });
 
     $('body').prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" >' +
-        '<input type="button" id="save" class="translateV" value="save"/>' +
-        '<input type="button" id="saveclose" class="translateV" value="saveclose"/>' +
-        '<input type="button" id="close" class="translateV" value="cancel"/>' +
+        '<button id="save" class="translateB">save</button>&nbsp;' +
+        '<button id="saveclose" class="translateB">saveclose</button>&nbsp;' +
+        '<button id="close" class="translateB">cancel</button>&nbsp;' +
         '</div>');
 
-    $('input[type="button"]').button();
-    $('input#save').click(function () {
+    $('button#save').button({icons: {primary: 'ui-icon-disk'}}).click(function () {
         if (typeof save == 'undefined') {
             alert("Please implement save function in your admin/index.html");
             return;
@@ -48,30 +48,41 @@ $(document).ready(function () {
             saveSettings(obj, common);
         });
     });
-    $('input#saveclose').click(function () {
-        if (!save) {
+    $('button#saveclose').button({icons: {
+        primary: 'ui-icon-disk',
+        secondary: "ui-icon-close"
+    }}).click(function () {
+        if (typeof save == 'undefined') {
             alert("Please implement save function in your admin/index.html");
             return;
         }
-        save(function (obj) {
-            saveSettings(obj);
-            window.close();
-            if (parent && parent.$iframeDialog) {
-                parent.$iframeDialog.dialog('close');
-            }
+        save(function (obj, common) {
+            saveSettings(obj, common, function () {
+                window.close();
+                if (parent && parent.$iframeDialog) {
+                    parent.$iframeDialog.dialog('close');
+                }
+            });
         });
     });
-    $('input#close').click(function () {
+    $('button#close').button({icons: {primary: 'ui-icon-close'}}).click(function () {
         window.close();
         if (parent && parent.$iframeDialog) {
             parent.$iframeDialog.dialog('close');
         }
     });
 
-    function saveSettings(obj, common) {
+    function saveSettings(obj, common, callback) {
         var newObj = {native: obj};
         if (common) newObj.common = common;
-        socket.emit('extendObject', id, newObj);
+        socket.emit('extendObject', id, newObj, function () {
+            changed = false;
+            if (onChangeSupported) {
+                $('#save').button('disable');
+                $('#saveclose').button('disable');
+            }
+            if (callback) callback();
+        });
     }
 
     // Read language settings
@@ -98,6 +109,20 @@ $(document).ready(function () {
         });
     }
 
+    // callback if something changed
+    function onChange(isChanged) {
+        onChangeSupported = true;
+        if (typeof isChanged == 'boolean' && isChanged === false) {
+            changed = false;
+            $('#save').button('disable');
+            $('#saveclose').button('disable');
+        } else {
+            changed = true;
+            $('#save').button('enable');
+            $('#saveclose').button('enable');
+        }
+    }
+
     function loadSettings() {
         socket.emit('getObject', id, function (err, res) {
             if (!err && res && res.native) {
@@ -108,7 +133,7 @@ $(document).ready(function () {
                 if (typeof load == 'undefined') {
                     alert("Please implement save function in your admin/index.html");
                 } else {
-                    load(res.native);
+                    load(res.native, onChange);
                 }
             } else {
                 alert('error loading settings for ' + id + '\n\n' + err);

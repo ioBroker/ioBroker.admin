@@ -1,4 +1,6 @@
 systemDictionary = {
+    "true":                 {"en": "true",                  "de": "ja",                     "ru": "да"},
+    "false":                {"en": "false",                 "de": "nein",                   "ru": "нет"},
     "System":               {"en": "System",                "de": "System",                 "ru": "Система"},
     "Objects":              {"en": "Objects",               "de": "Objekte",                "ru": "Объекты"},
     "States":               {"en": "States",                "de": "Zustände",               "ru": "Состояния"},
@@ -267,5 +269,7 @@ systemDictionary = {
     "No states selected!":  {"en": "No states selected!",   "de": "Keine Zustände ausgewählt!", "ru": "Нечего настраивать!"},
     "Message":              {"en": "Message",               "de": "Meldung",                "ru": "Сообщение"},
     "Host %s is offline":   {"en": "Host %s is offline",    "de": "Host %s ist offline",    "ru": "Хост %s недоступен"},
-    "command execution":    {"en": "Command execution",     "de": "Kommando-Ausführung",    "ru": "Выполнение команды"}
+    "command execution":    {"en": "Command execution",     "de": "Kommando-Ausführung",    "ru": "Выполнение команды"},
+    "Installed instances":  {"en": "Installed instances",   "de": "Installierte Instanze",  "ru": "Добавлено драйверов"},
+    "Active instances":     {"en": "Active instances",      "de": "Aktivierte Instanze",    "ru": "Драйверов активно"}
 };
