@@ -152,7 +152,7 @@ $(document).ready(function () {
                 case '#tab-users':
                     initUsers();
                     break;
-                
+
                 case '#tab-groups':
                     initGroups();
                     break;
@@ -1697,7 +1697,7 @@ $(document).ready(function () {
             if (event.which == 13) saveGroup();
         });
     }
-    
+
     function prepareScripts() {
         $gridScripts.jqGrid({
             datatype: 'local',
@@ -2525,7 +2525,7 @@ $(document).ready(function () {
             $('.log-line').each(function (index) {
                 if (filterHost && !$(this).hasClass('log-from-' + filterHost)) {
                     $(this).hide();
-                } else 
+                } else
                 if (filterMsg && $(this).html().indexOf(filterMsg) == -1) {
                     $(this).hide();
                 }
@@ -3182,6 +3182,16 @@ $(document).ready(function () {
             // afterSave
             setTimeout(function () {
                 var _obj = $gridInstance.jqGrid('getRowData', 'instance_' + id);
+
+                // Translate mode back
+                var modes = $gridInstance.jqGrid('getColProp', 'mode');
+                if (modes) modes = modes.editoptions.value;
+                for (var mode in modes) {
+                    if (modes[mode] == _obj.mode) {
+                        _obj.mode = mode;
+                        break;
+                    }
+                }
 
                 var obj = {common:{}};
                 obj.common.host     = _obj.host;
@@ -4432,7 +4442,7 @@ $(document).ready(function () {
             tc = formatDate(new Date());
             lc = '';
         }
-        
+
         if (eventTypes.indexOf(type) == -1) {
             eventTypes.push(type);
             eventTypes.sort();

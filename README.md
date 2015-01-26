@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.14 (2015-01-26)
+* (bluefox) fix error with adapter instances with more modes (again)
+
 ### 0.3.13 (2015-01-21)
 * (bluefox) add selection of certificates to settings of admin
 * (bluefox) make showMessage dialog
