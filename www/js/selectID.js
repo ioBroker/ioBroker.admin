@@ -613,7 +613,7 @@
                         base++;
                     } else
                     if (data.columns[c] == 'name') {
-                        $tdList.eq(base++).text(isCommon ? data.objects[node.key].common.name : '');
+                        $tdList.eq(base++).text(isCommon ? data.objects[node.key].common.name : '').css({overflow: 'hidden'}).attr('title', isCommon ? data.objects[node.key].common.name : '');
                     } else
                     if (data.columns[c] == 'type') {
                         $tdList.eq(base++).text(data.objects[node.key] ? data.objects[node.key].type: '');
@@ -641,41 +641,31 @@
 
                     } else
                     if (data.columns[c] == 'value') {
-                        if (data.states) {
-                            if (data.states[node.key]) {
-                                var val = data.states[node.key].val;
-                                var fullVal;
-                                if (val === undefined) {
-                                    val = '';
-                                } else {
-                                    if (isCommon && data.objects[node.key].common.unit) val += ' ' + data.objects[node.key].common.unit;
-                                    fullVal = data.texts.value + ': ' + val;
-                                    fullVal += '\x0A' + data.texts.ack  + ': ' + data.states[node.key].ack;
-                                    fullVal += '\x0A' + data.texts.ts   + ': ' + formatDate(new Date(data.states[node.key].ts * 1000));
-                                    fullVal += '\x0A' + data.texts.lc   + ': ' + formatDate(new Date(data.states[node.key].lc * 1000));
-                                    fullVal += '\x0A' + data.texts.from + ': ' + (data.states[node.key].from || '');
-                                }
-                                $tdList.eq(base).text(val);
-                                $tdList.eq(base).attr('title', fullVal);
-                            } else if (data.states[node.key + '.val'] !== undefined) {
-                                var val = data.states[node.key + '.val'];
-                                var fullVal;
-                                if (val === undefined) {
-                                    val = '';
-                                } else {
-                                    if (isCommon && data.objects[node.key].common.unit) val += ' ' + data.objects[node.key].common.unit;
-                                    fullVal = data.texts.value + ': ' + val;
-                                    fullVal += '\x0A' + data.texts.ack  + ': ' + data.states[node.key + '.ack'];
-                                    fullVal += '\x0A' + data.texts.ts   + ': ' + formatDate(new Date(data.states[node.key + '.ts'] * 1000));
-                                    fullVal += '\x0A' + data.texts.lc   + ': ' + formatDate(new Date(data.states[node.key + '.lc'] * 1000));
-                                    fullVal += '\x0A' + data.texts.from + ': ' + (data.states[node.key + '.from'] || '');
-                                }
-                                $tdList.eq(base).text(val);
-                                $tdList.eq(base).attr('title', fullVal);
-                            } else {
-                                $tdList.eq(base).text('');
-                                $tdList.eq(base).attr('title', '');
+                        if (data.states && (data.states[node.key] || data.states[node.key + '.val'] !== undefined)) {
+                            var val = data.states[node.key].val;
+                            if (!val) {
+                                val = {
+                                    val:  data.states[node.key + '.val'],
+                                    ts:   data.states[node.key + '.ts'],
+                                    lc:   data.states[node.key + '.lc'],
+                                    from: data.states[node.key + '.from'],
+                                    ack:  data.states[node.key + '.ack']
+                                };
                             }
+
+                            var fullVal;
+                            if (val === undefined) {
+                                val = '';
+                            } else {
+                                if (isCommon && data.objects[node.key].common.unit) val += ' ' + data.objects[node.key].common.unit;
+                                fullVal = data.texts.value + ': ' + val;
+                                fullVal += '\x0A' + data.texts.ack + ': ' + data.states[node.key].ack;
+                                fullVal += '\x0A' + data.texts.ts + ': ' + formatDate(new Date(data.states[node.key].ts * 1000));
+                                fullVal += '\x0A' + data.texts.lc + ': ' + formatDate(new Date(data.states[node.key].lc * 1000));
+                                fullVal += '\x0A' + data.texts.from + ': ' + (data.states[node.key].from || '');
+                            }
+                            $tdList.eq(base).text(val);
+                            $tdList.eq(base).attr('title', fullVal);
                         } else {
                             $tdList.eq(base).text('');
                             $tdList.eq(base).attr('title', '');

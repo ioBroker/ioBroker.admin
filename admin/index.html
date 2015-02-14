@@ -64,7 +64,6 @@
                 $('#' + key + '.value').prop('checked', settings[key]).change(function() {
                     onChange();
                     showHideSettings();
-                    changed = true;
                 });
             } else {
                 $('#' + key + '.value').val(settings[key]).change(onChange).keyup(function() {

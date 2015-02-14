@@ -13,6 +13,7 @@
 /*global license */
 /*global translateAll */
 /*global initGridLanguage */
+/*global systemLang */
 'use strict';
 
 //if (typeof Worker === 'undefined') alert('your browser does not support WebWorkers :-(');
@@ -35,26 +36,91 @@ var $iframeDialog = null; // used in adapter settings window
 
 (function ($) {
 $(document).ready(function () {
+    var main = {
+        objects:        {},
+        states:         {},
+        currentHost:    '',
+        socket:         io.connect(),
+        systemConfig:   null,
+        instances:      null,
+        objectsLoaded:  false,
+        waitForRestart: false,
+        tabs:           null,
+        // Helper methods
+        upToDate:     function (_new, old) {
+            _new = _new.split('.');
+            old = old.split('.');
+            _new[0] = parseInt(_new[0], 10);
+            old[0] = parseInt(old[0], 10);
+            if (_new[0] > old[0]) {
+                return false;
+            } else if (_new[0] === old[0]) {
+                _new[1] = parseInt(_new[1], 10);
+                old[1] = parseInt(old[1], 10);
+                if (_new[1] > old[1]) {
+                    return false;
+                } else if (_new[1] === old[1]) {
+                    _new[2] = parseInt(_new[2], 10);
+                    old[2] = parseInt(old[2], 10);
+                    if (_new[2] > old[2]) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        },
+        // Methods
+        cmdExec:      function (host, cmd, callback) {
+            $stdout.val('');
+            $dialogCommand.dialog('open');
+            stdout = '$ ./iobroker ' + cmd;
+            $stdout.val(stdout);
+            // genereate the unique id to coordinate the outputs
+            activeCmdId = Math.floor(Math.random() * 0xFFFFFFE) + 1;
+            cmdCallback = callback;
+            main.socket.emit('cmdExec', host, activeCmdId, cmd);
+        },
+        confirmMessage: function (message, title, icon, callback) {
+            $dialogConfirm.dialog('option', 'title', title || _('Message'));
+            $('#dialog-confirm-text').html(message);
+            if (icon) {
+                $('#dialog-confirm-icon').show();
+                $('#dialog-confirm-icon').attr('class', '');
+                $('#dialog-confirm-icon').addClass('ui-icon ui-icon-' + icon);
+            } else {
+                $('#dialog-confirm-icon').hide();
+            }
+            $dialogConfirm.data('callback', callback);
+            $dialogConfirm.dialog('open');
+        }
+    };
+    
+    var tabs = {
+        adapters:   new Adapters(main),
+        instances:  new Instances(main)
+    };
+    main.instances = tabs.instances.list;
+    main.tabs      = tabs;
 
     // Todo put this in adapter instance config
     var historyMaxAge =         86400; // Maxmimum datapoint age to be shown in gridHistory (seconds)
 
     var objectTree =            {name: '', children:{}, count: 0};
-    var instances =             [];
     var enums =                 [];
     var scripts =               [];
     var users =                 [];
     var groups =                [];
-    var adapters =              [];
     var children =              {};
-    var objects =               {};
     var updateTimers =          {};
     var hosts =                 [];
-    var states =                {};
     var enumCurrentParent =     '';
     var historyEnabled =        null;
 
-    var systemConfig;
     var systemRepos;
     var systemCerts;
 
@@ -74,13 +140,11 @@ $(document).ready(function () {
     var logFilterTimeout =      null;
 
     var $stdout =               $('#stdout');
-    var $configFrame =          $('#config-iframe');
     var $selectId =             null;
 
     var $dialogCommand =        $('#dialog-command');
     var $dialogEnumMembers =    $('#dialog-enum-members');
     var $dialogEnum =           $('#dialog-enum');
-    var $dialogConfig =         $('#dialog-config');
     var $dialogScript =         $('#dialog-script');
     var $dialogObject =         $('#dialog-object');
     var $dialogUser =           $('#dialog-user');
@@ -97,24 +161,15 @@ $(document).ready(function () {
     var $gridEnumMembers =      $('#grid-enum-members');
     var $gridObjects =          $('#grid-objects');
     var $gridStates =           $('#grid-states');
-    var $gridAdapter =          $('#grid-adapters');
-    var $gridInstance =         $('#grid-instances');
     var $gridScripts =          $('#grid-scripts');
     var $gridHosts =            $('#grid-hosts');
     var $gridHistory =          $('#grid-history');
     var $gridRepo =             $('#grid-repos');
     var $gridCerts =            $('#grid-certs');
 
-    var socket =                io.connect();
     var firstConnect =          true;
-    var waitForRestart =        false;
-    var objectsLoaded =         false;
 
     var enumEdit =              null;
-    var currentHost =           '';
-    var curRepository =         null;
-    var curRepoLastUpdate =     null;
-    var curInstalled =          null;
     var currentHistory =        null; // Id of the currently shown history dialog
     var historyIds =            [];
 
@@ -146,7 +201,7 @@ $(document).ready(function () {
                     break;
 
                 case '#tab-instances':
-                    initInstances();
+                    tabs.instances.init();
                     break;
 
                 case '#tab-users':
@@ -186,8 +241,8 @@ $(document).ready(function () {
                     }
                 }
 
-                $('#diagMode').val(systemConfig.common.diag).change(function () {
-                    socket.emit('sendToHost', currentHost, 'getDiagData', $(this).val(), function (obj) {
+                $('#diagMode').val(main.systemConfig.common.diag).change(function () {
+                    main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
                         $('#diagSample').html(JSON.stringify(obj, null, 2));
                     });
                 });
@@ -203,12 +258,12 @@ $(document).ready(function () {
                         var id = $this.attr('id').substring('system_'.length);
 
                         if ($this.attr('type') == 'checkbox') {
-                            $this.prop('checked', systemConfig.common[id]);
+                            $this.prop('checked', main.systemConfig.common[id]);
                         } else {
                             if (id == 'isFloatComma') {
-                                $this.val(systemConfig.common[id] ? "true" : "false");
+                                $this.val(main.systemConfig.common[id] ? "true" : "false");
                             } else {
-                                $this.val(systemConfig.common[id]);
+                                $this.val(main.systemConfig.common[id]);
                             }
                         }
 
@@ -274,7 +329,7 @@ $(document).ready(function () {
         if (id) {
             $dialogHistory.dialog('option', 'title', _('History of %s states', ids.length));
 
-            socket.emit('setObject', id, objects[id], function () {
+            main.socket.emit('setObject', id, main.objects[id], function () {
                 setTimeout(setHistory, 50, ids, callback);
             });
         } else {
@@ -285,7 +340,7 @@ $(document).ready(function () {
     // Use the function for this because it must be done after the language was read
     function initAllDialogs() {
 
-        initGridLanguage(systemConfig.common.language);
+        initGridLanguage(main.systemConfig.common.language);
 
         $dialogSystem.dialog({
             autoOpen:   false,
@@ -296,7 +351,7 @@ $(document).ready(function () {
                 {
                     text: _('Save'),
                     click: function () {
-                        var common = systemConfig.common;
+                        var common = main.systemConfig.common;
                         var languageChanged   = false;
                         var activeRepoChanged = false;
 
@@ -348,27 +403,27 @@ $(document).ready(function () {
                             systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
                         }
 
-                        socket.emit('extendObject', 'system.config', {common: common}, function (err) {
+                        main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
                             if (!err) {
                                 if (languageChanged) {
                                     window.location.reload();
                                 } else {
                                     if (activeRepoChanged) {
                                         setTimeout(function () {
-                                            initAdapters(true);
+                                            tabs.adapters.init(true);
                                         }, 0);
                                     }
                                 }
                             }
 
-                            socket.emit('extendObject', 'system.repositories', systemRepos, function (err) {
+                            main.socket.emit('extendObject', 'system.repositories', systemRepos, function (err) {
                                 if (activeRepoChanged) {
                                     setTimeout(function () {
-                                        initAdapters(true);
+                                        tabs.adapters.init(true);
                                     }, 0);
                                 }
 
-                                socket.emit('extendObject', 'system.certificates', systemCerts, function (err) {
+                                main.socket.emit('extendObject', 'system.certificates', systemCerts, function (err) {
                                     $dialogSystem.dialog('close');
                                 });
                             });
@@ -410,7 +465,7 @@ $(document).ready(function () {
                             showMessage(_('Empty name!'), '', 'notice');
                             return;
                         }
-                        if (objects[(enumCurrentParent || 'enum') + '.' + name]) {
+                        if (main.objects[(enumCurrentParent || 'enum') + '.' + name]) {
                             showMessage(_('Name yet exists!'), '', 'notice');
                             return;
                         }
@@ -442,27 +497,6 @@ $(document).ready(function () {
             }
         });
 
-        $dialogConfig.dialog({
-            autoOpen:   false,
-            modal:      true,
-            width:      830, //$(window).width() > 920 ? 920: $(window).width(),
-            height:     536, //$(window).height() - 100, // 480
-            closeOnEscape: false,
-            open: function (event, ui) {
-                $('#dialog-config').css('padding', '2px 0px');
-            },
-            beforeClose: function () {
-                if (window.frames['config-iframe'].changed) {
-                    return confirm(_('Are you sure? Changes are not saved.'));
-                }
-                return true;
-            },
-            close: function () {
-                // Clear iframe
-                $configFrame.attr('src', '');
-            }
-        });
-
         $dialogHistory.dialog({
             autoOpen:      false,
             modal:         true,
@@ -481,7 +515,7 @@ $(document).ready(function () {
                         historyIds = ids;
 
                         for(var i = 0; i < ids.length; i++) {
-                            objects[ids[i]].common.history = {
+                            main.objects[ids[i]].common.history = {
                                 enabled:     $('#edit-history-enabled').is(':checked'),
                                 changesOnly: $('#edit-history-changesOnly').is(':checked'),
                                 minLength:   minLength,
@@ -565,20 +599,6 @@ $(document).ready(function () {
         $dialogMessage.dialog('open');
     }
 
-    function confirmMessage(message, title, icon, callback) {
-        $dialogConfirm.dialog('option', 'title', title || _('Message'));
-        $('#dialog-confirm-text').html(message);
-        if (icon) {
-            $('#dialog-confirm-icon').show();
-            $('#dialog-confirm-icon').attr('class', '');
-            $('#dialog-confirm-icon').addClass('ui-icon ui-icon-' + icon);
-        } else {
-            $('#dialog-confirm-icon').hide();
-        }
-        $dialogConfirm.data('callback', callback);
-        $dialogConfirm.dialog('open');
-    }
-
     $('#enum-name').keyup(function () {
         var t = $('#enum-gen-id');
         t.html(t[0]._original + '.' + $(this).val().replace(/ /, '_').toLowerCase());
@@ -638,7 +658,7 @@ $(document).ready(function () {
     $('#log-clear-on-disk').button({icons:{primary: 'ui-icon-trash'}, text: false}).click(function () {
         confirmMessage(_('Log file will be deleted. Are you sure?'), null, null, function (result) {
             if (result) {
-                socket.emit('sendToHost', currentHost, 'delLogs', null, function () {
+                main.socket.emit('sendToHost', main.currentHost, 'delLogs', null, function () {
                     $('#log-table').html('');
                     logLinesCount = 0;
                     logLinesStart = 0;
@@ -692,8 +712,8 @@ $(document).ready(function () {
         if ($selectId) return;
         $selectId = $('#dialog-select-member').selectId('init',
             {
-                objects: objects,
-                states:  states,
+                objects: main.objects,
+                states:  main.states,
                 filter: {type: 'state'},
                 texts: {
                     select:   _('Select'),
@@ -716,7 +736,7 @@ $(document).ready(function () {
     }
 
     function checkHistory() {
-        if (objects['system.adapter.history.0'] && objects['system.adapter.history.0'].common.enabled) {
+        if (main.objects['system.adapter.history.0'] && main.objects['system.adapter.history.0'].common.enabled) {
             if (historyEnabled !== null && historyEnabled != true) {
                 historyEnabled = true;
                 // update history buttons
@@ -740,26 +760,26 @@ $(document).ready(function () {
         if (typeof ids != 'object') ids = [ids];
 
         for (var i = 0; i < ids.length; i++) {
-            if (!objects[ids[i]]) {
+            if (!main.objects[ids[i]]) {
                 var p = ids[i].split('.');
                 p.splice(2);
-                objects[ids[i]] = {
+                main.objects[ids[i]] = {
                     type:   'state',
                     parent: p.join('.'),
                     common: {
                         // TODO define role somehow
-                        type: states[ids[i]] ? getType(states[ids[i]].val) : 'mixed',
+                        type: main.states[ids[i]] ? getType(main.states[ids[i]].val) : 'mixed',
                         name: ids[i]
                     }
                 };
             }
-            if (!objects[ids[i]].common.history) {
-                objects[ids[i]].common.history = {
+            if (!main.objects[ids[i]].common.history) {
+                main.objects[ids[i]].common.history = {
                     enabled:        false,
                     changesOnly:    true,
                     debounce:       10000, // de-bounce interval
                     // use default value from history-adadpter config
-                    minLength:      (objects['system.adapter.history.0'] && objects['system.adapter.history.0'].native) ? objects['system.adapter.history.0'].native.minLength || 480 : 480,
+                    minLength:      (main.objects['system.adapter.history.0'] && main.objects['system.adapter.history.0'].native) ? main.objects['system.adapter.history.0'].native.minLength || 480 : 480,
                     retention:      604800 // one week by default
                 };
             }
@@ -768,19 +788,19 @@ $(document).ready(function () {
         var title;
         if (ids.length == 1) {
             title = _('History of %s', ids[0]);
-            currentHistory = objects[ids[0]].common.history.enabled ? ids[0]: null;
+            currentHistory = main.objects[ids[0]].common.history.enabled ? ids[0]: null;
         } else {
             title = _('History of %s states', ids.length);
             currentHistory = null;
         }
         $('#edit-history-ids').val(JSON.stringify(ids));
 
-        $('#edit-history-enabled').prop('checked', objects[ids[0]].common.history.enabled);
-        $('#edit-history-changesOnly').prop('checked', objects[ids[0]].common.history.changesOnly);
+        $('#edit-history-enabled').prop('checked', main.objects[ids[0]].common.history.enabled);
+        $('#edit-history-changesOnly').prop('checked', main.objects[ids[0]].common.history.changesOnly);
 
-        $('#edit-history-minLength').val(objects[ids[0]].common.history.minLength);
-        $('#edit-history-debounce').val(objects[ids[0]].common.history.debounce);
-        $('#edit-history-retention').val(objects[ids[0]].common.history.retention);
+        $('#edit-history-minLength').val(main.objects[ids[0]].common.history.minLength);
+        $('#edit-history-debounce').val(main.objects[ids[0]].common.history.debounce);
+        $('#edit-history-retention').val(main.objects[ids[0]].common.history.retention);
         $dialogHistory.dialog('option', 'title', title);
         $gridHistory.jqGrid('clearGridData');
         $("#load_grid-history").show();
@@ -788,18 +808,18 @@ $(document).ready(function () {
         var start = Math.round((new Date()).getTime() / 1000) - historyMaxAge;
         var end =   Math.round((new Date()).getTime() / 1000) + 5000;
         //console.log('getStateHistory', id, start, end)
-        var tabs = $('#tabs-history');
+        var _tabs = $('#tabs-history');
 
         var port = 0;
         var chart = false;
         if (ids.length == 1) {
             $dialogHistory.dialog('option', 'height', 575);
             $dialogHistory.dialog('open');
-            tabs[0]._id = ids[0];
-            tabs.show();
-            if (!tabs[0]._inited) {
-                tabs[0]._inited = true;
-                tabs.tabs({
+            _tabs[0]._id = ids[0];
+            _tabs.show();
+            if (!_tabs[0]._inited) {
+                _tabs[0]._inited = true;
+                _tabs.tabs({
                     activate: function (event, ui) {
                         switch (ui.newPanel.selector) {
                             case '#tab-history-table':
@@ -810,12 +830,12 @@ $(document).ready(function () {
                                 var port = 0;
                                 var chart = false;
                                 var _id = this._id;
-                                for (var i = 0; i < instances.length; i++) {
-                                    if (objects[instances[i]].common.name == 'rickshaw' && objects[instances[i]].common.enabled) {
+                                for (var i = 0; i < main.instances.length; i++) {
+                                    if (main.objects[main.instances[i]].common.name == 'rickshaw' && main.objects[main.instances[i]].common.enabled) {
                                         chart = 'rickshaw';
                                     } else
-                                    if (objects[instances[i]].common.name == 'web' && objects[instances[i]].common.enabled) {
-                                        port = objects[instances[i]].native.port;
+                                    if (main.objects[main.instances[i]].common.name == 'web' && main.objects[main.instances[i]].common.enabled) {
+                                        port = main.objects[main.instances[i]].native.port;
                                     }
                                     if (chart && port) break;
                                 }
@@ -830,21 +850,21 @@ $(document).ready(function () {
                     }
                 });
             } else {
-                tabs.tabs({active: 0});
+                _tabs.tabs({active: 0});
             }
 
             // Check if chart enabled and set
-            for (var i = 0; i < instances.length; i++) {
-                if (objects[instances[i]].common.name == 'rickshaw' && objects[instances[i]].common.enabled) {
+            for (var i = 0; i < main.instances.length; i++) {
+                if (main.objects[main.instances[i]].common.name == 'rickshaw' && main.objects[main.instances[i]].common.enabled) {
                     chart = 'rickshaw';
                 } else
-                if (objects[instances[i]].common.name == 'web'      && objects[instances[i]].common.enabled) {
-                    port = objects[instances[i]].native.port;
+                if (main.objects[main.instances[i]].common.name == 'web'      && main.objects[main.instances[i]].common.enabled) {
+                    port = main.objects[main.instances[i]].native.port;
                 }
                 if (chart && port) break;
             }
 
-            socket.emit('getStateHistory', ids[0], start, end, function (err, res) {
+            main.socket.emit('getStateHistory', ids[0], start, end, function (err, res) {
                 setTimeout(function () {
                     if (!err) {
                         var rows = [];
@@ -867,10 +887,10 @@ $(document).ready(function () {
                     }
                 }, 0);
             });
-            tabs.tabs('option', 'disabled', (port && chart && currentHistory) ? [] : [1]);
+            _tabs.tabs('option', 'disabled', (port && chart && currentHistory) ? [] : [1]);
         } else {
             $dialogHistory.dialog('option', 'height', 150);
-            tabs.hide();
+            _tabs.hide();
             $dialogHistory.dialog('open');
         }
     }
@@ -937,12 +957,12 @@ $(document).ready(function () {
             onClickButton: function () {
                 var _obj = $gridEnumMembers.jqGrid('getRowData', $gridEnumMembers.jqGrid('getGridParam', 'selrow'));
                 var id = _obj._id;
-                var obj = objects[enumEdit];
+                var obj = main.objects[enumEdit];
                 var idx = obj.common.members.indexOf(id);
                 if (idx !== -1) {
                     obj.common.members.splice(idx, 1);
-                    objects[enumEdit] = obj;
-                    socket.emit('setObject', enumEdit, obj, function () {
+                    main.objects[enumEdit] = obj;
+                    main.socket.emit('setObject', enumEdit, obj, function () {
                         setTimeout(function () {
                             enumMembers(enumEdit);
                         }, 0);
@@ -960,11 +980,11 @@ $(document).ready(function () {
                 initSelectId();
 
                 $selectId.selectId('show', function (newId, oldId) {
-                    var obj = objects[enumEdit];
+                    var obj = main.objects[enumEdit];
                     if (obj.common.members.indexOf(newId) === -1) {
                         obj.common.members.push(newId);
 
-                        socket.emit('setObject', enumEdit, obj, function () {
+                        main.socket.emit('setObject', enumEdit, obj, function () {
                             setTimeout(function () {
                                 enumMembers(enumEdit);
                             }, 0);
@@ -1108,7 +1128,7 @@ $(document).ready(function () {
                 do {
                     idx++;
                     newId = (enumCurrentParent || 'enum')  + '.' + name + idx;
-                } while (objects[newId]);
+                } while (main.objects[newId]);
 
                 $('#enum-name').val(name + idx);
                 var t = $('#enum-gen-id');
@@ -1160,17 +1180,17 @@ $(document).ready(function () {
                     stateLastSelected = id;
                 }
                 var _id = id.substring(6);//'state_'.length
-                if (objects[_id] && objects[_id].common && objects[_id].common.type == 'boolean') {
+                if (main.objects[_id] && main.objects[_id].common && main.objects[_id].common.type == 'boolean') {
                     $gridStates.setColProp('val', {
                         editable:    true,
                         edittype:    'checkbox',
                         editoptions: {value: 'true:false'}
                     });
-                } else if (objects[_id] && objects[_id].common && objects[_id].common.type == 'number' && objects[_id].common.states) {
+                } else if (main.objects[_id] && main.objects[_id].common && main.objects[_id].common.type == 'number' && main.objects[_id].common.states) {
                     $gridStates.setColProp('val', {
                         editable:    true,
                         edittype:    'select',
-                        editoptions: {value: objects[_id].common.states.join(':')},
+                        editoptions: {value: main.objects[_id].common.states.join(':')},
                         align:       'center'
                     });
                 } else {
@@ -1203,7 +1223,7 @@ $(document).ready(function () {
                     if (ack === 'false') ack = false;
 
                     var id = $('tr[id="' + stateLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                    socket.emit('setState', id, {val: val, ack: ack});
+                    main.socket.emit('setState', id, {val: val, ack: ack});
                     stateLastSelected = null;
                 });
             }
@@ -1231,145 +1251,6 @@ $(document).ready(function () {
             id:       'update-states',
             title:    _('Update states'),
             cursor:   'pointer'
-        });
-    }
-
-    function prepareAdapters() {
-        $gridAdapter.jqGrid({
-            datatype: 'local',
-            colNames: ['id', '', _('name'), _('title'), _('desc'), _('keywords'), _('available'), _('installed'), _('platform'), _('license'), ''],
-            colModel: [
-                {name: '_id',       index: '_id',       hidden: true},
-                {name: 'image',     index: 'image',     width: 22,   editable: false, sortable: false, search: false, align: 'center'},
-                {name: 'name',      index: 'name',      width:  64},
-                {name: 'title',     index: 'title',     width: 180},
-                {name: 'desc',      index: 'desc',      width: 360},
-                {name: 'keywords',  index: 'keywords',  width: 120},
-                {name: 'version',   index: 'version',   width:  70, align: 'center'},
-                {name: 'installed', index: 'installed', width: 110, align: 'center'},
-                {name: 'platform',  index: 'platform',  hidden: true},
-                {name: 'license',   index: 'license',   hidden: true},
-                {name: 'install',   index: 'install',   width: 72}
-            ],
-            pager: $('#pager-adapters'),
-            width: 964,
-            height: 326,
-            rowNum: 100,
-            rowList: [20, 50, 100],
-            sortname: "id",
-            sortorder: "desc",
-            viewrecords: true,
-            caption: _('ioBroker adapters'),
-            ignoreCase: true,
-            loadComplete: function () {
-                initAdapterButtons();
-            }
-        }).jqGrid('filterToolbar', {
-            defaultSearch: 'cn',
-            autosearch:    true,
-            searchOnEnter: false,
-            enableClear:   false,
-            afterSearch:   function () {
-                initAdapterButtons();
-            }
-        }).navGrid('#pager-adapters', {
-            search:  false,
-            edit:    false,
-            add:     false,
-            del:     false,
-            refresh: false
-        }).jqGrid('navButtonAdd', '#pager-adapters', {
-            caption:       '',
-            buttonicon:    'ui-icon-refresh',
-            onClickButton: function () {
-                initAdapters(true, true);
-            },
-            position:      'first',
-            id:            'add-object',
-            title:         _('update adapter information'),
-            cursor:        'pointer'
-        });
-
-        $('#gview_grid-adapters .ui-jqgrid-titlebar').append('<div style="padding-left: 120px; margin-bottom: -3px;"><span class="translate">Host: </span><select id="host-adapters"></select></div>');
-
-    }
-
-    function prepareInstances() {
-        $gridInstance.jqGrid({
-            datatype: 'local',
-            colNames: ['id', 'availableModes',  '', _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('alive'), _('connected')],
-            colModel: [
-                {name: '_id',       index: '_id',       hidden: true},
-                {name: 'availableModes', index:'availableModes', hidden: true},
-                {name: 'image',     index: 'image',     width: 22,   editable: false, sortable: false, search: false, align: 'center'},
-                {name: 'name',      index: 'name',      width: 130},
-                {name: 'instance',  index: 'instance',  width: 70},
-                {name: 'title',     index: 'title',     width: 220,  editable: true},
-                {name: 'enabled',   index: 'enabled',   width: 60,   editable: true, edittype: 'checkbox', editoptions: {value: _('true') + ':' + _('false')}, align: 'center'},
-                {name: 'host',      index: 'host',      width: 100,  editable: true, edittype: 'select', editoptions: ''},
-                {name: 'mode',      index: 'mode',      width: 80,   editable: true, edittype: 'select', editoptions: {value: null}, align: 'center'},
-                {name: 'schedule',  index: 'schedule',  width: 80,   align: 'center', editable: true},
-                {name: 'buttons',   index: 'buttons',   width: 80,   align: 'center', sortable: false, search: false},
-                {name: 'platform',  index: 'platform',  width: 60,   hidden: true},
-                {name: 'loglevel',  index: 'loglevel',  width: 60,   align: 'center', editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}},
-                {name: 'alive',     index: 'alive',     width: 60,   align: 'center'},
-                {name: 'connected', index: 'connected', width: 60,   align: 'center'}
-            ],
-            pager: $('#pager-instances'),
-            rowNum: 100,
-            rowList: [20, 50, 100],
-            sortname: "id",
-            sortorder: "desc",
-            viewrecords: true,
-            caption: _('ioBroker adapter instances'),
-            ignoreCase: true,
-            ondblClickRow: function (rowId, e) {
-                var rowData = $gridInstance.jqGrid('getRowData', rowId);
-                onEditInstance(rowData._id);
-            }
-        }).jqGrid('filterToolbar', {
-            defaultSearch: 'cn',
-            autosearch:    true,
-            searchOnEnter: false,
-            enableClear:   false,
-            afterSearch:   function () {
-                initInstanceButtons();
-            }
-        }).navGrid('#pager-instances', {
-            search:  false,
-            edit:    false,
-            add:     false,
-            del:     false,
-            refresh: false
-        }).jqGrid('navButtonAdd', '#pager-instances', {
-            caption: '',
-            buttonicon: 'ui-icon-gear',
-            onClickButton: function () {
-                var objSelected = $gridInstance.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-objects"][id$="_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                var obj = $gridInstance.jqGrid('getRowData', objSelected);
-                editObject(obj._id);
-            },
-            position: 'first',
-            id: 'edit-instance',
-            title: _('edit instance'),
-            cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-instances', {
-            caption:    '',
-            buttonicon: 'ui-icon-refresh',
-            onClickButton: function () {
-                initInstances(true);
-            },
-            position:   'first',
-            id:         'reload-instances',
-            title:      _('reload instance'),
-            cursor:     'pointer'
         });
     }
 
@@ -1425,7 +1306,7 @@ $(document).ready(function () {
                 $(".user-enabled-edit").change(function () {
                     var obj = {common: {enabled: $(this).is(':checked')}};
                     var id  = $(this).attr('data-id');
-                    socket.emit('extendObject', id, obj);
+                    main.socket.emit('extendObject', id, obj);
                 });
             }
         }).jqGrid('filterToolbar', {
@@ -1457,7 +1338,7 @@ $(document).ready(function () {
                 var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 confirmMessage(_('Are you sure?'), null, 'help', function (result) {
                     if (result) {
-                        socket.emit('delUser', id.replace('system.user.', ''), function (err) {
+                        main.socket.emit('delUser', id.replace('system.user.', ''), function (err) {
                             if (err) {
                                 showMessage(_('Cannot delete user: ') + err, '', 'alert');
                             } else {
@@ -1583,7 +1464,7 @@ $(document).ready(function () {
                     close: function () {
                         var obj = {common: {members: $(this).val()}};
                         var id  = $(this).attr('data-id');
-                        socket.emit('extendObject', id, obj, function (err, obj) {
+                        main.socket.emit('extendObject', id, obj, function (err, obj) {
                             if (err) {
                                 // Cannot modify
                                 showMessage(_('Cannot change group'), '', 'alert');
@@ -1624,7 +1505,7 @@ $(document).ready(function () {
                 var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                 confirmMessage(_('Are you sure?'), null, 'help', function (result) {
                     if (result) {
-                        socket.emit('delGroup', id.replace("system.group.", ""), function (err) {
+                        main.socket.emit('delGroup', id.replace("system.group.", ""), function (err) {
                             if (err) {
                                 showMessage(_('Cannot delete group: %s', err), '', 'alert');
                             }
@@ -1770,19 +1651,19 @@ $(document).ready(function () {
                     var engineType = '';
 
                     // find first instance
-                    for (var i = 0; i < instances.length; i++) {
-                        if (objects[instances[i]] && objects[instances[i]] && objects[instances[i]].common.engineTypes) {
-                            instance = instances[i];
-                            if (typeof objects[instances[i]].common.engineTypes == 'string') {
-                                engineType = objects[instances[i]].common.engineTypes;
+                    for (var i = 0; i < main.instances.length; i++) {
+                        if (main.objects[main.instances[i]] && main.objects[main.instances[i]] && main.objects[main.instances[i]].common.engineTypes) {
+                            instance = main.instances[i];
+                            if (typeof main.objects[main.instances[i]].common.engineTypes == 'string') {
+                                engineType = main.objects[main.instances[i]].common.engineTypes;
                             } else {
-                                engineType = objects[instances[i]].common.engineTypes[0];
+                                engineType = main.objects[main.instances[i]].common.engineTypes[0];
                             }
                             break;
                         }
                     }
 
-                    socket.emit('setObject', 'script.js.' + name.replace(/ /g, '_').replace(/\./g, '_'), {
+                    main.socket.emit('setObject', 'script.js.' + name.replace(/ /g, '_').replace(/\./g, '_'), {
                         common: {
                             name:       name,
                             engineType: engineType,
@@ -1865,7 +1746,7 @@ $(document).ready(function () {
             buttonicon:    'ui-icon-refresh',
             onClickButton: function () {
                 initHosts(true, true, function () {
-                    initAdapters(true, false);
+                    tabs.adapters.init(true, false);
                 });
             },
             position:      'first',
@@ -2039,209 +1920,6 @@ $(document).ready(function () {
 
     // Grids content
 
-    // ----------------------------- Adpaters show and Edit ------------------------------------------------
-    function initAdapters(update, updateRepo) {
-        $gridAdapter.jqGrid('clearGridData');
-        $("#load_grid-adapters").show();
-        $('a[href="#tab-adapters"]').removeClass('updateReady');
-
-        $("#load_grid-adapters").show();
-
-        getAdaptersInfo(currentHost, update, updateRepo, function (repository, installedList) {
-            var id = 1;
-            var obj;
-            var version;
-            var tmp;
-            var adapter;
-
-            var listInstalled    = [];
-            var listUnsinstalled = [];
-
-            if (installedList) {
-                for (adapter in installedList) {
-                    obj = installedList[adapter];
-                    if (!obj || obj.controller || adapter == 'hosts') continue;
-                    listInstalled.push(adapter);
-                }
-                listInstalled.sort();
-            }
-
-            // List of adapters for repository
-            for (adapter in repository) {
-                obj = repository[adapter];
-                if (!obj || obj.controller) continue;
-                version = '';
-                if (installedList && installedList[adapter]) continue;
-                listUnsinstalled.push(adapter);
-            }
-            listUnsinstalled.sort();
-
-            // list of the installed adapters
-            for (var i = 0; i < listInstalled.length; i++) {
-                adapter = listInstalled[i];
-                obj = installedList ? installedList[adapter] : null;
-                if (!obj || obj.controller || adapter == 'hosts') continue;
-                var installed = '';
-                var icon =      obj.icon;
-                version =   '';
-                if (repository[adapter] && repository[adapter].version) {
-                    version = repository[adapter].version;
-                }
-
-                if (repository[adapter] && repository[adapter].extIcon) icon = repository[adapter].extIcon;
-
-                if (obj.version) {
-                    installed = obj.version;
-
-                    var _instances = 0;
-                    var _enabled = 0;
-                    // Show information about installed and enabled instances
-                    for (var z = 0; z < instances.length; z++) {
-                        if (objects[instances[z]].common.name == adapter) {
-                            _instances++;
-                            if (objects[instances[z]].common.enabled) _enabled++;
-                        }
-                    }
-                    if (_instances) {
-                        installed += '&nbsp;[<span title="' + _('Installed instances') + '">' + _instances + '</span>';
-                        if (_enabled) installed += '/<span title="' + _('Active instances') + '" style="color: green">' + _enabled + '</span>';
-                        installed += ']';
-                    }
-
-                    tmp = installed.split('.');
-                    if (!upToDate(version, installed)) {
-                        installed += ' <button class="adapter-update-submit" data-adapter-name="' + adapter + '">' + _('update') + '</button>';
-                        version = version.replace('class="', 'class="updateReady ');
-                        $('a[href="#tab-adapters"]').addClass('updateReady');
-                    }
-                }
-                if (version) {
-                    tmp = version.split('.');
-                    if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
-                        version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
-                    } else if (tmp[0] === '0' && tmp[1] === '0') {
-                        version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
-                    } else if (tmp[0] === '0') {
-                        version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
-                    } else {
-                        version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
-                    }
-                }
-
-                $gridAdapter.jqGrid('addRowData', 'adapter_' + adapter.replace(/ /g, '_'), {
-                    _id:       id++,
-                    image:     icon ? '<img src="' + icon + '" width="22px" height="22px" />' : '',
-                    name:      adapter,
-                    title:     obj.title,
-                    desc:      (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc,
-                    keywords:  obj.keywords ? obj.keywords.join(' ') : '',
-                    version:   version,
-                    installed: installed,
-                    install:  '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
-                        '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
-                    platform:  obj.platform
-                });
-            }
-
-            for (i = 0; i < listUnsinstalled.length; i++) {
-                adapter = listUnsinstalled[i];
-
-                obj = repository[adapter];
-                if (!obj || obj.controller) continue;
-                version =   '';
-                if (installedList && installedList[adapter]) continue;
-
-                if (repository[adapter] && repository[adapter].version) {
-                    version = repository[adapter].version;
-                    tmp = version.split('.');
-                    if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
-                        version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
-                    } else if (tmp[0] === '0' && tmp[1] === '0') {
-                        version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
-                    } else if (tmp[0] === '0') {
-                        version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
-                    } else {
-                        version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
-                    }
-                }
-
-                $gridAdapter.jqGrid('addRowData', 'adapter_' + adapter.replace(/ /g, '_'), {
-                    _id:       id++,
-                    image:     repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" width="22px" height="22px" />' : '',
-                    name:      adapter,
-                    title:     obj.title,
-                    desc:      (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc,
-                    keywords:  obj.keywords ? obj.keywords.join(' ') : '',
-                    version:   version,
-                    installed: '',
-                    install:  '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
-                        '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
-                    platform: obj.platform
-                });
-            }
-
-            $gridAdapter.trigger('reloadGrid');
-        });
-    }
-    function initAdapterButtons() {
-        $(".adapter-install-submit").button({
-            text: false,
-            icons: {
-                primary: 'ui-icon-plusthick'
-            }
-        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
-            var adapter = $(this).attr('data-adapter-name');
-            getAdaptersInfo(currentHost, false, false, function (repo, installed) {
-                var obj = repo[adapter];
-
-                if (!obj) obj = installed[adapter];
-
-                if (!obj) return;
-
-                if (obj.license && obj.license !== 'MIT') {
-                    // TODO Show license dialog!
-                    cmdExec(currentHost, 'add ' + adapter, function (exitCode) {
-                        if (!exitCode) initAdapters(true);
-                    });
-                } else {
-                    cmdExec(currentHost, 'add ' + adapter, function (exitCode) {
-                        if (!exitCode) initAdapters(true);
-                    });
-                }
-            });
-        });
-
-        $(".adapter-delete-submit").button({
-            icons: {primary: 'ui-icon-trash'},
-            text:  false
-        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
-            cmdExec(currentHost, 'del ' + $(this).attr('data-adapter-name'), function (exitCode) {
-                if (!exitCode) initAdapters(true);
-            });
-        });
-
-        $(".adapter-readme-submit").button({
-            icons: {primary: 'ui-icon-help'},
-            text: false
-        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
-            window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
-        });
-
-        $(".adapter-update-submit").button({
-            icons: {primary: 'ui-icon-refresh'},
-            text:  false
-        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
-            var aName = $(this).attr('data-adapter-name');
-            if (aName == 'admin') waitForRestart = true;
-
-            cmdExec(currentHost, 'upgrade ' + aName, function (exitCode) {
-                if (!exitCode) initAdapters(true);
-            });
-        });
-    }
-
     // ----------------------------- Repositories show and Edit ------------------------------------------------
     function initRepoGrid(update) {
         $gridRepo.jqGrid('clearGridData');
@@ -2269,7 +1947,7 @@ $(document).ready(function () {
         }
 
 
-        $gridAdapter.trigger('reloadGrid');
+        $gridRepo.trigger('reloadGrid');
     }
     function initRepoButtons() {
         $('.repo-edit-submit').unbind('click').button({
@@ -2358,7 +2036,7 @@ $(document).ready(function () {
         }
 
 
-        $gridAdapter.trigger('reloadGrid');
+        $gridCerts.trigger('reloadGrid');
     }
     function initCertButtons() {
         $('.cert-edit-submit').unbind('click').button({
@@ -2412,13 +2090,13 @@ $(document).ready(function () {
 
     // -------------------------------- Logs ------------------------------------------------------------
     function initLogs() {
-        if (!currentHost) {
+        if (!main.currentHost) {
             setTimeout(initLogs, 500);
             return;
         }
 
         $('#log-table').html('');
-        socket.emit('sendToHost', currentHost, 'getLogs', 200, function (lines) {
+        main.socket.emit('sendToHost', main.currentHost, 'getLogs', 200, function (lines) {
             setTimeout(function () {
                 var message = {message: '', severity: 'debug', from: '', ts: ''};
                 var size = lines ? lines.pop() : -1;
@@ -2539,9 +2217,9 @@ $(document).ready(function () {
     // Find all script engines
     function fillEngines(id) {
         var engines = [];
-        for (var t = 0; t < instances.length; t++) {
-            if (objects[instances[t]] && objects[instances[t]].common && objects[instances[t]].common.engineTypes) {
-                var engineTypes = objects[instances[t]].common.engineTypes;
+        for (var t = 0; t < main.instances.length; t++) {
+            if (main.objects[main.instances[t]] && main.objects[main.instances[t]].common && main.objects[main.instances[t]].common.engineTypes) {
+                var engineTypes = main.objects[main.instances[t]].common.engineTypes;
                 if (typeof engineTypes == 'string') {
                     if (engines.indexOf(engineTypes) == -1) engines.push(engineTypes);
                 } else {
@@ -2570,9 +2248,9 @@ $(document).ready(function () {
         $('.script-cancel-submit[data-script-id="' + id + '"]').show();
 
         var list = {};
-        for (var i = 0; i < instances.length; i++) {
-            if (instances[i].indexOf('.javascript.') != -1) {
-                list[instances[i]] = instances[i];
+        for (var i = 0; i < main.instances.length; i++) {
+            if (main.instances[i].indexOf('.javascript.') != -1) {
+                list[main.instances[i]] = main.instances[i];
             }
         }
 
@@ -2586,7 +2264,7 @@ $(document).ready(function () {
         $gridScripts.jqGrid('editRow', 'script_' + id, {"url": "clientArray"});
     }
     function updateScript(id, newCommon) {
-        socket.emit('getObject', id, function (err, _obj) {
+        main.socket.emit('getObject', id, function (err, _obj) {
             setTimeout(function () {
                 var obj = {common: {}};
 
@@ -2599,7 +2277,7 @@ $(document).ready(function () {
                 if (newCommon.source !== undefined) obj.common.source = newCommon.source;
 
                 if (_obj && _obj.common && newCommon.name == _obj.common.name && (newCommon.engineType === undefined || newCommon.engineType == _obj.common.engineType)) {
-                    socket.emit('extendObject', id, obj);
+                    main.socket.emit('extendObject', id, obj);
                 } else {
                     var prefix;
 
@@ -2609,7 +2287,7 @@ $(document).ready(function () {
                     prefix = 'script.' + (parts[1] || parts[0]) + '.';
 
                     if (_obj) {
-                        socket.emit('delObject', _obj._id);
+                        main.socket.emit('delObject', _obj._id);
                         if (obj.common.engine  !== undefined) _obj.common.engine  = obj.common.engine;
                         if (obj.common.enabled !== undefined) _obj.common.enabled = obj.common.enabled;
                         if (obj.common.source  !== undefined) _obj.common.source  = obj.common.source;
@@ -2622,14 +2300,14 @@ $(document).ready(function () {
                     _obj.common.name = newCommon.name;
 
                     _obj._id = prefix + newCommon.name.replace(/ /g, '_').replace(/\./g, '_');
-                    socket.emit('setObject', _obj._id, _obj);
+                    main.socket.emit('setObject', _obj._id, _obj);
                 }
             }, 0);
         });
     }
     function initScripts(update) {
 
-        if (!objectsLoaded) {
+        if (!main.objectsLoaded) {
             setTimeout(initScripts, 250);
             return;
         }
@@ -2643,7 +2321,7 @@ $(document).ready(function () {
             }).css('height', '30px').click(function () {
                 initSelectId();
                 $selectId.selectId('show', function (newId) {
-                    editor.insert('"' + newId + '"' + ((objects[newId] && objects[newId].common && objects[newId].common.name) ? ('/*' + objects[newId].common.name + '*/') : ''));
+                    editor.insert('"' + newId + '"' + ((main.objects[newId] && main.objects[newId].common && main.objects[newId].common.name) ? ('/*' + main.objects[newId].common.name + '*/') : ''));
                 });
             });
         }
@@ -2655,7 +2333,7 @@ $(document).ready(function () {
 
             scripts.sort();
             for (var i = 0; i < scripts.length; i++) {
-                var obj = objects[scripts[i]];
+                var obj = main.objects[scripts[i]];
                 if (!obj) continue;
 
                 $gridScripts.jqGrid('addRowData', 'script_' + id, {
@@ -2704,7 +2382,7 @@ $(document).ready(function () {
         }).click(function () {
             var id = $(this).attr('data-script-id');
             var objSelected = $gridScripts.jqGrid('getRowData', 'script_' + id);
-            socket.emit('extendObject', objSelected._obj_id, {});
+            main.socket.emit('extendObject', objSelected._obj_id, {});
         });
 
         $('.script-delete-submit').unbind('click').button({
@@ -2713,7 +2391,7 @@ $(document).ready(function () {
         }).click(function () {
             var id = $(this).attr('data-script-id');
             var objNew = $gridScripts.jqGrid('getRowData', 'script_' + id);
-            socket.emit('delObject', objNew._obj_id);
+            main.socket.emit('delObject', objNew._obj_id);
 
             //$gridScripts.jqGrid('delRowData', 'script_' + id);
         });
@@ -2737,7 +2415,7 @@ $(document).ready(function () {
                 var objNew = $gridScripts.jqGrid('getRowData', 'script_' + id);
                 updateScript(objNew._obj_id, objNew);
 
-               /* socket.emit('getObject', objNew._obj_id, function (err, _obj) {
+               /* main.socket.emit('getObject', objNew._obj_id, function (err, _obj) {
                     var obj = {common:{}};
                     obj.common.engine  = objNew.engine;
                     obj.common.enabled = objNew.enabled;
@@ -2745,13 +2423,13 @@ $(document).ready(function () {
                     if (obj.common.enabled === 'false') obj.common.enabled = false;
 
                     if (_obj && _obj.common && objNew.name == _obj.common.name) {
-                        socket.emit('extendObject', objNew._obj_id, obj);
+                        main.socket.emit('extendObject', objNew._obj_id, obj);
                     } else {
                         var prefix = 'script.js.';
                         if (_obj) {
                             var parts = _obj._id.split('.', 3);
                             prefix = 'script.' + parts[1] + '.';
-                            socket.emit('delObject', _obj._id);
+                            main.socket.emit('delObject', _obj._id);
                             _obj.common.engine  = obj.common.engine;
                             _obj.common.enabled = obj.common.enabled;
                             delete _obj._rev;
@@ -2762,7 +2440,7 @@ $(document).ready(function () {
                         _obj.common.platform = _obj.common.platform || 'Javascript/Node.js';
 
                         _obj._id         = prefix + objNew.name.replace(/ /g, '_').replace(/\./g, '_');
-                        socket.emit('setObject', _obj._id, _obj)
+                        main.socket.emit('setObject', _obj._id, _obj)
                     }
                 });*/
             }, 100);
@@ -2788,7 +2466,7 @@ $(document).ready(function () {
         var engines = fillEngines('edit-script-engine-type');
 
         if (id) {
-            var obj = objects[id];
+            var obj = main.objects[id];
             $dialogScript.dialog('option', 'title', id);
             $('#edit-script-id').val(obj._id);
             $('#edit-script-name').val(obj.common.name);
@@ -2831,7 +2509,7 @@ $(document).ready(function () {
     // ----------------------------- Hosts show and Edit ------------------------------------------------
     function initHostsList(isUpdate) {
 
-        if (!objectsLoaded) {
+        if (!main.objectsLoaded) {
             setTimeout(initHostsList, 250);
             return;
         }
@@ -2860,11 +2538,7 @@ $(document).ready(function () {
         }
 
         // Change editoptions for gridInstances column host
-        var tmp = '';
-        for (var k = 0; k < hosts.length; k++) {
-            tmp += (k > 0 ? ';' : '') + hosts[k].name + ':' + hosts[k].name;
-        }
-        $gridInstance.jqGrid('setColProp', 'host', {editoptions: {value: tmp}});
+        tabs.instances.updateHosts(hosts);
 
         for (i = 0; i < hosts.length; i++) {
             found = false;
@@ -2878,20 +2552,20 @@ $(document).ready(function () {
                 $selHosts.append('<option value="' + hosts[i].name + '">' + hosts[i].name + '</option>');
             }
         }
-        if ($selHosts.val() != currentHost) {
-            currentHost = $selHosts.val();
-            initAdapters(true);
+        if ($selHosts.val() != main.currentHost) {
+            main.currentHost = $selHosts.val();
+            tabs.adapters.init(true);
         }
         $selHosts.unbind('change').change(function () {
-            if (!states['system.host.' + $(this).val() + '.alive'] || !states['system.host.' + $(this).val() + '.alive'].val) {
+            if (!main.states['system.host.' + $(this).val() + '.alive'] || !main.states['system.host.' + $(this).val() + '.alive'].val) {
                 showMessage(_('Host %s is offline', $(this).val()));
-                $(this).val(currentHost);
+                $(this).val(main.currentHost);
                 return;
             }
 
-            currentHost = $(this).val();
+            main.currentHost = $(this).val();
 
-            initAdapters(true);
+            tabs.adapters.init(true);
         });
     }
     function initHostButtons() {
@@ -2903,13 +2577,13 @@ $(document).ready(function () {
         });
 
         $('.host-restart-submit').button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click').on('click', function () {
-            waitForRestart = true;
+            main.waitForRestart = true;
             cmdExec($(this).attr('data-host-name'), '_restart');
         });
     }
     function initHosts(update, updateRepo, callback) {
 
-        if (!objectsLoaded) {
+        if (!main.objectsLoaded) {
             setTimeout(initHosts, 250);
             return;
         }
@@ -2921,7 +2595,7 @@ $(document).ready(function () {
             $("#load_grid-hosts").show();
 
             for (var i = 0; i < hosts.length; i++) {
-                var obj = objects[hosts[i].id];
+                var obj = main.objects[hosts[i].id];
 
                 $gridHosts.jqGrid('addRowData', 'host_' + hosts[i].id.replace(/ /g, '_'), {
                     _id:       obj._id,
@@ -2936,7 +2610,7 @@ $(document).ready(function () {
             }
             $gridHosts.trigger('reloadGrid');
 
-            getAdaptersInfo(currentHost, update, updateRepo, function (repository, installedList) {
+            tabs.adapters.getAdaptersInfo(main.currentHost, update, updateRepo, function (repository, installedList) {
                 var data  = $gridHosts.jqGrid('getGridParam', 'data');
                 var index = $gridHosts.jqGrid('getGridParam', '_index');
 
@@ -2944,7 +2618,7 @@ $(document).ready(function () {
                 if (!installedList || !installedList.hosts) return;
 
                 for (var id in installedList.hosts) {
-                    var obj = objects['system.host.' + id];
+                    var obj = main.objects['system.host.' + id];
                     var installed = '';
                     var version = obj.common ? (repository[obj.common.type] ? repository[obj.common.type].version : '') : '';
                     installed = installedList.hosts[id].version;
@@ -2953,7 +2627,7 @@ $(document).ready(function () {
                     if (!installed && obj.common && obj.common.installedVersion) installed = obj.common.installedVersion;
 
                     if (installed && version) {
-                        if (!upToDate(version, installed)) {
+                        if (!main.upToDate(version, installed)) {
                             installed += ' <button class="host-update-submit" data-host-name="' + obj.common.hostname + '">' + _('update') + '</button>';
                             version = '<span class="updateReady">' + version + '<span>';
                             $('a[href="#tab-hosts"]').addClass('updateReady');
@@ -2978,268 +2652,11 @@ $(document).ready(function () {
             });
         }
     }
-
-    // ----------------------------- Instances show and Edit ------------------------------------------------
-    function onEditInstance(id, e) {
-        var rowData = $gridInstance.jqGrid('getRowData', 'instance_' + id);
-
-        $('.instance-edit').hide();
-        $('.instance-settings').hide();
-        $('.instance-reload').hide();
-        $('.instance-del').hide();
-        $('.instance-ok-submit[data-instance-id="' + id + '"]').show();
-        $('.instance-cancel-submit[data-instance-id="' + id + '"]').show();
-        $('#reload-instances').addClass('ui-state-disabled');
-        $('#edit-instance').addClass('ui-state-disabled');
-
-        // Set the colors
-        var a = $('td[aria-describedby="grid-instances_enabled"]');
-        a.each(function (index) {
-            var text = $(this).html();
-            if (text == '<span style="color:green;font-weight:bold">' + _('true') + '</span>') {
-                $(this).html(_('true'));
-            } else if (text == '<span style="color:red">' + _('false') + '</span>') {
-                $(this).html( _('false'));
-            }
-        });
-
-        if (rowData.availableModes) {
-            var list = {};
-            var modes = rowData.availableModes.split(',');
-            var editable = false;
-            for (var i = 0; i < modes.length; i++) {
-                list[modes[i]] = _(modes[i]);
-                if (modes[i] == 'schedule') editable = true;
-            }
-            $gridInstance.setColProp('mode', {
-                editable:    true,
-                edittype:    'select',
-                editoptions: {value: list},
-                align:       'center'
-            });
-            $gridInstance.setColProp('schedule', {
-                editable:    editable,
-                align:       'center'
-            });
-        } else {
-            $gridInstance.setColProp('mode', {
-                editable: false,
-                align:    'center'
-            });
-            $gridInstance.setColProp('schedule', {
-                editable:    rowData.mode == 'schedule',
-                align:       'center'
-            });
-        }
-        $gridInstance.jqGrid('editRow', 'instance_' + id, {"url": "clientArray"});
-    }
-    function replaceLink(vars, adapter, instance) {
-        // like web_port
-        var parts = vars.split('_');
-        socket.emit('getObject', 'system.adapter.' + parts[0] + '.0', function (err, obj) {
-            if (obj) {
-                setTimeout(function () {
-                    var link = $('#a_' + adapter + '_' + instance).attr('href').replace('%' + vars + '%', obj.native[parts[1]]);
-                    $('#a_' + adapter + '_' + instance).attr('href', link);
-                }, 0);
-            }
-        });
-    }
-
-    function htmlBoolean(value) {
-        if (value === 'true' || value === true) {
-            return '<span style="color:green;font-weight:bold">' + _('true') + '</span>';
-        } else if (value === 'false' || value === false) {
-            return '<span style="color:red">' + _('false') + '</span>';
-        } else {
-            return value;
-        }
-    }
-
-    function initInstances(update) {
-
-        if (!objectsLoaded) {
-            setTimeout(initInstances, 250);
-            return;
-        }
-
-        if (typeof $gridInstance !== 'undefined' && (!$gridInstance[0]._isInited || update)) {
-            $gridInstance[0]._isInited = true;
-            $gridInstance.jqGrid('clearGridData');
-
-            instances.sort();
-
-            for (var i = 0; i < instances.length; i++) {
-                var obj = objects[instances[i]];
-                if (!obj) continue;
-                var tmp = obj._id.split('.');
-                var adapter = tmp[2];
-                var instance = tmp[3];
-                var title = obj.common ? obj.common.title : '';
-                var link  = obj.common.localLink || '';
-                if (link && link.indexOf('%ip%') != -1) link = link.replace('%ip%', location.hostname);
-                if (link && link.indexOf('%') != -1) {
-                    // TODO Get vars
-                    var vars = 'web_port';
-                    replaceLink(vars, adapter, instance);
-                }
-
-                $gridInstance.jqGrid('addRowData', 'instance_' + instances[i].replace(/ /g, '_'), {
-                    _id:       obj._id,
-                    availableModes: obj.common ? obj.common.availableModes : null,
-                    image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px"/>' : '',
-                    name:      obj.common ? obj.common.name : '',
-                    instance:  obj._id.slice(15),
-                    title:     obj.common ? (link ? '<a href="' + link + '" id="a_' + adapter + '_' + instance + '" target="_blank">' + title + '</a>': title): '',
-                    enabled:   obj.common ? (obj.common.enabled ? "true": "false") : "false",
-                    host:      obj.common ? obj.common.host : '',
-                    mode:      obj.common.mode,
-                    schedule:  obj.common.mode === 'schedule' ? obj.common.schedule : '',
-                    buttons:   '<button data-instance-id="' + instances[i] + '" class="instance-settings" data-instance-href="/adapter/' + adapter + '/?' + instance + '" >' + _('config') + '</button>' +
-                               '<button data-instance-id="' + instances[i] + '" class="instance-edit">'   + _('edit')   + '</button>' +
-                               '<button data-instance-id="' + instances[i] + '" class="instance-reload">' + _('reload') + '</button>' +
-                               '<button data-instance-id="' + instances[i] + '" class="instance-del">'    + _('delete') + '</button>' +
-                               '<button data-instance-id="' + instances[i] + '" class="instance-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
-                               '<button data-instance-id="' + instances[i] + '" class="instance-cancel-submit" style="display:none">' + _('cancel') + '</button>',
-                    platform:  obj.common ? obj.common.platform : '',
-                    loglevel:  obj.common ? obj.common.loglevel : '',
-                    alive:     states[obj._id + '.alive'] ? htmlBoolean(states[obj._id + '.alive'].val) : '',
-                    connected: states[obj._id + '.connected'] ? htmlBoolean(states[obj._id + '.connected'].val) : ''
-                });
-            }
-            $gridInstance.trigger('reloadGrid');
-
-            // Set the colors
-            var a = $('td[aria-describedby="grid-instances_enabled"]');
-            a.each(function (index) {
-                var text = $(this).html();
-                if (text == 'true' || text == 'false') {
-                    $(this).html(htmlBoolean(text));
-                }
-            });
-
-            $('.host-selector').each(function () {
-                var id = $(this).attr('data-id');
-                $(this).val((objects[id] && objects[id].common) ? obj.common.host || '': '').
-                    change(function () {
-                        socket.emit('extendObject', $(this).attr('data-id'), {common:{host: $(this).val()}});
-                    });
-            });
-
-            initInstanceButtons();
-        }
-    }
-    function initInstanceButtons() {
-        $('.instance-edit').unbind('click').button({
-            icons: {primary: 'ui-icon-pencil'},
-            text:  false
-        }).css('width', '22px').css('height', '18px').click(function () {
-            onEditInstance($(this).attr('data-instance-id'));
-        });
-
-        $('.instance-settings').button({icons: {primary: 'ui-icon-note'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
-            .click(function () {
-                $iframeDialog = $dialogConfig;
-                $configFrame.attr('src', $(this).attr('data-instance-href'));
-                var name = $(this).attr('data-instance-id').replace(/^system\.adapter\./, '');
-                $dialogConfig.dialog('option', 'title', _('Adapter configuration') + ': ' + name).dialog('open');
-            });
-
-        $('.instance-reload').button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click')
-            .click(function () {
-                socket.emit('extendObject', $(this).attr('data-instance-id'), {});
-            });
-
-        $('.instance-del').button({icons: {primary: 'ui-icon-trash'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
-            .click(function () {
-                var id = $(this).attr('data-instance-id');
-                if (objects[id] && objects[id].common && objects[id].common.host) {
-                    confirmMessage(_('Are you sure?'), null, 'help', function (result) {
-                        if (result) {
-                            cmdExec(objects[id].common.host, 'del ' + id.replace('system.adapter.', ''), function (exitCode) {
-                                if (!exitCode) initAdapters(true);
-                            });
-                        }
-                    });
-                }
-            });
-
-        $('.instance-ok-submit').unbind('click').button({
-            icons: {primary: 'ui-icon-check'},
-            text:  false
-        }).css('width', '22px').css('height', '18px').click(function () {
-            var id = $(this).attr('data-instance-id');
-            $('.instance-edit').show();
-            $('.instance-settings').show();
-            $('.instance-reload').show();
-            $('.instance-del').show();
-            $('.instance-ok-submit').hide();
-            $('.instance-cancel-submit').hide();
-            $('#reload-instances').removeClass('ui-state-disabled');
-            $('#edit-instance').removeClass('ui-state-disabled');
-
-            $gridInstance.jqGrid('saveRow', 'instance_' + id, {"url": "clientArray"});
-            // afterSave
-            setTimeout(function () {
-                var _obj = $gridInstance.jqGrid('getRowData', 'instance_' + id);
-
-                // Translate mode back
-                var modes = $gridInstance.jqGrid('getColProp', 'mode');
-                if (modes) modes = modes.editoptions.value;
-                for (var mode in modes) {
-                    if (modes[mode] == _obj.mode) {
-                        _obj.mode = mode;
-                        break;
-                    }
-                }
-
-                var obj = {common:{}};
-                obj.common.host     = _obj.host;
-                obj.common.loglevel = _obj.loglevel;
-                obj.common.schedule = _obj.schedule;
-                obj.common.enabled  = _obj.enabled;
-                obj.common.mode     = _obj.mode;
-                obj.common.title    = _obj.title;
-
-                if (obj.common.enabled === _('true'))  obj.common.enabled = true;
-                if (obj.common.enabled === _('false')) obj.common.enabled = false;
-
-                socket.emit('extendObject', _obj._id, obj);
-            }, 100);
-        });
-
-        $('.instance-cancel-submit').unbind('click').button({
-            icons: {primary: 'ui-icon-close'},
-            text:  false
-        }).css('width', '22px').css('height', '18px').click(function () {
-            var id = $(this).attr('data-instance-id');
-            $('.instance-edit').show();
-            $('.instance-settings').show();
-            $('.instance-reload').show();
-            $('.instance-del').show();
-            $('.instance-ok-submit').hide();
-            $('.instance-cancel-submit').hide();
-            $('#reload-instances').removeClass('ui-state-disabled');
-            $('#edit-instance').removeClass('ui-state-disabled');
-            $gridInstance.jqGrid('restoreRow', 'instance_' + id, false);
-
-            // Set the colors
-            var a = $('td[aria-describedby="grid-instances_enabled"]');
-            a.each(function (index) {
-                var text = $(this).html();
-                if (text == _('true')) {
-                    $(this).html('<span style="color:green;font-weight:bold">' + _('true') + '</span>');
-                } else if (text == _('false')) {
-                    $(this).html('<span style="color:red">' + _('false') + '</span>');
-                }
-            });
-        });
-    }
-
+    
     // ----------------------------- Users show and Edit ------------------------------------------------
     function initUsers(update) {
 
-        if (!objectsLoaded) {
+        if (!main.objectsLoaded) {
             setTimeout(initUsers, 500);
             return;
         }
@@ -3248,13 +2665,13 @@ $(document).ready(function () {
             $gridUsers[0]._isInited = true;
             $gridUsers.jqGrid('clearGridData');
             for (var i = 0; i < users.length; i++) {
-                var obj = objects[users[i]];
+                var obj = main.objects[users[i]];
                 var select = '<select class="user-groups-edit" multiple="multiple" data-id="' + users[i] + '">';
                 for (var j = 0; j < groups.length; j++) {
                     var name = groups[j].substring('system.group.'.length);
                     name = name.substring(0, 1).toUpperCase() + name.substring(1);
                     select += '<option value="' + groups[j] + '"';
-                    if (objects[groups[j]].common && objects[groups[j]].common.members && objects[groups[j]].common.members.indexOf(users[i]) != -1) select += ' selected';
+                    if (main.objects[groups[j]].common && main.objects[groups[j]].common.members && main.objects[groups[j]].common.members.indexOf(users[i]) != -1) select += ' selected';
                     select += '>' + name + '</option>';
                 }
 
@@ -3270,7 +2687,7 @@ $(document).ready(function () {
     }
     function editUser(id) {
         if (id) {
-            var obj = objects[id];
+            var obj = main.objects[id];
             $dialogUser.dialog('option', 'title', id);
             $('#edit-user-id').val(obj._id);
             $('#edit-user-name').val(obj.common.name);
@@ -3300,7 +2717,7 @@ $(document).ready(function () {
         var user = $('#edit-user-name').val();
 
         if (!id) {
-            socket.emit('addUser', user, pass, function (err) {
+            main.socket.emit('addUser', user, pass, function (err) {
                 if (err) {
                     showMessage(_('Cannot set password: ') + err, '', 'alert');
                 } else {
@@ -3313,7 +2730,7 @@ $(document).ready(function () {
         } else {
             // If password changed
             if (pass != '__pass_not_set__') {
-                socket.emit('changePassword', user, pass, function (err) {
+                main.socket.emit('changePassword', user, pass, function (err) {
                     if (err) {
                         showMessage(_('Cannot set password: ') + err, '', 'alert');
                     } else {
@@ -3329,28 +2746,28 @@ $(document).ready(function () {
         for (var i = 0; i < groups.length; i++) {
             // If user has no group, but group has user => delete user from group
             if (userGroups.indexOf(groups[i]) == -1 &&
-                objects[groups[i]].common.members && objects[groups[i]].common.members.indexOf(userId) != -1) {
-                objects[groups[i]].common.members.splice(objects[groups[i]].common.members.indexOf(userId), 1);
-                obj = {common: {members: objects[groups[i]].common.members}};
-                socket.emit('extendObject', groups[i], obj);
+                main.objects[groups[i]].common.members && main.objects[groups[i]].common.members.indexOf(userId) != -1) {
+                main.objects[groups[i]].common.members.splice(main.objects[groups[i]].common.members.indexOf(userId), 1);
+                obj = {common: {members: main.objects[groups[i]].common.members}};
+                main.socket.emit('extendObject', groups[i], obj);
             }
             if (userGroups.indexOf(groups[i]) != -1 &&
-                (!objects[groups[i]].common.members || objects[groups[i]].common.members.indexOf(userId) == -1)) {
-                objects[groups[i]].common.members = objects[groups[i]].common.members || [];
-                objects[groups[i]].common.members.push(userId);
-                obj = {common: {members: objects[groups[i]].common.members}};
-                socket.emit('extendObject', groups[i], obj);
+                (!main.objects[groups[i]].common.members || main.objects[groups[i]].common.members.indexOf(userId) == -1)) {
+                main.objects[groups[i]].common.members = main.objects[groups[i]].common.members || [];
+                main.objects[groups[i]].common.members.push(userId);
+                obj = {common: {members: main.objects[groups[i]].common.members}};
+                main.socket.emit('extendObject', groups[i], obj);
             }
         }
     }
     function delUser(id) {
         for (var i = 0; i < groups.length; i++) {
             // If user has no group, but group has user => delete user from group
-            if (objects[groups[i]].common.members && objects[groups[i]].common.members.indexOf(id) != -1) {
-                objects[groups[i]].common.members.splice(objects[groups[i]].common.members.indexOf(id), 1);
-                socket.emit('extendObject', groups[i], {
+            if (main.objects[groups[i]].common.members && main.objects[groups[i]].common.members.indexOf(id) != -1) {
+                main.objects[groups[i]].common.members.splice(main.objects[groups[i]].common.members.indexOf(id), 1);
+                main.socket.emit('extendObject', groups[i], {
                     common: {
-                        members: objects[groups[i]].common.members
+                        members: main.objects[groups[i]].common.members
                     }
                 });
             }
@@ -3360,7 +2777,7 @@ $(document).ready(function () {
     // ----------------------------- Groups show and Edit ------------------------------------------------
     function initGroups(update) {
 
-        if (!objectsLoaded) {
+        if (!main.objectsLoaded) {
             setTimeout(initGroups, 500);
             return;
         }
@@ -3369,7 +2786,7 @@ $(document).ready(function () {
             $gridGroups[0]._isInited = true;
             $gridGroups.jqGrid('clearGridData');
             for (var i = 0; i < groups.length; i++) {
-                var obj = objects[groups[i]];
+                var obj = main.objects[groups[i]];
                 var select = '<select class="group-users-edit" multiple="multiple" data-id="' + groups[i] + '">';
                 for (var j = 0; j < users.length; j++) {
                     var name = users[j].substring('system.user.'.length);
@@ -3390,7 +2807,7 @@ $(document).ready(function () {
     }
     function editGroup(id) {
         if (id) {
-            var obj = objects[id];
+            var obj = main.objects[id];
             $dialogGroup.dialog('option', 'title', id);
             $('#edit-group-id').val(obj._id);
             $('#edit-group-name').val(obj.common.name);
@@ -3412,7 +2829,7 @@ $(document).ready(function () {
         var desc  = $('#edit-group-desc').val();
 
         if (!id) {
-            socket.emit('addGroup', group, desc, function (err) {
+            main.socket.emit('addGroup', group, desc, function (err) {
                 if (err) {
                     showMessage(_('Cannot create group: ') + err, '', 'alert');
                 } else {
@@ -3425,7 +2842,7 @@ $(document).ready(function () {
         } else {
             var obj = {common: {desc: desc}};
             // If description changed
-            socket.emit('extendObject', id, obj, function (err, res) {
+            main.socket.emit('extendObject', id, obj, function (err, res) {
                 if (err) {
                     showMessage(_('Cannot change group: ') + err, '', 'alert');
                 } else {
@@ -3435,73 +2852,23 @@ $(document).ready(function () {
         }
     }
 
-    // Methods
-    function cmdExec(host, cmd, callback) {
-        $stdout.val('');
-        $dialogCommand.dialog('open');
-        stdout = '$ ./iobroker ' + cmd;
-        $stdout.val(stdout);
-        // genereate the unique id to coordinate the outputs
-        activeCmdId = Math.floor(Math.random() * 0xFFFFFFE) + 1;
-        cmdCallback = callback;
-        socket.emit('cmdExec', host, activeCmdId, cmd);
-    }
-
-    function getAdaptersInfo(host, update, updateRepo, callback) {
-        if (!callback) throw 'Callback cannot be null or undefined';
-        if (update) {
-            // Do not update too offten
-            if (!curRepoLastUpdate || ((new Date()).getTime() - curRepoLastUpdate > 1000)) {
-                curRepository = null;
-                curInstalled  = null;
-            }
-        }
-        if (!curRepository) {
-            socket.emit('sendToHost', host, 'getRepository', {repo: systemConfig.common.activeRepo, update: updateRepo}, function (_repository) {
-                curRepository = _repository;
-                if (curRepository && curInstalled) {
-                    curRepoLastUpdate = (new Date()).getTime();
-                    setTimeout(function () {
-                        callback(curRepository, curInstalled);
-                    }, 0);
-                }
-            });
-        }
-        if (!curInstalled) {
-            socket.emit('sendToHost', host, 'getInstalled', null, function (_installed) {
-                curInstalled = _installed;
-                if (curRepository && curInstalled) {
-                    curRepoLastUpdate = (new Date()).getTime();
-                    setTimeout(function () {
-                        callback(curRepository, curInstalled);
-                    }, 0);
-                }
-            });
-        }
-        if (curInstalled && curRepository) {
-            setTimeout(function () {
-                callback(curRepository, curInstalled);
-            }, 0);
-        }
-    }
-
     // ----------------------------- Objects show and Edit ------------------------------------------------
     function getObjects(callback) {
-        socket.emit('getObjects', function (err, res) {
+        main.socket.emit('getObjects', function (err, res) {
             setTimeout(function () {
                 var obj;
-                objects = res;
-                for (var id in objects) {
+                main.objects = res;
+                for (var id in main.objects) {
                     if (id.slice(0, 7) === '_design') continue;
 
-                    obj = objects[id];
+                    obj = main.objects[id];
 
-                    if (obj.type === 'instance') instances.push(id);
+                    if (obj.type === 'instance') main.instances.push(id);
                     if (obj.type === 'enum')     enums.push(id);
                     if (obj.type === 'script')   scripts.push(id);
                     if (obj.type === 'user')     users.push(id);
                     if (obj.type === 'group')    groups.push(id);
-                    if (obj.type === 'adapter')  adapters.push(id);
+                    if (obj.type === 'adapter')  tabs.adapters.list.push(id);
                     if (obj.type === 'enum')     enums.push(id);
                     if (obj.type === 'host') {
                         var addr = null;
@@ -3529,7 +2896,7 @@ $(document).ready(function () {
                     //treeInsert(id);
                 }
                 //benchmark('finished getObjects loop');
-                objectsLoaded = true;
+                main.objectsLoaded = true;
 
                 // If history enabled
                 checkHistory();
@@ -3549,7 +2916,7 @@ $(document).ready(function () {
         });
     }
     function initObjects(update) {
-        if (!objectsLoaded) {
+        if (!main.objectsLoaded) {
             setTimeout(initObjects, 250);
             return;
         }
@@ -3566,8 +2933,8 @@ $(document).ready(function () {
             $gridObjects.height(y - 100).width(x - 20);
 
             var settings = {
-                objects: objects,
-                states: states,
+                objects: main.objects,
+                states: main.states,
                 noDialog: true,
                 texts: {
                     select:   _('Select'),
@@ -3627,9 +2994,9 @@ $(document).ready(function () {
                         height: 20,
                         match: function (id) {
                             // Show history button only if history adapter enabled
-                            if (objects[id] && historyEnabled && !id.match(/\.messagebox$/) && objects[id].type == 'state') {
+                            if (main.objects[id] && historyEnabled && !id.match(/\.messagebox$/) && main.objects[id].type == 'state') {
                                 // Check if history enabled
-                                if (objects[id] && objects[id].common && objects[id].common.history && objects[id].common.history.enabled) {
+                                if (main.objects[id] && main.objects[id].common && main.objects[id].common.history && main.objects[id].common.history.enabled) {
                                     this.addClass('history-enabled').removeClass('history-disabled').css({'background': 'lightgreen'});
                                 } else {
                                     this.addClass('history-disabled').removeClass('history-enabled').css({'background': ''});
@@ -3649,7 +3016,7 @@ $(document).ready(function () {
                         var _ids = $gridObjects.selectId('getFilteredIds');
                         var ids = [];
                         for (var i = 0; i < _ids.length; i++) {
-                            if (objects[_ids[i]] && objects[_ids[i]].type == 'state') ids.push(_ids[i]);
+                            if (main.objects[_ids[i]] && main.objects[_ids[i]].type == 'state') ids.push(_ids[i]);
                         }
                         if (ids && ids.length) {
                             openHistoryDlg(ids);
@@ -3666,7 +3033,7 @@ $(document).ready(function () {
         }
     }
     function editObject(id) {
-        var obj = objects[id];
+        var obj = main.objects[id];
         if (!obj) return;
         $dialogObject.dialog('option', 'title', id);
         $('#edit-object-id').val(obj._id);
@@ -3718,7 +3085,7 @@ $(document).ready(function () {
             return false;
         }
 
-        socket.emit('extendObject', obj._id, obj);
+        main.socket.emit('extendObject', obj._id, obj);
 
 
         $dialogObject.dialog('close');
@@ -3734,12 +3101,12 @@ $(document).ready(function () {
                 break;
             }
         } else {
-            if (objects[id] && objects[id].common && objects[id].common['object-non-deletable']) {
+            if (main.objects[id] && main.objects[id].common && main.objects[id].common['object-non-deletable']) {
                 showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
                 if (callback) callback(id);
             } else {
-                socket.emit('delObject', id, function () {
-                    socket.emit('delState', id, function () {
+                main.socket.emit('delObject', id, function () {
+                    main.socket.emit('delState', id, function () {
                         if (callback) {
                             setTimeout(function () {
                                 callback(id);
@@ -3768,11 +3135,11 @@ $(document).ready(function () {
         if (tasks.length) {
             var task = tasks.shift();
             if (task.name == 'delObject') {
-                socket.emit(task.name, task.id, function () {
+                main.socket.emit(task.name, task.id, function () {
                     setTimeout(enumRename, 0, undefined, undefined, undefined, callback);
                 });
             } else {
-                socket.emit(task.name, task.id, task.obj, function () {
+                main.socket.emit(task.name, task.id, task.obj, function () {
                     setTimeout(enumRename, 0, undefined, undefined, undefined, callback);
                 });
             }
@@ -3788,7 +3155,7 @@ $(document).ready(function () {
     }
     function _enumRename(oldId, newId, newName, callback) {
         //Check if this name exists
-        if (oldId != newId && objects[newId]) {
+        if (oldId != newId && main.objects[newId]) {
             showMessage(_('Name yet exists!'), '', 'info');
             initEnums(true);
             if (callback) callback();
@@ -3798,7 +3165,7 @@ $(document).ready(function () {
                     tasks.push({name: 'extendObject', id:  oldId, obj: {common: {name: newName}}});
                     if (callback) callback();
                 }
-            } else if (objects[oldId] && objects[oldId].common && objects[oldId].common.nondeletable) {
+            } else if (main.objects[oldId] && main.objects[oldId].common && main.objects[oldId].common.nondeletable) {
                 showMessage(_('Change of enum\'s id "%s" is not allowed!', oldId), '', 'notice');
                 initEnums(true);
                 if (callback) callback();
@@ -3806,7 +3173,7 @@ $(document).ready(function () {
                 var leaf = $gridEnums.selectId('getTreeInfo', oldId);
                 //var leaf = treeFindLeaf(oldId);
                 if (leaf && leaf.children) {
-                    socket.emit('getObject', oldId, function (err, obj) {
+                    main.socket.emit('getObject', oldId, function (err, obj) {
                         setTimeout(function () {
                             if (obj) {
                                 obj._id = newId;
@@ -3829,7 +3196,7 @@ $(document).ready(function () {
                         }, 0);
                     });
                 } else {
-                    socket.emit('getObject', oldId, function (err, obj) {
+                    main.socket.emit('getObject', oldId, function (err, obj) {
                         if (obj) {
                             setTimeout(function () {
                                 obj._id = newId;
@@ -3848,12 +3215,12 @@ $(document).ready(function () {
 
 
     function enumAddChild(parent, newId, name) {
-        if (objects[newId]) {
+        if (main.objects[newId]) {
             showMessage(_('Name yet exists!'), '', 'notice');
             return false;
         }
 
-        socket.emit('setObject', newId, {
+        main.socket.emit('setObject', newId, {
             _id: newId,
             common:   {
                 name: name,
@@ -3866,8 +3233,8 @@ $(document).ready(function () {
     function enumMembers(id) {
         enumEdit = id;
         $dialogEnumMembers.dialog('option', 'title', id);
-        $('#enum-name-edit').val(objects[id].common.name);
-        var members = objects[id].common.members || [];
+        $('#enum-name-edit').val(main.objects[id].common.name);
+        var members = main.objects[id].common.members || [];
         $gridEnumMembers.jqGrid('clearGridData');
         // Remove empty entries
         for (var i = members.length - 1; i >= 0; i--) {
@@ -3877,8 +3244,8 @@ $(document).ready(function () {
         }
 
         for (i = 0; i < members.length; i++) {
-            if (objects[members[i]]) {
-                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {_id: members[i], name: objects[members[i]].common.name, type: objects[members[i]].type});
+            if (main.objects[members[i]]) {
+                $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {_id: members[i], name: main.objects[members[i]].common.name, type: main.objects[members[i]].type});
             } else if (members[i]) {
                 $gridEnumMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {
                     _id:  members[i],
@@ -3944,7 +3311,7 @@ $(document).ready(function () {
                 do {
                     idx++;
                     newId = (enumCurrentParent || 'enum')  + '.' + name + idx;
-                } while (objects[newId]);
+                } while (main.objects[newId]);
 
                 $('#enum-name').val(name + idx);
                 // Store prefix in DOM to show generated ID
@@ -4182,7 +3549,7 @@ $(document).ready(function () {
     }*/
 
     function initEnums(update, expandId) {
-        if (!objectsLoaded) {
+        if (!main.objectsLoaded) {
             setTimeout(initEnums, 250);
             return;
         }
@@ -4205,19 +3572,19 @@ $(document).ready(function () {
             if (tree && tree.count) {
                 for (i in tree.children) {
                     var id = tree.children[i].id;
-                    if (id && objects[id].type === 'enum') {
-                        if (!objects[id].common) objects[id].common = {};
+                    if (id && main.objects[id].type === 'enum') {
+                        if (!main.objects[id].common) main.objects[id].common = {};
                         gridEnumsData.push({
                             gridId:  'enum_' + id.replace(/ /g, '_'),
-                            _id:     objects[id]._id,
-                            name:    objects[id].common.name || '',
-                            members: objects[id].common.members ? objects[id].common.members.length : '',
-                            buttons: '<button data-enum-id="' + objects[id]._id + '" class="enum-edit">'         + _('edit')         + '</button>' +
-                                //'<button data-enum-id="' + objects[id]._id + '" class="enum-members">'      + _('members')      + '</button>' +
-                                (objects[id].common.nondeletable ? '' : '<button data-enum-id="' + objects[id]._id + '" class="enum-del">' + _('delete') + '</button>') +
-                                '<button data-enum-id="' + objects[id]._id + '" class="enum-add-children">' + _('add children') + '</button>' +
-                                '<button data-enum-id="' + objects[id]._id + '" class="enum-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
-                                '<button data-enum-id="' + objects[id]._id + '" class="enum-cancel-submit" style="display:none">' + _('cancel') + '</button>'
+                            _id:     main.objects[id]._id,
+                            name:    main.objects[id].common.name || '',
+                            members: main.objects[id].common.members ? main.objects[id].common.members.length : '',
+                            buttons: '<button data-enum-id="' + main.objects[id]._id + '" class="enum-edit">'         + _('edit')         + '</button>' +
+                                //'<button data-enum-id="' + main.objects[id]._id + '" class="enum-members">'      + _('members')      + '</button>' +
+                                (main.objects[id].common.nondeletable ? '' : '<button data-enum-id="' + main.objects[id]._id + '" class="enum-del">' + _('delete') + '</button>') +
+                                '<button data-enum-id="' + main.objects[id]._id + '" class="enum-add-children">' + _('add children') + '</button>' +
+                                '<button data-enum-id="' + main.objects[id]._id + '" class="enum-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
+                                '<button data-enum-id="' + main.objects[id]._id + '" class="enum-cancel-submit" style="display:none">' + _('cancel') + '</button>'
                         });
                     }
                 }
@@ -4232,8 +3599,8 @@ $(document).ready(function () {
 
             initEnumButtons();*/
             $gridEnums.selectId('init', {
-                objects: objects,
-                states: states,
+                objects: main.objects,
+                states: main.states,
                 noDialog: true,
                 texts: {
                     select:   _('Select'),
@@ -4273,7 +3640,7 @@ $(document).ready(function () {
                             do {
                                 idx++;
                                 newId = (enumCurrentParent || 'enum')  + '.' + name + idx;
-                            } while (objects[newId]);
+                            } while (main.objects[newId]);
 
                             $('#enum-name').val(name + idx);
                             // Store prefix in DOM to show generated ID
@@ -4295,7 +3662,7 @@ $(document).ready(function () {
                             delObject($gridEnums, id);
                         },
                         match: function (id) {
-                            if (!objects[id] || !objects[id].common || objects[id].common.nondeletable) this.hide();
+                            if (!main.objects[id] || !main.objects[id].common || main.objects[id].common.nondeletable) this.hide();
                         },
                         width: 26,
                         height: 20
@@ -4343,7 +3710,7 @@ $(document).ready(function () {
                             do {
                                 idx++;
                                 newId = (enumCurrentParent || 'enum')  + '.' + name + idx;
-                            } while (objects[newId]);
+                            } while (main.objects[newId]);
 
                             $('#enum-name').val(name + idx);
                             var t = $('#enum-gen-id');
@@ -4366,12 +3733,12 @@ $(document).ready(function () {
 		obj = obj || {};
         obj._id = key;
         obj.id = key;
-        obj.name = objects[obj._id] ? (objects[obj._id].common.name || obj._id) : obj._id;
+        obj.name = main.objects[obj._id] ? (main.objects[obj._id].common.name || obj._id) : obj._id;
 
-        if (objects[key] && objects[key].parent && objects[objects[key].parent]) {
-            obj.pname = objects[objects[key].parent].common.name;
+        if (main.objects[key] && main.objects[key].parent && main.objects[main.objects[key].parent]) {
+            obj.pname = main.objects[main.objects[key].parent].common.name;
             // Add instance
-            var parts = objects[key].parent.split('.');
+            var parts = main.objects[key].parent.split('.');
             if (obj.pname.indexOf('.' + parts[parts.length - 1]) == -1) {
                 obj.pname += '.' + parts[parts.length - 1];
             }
@@ -4385,7 +3752,7 @@ $(document).ready(function () {
             obj.pname = b.join('.');
         }
 
-        obj.type = objects[obj._id] && objects[obj._id].common ? objects[obj._id].common.type : '';
+        obj.type = main.objects[obj._id] && main.objects[obj._id].common ? main.objects[obj._id].common.type : '';
         if (obj.ts) obj.ts = formatDate(obj.ts, true);
         if (obj.lc) obj.lc = formatDate(obj.lc, true);
 
@@ -4396,7 +3763,7 @@ $(document).ready(function () {
         return obj;
     }
     function initStates(update) {
-        if (!objectsLoaded || !states) {
+        if (!main.objectsLoaded || !main.states) {
             setTimeout(initStates, 250);
             return;
         }
@@ -4405,16 +3772,16 @@ $(document).ready(function () {
             $gridStates.jqGrid('clearGridData');
             $gridStates[0]._isInited = true;
 
-            for (var key in states) {
-                $gridStates.jqGrid('addRowData', 'state_' + key, convertState(key, states[key]));
+            for (var key in main.states) {
+                $gridStates.jqGrid('addRowData', 'state_' + key, convertState(key, main.states[key]));
             }
             $gridStates.trigger('reloadGrid');
         }
     }
     function getStates(callback) {
         $gridStates.jqGrid('clearGridData');
-        socket.emit('getStates', function (err, res) {
-            states = res;
+        main.socket.emit('getStates', function (err, res) {
+            main.states = res;
             if (typeof callback === 'function') {
                 setTimeout(function () {
                     callback();
@@ -4565,11 +3932,11 @@ $(document).ready(function () {
 
 
     // ---------------------------- Socket.io methods ---------------------------------------------
-    socket.on('log', function (message) {
+    main.socket.on('log', function (message) {
         //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
         addMessageLog(message);
     });
-    socket.on('error', function (error) {
+    main.socket.on('error', function (error) {
         //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
         //addMessageLog({message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()});
         console.log(error);
@@ -4594,10 +3961,10 @@ $(document).ready(function () {
         if (id && id.match(/\.messagebox$/)) {
             addEventMessage(id, state);
         } else {
-            if ($gridStates && objectsLoaded) {
+            if ($gridStates && main.objectsLoaded) {
                 // Update gridStates
                 if (state) {
-                    if (states[id]) {
+                    if (main.states[id]) {
                         var data  = $gridStates.jqGrid('getGridParam', 'data');
                         var index = $gridStates.jqGrid('getGridParam', '_index');
                         rowData = data[index['state_' + id]];
@@ -4627,36 +3994,11 @@ $(document).ready(function () {
             if ($selectId) $selectId.selectId('state', id, state);
         }
 
-        // Update alive and connecetd of instances
-        if ($gridInstance) {
-            var parts = id.split('.');
-            var last = parts.pop();
-            id = parts.join('.');
-            if (last === 'alive' && instances.indexOf(id) !== -1) {
-                rowData = $gridInstance.jqGrid('getRowData', 'instance_' + id);
-                rowData.alive = (rowData.alive === true || rowData.alive === 'true');
-                var newVal = state ? state.val : false;
-                newVal = (newVal === true || newVal === 'true');
-                if (rowData.alive != newVal) {
-                    rowData.alive = htmlBoolean(newVal);
-                    $gridInstance.jqGrid('setRowData', 'instance_' + id, rowData);
-                    initInstanceButtons();
-                }
-            } else if (last === 'connected' && instances.indexOf(id) !== -1) {
-                rowData = $gridInstance.jqGrid('getRowData', 'instance_' + id);
-                rowData.connected = (rowData.connected === true || rowData.connected === 'true');
-                var newVal = state ? state.val : false;
-                newVal = (newVal === true || newVal === 'true');
-                if (rowData.connected != newVal) {
-                    rowData.connected = htmlBoolean(newVal);
-                    $gridInstance.jqGrid('setRowData', 'instance_' + id, rowData);
-                    initInstanceButtons();
-                }
-            }
-        }
+        // Update alive and connecetd of main.instances
+        tabs.instances.stateChange(id, state);
     }
 
-    socket.on('stateChange', function (id, obj) {
+    main.socket.on('stateChange', function (id, obj) {
         setTimeout(stateChange, 0, id, obj);
     });
 
@@ -4668,21 +4010,21 @@ $(document).ready(function () {
         var isNew = false;
         var isUpdate = false;
 
-        // update objects cache
+        // update main.objects cache
         if (obj) {
-            if (obj._rev && objects[id]) objects[id]._rev = obj._rev;
-            if (!objects[id]) {
+            if (obj._rev && main.objects[id]) main.objects[id]._rev = obj._rev;
+            if (!main.objects[id]) {
                 isNew = true;
                 //treeInsert(id);
             }
-            if (isNew || JSON.stringify(objects[id]) != JSON.stringify(obj)) {
-                objects[id] = obj;
+            if (isNew || JSON.stringify(main.objects[id]) != JSON.stringify(obj)) {
+                main.objects[id] = obj;
                 changed = true;
             }
-        } else if (objects[id]) {
+        } else if (main.objects[id]) {
             changed = true;
-            oldObj = {_id: id, type: objects[id].type};
-            delete objects[id];
+            oldObj = {_id: id, type: main.objects[id].type};
+            delete main.objects[id];
         }
 
         // update to event table
@@ -4695,20 +4037,20 @@ $(document).ready(function () {
         // If system config updated
         if (id == 'system.config') {
             // Check language
-            if (systemConfig.common.language != obj.common.language) {
+            if (main.systemConfig.common.language != obj.common.language) {
                 window.location.reload();
             }
 
-            systemConfig = obj;
+            main.systemConfig = obj;
         }
 
         // Update Instance Table
         if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
             if (obj) {
-                if (instances.indexOf(id) == -1) instances.push(id);
+                if (main.instances.indexOf(id) == -1) main.instances.push(id);
             } else {
-                i = instances.indexOf(id);
-                if (i != -1) instances.splice(i, 1);
+                i = main.instances.indexOf(id);
+                if (i != -1) main.instances.splice(i, 1);
             }
             if (id.match(/^system\.adapter\.history\.[0-9]+$/)) {
                 checkHistory();
@@ -4732,29 +4074,21 @@ $(document).ready(function () {
             var engines = fillEngines();
             $('#tabs').tabs('option', 'disabled', (engines && engines.length) ? [] : [4]);
 
-            if (typeof $gridInstance !== 'undefined' && $gridInstance[0]._isInited) {
-                if (updateTimers.initInstances) {
-                    clearTimeout(updateTimers.initInstances);
-                }
-                updateTimers.initInstances = setTimeout(function () {
-                    updateTimers.initInstances = null;
-                    initInstances(true);
-                }, 200);
-            }
+            tabs.instances.objectChange(id, obj);
         }
 
         // Update Adapter Table
         /*if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+$/)) {
          if (obj) {
-         if (adapters.indexOf(id) == -1) adapters.push(id);
+         if (tabs.adapters.list.indexOf(id) == -1) tabs.adapters.list.push(id);
          } else {
-         var j = adapters.indexOf(id);
+         var j = tabs.adapters.list.indexOf(id);
          if (j != -1) {
-         adapters.splice(j, 1);
+         tabs.adapters.list.splice(j, 1);
          }
          }
          if (typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
-         initAdapters(true);
+         tabs.adapters.init(true);
          }
          }*/
         // Update users
@@ -4856,24 +4190,24 @@ $(document).ready(function () {
         }
     }
 
-    socket.on('objectChange', function (id, obj) {
+    main.socket.on('objectChange', function (id, obj) {
         setTimeout(objectChange, 0, id, obj);
     });
-    socket.on('cmdStdout', function (_id, text) {
+    main.socket.on('cmdStdout', function (_id, text) {
         if (activeCmdId == _id) {
             stdout += '\n' + text;
             $stdout.val(stdout);
             $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
         }
     });
-    socket.on('cmdStderr', function (_id, text) {
+    main.socket.on('cmdStderr', function (_id, text) {
         if (activeCmdId == _id) {
             stdout += '\nERROR: ' + text;
             $stdout.val(stdout);
             $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
         }
     });
-    socket.on('cmdExit', function (_id, exitCode) {
+    main.socket.on('cmdExit', function (_id, exitCode) {
         if (activeCmdId == _id) {
             exitCode = parseInt(exitCode, 10);
             stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
@@ -4890,28 +4224,28 @@ $(document).ready(function () {
             }
         }
     });
-    socket.on('connect', function () {
+    main.socket.on('connect', function () {
         $('#connecting').hide();
         if (firstConnect) {
             firstConnect = false;
 
-            socket.emit('authEnabled', function (auth) {
+            main.socket.emit('authEnabled', function (auth) {
                 if (!auth) $('#button-logout').remove();
             });
 
             // Read system configuration
-            socket.emit('getObject', 'system.config', function (err, data) {
-                systemConfig = data;
-                socket.emit('getObject', 'system.repositories', function (err, repo) {
+            main.socket.emit('getObject', 'system.config', function (err, data) {
+                main.systemConfig = data;
+                main.socket.emit('getObject', 'system.repositories', function (err, repo) {
                     systemRepos = repo;
-                    socket.emit('getObject', 'system.certificates', function (err, certs) {
+                    main.socket.emit('getObject', 'system.certificates', function (err, certs) {
                         setTimeout(function () {
                             systemCerts = certs;
-                            if (!err && systemConfig && systemConfig.common) {
-                                systemLang = systemConfig.common.language || systemLang;
-                                if (!systemConfig.common.licenseConfirmed) {
+                            if (!err && main.systemConfig && main.systemConfig.common) {
+                                systemLang = main.systemConfig.common.language || systemLang;
+                                if (!main.systemConfig.common.licenseConfirmed) {
                                     // Show license agreement
-                                    var language = systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
+                                    var language = main.systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
                                     if (language != 'en' && language != 'de' && language != 'ru') language = 'en';
 
                                     $('#license_text').html(license[language] || license.en);
@@ -4932,7 +4266,7 @@ $(document).ready(function () {
                                             {
                                                 text: _('agree'),
                                                 click: function () {
-                                                    socket.emit('extendObject', 'system.config', {
+                                                    main.socket.emit('extendObject', 'system.config', {
                                                         common: {
                                                             licenseConfirmed: true,
                                                             language: language
@@ -4966,7 +4300,7 @@ $(document).ready(function () {
                                     });
                                 }
                             } else {
-                                systemConfig = {
+                                main.systemConfig = {
                                     type: 'config',
                                     common: {
                                         name:             'system.config',
@@ -4978,10 +4312,10 @@ $(document).ready(function () {
                                         licenseConfirmed: false         // If license agreement confirmed
                                     }
                                 };
-                                systemConfig.common.language = window.navigator.userLanguage || window.navigator.language;
+                                main.systemConfig.common.language = window.navigator.userLanguage || window.navigator.language;
 
-                                if (systemConfig.common.language !== 'en' && systemConfig.common.language !== 'de' && systemConfig.common.language !== 'ru') {
-                                    systemConfig.common.language = 'en';
+                                if (main.systemConfig.common.language !== 'en' && main.systemConfig.common.language !== 'de' && main.systemConfig.common.language !== 'ru') {
+                                    main.systemConfig.common.language = 'en';
                                 }
                             }
 
@@ -4995,8 +4329,8 @@ $(document).ready(function () {
                             prepareObjects();
                             prepareEnums();
                             prepareStates();
-                            prepareAdapters();
-                            prepareInstances();
+                            tabs.adapters.prepare();
+                            tabs.instances.prepare();
                             prepareUsers();
                             prepareGroups();
                             prepareScripts();
@@ -5033,48 +4367,20 @@ $(document).ready(function () {
                 });
             });
         }
-        if (waitForRestart) {
+        if (main.waitForRestart) {
             location.reload();
         }
     });
-    socket.on('disconnect', function () {
+    main.socket.on('disconnect', function () {
         $('#connecting').show();
     });
-    socket.on('reconnect', function () {
+    main.socket.on('reconnect', function () {
         $('#connecting').hide();
-        if (waitForRestart) {
+        if (main.waitForRestart) {
             location.reload();
         }
     });
 
-    // Helper methods
-    function upToDate(_new, old) {
-        _new = _new.split('.');
-        old = old.split('.');
-        _new[0] = parseInt(_new[0], 10);
-        old[0] = parseInt(old[0], 10);
-        if (_new[0] > old[0]) {
-            return false;
-        } else if (_new[0] === old[0]) {
-            _new[1] = parseInt(_new[1], 10);
-            old[1] = parseInt(old[1], 10);
-            if (_new[1] > old[1]) {
-                return false;
-            } else if (_new[1] === old[1]) {
-                _new[2] = parseInt(_new[2], 10);
-                old[2] = parseInt(old[2], 10);
-                if (_new[2] > old[2]) {
-                    return false;
-                } else {
-                    return true;
-                }
-            } else {
-                return true;
-            }
-        } else {
-            return true;
-        }
-    }
     function formatDate(dateObj, isSeconds) {
         //return dateObj.getFullYear() + '-' +
         //    ("0" + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
@@ -5144,8 +4450,8 @@ $(document).ready(function () {
         $gridObjects.height(y - 100).width(x - 20);
 
         $gridEnums.setGridHeight(y - 150).setGridWidth(x - 20);
-        $gridAdapter.setGridHeight(y - 150).setGridWidth(x - 20);
-        $gridInstance.setGridHeight(y - 150).setGridWidth(x - 20);
+        tabs.adapters.resize(x, y);
+        tabs.instances.resize(x, y);
         $gridScripts.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridUsers.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridGroups.setGridHeight(y - 150).setGridWidth(x - 20);
