@@ -656,7 +656,7 @@ $(document).ready(function () {
         }
     });
     $('#log-clear-on-disk').button({icons:{primary: 'ui-icon-trash'}, text: false}).click(function () {
-        confirmMessage(_('Log file will be deleted. Are you sure?'), null, null, function (result) {
+        main.confirmMessage(_('Log file will be deleted. Are you sure?'), null, null, function (result) {
             if (result) {
                 main.socket.emit('sendToHost', main.currentHost, 'delLogs', null, function () {
                     $('#log-table').html('');
@@ -1336,7 +1336,7 @@ $(document).ready(function () {
                     });
                 }
                 var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                confirmMessage(_('Are you sure?'), null, 'help', function (result) {
+                main.confirmMessage(_('Are you sure?'), null, 'help', function (result) {
                     if (result) {
                         main.socket.emit('delUser', id.replace('system.user.', ''), function (err) {
                             if (err) {
@@ -1503,7 +1503,7 @@ $(document).ready(function () {
                     });
                 }
                 var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                confirmMessage(_('Are you sure?'), null, 'help', function (result) {
+                main.confirmMessage(_('Are you sure?'), null, 'help', function (result) {
                     if (result) {
                         main.socket.emit('delGroup', id.replace("system.group.", ""), function (err) {
                             if (err) {
@@ -3121,7 +3121,7 @@ $(document).ready(function () {
         if (hideConfirm) {
             _delObject($tree, id, callback);
         } else {
-            confirmMessage(_('Are you sure to delete %s and all children?', id), null, 'help', function (result) {
+            main.confirmMessage(_('Are you sure to delete %s and all children?', id), null, 'help', function (result) {
                 if (result) {
                     _delObject($tree, id, callback);
                 }

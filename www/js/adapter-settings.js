@@ -431,6 +431,17 @@ function _editInitButtons($grid, tabId, objId) {
 }
 
 function _editTable(tabId, cols, values, rooms, top, onChange) {
+    var title = 'Device list';
+    if (typeof tabId == 'object') {
+        cols     = tabId.cols;
+        values   = tabId.values;
+        rooms    = tabId.rooms;
+        top      = tabId.top;
+        onChange = tabId.onChange;
+        if (tabId.title) title = tabId.title;
+        tabId    = tabId.tabId;
+    }
+
     initGridLanguage(systemLang);
     var colNames = [];
     var colModel = [];
@@ -444,6 +455,14 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         hidden:  true
     });
     for (var i = 0; i < cols.length; i++) {
+        var width = null;
+        var checkbox = null;
+
+        if (typeof cols[i] == 'object') {
+            width  = cols[i].width;
+            if (cols[i].checkbox) checkbox = true;
+            cols[i] = cols[i].name;
+        }
         colNames.push(_(cols[i]));
         var _obj = {
             name:     cols[i],
@@ -451,6 +470,12 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
 //                width:    160,
             editable: true
         };
+        if (width) _obj.width = width;
+        if (checkbox) {
+            _obj.edittype    = 'checkbox';
+            _obj.editoptions = {value: "true:false"};
+        }
+
         if (cols[i] == 'room') {
             var list = {'': _('none')};
             for (room in rooms) {
@@ -470,7 +495,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         colModel.push(_obj);
     }
     colNames.push('');
-    colModel.push({name: '_commands',    index: '_commands',    width: 60,  editable: false, align: 'center', search:false});
+    colModel.push({name: '_commands', index: '_commands', width: 60, editable: false, align: 'center', search: false});
 
     $grid[0]._cols     = cols;
     $grid[0]._rooms    = rooms;
@@ -508,7 +533,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         pgbuttons: false,
         pginput: false,
         pgtext: false,
-        caption: _('Device list'),
+        caption: _(title),
         ignoreCase: true
     }).jqGrid('filterToolbar', {
         defaultSearch: 'cn',
@@ -600,6 +625,10 @@ function enumName2Id(enums, name) {
 // returns the jquery object of $('#tabId')
 // To extract data from table
 function editTable(tabId, cols, values, top, onChange) {
+    if (typeof tabId == 'object') {
+        cols     = tabId.cols;
+    }
+
     if (cols.indexOf('room') != -1) {
         getEnums("rooms", function (err, list) {
             return _editTable(tabId, cols, values, list, top, onChange);

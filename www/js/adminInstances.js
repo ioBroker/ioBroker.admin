@@ -41,7 +41,7 @@ function Instances(main) {
             ignoreCase:    true,
             ondblClickRow: function (rowId, e) {
                 var rowData = that.$grid.jqGrid('getRowData', rowId);
-                that.onEditInstance(rowData._id);
+                that.onEdit(rowData._id);
             }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
