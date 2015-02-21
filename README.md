@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.17 (2015-01-27)
+* (bluefox) fix error with refresh button for adapters (again)
+
 ### 0.3.16 (2015-01-26)
 * (bluefox) fix error with refresh button for adapters
 

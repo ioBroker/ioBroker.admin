@@ -318,7 +318,7 @@ function Adapters(main) {
             var aName = $(this).attr('data-adapter-name');
             if (aName == 'admin') that.main.waitForRestart = true;
 
-            that.main.cmdExec(currentHost, 'upgrade ' + aName, function (exitCode) {
+            that.main.cmdExec(that.main.currentHost, 'upgrade ' + aName, function (exitCode) {
                 if (!exitCode) that.init(true);
             });
         });
