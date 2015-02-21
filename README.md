@@ -8,7 +8,10 @@ user interface for configuration and administration
 
 
 ## Changelog
-### 0.3.15 (2015-02-21)
+### 0.3.16 (2015-01-26)
+* (bluefox) fix error with refresh button for adapters
+
+### 0.3.15 (2015-01-26)
 * (bluefox) extend table editor in adapter settings
 * (bluefox) fix error in instances.
 
