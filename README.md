@@ -8,6 +8,10 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.15 (2015-02-21)
+* (bluefox) extend table editor in adapter settings
+* (bluefox) fix error in instances.
+
 ### 0.3.14 (2015-01-26)
 * (bluefox) fix error with adapter instances with more modes (again)
 

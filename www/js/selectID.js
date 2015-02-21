@@ -1,5 +1,5 @@
 /*
- Copyright 2014 bluefox <bluefox@ccu.io>
+ Copyright 2014-2015 bluefox <bluefox@ccu.io>
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -88,7 +88,7 @@
         //    ("0" + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
         //    ("0" + (dateObj.getSeconds()).toString(10)).slice(-2);
         // Following implementation is 5 times faster
-
+        if (!dateObj) return '';
 
         var text = dateObj.getFullYear();
         var v = dateObj.getMonth() + 1;
@@ -149,11 +149,6 @@
         data.tree = {title: '', children: [], count: 0, root: true};
 
         for (var id in objects) {
-
-            if (!filterId(data, id)) continue;
-
-            treeInsert(data, id, data.currentId == id);
-
             if (isRoom && objects[id].type == 'enum' && data.regexEnumRooms.test(id)) data.enums.push(id);
 
             if (isType && data.types.indexOf(objects[id].type) == -1) data.types.push(objects[id].type);
@@ -164,6 +159,21 @@
                 for (var u = 0; u < parts.length; u++) {
                     role += (role ? '.' : '') + parts[u];
                     if (data.roles.indexOf(role) == -1) data.roles.push(role);
+                }
+            }
+
+            if (!filterId(data, id)) continue;
+
+            treeInsert(data, id, data.currentId == id);
+
+            if (objects[id].enums) {
+                for (var e in objects[id].enums) {
+                    if (objects[e] &&
+                        objects[e].common &&
+                        objects[e].common.members &&
+                        objects[e].common.members.indexOf(id) == -1) {
+                        objects[e].common.members.push(id);
+                    }
                 }
             }
         }
@@ -613,7 +623,7 @@
                         base++;
                     } else
                     if (data.columns[c] == 'name') {
-                        $tdList.eq(base++).text(isCommon ? data.objects[node.key].common.name : '').css({overflow: 'hidden'}).attr('title', isCommon ? data.objects[node.key].common.name : '');
+                        $tdList.eq(base++).text(isCommon ? data.objects[node.key].common.name : '').css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '');
                     } else
                     if (data.columns[c] == 'type') {
                         $tdList.eq(base++).text(data.objects[node.key] ? data.objects[node.key].type: '');
@@ -642,29 +652,29 @@
                     } else
                     if (data.columns[c] == 'value') {
                         if (data.states && (data.states[node.key] || data.states[node.key + '.val'] !== undefined)) {
-                            var val = data.states[node.key].val;
-                            if (!val) {
-                                val = {
+                            var state = data.states[node.key];
+                            if (!state) {
+                                state = {
                                     val:  data.states[node.key + '.val'],
                                     ts:   data.states[node.key + '.ts'],
                                     lc:   data.states[node.key + '.lc'],
                                     from: data.states[node.key + '.from'],
-                                    ack:  data.states[node.key + '.ack']
+                                    ack: (data.states[node.key + '.ack'] === undefined) ? '' : data.states[node.key + '.ack']
                                 };
                             }
 
                             var fullVal;
-                            if (val === undefined) {
-                                val = '';
+                            if (state.val === undefined) {
+                                state.val = '';
                             } else {
-                                if (isCommon && data.objects[node.key].common.unit) val += ' ' + data.objects[node.key].common.unit;
-                                fullVal = data.texts.value + ': ' + val;
-                                fullVal += '\x0A' + data.texts.ack + ': ' + data.states[node.key].ack;
-                                fullVal += '\x0A' + data.texts.ts + ': ' + formatDate(new Date(data.states[node.key].ts * 1000));
-                                fullVal += '\x0A' + data.texts.lc + ': ' + formatDate(new Date(data.states[node.key].lc * 1000));
-                                fullVal += '\x0A' + data.texts.from + ': ' + (data.states[node.key].from || '');
+                                if (isCommon && data.objects[node.key].common.unit) state.val += ' ' + data.objects[node.key].common.unit;
+                                fullVal  =          data.texts.value + ': ' + state.val;
+                                fullVal += '\x0A' + data.texts.ack   + ': ' + state.ack;
+                                fullVal += '\x0A' + data.texts.ts    + ': ' + (state.ts ? formatDate(new Date(state.ts * 1000)) : '');
+                                fullVal += '\x0A' + data.texts.lc    + ': ' + (state.lc ? formatDate(new Date(state.lc * 1000)) : '');
+                                fullVal += '\x0A' + data.texts.from  + ': ' + (state.from || '');
                             }
-                            $tdList.eq(base).text(val);
+                            $tdList.eq(base).text(state.val);
                             $tdList.eq(base).attr('title', fullVal);
                         } else {
                             $tdList.eq(base).text('');
@@ -986,8 +996,8 @@
                                 rooms.indexOf(data.objects[data.enums[i]].common.name) == -1) {
                                 rooms.push(data.objects[data.enums[i]].common.name);
                             }
-                            data.rooms[node.key] = rooms;
                         }
+                        data.rooms[node.key] = rooms;
                     }
 
                     if (rooms.indexOf(data.filterVals[f]) == -1) return false;
