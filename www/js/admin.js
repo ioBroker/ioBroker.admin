@@ -76,6 +76,7 @@ $(document).ready(function () {
         },
         // Methods
         cmdExec:      function (host, cmd, callback) {
+            host = host || main.currentHost;
             $stdout.val('');
             $dialogCommand.dialog('open');
             stdout = '$ ./iobroker ' + cmd;

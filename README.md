@@ -8,10 +8,13 @@ user interface for configuration and administration
 
 
 ## Changelog
-### 0.3.17 (2015-01-27)
+### 0.3.18 (2015-02-22)
+* (bluefox) fix error with delete button for adapters
+
+### 0.3.17 (2015-02-22)
 * (bluefox) fix error with refresh button for adapters (again)
 
-### 0.3.16 (2015-01-26)
+### 0.3.16 (2015-02-21)
 * (bluefox) fix error with refresh button for adapters
 
 ### 0.3.15 (2015-01-26)

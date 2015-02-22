@@ -128,7 +128,7 @@ function Adapters(main) {
 
             $("#load_grid-adapters").show();
 
-            this.getAdaptersInfo(main.currentHost, update, updateRepo, function (repository, installedList) {
+            this.getAdaptersInfo(this.main.currentHost, update, updateRepo, function (repository, installedList) {
                 var id = 1;
                 var obj;
                 var version;
@@ -284,11 +284,11 @@ function Adapters(main) {
 
                 if (obj.license && obj.license !== 'MIT') {
                     // TODO Show license dialog!
-                    that.main.cmdExec(that.main.currentHost, 'add ' + adapter, function (exitCode) {
+                    that.main.cmdExec(null, 'add ' + adapter, function (exitCode) {
                         if (!exitCode) that.init(true);
                     });
                 } else {
-                    that.main.cmdExec(currentHost, 'add ' + adapter, function (exitCode) {
+                    that.main.cmdExec(null, 'add ' + adapter, function (exitCode) {
                         if (!exitCode) that.init(true);
                     });
                 }
@@ -299,7 +299,7 @@ function Adapters(main) {
             icons: {primary: 'ui-icon-trash'},
             text:  false
         }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
-            that.main.cmdExec(currentHost, 'del ' + $(this).attr('data-adapter-name'), function (exitCode) {
+            that.main.cmdExec(null, 'del ' + $(this).attr('data-adapter-name'), function (exitCode) {
                 if (!exitCode) that.init(true);
             });
         });
@@ -318,7 +318,7 @@ function Adapters(main) {
             var aName = $(this).attr('data-adapter-name');
             if (aName == 'admin') that.main.waitForRestart = true;
 
-            that.main.cmdExec(that.main.currentHost, 'upgrade ' + aName, function (exitCode) {
+            that.main.cmdExec(null, 'upgrade ' + aName, function (exitCode) {
                 if (!exitCode) that.init(true);
             });
         });
