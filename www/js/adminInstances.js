@@ -37,7 +37,7 @@ function Instances(main) {
             sortname:      "id",
             sortorder:     "desc",
             viewrecords:   true,
-            caption:       _('ioBroker adapter this.list'),
+            caption:       _('ioBroker adapter instances'),
             ignoreCase:    true,
             ondblClickRow: function (rowId, e) {
                 var rowData = that.$grid.jqGrid('getRowData', rowId);
@@ -108,7 +108,7 @@ function Instances(main) {
                 that.$configFrame.attr('src', '');
             }
         });
-    }
+    };
 
     this.onEdit = function (id, e) {
         var rowData = this.$grid.jqGrid('getRowData', 'instance_' + id);
@@ -131,6 +131,14 @@ function Instances(main) {
             } else if (text == '<span style="color:red">' + _('false') + '</span>') {
                 $(this).html( _('false'));
             }
+        });
+
+        // Set the links
+        var a = $('td[aria-describedby="grid-instances_title"]');
+        a.each(function (index) {
+            var text = $(this).html();
+            var m = text.match(/\<a.*>(.*)\<\/a\>/);
+            if (m) $(this).html(m[1]);
         });
 
         if (rowData.availableModes) {
@@ -162,20 +170,39 @@ function Instances(main) {
             });
         }
         this.$grid.jqGrid('editRow', 'instance_' + id, {"url": "clientArray"});
-    }
+    };
 
-    this.replaceLink = function (vars, adapter, instance) {
-        // like web_port
-        var parts = vars.split('_');
-        this.main.socket.emit('getObject', 'system.adapter.' + parts[0] + '.0', function (err, obj) {
+    this.replaceLink = function (_var, adapter, instance) {
+        _var = _var.replace(/\%/g, '');
+        // like web.0_port
+        var parts;
+        if (_var.indexOf('_') == -1) {
+            parts = [
+                adapter + '.' + instance,
+                _var
+            ]
+        } else {
+            parts = _var.split('_');
+            // add .0 if not defined
+            if (!parts[0].match(/\.[0-9]+$/)) parts[0] += '.0';
+        }
+
+        this.main.socket.emit('getObject', 'system.adapter.' + parts[0], function (err, obj) {
             if (obj) {
                 setTimeout(function () {
-                    var link = $('#a_' + adapter + '_' + instance).attr('href').replace('%' + vars + '%', obj.native[parts[1]]);
+                    var link = $('#a_' + adapter + '_' + instance).attr('href').replace('%' + _var + '%', obj.native[parts[1]]);
                     $('#a_' + adapter + '_' + instance).attr('href', link);
                 }, 0);
             }
         });
-    }
+    };
+
+    this.replaceLinks = function (vars, adapter, instance) {
+        if (typeof vars != 'object') vars = [vars];
+        for (var t = 0; t < vars.length; t++) {
+            this.replaceLink(vars[t], adapter, instance);
+        }
+    };
 
     this.htmlBoolean = function (value) {
         if (value === 'true' || value === true) {
@@ -187,7 +214,7 @@ function Instances(main) {
         } else {
             return value;
         }
-    }
+    };
 
     this.init = function (update) {
         if (!this.main.objectsLoaded) {
@@ -212,11 +239,9 @@ function Instances(main) {
                 var title = obj.common ? obj.common.title : '';
                 var link  = obj.common.localLink || '';
                 if (link && link.indexOf('%ip%') != -1) link = link.replace('%ip%', location.hostname);
-                if (link && link.indexOf('%') != -1) {
-                    // TODO Get vars
-                    var vars = 'web_port';
-                    this.replaceLink(vars, adapter, instance);
-                }
+
+                var vars = link.match(/\%(\w+)\%/g);
+                if (vars) this.replaceLinks(vars, adapter, instance);
 
                 this.$grid.jqGrid('addRowData', 'instance_' + this.list[i].replace(/ /g, '_'), {
                     _id:       obj._id,
@@ -262,7 +287,7 @@ function Instances(main) {
 
             this.initButtons();
         }
-    }
+    };
 
     this.updateHosts = function (hosts) {
         var tmp = '';
@@ -270,7 +295,7 @@ function Instances(main) {
             tmp += (k > 0 ? ';' : '') + hosts[k].name + ':' + hosts[k].name;
         }
         this.$grid.jqGrid('setColProp', 'host', {editoptions: {value: tmp}});
-    }
+    };
 
     this.stateChange = function (id, state) {
         if (this.$grid) {
@@ -300,7 +325,7 @@ function Instances(main) {
             }
         }
 
-    }
+    };
 
     this.objectChange = function (id, obj) {
         if (this.$grid !== undefined && this.$grid[0]._isInited) {
@@ -311,7 +336,7 @@ function Instances(main) {
                 that.init(true);
             }, 200);
         }
-    }
+    };
 
     this.initButtons = function (id) {
         if (id) {
@@ -413,6 +438,29 @@ function Instances(main) {
             $('#edit-instance').removeClass('ui-state-disabled');
             that.$grid.jqGrid('restoreRow', 'instance_' + id, false);
 
+            // Restore links
+            for (var i = 0; i < that.list.length; i++) {
+                var obj = that.main.objects[that.list[i]];
+                if (!obj) continue;
+                var tmp      = obj._id.split('.');
+                var adapter  = tmp[2];
+                var instance = tmp[3];
+
+                var title = obj.common ? obj.common.title : '';
+                var oldLink  = obj.common.localLink || '';
+                var newLink  = oldLink;
+                if (newLink && newLink.indexOf('%ip%') != -1) newLink = newLink.replace('%ip%', location.hostname);
+
+                var vars = newLink.match(/\%(\w+)\%/g);
+                if (newLink) {
+                    if (vars) that.replaceLinks(vars, adapter, instance);
+                    var _obj = that.$grid.jqGrid('getRowData', 'instance_' + obj._id);
+                    _obj.title = obj.common ? (newLink ? '<a href="' + newLink + '" id="a_' + adapter + '_' + instance + '" target="_blank">' + title + '</a>' : title): '';
+                    that.$grid.jqGrid('setRowData', 'instance_' + obj._id, _obj);
+                    that.initButtons(obj._id);
+                }
+            }
+
             // Set the colors
             var a = $('td[aria-describedby="grid-instances_enabled"]');
             a.each(function (index) {
@@ -423,10 +471,11 @@ function Instances(main) {
                     $(this).html('<span style="color:red">' + _('false') + '</span>');
                 }
             });
+
         });
-    }
+    };
 
     this.resize = function (width, height) {
         this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
-    }
+    };
 }

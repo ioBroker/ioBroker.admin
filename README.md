@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.19 (2015-03-04)
+* (bluefox) fix some errors with restart
+
 ### 0.3.18 (2015-02-22)
 * (bluefox) fix error with delete button for adapters
 

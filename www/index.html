@@ -207,304 +207,305 @@
         </div>
     </div>
 </div>
-<div id="dialog-object" style="display:none">
-    <table>
-        <tr>
-            <td class="translate">name</td>
-            <td><input size="60" id="edit-object-name"></td>
-            <td class="translate">type</td>
-            <td>
-                <select id="edit-object-type" disabled="disabled">
-                    <option>device</option>
-                    <option>channel</option>
-                    <option>state</option>
-                    <option>enum</option>
-                    <option>host</option>
-                    <option>adapter</option>
-                    <option>instance</option>
-                    <option>meta</option>
-                    <option>config</option>
-                    <option>path</option>
-                    <option>file</option>
-                    <option>script</option>
-                    <option>group</option>
-                    <option>user</option>
-                </select>
-            </td>
-        </tr>
-        <!--tr>
-            <td>parent</td>
-            <td colspan="3">
-                <input size="60" id="edit-object-parent" disabled="disabled">
-                <button class="jump" id="jump-parent">-&gt;</button>
-            </td>
-        </tr>
-        <tr>
-            <td>children</td>
-            <td colspan="3" id="edit-object-children"></td>
-        </tr-->
 
-    </table><br/>
-    <table style="width: 100%">
-        <tr>
-            <td style="width: 50%">
-                <span class="translate">common</span><br/>
-                <textarea id="edit-object-common"></textarea>
-            </td>
-            <td style="width: 50%">
-                <span class="translate">native</span><br/>
-                <textarea id="edit-object-native"></textarea>
-            </td>
-        </tr>
-        <tr>
-            <td style="width: 100%" colspan="2">
-                <span class="translate">rest</span><br/>
-                <textarea id="view-object-full" readonly></textarea>
-            </td>
-        </tr>
-    </table>
-    <input type="hidden" id="edit-object-id">
-    <input type="hidden" id="edit-object-parent-old">
-</div>
-<div id="dialog-enum" class="translateT" title="edit enum" style="display:none">
-    <table>
-        <tr>
-            <td><label for="enum-name" class="translate">Name</label></td>
-            <td><input id="enum-name" type="text" size="40"/></td>
-        </tr>
-        <tr>
-            <td><label for="enum-gen-id" class="translate">Generated&nbsp;ID:</label></td>
-            <td><span id="enum-gen-id"></span></td>
-        </tr>
-    </table>
-</div>
-<div id="dialog-enum-members" style="display:none">
-    <span class="translate" style="padding-right: 10">Name:</span><input id="enum-name-edit" size="20" disabled/>
-    <table id="grid-enum-members"></table>
-    <div id="pager-enum-members"></div>
-</div>
-<div id="dialog-script" style="display:none">
-    <table style="width: 100%">
-        <tr>
-            <td class="translate" style="width:100">name</td>
-            <td colspan="2"><input size="60" id="edit-script-name"></td>
-        </tr>
-        <tr>
-            <td class="translate">engine type</td>
-            <td style="width:100">
-                <select id="edit-script-engine-type"></select>
-            </td>
-            <td style="text-align:right">
-                <button id="edit-insert-id" class="translate">Insert</button>
-            </td>
-        </tr>
-    </table><br/>
-    <!--<textarea id="edit-script-source"></textarea>-->
-    <div id="script-editor">Test!</div>
-    <input type="hidden" id="edit-script-id">
+    <div id="dialog-object" style="display:none">
+        <table>
+            <tr>
+                <td class="translate">name</td>
+                <td><input size="60" id="edit-object-name"></td>
+                <td class="translate">type</td>
+                <td>
+                    <select id="edit-object-type" disabled="disabled">
+                        <option>device</option>
+                        <option>channel</option>
+                        <option>state</option>
+                        <option>enum</option>
+                        <option>host</option>
+                        <option>adapter</option>
+                        <option>instance</option>
+                        <option>meta</option>
+                        <option>config</option>
+                        <option>path</option>
+                        <option>file</option>
+                        <option>script</option>
+                        <option>group</option>
+                        <option>user</option>
+                    </select>
+                </td>
+            </tr>
+            <!--tr>
+                <td>parent</td>
+                <td colspan="3">
+                    <input size="60" id="edit-object-parent" disabled="disabled">
+                    <button class="jump" id="jump-parent">-&gt;</button>
+                </td>
+            </tr>
+            <tr>
+                <td>children</td>
+                <td colspan="3" id="edit-object-children"></td>
+            </tr-->
+
+        </table><br/>
+        <table style="width: 100%">
+            <tr>
+                <td style="width: 50%">
+                    <span class="translate">common</span><br/>
+                    <textarea id="edit-object-common"></textarea>
+                </td>
+                <td style="width: 50%">
+                    <span class="translate">native</span><br/>
+                    <textarea id="edit-object-native"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 100%" colspan="2">
+                    <span class="translate">rest</span><br/>
+                    <textarea id="view-object-full" readonly></textarea>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" id="edit-object-id">
+        <input type="hidden" id="edit-object-parent-old">
+    </div>
+    <div id="dialog-enum" class="translateT" title="edit enum" style="display:none">
+        <table>
+            <tr>
+                <td><label for="enum-name" class="translate">Name</label></td>
+                <td><input id="enum-name" type="text" size="40"/></td>
+            </tr>
+            <tr>
+                <td><label for="enum-gen-id" class="translate">Generated&nbsp;ID:</label></td>
+                <td><span id="enum-gen-id"></span></td>
+            </tr>
+        </table>
+    </div>
+    <div id="dialog-enum-members" style="display:none">
+        <span class="translate" style="padding-right: 10">Name:</span><input id="enum-name-edit" size="20" disabled/>
+        <table id="grid-enum-members"></table>
+        <div id="pager-enum-members"></div>
+    </div>
+    <div id="dialog-script" style="display:none">
+        <table style="width: 100%">
+            <tr>
+                <td class="translate" style="width:100">name</td>
+                <td colspan="2"><input size="60" id="edit-script-name"></td>
+            </tr>
+            <tr>
+                <td class="translate">engine type</td>
+                <td style="width:100">
+                    <select id="edit-script-engine-type"></select>
+                </td>
+                <td style="text-align:right">
+                    <button id="edit-insert-id" class="translate">Insert</button>
+                </td>
+            </tr>
+        </table><br/>
+        <!--<textarea id="edit-script-source"></textarea>-->
+        <div id="script-editor">Test!</div>
+        <input type="hidden" id="edit-script-id">
 
 
-</div>
-<div id="dialog-user" style="display:none">
-    <table>
-        <tr>
-            <td>name</td>
-            <td><input size="15" id="edit-user-name"></td>
-        </tr>
-        <tr>
-            <td>password</td>
-            <td><input size="15" id="edit-user-pass" type="password"></td>
-        </tr>
-        <tr>
-            <td>confirm password</td>
-            <td><input size="15" id="edit-user-passconf" type="password"></td>
-        </tr>
-    </table><br/>
-    <input type="hidden" id="edit-user-id">
-</div>
-<div id="dialog-group" style="display:none">
-    <table>
-        <tr>
-            <td>name</td>
-            <td><input size="15" id="edit-group-name"></td>
-        </tr>
-        <tr>
-            <td>description</td>
-            <td><input size="40" id="edit-group-desc"></td>
-        </tr>
-    </table><br/>
-    <input type="hidden" id="edit-group-id">
-</div>
-<div id="dialog-select-member" style="display:none">
-    <!--div id="tree-select-member" style="width:100%; height:100%"></div-->
-</div>
-<div id="dialog-history" style="display:none">
-    <table style="font-size: 12px">
-        <tr>
-            <td class="translate">enabled</td>
-            <td><input type="checkbox" id="edit-history-enabled"></td>
-            <td style="width: 40px">&nbsp;</td>
-            <td class="translate">log changes only</td>
-            <td><input type="checkbox" id="edit-history-changesOnly"></td>
-            <td class="translate">De-bounce interval(ms)</td>
-            <td><input type="number" id="edit-history-debounce"  min="500" max="86400000"></td>
-        </tr>
-        <tr>
-            <td class="translate">minimum datapoint count in Redis</td>
-            <td><input type="number" id="edit-history-minLength" min="100" max="5000"></td>
-            <td style="width: 40px">&nbsp;</td>
-            <td class="translate">CouchDB retention</td>
-            <td>
-                <select id="edit-history-retention">
-                    <option value="0"            class="translate">keep forever</option>
-                    <option value="63072000"    class="translate">2 years</option>
-                    <option value="31536000"    class="translate">1 year</option>
-                    <option value="15811200"    class="translate">6 months</option>
-                    <option value="7948800"     class="translate">3 months</option>
-                    <option value="2678400"     class="translate">1 months</option>
-                    <option value="1209600"     class="translate">2 weeks</option>
-                    <option value="604800"      class="translate">1 week</option>
-                    <option value="432000"      class="translate">5 days</option>
-                    <option value="259200"      class="translate">3 days</option>
-                    <option value="86400"       class="translate">1 day</option>
-                </select>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-    </table>
-    <div id="tabs-history">
-        <ul>
-            <li><a href="#tab-history-table" class="translate">Table</a></li>
-            <li><a href="#tab-history-chart" class="translate">Chart</a></li>
-        </ul>
-        <div id="tab-history-table">
-            <input type="hidden" id="edit-history-ids">
-            <table id="grid-history"></table>
-            <div id="pager-history"></div>
-        </div>
-        <div id="tab-history-chart">
-            <iframe id="iframe-history-chart"></iframe>
+    </div>
+    <div id="dialog-user" style="display:none">
+        <table>
+            <tr>
+                <td>name</td>
+                <td><input size="15" id="edit-user-name"></td>
+            </tr>
+            <tr>
+                <td>password</td>
+                <td><input size="15" id="edit-user-pass" type="password"></td>
+            </tr>
+            <tr>
+                <td>confirm password</td>
+                <td><input size="15" id="edit-user-passconf" type="password"></td>
+            </tr>
+        </table><br/>
+        <input type="hidden" id="edit-user-id">
+    </div>
+    <div id="dialog-group" style="display:none">
+        <table>
+            <tr>
+                <td>name</td>
+                <td><input size="15" id="edit-group-name"></td>
+            </tr>
+            <tr>
+                <td>description</td>
+                <td><input size="40" id="edit-group-desc"></td>
+            </tr>
+        </table><br/>
+        <input type="hidden" id="edit-group-id">
+    </div>
+    <div id="dialog-select-member" style="display:none">
+        <!--div id="tree-select-member" style="width:100%; height:100%"></div-->
+    </div>
+    <div id="dialog-history" style="display:none">
+        <table style="font-size: 12px">
+            <tr>
+                <td class="translate">enabled</td>
+                <td><input type="checkbox" id="edit-history-enabled"></td>
+                <td style="width: 40px">&nbsp;</td>
+                <td class="translate">log changes only</td>
+                <td><input type="checkbox" id="edit-history-changesOnly"></td>
+                <td class="translate">De-bounce interval(ms)</td>
+                <td><input type="number" id="edit-history-debounce"  min="500" max="86400000"></td>
+            </tr>
+            <tr>
+                <td class="translate">minimum datapoint count in Redis</td>
+                <td><input type="number" id="edit-history-minLength" min="100" max="5000"></td>
+                <td style="width: 40px">&nbsp;</td>
+                <td class="translate">CouchDB retention</td>
+                <td>
+                    <select id="edit-history-retention">
+                        <option value="0"            class="translate">keep forever</option>
+                        <option value="63072000"    class="translate">2 years</option>
+                        <option value="31536000"    class="translate">1 year</option>
+                        <option value="15811200"    class="translate">6 months</option>
+                        <option value="7948800"     class="translate">3 months</option>
+                        <option value="2678400"     class="translate">1 months</option>
+                        <option value="1209600"     class="translate">2 weeks</option>
+                        <option value="604800"      class="translate">1 week</option>
+                        <option value="432000"      class="translate">5 days</option>
+                        <option value="259200"      class="translate">3 days</option>
+                        <option value="86400"       class="translate">1 day</option>
+                    </select>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <div id="tabs-history">
+            <ul>
+                <li><a href="#tab-history-table" class="translate">Table</a></li>
+                <li><a href="#tab-history-chart" class="translate">Chart</a></li>
+            </ul>
+            <div id="tab-history-table">
+                <input type="hidden" id="edit-history-ids">
+                <table id="grid-history"></table>
+                <div id="pager-history"></div>
+            </div>
+            <div id="tab-history-chart">
+                <iframe id="iframe-history-chart"></iframe>
+            </div>
         </div>
     </div>
-</div>
-<div title="command execution" id="dialog-command" class="translateT" style="display:none">
-    <textarea style="font-family: courier, monospace; font-size: 11px;" id="stdout" disabled="disabled" cols="120" rows="30"></textarea>
-</div>
-<div title="adater configuration" id="dialog-config" style="display:none">
-    <iframe style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%; height: 100%" id="config-iframe" name="config-iframe"></iframe>
-</div>
-<div title="license agreement" id="dialog-license" class="translateT" style="display:none;z-index: 102">
-    <h3 class="translate">Select language</h3>
-    <select id="license_language">
-        <option value="en">English</option>
-        <option value="de">Deutsch</option>
-        <option value="ru">русский</option>
-    </select>
-    <h3 class="translate">License terms</h3>
-    <div id="license_text" style="width: 100%"></div>
-</div>
-<div id="connecting" style="left:50%; top:50%;position: fixed;"><img class="wait-rotate" src="img/gear.png"/></div>
-<div title="System settings" id="dialog-system"  class="translateT" style="display:none">
-    <div id="tabs-system">
-        <ul>
-            <li><a href="#tab-system-main"  class="translate">Main settings</a></li>
-            <li><a href="#tab-system-repo"  class="translate">Repositories</a></li>
-            <li><a href="#tab-system-certs" class="translate">Certificates</a></li>
-            <li><a href="#tab-system-diag"  class="translate">Statistics</a></li>
-        </ul>
-        <div id="tab-system-main">
-            <table>
-                <tr><td class="translate">System language:</td>
-                    <td>
-                        <select id="system_language" class="system-settings value">
-                            <option value="en">English</option>
-                            <option value="de">Deutsch</option>
-                            <option value="ru">русский</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr><td class="translate">Temperature units:</td>
-                    <td>
-                        <select id="system_tempUnit" class="system-settings value">
-                            <option value="°C">°C</option>
-                            <option value="°F">°F</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr><td class="translate">Currency:</td>
-                    <td>
-                        <input type="text" size="5" maxlength="5" id="system_currency" class="system-settings value"/>
-                    </td>
-                </tr>
-                <tr><td class="translate">Date format:</td>
-                    <td>
-                        <select id="system_dateFormat" class="system-settings value">
-                            <option value="DD.MM.YYYY" class="translate">DD.MM.YYYY</option>
-                            <option value="DD.MM.YY"   class="translate">DD.MM.YY</option>
-                            <option value="DD/MM/YYYY" class="translate">DD/MM/YYYY</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr><td class="translate">Float divider:</td>
-                    <td>
-                        <select id="system_isFloatComma" class="system-settings value">
-                            <option value="true"  class="translate">comma</option>
-                            <option value="false" class="translate">point</option>
-                        </select>
-                    </td>
-                <tr><td class="translate">Active repository:</td>
-                    <td>
-                        <select id="system_activeRepo" class="system-settings value">
-                        </select>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div id="tab-system-repo">
-            <table id="grid-repos"></table>
-            <div id="pager-repos"></div>
-        </div>
-        <div id="tab-system-certs">
-            <table id="grid-certs"></table>
-            <div id="pager-certs"></div>
-        </div>
-        <div id="tab-system-diag">
-            <table id="table-diag">
-                <tr>
-                    <td class="translate">Note:</td>
-                    <td class="translate">diag-note</td>
-                </tr>
-                <tr>
-                    <td class="translate">Statistics:</td>
-                    <td><select id="diagMode">
-                        <option value="none" class="translate">none</option>
-                        <option value="normal" class="translate">normal</option>
-                        <option value="extended" class="translate">extended</option>
-                    </select></td>
-                </tr>
-                <tr>
-                    <td class="translate" style="vertical-align: top">Sent data:</td>
-                    <td><pre id="diagSample" style="font-size: 10px"></pre></td>
-                </tr>
-            </table>
+    <div id="dialog-command" title="command execution" class="translateT" style="display:none">
+        <textarea style="font-family: courier, monospace; font-size: 11px;" id="stdout" disabled="disabled" cols="120" rows="30"></textarea>
+    </div>
+    <div id="dialog-config" title="adater configuration" style="display:none">
+        <iframe style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%; height: 100%" id="config-iframe" name="config-iframe"></iframe>
+    </div>
+    <div id="dialog-license" title="license agreement" class="translateT" style="display:none;z-index: 102">
+        <h3 class="translate">Select language</h3>
+        <select id="license_language">
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="ru">русский</option>
+        </select>
+        <h3 class="translate">License terms</h3>
+        <div id="license_text" style="width: 100%"></div>
+    </div>
+    <div id="connecting" style="left:50%; top:50%;position: fixed;"><img class="wait-rotate" src="img/gear.png"/></div>
+    <div id="dialog-system" title="System settings" class="translateT" style="display:none">
+        <div id="tabs-system">
+            <ul>
+                <li><a href="#tab-system-main"  class="translate">Main settings</a></li>
+                <li><a href="#tab-system-repo"  class="translate">Repositories</a></li>
+                <li><a href="#tab-system-certs" class="translate">Certificates</a></li>
+                <li><a href="#tab-system-diag"  class="translate">Statistics</a></li>
+            </ul>
+            <div id="tab-system-main">
+                <table>
+                    <tr><td class="translate">System language:</td>
+                        <td>
+                            <select id="system_language" class="system-settings value">
+                                <option value="en">English</option>
+                                <option value="de">Deutsch</option>
+                                <option value="ru">русский</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr><td class="translate">Temperature units:</td>
+                        <td>
+                            <select id="system_tempUnit" class="system-settings value">
+                                <option value="°C">°C</option>
+                                <option value="°F">°F</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr><td class="translate">Currency:</td>
+                        <td>
+                            <input type="text" size="5" maxlength="5" id="system_currency" class="system-settings value"/>
+                        </td>
+                    </tr>
+                    <tr><td class="translate">Date format:</td>
+                        <td>
+                            <select id="system_dateFormat" class="system-settings value">
+                                <option value="DD.MM.YYYY" class="translate">DD.MM.YYYY</option>
+                                <option value="DD.MM.YY"   class="translate">DD.MM.YY</option>
+                                <option value="DD/MM/YYYY" class="translate">DD/MM/YYYY</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr><td class="translate">Float divider:</td>
+                        <td>
+                            <select id="system_isFloatComma" class="system-settings value">
+                                <option value="true"  class="translate">comma</option>
+                                <option value="false" class="translate">point</option>
+                            </select>
+                        </td>
+                    <tr><td class="translate">Active repository:</td>
+                        <td>
+                            <select id="system_activeRepo" class="system-settings value">
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="tab-system-repo">
+                <table id="grid-repos"></table>
+                <div id="pager-repos"></div>
+            </div>
+            <div id="tab-system-certs">
+                <table id="grid-certs"></table>
+                <div id="pager-certs"></div>
+            </div>
+            <div id="tab-system-diag">
+                <table id="table-diag">
+                    <tr>
+                        <td class="translate">Note:</td>
+                        <td class="translate">diag-note</td>
+                    </tr>
+                    <tr>
+                        <td class="translate">Statistics:</td>
+                        <td><select id="diagMode">
+                            <option value="none" class="translate">none</option>
+                            <option value="normal" class="translate">normal</option>
+                            <option value="extended" class="translate">extended</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td class="translate" style="vertical-align: top">Sent data:</td>
+                        <td><pre id="diagSample" style="font-size: 10px"></pre></td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 
-<div title="Copy log" id="log-copy-text" style="display:none; width:100%; height: 100%; background: white; top:0; left:0; position: absolute; z-index:2000">
-</div>
-<div id="dialog-message" title="Message" style="display: none">
-    <p>
-        <span id="dialog-message-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
-        <span id="dialog-message-text"></span>
-    </p>
-</div>
-<div id="dialog-confirm" title="Question" style="display: none">
-    <p>
-        <span id="dialog-confirm-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
-        <span id="dialog-confirm-text"></span>
-    </p>
-</div>
+    <div id="log-copy-text"  title="Copy log" style="display:none; width:100%; height: 100%; background: white; top:0; left:0; position: absolute; z-index:2000">
+    </div>
+    <div id="dialog-message" title="Message" style="display: none">
+        <p>
+            <span id="dialog-message-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
+            <span id="dialog-message-text"></span>
+        </p>
+    </div>
+    <div id="dialog-confirm" title="Question" style="display: none">
+        <p>
+            <span id="dialog-confirm-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
+            <span id="dialog-confirm-text"></span>
+        </p>
+    </div>
 </body>
 </html>

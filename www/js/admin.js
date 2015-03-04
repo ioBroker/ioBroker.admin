@@ -2572,14 +2572,14 @@ $(document).ready(function () {
     function initHostButtons() {
 
         $('.host-update-submit').button({icons: {primary: 'ui-icon-refresh'}}).unbind('click').on('click', function () {
-            cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
+            main.cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
                 if (!exitCode) initHosts(true);
             });
         });
 
         $('.host-restart-submit').button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click').on('click', function () {
             main.waitForRestart = true;
-            cmdExec($(this).attr('data-host-name'), '_restart');
+            main.cmdExec($(this).attr('data-host-name'), '_restart');
         });
     }
     function initHosts(update, updateRepo, callback) {
@@ -3823,12 +3823,14 @@ $(document).ready(function () {
         }
         if (eventsLinesCount >= 500) {
             eventsLinesStart++;
-            document.getElementById('event_' + eventsLinesStart).outerHTML = '';
+            var e = document.getElementById('event_' + eventsLinesStart);
+            if (e) e.outerHTML = '';
         } else {
             eventsLinesCount++;
         }
 
         if (state) {
+            state.from = state.from || '';
             state.from = state.from.replace('system.adapter.', '');
             state.from = state.from.replace('system.', '');
 
