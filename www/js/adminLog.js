@@ -15,8 +15,8 @@ function Logs(main) {
 
 
     this.prepare = function () {
-        $('#log-filter-severity').change(this.filterLog);
-        $('#log-filter-host').change(this.filterLog);
+        $('#log-filter-severity').change(this.filter);
+        $('#log-filter-host').change(this.filter);
         $('#log-filter-message').change(function () {
             if (that.logFilterTimeout) clearTimeout(that.logFilterTimeout);
             that.logFilterTimeout = setTimeout(that.filter, 1000);
@@ -93,13 +93,16 @@ function Logs(main) {
                     if (lines[i][4] == '-' && lines[i][7] == '-') {
                         lines[i]         = lines[i].replace(/(\[[0-9]+m)/g, '');
                         message.ts       = lines[i].substring(0, 23);
-                        lines[i]         =  lines[i].substring(27);
+                        lines[i]         = lines[i].substring(27);
 
                         var pos          = lines[i].indexOf(':');
-                        message.severity = lines[i].substring(0, pos - 1);
+                        message.severity = lines[i].substring(0, pos);
+                        if (message.severity.charCodeAt(message.severity.length - 1) == 27) message.severity = message.severity.substring(0, message.severity.length - 1);
+                        if (message.severity.charCodeAt(0) == 27) message.severity = message.severity.substring(1);
+
                         lines[i]         = lines[i].substring(pos + 2);
                         pos              = lines[i].indexOf(' ');
-                        message.from     = lines[i].substring(0, pos);
+                        message.from     = lines[i].substring(0, pos).replace(/\./g, '-');
                         message.message  = lines[i].substring(pos);
                     } else {
                         message.message = lines[i];
@@ -122,12 +125,12 @@ function Logs(main) {
 
         var hostFilter = $('#log-filter-host').val();
 
-        if (this.logHosts.indexOf(message.from) == -1) {
+        if (message.from && this.logHosts.indexOf(message.from) == -1) {
             this.logHosts.push(message.from);
             this.logHosts.sort();
             $('#log-filter-host').html('<option value="">' + _('all') + '</option>');
             for (var i = 0; i < this.logHosts.length; i++) {
-                $('#log-filter-host').append('<option value="' + this.logHosts[i] + '" ' + ((this.logHosts[i] == hostFilter) ? 'selected' : '') + '>' + this.logHosts[i] + '</option>');
+                $('#log-filter-host').append('<option value="' + this.logHosts[i].replace(/\./g, '-') + '" ' + ((this.logHosts[i] == hostFilter) ? 'selected' : '') + '>' + this.logHosts[i] + '</option>');
             }
         }
         var visible = '';
@@ -145,9 +148,9 @@ function Logs(main) {
             }
         }
 
-        if (message.severity == 'error')         $('a[href="#tab-log"]').addClass('errorLog');
+        if (message.severity == 'error') $('a[href="#tab-log"]').addClass('errorLog');
 
-        var text = '<tr id="log-line-' + (this.logLinesStart + this.logLinesCount) + '" class="log-line log-severity-' + message.severity + ' log-from-' + (message.from || '') + '" style="' + visible + '">';
+        var text = '<tr id="log-line-' + (this.logLinesStart + this.logLinesCount) + '" class="log-line log-severity-' + message.severity + ' ' + (message.from ? 'log-from-' + message.from : '') + '" style="' + visible + '">';
         text += '<td class="log-column-1">' + (message.from || '') + '</td>';
         text += '<td class="log-column-2">' + this.main.formatDate(message.ts) + '</td>';
         text += '<td class="log-column-3">' + message.severity + '</td>';
@@ -165,30 +168,30 @@ function Logs(main) {
         var filterHost = $('#log-filter-host').val();
         var filterMsg  = $('#log-filter-message').val();
         if (filterSev == 'error') {
-            $('.log-severity-debug').hide();
-            $('.log-severity-info').hide();
-            $('.log-severity-warn').hide();
-            $('.log-severity-error').show();
+            $('#log-outer .log-severity-debug').hide();
+            $('#log-outer .log-severity-info').hide();
+            $('#log-outer .log-severity-warn').hide();
+            $('#log-outer .log-severity-error').show();
         } else
         if (filterSev == 'warn') {
-            $('.log-severity-debug').hide();
-            $('.log-severity-info').hide();
-            $('.log-severity-warn').show();
-            $('.log-severity-error').show();
+            $('#log-outer .log-severity-debug').hide();
+            $('#log-outer .log-severity-info').hide();
+            $('#log-outer .log-severity-warn').show();
+            $('#log-outer .log-severity-error').show();
         }else
         if (filterSev == 'info') {
-            $('.log-severity-debug').hide();
-            $('.log-severity-info').show();
-            $('.log-severity-warn').show();
-            $('.log-severity-error').show();
+            $('#log-outer .log-severity-debug').hide();
+            $('#log-outer .log-severity-info').show();
+            $('#log-outer .log-severity-warn').show();
+            $('#log-outer .log-severity-error').show();
         } else {
-            $('.log-severity-debug').show();
-            $('.log-severity-info').show();
-            $('.log-severity-warn').show();
-            $('.log-severity-error').show();
+            $('#log-outer .log-severity-debug').show();
+            $('#log-outer .log-severity-info').show();
+            $('#log-outer .log-severity-warn').show();
+            $('#log-outer .log-severity-error').show();
         }
         if (filterHost || filterMsg) {
-            $('.log-line').each(function (index) {
+            $('#log-outer .log-line').each(function (index) {
                 if (filterHost && !$(this).hasClass('log-from-' + filterHost)) {
                     $(this).hide();
                 } else

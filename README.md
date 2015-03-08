@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 
 ## Changelog
+### 0.3.21 (2015-03-08)
+* (bluefox) fix filter in log
+*
 ### 0.3.20 (2015-03-07)
 * (bluefox) support of uncolored log messages
 * (bluefox) place logs in own file
