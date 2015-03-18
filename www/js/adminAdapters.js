@@ -37,7 +37,9 @@ function Adapters(main) {
             ignoreCase:   true,
             loadComplete: function () {
                 that.initButtons();
-            }
+            },
+            postData: that.main.config.adaptersFilter ? { filters: that.main.config.adaptersFilter} : undefined,
+            search: !!that.main.config.adaptersFilter
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
             autosearch:    true,
@@ -45,6 +47,7 @@ function Adapters(main) {
             enableClear:   false,
             afterSearch:   function () {
                 that.initButtons();
+                that.main.saveConfig('adaptersFilter', that.$grid.getGridParam('postData').filters);
             }
         }).navGrid('#pager-adapters', {
             search:  false,
@@ -65,6 +68,14 @@ function Adapters(main) {
         });
 
         $('#gview_grid-adapters .ui-jqgrid-titlebar').append('<div style="padding-left: 120px; margin-bottom: -3px;"><span class="translate">Host: </span><select id="host-adapters"></select></div>');
+        if (that.main.config.adaptersFilter) {
+            var filters = JSON.parse(that.main.config.adaptersFilter);
+            if (filters.rules) {
+                for (var f = 0; f < filters.rules.length; f++) {
+                    $('#gview_grid-adapters #gs_' + filters.rules[f].field).val(filters.rules[f].data);
+                }
+            }
+        }
     };
 
     this.getAdaptersInfo = function (host, update, updateRepo, callback) {

@@ -6,7 +6,6 @@ user interface for configuration and administration
 
 ## Todo
 
-
 ## Changelog
 ### 0.3.21 (2015-03-08)
 * (bluefox) fix filter in log

@@ -369,7 +369,7 @@ function _editInitButtons($grid, tabId, objId) {
         changed = true;
         $('#save').button("enable");
         $('#saveclose').button("enable");
-    }).css('height', '18px');
+    }).css({'height': '18px', width: '22px'});
 
     $('.' + tabId + '-delete-submit' + search).unbind('click').button({
         icons: {primary: 'ui-icon-trash'},
@@ -385,7 +385,7 @@ function _editInitButtons($grid, tabId, objId) {
             $grid[0]._edited.splice(pos, 1);
         }
         if ($grid[0]._onChange) $grid[0]._onChange('del', id);
-    }).css('height', '18px');
+    }).css({'height': '18px', width: '22px'});
 
     $('.' + tabId + '-ok-submit' + search).unbind('click').button({
         icons: {primary: 'ui-icon-check'},
@@ -409,7 +409,7 @@ function _editInitButtons($grid, tabId, objId) {
             $grid[0]._edited.splice(pos, 1);
         }
         if ($grid[0]._onChange) $grid[0]._onChange('changed', $grid.jqGrid('getRowData', tabId + '_' + id));
-    }).css('height', '18px');
+    }).css({'height': '18px', width: '22px'});
 
     $('.' + tabId + '-cancel-submit' + search).unbind('click').button({
         icons: {primary: 'ui-icon-close'},
@@ -427,7 +427,7 @@ function _editInitButtons($grid, tabId, objId) {
         if (pos != -1) {
             $grid[0]._edited.splice(pos, 1);
         }
-    }).css('height', '18px');
+    }).css({'height': '18px', width: '22px'});
 }
 
 function _editTable(tabId, cols, values, rooms, top, onChange) {
@@ -495,7 +495,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         colModel.push(_obj);
     }
     colNames.push('');
-    colModel.push({name: '_commands', index: '_commands', width: 60, editable: false, align: 'center', search: false});
+    colModel.push({name: '_commands', index: '_commands', width: 50, editable: false, align: 'center', search: false});
 
     $grid[0]._cols     = cols;
     $grid[0]._rooms    = rooms;
@@ -534,7 +534,10 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         pginput: false,
         pgtext: false,
         caption: _(title),
-        ignoreCase: true
+        ignoreCase: true,
+        loadComplete: function () {
+            _editInitButtons($grid, tabId);
+        }
     }).jqGrid('filterToolbar', {
         defaultSearch: 'cn',
         autosearch:    true,
@@ -600,6 +603,9 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         $grid.setGridHeight($(this).height() - top).setGridWidth($(this).width() - 10);
     });
     $(window).trigger('resize');
+
+    // hide scrollbar
+    $('.ui-jqgrid-bdiv').css({'overflow-x': 'hidden'});
 
     return $grid;
 }

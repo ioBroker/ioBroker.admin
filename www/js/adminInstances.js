@@ -42,7 +42,9 @@ function Instances(main) {
             ondblClickRow: function (rowId, e) {
                 var rowData = that.$grid.jqGrid('getRowData', rowId);
                 that.onEdit(rowData._id);
-            }
+            },
+            postData: that.main.config.instancesFilter ? { filters: that.main.config.instancesFilter} : undefined,
+            search: !!that.main.config.instancesFilter
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
             autosearch:    true,
@@ -50,6 +52,8 @@ function Instances(main) {
             enableClear:   false,
             afterSearch:   function () {
                 that.initButtons();
+                // Save filter
+                that.main.saveConfig('instancesFilter', that.$grid.getGridParam("postData").filters);
             }
         }).navGrid('#pager-instances', {
             search:  false,
@@ -95,19 +99,38 @@ function Instances(main) {
             height:     536, //$(window).height() - 100, // 480
             closeOnEscape: false,
             open: function (event, ui) {
-                $('#dialog-config').css('padding', '2px 0px');
+                that.$dialogConfig.css('padding', '2px 0px');
             },
             beforeClose: function () {
                 if (window.frames['config-iframe'].changed) {
                     return confirm(_('Are you sure? Changes are not saved.'));
                 }
+                var pos  = $(this).parent().position();
+                var name = $(this).data('name');
+                that.main.saveConfig('adapter-config-top-' + name,  pos.top);
+                that.main.saveConfig('adapter-config-left-' + name, pos.left);
+
                 return true;
             },
             close: function () {
                 // Clear iframe
                 that.$configFrame.attr('src', '');
+            },
+            resize: function () {
+                var name = $(this).data('name');
+                that.main.saveConfig('adapter-config-width-' + name, $(this).parent().width());
+                that.main.saveConfig('adapter-config-height-' + name, $(this).parent().height() + 10);
             }
         });
+
+        if (that.main.config.instancesFilter) {
+            var filters = JSON.parse(that.main.config.instancesFilter);
+            if (filters.rules) {
+                for (var f = 0; f < filters.rules.length; f++) {
+                    $('#gview_grid-instances #gs_' + filters.rules[f].field).val(filters.rules[f].data);
+                }
+            }
+        }
     };
 
     this.onEdit = function (id, e) {
@@ -357,7 +380,32 @@ function Instances(main) {
                 $iframeDialog = that.$dialogConfig;
                 that.$configFrame.attr('src', $(this).attr('data-instance-href'));
                 var name = $(this).attr('data-instance-id').replace(/^system\.adapter\./, '');
-                that.$dialogConfig.dialog('option', 'title', _('Adapter configuration') + ': ' + name).dialog('open');
+                var config = that.main.objects[$(this).attr('data-instance-id')];
+                var width = 830;
+                var height = 536;
+                var minHeight = 0;
+                var minWidth = 0;
+                if (config.common.config) {
+                    if (config.common.config.width) width   = config.common.config.width;
+                    if (config.common.config.height) height = config.common.config.height;
+                    if (config.common.config.minWidth) minWidth   = config.common.config.minWidth;
+                    if (config.common.config.minHeight) minHeight = config.common.config.minHeight;
+                }
+                if (that.main.config['adapter-config-width-'  + name])  width = that.main.config['adapter-config-width-'  + name];
+                if (that.main.config['adapter-config-height-' + name]) height = that.main.config['adapter-config-height-' + name];
+                that.$dialogConfig.data('name', name);
+
+                // Set minimal height and width
+                that.$dialogConfig.dialog('option', 'minWidth',  minWidth).dialog('option', 'minHeight', minHeight);
+
+                that.$dialogConfig
+                    .dialog('option', 'title', _('Adapter configuration') + ': ' + name)
+                    .dialog('option', 'width',  width)
+                    .dialog('option', 'height', height)
+                    .dialog('open');
+
+                if (that.main.config['adapter-config-top-'  + name])   that.$dialogConfig.parent().css({top: that.main.config['adapter-config-top-' + name]});
+                if (that.main.config['adapter-config-left-' + name])   that.$dialogConfig.parent().css({left: that.main.config['adapter-config-left-' + name]});
             });
 
         $('.instance-reload' + id).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click')
