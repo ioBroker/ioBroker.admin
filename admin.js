@@ -617,6 +617,12 @@ function socketEvents(socket, user) {
         adapter.readDir(_adapter, path, callback);
     });
 
+    socket.on('writeFile', function (_adapter, filename, data, callback) {
+        adapter.writeFile(_adapter, filename, data, null, callback);
+    });
+    socket.on('readFile', function (_adapter, filename, callback) {
+        adapter.readFile(_adapter, filename, null, callback);
+    });
     socket.on('sendTo', function (adapterInstance, command, message, callback) {
         adapter.sendTo(adapterInstance, command, message, function (res) {
             if (callback) {

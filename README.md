@@ -7,9 +7,16 @@ user interface for configuration and administration
 ## Todo
 
 ## Changelog
+### 0.3.22 (2015-03-20)
+* (bluefox) move states to extra file
+* (bluefox) speed up rendering of states
+* (bluefox) store some filter settings (not all yet)
+* (bluefox) support of width and height settings for configuration dialog of adapter instance
+* (bluefox) enable read and upload of files (for sayit)
+
 ### 0.3.21 (2015-03-08)
 * (bluefox) fix filter in log
-*
+
 ### 0.3.20 (2015-03-07)
 * (bluefox) support of uncolored log messages
 * (bluefox) place logs in own file
