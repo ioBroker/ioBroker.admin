@@ -77,31 +77,31 @@ function States(main) {
             caption: _('ioBroker States'),
             ignoreCase: true,
             ondblClickRow: function (id) {
-                var rowData = this.$grid.jqGrid('getRowData', id);
+                var rowData = that.$grid.jqGrid('getRowData', id);
                 rowData.ack = false;
                 rowData.from = '';
-                this.$grid.jqGrid('setRowData', id, rowData);
+                that.$grid.jqGrid('setRowData', id, rowData);
 
                 if (id && id !== stateLastSelected) {
-                    this.$grid.restoreRow(stateLastSelected);
+                    that.$grid.restoreRow(stateLastSelected);
                     stateLastSelected = id;
                 }
                 var _id = id.substring(6);//'state_'.length
                 if (main.objects[_id] && main.objects[_id].common && main.objects[_id].common.type == 'boolean') {
-                    this.$grid.setColProp('val', {
+                    that.$grid.setColProp('val', {
                         editable: true,
                         edittype: 'checkbox',
                         editoptions: {value: 'true:false'}
                     });
                 } else if (main.objects[_id] && main.objects[_id].common && main.objects[_id].common.type == 'number' && main.objects[_id].common.states) {
-                    this.$grid.setColProp('val', {
+                    that.$grid.setColProp('val', {
                         editable: true,
                         edittype: 'select',
                         editoptions: {value: main.objects[_id].common.states.join(':')},
                         align: 'center'
                     });
                 } else {
-                    this.$grid.setColProp('val', {
+                    that.$grid.setColProp('val', {
                         editable: true,
                         edittype: 'text',
                         editoptions: null,
@@ -109,7 +109,7 @@ function States(main) {
                     });
                 }
 
-                this.$grid.editRow(id, true, function () {
+                that.$grid.editRow(id, true, function () {
                     // onEdit
                     stateEdit = true;
                 }, function (obj) {
@@ -117,20 +117,20 @@ function States(main) {
                 }, 'clientArray', null, function () {
                     // afterSave
                     stateEdit = false;
-                    var val = this.$grid.jqGrid('getCell', stateLastSelected, 'val');
+                    var val = that.$grid.jqGrid('getCell', stateLastSelected, 'val');
 
                     if (val === 'true')  val = true;
                     if (val === 'false') val = false;
 
                     if (parseFloat(val) == val) val = parseFloat(val);
 
-                    var ack = this.$grid.jqGrid('getCell', stateLastSelected, 'ack');
+                    var ack = that.$grid.jqGrid('getCell', stateLastSelected, 'ack');
 
                     if (ack === 'true')  ack = true;
                     if (ack === 'false') ack = false;
 
                     var id = $('tr[id="' + stateLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                    main.socket.emit('setState', id, {val: val, ack: ack});
+                    that.main.socket.emit('setState', id, {val: val, ack: ack});
                     stateLastSelected = null;
                 });
             },
@@ -164,8 +164,8 @@ function States(main) {
             cursor: 'pointer'
         });
 
-        if (that.main.config.statesFilter) {
-            var filters = JSON.parse(that.main.config.statesFilter);
+        if (this.main.config.statesFilter) {
+            var filters = JSON.parse(this.main.config.statesFilter);
             if (filters.rules) {
                 for (var f = 0; f < filters.rules.length; f++) {
                     $('#gview_grid-states #gs_' + filters.rules[f].field).val(filters.rules[f].data);

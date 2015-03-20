@@ -613,6 +613,10 @@ function socketEvents(socket, user) {
         adapter.sendToHost(host, 'cmdExec', {data: cmd, id: id});
     });
 
+    socket.on('readDir', function (_adapter, path, callback) {
+        adapter.readDir(_adapter, path, callback);
+    });
+
     socket.on('sendTo', function (adapterInstance, command, message, callback) {
         adapter.sendTo(adapterInstance, command, message, function (res) {
             if (callback) {

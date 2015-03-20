@@ -104,9 +104,9 @@ systemDictionary = {
     },
     "schedule":             {"en": "schedule",              "de": "Zeitplanung",            "ru": "Расписание"},
     "config instance":      {"en": "config instance",       "de": "Instanz konfigurieren",  "ru": "config instance"},
-    "add instance":         {"en": "add instance",          "de": "Instanz hinzufügen",     "ru": "Экземпляр"},
-    "readme":               {"en": "readme",                "de": "Lies mich",              "ru": "инструкции"},
-    "delete adapter":       {"en": "delete adapter",        "de": "Adapter löschen",        "ru": "Удалить адаптер"},
+    "add instance":         {"en": "add instance",          "de": "Instanz hinzufügen",     "ru": "Установить драйвер"},
+    "readme":               {"en": "readme",                "de": "Lies mich",              "ru": "Описание драйвера"},
+    "delete adapter":       {"en": "delete adapter",        "de": "Adapter löschen",        "ru": "Удалить драйвер"},
     "Save":                 {"en": "Save",                  "de": "Speichern",              "ru": "Сохранить"},
     "Cancel":               {"en": "Cancel",                "de": "Abbrechen",              "ru": "Отмена"},
     "Log":                  {"en": "Log",                   "de": "Log",                    "ru": "Лог"},
@@ -190,7 +190,7 @@ systemDictionary = {
               "Keine private Information wird zu ioBroker.org gesendet. Jedes Mal wenn Adapterliste upgedated wird, wird die anonymisierte Statistik gesendet.<br>\n" +
               "Vielen Dank!",
         "ru": "Мы долго работали над этим проектом. Мы просим вас переслать нам статистику использования, как компенсацию.<br>\n" +
-              "Никакой приватной информации не отсылается в ioBroker.org. Каждый раз, когда список адаптеров обновляется, будет отсылатся анонимная статистика.<br>\n" +
+              "Никакой приватной информации не отсылается в ioBroker.org. Каждый раз, когда список драйверов обновляется, будет отсылатся анонимная статистика.<br>\n" +
               "Большое спасибо!"
     },
     "ts":                   {"en": "Timestamp",             "de": "Zeit",                   "ru": "Время"},
