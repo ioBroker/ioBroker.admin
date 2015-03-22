@@ -163,22 +163,56 @@ $(document).ready(function () {
             }
 
             return text;
+        },
+        _delObject:     function ($tree, id, callback) {
+            var leaf = $tree.selectId('getTreeInfo', id);
+            //var leaf = treeFindLeaf(id);
+            if (leaf && leaf.children) {
+                for (var e = 0; e < leaf.children.length; e++) {
+                    main.delObject($tree, leaf.children[e], function () {
+                        main.delObject($tree, id, callback, true);
+                    }, true);
+                    break;
+                }
+            } else {
+                if (main.objects[id] && main.objects[id].common && main.objects[id].common['object-non-deletable']) {
+                    showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
+                    if (callback) callback(id);
+                } else {
+                    main.socket.emit('delObject', id, function () {
+                        main.socket.emit('delState', id, function () {
+                            if (callback) {
+                                setTimeout(function () {
+                                    callback(id);
+                                }, 0);
+                            }
+                        });
+                    });
+                }
+            }
+        },
+        delObject:      function ($tree, id, callback, hideConfirm) {
+            if (hideConfirm) {
+                main._delObject($tree, id, callback);
+            } else {
+                main.confirmMessage(_('Are you sure to delete %s and all children?', id), null, 'help', function (result) {
+                    if (result) main._delObject($tree, id, callback);
+                });
+            }
         }
-    };
+
+};
     
     var tabs = {
         adapters:   new Adapters(main),
         instances:  new Instances(main),
         logs:       new Logs(main),
-        states:     new States(main)
+        states:     new States(main),
+        objects:    new Objects(main)
     };
     main.instances = tabs.instances.list;
     main.tabs      = tabs;
 
-    // Todo put this in adapter instance config
-    var historyMaxAge =         86400; // Maxmimum datapoint age to be shown in gridHistory (seconds)
-
-    var objectTree =            {name: '', children:{}, count: 0};
     var enums =                 [];
     var scripts =               [];
     var users =                 [];
@@ -187,7 +221,6 @@ $(document).ready(function () {
     var updateTimers =          {};
     var hosts =                 [];
     var enumCurrentParent =     '';
-    var historyEnabled =        null;
 
     var systemRepos;
     var systemCerts;
@@ -209,11 +242,9 @@ $(document).ready(function () {
     var $dialogEnumMembers =    $('#dialog-enum-members');
     var $dialogEnum =           $('#dialog-enum');
     var $dialogScript =         $('#dialog-script');
-    var $dialogObject =         $('#dialog-object');
     var $dialogUser =           $('#dialog-user');
     var $dialogGroup =          $('#dialog-group');
     var $dialogLicense =        $('#dialog-license');
-    var $dialogHistory =        $('#dialog-history');
     var $dialogSystem =         $('#dialog-system');
     var $dialogMessage =        $('#dialog-message');
     var $dialogConfirm =        $('#dialog-confirm');
@@ -222,18 +253,14 @@ $(document).ready(function () {
     var $gridGroups =           $('#grid-groups');
     var $gridEnums =            $('#grid-enums');
     var $gridEnumMembers =      $('#grid-enum-members');
-    var $gridObjects =          $('#grid-objects');
     var $gridScripts =          $('#grid-scripts');
     var $gridHosts =            $('#grid-hosts');
-    var $gridHistory =          $('#grid-history');
     var $gridRepo =             $('#grid-repos');
     var $gridCerts =            $('#grid-certs');
 
     var firstConnect =          true;
 
     var enumEdit =              null;
-    var currentHistory =        null; // Id of the currently shown history dialog
-    var historyIds =            [];
 
     var editor =                null;
 
@@ -262,7 +289,7 @@ $(document).ready(function () {
             window.location.hash = '#' + ui.newPanel.selector.slice(5);
             switch (ui.newPanel.selector) {
                 case '#tab-objects':
-                    initObjects();
+                    tabs.objects.init();
                     break;
 
                 case '#tab-hosts':
@@ -402,20 +429,6 @@ $(document).ready(function () {
     function cert2string(cert) {
         var res = cert.replace(/(?:\\[rn]|[\r\n]+)+/g, "");
         return res;
-    }
-
-    // Set modified history states
-    function setHistory(ids, callback) {
-        var id = ids.pop();
-        if (id) {
-            $dialogHistory.dialog('option', 'title', _('History of %s states', ids.length));
-
-            main.socket.emit('setObject', id, main.objects[id], function () {
-                setTimeout(setHistory, 50, ids, callback);
-            });
-        } else {
-            if (callback) callback();
-        }
     }
 
     // Use the function for this because it must be done after the language was read
@@ -578,58 +591,6 @@ $(document).ready(function () {
             }
         });
 
-        $dialogHistory.dialog({
-            autoOpen:      false,
-            modal:         true,
-            width:         830,
-            height:        575,
-            closeOnEscape: false,
-            buttons: [
-                {
-                    text: _('Save'),
-                    click: function () {
-                        var ids =           JSON.parse($('#edit-history-ids').val());
-                        var minLength =     parseInt($('#edit-history-minLength').val(), 10) || 480;
-
-                        // do not update charts
-                        currentHistory = null;
-                        historyIds = ids;
-
-                        for(var i = 0; i < ids.length; i++) {
-                            main.objects[ids[i]].common.history = {
-                                enabled:     $('#edit-history-enabled').is(':checked'),
-                                changesOnly: $('#edit-history-changesOnly').is(':checked'),
-                                minLength:   minLength,
-                                maxLength:   minLength * 2,
-                                retention:   parseInt($('#edit-history-retention').val(), 10) || 0,
-                                debounce:    parseInt($('#edit-history-debounce').val(),  10) || 1000
-                            };
-                        }
-                        setHistory(ids, function () {
-                            $dialogHistory.dialog('close');
-                        });
-                    }
-                },
-                {
-                    text: _('Cancel'),
-                    click: function () {
-                        $dialogHistory.dialog('close');
-                    }
-                }
-            ],
-            open: function (event, ui) {
-                $gridHistory.setGridHeight($(this).height() - 180).setGridWidth($(this).width() - 30);
-                $('#iframe-history-chart').css({height: $(this).height() - 115, width: $(this).width() - 30});
-            },
-            close: function () {
-                $('#iframe-history-chart').attr('src', '');
-            },
-            resize: function () {
-                $gridHistory.setGridHeight($(this).height() - 180).setGridWidth($(this).width() - 30);
-                $('#iframe-history-chart').css({height: $(this).height() - 115, width: $(this).width() - 30});
-            }
-        });
-
         $dialogMessage.dialog({
             autoOpen: false,
             modal:    true,
@@ -756,195 +717,6 @@ $(document).ready(function () {
             });
     }
 
-    function checkHistory() {
-        if (main.objects['system.adapter.history.0'] && main.objects['system.adapter.history.0'].common.enabled) {
-            if (historyEnabled !== null && historyEnabled != true) {
-                historyEnabled = true;
-                // update history buttons
-                initObjects(true);
-            } else {
-                historyEnabled = true;
-            }
-        } else {
-            if (historyEnabled !== null && historyEnabled != false) {
-                historyEnabled = false;
-                // update history buttons
-                initObjects(true);
-            } else {
-                historyEnabled = false;
-            }
-        }
-    }
-
-    // ----------------------------- Grids and Dialog inits ------------------------------------------------
-    function openHistoryDlg(ids) {
-        if (typeof ids != 'object') ids = [ids];
-
-        for (var i = 0; i < ids.length; i++) {
-            if (!main.objects[ids[i]]) {
-                var p = ids[i].split('.');
-                p.splice(2);
-                main.objects[ids[i]] = {
-                    type:   'state',
-                    parent: p.join('.'),
-                    common: {
-                        // TODO define role somehow
-                        type: main.states[ids[i]] ? getType(main.states[ids[i]].val) : 'mixed',
-                        name: ids[i]
-                    }
-                };
-            }
-            if (!main.objects[ids[i]].common.history) {
-                main.objects[ids[i]].common.history = {
-                    enabled:        false,
-                    changesOnly:    true,
-                    debounce:       10000, // de-bounce interval
-                    // use default value from history-adadpter config
-                    minLength:      (main.objects['system.adapter.history.0'] && main.objects['system.adapter.history.0'].native) ? main.objects['system.adapter.history.0'].native.minLength || 480 : 480,
-                    retention:      604800 // one week by default
-                };
-            }
-        }
-
-        var title;
-        if (ids.length == 1) {
-            title = _('History of %s', ids[0]);
-            currentHistory = main.objects[ids[0]].common.history.enabled ? ids[0]: null;
-        } else {
-            title = _('History of %s states', ids.length);
-            currentHistory = null;
-        }
-        $('#edit-history-ids').val(JSON.stringify(ids));
-
-        $('#edit-history-enabled').prop('checked', main.objects[ids[0]].common.history.enabled);
-        $('#edit-history-changesOnly').prop('checked', main.objects[ids[0]].common.history.changesOnly);
-
-        $('#edit-history-minLength').val(main.objects[ids[0]].common.history.minLength);
-        $('#edit-history-debounce').val(main.objects[ids[0]].common.history.debounce);
-        $('#edit-history-retention').val(main.objects[ids[0]].common.history.retention);
-        $dialogHistory.dialog('option', 'title', title);
-        $gridHistory.jqGrid('clearGridData');
-        $("#load_grid-history").show();
-
-        var start = Math.round((new Date()).getTime() / 1000) - historyMaxAge;
-        var end =   Math.round((new Date()).getTime() / 1000) + 5000;
-        //console.log('getStateHistory', id, start, end)
-        var _tabs = $('#tabs-history');
-
-        var port = 0;
-        var chart = false;
-        if (ids.length == 1) {
-            $dialogHistory.dialog('option', 'height', 575);
-            $dialogHistory.dialog('open');
-            _tabs[0]._id = ids[0];
-            _tabs.show();
-            if (!_tabs[0]._inited) {
-                _tabs[0]._inited = true;
-                _tabs.tabs({
-                    activate: function (event, ui) {
-                        switch (ui.newPanel.selector) {
-                            case '#tab-history-table':
-                                $('#iframe-history-chart').attr('src', '');
-                                break;
-
-                            case '#tab-history-chart':
-                                var port = 0;
-                                var chart = false;
-                                var _id = this._id;
-                                for (var i = 0; i < main.instances.length; i++) {
-                                    if (main.objects[main.instances[i]].common.name == 'rickshaw' && main.objects[main.instances[i]].common.enabled) {
-                                        chart = 'rickshaw';
-                                    } else
-                                    if (main.objects[main.instances[i]].common.name == 'web' && main.objects[main.instances[i]].common.enabled) {
-                                        port = main.objects[main.instances[i]].native.port;
-                                    }
-                                    if (chart && port) break;
-                                }
-                                var $chart = $('#iframe-history-chart');
-
-                                $chart.attr('src', 'http://' + location.hostname + ':' + port + '/' + chart + '/index.html?axeX=lines&axeY=inside&_ids=' + encodeURI(_id) + '&width=' + ($chart.width() - 10) + '&hoverDetail=true&height=' + ($chart.height() - 10));
-                                break;
-
-                        }
-                    },
-                    create: function () {
-                    }
-                });
-            } else {
-                _tabs.tabs({active: 0});
-            }
-
-            // Check if chart enabled and set
-            for (var i = 0; i < main.instances.length; i++) {
-                if (main.objects[main.instances[i]].common.name == 'rickshaw' && main.objects[main.instances[i]].common.enabled) {
-                    chart = 'rickshaw';
-                } else
-                if (main.objects[main.instances[i]].common.name == 'web'      && main.objects[main.instances[i]].common.enabled) {
-                    port = main.objects[main.instances[i]].native.port;
-                }
-                if (chart && port) break;
-            }
-
-            main.socket.emit('getStateHistory', ids[0], start, end, function (err, res) {
-                setTimeout(function () {
-                    if (!err) {
-                        var rows = [];
-                        //console.log('got ' + res.length + ' history datapoints for ' + id);
-                        for (var i = 0; i < res.length; i++) {
-                            rows.push({
-                                gid: i,
-                                id:  res[i].id,
-                                ack: res[i].ack,
-                                val: res[i].val,
-                                ts:  main.formatDate(res[i].ts, true),
-                                lc:  main.formatDate(res[i].lc, true)
-                            });
-                        }
-                        $gridHistory[0]._maxGid = res.length;
-                        $gridHistory.jqGrid('addRowData', 'gid', rows);
-                        $gridHistory.trigger('reloadGrid');
-                    } else {
-                        console.log(err);
-                    }
-                }, 0);
-            });
-            _tabs.tabs('option', 'disabled', (port && chart && currentHistory) ? [] : [1]);
-        } else {
-            $dialogHistory.dialog('option', 'height', 150);
-            _tabs.hide();
-            $dialogHistory.dialog('open');
-        }
-    }
-    function prepareHistory() {
-        $gridHistory.jqGrid({
-            datatype: 'local',
-            colNames: [_('val'), _('ack'), _('from'), _('ts'), _('lc')],
-            colModel: [
-                {name: 'val',  index: 'val',  width: 160, editable: true},
-                {name: 'ack',  index: 'ack',  width: 60,  fixed: false},
-                {name: 'from', index: 'from', width: 80,  fixed: false},
-                {name: 'ts',   index: 'ts',   width: 140, fixed: false},
-                {name: 'lc',   index: 'lc',   width: 140, fixed: false}
-            ],
-            width: 750,
-            height: 300,
-            pager: $('#pager-history'),
-            rowNum: 100,
-            rowList: [15, 100, 1000],
-            sortname: "id",
-            sortorder: "desc",
-            viewrecords: true,
-            caption: _('history data'),
-            ignoreCase: true
-
-        });
-
-        $(document).on('click', '.history', function () {
-            openHistoryDlg($(this).attr('data-id'));
-        });
-
-    }
-
     function prepareEnumMembers() {
         $gridEnumMembers.jqGrid({
             datatype: 'local',
@@ -1039,34 +811,6 @@ $(document).ready(function () {
         });
 
         $dialogEnumMembers.trigger('resize');
-    }
-
-    function prepareObjects() {
-        $dialogObject.dialog({
-            autoOpen:   false,
-            modal:      true,
-            width: 800,
-            height: 640,
-            buttons: [
-                {
-                    text: _('Save'),
-                    click: saveObject
-                },
-                {
-                    text: _('Cancel'),
-                    click: function () {
-                        $dialogObject.dialog('close');
-                        $('#json-object').val('');
-                    }
-                }
-            ]
-        });
-
-        $(document).on('click', '.jump', function (e) {
-            editObject($(this).attr('data-jump-to'));
-            e.preventDefault();
-            return false;
-        });
     }
 
     function prepareUsers() {
@@ -2013,6 +1757,7 @@ $(document).ready(function () {
                 initSelectId();
                 $selectId.selectId('show', function (newId) {
                     editor.insert('"' + newId + '"' + ((main.objects[newId] && main.objects[newId].common && main.objects[newId].common.name) ? ('/*' + main.objects[newId].common.name + '*/') : ''));
+                    editor.focus();
                 });
             });
         }
@@ -2590,7 +2335,7 @@ $(document).ready(function () {
                 main.objectsLoaded = true;
 
                 // If history enabled
-                checkHistory();
+                tabs.objects.checkHistory();
 
                 // Detect if some script engine instance installed
                 var engines = fillEngines();
@@ -2606,220 +2351,6 @@ $(document).ready(function () {
             }, 0);
         });
     }
-    function initObjects(update) {
-        if (!main.objectsLoaded) {
-            setTimeout(initObjects, 250);
-            return;
-        }
-
-        if (typeof $gridObjects !== 'undefined' && (!$gridObjects[0]._isInited || update)) {
-            //$gridObjects.jqGrid('clearGridData');
-            $gridObjects[0]._isInited = true;
-
-            var x = $(window).width();
-            var y = $(window).height();
-            if (x < 720) x = 720;
-            if (y < 480) y = 480;
-
-            $gridObjects.height(y - 100).width(x - 20);
-
-            var settings = {
-                objects: main.objects,
-                states: main.states,
-                noDialog: true,
-                texts: {
-                    select:   _('Select'),
-                    cancel:   _('Cancel'),
-                    all:      _('All'),
-                    id:       _('ID'),
-                    name:     _('Name'),
-                    role:     _('Role'),
-                    room:     _('Room'),
-                    value:    _('Value'),
-                    type:     _('Type'),
-                    selectid: _('Select ID'),
-                    from:     _('From'),
-                    lc:       _('Last changed'),
-                    ts:       _('Time stamp'),
-                    wait:     _('Processing...'),
-                    ack:      _('Acknowledged'),
-                    edit:     _('Edit'),
-                    ok:       _('Ok'),
-                    with:     _('With'),
-                    without:  _('Without')
-                },
-                columns: ['image', 'name', 'type', 'role', 'room', 'value', 'button'],
-                buttons: [
-                    {
-                        text: false,
-                        icons: {
-                            primary:'ui-icon-gear'
-                        },
-                        click: function (id) {
-                            editObject(id);
-                        },
-                        width: 26,
-                        height: 20
-                    },
-                    {
-                        text: false,
-                        icons: {
-                            primary:'ui-icon-trash'
-                        },
-                        click: function (id) {
-                            // Delete all children
-                            if (id) delObject($gridObjects, id);
-                        },
-                        width: 26,
-                        height: 20
-                    },
-                    {
-                        text: false,
-                        icons: {
-                            primary:'ui-icon-clock'
-                        },
-                        click: function (id) {
-                            openHistoryDlg(id);
-                        },
-                        width: 26,
-                        height: 20,
-                        match: function (id) {
-                            // Show history button only if history adapter enabled
-                            if (main.objects[id] && historyEnabled && !id.match(/\.messagebox$/) && main.objects[id].type == 'state') {
-                                // Check if history enabled
-                                if (main.objects[id] && main.objects[id].common && main.objects[id].common.history && main.objects[id].common.history.enabled) {
-                                    this.addClass('history-enabled').removeClass('history-disabled').css({'background': 'lightgreen'});
-                                } else {
-                                    this.addClass('history-disabled').removeClass('history-enabled').css({'background': ''});
-                                }
-                            } else {
-                                this.hide();
-                            }
-                        }
-                    }
-                ]
-            };
-            if (historyEnabled) {
-                settings.customButtonFilter = {
-                    icons:    {primary: 'ui-icon-clock'},
-                    text:     false,
-                    callback: function () {
-                        var _ids = $gridObjects.selectId('getFilteredIds');
-                        var ids = [];
-                        for (var i = 0; i < _ids.length; i++) {
-                            if (main.objects[_ids[i]] && main.objects[_ids[i]].type == 'state') ids.push(_ids[i]);
-                        }
-                        if (ids && ids.length) {
-                            openHistoryDlg(ids);
-                        } else {
-                            showMessage(_('No states selected!'), '', 'info');
-                        }
-                    }
-                }
-            } else {
-                settings.customButtonFilter = null;
-            }
-
-            $gridObjects.selectId('init', settings).selectId('show');
-        }
-    }
-    function editObject(id) {
-        var obj = main.objects[id];
-        if (!obj) return;
-        $dialogObject.dialog('option', 'title', id);
-        $('#edit-object-id').val(obj._id);
-        $('#edit-object-parent-old').val(obj.parent);
-        $('#edit-object-name').val(obj.common ? obj.common.name : id);
-        $('#edit-object-type').val(obj.type);
-        //$('#edit-object-parent').val(obj.parent);
-        $('#jump-parent').attr('data-jump-to', obj.parent);
-        /*var childs = '<div style="font-size: 10px">';
-        // childs += '<table style="font-size: 11px">';
-        if (obj.children) {
-            for (var i = 0; i < obj.children.length; i++) {
-                //childs += '<tr><td>' + obj.children[i] + '</td><td><button data-jump-to="' + obj.children[i] + '" class="jump">-></button></td></tr>';
-                childs += '<a style="text-decoration: underline; cursor: pointer;" class="jump" data-jump-to="' + obj.children[i] + '">' + obj.children[i] + '</a><br>';
-            }
-        }
-
-        childs += '</div>';*/
-        //childs += '</table>';
-        //$('#edit-object-children').html(childs);
-        $('#edit-object-common').val(JSON.stringify(obj.common, null, '  '));
-        $('#edit-object-native').val(JSON.stringify(obj.native, null, '  '));
-        var _obj = JSON.parse(JSON.stringify(obj));
-        if (_obj._id)    delete _obj._id;
-        if (_obj.common) delete _obj.common;
-        if (_obj.type)   delete _obj.type;
-        if (_obj.native) delete _obj.native;
-        $('#view-object-full').val(JSON.stringify(_obj, null, '  '));
-        $dialogObject.dialog('open');
-    }
-    function saveObject() {
-        var obj = {common: {}, native: {}};
-        obj._id =         $('#edit-object-id').val();
-        obj.parent =      $('#edit-object-parent-old').val();
-        obj.common.name = $('#edit-object-name').val();
-        obj.type =        $('#edit-object-type').val();
-        obj.parent =      $('#edit-object-parent').val();
-
-        try {
-            obj.common = JSON.parse($('#edit-object-common').val());
-        } catch (e) {
-            showMessage('common ' + e, '', 'alert');
-            return false;
-        }
-        try {
-            obj.native = JSON.parse($('#edit-object-native').val());
-        } catch (e) {
-            showMessage('native ' + e, '', 'alert');
-            return false;
-        }
-
-        main.socket.emit('extendObject', obj._id, obj);
-
-
-        $dialogObject.dialog('close');
-    }
-    function _delObject($tree, id, callback) {
-        var leaf = $tree.selectId('getTreeInfo', id);
-        //var leaf = treeFindLeaf(id);
-        if (leaf && leaf.children) {
-            for (var e = 0; e < leaf.children.length; e++) {
-                delObject($tree, leaf.children[e], function () {
-                    delObject($tree, id, callback, true);
-                }, true);
-                break;
-            }
-        } else {
-            if (main.objects[id] && main.objects[id].common && main.objects[id].common['object-non-deletable']) {
-                showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
-                if (callback) callback(id);
-            } else {
-                main.socket.emit('delObject', id, function () {
-                    main.socket.emit('delState', id, function () {
-                        if (callback) {
-                            setTimeout(function () {
-                                callback(id);
-                            }, 0);
-                        }
-                    });
-                });
-            }
-        }
-    }
-    function delObject($tree, id, callback, hideConfirm) {
-        if (hideConfirm) {
-            _delObject($tree, id, callback);
-        } else {
-            main.confirmMessage(_('Are you sure to delete %s and all children?', id), null, 'help', function (result) {
-                if (result) {
-                    _delObject($tree, id, callback);
-                }
-            });
-        }
-    }
-
     // ----------------------------- Enum show and Edit ------------------------------------------------
     var tasks = [];
     function enumRename(oldId, newId, newName, callback) {
@@ -2967,38 +2498,7 @@ $(document).ready(function () {
             if (y < 480) y = 480;
 
             $gridEnums.height(y - 100).width(x - 20);
-            /*var tree = objectTree.children.enum;
-            if (!tree) tree = objectTree;
 
-            if (tree && tree.count) {
-                for (i in tree.children) {
-                    var id = tree.children[i].id;
-                    if (id && main.objects[id].type === 'enum') {
-                        if (!main.objects[id].common) main.objects[id].common = {};
-                        gridEnumsData.push({
-                            gridId:  'enum_' + id.replace(/ /g, '_'),
-                            _id:     main.objects[id]._id,
-                            name:    main.objects[id].common.name || '',
-                            members: main.objects[id].common.members ? main.objects[id].common.members.length : '',
-                            buttons: '<button data-enum-id="' + main.objects[id]._id + '" class="enum-edit">'         + _('edit')         + '</button>' +
-                                //'<button data-enum-id="' + main.objects[id]._id + '" class="enum-members">'      + _('members')      + '</button>' +
-                                (main.objects[id].common.nondeletable ? '' : '<button data-enum-id="' + main.objects[id]._id + '" class="enum-del">' + _('delete') + '</button>') +
-                                '<button data-enum-id="' + main.objects[id]._id + '" class="enum-add-children">' + _('add children') + '</button>' +
-                                '<button data-enum-id="' + main.objects[id]._id + '" class="enum-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
-                                '<button data-enum-id="' + main.objects[id]._id + '" class="enum-cancel-submit" style="display:none">' + _('cancel') + '</button>'
-                        });
-                    }
-                }
-            }
-            $gridEnums.jqGrid('addRowData', 'gridId', gridEnumsData);
-            $gridEnums.trigger('reloadGrid');
-            if (expandId) $gridEnums.jqGrid('expandSubGridRow', 'enum_' + expandId);
-
-            for (i = 0; i < enumExpanded.length; i++) {
-                $gridEnums.jqGrid('expandSubGridRow', 'enum_' + enumExpanded[i]);
-            }
-
-            initEnumButtons();*/
             $gridEnums.selectId('init', {
                 objects: main.objects,
                 states: main.states,
@@ -3060,7 +2560,7 @@ $(document).ready(function () {
                             primary:'ui-icon-trash'
                         },
                         click: function (id) {
-                            delObject($gridEnums, id);
+                            main.delObject($gridEnums, id);
                         },
                         match: function (id) {
                             if (!main.objects[id] || !main.objects[id].common || main.objects[id].common.nondeletable) this.hide();
@@ -3297,29 +2797,18 @@ $(document).ready(function () {
         var rowData;
         id = id ? id.replace(/ /g, '_') : '';
 
-        if (currentHistory == id) {
-            var gid = $gridHistory[0]._maxGid++;
-            $gridHistory.jqGrid('addRowData', gid, {
-                gid: gid,
-                id:  id,
-                ack: state.ack,
-                val: state.val,
-                ts:  main.formatDate(state.ts, true),
-                lc:  main.formatDate(state.lc, true)
-            });
-        }
-
         if (id && id.match(/\.messagebox$/)) {
             addEventMessage(id, state);
         } else {
             tabs.states.stateChange(id, state);
+            tabs.objects.stateChange(id, state);
 
-            if ($gridObjects) $gridObjects.selectId('state', id, state);
             if ($selectId) $selectId.selectId('state', id, state);
         }
 
         // Update alive and connecetd of main.instances
         tabs.instances.stateChange(id, state);
+        tabs.objects.stateChangeHistory(id, state);
     }
 
     main.socket.on('stateChange', function (id, obj) {
@@ -3354,7 +2843,7 @@ $(document).ready(function () {
         // update to event table
         addEventMessage(id, null, null, obj);
 
-        if ($gridObjects) $gridObjects.selectId('object', id, obj);
+        tabs.objects.objectChange(id, obj);
         if ($selectId)    $selectId.selectId('object', id, obj);
         if ($gridEnums)   $gridEnums.selectId('object', id, obj);
 
@@ -3377,9 +2866,8 @@ $(document).ready(function () {
                 if (i != -1) main.instances.splice(i, 1);
             }
             if (id.match(/^system\.adapter\.history\.[0-9]+$/)) {
-                checkHistory();
                 // Update all states if history enabled or disabled
-                $gridObjects.selectId('reinit');
+                tabs.objects.reinit();
             }
 
             if (id.match(/^system\.adapter\.node-red\.[0-9]+$/)) {
@@ -3650,14 +3138,14 @@ $(document).ready(function () {
                             initAllDialogs();
                             prepareEnumMembers();
                             prepareHosts();
-                            prepareObjects();
+                            tabs.objects.prepare();
                             tabs.states.prepare();
                             tabs.adapters.prepare();
                             tabs.instances.prepare();
                             prepareUsers();
                             prepareGroups();
                             prepareScripts();
-                            prepareHistory();
+                            tabs.objects.prepareHistory();
                             prepareRepos();
                             prepareCerts();
                             resizeGrids();
@@ -3715,10 +3203,10 @@ $(document).ready(function () {
         }
         $('#grid-events-inner').css('height', (y - 130) + 'px');
         tabs.states.resize(x, y);
-        $gridObjects.height(y - 100).width(x - 20);
         $gridEnums.setGridHeight(y - 150).setGridWidth(x - 20);
         tabs.adapters.resize(x, y);
         tabs.instances.resize(x, y);
+        tabs.objects.resize(x, y);
         $gridScripts.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridUsers.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridGroups.setGridHeight(y - 150).setGridWidth(x - 20);

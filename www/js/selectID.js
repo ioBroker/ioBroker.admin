@@ -652,7 +652,7 @@
                     } else
                     if (data.columns[c] == 'value') {
                         if (data.states && (data.states[node.key] || data.states[node.key + '.val'] !== undefined)) {
-                            var state = data.states[node.key];
+                            var state = JSON.stringify(data.states[node.key]);
                             if (!state) {
                                 state = {
                                     val:  data.states[node.key + '.val'],
@@ -1418,7 +1418,7 @@
         // update states
         "state": function (id, state) {
             for (var i = 0; i < this.length; i++) {
-                var dlg = this[i];
+                var dlg  = this[i];
                 var $dlg = $(dlg);
                 var data = $dlg.data('selectId');
                 if (!data || !data.states || !data.$tree) continue;

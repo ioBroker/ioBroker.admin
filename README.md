@@ -7,6 +7,10 @@ user interface for configuration and administration
 ## Todo
 
 ## Changelog
+### 0.3.23 (2015-03-22)
+* (bluefox) fix error with show values in objects TAB
+* (bluefox) move objects tab code into adminObjects.js
+
 ### 0.3.22 (2015-03-20)
 * (bluefox) move states to extra file
 * (bluefox) speed up rendering of states
