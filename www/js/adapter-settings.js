@@ -73,15 +73,18 @@ $(document).ready(function () {
     });
 
     function saveSettings(obj, common, callback) {
-        var newObj = {native: obj};
         if (common) newObj.common = common;
-        socket.emit('extendObject', id, newObj, function () {
-            changed = false;
-            if (onChangeSupported) {
-                $('#save').button('disable');
-                $('#saveclose').button('disable');
-            }
-            if (callback) callback();
+        socket.emit('getObject', id, function (err, oldObj) {
+            if (!oldObj) oldObj = {};
+            oldObj.native = obj;
+            socket.emit('setObject', id, oldObj, function () {
+                changed = false;
+                if (onChangeSupported) {
+                    $('#save').button('disable');
+                    $('#saveclose').button('disable');
+                }
+                if (callback) callback();
+            });
         });
     }
 

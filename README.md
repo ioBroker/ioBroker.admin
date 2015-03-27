@@ -7,6 +7,9 @@ user interface for configuration and administration
 ## Todo
 
 ## Changelog
+### 0.3.24 (2015-03-27)
+* (bluefox) change save function for adapter settings
+
 ### 0.3.23 (2015-03-22)
 * (bluefox) fix error with show values in objects TAB
 * (bluefox) move objects tab code into adminObjects.js
