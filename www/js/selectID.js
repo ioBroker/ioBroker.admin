@@ -652,7 +652,7 @@
                     } else
                     if (data.columns[c] == 'value') {
                         if (data.states && (data.states[node.key] || data.states[node.key + '.val'] !== undefined)) {
-                            var state = JSON.stringify(data.states[node.key]);
+                            var state = data.states[node.key];
                             if (!state) {
                                 state = {
                                     val:  data.states[node.key + '.val'],
