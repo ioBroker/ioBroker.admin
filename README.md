@@ -7,7 +7,7 @@ user interface for configuration and administration
 ## Todo
 
 ## Changelog
-### 0.3.24 (2015-03-27)
+### 0.3.25 (2015-03-27)
 * (bluefox) change save function for adapter settings
 
 ### 0.3.23 (2015-03-22)

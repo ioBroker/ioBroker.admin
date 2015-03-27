@@ -72,11 +72,20 @@ $(document).ready(function () {
         }
     });
 
-    function saveSettings(obj, common, callback) {
-        if (common) newObj.common = common;
+    function saveSettings(native, common, callback) {
+        if (typeof common == 'function') {
+            callback = common;
+            common = null;
+        }
+
         socket.emit('getObject', id, function (err, oldObj) {
             if (!oldObj) oldObj = {};
-            oldObj.native = obj;
+
+            for (var a in native) {
+                oldObj.native[a] = native[a];
+            }
+
+            if (common) oldObj.common = common;
             socket.emit('setObject', id, oldObj, function () {
                 changed = false;
                 if (onChangeSupported) {
