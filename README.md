@@ -7,6 +7,11 @@ user interface for configuration and administration
 ## Todo
 
 ## Changelog
+### 0.3.27 (2015-04-14)
+* (bluefox) save size of script editor dialog
+* (bluefox) fix errors with table editor in adapter configuration
+* (bluefox) update npm modules
+
 ### 0.3.26 (2015-03-27)
 * (bluefox) change save function for adapter settings
 * (bluefox) fix show states in object tab
