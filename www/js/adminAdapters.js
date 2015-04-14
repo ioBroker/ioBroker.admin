@@ -76,6 +76,7 @@ function Adapters(main) {
                 }
             }
         }
+        $("#load_grid-adapters").show();
     };
 
     this.getAdaptersInfo = function (host, update, updateRepo, callback) {

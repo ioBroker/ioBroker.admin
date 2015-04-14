@@ -39,6 +39,8 @@ function Objects(main) {
             e.preventDefault();
             return false;
         });
+
+        $("#load_grid-objects").show();
     };
 
     this.stateChange = function (id, state) {

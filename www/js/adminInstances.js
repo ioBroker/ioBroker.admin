@@ -131,6 +131,8 @@ function Instances(main) {
                 }
             }
         }
+
+        $("#load_grid-instances").show();
     };
 
     this.onEdit = function (id, e) {

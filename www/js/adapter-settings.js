@@ -5,11 +5,11 @@ var host =     null; // host object on which the adapter runs
 var changed =  false;
 var certs =    [];
 var adapter =  '';
+var onChangeSupported = false;
 
 $(document).ready(function () {
 
     var tmp = window.location.pathname.split('/');
-    var onChangeSupported = false;
     adapter = tmp[2];
     var id = 'system.adapter.' + adapter + '.' + instance;
 
@@ -26,6 +26,7 @@ $(document).ready(function () {
     systemDictionary.ok =             {"en": "Ok",          "de": "Ok",          "ru": "Ok"};
     systemDictionary.cancel =         {"en": "Cancel",      "de": "Abbrechen",   "ru": "Отмена"};
     systemDictionary.Message =        {"en": "Message",     "de": "Mitteilung",  "ru": "Сообщение"};
+    systemDictionary.close =          {"en": "Close",       "de": "Zumachen",    "ru": "Закрыть"};
 
 
     loadSystemConfig(function () {
@@ -91,6 +92,7 @@ $(document).ready(function () {
                 if (onChangeSupported) {
                     $('#save').button('disable');
                     $('#saveclose').button('disable');
+                    $('#close .ui-button-text').html(_('close'));
                 }
                 if (callback) callback();
             });
@@ -128,10 +130,12 @@ $(document).ready(function () {
             changed = false;
             $('#save').button('disable');
             $('#saveclose').button('disable');
+            $('#close .ui-button-text').html(_('close'));
         } else {
             changed = true;
             $('#save').button('enable');
             $('#saveclose').button('enable');
+            $('#close .ui-button-text').html(_('cancel'));
         }
     }
 
@@ -381,6 +385,7 @@ function _editInitButtons($grid, tabId, objId) {
         changed = true;
         $('#save').button("enable");
         $('#saveclose').button("enable");
+        if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
     }).css({'height': '18px', width: '22px'});
 
     $('.' + tabId + '-delete-submit' + search).unbind('click').button({
@@ -389,9 +394,12 @@ function _editInitButtons($grid, tabId, objId) {
     }).click(function () {
         var id = $(this).attr('data-' + tabId + '-id');
         $grid.jqGrid('delRowData', tabId + '_' + id);
+
         changed = true;
         $('#save').button("enable");
         $('#saveclose').button("enable");
+        if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
+
         var pos = $grid[0]._edited.indexOf(id);
         if (pos != -1) {
             $grid[0]._edited.splice(pos, 1);
@@ -415,6 +423,7 @@ function _editInitButtons($grid, tabId, objId) {
         changed = true;
         $('#save').button("enable");
         $('#saveclose').button("enable");
+        if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
 
         var pos = $grid[0]._edited.indexOf(id);
         if (pos != -1) {
@@ -523,8 +532,8 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         width:     800,
         height:    330,
         pager:     $('#pager-' + tabId),
-        rowNum:    20,
-        rowList:   [20, 50, 100],
+        rowNum:    1000,
+        rowList:   [1000],
         ondblClickRow: function (rowid) {
             var id = rowid.substring((tabId + '_').length);
             $('.' + tabId + '-edit-submit').hide();
@@ -532,12 +541,12 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + id + '"]').show();
             $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
             $grid.jqGrid('editRow', rowid, {"url": "clientArray"});
-            if ($grid[0]._edited.indexOf(id) == -1) {
-                $grid[0]._edited.push(id);
-            }
+            if ($grid[0]._edited.indexOf(id) == -1) $grid[0]._edited.push(id);
+
             changed = true;
             $('#save').button("enable");
             $('#saveclose').button("enable");
+            if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
         },
         sortname:  "id",
         sortorder: "desc",
@@ -549,6 +558,12 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         ignoreCase: true,
         loadComplete: function () {
             _editInitButtons($grid, tabId);
+        },
+        onSortCol: function () {
+            changed = true;
+            $('#save').button("enable");
+            $('#saveclose').button("enable");
+            if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
         }
     }).jqGrid('filterToolbar', {
         defaultSearch: 'cn',
@@ -559,6 +574,9 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             _editInitButtons($grid, tabId);
         }
     });
+
+    $('#pager-' + tabId + '_center').hide();
+
     if ($('#pager-' + tabId).length) {
         $grid.navGrid('#pager-' + tabId, {
             search:  false,
@@ -597,6 +615,8 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
                 changed = true;
                 $('#save').button("enable");
                 $('#saveclose').button("enable");
+                if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
+
                 addToTable(tabId, obj, $grid);
             },
             position: 'first',
