@@ -271,5 +271,16 @@ systemDictionary = {
     "Host %s is offline":   {"en": "Host %s is offline",    "de": "Host %s ist offline",    "ru": "Хост %s недоступен"},
     "command execution":    {"en": "Command execution",     "de": "Kommando-Ausführung",    "ru": "Выполнение команды"},
     "Installed instances":  {"en": "Installed instances",   "de": "Installierte Instanze",  "ru": "Добавлено драйверов"},
-    "Active instances":     {"en": "Active instances",      "de": "Aktivierte Instanze",    "ru": "Драйверов активно"}
+    "Active instances":     {"en": "Active instances",      "de": "Aktivierte Instanze",    "ru": "Драйверов активно"},
+    "Host:":                {"en": "Host:",                 "de": "Host:",                  "ru": "Хост:"},
+    "installed adapters":   {"en": "installed adapters",    "de": "installed adapters",     "ru": "installed adapters"},
+    "list":                 {"en": "list",                  "de": "Liste",                  "ru": "Список"},
+    "collapse all":         {"en": "collapse all",          "de": "Zumachen alle",          "ru": "Свернуть все группы"},
+    "expand all":           {"en": "expand all",            "de": "Aufmachen alle",         "ru": "Развернуть все группы"},
+    "common adapters":      {"en": "common",                "de": "Allgemein",              "ru": "Общие"},
+    "hardware":             {"en": "hardware",              "de": "Hardware",               "ru": "Hardware"},
+    "script":               {"en": "scripts and logic",     "de": "Skripte und Logik",      "ru": "Скрипты и логика"},
+    "media":                {"en": "media",                 "de": "Media",                  "ru": "Медиа"},
+    "visualisation":        {"en": "visualisation",         "de": "Visualisation",          "ru": "Визуализация"},
+    "communication":        {"en": "communication",         "de": "Kommunikation",          "ru": "Сетевые"}
 };

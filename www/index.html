@@ -113,23 +113,44 @@
             </div>
         </div>
         <div id="tab-adapters">
-            <table id="grid-adapters"></table>
-            <div id="pager-adapters"></div>
-            <!--table id="grid-adapters">
+            <!--table id="grid-adapters"></table>
+            <!--div id="pager-adapters"></div-->
+            <table><tr>
+                <td></td>
+                <td><button id="btn_filter_adapters" class="translateT" title="installed adapters"></button></td>
+                <td style="width:30px"></td>
+                <td><button id="btn_refresh_adapters" class="translateT" title="update adapter information"></button></td>
+                <td><button id="btn_list_adapters" class="translateT" title="list"></button></td>
+                <td><button id="btn_collapse_adapters" class="translateT" title="collapse all"></button></td>
+                <td><button id="btn_expand_adapters" class="translateT" title="expand all"></button></td>
+                <td><div style="padding-left: 120px"><span class="translate">Host:</span> <select id="host-adapters"></select></div></td>
+            </tr></table>
+            <div id="process_running_adapters" class="translate" style="position:absolute; top:50%; left:50%; width: 150; height: 25; padding: 12; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">Processing...</div>
+            <div style="width:100%;height:100%"><table id="grid-adapters" style="width:100%;table-layout:fixed;">
                 <colgroup>
-                    <col width="30px"></col>
-                    <col width="30px"></col>
+                    <col width="320px"></col>
                     <col width="*"></col>
-                    <col width="50px"></col>
-                    <col width="30px"></col>
+                    <col width="200px"></col>
+                    <col width="70px"></col>
+                    <col width="135px"></col>
+                    <col width="140px"></col>
+                    <col width="140px"></col>
+                    <col width="140px"></col>
                 </colgroup>
                 <thead>
-                <tr> <th></th> <th>#</th> <th></th> <th>Key</th> <th>Like</th> </tr>
+                <tr>
+                    <th class="translate">Name</th>
+                    <th class="translate">description</th>
+                    <th class="translate">keywords</th>
+                    <th class="translate">version</th>
+                    <th class="translate">installed</th>
+                    <th class="translate">platform</th>
+                    <th class="translate">license</th>
+                    <th class="translate">install</th>
+                </tr>
                 </thead>
-                <tbody>
-                <tr> <td></td> <td></td> <td></td> <td></td> </tr>
-                </tbody>
-            </table-->
+                <tbody></tbody>
+            </table></div>
         </div>
         <div id="tab-instances">
             <table id="grid-instances"></table>

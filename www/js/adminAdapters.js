@@ -7,9 +7,22 @@ function Adapters(main) {
     this.list = [];
     this.$grid =  $('#grid-adapters');
     this.main = main;
+    this.tree = [];
+    this.data = {};
+    this.groupImages = {
+        'common adapters': '/img/common.png',
+        'hardware': '/img/hardware.png',
+        'script': '/img/script.png',
+        'media': '/img/media.png',
+        'communication': '/img/communication.png',
+        'visualisation': '/img/visualisation.png'
+    };
+    this.isList = false;
+    this.filterVals = {length: 0};
+    this.onlyInstalled = false;
 
     this.prepare = function () {
-        this.$grid.jqGrid({
+        /*this.$grid.jqGrid({
             datatype: 'local',
             colNames: ['id', '', _('name'), _('title'), _('desc'), _('keywords'), _('available'), _('installed'), _('platform'), _('license'), ''],
             colModel: [
@@ -65,10 +78,10 @@ function Adapters(main) {
             id:            'add-object',
             title:         _('update adapter information'),
             cursor:        'pointer'
-        });
+        });*/
 
-        $('#gview_grid-adapters .ui-jqgrid-titlebar').append('<div style="padding-left: 120px; margin-bottom: -3px;"><span class="translate">Host: </span><select id="host-adapters"></select></div>');
-        if (that.main.config.adaptersFilter) {
+        //$('#gview_grid-adapters .ui-jqgrid-titlebar').append('<div style="padding-left: 120px; margin-bottom: -3px;"><span class="translate">Host: </span><select id="host-adapters"></select></div>');
+        /*if (that.main.config.adaptersFilter) {
             var filters = JSON.parse(that.main.config.adaptersFilter);
             if (filters.rules) {
                 for (var f = 0; f < filters.rules.length; f++) {
@@ -76,7 +89,104 @@ function Adapters(main) {
                 }
             }
         }
-        $("#load_grid-adapters").show();
+        $("#load_grid-adapters").show();*/
+
+        that.$grid.fancytree({
+            extensions: ["table"],
+            checkbox: false,
+            table: {
+                indentation: 20      // indent 20px per node level
+            },
+            source: that.tree,
+            renderColumns: function(event, data) {
+                var node = data.node,
+                    $tdList = $(node.tr).find(">td");
+                if (!that.data[node.key]) return;
+                $tdList.eq(0).css({'overflow': 'hidden', "white-space": "nowrap"});
+                $tdList.eq(1).html(that.data[node.key].desc).css({'overflow': 'hidden', "white-space": "nowrap"});
+                $tdList.eq(2).html(that.data[node.key].keywords).css({'overflow': 'hidden', "white-space": "nowrap"}).attr('title', that.data[node.key].keywords);
+
+                $tdList.eq(3).html(that.data[node.key].version).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
+                $tdList.eq(4).html(that.data[node.key].installed).css({'padding-left': '10px', 'overflow': 'hidden', "white-space": "nowrap"});
+                $tdList.eq(5).html(that.data[node.key].platform).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
+                $tdList.eq(6).html(that.data[node.key].license).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
+                $tdList.eq(7).html(that.data[node.key].install).css({'text-align': 'center'});
+            }
+        });
+
+        $('#btn_collapse_adapters').button({icons: {primary: 'ui-icon-folder-collapsed'}, text: false}).css({width: 18, height: 18}).click(function () {
+            $('#process_running_adapters').show();
+            setTimeout(function () {
+                that.$grid.fancytree('getRootNode').visit(function (node) {
+                    if (!that.filterVals.length || node.match || node.subMatch) node.setExpanded(false);
+                });
+                $('#process_running_adapters').hide();
+            }, 100);
+        });
+
+        $('#btn_expand_adapters').button({icons: {primary: 'ui-icon-folder-open'}, text: false}).css({width: 18, height: 18}).click(function () {
+            $('#process_running_adapters').show();
+            setTimeout(function () {
+                that.$grid.fancytree('getRootNode').visit(function (node) {
+                    if (!that.filterVals.length || node.match || node.subMatch)
+                        node.setExpanded(true);
+                });
+                $('#process_running_adapters').hide();
+            }, 100);
+        });
+
+        $('#btn_list_adapters').button({icons: {primary: 'ui-icon-grip-dotted-horizontal'}, text: false}).css({width: 18, height: 18}).click(function () {
+            $('#process_running_adapters').show();
+            that.isList = !that.isList;
+            if (that.isList) {
+                $('#btn_list_adapters').addClass('ui-state-error');
+                $('#btn_expand_adapters').hide();
+                $('#btn_collapse_adapters').hide();
+                $(this).attr('title', _('list'));
+            } else {
+                $('#btn_list_adapters').removeClass('ui-state-error');
+                $('#btn_expand_adapters').show();
+                $('#btn_collapse_adapters').show();
+                $(this).attr('title', _('tree'));
+            }
+            $('#process_running_adapters').show();
+
+            setTimeout(function () {
+                that.init(true);
+                $('#process_running_adapters').hide();
+            }, 200);
+        });
+
+        $('#btn_filter_adapters').button({icons: {primary: 'ui-icon-star'}, text: false}).css({width: 18, height: 18}).click(function () {
+            $('#process_running_adapters').show();
+            that.onlyInstalled = !that.onlyInstalled;
+            if (that.onlyInstalled) {
+                $('#btn_filter_adapters').addClass('ui-state-error');
+            } else {
+                $('#btn_filter_adapters').removeClass('ui-state-error');
+            }
+
+            setTimeout(function () {
+                that.init(true);
+                $('#process_running_adapters').hide();
+            }, 200);
+        });
+
+        if (that.isList) {
+            $('#btn_list_adapters').addClass('ui-state-error');
+            $('#btn_expand_adapters').hide();
+            $('#btn_collapse_adapters').hide();
+            $('#btn_list_adapters').attr('title', _('tree'));
+        }
+
+        if (that.onlyInstalled) {
+            $('#btn_filter_adapters').addClass('ui-state-error');
+        }
+
+        $('#btn_refresh_adapters').button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 18, height: 18}).click(function () {
+            that.init(true, true);
+        });
+
     };
 
     this.getAdaptersInfo = function (host, update, updateRepo, callback) {
@@ -134,11 +244,15 @@ function Adapters(main) {
         if (typeof this.$grid !== 'undefined' && (!this.$grid[0]._isInited || update)) {
             this.$grid[0]._isInited = true;
 
-            this.$grid.jqGrid('clearGridData');
+            $('#process_running_adapters').show();
+            /*this.$grid.jqGrid('clearGridData');
             $("#load_grid-adapters").show();
             $('a[href="#tab-adapters"]').removeClass('updateReady');
 
-            $("#load_grid-adapters").show();
+            $("#load_grid-adapters").show();*/
+
+            this.$grid.find('tbody').html('');
+
 
             this.getAdaptersInfo(this.main.currentHost, update, updateRepo, function (repository, installedList) {
                 var id = 1;
@@ -169,6 +283,9 @@ function Adapters(main) {
                 }
                 listUnsinstalled.sort();
 
+                that.tree = [];
+                that.data = {};
+
                 // list of the installed adapters
                 for (var i = 0; i < listInstalled.length; i++) {
                     adapter = listInstalled[i];
@@ -183,10 +300,11 @@ function Adapters(main) {
                     if (repository[adapter] && repository[adapter].extIcon) icon = repository[adapter].extIcon;
 
                     if (obj.version) {
-                        installed = obj.version;
+                        installed = '<table style="border: 0px;border-collapse: collapse;" cellspacing="0" cellpadding="0"><tr><td style="border: 0px;padding: 0;width:50px">' + obj.version + '</td>';
 
                         var _instances = 0;
-                        var _enabled = 0;
+                        var _enabled   = 0;
+
                         // Show information about installed and enabled instances
                         for (var z = 0; z < that.main.instances.length; z++) {
                             if (main.objects[that.main.instances[z]].common.name == adapter) {
@@ -195,17 +313,20 @@ function Adapters(main) {
                             }
                         }
                         if (_instances) {
-                            installed += '&nbsp;[<span title="' + _('Installed instances') + '">' + _instances + '</span>';
+                            installed += '<td style="border: 0px;padding: 0;width:40px">[<span title="' + _('Installed instances') + '">' + _instances + '</span>';
                             if (_enabled) installed += '/<span title="' + _('Active instances') + '" style="color: green">' + _enabled + '</span>';
-                            installed += ']';
+                            installed += ']</td>';
+                        } else {
+                            installed += '<td style="border: 0px;padding: 0;width:40px"></td>';
                         }
 
                         tmp = installed.split('.');
-                        if (!that.main.upToDate(version, installed)) {
-                            installed += ' <button class="adapter-update-submit" data-adapter-name="' + adapter + '">' + _('update') + '</button>';
+                        if (!that.main.upToDate(version, obj.version)) {
+                            installed += '<td style="border: 0px;padding: 0;width:30px"><button class="adapter-update-submit" data-adapter-name="' + adapter + '">' + _('update') + '</button></td>';
                             version = version.replace('class="', 'class="updateReady ');
                             $('a[href="#tab-adapters"]').addClass('updateReady');
                         }
+                        installed += '</tr></table>';
                     }
                     if (version) {
                         tmp = version.split('.');
@@ -220,7 +341,7 @@ function Adapters(main) {
                         }
                     }
 
-                    that.$grid.jqGrid('addRowData', 'adapter_' + adapter.replace(/ /g, '_'), {
+                    that.data[adapter] = {
                         _id: id++,
                         image: icon ? '<img src="' + icon + '" width="22px" height="22px" />' : '',
                         name: adapter,
@@ -230,51 +351,131 @@ function Adapters(main) {
                         version: version,
                         installed: installed,
                         install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
-                        '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
-                        platform: obj.platform
-                    });
+                            '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
+                            '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
+                        platform: obj.platform,
+                        group: obj.type ? obj.type : 'common adapters'
+                    };
+
+                    if (!that.isList) {
+                        var igroup = -1;
+                        for (var j = 0; j < that.tree.length; j++){
+                            if (that.tree[j].key == that.data[adapter].group) {
+                                igroup = j;
+                                break;
+                            }
+                        }
+                        if (igroup < 0) {
+                            that.tree.push({
+                                title:    _(that.data[adapter].group),
+                                key:      that.data[adapter].group,
+                                folder:   true,
+                                expanded: true,
+                                children: [],
+                                icon:     that.groupImages[that.data[adapter].group]
+                            });
+                            igroup = that.tree.length - 1;
+                        }
+                        that.tree[igroup].children.push({
+                            icon:     icon,
+                            title:    that.data[adapter].title || adapter,
+                            key:      adapter,
+                            folder:   false,
+                            expanded: false
+                        });
+                    } else {
+                        that.tree.push({
+                            icon:     icon,
+                            title:    that.data[adapter].title || adapter,
+                            key:      adapter,
+                            folder:   false,
+                            expanded: false
+                        });
+                    }
                 }
 
-                for (i = 0; i < listUnsinstalled.length; i++) {
-                    adapter = listUnsinstalled[i];
+                if (!that.onlyInstalled) {
+                    for (i = 0; i < listUnsinstalled.length; i++) {
+                        adapter = listUnsinstalled[i];
 
-                    obj = repository[adapter];
-                    if (!obj || obj.controller) continue;
-                    version = '';
-                    if (installedList && installedList[adapter]) continue;
+                        obj = repository[adapter];
+                        if (!obj || obj.controller) continue;
+                        version = '';
+                        if (installedList && installedList[adapter]) continue;
 
-                    if (repository[adapter] && repository[adapter].version) {
-                        version = repository[adapter].version;
-                        tmp = version.split('.');
-                        if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
-                            version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
-                        } else if (tmp[0] === '0' && tmp[1] === '0') {
-                            version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
-                        } else if (tmp[0] === '0') {
-                            version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
+                        if (repository[adapter] && repository[adapter].version) {
+                            version = repository[adapter].version;
+                            tmp = version.split('.');
+                            if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
+                                version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
+                            } else if (tmp[0] === '0' && tmp[1] === '0') {
+                                version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
+                            } else if (tmp[0] === '0') {
+                                version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
+                            } else {
+                                version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
+                            }
+                        }
+
+                        that.data[adapter] = {
+                            _id: id++,
+                            image: repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" width="22px" height="22px" />' : '',
+                            name: adapter,
+                            title: obj.title,
+                            desc: (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc,
+                            keywords: obj.keywords ? obj.keywords.join(' ') : '',
+                            version: version,
+                            installed: '',
+                            install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
+                                '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
+                                '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
+                            platform: obj.platform,
+                            license: obj.license ? obj.license : '',
+                            group: obj.type ? obj.type : 'common adapters'
+                        };
+                        if (!that.isList) {
+                            var igroup = -1;
+                            for (var j = 0; j < that.tree.length; j++){
+                                if (that.tree[j].key == that.data[adapter].group) {
+                                    igroup = j;
+                                    break;
+                                }
+                            }
+                            if (igroup < 0) {
+                                that.tree.push({
+                                    title:    _(that.data[adapter].group),
+                                    key:      that.data[adapter].group,
+                                    folder:   true,
+                                    expanded: true,
+                                    children: [],
+                                    icon:     that.groupImages[that.data[adapter].group]
+                                });
+                                igroup = that.tree.length - 1;
+                            }
+                            that.tree[igroup].children.push({
+                                title:    that.data[adapter].title || adapter,
+                                icon:     repository[adapter].extIcon,
+                                key:      adapter,
+                                folder:   false,
+                                expanded: false
+                            });
                         } else {
-                            version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
+                            that.tree.push({
+                                icon:     repository[adapter].extIcon,
+                                title:    that.data[adapter].title || adapter,
+                                key:      adapter,
+                                folder:   false,
+                                expanded: false
+                            });
                         }
                     }
-
-                    that.$grid.jqGrid('addRowData', 'adapter_' + adapter.replace(/ /g, '_'), {
-                        _id: id++,
-                        image: repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" width="22px" height="22px" />' : '',
-                        name: adapter,
-                        title: obj.title,
-                        desc: (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc,
-                        keywords: obj.keywords ? obj.keywords.join(' ') : '',
-                        version: version,
-                        installed: '',
-                        install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
-                        '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
-                        platform: obj.platform
-                    });
                 }
 
-                that.$grid.trigger('reloadGrid');
+
+                that.$grid.fancytree('getTree').reload(that.tree);
+                $('#grid-adapters .fancytree-icon').css({width: 22, height: 22});
+                that.initButtons();
+                $('#process_running_adapters').hide();
             });
         }
     };
