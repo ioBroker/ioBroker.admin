@@ -7,6 +7,10 @@ user interface for configuration and administration
 ## Todo
 
 ## Changelog
+### 0.4.0 (2015-04-16)
+* (bluefox) use tree for adapters
+* (bluefox) implement license agreement for adapters
+
 ### 0.3.27 (2015-04-14)
 * (bluefox) save size of script editor dialog
 * (bluefox) fix errors with table editor in adapter configuration

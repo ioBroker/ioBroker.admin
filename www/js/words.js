@@ -282,5 +282,9 @@ systemDictionary = {
     "script":               {"en": "scripts and logic",     "de": "Skripte und Logik",      "ru": "Скрипты и логика"},
     "media":                {"en": "media",                 "de": "Media",                  "ru": "Медиа"},
     "visualisation":        {"en": "visualisation",         "de": "Visualisation",          "ru": "Визуализация"},
-    "communication":        {"en": "communication",         "de": "Kommunikation",          "ru": "Сетевые"}
+    "communication":        {"en": "communication",         "de": "Kommunikation",          "ru": "Сетевые"},
+    "agree":                {"en": "agree",                 "de": "Einverstanden",          "ru": "Согласен(на)"},
+    "not agree":            {"en": "not agree",             "de": "Nicht einverstanden",    "ru": "Не согласен(на)"},
+    "Filter:":              {"en": "Filter:",               "de": "Filter:",                "ru": "Искать:"},
+    "adapter with updates": {"en": "adapters with updates", "de": "Adapters mit Updates",   "ru": "Драйвера с обновлениями"},
 };
