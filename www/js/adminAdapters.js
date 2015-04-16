@@ -473,7 +473,9 @@ function Adapters(main) {
 
 
                 that.$grid.fancytree('getTree').reload(that.tree);
-                $('#grid-adapters .fancytree-icon').css({width: 22, height: 22});
+                $('#grid-adapters .fancytree-icon').each(function () {
+                    if ($(this).attr('src')) $(this).css({width: 22, height: 22});
+                });
                 that.initButtons();
                 $('#process_running_adapters').hide();
             });
