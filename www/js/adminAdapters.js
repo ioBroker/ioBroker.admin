@@ -34,9 +34,14 @@ function Adapters(main) {
             },
             source: that.tree,
             renderColumns: function(event, data) {
-                var node = data.node,
-                    $tdList = $(node.tr).find(">td");
-                if (!that.data[node.key]) return;
+                var node = data.node;
+                var $tdList = $(node.tr).find(">td");
+
+                if (!that.data[node.key]) {
+                    $tdList.eq(0).css({'font-weight': 'bold'});
+                    //$(node.tr).addClass('ui-state-highlight');
+                    return;
+                }
                 $tdList.eq(0).css({'overflow': 'hidden', "white-space": "nowrap"});
                 $tdList.eq(1).html(that.data[node.key].desc).css({'overflow': 'hidden', "white-space": "nowrap"});
                 $tdList.eq(2).html(that.data[node.key].keywords).css({'overflow': 'hidden', "white-space": "nowrap"}).attr('title', that.data[node.key].keywords);
