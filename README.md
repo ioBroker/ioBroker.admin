@@ -7,6 +7,9 @@ user interface for configuration and administration
 ## Todo
 
 ## Changelog
+### 0.4.1 (2015-04-17)
+* (bluefox) fix click on buttons on adapter tab
+
 ### 0.4.0 (2015-04-16)
 * (bluefox) use tree for adapters
 * (bluefox) implement license agreement for adapters

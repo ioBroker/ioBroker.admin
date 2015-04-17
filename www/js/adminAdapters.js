@@ -27,7 +27,7 @@ function Adapters(main) {
 
     this.prepare = function () {
         that.$grid.fancytree({
-            extensions: ["table", "gridnav", "filter"/*, "themeroller"*/],
+            extensions: ["table", "gridnav", "filter", "themeroller"],
             checkbox: false,
             table: {
                 indentation: 20      // indent 20px per node level
@@ -51,6 +51,12 @@ function Adapters(main) {
                 $tdList.eq(5).html(that.data[node.key].platform).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
                 $tdList.eq(6).html(that.data[node.key].license).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
                 $tdList.eq(7).html(that.data[node.key].install).css({'text-align': 'center'});
+                that.initButtons(node.key);
+                // If we render this element, that means it is expanded
+                if (that.isCollapsed[that.data[node.key].group]) {
+                    that.isCollapsed[that.data[node.key].group] = false;
+                    that.main.saveConfig('adaptersIsCollapsed', JSON.stringify(that.isCollapsed));
+                }
             },
             gridnav: {
                 autofocusInput:   false,
@@ -60,12 +66,8 @@ function Adapters(main) {
                 mode: "hide",
                 autoApply: true
             },
-            expand: function(event, data) {
-                that.isCollapsed[data.node.key] = false;
-                that.main.saveConfig('adaptersIsCollapsed', JSON.stringify(that.isCollapsed));
-                that.initButtons();
-            },
             collapse: function(event, data) {
+                if (that.isCollapsed[data.node.key]) return;
                 that.isCollapsed[data.node.key] = true;
                 that.main.saveConfig('adaptersIsCollapsed', JSON.stringify(that.isCollapsed));
             }
@@ -314,7 +316,7 @@ function Adapters(main) {
                     if (repository[adapter] && repository[adapter].extIcon) icon = repository[adapter].extIcon;
 
                     if (obj.version) {
-                        installed = '<table style="border: 0px;border-collapse: collapse;" cellspacing="0" cellpadding="0"><tr><td style="border: 0px;padding: 0;width:50px">' + obj.version + '</td>';
+                        installed = '<table style="border: 0px;border-collapse: collapse;" cellspacing="0" cellpadding="0" class="ui-widget"><tr><td style="border: 0px;padding: 0;width:50px">' + obj.version + '</td>';
 
                         var _instances = 0;
                         var _enabled   = 0;
@@ -397,17 +399,13 @@ function Adapters(main) {
                         that.tree[igroup].children.push({
                             icon:     icon,
                             title:    that.data[adapter].title || adapter,
-                            key:      adapter,
-                            folder:   false,
-                            expanded: false
+                            key:      adapter
                         });
                     } else {
                         that.tree.push({
                             icon:     icon,
                             title:    that.data[adapter].title || adapter,
-                            key:      adapter,
-                            folder:   false,
-                            expanded: false
+                            key:      adapter
                         });
                     }
                 }
@@ -473,17 +471,13 @@ function Adapters(main) {
                             that.tree[igroup].children.push({
                                 title:    that.data[adapter].title || adapter,
                                 icon:     repository[adapter].extIcon,
-                                key:      adapter,
-                                folder:   false,
-                                expanded: false
+                                key:      adapter
                             });
                         } else {
                             that.tree.push({
                                 icon:     repository[adapter].extIcon,
                                 title:    that.data[adapter].title || adapter,
-                                key:      adapter,
-                                folder:   false,
-                                expanded: false
+                                key:      adapter
                             });
                         }
                     }
@@ -493,7 +487,6 @@ function Adapters(main) {
                 $('#grid-adapters .fancytree-icon').each(function () {
                     if ($(this).attr('src')) $(this).css({width: 22, height: 22});
                 });
-                that.initButtons();
                 $('#process_running_adapters').hide();
                 if (that.currentFilter) that.$grid.fancytree('getTree').filterNodes(customFilter, false);
             });
@@ -555,8 +548,8 @@ function Adapters(main) {
         });
     }
 
-    this.initButtons = function () {
-        $(".adapter-install-submit").button({
+    this.initButtons = function (adapter) {
+        $('.adapter-install-submit[data-adapter-name="' + adapter + '"]').button({
             text: false,
             icons: {
                 primary: 'ui-icon-plusthick'
@@ -587,7 +580,7 @@ function Adapters(main) {
             });
         });
 
-        $(".adapter-delete-submit").button({
+        $('.adapter-delete-submit[data-adapter-name="' + adapter + '"]').button({
             icons: {primary: 'ui-icon-trash'},
             text:  false
         }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
@@ -596,14 +589,14 @@ function Adapters(main) {
             });
         });
 
-        $(".adapter-readme-submit").button({
+        $('.adapter-readme-submit[data-adapter-name="' + adapter + '"]').button({
             icons: {primary: 'ui-icon-help'},
             text: false
         }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
             window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
         });
 
-        $(".adapter-update-submit").button({
+        $('.adapter-update-submit[data-adapter-name="' + adapter + '"]').button({
             icons: {primary: 'ui-icon-refresh'},
             text:  false
         }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
