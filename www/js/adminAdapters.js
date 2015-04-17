@@ -508,6 +508,13 @@ function Adapters(main) {
             callback(true);
         }, 10000);
 
+        // Workaround
+        // https://github.com/ioBroker/ioBroker.vis/blob/master/LICENSE =>
+        // https://raw.githubusercontent.com/ioBroker/ioBroker.vis/master/LICENSE
+        if (that.data[adapter].licenseUrl.indexOf('github.com') != -1) {
+            that.data[adapter].licenseUrl = that.data[adapter].licenseUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+        }
+
         that.main.socket.emit('httpGet', that.data[adapter].licenseUrl, function (error, response, body) {
             if (timeout) {
                 clearTimeout(timeout);
