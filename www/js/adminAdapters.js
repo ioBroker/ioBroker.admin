@@ -503,7 +503,7 @@ function Adapters(main) {
     function showLicenseDialog(adapter, callback) {
         var $dialogLicense = $('#dialog-license');
         // Is adapter installed
-        if (/*that.data[adapter].installed || */!that.data[adapter].licenseUrl) {
+        if (that.data[adapter].installed || !that.data[adapter].licenseUrl) {
             callback(true);
             return;
         }
