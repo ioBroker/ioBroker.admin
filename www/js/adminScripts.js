@@ -270,8 +270,8 @@ function Scripts(main) {
             }).css('height', '30px').click(function () {
                 var sid = that.main.initSelectId();
                 sid.selectId('show', function (newId) {
-                    this.editor.insert('"' + newId + '"' + ((main.objects[newId] && main.objects[newId].common && main.objects[newId].common.name) ? ('/*' + main.objects[newId].common.name + '*/') : ''));
-                    this.editor.focus();
+                    that.editor.insert('"' + newId + '"' + ((that.main.objects[newId] && that.main.objects[newId].common && that.main.objects[newId].common.name) ? ('/*' + that.main.objects[newId].common.name + '*/') : ''));
+                    that.editor.focus();
                 });
             });
             this.editor.on('input', function() {
@@ -457,7 +457,7 @@ function Scripts(main) {
                 $('#script-edit-button-save').button('disable');
             }, 100);
         } else {
-            showMessage(_('This should never come!'), '', 'alert');
+            that.main.showMessage(_('This should never come!'), '', 'alert');
             /*// Should never come
              that.$dialog.dialog('option', 'title', 'new script');
              $('#edit-script-id').val('');

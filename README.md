@@ -7,7 +7,13 @@ user interface for configuration and administration
 ## Todo
 
 ## Changelog
-### 0.4.1 (2015-04-17)
+### 0.4.3 (2015-04-19)
+* (bluefox) fix error with select ID dialog in edit script
+* (bluefox) fix group of installed adapter
+* (bluefox) show statistics over installed adapters 
+* (bluefox) add "agree with statistics" checkbox
+
+### 0.4.2 (2015-04-17)
 * (bluefox) workaround for license text
 
 ### 0.4.1 (2015-04-17)

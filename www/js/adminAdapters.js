@@ -40,6 +40,24 @@ function Adapters(main) {
                 if (!that.data[node.key]) {
                     $tdList.eq(0).css({'font-weight': 'bold'});
                     //$(node.tr).addClass('ui-state-highlight');
+
+                    // Calculate total count of adapter and count of installed adapter
+                    for (var c = 0; c < that.tree.length; c++) {
+                        if (that.tree[c].key == node.key) {
+                            var installed = 0;
+                            for (var k = 0; k < that.tree[c].children.length; k++) {
+                                if (that.data[that.tree[c].children[k].key].installed) installed++;
+                            }
+                            var title;
+                            if (!that.onlyInstalled && !that.onlyUpdatable) {
+                                title = '[<span title="' + _('Installed from group') + '">' + installed + '</span> / <span title="' + _('Total count in group') + '">' + that.tree[c].children.length + '</span>]';
+                            } else {
+                                title = '<span title="' + _('Installed from group') + '">' + installed + '</span>';
+                            }
+                            $tdList.eq(4).html(title).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
+                            break;
+                        }
+                    }
                     return;
                 }
                 $tdList.eq(0).css({'overflow': 'hidden', "white-space": "nowrap"});
@@ -345,7 +363,7 @@ function Adapters(main) {
                             continue;
                         }
 
-                            installed += '</tr></table>';
+                        installed += '</tr></table>';
                     }
                     if (version) {
                         tmp = version.split('.');
@@ -372,7 +390,7 @@ function Adapters(main) {
                             '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
                             '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
                         platform:   obj.platform,
-                        group:      obj.type ? obj.type : 'common adapters',
+                        group:      obj.type || 'common adapters',
                         license:    obj.license || '',
                         licenseUrl: obj.licenseUrl || ''
                     };
@@ -501,6 +519,7 @@ function Adapters(main) {
             return;
         }
         $('#license_language').hide();
+        $('#license_diag').hide();
         $('#license_language_label').hide();
 
         var timeout = setTimeout(function () {

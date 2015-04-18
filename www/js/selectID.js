@@ -517,7 +517,7 @@
         text += '        </thead>';
         text += '        <tbody>';
         text += '        </tbody>';
-        text += '    </table></div><div id="process_running_' + data.instance + '" style="position:absolute; top:50%; left:50%; width: 150; height: 25; padding: 12; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5">' + data.texts.wait + '</div>';
+        text += '    </table></div><div id="process_running_' + data.instance + '" style="position:absolute; top:50%; left:50%; width: 150; height: 25; padding: 12; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">' + data.texts.wait + '</div>';
 
         $dlg.html(text);
 

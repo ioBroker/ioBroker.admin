@@ -287,4 +287,12 @@ systemDictionary = {
     "not agree":            {"en": "not agree",             "de": "Nicht einverstanden",    "ru": "Не согласен(на)"},
     "Filter:":              {"en": "Filter:",               "de": "Filter:",                "ru": "Искать:"},
     "adapter with updates": {"en": "adapters with updates", "de": "Adapters mit Updates",   "ru": "Драйвера с обновлениями"},
+    "Total count in group": {"en": "Total count in group",  "de": "Insgesamt in der Gruppe", "ru": "Всего в группе"},
+    "Installed from group": {"en": "Installed from group",  "de": "Installiert aus der Gruppe", "ru": "Установенно из группы"},
+    "weather":              {"en": "Weather",               "de": "Wetter",                 "ru": "Погода"},
+    "license_checkbox": {
+        "en": "I am agree with collection of anonymous diagnostic data<br>(can be later disabled)",
+        "de": "Ich bin mit der Sammlung von anonyme Statistics einverstanden.<br>(konnte später über Konfiguration deaktiviert werden)",
+        "ru": "Я соглашаюсь с анонимным сбором статистики.<br>(Можно декативировать через настройки)"
+    }
 };

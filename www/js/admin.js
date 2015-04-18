@@ -111,6 +111,18 @@ $(document).ready(function () {
             $dialogConfirm.data('callback', callback);
             $dialogConfirm.dialog('open');
         },
+        showMessage:    function (message, title, icon) {
+        $dialogMessage.dialog('option', 'title', title || _('Message'));
+            $('#dialog-message-text').html(message);
+            if (icon) {
+                $('#dialog-message-icon').show();
+                $('#dialog-message-icon').attr('class', '');
+                $('#dialog-message-icon').addClass('ui-icon ui-icon-' + icon);
+            } else {
+                $('#dialog-message-icon').hide();
+            }
+            $dialogMessage.dialog('open');
+        },
         formatDate:     function (dateObj, isSeconds) {
             //return dateObj.getFullYear() + '-' +
             //    ("0" + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
@@ -177,7 +189,7 @@ $(document).ready(function () {
                 }
             } else {
                 if (main.objects[id] && main.objects[id].common && main.objects[id].common['object-non-deletable']) {
-                    showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
+                    main.showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
                     if (callback) callback(id);
                 } else {
                     main.socket.emit('delObject', id, function () {
@@ -410,13 +422,13 @@ $(document).ready(function () {
     function string2cert(name, str) {
         // expected format: -----BEGIN CERTIFICATE-----certif...icate==-----END CERTIFICATE-----
         if (str.length < '-----BEGIN CERTIFICATE-----==-----END CERTIFICATE-----'.length) {
-            showMessage(_('Invalid certificate "%s". To short.', name));
+            main.showMessage(_('Invalid certificate "%s". To short.', name));
             return '';
         }
         var lines = [];
         if (str.substring(0, '-----BEGIN RSA PRIVATE KEY-----'.length) == '-----BEGIN RSA PRIVATE KEY-----') {
             if (str.substring(str.length -  '-----END RSA PRIVATE KEY-----'.length) != '-----END RSA PRIVATE KEY-----') {
-                showMessage(_('Certificate "%s" must end with "-----END RSA PRIVATE KEY-----".', name), '', 'notice');
+                main.showMessage(_('Certificate "%s" must end with "-----END RSA PRIVATE KEY-----".', name), '', 'notice');
                 return '';
             }
             str = str.substring('-----BEGIN RSA PRIVATE KEY-----'.length);
@@ -429,11 +441,11 @@ $(document).ready(function () {
             return '-----BEGIN RSA PRIVATE KEY-----\r\n' + lines.join('\r\n') + '\r\n-----END RSA PRIVATE KEY-----\r\n';
         } else {
             if (str.substring(0, '-----BEGIN CERTIFICATE-----'.length) != '-----BEGIN CERTIFICATE-----') {
-                showMessage(_('Certificate "%s" must start with "-----BEGIN CERTIFICATE-----".', name), '', 'notice');
+                main.showMessage(_('Certificate "%s" must start with "-----BEGIN CERTIFICATE-----".', name), '', 'notice');
                 return '';
             }
             if (str.substring(str.length -  '-----END CERTIFICATE-----'.length) != '-----END CERTIFICATE-----') {
-                showMessage(_('Certificate "%s" must end with "-----END CERTIFICATE-----".', name), '', 'notice');
+                main.showMessage(_('Certificate "%s" must end with "-----END CERTIFICATE-----".', name), '', 'notice');
                 return '';
             }
             str = str.substring('-----BEGIN CERTIFICATE-----'.length);
@@ -577,11 +589,11 @@ $(document).ready(function () {
 
                         var name = $('#enum-name').val().replace(/ /g, '_').toLowerCase();
                         if (!name) {
-                            showMessage(_('Empty name!'), '', 'notice');
+                            main.showMessage(_('Empty name!'), '', 'notice');
                             return;
                         }
                         if (main.objects[(enumCurrentParent || 'enum') + '.' + name]) {
-                            showMessage(_('Name yet exists!'), '', 'notice');
+                            main.showMessage(_('Name yet exists!'), '', 'notice');
                             return;
                         }
 
@@ -648,19 +660,6 @@ $(document).ready(function () {
 
             ]
         });
-    }
-
-    function showMessage(message, title, icon) {
-        $dialogMessage.dialog('option', 'title', title || _('Message'));
-        $('#dialog-message-text').html(message);
-        if (icon) {
-            $('#dialog-message-icon').show();
-            $('#dialog-message-icon').attr('class', '');
-            $('#dialog-message-icon').addClass('ui-icon ui-icon-' + icon);
-        } else {
-            $('#dialog-message-icon').hide();
-        }
-        $dialogMessage.dialog('open');
     }
 
     $('#enum-name').keyup(function () {
@@ -893,7 +892,7 @@ $(document).ready(function () {
                     if (result) {
                         main.socket.emit('delUser', id.replace('system.user.', ''), function (err) {
                             if (err) {
-                                showMessage(_('Cannot delete user: ') + err, '', 'alert');
+                                main.showMessage(_('Cannot delete user: ') + err, '', 'alert');
                             } else {
                                 setTimeout(function () {
                                     delUser(id);
@@ -924,7 +923,7 @@ $(document).ready(function () {
                     var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                     editUser(id);
                 } else {
-                    showMessage(_('Invalid object %s', objSelected), '', 'alert');
+                    main.showMessage(_('Invalid object %s', objSelected), '', 'alert');
                 }
             },
             position: 'first',
@@ -1020,7 +1019,7 @@ $(document).ready(function () {
                         main.socket.emit('extendObject', id, obj, function (err, obj) {
                             if (err) {
                                 // Cannot modify
-                                showMessage(_('Cannot change group'), '', 'alert');
+                                main.showMessage(_('Cannot change group'), '', 'alert');
                             }
                         });
                     },
@@ -1060,7 +1059,7 @@ $(document).ready(function () {
                     if (result) {
                         main.socket.emit('delGroup', id.replace("system.group.", ""), function (err) {
                             if (err) {
-                                showMessage(_('Cannot delete group: %s', err), '', 'alert');
+                                main.showMessage(_('Cannot delete group: %s', err), '', 'alert');
                             }
                         });
                     }
@@ -1086,7 +1085,7 @@ $(document).ready(function () {
                     var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                     editGroup(id);
                 } else {
-                    showMessage(_('Invalid object %s', objSelected), '', 'alert');
+                    main.showMessage(_('Invalid object %s', objSelected), '', 'alert');
                 }
             },
             position: 'first',
@@ -1572,7 +1571,7 @@ $(document).ready(function () {
         }
         $selHosts.unbind('change').change(function () {
             if (!main.states['system.host.' + $(this).val() + '.alive'] || !main.states['system.host.' + $(this).val() + '.alive'].val) {
-                showMessage(_('Host %s is offline', $(this).val()));
+                main.showMessage(_('Host %s is offline', $(this).val()));
                 $(this).val(main.currentHost);
                 return;
             }
@@ -1724,7 +1723,7 @@ $(document).ready(function () {
         var passconf = $('#edit-user-passconf').val();
 
         if (pass != passconf) {
-            showMessage(_('Password and confirmation are not equal!'), '', 'notice');
+            main.showMessage(_('Password and confirmation are not equal!'), '', 'notice');
             return;
         }
         var id = $('#edit-user-id').val();
@@ -1733,7 +1732,7 @@ $(document).ready(function () {
         if (!id) {
             main.socket.emit('addUser', user, pass, function (err) {
                 if (err) {
-                    showMessage(_('Cannot set password: ') + err, '', 'alert');
+                    main.showMessage(_('Cannot set password: ') + err, '', 'alert');
                 } else {
                     $dialogUser.dialog('close');
                     setTimeout(function () {
@@ -1746,7 +1745,7 @@ $(document).ready(function () {
             if (pass != '__pass_not_set__') {
                 main.socket.emit('changePassword', user, pass, function (err) {
                     if (err) {
-                        showMessage(_('Cannot set password: ') + err, '', 'alert');
+                        main.showMessage(_('Cannot set password: ') + err, '', 'alert');
                     } else {
                         $dialogUser.dialog('close');
                     }
@@ -1845,7 +1844,7 @@ $(document).ready(function () {
         if (!id) {
             main.socket.emit('addGroup', group, desc, function (err) {
                 if (err) {
-                    showMessage(_('Cannot create group: ') + err, '', 'alert');
+                    main.showMessage(_('Cannot create group: ') + err, '', 'alert');
                 } else {
                     $dialogGroup.dialog('close');
                     setTimeout(function () {
@@ -1858,7 +1857,7 @@ $(document).ready(function () {
             // If description changed
             main.socket.emit('extendObject', id, obj, function (err, res) {
                 if (err) {
-                    showMessage(_('Cannot change group: ') + err, '', 'alert');
+                    main.showMessage(_('Cannot change group: ') + err, '', 'alert');
                 } else {
                     $dialogGroup.dialog('close');
                 }
@@ -1955,7 +1954,7 @@ $(document).ready(function () {
     function _enumRename(oldId, newId, newName, callback) {
         //Check if this name exists
         if (oldId != newId && main.objects[newId]) {
-            showMessage(_('Name yet exists!'), '', 'info');
+            main.showMessage(_('Name yet exists!'), '', 'info');
             initEnums(true);
             if (callback) callback();
         } else {
@@ -1965,7 +1964,7 @@ $(document).ready(function () {
                     if (callback) callback();
                 }
             } else if (main.objects[oldId] && main.objects[oldId].common && main.objects[oldId].common.nondeletable) {
-                showMessage(_('Change of enum\'s id "%s" is not allowed!', oldId), '', 'notice');
+                main.showMessage(_('Change of enum\'s id "%s" is not allowed!', oldId), '', 'notice');
                 initEnums(true);
                 if (callback) callback();
             } else {
@@ -2015,7 +2014,7 @@ $(document).ready(function () {
 
     function enumAddChild(parent, newId, name) {
         if (main.objects[newId]) {
-            showMessage(_('Name yet exists!'), '', 'notice');
+            main.showMessage(_('Name yet exists!'), '', 'notice');
             return false;
         }
 
@@ -2643,8 +2642,15 @@ $(document).ready(function () {
                                     $('#license_language').change(function () {
                                         language = $(this).val();
                                         $('#license_text').html(license[language] || license.en);
+                                        $('#license_checkbox').html(translateWord('license_checkbox', language));
                                     });
-
+                                    $('#license_diag').change(function () {
+                                        if ($(this).prop('checked')) {
+                                            $('#license_agree').button('enable');
+                                        } else {
+                                            $('#license_agree').button('disable');
+                                        }
+                                    });
                                     $dialogLicense.css({'z-index': 200});
                                     $dialogLicense.dialog({
                                         autoOpen: true,
@@ -2664,8 +2670,8 @@ $(document).ready(function () {
                                                         $dialogLicense.dialog('close');
                                                         $('#license_language').hide();
                                                     });
-
-                                                }
+                                                },
+                                                id: 'license_agree'
                                             },
                                             {
                                                 text: _('not agree'),
@@ -2676,6 +2682,9 @@ $(document).ready(function () {
                                         ],
                                         close: function () {
 
+                                        },
+                                        open: function () {
+                                            $('#license_agree').button('disable');
                                         }
                                     });
                                     $('#edit-user-name').keydown(function (event) {
