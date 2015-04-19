@@ -7,6 +7,9 @@ user interface for configuration and administration
 ## Todo
 
 ## Changelog
+### 0.4.4 (2015-04-19)
+* (bluefox) fix error with hm-rega instance
+
 ### 0.4.3 (2015-04-19)
 * (bluefox) fix error with select ID dialog in edit script
 * (bluefox) fix group of installed adapter

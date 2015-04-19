@@ -86,7 +86,11 @@ $(document).ready(function () {
                 oldObj.native[a] = native[a];
             }
 
-            if (common) oldObj.common = common;
+            if (common) {
+                for (var a in common) {
+                    oldObj.common[a] = common[a];
+                }
+            }
             socket.emit('setObject', id, oldObj, function () {
                 changed = false;
                 if (onChangeSupported) {
