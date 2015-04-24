@@ -10,12 +10,15 @@ function Adapters(main) {
     this.tree = [];
     this.data = {};
     this.groupImages = {
-        'common adapters': '/img/common.png',
-        'hardware': '/img/hardware.png',
-        'script': '/img/script.png',
-        'media': '/img/media.png',
-        'communication': '/img/communication.png',
-        'visualisation': '/img/visualisation.png'
+        'common adapters':  '/img/common.png',
+        'hardware':         '/img/hardware.png',
+        'script':           '/img/script.png',
+        'media':            '/img/media.png',
+        'communication':    '/img/communication.png',
+        'visualisation':    '/img/visualisation.png',
+        'storage':          '/img/storage.png',
+        'weather':          '/img/weather.png',
+        'schedule':         '/img/schedule.png'
     };
 
     this.isList = false;
@@ -25,6 +28,30 @@ function Adapters(main) {
     this.currentFilter = '';
     this.isCollapsed = {};
 
+    this.types = {
+        "S7":           "hardware",
+        "admin":        "common adapters",
+        "dwd":          "weather",
+        "example":      "common adapters",
+        "history":      "storage",
+        "hmm":          "hardware",
+        "hue":          "hardware",
+        "javascript":   "script",
+        "megad":        "hardware",
+        "occ":          "schedule",
+        "onkyo":        "hardware",
+        "simple-api":   "communication",
+        "socketio":     "communication",
+        "web":          "visualisation",
+        "artnet":       "hardware",
+        "b-control-em": "hardware",
+        "email":        "communication",
+        "knx":          "hardware",
+        "legacy":       "visualisation",
+        "pushover":     "communication",
+        "zwave":        "hardware"
+    };
+    
     this.prepare = function () {
         that.$grid.fancytree({
             extensions: ["table", "gridnav", "filter", "themeroller"],
@@ -390,10 +417,13 @@ function Adapters(main) {
                             '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
                             '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
                         platform:   obj.platform,
-                        group:      obj.type || 'common adapters',
+                        group:      obj.type || that.types[adapter] || 'common adapters',
                         license:    obj.license || '',
                         licenseUrl: obj.licenseUrl || ''
                     };
+
+                    if (!obj.type) console.log('"' + adapter + '": "common adapters",');
+                    if (obj.type && that.types[adapter]) console.log('Adapter "' + adapter + '" has own type. Remove from admin.');
 
                     if (!that.isList) {
                         var igroup = -1;
@@ -465,8 +495,12 @@ function Adapters(main) {
                             platform:   obj.platform,
                             license:    obj.license || '',
                             licenseUrl: obj.licenseUrl || '',
-                            group:      obj.type ? obj.type : 'common adapters'
+                            group:      obj.type || that.types[adapter] || 'common adapters'
                         };
+
+                        if (!obj.type) console.log('"' + adapter + '": "common adapters",');
+                        if (obj.type && that.types[adapter]) console.log('Adapter "' + adapter + '" has own type. Remove from admin.');
+
                         if (!that.isList) {
                             var igroup = -1;
                             for (var j = 0; j < that.tree.length; j++){

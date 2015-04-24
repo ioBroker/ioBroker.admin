@@ -2638,11 +2638,16 @@ $(document).ready(function () {
 
                                     $('#license_text').html(license[language] || license.en);
                                     $('#license_language').val(language).show();
+                                    $('#license_checkbox').html(translateWord('license_checkbox', language));
+                                    $('#license_agree .ui-button-text').html(translateWord('agree', language));
+                                    $('#license_non_agree .ui-button-text').html(translateWord('not agree', language));
 
                                     $('#license_language').change(function () {
                                         language = $(this).val();
                                         $('#license_text').html(license[language] || license.en);
                                         $('#license_checkbox').html(translateWord('license_checkbox', language));
+                                        $('#license_agree .ui-button-text').html(translateWord('agree', language));
+                                        $('#license_non_agree .ui-button-text').html(translateWord('not agree', language));
                                     });
                                     $('#license_diag').change(function () {
                                         if ($(this).prop('checked')) {
@@ -2677,7 +2682,8 @@ $(document).ready(function () {
                                                 text: _('not agree'),
                                                 click: function () {
                                                     location.reload();
-                                                }
+                                                },
+                                                id: 'license_non_agree'
                                             }
                                         ],
                                         close: function () {

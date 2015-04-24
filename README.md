@@ -7,6 +7,12 @@ user interface for configuration and administration
 ## Todo
 
 ## Changelog
+
+### 0.4.5 (2015-04-24)
+* (SmilingJack) update jquery ui to 1.11.4
+* (bluefox) remove unused libs
+* (bluefox) set missing categories
+
 ### 0.4.4 (2015-04-19)
 * (bluefox) fix error with hm-rega instance
 

@@ -290,9 +290,10 @@ systemDictionary = {
     "Total count in group": {"en": "Total count in group",  "de": "Insgesamt in der Gruppe", "ru": "Всего в группе"},
     "Installed from group": {"en": "Installed from group",  "de": "Installiert aus der Gruppe", "ru": "Установенно из группы"},
     "weather":              {"en": "Weather",               "de": "Wetter",                 "ru": "Погода"},
+    "storage":              {"en": "Storage",               "de": "Aufbewarung",            "ru": "Хранилище"},
     "license_checkbox": {
-        "en": "I am agree with collection of anonymous diagnostic data<br>(can be later disabled)",
-        "de": "Ich bin mit der Sammlung von anonyme Statistics einverstanden.<br>(konnte später über Konfiguration deaktiviert werden)",
-        "ru": "Я соглашаюсь с анонимным сбором статистики.<br>(Можно декативировать через настройки)"
+        "en": "I am agree with collection of anonymous statistics.<br>(can be disabled in settings)",
+        "de": "Ich bin mit der Sammlung von anonymer Statistik einverstanden.<br>(konnte später über Konfiguration deaktiviert werden)",
+        "ru": "Я соглашаюсь с анонимным сбором статистики.<br>(Можно деактивировать через настройки)"
     }
 };
