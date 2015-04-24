@@ -271,5 +271,28 @@ systemDictionary = {
     "Host %s is offline":   {"en": "Host %s is offline",    "de": "Host %s ist offline",    "ru": "Хост %s недоступен"},
     "command execution":    {"en": "Command execution",     "de": "Kommando-Ausführung",    "ru": "Выполнение команды"},
     "Installed instances":  {"en": "Installed instances",   "de": "Installierte Instanze",  "ru": "Добавлено драйверов"},
-    "Active instances":     {"en": "Active instances",      "de": "Aktivierte Instanze",    "ru": "Драйверов активно"}
+    "Active instances":     {"en": "Active instances",      "de": "Aktivierte Instanze",    "ru": "Драйверов активно"},
+    "Host:":                {"en": "Host:",                 "de": "Host:",                  "ru": "Хост:"},
+    "installed adapters":   {"en": "Filter installed adapters",    "de": "Filter installierte Adapters",     "ru": "Только установленные драйвера"},
+    "list":                 {"en": "list",                  "de": "Liste",                  "ru": "Список"},
+    "collapse all":         {"en": "collapse all",          "de": "Zumachen alle",          "ru": "Свернуть все группы"},
+    "expand all":           {"en": "expand all",            "de": "Aufmachen alle",         "ru": "Развернуть все группы"},
+    "common adapters":      {"en": "common",                "de": "Allgemein",              "ru": "Общие"},
+    "hardware":             {"en": "hardware",              "de": "Hardware",               "ru": "Hardware"},
+    "script":               {"en": "scripts and logic",     "de": "Skripte und Logik",      "ru": "Скрипты и логика"},
+    "media":                {"en": "media",                 "de": "Media",                  "ru": "Медиа"},
+    "visualisation":        {"en": "visualisation",         "de": "Visualisation",          "ru": "Визуализация"},
+    "communication":        {"en": "communication",         "de": "Kommunikation",          "ru": "Сетевые"},
+    "agree":                {"en": "agree",                 "de": "Einverstanden",          "ru": "Согласен(на)"},
+    "not agree":            {"en": "not agree",             "de": "Nicht einverstanden",    "ru": "Не согласен(на)"},
+    "Filter:":              {"en": "Filter:",               "de": "Filter:",                "ru": "Искать:"},
+    "adapter with updates": {"en": "adapters with updates", "de": "Adapters mit Updates",   "ru": "Драйвера с обновлениями"},
+    "Total count in group": {"en": "Total count in group",  "de": "Insgesamt in der Gruppe", "ru": "Всего в группе"},
+    "Installed from group": {"en": "Installed from group",  "de": "Installiert aus der Gruppe", "ru": "Установенно из группы"},
+    "weather":              {"en": "Weather",               "de": "Wetter",                 "ru": "Погода"},
+    "license_checkbox": {
+        "en": "I am agree with collection of anonymous diagnostic data<br>(can be later disabled)",
+        "de": "Ich bin mit der Sammlung von anonyme Statistics einverstanden.<br>(konnte später über Konfiguration deaktiviert werden)",
+        "ru": "Я соглашаюсь с анонимным сбором статистики.<br>(Можно декативировать через настройки)"
+    }
 };

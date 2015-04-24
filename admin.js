@@ -46,7 +46,7 @@ adapter.on('objectChange', function (id, obj) {
     }
     // TODO Build in some threshold of messages
 
-    if (webServer) webServer.io.sockets.emit('objectChange', id, obj);
+    if (webServer && webServer.io) webServer.io.sockets.emit('objectChange', id, obj);
 });
 
 adapter.on('stateChange', function (id, state) {
@@ -55,7 +55,7 @@ adapter.on('stateChange', function (id, state) {
     } else {
         states[id] = state;
     }
-    if (webServer) webServer.io.sockets.emit('stateChange', id, state);
+    if (webServer && webServer.io) webServer.io.sockets.emit('stateChange', id, state);
 });
 
 adapter.on('ready', function () {
@@ -368,7 +368,7 @@ function initWebServer(settings) {
             adapter.readFile(id, url, null, function (err, buffer, mimeType) {
                 if (!buffer || err) {
                     res.contentType('text/html');
-                    res.send('File ' + url + ' not found', 404);
+                    res.status(404).send('File ' + url + ' not found');
                 } else {
                     if (mimeType) {
                         res.contentType(mimeType['content-type'] || mimeType);

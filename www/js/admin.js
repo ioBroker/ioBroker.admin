@@ -46,6 +46,7 @@ $(document).ready(function () {
         objectsLoaded:  false,
         waitForRestart: false,
         tabs:           null,
+        selectId:       null,
         config:         {},
         addEventMessage: function (id, state, rowData) {
             addEventMessage(id, state, rowData);
@@ -109,6 +110,18 @@ $(document).ready(function () {
             }
             $dialogConfirm.data('callback', callback);
             $dialogConfirm.dialog('open');
+        },
+        showMessage:    function (message, title, icon) {
+        $dialogMessage.dialog('option', 'title', title || _('Message'));
+            $('#dialog-message-text').html(message);
+            if (icon) {
+                $('#dialog-message-icon').show();
+                $('#dialog-message-icon').attr('class', '');
+                $('#dialog-message-icon').addClass('ui-icon ui-icon-' + icon);
+            } else {
+                $('#dialog-message-icon').hide();
+            }
+            $dialogMessage.dialog('open');
         },
         formatDate:     function (dateObj, isSeconds) {
             //return dateObj.getFullYear() + '-' +
@@ -176,7 +189,7 @@ $(document).ready(function () {
                 }
             } else {
                 if (main.objects[id] && main.objects[id].common && main.objects[id].common['object-non-deletable']) {
-                    showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
+                    main.showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
                     if (callback) callback(id);
                 } else {
                     main.socket.emit('delObject', id, function () {
@@ -199,16 +212,42 @@ $(document).ready(function () {
                     if (result) main._delObject($tree, id, callback);
                 });
             }
+        },
+        initSelectId: function () {
+            if (main.selectId) return main.selectId;
+            main.selectId = $('#dialog-select-member').selectId('init',  {
+                objects: main.objects,
+                states:  main.states,
+                filter: {type: 'state'},
+                texts: {
+                    select:   _('Select'),
+                    cancel:   _('Cancel'),
+                    all:      _('All'),
+                    id:       _('ID'),
+                    name:     _('Name'),
+                    role:     _('Role'),
+                    room:     _('Room'),
+                    value:    _('Value'),
+                    selectid: _('Select ID'),
+                    from:     _('From'),
+                    lc:       _('Last changed'),
+                    ts:       _('Time stamp'),
+                    wait:     _('Processing...'),
+                    ack:      _('Acknowledged')
+                },
+                columns: ['image', 'name', 'role', 'room', 'value']
+            });
+            return main.selectId;
         }
-
-};
+    };
     
     var tabs = {
         adapters:   new Adapters(main),
         instances:  new Instances(main),
         logs:       new Logs(main),
         states:     new States(main),
-        objects:    new Objects(main)
+        objects:    new Objects(main),
+        scripts:    new Scripts(main)
     };
     main.instances = tabs.instances.list;
     main.tabs      = tabs;
@@ -236,12 +275,10 @@ $(document).ready(function () {
     var eventFilterTimeout =    null;
 
     var $stdout =               $('#stdout');
-    var $selectId =             null;
 
     var $dialogCommand =        $('#dialog-command');
     var $dialogEnumMembers =    $('#dialog-enum-members');
     var $dialogEnum =           $('#dialog-enum');
-    var $dialogScript =         $('#dialog-script');
     var $dialogUser =           $('#dialog-user');
     var $dialogGroup =          $('#dialog-group');
     var $dialogLicense =        $('#dialog-license');
@@ -253,7 +290,6 @@ $(document).ready(function () {
     var $gridGroups =           $('#grid-groups');
     var $gridEnums =            $('#grid-enums');
     var $gridEnumMembers =      $('#grid-enum-members');
-    var $gridScripts =          $('#grid-scripts');
     var $gridHosts =            $('#grid-hosts');
     var $gridRepo =             $('#grid-repos');
     var $gridCerts =            $('#grid-certs');
@@ -261,9 +297,6 @@ $(document).ready(function () {
     var firstConnect =          true;
 
     var enumEdit =              null;
-
-    var editor =                null;
-
 
     // Read all positions, selected widgets for every view,
     // Selected view, selected menu page,
@@ -301,7 +334,7 @@ $(document).ready(function () {
                     break;
 
                 case '#tab-scripts':
-                    initScripts();
+                    tabs.scripts.init();
                     break;
 
                 case '#tab-adapters':
@@ -389,13 +422,13 @@ $(document).ready(function () {
     function string2cert(name, str) {
         // expected format: -----BEGIN CERTIFICATE-----certif...icate==-----END CERTIFICATE-----
         if (str.length < '-----BEGIN CERTIFICATE-----==-----END CERTIFICATE-----'.length) {
-            showMessage(_('Invalid certificate "%s". To short.', name));
+            main.showMessage(_('Invalid certificate "%s". To short.', name));
             return '';
         }
         var lines = [];
         if (str.substring(0, '-----BEGIN RSA PRIVATE KEY-----'.length) == '-----BEGIN RSA PRIVATE KEY-----') {
             if (str.substring(str.length -  '-----END RSA PRIVATE KEY-----'.length) != '-----END RSA PRIVATE KEY-----') {
-                showMessage(_('Certificate "%s" must end with "-----END RSA PRIVATE KEY-----".', name), '', 'notice');
+                main.showMessage(_('Certificate "%s" must end with "-----END RSA PRIVATE KEY-----".', name), '', 'notice');
                 return '';
             }
             str = str.substring('-----BEGIN RSA PRIVATE KEY-----'.length);
@@ -408,11 +441,11 @@ $(document).ready(function () {
             return '-----BEGIN RSA PRIVATE KEY-----\r\n' + lines.join('\r\n') + '\r\n-----END RSA PRIVATE KEY-----\r\n';
         } else {
             if (str.substring(0, '-----BEGIN CERTIFICATE-----'.length) != '-----BEGIN CERTIFICATE-----') {
-                showMessage(_('Certificate "%s" must start with "-----BEGIN CERTIFICATE-----".', name), '', 'notice');
+                main.showMessage(_('Certificate "%s" must start with "-----BEGIN CERTIFICATE-----".', name), '', 'notice');
                 return '';
             }
             if (str.substring(str.length -  '-----END CERTIFICATE-----'.length) != '-----END CERTIFICATE-----') {
-                showMessage(_('Certificate "%s" must end with "-----END CERTIFICATE-----".', name), '', 'notice');
+                main.showMessage(_('Certificate "%s" must end with "-----END CERTIFICATE-----".', name), '', 'notice');
                 return '';
             }
             str = str.substring('-----BEGIN CERTIFICATE-----'.length);
@@ -556,11 +589,11 @@ $(document).ready(function () {
 
                         var name = $('#enum-name').val().replace(/ /g, '_').toLowerCase();
                         if (!name) {
-                            showMessage(_('Empty name!'), '', 'notice');
+                            main.showMessage(_('Empty name!'), '', 'notice');
                             return;
                         }
                         if (main.objects[(enumCurrentParent || 'enum') + '.' + name]) {
-                            showMessage(_('Name yet exists!'), '', 'notice');
+                            main.showMessage(_('Name yet exists!'), '', 'notice');
                             return;
                         }
 
@@ -629,19 +662,6 @@ $(document).ready(function () {
         });
     }
 
-    function showMessage(message, title, icon) {
-        $dialogMessage.dialog('option', 'title', title || _('Message'));
-        $('#dialog-message-text').html(message);
-        if (icon) {
-            $('#dialog-message-icon').show();
-            $('#dialog-message-icon').attr('class', '');
-            $('#dialog-message-icon').addClass('ui-icon ui-icon-' + icon);
-        } else {
-            $('#dialog-message-icon').hide();
-        }
-        $dialogMessage.dialog('open');
-    }
-
     $('#enum-name').keyup(function () {
         var t = $('#enum-gen-id');
         t.html(t[0]._original + '.' + $(this).val().replace(/ /, '_').toLowerCase());
@@ -688,33 +708,6 @@ $(document).ready(function () {
         if (val === true || val === 'true' || val === false || val === 'false') return 'bool';
         if (parseFloat(val).toString() == val) return 'number';
         return typeof val;
-    }
-
-    function initSelectId() {
-        if ($selectId) return;
-        $selectId = $('#dialog-select-member').selectId('init',
-            {
-                objects: main.objects,
-                states:  main.states,
-                filter: {type: 'state'},
-                texts: {
-                    select:   _('Select'),
-                    cancel:   _('Cancel'),
-                    all:      _('All'),
-                    id:       _('ID'),
-                    name:     _('Name'),
-                    role:     _('Role'),
-                    room:     _('Room'),
-                    value:    _('Value'),
-                    selectid: _('Select ID'),
-                    from:     _('From'),
-                    lc:       _('Last changed'),
-                    ts:       _('Time stamp'),
-                    wait:     _('Processing...'),
-                    ack:      _('Acknowledged')
-                },
-                columns: ['image', 'name', 'role', 'room', 'value']
-            });
     }
 
     function prepareEnumMembers() {
@@ -770,9 +763,9 @@ $(document).ready(function () {
             caption: '',
             buttonicon: 'ui-icon-plus',
             onClickButton: function () {
-                initSelectId();
+                var sid = main.initSelectId();
 
-                $selectId.selectId('show', function (newId, oldId) {
+                sid.selectId('show', function (newId, oldId) {
                     var obj = main.objects[enumEdit];
                     if (obj.common.members.indexOf(newId) === -1) {
                         obj.common.members.push(newId);
@@ -899,7 +892,7 @@ $(document).ready(function () {
                     if (result) {
                         main.socket.emit('delUser', id.replace('system.user.', ''), function (err) {
                             if (err) {
-                                showMessage(_('Cannot delete user: ') + err, '', 'alert');
+                                main.showMessage(_('Cannot delete user: ') + err, '', 'alert');
                             } else {
                                 setTimeout(function () {
                                     delUser(id);
@@ -930,7 +923,7 @@ $(document).ready(function () {
                     var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                     editUser(id);
                 } else {
-                    showMessage(_('Invalid object %s', objSelected), '', 'alert');
+                    main.showMessage(_('Invalid object %s', objSelected), '', 'alert');
                 }
             },
             position: 'first',
@@ -1026,7 +1019,7 @@ $(document).ready(function () {
                         main.socket.emit('extendObject', id, obj, function (err, obj) {
                             if (err) {
                                 // Cannot modify
-                                showMessage(_('Cannot change group'), '', 'alert');
+                                main.showMessage(_('Cannot change group'), '', 'alert');
                             }
                         });
                     },
@@ -1066,7 +1059,7 @@ $(document).ready(function () {
                     if (result) {
                         main.socket.emit('delGroup', id.replace("system.group.", ""), function (err) {
                             if (err) {
-                                showMessage(_('Cannot delete group: %s', err), '', 'alert');
+                                main.showMessage(_('Cannot delete group: %s', err), '', 'alert');
                             }
                         });
                     }
@@ -1092,7 +1085,7 @@ $(document).ready(function () {
                     var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
                     editGroup(id);
                 } else {
-                    showMessage(_('Invalid object %s', objSelected), '', 'alert');
+                    main.showMessage(_('Invalid object %s', objSelected), '', 'alert');
                 }
             },
             position: 'first',
@@ -1135,127 +1128,6 @@ $(document).ready(function () {
         });
         $('#edit-group-desc').keydown(function (event) {
             if (event.which == 13) saveGroup();
-        });
-    }
-
-    function prepareScripts() {
-        $gridScripts.jqGrid({
-            datatype: 'local',
-            colNames: ['_id', 'id', _('name'), _('engine type'), _('enabled'), _('engine'), ''],
-            colModel: [
-                {name: '_id',        index: '_id', hidden: true},
-                {name: '_obj_id',    index: '_obj_id'},
-                {name: 'name',       index: 'name',     editable: true},
-                {name: 'engineType', index: 'engineType'},
-                {name: 'enabled',    index: 'enabled',  editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
-                {name: 'engine',     index: 'engine',   editable: true, edittype: 'select', editoptions: ''},
-                {name: 'commands',   index: 'commands', editable: false, width: 80, align: 'center'}
-            ],
-            pager: $('#pager-scripts'),
-            rowNum: 100,
-            rowList: [20, 50, 100],
-            sortname: "id",
-            sortorder: "desc",
-            viewrecords: true,
-            caption: _('ioBroker adapter scripts'),
-            ignoreCase: true,
-            ondblClickRow: function (rowid) {
-                onEditScript(rowid.substring('script_'.length));
-            },
-            gridComplete: function () {
-                /*$('#del-script').addClass('ui-state-disabled');
-                $('#edit-script').addClass('ui-state-disabled');*/
-            }
-        }).jqGrid('filterToolbar', {
-            defaultSearch: 'cn',
-            autosearch:    true,
-            searchOnEnter: false,
-            enableClear:   false,
-            afterSearch:   function () {
-                initScriptButtons();
-            }
-        }).navGrid('#pager-scripts', {
-            search:  false,
-            edit:    false,
-            add:     false,
-            del:     false,
-            refresh: false
-        }).jqGrid('navButtonAdd', '#pager-scripts', {
-                caption: '',
-                buttonicon: 'ui-icon-plus',
-                onClickButton: function () {
-                    // Find last id;
-                    var id = 1;
-                    var ids = $gridScripts.jqGrid('getDataIDs');
-                    while (ids.indexOf('script_' + id) != -1) {
-                        id++;
-                    }
-                    // Find new unique name
-                    var found;
-                    var newText = _("Script");
-                    var idx = 1;
-                    do {
-                        found = true;
-                        for (var _id = 0; _id < ids.length; _id++) {
-                            var obj = $gridScripts.jqGrid('getRowData', ids[_id]);
-                            if (obj && obj.name == newText + idx)  {
-                                idx++;
-                                found = false;
-                                break;
-                            }
-                        }
-                    } while (!found);
-                    var name = newText + idx;
-                    var instance = '';
-                    var engineType = '';
-
-                    // find first instance
-                    for (var i = 0; i < main.instances.length; i++) {
-                        if (main.objects[main.instances[i]] && main.objects[main.instances[i]] && main.objects[main.instances[i]].common.engineTypes) {
-                            instance = main.instances[i];
-                            if (typeof main.objects[main.instances[i]].common.engineTypes == 'string') {
-                                engineType = main.objects[main.instances[i]].common.engineTypes;
-                            } else {
-                                engineType = main.objects[main.instances[i]].common.engineTypes[0];
-                            }
-                            break;
-                        }
-                    }
-
-                    main.socket.emit('setObject', 'script.js.' + name.replace(/ /g, '_').replace(/\./g, '_'), {
-                        common: {
-                            name:       name,
-                            engineType: engineType,
-                            source:     '',
-                            enabled:    false,
-                            engine:     instance
-                        },
-                        type: 'script'
-                    });
-                },
-                position: 'first',
-                id:       'add-script',
-                title:    _('new script'),
-                cursor:   'pointer'
-            });
-
-        $dialogScript.dialog({
-            autoOpen:   false,
-            modal:      true,
-            width: 800,
-            height: 540,
-            buttons: [
-                {
-                    text: _('Save'),
-                    click: saveScript
-                },
-                {
-                    text: _('Cancel'),
-                    click: function () {
-                        $dialogScript.dialog('close');
-                    }
-                }
-            ]
         });
     }
 
@@ -1647,301 +1519,6 @@ $(document).ready(function () {
         // todo
     }
 
-    // ----------------------------- Scripts show and Edit ------------------------------------------------
-
-    // Find all script engines
-    function fillEngines(id) {
-        var engines = [];
-        for (var t = 0; t < main.instances.length; t++) {
-            if (main.objects[main.instances[t]] && main.objects[main.instances[t]].common && main.objects[main.instances[t]].common.engineTypes) {
-                var engineTypes = main.objects[main.instances[t]].common.engineTypes;
-                if (typeof engineTypes == 'string') {
-                    if (engines.indexOf(engineTypes) == -1) engines.push(engineTypes);
-                } else {
-                    for (var z = 0; z < engineTypes.length; z++) {
-                        if (engines.indexOf(engineTypes[z]) == -1) engines.push(engineTypes[z]);
-                    }
-                }
-            }
-        }
-        if (id) {
-            var text = '';
-            for (var u = 0; u < engines.length; u++) {
-                text += '<option value="' + engines[u] + '">' + engines[u] + '</option>';
-            }
-            $('#' + id).html(text);
-        }
-        return engines;
-    }
-    function onEditScript(id) {
-        $('#add-script').addClass('ui-state-disabled');
-        $('.script-edit-submit').hide();
-        $('.script-edit-file-submit').hide();
-        $('.script-delete-submit').hide();
-        $('.script-reload-submit').hide();
-        $('.script-ok-submit[data-script-id="' + id + '"]').show();
-        $('.script-cancel-submit[data-script-id="' + id + '"]').show();
-
-        var list = {};
-        for (var i = 0; i < main.instances.length; i++) {
-            if (main.instances[i].indexOf('.javascript.') != -1) {
-                list[main.instances[i]] = main.instances[i];
-            }
-        }
-
-        $gridScripts.setColProp('engine', {
-            editable:    true,
-            edittype:    'select',
-            editoptions: {value: list},
-            align:       'center'
-        });
-
-        $gridScripts.jqGrid('editRow', 'script_' + id, {"url": "clientArray"});
-    }
-    function updateScript(id, newCommon) {
-        main.socket.emit('getObject', id, function (err, _obj) {
-            setTimeout(function () {
-                var obj = {common: {}};
-
-                if (newCommon.engine  !== undefined) obj.common.engine  = newCommon.engine;
-                if (newCommon.enabled !== undefined) obj.common.enabled = newCommon.enabled;
-
-                if (obj.common.enabled === 'true')  obj.common.enabled = true;
-                if (obj.common.enabled === 'false') obj.common.enabled = false;
-
-                if (newCommon.source !== undefined) obj.common.source = newCommon.source;
-
-                if (_obj && _obj.common && newCommon.name == _obj.common.name && (newCommon.engineType === undefined || newCommon.engineType == _obj.common.engineType)) {
-                    main.socket.emit('extendObject', id, obj);
-                } else {
-                    var prefix;
-
-                    _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
-                    var parts = _obj.common.engineType.split('/');
-
-                    prefix = 'script.' + (parts[1] || parts[0]) + '.';
-
-                    if (_obj) {
-                        main.socket.emit('delObject', _obj._id);
-                        if (obj.common.engine  !== undefined) _obj.common.engine  = obj.common.engine;
-                        if (obj.common.enabled !== undefined) _obj.common.enabled = obj.common.enabled;
-                        if (obj.common.source  !== undefined) _obj.common.source  = obj.common.source;
-                        if (obj.common.name    !== undefined) _obj.common.name    = obj.common.name;
-                        delete _obj._rev;
-                    } else {
-                        _obj = obj;
-                    }
-                    // Name must always exist
-                    _obj.common.name = newCommon.name;
-
-                    _obj._id = prefix + newCommon.name.replace(/ /g, '_').replace(/\./g, '_');
-                    main.socket.emit('setObject', _obj._id, _obj);
-                }
-            }, 0);
-        });
-    }
-    function initScripts(update) {
-
-        if (!main.objectsLoaded) {
-            setTimeout(initScripts, 250);
-            return;
-        }
-        if (!editor) {
-            editor = ace.edit("script-editor");
-            //editor.setTheme("ace/theme/monokai");
-            editor.getSession().setMode("ace/mode/javascript");
-            editor.resize();
-            $('#edit-insert-id').button({
-                icons: {primary: 'ui-icon-note'}
-            }).css('height', '30px').click(function () {
-                initSelectId();
-                $selectId.selectId('show', function (newId) {
-                    editor.insert('"' + newId + '"' + ((main.objects[newId] && main.objects[newId].common && main.objects[newId].common.name) ? ('/*' + main.objects[newId].common.name + '*/') : ''));
-                    editor.focus();
-                });
-            });
-        }
-
-        if (update || typeof $gridScripts != 'undefined' && !$gridScripts[0]._isInited) {
-            $gridScripts[0]._isInited = true;
-            $gridScripts.jqGrid('clearGridData');
-            var id = 1;
-
-            scripts.sort();
-            for (var i = 0; i < scripts.length; i++) {
-                var obj = main.objects[scripts[i]];
-                if (!obj) continue;
-
-                $gridScripts.jqGrid('addRowData', 'script_' + id, {
-                    _id:        id,
-                    _obj_id:    obj._id,
-                    name:       obj.common ? obj.common.name     : '',
-                    engineType: obj.common ? obj.common.engineType : '',
-                    enabled:    obj.common ? obj.common.enabled  : '',
-                    engine:     obj.common ? obj.common.engine   : '',
-                    commands:
-                        '<button data-script-id="' + id + '" class="script-edit-submit">'      + _('edit')   + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-edit-file-submit">' + _('edit file') + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-reload-submit">'    + _('restart script') + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-delete-submit">'    + _('delete') + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
-                        '<button data-script-id="' + id + '" class="script-cancel-submit" style="display:none">' + _('cancel') + '</button>'
-                });
-                id++;
-            }
-            $gridScripts.trigger('reloadGrid');
-            initScriptButtons();
-        }
-    }
-    function initScriptButtons() {
-        $('.script-edit-submit').unbind('click').button({
-            icons: {primary: 'ui-icon-pencil'},
-            text:  false
-        }).click(function () {
-            onEditScript($(this).attr('data-script-id'));
-        });
-
-        $('.script-edit-file-submit').unbind('click').button({
-            icons: {primary: 'ui-icon-note'},
-            text:  false
-        }).click(function () {
-            var id = $(this).attr('data-script-id');
-            var objSelected = $gridScripts.jqGrid('getRowData', 'script_' + id);
-            if (objSelected) {
-                editScript(objSelected._obj_id);
-            }
-        });
-
-        $('.script-reload-submit').unbind('click').button({
-            icons: {primary: 'ui-icon-refresh'},
-            text:  false
-        }).click(function () {
-            var id = $(this).attr('data-script-id');
-            var objSelected = $gridScripts.jqGrid('getRowData', 'script_' + id);
-            main.socket.emit('extendObject', objSelected._obj_id, {});
-        });
-
-        $('.script-delete-submit').unbind('click').button({
-            icons: {primary: 'ui-icon-trash'},
-            text:  false
-        }).click(function () {
-            var id = $(this).attr('data-script-id');
-            var objNew = $gridScripts.jqGrid('getRowData', 'script_' + id);
-            main.socket.emit('delObject', objNew._obj_id);
-
-            //$gridScripts.jqGrid('delRowData', 'script_' + id);
-        });
-
-        $('.script-ok-submit').unbind('click').button({
-            icons: {primary: 'ui-icon-check'},
-            text:  false
-        }).click(function () {
-            var id = $(this).attr('data-script-id');
-            $('.script-edit-submit').show();
-            $('.script-edit-file-submit').show();
-            $('.script-delete-submit').show();
-            $('.script-reload-submit').show();
-            $('.script-ok-submit').hide();
-            $('.script-cancel-submit').hide();
-            $('#add-script').removeClass('ui-state-disabled');
-
-            $gridScripts.jqGrid('saveRow', 'script_' + id, {"url": "clientArray"});
-            // afterSave
-            setTimeout(function () {
-                var objNew = $gridScripts.jqGrid('getRowData', 'script_' + id);
-                updateScript(objNew._obj_id, objNew);
-
-               /* main.socket.emit('getObject', objNew._obj_id, function (err, _obj) {
-                    var obj = {common:{}};
-                    obj.common.engine  = objNew.engine;
-                    obj.common.enabled = objNew.enabled;
-                    if (obj.common.enabled === 'true')  obj.common.enabled = true;
-                    if (obj.common.enabled === 'false') obj.common.enabled = false;
-
-                    if (_obj && _obj.common && objNew.name == _obj.common.name) {
-                        main.socket.emit('extendObject', objNew._obj_id, obj);
-                    } else {
-                        var prefix = 'script.js.';
-                        if (_obj) {
-                            var parts = _obj._id.split('.', 3);
-                            prefix = 'script.' + parts[1] + '.';
-                            main.socket.emit('delObject', _obj._id);
-                            _obj.common.engine  = obj.common.engine;
-                            _obj.common.enabled = obj.common.enabled;
-                            delete _obj._rev;
-                        } else {
-                            _obj = obj;
-                        }
-                        _obj.common.name = objNew.name;
-                        _obj.common.platform = _obj.common.platform || 'Javascript/Node.js';
-
-                        _obj._id         = prefix + objNew.name.replace(/ /g, '_').replace(/\./g, '_');
-                        main.socket.emit('setObject', _obj._id, _obj)
-                    }
-                });*/
-            }, 100);
-        });
-
-        $('.script-cancel-submit').unbind('click').button({
-            icons: {primary: 'ui-icon-close'},
-            text:  false
-        }).click(function () {
-            var id = $(this).attr('data-script-id');
-            $('.script-edit-submit').show();
-            $('.script-edit-file-submit').show();
-            $('.script-reload-submit').show();
-            $('.script-delete-submit').show();
-            $('.script-ok-submit').hide();
-            $('.script-cancel-submit').hide();
-            $('#add-script').removeClass('ui-state-disabled');
-            $gridScripts.jqGrid('restoreRow', 'script_' + id, false);
-        });
-    }
-    function editScript(id) {
-
-        var engines = fillEngines('edit-script-engine-type');
-
-        if (id) {
-            var obj = main.objects[id];
-            $dialogScript.dialog('option', 'title', id);
-            $('#edit-script-id').val(obj._id);
-            $('#edit-script-name').val(obj.common.name);
-            // Add engine even if it is not installed
-            if (engines.indexOf(obj.common.engineType) == -1) $('#edit-script-engine-type').append('<option value="' + obj.common.engineType + '">' + obj.common.engineType + '</option>');
-            $('#edit-script-engine-type').val(obj.common.engineType);
-
-            if (obj.common.engineType.match(/^[jJ]ava[sS]cript/)) {
-                editor.getSession().setMode("ace/mode/javascript");
-            } else if (obj.common.engineType.match(/^[cC]offee[sS]cript/)) {
-                editor.getSession().setMode("ace/mode/coffee");
-            }
-            //$('#edit-script-source').val(obj.common.source);
-            editor.setValue(obj.common.source);
-            $dialogScript.dialog('open');
-        } else {
-            showMessage(_('This should never come!'), '', 'alert');
-             /*// Should never come
-             $dialogScript.dialog('option', 'title', 'new script');
-             $('#edit-script-id').val('');
-             $('#edit-script-name').val('');
-             $('#edit-script-engine-type').val('Javascript');
-             //$('#edit-script-source').val('');
-             editor.setValue('');
-             $dialogScript.dialog('open');*/
-         }
-    }
-    function saveScript() {
-        var obj = {};
-
-        obj._id        = $('#edit-script-id').val();
-        obj.name       = $('#edit-script-name').val();
-        obj.source     = editor.getValue();
-        obj.engineType = $('#edit-script-engine-type').val() || '';
-
-        updateScript(obj._id, obj);
-        $dialogScript.dialog('close');
-    }
-
     // ----------------------------- Hosts show and Edit ------------------------------------------------
     function initHostsList(isUpdate) {
 
@@ -1994,7 +1571,7 @@ $(document).ready(function () {
         }
         $selHosts.unbind('change').change(function () {
             if (!main.states['system.host.' + $(this).val() + '.alive'] || !main.states['system.host.' + $(this).val() + '.alive'].val) {
-                showMessage(_('Host %s is offline', $(this).val()));
+                main.showMessage(_('Host %s is offline', $(this).val()));
                 $(this).val(main.currentHost);
                 return;
             }
@@ -2146,7 +1723,7 @@ $(document).ready(function () {
         var passconf = $('#edit-user-passconf').val();
 
         if (pass != passconf) {
-            showMessage(_('Password and confirmation are not equal!'), '', 'notice');
+            main.showMessage(_('Password and confirmation are not equal!'), '', 'notice');
             return;
         }
         var id = $('#edit-user-id').val();
@@ -2155,7 +1732,7 @@ $(document).ready(function () {
         if (!id) {
             main.socket.emit('addUser', user, pass, function (err) {
                 if (err) {
-                    showMessage(_('Cannot set password: ') + err, '', 'alert');
+                    main.showMessage(_('Cannot set password: ') + err, '', 'alert');
                 } else {
                     $dialogUser.dialog('close');
                     setTimeout(function () {
@@ -2168,7 +1745,7 @@ $(document).ready(function () {
             if (pass != '__pass_not_set__') {
                 main.socket.emit('changePassword', user, pass, function (err) {
                     if (err) {
-                        showMessage(_('Cannot set password: ') + err, '', 'alert');
+                        main.showMessage(_('Cannot set password: ') + err, '', 'alert');
                     } else {
                         $dialogUser.dialog('close');
                     }
@@ -2267,7 +1844,7 @@ $(document).ready(function () {
         if (!id) {
             main.socket.emit('addGroup', group, desc, function (err) {
                 if (err) {
-                    showMessage(_('Cannot create group: ') + err, '', 'alert');
+                    main.showMessage(_('Cannot create group: ') + err, '', 'alert');
                 } else {
                     $dialogGroup.dialog('close');
                     setTimeout(function () {
@@ -2280,7 +1857,7 @@ $(document).ready(function () {
             // If description changed
             main.socket.emit('extendObject', id, obj, function (err, res) {
                 if (err) {
-                    showMessage(_('Cannot change group: ') + err, '', 'alert');
+                    main.showMessage(_('Cannot change group: ') + err, '', 'alert');
                 } else {
                     $dialogGroup.dialog('close');
                 }
@@ -2301,7 +1878,7 @@ $(document).ready(function () {
 
                     if (obj.type === 'instance') main.instances.push(id);
                     if (obj.type === 'enum')     enums.push(id);
-                    if (obj.type === 'script')   scripts.push(id);
+                    if (obj.type === 'script')   tabs.scripts.list.push(id);
                     if (obj.type === 'user')     users.push(id);
                     if (obj.type === 'group')    groups.push(id);
                     if (obj.type === 'adapter')  tabs.adapters.list.push(id);
@@ -2338,14 +1915,13 @@ $(document).ready(function () {
                 tabs.objects.checkHistory();
 
                 // Detect if some script engine instance installed
-                var engines = fillEngines();
+                var engines = tabs.scripts.fillEngines();
 
                 // Disable scripts tab if no one script engine instance found
                 if (!engines || !engines.length) $('#tabs').tabs('option', 'disabled', [4]);
 
                 // Show if update available
                 initHostsList();
-
 
                 if (typeof callback === 'function') callback();
             }, 0);
@@ -2378,7 +1954,7 @@ $(document).ready(function () {
     function _enumRename(oldId, newId, newName, callback) {
         //Check if this name exists
         if (oldId != newId && main.objects[newId]) {
-            showMessage(_('Name yet exists!'), '', 'info');
+            main.showMessage(_('Name yet exists!'), '', 'info');
             initEnums(true);
             if (callback) callback();
         } else {
@@ -2388,7 +1964,7 @@ $(document).ready(function () {
                     if (callback) callback();
                 }
             } else if (main.objects[oldId] && main.objects[oldId].common && main.objects[oldId].common.nondeletable) {
-                showMessage(_('Change of enum\'s id "%s" is not allowed!', oldId), '', 'notice');
+                main.showMessage(_('Change of enum\'s id "%s" is not allowed!', oldId), '', 'notice');
                 initEnums(true);
                 if (callback) callback();
             } else {
@@ -2438,7 +2014,7 @@ $(document).ready(function () {
 
     function enumAddChild(parent, newId, name) {
         if (main.objects[newId]) {
-            showMessage(_('Name yet exists!'), '', 'notice');
+            main.showMessage(_('Name yet exists!'), '', 'notice');
             return false;
         }
 
@@ -2803,7 +2379,7 @@ $(document).ready(function () {
             tabs.states.stateChange(id, state);
             tabs.objects.stateChange(id, state);
 
-            if ($selectId) $selectId.selectId('state', id, state);
+            if (main.selectId) main.selectId.selectId('state', id, state);
         }
 
         // Update alive and connecetd of main.instances
@@ -2844,8 +2420,8 @@ $(document).ready(function () {
         addEventMessage(id, null, null, obj);
 
         tabs.objects.objectChange(id, obj);
-        if ($selectId)    $selectId.selectId('object', id, obj);
-        if ($gridEnums)   $gridEnums.selectId('object', id, obj);
+        if (main.selectId) main.selectId.selectId('object', id, obj);
+        if ($gridEnums)    $gridEnums.selectId('object', id, obj);
 
         // If system config updated
         if (id == 'system.config') {
@@ -2883,7 +2459,7 @@ $(document).ready(function () {
             }
 
             // Disable scripts tab if no one script engine instance found
-            var engines = fillEngines();
+            var engines = tabs.scripts.fillEngines();
             $('#tabs').tabs('option', 'disabled', (engines && engines.length) ? [] : [4]);
 
             tabs.instances.objectChange(id, obj);
@@ -2949,10 +2525,10 @@ $(document).ready(function () {
         // Update scripts
         if (id.match(/^script\./)) {
             if (obj) {
-                if (scripts.indexOf(id) == -1) scripts.push(id);
+                if (tabs.scripts.list.indexOf(id) == -1) tabs.scripts.list.push(id);
             } else {
-                j = scripts.indexOf(id);
-                if (j != -1) scripts.splice(j, 1);
+                j = tabs.scripts.list.indexOf(id);
+                if (j != -1) tabs.scripts.list.splice(j, 1);
             }
 
             if (updateTimers.initScripts) {
@@ -2960,7 +2536,7 @@ $(document).ready(function () {
             }
             updateTimers.initScripts = setTimeout(function () {
                 updateTimers.initScripts = null;
-                initScripts(true);
+                tabs.scripts.init(true);
             }, 200);
         }
 
@@ -3066,8 +2642,15 @@ $(document).ready(function () {
                                     $('#license_language').change(function () {
                                         language = $(this).val();
                                         $('#license_text').html(license[language] || license.en);
+                                        $('#license_checkbox').html(translateWord('license_checkbox', language));
                                     });
-
+                                    $('#license_diag').change(function () {
+                                        if ($(this).prop('checked')) {
+                                            $('#license_agree').button('enable');
+                                        } else {
+                                            $('#license_agree').button('disable');
+                                        }
+                                    });
                                     $dialogLicense.css({'z-index': 200});
                                     $dialogLicense.dialog({
                                         autoOpen: true,
@@ -3087,8 +2670,8 @@ $(document).ready(function () {
                                                         $dialogLicense.dialog('close');
                                                         $('#license_language').hide();
                                                     });
-
-                                                }
+                                                },
+                                                id: 'license_agree'
                                             },
                                             {
                                                 text: _('not agree'),
@@ -3099,6 +2682,9 @@ $(document).ready(function () {
                                         ],
                                         close: function () {
 
+                                        },
+                                        open: function () {
+                                            $('#license_agree').button('disable');
                                         }
                                     });
                                     $('#edit-user-name').keydown(function (event) {
@@ -3144,20 +2730,14 @@ $(document).ready(function () {
                             tabs.instances.prepare();
                             prepareUsers();
                             prepareGroups();
-                            prepareScripts();
+                            tabs.scripts.prepare();
                             tabs.objects.prepareHistory();
                             prepareRepos();
                             prepareCerts();
                             resizeGrids();
 
-                            $("#load_grid-select-member").show();
-                            $("#load_grid-objects").show();
                             $("#load_grid-hosts").show();
                             $("#load_grid-enums").show();
-                            $("#load_grid-states").show();
-                            $("#load_grid-scripts").show();
-                            $("#load_grid-adapters").show();
-                            $("#load_grid-instances").show();
                             $("#load_grid-users").show();
                             $("#load_grid-groups").show();
 
@@ -3207,7 +2787,7 @@ $(document).ready(function () {
         tabs.adapters.resize(x, y);
         tabs.instances.resize(x, y);
         tabs.objects.resize(x, y);
-        $gridScripts.setGridHeight(y - 150).setGridWidth(x - 20);
+        tabs.scripts.resize(x, y);
         $gridUsers.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridGroups.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridHosts.setGridHeight(y - 150).setGridWidth(x - 20);

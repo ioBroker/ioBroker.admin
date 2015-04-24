@@ -172,6 +172,7 @@ function States(main) {
                 }
             }
         }
+        $("#load_grid-states").show();
     };
 
     this.init = function (update) {

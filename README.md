@@ -7,6 +7,34 @@ user interface for configuration and administration
 ## Todo
 
 ## Changelog
+### 0.4.4 (2015-04-19)
+* (bluefox) fix error with hm-rega instance
+
+### 0.4.3 (2015-04-19)
+* (bluefox) fix error with select ID dialog in edit script
+* (bluefox) fix group of installed adapter
+* (bluefox) show statistics over installed adapters 
+* (bluefox) add "agree with statistics" checkbox
+
+### 0.4.2 (2015-04-17)
+* (bluefox) workaround for license text
+
+### 0.4.1 (2015-04-17)
+* (bluefox) fix click on buttons on adapter tab
+
+### 0.4.0 (2015-04-16)
+* (bluefox) use tree for adapters
+* (bluefox) implement license agreement for adapters
+
+### 0.3.27 (2015-04-14)
+* (bluefox) save size of script editor dialog
+* (bluefox) fix errors with table editor in adapter configuration
+* (bluefox) update npm modules
+
+### 0.3.26 (2015-03-27)
+* (bluefox) change save function for adapter settings
+* (bluefox) fix show states in object tab
+
 ### 0.3.23 (2015-03-22)
 * (bluefox) fix error with show values in objects TAB
 * (bluefox) move objects tab code into adminObjects.js

@@ -39,6 +39,8 @@ function Objects(main) {
             e.preventDefault();
             return false;
         });
+
+        $("#load_grid-objects").show();
     };
 
     this.stateChange = function (id, state) {
@@ -164,7 +166,7 @@ function Objects(main) {
                         if (ids && ids.length) {
                             that.openHistoryDlg(ids);
                         } else {
-                            showMessage(_('No states selected!'), '', 'info');
+                            that.main.showMessage(_('No states selected!'), '', 'info');
                         }
                     }
                 }
@@ -208,14 +210,16 @@ function Objects(main) {
         try {
             obj.common = JSON.parse($('#edit-object-common').val());
         } catch (e) {
-            showMessage('common ' + e, '', 'alert');
+            that.main.showMessage('common ' + e, '', 'alert');
             return false;
         }
-        try {
-            obj.native = JSON.parse($('#edit-object-native').val());
-        } catch (e) {
-            showMessage('native ' + e, '', 'alert');
-            return false;
+        if ($('#edit-object-native').val().trim()) {
+            try {
+                obj.native = JSON.parse($('#edit-object-native').val());
+            } catch (e) {
+                that.main.showMessage('native ' + e, '', 'alert');
+                return false;
+            }
         }
 
         main.socket.emit('extendObject', obj._id, obj);

@@ -131,6 +131,8 @@ function Instances(main) {
                 }
             }
         }
+
+        $("#load_grid-instances").show();
     };
 
     this.onEdit = function (id, e) {
@@ -213,8 +215,11 @@ function Instances(main) {
         this.main.socket.emit('getObject', 'system.adapter.' + parts[0], function (err, obj) {
             if (obj) {
                 setTimeout(function () {
-                    var link = $('#a_' + adapter + '_' + instance).attr('href').replace('%' + _var + '%', obj.native[parts[1]]);
-                    $('#a_' + adapter + '_' + instance).attr('href', link);
+                    var link = $('#a_' + adapter + '_' + instance).attr('href');
+                    if (link) {
+                        link = link.replace('%' + _var + '%', obj.native[parts[1]]);
+                        $('#a_' + adapter + '_' + instance).attr('href', link);
+                    }
                 }, 0);
             }
         });
