@@ -7,6 +7,8 @@ user interface for configuration and administration
 ## Todo
 
 ## Changelog
+### 0.4.6 (2015-05-01)
+* (bluefox) confirm deleting of scripts
 
 ### 0.4.5 (2015-04-24)
 * (SmilingJack) update jquery ui to 1.11.4

@@ -344,7 +344,10 @@ function Scripts(main) {
         }).click(function () {
             var id = $(this).attr('data-script-id');
             var objNew = that.$grid.jqGrid('getRowData', 'script_' + id);
-            that.main.socket.emit('delObject', objNew._obj_id);
+
+            that.main.confirmMessage(_('Are you sure to delete script %s?', objNew.name), null, 'help', function (result) {
+                if (result) that.main.socket.emit('delObject', objNew._obj_id);
+            });
 
             //that.$grid.jqGrid('delRowData', 'script_' + id);
         });

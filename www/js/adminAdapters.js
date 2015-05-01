@@ -30,14 +30,11 @@ function Adapters(main) {
 
     this.types = {
         "S7":           "hardware",
-        "admin":        "common adapters",
         "dwd":          "weather",
-        "example":      "common adapters",
         "history":      "storage",
         "hmm":          "hardware",
         "hue":          "hardware",
         "javascript":   "script",
-        "megad":        "hardware",
         "occ":          "schedule",
         "onkyo":        "hardware",
         "simple-api":   "communication",

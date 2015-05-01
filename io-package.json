@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "admin",
-        "version": "0.4.5",
+        "version": "0.4.6",
         "title":                    "ioBroker Admin",
         "desc": {
             "en":                   "Opens a webserver for the ioBroker admin UI",
@@ -21,6 +21,7 @@
             "hobbyquaker <hq@ccu.io>",
             "bluefox <bluefox@ccu.io>"
         ],
+        "type":                     "common adapters",
         "license":                  "MIT",
         "logTransporter":           true,
         "wwwDontUpload":            true
