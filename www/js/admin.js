@@ -1901,10 +1901,7 @@ $(document).ready(function () {
                     }
 
                     if (id.match(/^system\.adapter\.node-red\.[0-9]+$/) && obj && obj.common && obj.common.enabled) {
-                        $("#a-tab-node-red").show();
-                        if ($('#tabs').tabs('option', 'active') == 5) $("#tab-node-red").show();
-                        $('#iframe-node-red').height($(window).height() - 55);
-                        $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
+                        showNodeRed(obj, 0);
                     }
                     //treeInsert(id);
                 }
@@ -1926,6 +1923,15 @@ $(document).ready(function () {
                 if (typeof callback === 'function') callback();
             }, 0);
         });
+    }
+    // Give to node-red some time to start up the WEB server
+    function showNodeRed (obj, timeout) {
+        setTimeout(function () {
+            $("#a-tab-node-red").show();
+            if ($('#tabs').tabs('option', 'active') == 5) $("#tab-node-red").show();
+            $('#iframe-node-red').height($(window).height() - 55);
+            $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
+        }, timeout);
     }
     // ----------------------------- Enum show and Edit ------------------------------------------------
     var tasks = [];
@@ -2448,10 +2454,7 @@ $(document).ready(function () {
 
             if (id.match(/^system\.adapter\.node-red\.[0-9]+$/)) {
                 if (obj && obj.common && obj.common.enabled) {
-                    $("#a-tab-node-red").show();
-                    if ($('#tabs').tabs('option', 'active') == 5) $("#tab-node-red").show();
-                    $('#iframe-node-red').height($(window).height() - 55);
-                    $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
+                    showNodeRed(obj, 7000);
                 } else {
                     $("#a-tab-node-red").hide();
                     $("#tab-node-red").hide();
