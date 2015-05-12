@@ -7,6 +7,11 @@ user interface for configuration and administration
 ## Todo
 
 ## Changelog
+
+### 0.4.7 (2015-05-13)
+* (bluefox) fix license agreement for adapters
+* (SmilingJack) fix scroll by adapter config
+
 ### 0.4.6 (2015-05-01)
 * (bluefox) confirm deleting of scripts
 

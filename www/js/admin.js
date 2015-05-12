@@ -2641,6 +2641,7 @@ $(document).ready(function () {
 
                                     $('#license_text').html(license[language] || license.en);
                                     $('#license_language').val(language).show();
+                                    $('#license_checkbox').show();
                                     $('#license_checkbox').html(translateWord('license_checkbox', language));
                                     $('#license_agree .ui-button-text').html(translateWord('agree', language));
                                     $('#license_non_agree .ui-button-text').html(translateWord('not agree', language));

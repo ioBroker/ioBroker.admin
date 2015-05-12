@@ -552,6 +552,7 @@ function Adapters(main) {
         $('#license_language').hide();
         $('#license_diag').hide();
         $('#license_language_label').hide();
+        $('#license_checkbox').hide();
 
         var timeout = setTimeout(function () {
             timeout = null;
