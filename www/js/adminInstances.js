@@ -37,6 +37,9 @@ function Instances(main) {
             sortname:      "id",
             sortorder:     "desc",
             viewrecords:   true,
+            loadComplete: function () {
+               that.initButtons();
+            },
             caption:       _('ioBroker adapter instances'),
             ignoreCase:    true,
             ondblClickRow: function (rowId, e) {

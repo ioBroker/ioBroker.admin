@@ -36,6 +36,9 @@ function Scripts(main) {
                 /*$('#del-script').addClass('ui-state-disabled');
                  $('#edit-script').addClass('ui-state-disabled');*/
             },
+            loadComplete: function () {
+                that.initButtons();
+            },
             postData: that.main.config.scriptsFilter ? { filters: that.main.config.scriptsFilter} : undefined,
             search: !!that.main.config.scriptsFilter
         }).jqGrid('filterToolbar', {

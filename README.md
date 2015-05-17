@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.4.8 (2015-05-17)
+* (bluefox) fix buttons after sort in jqGrid table
+
 ### 0.4.7 (2015-05-13)
 * (bluefox) fix license agreement for adapters
 * (SmilingJack) fix scroll by adapter config

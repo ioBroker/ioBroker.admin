@@ -247,7 +247,8 @@ $(document).ready(function () {
         logs:       new Logs(main),
         states:     new States(main),
         objects:    new Objects(main),
-        scripts:    new Scripts(main)
+        scripts:    new Scripts(main),
+        hosts:      new Hosts(main)
     };
     main.instances = tabs.instances.list;
     main.tabs      = tabs;
@@ -258,7 +259,6 @@ $(document).ready(function () {
     var groups =                [];
     var children =              {};
     var updateTimers =          {};
-    var hosts =                 [];
     var enumCurrentParent =     '';
 
     var systemRepos;
@@ -290,7 +290,6 @@ $(document).ready(function () {
     var $gridGroups =           $('#grid-groups');
     var $gridEnums =            $('#grid-enums');
     var $gridEnumMembers =      $('#grid-enum-members');
-    var $gridHosts =            $('#grid-hosts');
     var $gridRepo =             $('#grid-repos');
     var $gridCerts =            $('#grid-certs');
 
@@ -326,7 +325,7 @@ $(document).ready(function () {
                     break;
 
                 case '#tab-hosts':
-                    initHosts();
+                    tabs.hosts.init();
                     break;
 
                 case '#tab-states':
@@ -338,7 +337,7 @@ $(document).ready(function () {
                     break;
 
                 case '#tab-adapters':
-                    initHostsList();
+                    tabs.hosts.initList();
                     break;
 
                 case '#tab-instances':
@@ -1131,62 +1130,6 @@ $(document).ready(function () {
         });
     }
 
-    function prepareHosts() {
-        $gridHosts.jqGrid({
-            datatype: 'local',
-            colNames: ['id', _('name'), _('type'), _('description'), _('platform'), _('os'), _('available'), _('installed')],
-            colModel: [
-                {name: '_id',       index: '_id',       hidden: true},
-                {name: 'name',      index: 'name',      width:  64},
-                {name: 'type',      index: 'type',      width:  70},
-                {name: 'title',     index: 'title',     width: 180},
-                {name: 'platform',  index: 'platform',  hidden: true},
-                {name: 'os',        index: 'os',        width: 360},
-                {name: 'available', index: 'available', width:  70, align: 'center'},
-                {name: 'installed', index: 'installed', width: 160}
-            ],
-            pager: $('#pager-hosts'),
-            width: 964,
-            height: 326,
-            rowNum: 100,
-            rowList: [20, 50, 100],
-            sortname: "id",
-            sortorder: "desc",
-            viewrecords: true,
-            caption: _('ioBroker hosts'),
-            ignoreCase: true,
-            gridComplete: function () {
-
-            }
-        }).jqGrid('filterToolbar', {
-            defaultSearch: 'cn',
-            autosearch:    true,
-            searchOnEnter: false,
-            enableClear:   false,
-            afterSearch:   function () {
-                initHostButtons();
-            }
-        }).navGrid('#pager-hosts', {
-            search:  false,
-            edit:    false,
-            add:     false,
-            del:     false,
-            refresh: false
-        }).jqGrid('navButtonAdd', '#pager-hosts', {
-            caption:       '',
-            buttonicon:    'ui-icon-refresh',
-            onClickButton: function () {
-                initHosts(true, true, function () {
-                    tabs.adapters.init(true, false);
-                });
-            },
-            position:      'first',
-            id:            'add-object',
-            title:         _('update adapter information'),
-            cursor:        'pointer'
-        });
-    }
-
     function prepareRepos() {
         $gridRepo.jqGrid({
             datatype: 'local',
@@ -1519,153 +1462,6 @@ $(document).ready(function () {
         // todo
     }
 
-    // ----------------------------- Hosts show and Edit ------------------------------------------------
-    function initHostsList(isUpdate) {
-
-        if (!main.objectsLoaded) {
-            setTimeout(initHostsList, 250);
-            return;
-        }
-
-        // fill the host list (select) on adapter tab
-        var selHosts = document.getElementById('host-adapters');
-        var myOpts   = selHosts.options;
-        var $selHosts = $(selHosts);
-        if (!isUpdate && $selHosts.data('inited')) return;
-
-        $selHosts.data('inited', true);
-        var found;
-        var j;
-        // first remove non-existing hosts
-        for (var i = 0; i < myOpts.length; i++) {
-            found = false;
-            for (j = 0; j < hosts.length; j++) {
-                if (hosts[j] == myOpts[i].value) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                selHosts.remove(i);
-            }
-        }
-
-        // Change editoptions for gridInstances column host
-        tabs.instances.updateHosts(hosts);
-
-        for (i = 0; i < hosts.length; i++) {
-            found = false;
-            for (j = 0; j < myOpts.length; j++) {
-                if (hosts[i].name == myOpts[j].value) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                $selHosts.append('<option value="' + hosts[i].name + '">' + hosts[i].name + '</option>');
-            }
-        }
-        if ($selHosts.val() != main.currentHost) {
-            main.currentHost = $selHosts.val();
-            tabs.adapters.init(true);
-        }
-        $selHosts.unbind('change').change(function () {
-            if (!main.states['system.host.' + $(this).val() + '.alive'] || !main.states['system.host.' + $(this).val() + '.alive'].val) {
-                main.showMessage(_('Host %s is offline', $(this).val()));
-                $(this).val(main.currentHost);
-                return;
-            }
-
-            main.currentHost = $(this).val();
-
-            tabs.adapters.init(true);
-        });
-    }
-    function initHostButtons() {
-
-        $('.host-update-submit').button({icons: {primary: 'ui-icon-refresh'}}).unbind('click').on('click', function () {
-            main.cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
-                if (!exitCode) initHosts(true);
-            });
-        });
-
-        $('.host-restart-submit').button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click').on('click', function () {
-            main.waitForRestart = true;
-            main.cmdExec($(this).attr('data-host-name'), '_restart');
-        });
-    }
-    function initHosts(update, updateRepo, callback) {
-
-        if (!main.objectsLoaded) {
-            setTimeout(initHosts, 250);
-            return;
-        }
-
-        if (typeof $gridHosts !== 'undefined' && (!$gridHosts[0]._isInited || update)) {
-            $('a[href="#tab-hosts"]').removeClass('updateReady');
-
-            $gridHosts.jqGrid('clearGridData');
-            $("#load_grid-hosts").show();
-
-            for (var i = 0; i < hosts.length; i++) {
-                var obj = main.objects[hosts[i].id];
-
-                $gridHosts.jqGrid('addRowData', 'host_' + hosts[i].id.replace(/ /g, '_'), {
-                    _id:       obj._id,
-                    name:      obj.common.hostname,
-                    type:      obj.common.type,
-                    title:     obj.common.title,
-                    platform:  obj.common.platform,
-                    os:        obj.native.os.platform,
-                    available: '',
-                    installed: ''
-                });
-            }
-            $gridHosts.trigger('reloadGrid');
-
-            tabs.adapters.getAdaptersInfo(main.currentHost, update, updateRepo, function (repository, installedList) {
-                var data  = $gridHosts.jqGrid('getGridParam', 'data');
-                var index = $gridHosts.jqGrid('getGridParam', '_index');
-
-                $gridHosts[0]._isInited = true;
-                if (!installedList || !installedList.hosts) return;
-
-                for (var id in installedList.hosts) {
-                    var obj = main.objects['system.host.' + id];
-                    var installed = '';
-                    var version = obj.common ? (repository[obj.common.type] ? repository[obj.common.type].version : '') : '';
-                    installed = installedList.hosts[id].version;
-                    if (installed != installedList.hosts[id].runningVersion) installed += '(' + _('Running: ') + installedList.hosts[id].runningVersion + ')';
-
-                    if (!installed && obj.common && obj.common.installedVersion) installed = obj.common.installedVersion;
-
-                    if (installed && version) {
-                        if (!main.upToDate(version, installed)) {
-                            installed += ' <button class="host-update-submit" data-host-name="' + obj.common.hostname + '">' + _('update') + '</button>';
-                            version = '<span class="updateReady">' + version + '<span>';
-                            $('a[href="#tab-hosts"]').addClass('updateReady');
-                        }
-                    }
-
-                    id = 'system.host.' + id.replace(/ /g, '_');
-
-                    var rowData = data[index['host_' + id]];
-                    if (rowData) {
-                        rowData.name =      '<table style="width:100%; padding: 0; border: 0; border-spacing: 0; border-color: rgba(0, 0, 0, 0)" cellspacing="0" cellpadding="0"><tr><td style="width:100%">' + obj.common.hostname + '</td><td><button class="host-restart-submit" data-host-name="' + obj.common.hostname + '">' + _('restart') + '</button></td></tr></table>';
-                        rowData.available = version;
-                        rowData.installed = installed;
-                    } else {
-                        console.log('Unknown host found: ' + id);
-                    }
-                }
-                $gridHosts.trigger('reloadGrid');
-
-                initHostButtons();
-                if (callback) callback();
-            });
-        }
-    }
-    
     // ----------------------------- Users show and Edit ------------------------------------------------
     function initUsers(update) {
 
@@ -1897,7 +1693,7 @@ $(document).ready(function () {
                                 if (addr) break;
                             }
                         }
-                        if (addr) hosts.push({name: obj.common.hostname, address: addr, id: obj._id});
+                        if (addr) tabs.hosts.list.push({name: obj.common.hostname, address: addr, id: obj._id});
                     }
 
                     if (id.match(/^system\.adapter\.node-red\.[0-9]+$/) && obj && obj.common && obj.common.enabled) {
@@ -1918,7 +1714,7 @@ $(document).ready(function () {
                 if (!engines || !engines.length) $('#tabs').tabs('option', 'disabled', [4]);
 
                 // Show if update available
-                initHostsList();
+                tabs.hosts.initList();
 
                 if (typeof callback === 'function') callback();
             }, 0);
@@ -2520,8 +2316,8 @@ $(document).ready(function () {
             }
             updateTimers.initHosts = setTimeout(function () {
                 updateTimers.initHosts = null;
-                initHosts(true);
-                initHostsList(true);
+                tabs.hosts.init(true);
+                tabs.hosts.initList(true);
             }, 200);
         }
 
@@ -2733,7 +2529,7 @@ $(document).ready(function () {
                             $('#tabs').show();
                             initAllDialogs();
                             prepareEnumMembers();
-                            prepareHosts();
+                            tabs.hosts.prepare();
                             tabs.objects.prepare();
                             tabs.states.prepare();
                             tabs.adapters.prepare();
@@ -2746,7 +2542,6 @@ $(document).ready(function () {
                             prepareCerts();
                             resizeGrids();
 
-                            $("#load_grid-hosts").show();
                             $("#load_grid-enums").show();
                             $("#load_grid-users").show();
                             $("#load_grid-groups").show();
@@ -2798,9 +2593,9 @@ $(document).ready(function () {
         tabs.instances.resize(x, y);
         tabs.objects.resize(x, y);
         tabs.scripts.resize(x, y);
+        tabs.hosts.resize(x, y);
         $gridUsers.setGridHeight(y - 150).setGridWidth(x - 20);
         $gridGroups.setGridHeight(y - 150).setGridWidth(x - 20);
-        $gridHosts.setGridHeight(y - 150).setGridWidth(x - 20);
         $('.subgrid-level-1').setGridWidth(x - 67);
         $('.subgrid-level-2').setGridWidth(x - 94);
         $('.subgrid-level-3').setGridWidth(x - 121);
@@ -2812,9 +2607,9 @@ $(document).ready(function () {
             var tab = 'tab-' + window.location.hash.slice(1);
             var index = $('#tabs a[href="#' + tab + '"]').parent().index() - 1;
             $('#tabs').tabs('option', 'active', index);
-            if (tab == 'tab-hosts') initHosts();
+            if (tab == 'tab-hosts') tabs.hosts.init();
         } else {
-            initHosts();
+            tabs.hosts.init();
         }
     }
 
