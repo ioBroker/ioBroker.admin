@@ -261,6 +261,10 @@ function Adapters(main) {
         }
         if (!this.curRepository) {
             this.main.socket.emit('sendToHost', host, 'getRepository', {repo: this.main.systemConfig.common.activeRepo, update: updateRepo}, function (_repository) {
+                if (_repository === 'permissionError') {
+                    console.error('May not read "getRepository"');
+                    _repository = {};
+                }
                 that.curRepository = _repository;
                 if (that.curRepository && that.curInstalled) {
                     that.curRepoLastUpdate = (new Date()).getTime();
@@ -272,6 +276,11 @@ function Adapters(main) {
         }
         if (!this.curInstalled) {
             this.main.socket.emit('sendToHost', host, 'getInstalled', null, function (_installed) {
+                if (_installed === 'permissionError') {
+                    console.error('May not read "getInstalled"');
+
+                    _installed = {};
+                }
                 that.curInstalled = _installed;
                 if (that.curRepository && that.curInstalled) {
                     that.curRepoLastUpdate = (new Date()).getTime();

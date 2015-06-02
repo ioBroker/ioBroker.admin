@@ -34,6 +34,7 @@ function Groups(main) {
                             if (err) {
                                 // Cannot modify
                                 that.main.showMessage(_('Cannot change group'), '', 'alert');
+                                that.init(true);
                             }
                         });
                     },
@@ -284,23 +285,39 @@ function Groups(main) {
             });
     };
 
-    this.synchronizeUser = function (userId, userGroups) {
+    this.synchronizeUser = function (userId, userGroups, callback) {
         var obj;
         userGroups = userGroups || [];
         for (var i = 0; i < this.list.length; i++) {
             // If user has no group, but group has user => delete user from group
             if (userGroups.indexOf(this.list[i]) == -1 &&
                 that.main.objects[this.list[i]].common.members && that.main.objects[this.list[i]].common.members.indexOf(userId) != -1) {
-                that.main.objects[this.list[i]].common.members.splice(that.main.objects[this.list[i]].common.members.indexOf(userId), 1);
-                obj = {common: {members: that.main.objects[this.list[i]].common.members}};
-                that.main.socket.emit('extendObject', this.list[i], obj);
+                var members = JSON.parse(JSON.stringify(that.main.objects[this.list[i]].common.members));
+                members.splice(members.indexOf(userId), 1);
+                obj = {common: {members: members}};
+                that.main.socket.emit('extendObject', this.list[i], obj, function (err) {
+                    if (err) {
+                        that.main.showError(err);
+                        if (callback) callback(err);
+                    } else {
+                        if (callback) callback();
+                    }
+                });
             }
             if (userGroups.indexOf(this.list[i]) != -1 &&
                 (!that.main.objects[this.list[i]].common.members || that.main.objects[this.list[i]].common.members.indexOf(userId) == -1)) {
                 that.main.objects[this.list[i]].common.members = that.main.objects[this.list[i]].common.members || [];
-                that.main.objects[this.list[i]].common.members.push(userId);
-                obj = {common: {members: that.main.objects[this.list[i]].common.members}};
-                that.main.socket.emit('extendObject', this.list[i], obj);
+                var _members = JSON.parse(JSON.stringify(that.main.objects[this.list[i]].common.members));
+                _members.push(userId);
+                obj = {common: {members: _members}};
+                that.main.socket.emit('extendObject', this.list[i], obj, function (err) {
+                    if (err) {
+                        that.main.showError(err);
+                        if (callback) callback(err);
+                    } else {
+                        if (callback) callback();
+                    }
+                });
             }
         }
     };

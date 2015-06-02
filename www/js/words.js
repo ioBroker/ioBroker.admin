@@ -1,3 +1,6 @@
+/*global systemDictionary */
+'use strict';
+
 systemDictionary = {
     "true":                 {"en": "true",                  "de": "ja",                     "ru": "да"},
     "false":                {"en": "false",                 "de": "nein",                   "ru": "нет"},
@@ -24,6 +27,7 @@ systemDictionary = {
     "save":                 {"en": "save",                  "de": "Speichern",              "ru": "Сохранить"},
     "Logout":               {"en": "Logout",                "de": "Ausloggen",              "ru": "Выйти"},
     "name":                 {"en": "name",                  "de": "Name",                   "ru": "Имя"},
+    "Name":                 {"en": "Name",                  "de": "Name",                   "ru": "Имя"},
     "type":                 {"en": "type",                  "de": "Typ",                    "ru": "Тип"},
     "members":              {"en": "members",               "de": "Mitglieder",             "ru": "Части"},
     "val":                  {"en": "val",                   "de": "Wert",                   "ru": "Значение"},
@@ -159,11 +163,9 @@ systemDictionary = {
     "Active repository:":   {"en": "Active repository:",    "de": "Aktiver Verwahrungsort:", "ru": "Активный репозиторий:"},
     "Generated&nbsp;ID:":   {"en": "Generated&nbsp;ID:",    "de": "Generated&nbsp;ID:",     "ru": "Сгенерированный&nbsp;ID:"},
     "license agreement":    {"en": "license agreement",     "de": "license agreement",      "ru": "Лицензионное соглашение"},
-    "description":          {"en": "description",           "de": "Beschreibung",           "ru": "Описание"},
     "link":                 {"en": "link",                  "de": "Link",                   "ru": "Ссылка"},
     "ioBroker repositories": {"en": "ioBroker repositories", "de": "ioBroker Verwahrungsorte", "ru": "Репозитории ioBroker"},
     "add repository":       {"en": "add repository",        "de": "Verwahrungsort hinzufügen", "ru": "Добавить репозиторий"},
-    "Name":                 {"en": "Name",                  "de": "Name",                   "ru": "Имя"},
     "edit":                 {"en": "edit",                  "de": "ändern",                 "ru": "редактировать"},
     "delete":               {"en": "delete",                "de": "löschen",                "ru": "удалить"},
     "ok":                   {"en": "Ok",                    "de": "Ok",                     "ru": "Ok"},
@@ -307,11 +309,43 @@ systemDictionary = {
     "http operation":       {"en": "http",                  "de": "http",                   "ru": "http"},
     "execute operation":    {"en": "Execute operation",     "de": "ausführen",              "ru": "выполнить"},
     "sendto operation":     {"en": "Send-to operation",     "de": "sendto",                 "ru": "sendto"},
-
-
+    "Password cannot be empty!": {
+        "en": "Password cannot be empty!",
+        "de": "Kennword darf nicht leer sein!",
+        "ru": "Пустой пароль!"
+    },
+    "Password and confirmation are not equal!": {
+        "en": "Password and confirmation are not equal!",
+        "de": "Kennword und Bestätigung sind untershciedlich!",
+        "ru": "Пароль и подтверждение разные!"
+    },
+    "password":             {"en": "Password",              "de": "Kennwort",               "ru": "Пароль"},
+    "confirm password":     {"en": "Confirm password",      "de": "Bestätigung",            "ru": "Подтверждение"},
     "license_checkbox": {
         "en": "I am agree with collection of anonymous statistics.<br>(can be disabled in settings)",
         "de": "Ich bin mit der Sammlung von anonymer Statistik einverstanden.<br>(konnte später über Konfiguration deaktiviert werden)",
         "ru": "Я соглашаюсь с анонимным сбором статистики.<br>(Можно деактивировать через настройки)"
+    },
+    "permissionError":      {"en": "Permission error",      "de": "Zulassungsfehler",       "ru": "Ошибка доступа"},
+    "Error":                {"en": "Error",                 "de": "Fehler",                 "ru": "Ошибка"},
+    "Are you sure to delete script %s?": {
+        "en": "Are you sure to delete script '%s'?",
+        "de": "Wollen Sie wirklich Skript '%s' löschen?",
+        "ru": "Вы действительно хотите удалить скрипт '%s'?"
+    },
+    "Cannot delete user: ": {
+        "en": "Cannot delete user: ",
+        "de": "Kann Anwender nicht löschen: ",
+        "ru": "Не могу удалить пользователя: "
+    },
+    "Cannot set password: ": {
+        "en": "Cannot set password: ",
+        "de": "Kann Kennwort nicht setzten: ",
+        "ru": "Не могу изменить пароль: "
+    },
+    "Has no permission to %s %s %s": {
+        "en": "Has no permission to %s %s %s",
+        "de": "Kein Zugriff '%s' für %s %s",
+        "ru": "Нет разрешения '%s' для %s %s"
     }
 };

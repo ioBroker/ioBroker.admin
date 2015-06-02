@@ -37,7 +37,7 @@ function Instances(main) {
             sortname:      "id",
             sortorder:     "desc",
             viewrecords:   true,
-            loadComplete: function () {
+            loadComplete:  function () {
                that.initButtons();
             },
             caption:       _('ioBroker adapter instances'),
@@ -77,7 +77,7 @@ function Instances(main) {
                     });
                 }
                 var obj = that.$grid.jqGrid('getRowData', objSelected);
-                that.main.tabs.objects.onEdit(obj._id);
+                that.main.tabs.objects.edit(obj._id);
             },
             position: 'first',
             id: 'edit-instance',
@@ -200,7 +200,7 @@ function Instances(main) {
                 align:       'center'
             });
         }
-        this.$grid.jqGrid('editRow', 'instance_' + id, {"url": "clientArray"});
+        this.$grid.jqGrid('editRow', 'instance_' + id, {'url': 'clientArray'});
     };
 
     this.replaceLink = function (_var, adapter, instance) {
@@ -383,11 +383,7 @@ function Instances(main) {
     };
 
     this.initButtons = function (id) {
-        if (id) {
-            id = '[data-instance-id="' + id + '"]';
-        } else {
-            id = '';
-        }
+        id = id ? '[data-instance-id="' + id + '"]' : '';
 
         $('.instance-edit' + id).unbind('click').button({
             icons: {primary: 'ui-icon-pencil'},
@@ -407,9 +403,9 @@ function Instances(main) {
                 var minHeight = 0;
                 var minWidth = 0;
                 if (config.common.config) {
-                    if (config.common.config.width) width   = config.common.config.width;
-                    if (config.common.config.height) height = config.common.config.height;
-                    if (config.common.config.minWidth) minWidth   = config.common.config.minWidth;
+                    if (config.common.config.width)     width     = config.common.config.width;
+                    if (config.common.config.height)    height    = config.common.config.height;
+                    if (config.common.config.minWidth)  minWidth  = config.common.config.minWidth;
                     if (config.common.config.minHeight) minHeight = config.common.config.minHeight;
                 }
                 if (that.main.config['adapter-config-width-'  + name])  width = that.main.config['adapter-config-width-'  + name];
@@ -431,7 +427,9 @@ function Instances(main) {
 
         $('.instance-reload' + id).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click')
             .click(function () {
-                that.main.socket.emit('extendObject', $(this).attr('data-instance-id'), {});
+                that.main.socket.emit('extendObject', $(this).attr('data-instance-id'), {}, function (err) {
+                    if (err) that.main.showError(err);
+                });
             });
 
         $('.instance-del' + id).button({icons: {primary: 'ui-icon-trash'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
@@ -462,7 +460,7 @@ function Instances(main) {
             $('#reload-instances').removeClass('ui-state-disabled');
             $('#edit-instance').removeClass('ui-state-disabled');
 
-            that.$grid.jqGrid('saveRow', 'instance_' + id, {"url": "clientArray"});
+            that.$grid.jqGrid('saveRow', 'instance_' + id, {'url': 'clientArray'});
             // afterSave
             setTimeout(function () {
                 var _obj = that.$grid.jqGrid('getRowData', 'instance_' + id);
@@ -488,7 +486,12 @@ function Instances(main) {
                 if (obj.common.enabled === _('true'))  obj.common.enabled = true;
                 if (obj.common.enabled === _('false')) obj.common.enabled = false;
 
-                that.main.socket.emit('extendObject', _obj._id, obj);
+                that.main.socket.emit('extendObject', _obj._id, obj, function (err) {
+                    if (err) {
+                        that.main.showError(err);
+                        that.init(true);
+                    }
+                });
             }, 100);
         });
 

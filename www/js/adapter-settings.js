@@ -91,7 +91,11 @@ $(document).ready(function () {
                     oldObj.common[a] = common[a];
                 }
             }
-            socket.emit('setObject', id, oldObj, function () {
+            socket.emit('setObject', id, oldObj, function (err) {
+                if (err) {
+                    showMessage(err, _('Error'), 'alert');
+                    return;
+                }
                 changed = false;
                 if (onChangeSupported) {
                     $('#save').button('disable');

@@ -46,27 +46,26 @@ function States(main) {
         var stateEdit = false;
         var stateLastSelected;
 
-        // TODO hide column history if no instance of history-adapter enabled
         this.$grid.jqGrid({
             datatype: 'local',
             colNames: ['id', _('parent name'), _('name'), _('val'), _('ack'), _('from'), _('ts'), _('lc')],
             colModel: [
-                {name: '_id', index: '_id', width: 250, fixed: false},
+                {name: '_id',   index: '_id',   width: 250, fixed: false},
                 {name: 'pname', index: 'pname', width: 250, fixed: false},
-                {name: 'name', index: 'name', width: 250, fixed: false},
-                {name: 'val', index: 'val', width: 160, editable: true},
+                {name: 'name',  index: 'name',  width: 250, fixed: false},
+                {name: 'val',   index: 'val',   width: 160, editable: true},
                 {
-                    name: 'ack',
-                    index: 'ack',
-                    width: 60,
-                    fixed: false,
-                    editable: true,
-                    edittype: 'checkbox',
+                    name:      'ack',
+                    index:     'ack',
+                    width:      60,
+                    fixed:      false,
+                    editable:   true,
+                    edittype:   'checkbox',
                     editoptions: {value: "true:false"}
                 },
-                {name: 'from', index: 'from', width: 80, fixed: false},
-                {name: 'ts', index: 'ts', width: 140, fixed: false},
-                {name: 'lc', index: 'lc', width: 140, fixed: false}
+                {name: 'from', index: 'from', width: 80,  fixed: false},
+                {name: 'ts',   index: 'ts',   width: 140, fixed: false},
+                {name: 'lc',   index: 'lc',   width: 140, fixed: false}
             ],
             pager: $('#pager-states'),
             rowNum: 100,
@@ -77,6 +76,7 @@ function States(main) {
             caption: _('ioBroker States'),
             ignoreCase: true,
             ondblClickRow: function (id) {
+                if (!that.main.acl.state.write) return;
                 var rowData = that.$grid.jqGrid('getRowData', id);
                 rowData.ack = false;
                 rowData.from = '';
@@ -118,6 +118,7 @@ function States(main) {
                     // afterSave
                     stateEdit = false;
                     var val = that.$grid.jqGrid('getCell', stateLastSelected, 'val');
+                    var oldSelected = stateLastSelected;
 
                     if (val === 'true')  val = true;
                     if (val === 'false') val = false;
@@ -130,7 +131,14 @@ function States(main) {
                     if (ack === 'false') ack = false;
 
                     var id = $('tr[id="' + stateLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                    that.main.socket.emit('setState', id, {val: val, ack: ack});
+                    that.main.socket.emit('setState', id, {val: val, ack: ack}, function (err) {
+                        if (err) {
+                            that.$grid.jqGrid('setCell', oldSelected, 'val',  main.states[id].val);
+                            that.$grid.jqGrid('setCell', oldSelected, 'ack',  main.states[id].ack);
+                            that.$grid.jqGrid('setCell', oldSelected, 'from', main.states[id].from);
+                            that.main.showError(err);
+                        }
+                    });
                     stateLastSelected = null;
                 });
             },

@@ -36,8 +36,12 @@ function Logs(main) {
         $('#log-clear-on-disk').button({icons:{primary: 'ui-icon-trash'}, text: false}).click(function () {
             that.main.confirmMessage(_('Log file will be deleted. Are you sure?'), null, null, function (result) {
                 if (result) {
-                    that.main.socket.emit('sendToHost', main.currentHost, 'delLogs', null, function () {
-                        that.clear();
+                    that.main.socket.emit('sendToHost', main.currentHost, 'delLogs', null, function (err) {
+                        if (err) {
+                            that.main.showError(err);
+                        } else {
+                            that.clear();
+                        }
                     });
                 }
             });

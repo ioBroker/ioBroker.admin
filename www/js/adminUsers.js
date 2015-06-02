@@ -1,3 +1,5 @@
+'use strict';
+
 function Users(main) {
     var that     = this;
     this.list    = [];
@@ -49,7 +51,9 @@ function Users(main) {
                 $(".user-groups-edit").multiselect({
                     selectedList: 4,
                     close: function () {
-                        that.main.tabs.groups.synchronizeUser($(this).attr('data-id'), $(this).val());
+                        that.main.tabs.groups.synchronizeUser($(this).attr('data-id'), $(this).val(), function (err) {
+                            if (err) that.init(true);
+                        });
                     },
                     checkAllText:     _('Check all'),
                     uncheckAllText:   _('Uncheck All'),
@@ -58,7 +62,12 @@ function Users(main) {
                 $(".user-enabled-edit").change(function () {
                     var obj = {common: {enabled: $(this).is(':checked')}};
                     var id  = $(this).attr('data-id');
-                    that.main.socket.emit('extendObject', id, obj);
+                    that.main.socket.emit('extendObject', id, obj, function (err) {
+                        if (err) {
+                            that.main.showError(err);
+                            that.init(true);
+                        }
+                    });
                 });
             }
         }).jqGrid('filterToolbar', {
@@ -219,7 +228,7 @@ function Users(main) {
             $('#edit-user-passconf').val('__pass_not_set__');
             that.$dialog.dialog('open');
         } else {
-            that.$dialog.dialog('option', 'title', 'new user');
+            that.$dialog.dialog('option', 'title', _('new user'));
             $('#edit-user-id').val('');
             $('#edit-user-name').val('');
             $('#edit-user-name').prop('disabled', false);
@@ -235,6 +244,10 @@ function Users(main) {
 
         if (pass != passconf) {
             that.main.showMessage(_('Password and confirmation are not equal!'), '', 'notice');
+            return;
+        }
+        if (!pass) {
+            that.main.showMessage(_('Password cannot be empty!'), '', 'notice');
             return;
         }
         var id   = $('#edit-user-id').val();

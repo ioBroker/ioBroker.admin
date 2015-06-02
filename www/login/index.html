@@ -169,17 +169,21 @@
         .lt-ie9 input[type=text], .lt-ie9 input[type=password] {
             line-height: 34px;
         }
+        .error {
+             color: red;
+             text-align: center;
+         }
     </style>
 </head>
 <body>
 <section class="container">
     <div class="login">
-        <h1>Login to Admin Interface</h1>
+        <h1 id="login">Login to Admin Interface</h1>
         <form action="/login" method="post" style="text-align:center;vertical-align: middle">
             <p><input type="text"     id="username" name="username" placeholder="Enter login"/></p>
             <p><input type="password" id="password" name="password" placeholder="Enter password"/></p>
             <input type="hidden" id="origin" name="origin" value=""/>
-            <p class="submit"><input type="submit" value="Submit"/></p>
+            <p class="submit"><input type="submit" id="submit" value="Submit"/></p>
         </form>
         <div id="error" class="error" style="display:none"></div>
     </div>
@@ -203,12 +207,15 @@
             document.getElementById('password').placeholder = 'Введите пароль';
         }
         document.getElementById('submit').value = 'Ok';
+        document.getElementById('login').innerHTML  = 'Вход в админ';
+
     } else if (userLang == 'de') {
         if (document.getElementById('username').placeholder) {
             document.getElementById('username').placeholder = 'Login eingeben';
             document.getElementById('password').placeholder = 'Kennwort eingeben';
         }
         document.getElementById('submit').value = 'Ok';
+        document.getElementById('login').innerHTML  = 'Login in Admin';
     }
 </script>
 </body>

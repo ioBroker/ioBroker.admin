@@ -338,8 +338,11 @@ function initWebServer(settings) {
 
             // route middleware to make sure a user is logged in
             server.app.use(function (req, res, next) {
-                if (req.isAuthenticated() || req.originalUrl === '/login/') return next();
-                res.redirect('/login/');
+                if (req.isAuthenticated() ||
+                    /^\/login\//.test(req.originalUrl) ||
+                    /\.ico$/.test(req.originalUrl)
+                ) return next();
+                res.redirect('/login/index.html?href=' + encodeURIComponent(req.originalUrl));
             });
         } else {
             server.app.get('/login', function (req, res) {
@@ -499,11 +502,24 @@ function getUserFromSocket(socket, callback) {
 function calculatePermissions(socket, user, callback) {
     // read all groups
     socket._acl = {};
+    if (user == 'admin') {
+        for (var c in commandsPermissions) {
+            socket._acl[commandsPermissions[c].type] = socket._acl[commandsPermissions[c].type] || {};
+            socket._acl[commandsPermissions[c].type][commandsPermissions[c].operation] = true;
+        }
+
+        if (callback) callback(socket._acl);
+        return;
+    }
+
     adapter.getForeignObjects('*', 'group', function (err, groups) {
         // aggregate all groups permissions, where this user is
         if (groups) {
             for (var g in groups) {
-                if (groups[g].common.members.indexOf('system.user.' + user) != -1) {
+                if (groups[g] &&
+                    groups[g].common &&
+                    groups[g].common.members &&
+                    groups[g].common.members.indexOf('system.user.' + user) != -1) {
                     for (var type in groups[g].common.acl) {
                         socket._acl[type] = socket._acl[type] || {};
                         for (var op in groups[g].common.acl[type]) {
@@ -533,7 +549,9 @@ function initSocket(socket) {
             }
         });
     } else {
-        socketEvents(socket);
+        calculatePermissions(socket, 'admin', function () {
+            socketEvents(socket);
+        });
     }
 }
 
@@ -562,7 +580,7 @@ function updateSession(socket) {
     return true;
 }
 
-function checkPermissions(socket, command, callback) {
+function checkPermissions(socket, command, callback, arg) {
     if (adapter.config.auth && socket._user != 'admin') {
         // type: file, object, state, other
         // operation: create, read, write, list, delete, sendto, execute, sendto
@@ -584,7 +602,8 @@ function checkPermissions(socket, command, callback) {
             socket.emit('permissionError', {
                 command:    command,
                 type:       commandsPermissions[command].type,
-                operation:  commandsPermissions[command].operation
+                operation:  commandsPermissions[command].operation,
+                arg:        arg
             });
         }
         return false;
@@ -629,45 +648,24 @@ var commandsPermissions = {
 
     authEnabled:        {type: '',          operation: ''},
     disconnect:         {type: '',          operation: ''},
-    listPermissions:    {type: '',          operation: ''}
+    listPermissions:    {type: '',          operation: ''},
+    getUserPermissions: {type: 'object',    operation: 'read'}
 };
 
 function socketEvents(socket, user) {
 
     socket._user = user;
-    // TODO Check if user may create and delete objects and so on
-    if (socket.handshake.headers.cookie) {
-        var cookie = decodeURIComponent(socket.handshake.headers.cookie);
-        var m = cookie.match(/connect\.sid=(.+)/);
-        if (m) {
-            // If session cookie exists
-            var sessionID = cookieParser.signedCookie(m[1], secret);
-            if (sessionID) {
-                socket._user      = null;
-                socket._secure    = true;
-                socket._sessionID = sessionID;
-                // Get user for session
-                console.log('Connected. Request sessionID.')
-                adapter.getSession(sessionID, function (obj) {
-                    if (obj && obj.passport) {
-                        socket._user = obj.passport.user;
-                    } else {
-                        socket._user = '';
-                        socket.emit('reauthenticate');
-                    }
-                    if (socket._authPending) {
-                        socket._authPending(!!socket._user, true);
-                        delete socket._authPending;
-                    }
-                });
-            } else {
-                socket._user = adapter.config.defaultUser;
+
+    if (socket.conn.request.sessionID) {
+        socket._secure    = true;
+        socket._sessionID = socket.conn.request.sessionID;
+        // Get user for session
+        adapter.getSession(socket.conn.request.sessionID, function (obj) {
+            if (!obj || !obj.passport) {
+                socket._user = '';
+                socket.emit('reauthenticate');
             }
-        } else {
-            socket._user = adapter.config.defaultUser;
-        }
-    } else {
-        socket._user = adapter.config.defaultUser;
+        });
     }
 
     // Enable logging, while some browser is connected
@@ -677,7 +675,7 @@ function socketEvents(socket, user) {
      *      objects
      */
     socket.on('getObject', function (id, callback) {
-        if (updateSession(socket) && checkPermissions(socket, 'getObject', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'getObject', callback, id)) {
             adapter.getForeignObject(id, callback);
         }
     });
@@ -689,31 +687,31 @@ function socketEvents(socket, user) {
     });
 
     socket.on('getObjectView', function (design, search, params, callback) {
-        if (updateSession(socket) && checkPermissions(socket, 'getObjectView', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'getObjectView', callback, search)) {
             adapter.objects.getObjectView(design, search, params, callback);
         }
     });
 
     socket.on('setObject', function (id, obj, callback) {
-        if (updateSession(socket) && checkPermissions(socket, 'setObject', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'setObject', callback, id)) {
             adapter.setForeignObject(id, obj, callback);
         }
     });
 
     socket.on('delObject', function (id, callback) {
-        if (updateSession(socket) && checkPermissions(socket, 'delObject', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'delObject', callback, id)) {
             adapter.delForeignObject(id, callback);
         }
     });
 
     socket.on('extendObject', function (id, obj, callback) {
-        if (updateSession(socket) && checkPermissions(socket, 'extendObject', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'extendObject', callback, id)) {
             adapter.extendForeignObject(id, obj, callback);
         }
     });
 
     socket.on('getHostByIp', function (ip, callback) {
-        if (updateSession(socket) && checkPermissions(socket, 'getHostByIp')) {
+        if (updateSession(socket) && checkPermissions(socket, 'getHostByIp', ip)) {
             adapter.objects.getObjectView('system', 'host', {}, function (err, data) {
                 if (data.rows.length) {
                     for (var i = 0; i < data.rows.length; i++) {
@@ -750,21 +748,22 @@ function socketEvents(socket, user) {
     });
 
     socket.on('getState', function (id, callback) {
-        if (updateSession(socket) && checkPermissions(socket, 'getState', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'getState', callback, id)) {
             if (callback) callback(null, states[id]);
         }
     });
 
     socket.on('setState', function (id, state, callback) {
-        if (updateSession(socket) && checkPermissions(socket, 'setState', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'setState', callback, id)) {
             if (typeof state !== 'object') state = {val: state};
             adapter.setForeignState(id, state, function (err, res) {
                 if (typeof callback === 'function') callback(err, res);
             });
         }
     });
+
     socket.on('delState', function (id, callback) {
-        if (updateSession(socket) && checkPermissions(socket, 'delState', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'delState', callback, id)) {
             adapter.delForeignState(id, callback);
         }
     });
@@ -781,32 +780,32 @@ function socketEvents(socket, user) {
      *      user/group
      */
     socket.on('addUser', function (user, pass, callback) {
-        if (updateSession(socket) || checkPermissions(socket, 'addUser', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'addUser', callback, user)) {
             addUser(user, pass, callback);
         }
     });
 
     socket.on('delUser', function (user, callback) {
-        if (updateSession(socket) || checkPermissions(socket, 'delUser', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'delUser', callback, user)) {
             delUser(user, callback);
         }
     });
 
     socket.on('addGroup', function (group, desc, callback) {
-        if (updateSession(socket) || checkPermissions(socket, 'addGroup', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'addGroup', callback, group)) {
             addGroup(group, desc, callback);
         }
     });
 
     socket.on('delGroup', function (group, callback) {
-        if (updateSession(socket) || checkPermissions(socket, 'delGroup', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'delGroup', callback, group)) {
             delGroup(group, callback);
         }
     });
 
     socket.on('changePassword', function (user, pass, callback) {
         if (updateSession(socket)) {
-            if (user == socket._user || checkPermissions(socket, 'changePassword', callback)) {
+            if (user == socket._user && checkPermissions(socket, 'changePassword', callback, user)) {
                 adapter.setPassword(user, pass, callback);
             }
         }
@@ -814,16 +813,16 @@ function socketEvents(socket, user) {
 
     // HTTP
     socket.on('httpGet', function (url, callback) {
-        if (updateSession(socket) || checkPermissions(socket, 'httpGet', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'httpGet', callback, url)) {
             request(url, callback);
         }
     });
 
     // iobroker commands will be executed on host/controller
     // following response commands are expected: cmdStdout, cmdStderr, cmdExit
-    socket.on('cmdExec', function (host, id, cmd) {
-        if (updateSession(socket) || checkPermissions(socket, 'cmdExec', callback)) {
-            console.log('cmdExec on ' + host + '(' + id + ': ' + cmd);
+    socket.on('cmdExec', function (host, id, cmd, callback) {
+        if (updateSession(socket) && checkPermissions(socket, 'cmdExec', callback, cmd)) {
+            console.log('cmdExec on ' + host + '(' + id + '): ' + cmd);
             // remember socket for this ID.
             cmdSessions[id] = {socket: socket};
             adapter.sendToHost(host, 'cmdExec', {data: cmd, id: id});
@@ -831,23 +830,23 @@ function socketEvents(socket, user) {
     });
 
     socket.on('readDir', function (_adapter, path, callback) {
-        if (updateSession(socket) || checkPermissions(socket, 'readDir', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'readDir', callback, path)) {
             adapter.readDir(_adapter, path, callback);
         }
     });
 
     socket.on('writeFile', function (_adapter, filename, data, callback) {
-        if (updateSession(socket) || checkPermissions(socket, 'writeFile', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'writeFile', callback, filename)) {
             adapter.writeFile(_adapter, filename, data, null, callback);
         }
     });
     socket.on('readFile', function (_adapter, filename, callback) {
-        if (updateSession(socket) || checkPermissions(socket, 'readFile', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'readFile', callback, filename)) {
             adapter.readFile(_adapter, filename, null, callback);
         }
     });
     socket.on('sendTo', function (adapterInstance, command, message, callback) {
-        if (updateSession(socket) || checkPermissions(socket, 'sendTo', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'sendTo', callback, command)) {
             adapter.sendTo(adapterInstance, command, message, function (res) {
                 if (callback) {
                     setTimeout(function () {
@@ -859,7 +858,7 @@ function socketEvents(socket, user) {
     });
 
     socket.on('sendToHost', function (host, command, message, callback) {
-        if (updateSession(socket) || checkPermissions(socket, 'sendToHost', callback)) {
+        if (updateSession(socket) && checkPermissions(socket, 'sendToHost', callback, command)) {
             adapter.sendToHost(host, command, message, function (res) {
                 if (callback) {
                     setTimeout(function () {
@@ -883,7 +882,12 @@ function socketEvents(socket, user) {
         if (updateSession(socket)) {
             if (callback) callback(commandsPermissions);
         }
-    })
+    });
+    socket.on('getUserPermissions', function (callback) {
+        if (updateSession(socket) && checkPermissions(socket, 'getUserPermissions', callback)) {
+            if (callback) callback(null, socket._acl);
+        }
+    });
 }
 
 function onAuthorizeSuccess(data, accept) {

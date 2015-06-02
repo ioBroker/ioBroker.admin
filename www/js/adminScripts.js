@@ -252,7 +252,12 @@ function Scripts(main) {
                 if (newCommon.source !== undefined) obj.common.source = newCommon.source;
 
                 if (_obj && _obj.common && newCommon.name == _obj.common.name && (newCommon.engineType === undefined || newCommon.engineType == _obj.common.engineType)) {
-                    that.main.socket.emit('extendObject', id, obj);
+                    that.main.socket.emit('extendObject', id, obj, function (err) {
+                        if (err) {
+                            that.main.showError(err);
+                            that.init(true);
+                        }
+                    });
                 } else {
                     var prefix;
 
@@ -262,7 +267,12 @@ function Scripts(main) {
                     prefix = 'script.' + (parts[1] || parts[0]) + '.';
 
                     if (_obj) {
-                        that.main.socket.emit('delObject', _obj._id);
+                        that.main.socket.emit('delObject', _obj._id, function (err) {
+                            if (err) {
+                                that.main.showError(err);
+                                that.init(true);
+                            }
+                        });
                         if (obj.common.engine  !== undefined) _obj.common.engine  = obj.common.engine;
                         if (obj.common.enabled !== undefined) _obj.common.enabled = obj.common.enabled;
                         if (obj.common.source  !== undefined) _obj.common.source  = obj.common.source;
@@ -275,7 +285,12 @@ function Scripts(main) {
                     _obj.common.name = newCommon.name;
 
                     _obj._id = prefix + newCommon.name.replace(/ /g, '_').replace(/\./g, '_');
-                    that.main.socket.emit('setObject', _obj._id, _obj);
+                    that.main.socket.emit('setObject', _obj._id, _obj, function (err) {
+                        if (err) {
+                            that.main.showError(err);
+                            that.init(true);
+                        }
+                    });
                 }
             }, 0);
         });

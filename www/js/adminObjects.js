@@ -78,8 +78,8 @@ function Objects(main) {
             that.$grid.height(y - 100).width(x - 20);
 
             var settings = {
-                objects: main.objects,
-                states: main.states,
+                objects:  main.objects,
+                states:   main.states,
                 noDialog: true,
                 texts: {
                     select:   _('Select'),
@@ -122,7 +122,11 @@ function Objects(main) {
                         },
                         click: function (id) {
                             // Delete all children
-                            if (id) that.main.delObject(that.$grid, id);
+                            if (id) {
+                                that.main.delObject(that.$grid, id, function (err) {
+                                    if (err) that.main.showError(err);
+                                });
+                            }
                         },
                         width: 26,
                         height: 20
@@ -230,7 +234,7 @@ function Objects(main) {
 
     // ----------------------------- HISTORY ------------------------------------------------
     this.checkHistory = function () {
-        if (main.objects['system.adapter.history.0'] && main.objects['system.adapter.history.0'].common.enabled) {
+        if (main.objects && main.objects['system.adapter.history.0'] && main.objects['system.adapter.history.0'].common.enabled) {
             if (this.historyEnabled !== null && this.historyEnabled != true) {
                 this.historyEnabled = true;
                 // update history buttons
@@ -408,10 +412,14 @@ function Objects(main) {
         if (id) {
             this.$dialogHistory.dialog('option', 'title', _('History of %s states', ids.length));
 
-            main.socket.emit('setObject', id, this.main.objects[id], function () {
-                setTimeout(function () {
-                    that.setHistory(ids, callback);
-                }, 50);
+            that.main.socket.emit('setObject', id, this.main.objects[id], function (err) {
+                if (err) {
+                    that.main.showMessage(_(err));
+                } else {
+                    setTimeout(function () {
+                        that.setHistory(ids, callback);
+                    }, 50);
+                }
             });
         } else {
             if (callback) callback();
