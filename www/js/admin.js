@@ -248,15 +248,15 @@ $(document).ready(function () {
         states:     new States(main),
         objects:    new Objects(main),
         scripts:    new Scripts(main),
-        hosts:      new Hosts(main)
+        hosts:      new Hosts(main),
+        users:      new Users(main),
+        groups:     new Groups(main)
     };
     main.instances = tabs.instances.list;
     main.tabs      = tabs;
 
     var enums =                 [];
     var scripts =               [];
-    var users =                 [];
-    var groups =                [];
     var children =              {};
     var updateTimers =          {};
     var enumCurrentParent =     '';
@@ -279,15 +279,11 @@ $(document).ready(function () {
     var $dialogCommand =        $('#dialog-command');
     var $dialogEnumMembers =    $('#dialog-enum-members');
     var $dialogEnum =           $('#dialog-enum');
-    var $dialogUser =           $('#dialog-user');
-    var $dialogGroup =          $('#dialog-group');
     var $dialogLicense =        $('#dialog-license');
     var $dialogSystem =         $('#dialog-system');
     var $dialogMessage =        $('#dialog-message');
     var $dialogConfirm =        $('#dialog-confirm');
 
-    var $gridUsers =            $('#grid-users');
-    var $gridGroups =           $('#grid-groups');
     var $gridEnums =            $('#grid-enums');
     var $gridEnumMembers =      $('#grid-enum-members');
     var $gridRepo =             $('#grid-repos');
@@ -345,11 +341,11 @@ $(document).ready(function () {
                     break;
 
                 case '#tab-users':
-                    initUsers();
+                    tabs.users.init();
                     break;
 
                 case '#tab-groups':
-                    initGroups();
+                    tabs.groups.init();
                     break;
 
                 case '#tab-enums':
@@ -365,8 +361,10 @@ $(document).ready(function () {
             $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
 
             $('.ui-tabs-nav')
-                .append('<button class="menu-button" id="button-logout">' + _('Logout') + '</button>')
-                .append('<button class="menu-button" id="button-system">' + _('System') + '</button>');
+                .append('<button class="menu-button" id="button-logout">' + _('Logout') + '</button>' +
+                        '<button class="menu-button" id="button-system">' + _('System') + '</button>' +
+                        '<div id="current-user" class="menu-button" style="padding-right: 10px; padding-top: 5px; height: 16px"></div>');
+
             $('#button-logout').button().click(function () {
                 window.location.href = '/logout/';
             });
@@ -805,331 +803,6 @@ $(document).ready(function () {
         $dialogEnumMembers.trigger('resize');
     }
 
-    function prepareUsers() {
-        var userLastSelected;
-        $gridUsers.jqGrid({
-            datatype: 'local',
-            colNames: ['id', _('name'), _('enabled'), _('groups')],
-            colModel: [
-                {name: '_id',       index: '_id', width: 250},
-                {name: 'name',      index: 'name',    editable: false, width: 150},
-                {name: 'enabled',   index: 'enabled', editable: false, width: 70, edittype: 'checkbox', editoptions: {value: "true:false"}},
-                {name: 'groups',    index: 'groups',  editable: false, width: 400}
-            ],
-            pager: $('#pager-users'),
-            rowNum: 100,
-            rowList: [20, 50, 100],
-            sortname: "id",
-            sortorder: "desc",
-            viewrecords: true,
-            caption: _('ioBroker users'),
-            ignoreCase: true,
-            onSelectRow: function (id, e) {
-                if (id && id !== userLastSelected) {
-                    $gridUsers.restoreRow(userLastSelected);
-                    userLastSelected = id;
-                }
-
-                id = $('tr[id="' + userLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
-
-                if (!users[id] || !users[id].common || !users[id].common.dontDelete) {
-                    $('#del-user').removeClass('ui-state-disabled');
-                }
-                $('#edit-user').removeClass('ui-state-disabled');
-
-                var rowData = $gridUsers.jqGrid('getRowData', id);
-                rowData.ack = false;
-                rowData.from = '';
-                $gridUsers.jqGrid('setRowData', id, rowData);
-            },
-            gridComplete: function () {
-                $('#del-user').addClass('ui-state-disabled');
-                $('#edit-user').addClass('ui-state-disabled');
-                $(".user-groups-edit").multiselect({
-                            selectedList: 4,
-                    close: function () {
-                        synchronizeUser($(this).attr('data-id'), $(this).val());
-                    },
-                    checkAllText:     _('Check all'),
-                    uncheckAllText:   _('Uncheck All'),
-                    noneSelectedText: _('Select options')
-                });
-                $(".user-enabled-edit").change(function () {
-                    var obj = {common: {enabled: $(this).is(':checked')}};
-                    var id  = $(this).attr('data-id');
-                    main.socket.emit('extendObject', id, obj);
-                });
-            }
-        }).jqGrid('filterToolbar', {
-            defaultSearch: 'cn',
-            autosearch:    true,
-            searchOnEnter: false,
-            enableClear:   false,
-            afterSearch:   function () {
-                //initUserButtons();
-            }
-        }).navGrid('#pager-users', {
-            search:  false,
-            edit:    false,
-            add:     false,
-            del:     false,
-            refresh: false
-        }).jqGrid('navButtonAdd', '#pager-users', {
-            caption: '',
-            buttonicon: 'ui-icon-trash',
-            onClickButton: function () {
-                var objSelected = $gridUsers.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-objects"][id$="_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                main.confirmMessage(_('Are you sure?'), null, 'help', function (result) {
-                    if (result) {
-                        main.socket.emit('delUser', id.replace('system.user.', ''), function (err) {
-                            if (err) {
-                                main.showMessage(_('Cannot delete user: ') + err, '', 'alert');
-                            } else {
-                                setTimeout(function () {
-                                    delUser(id);
-                                }, 0);
-                            }
-                        });
-
-                    }
-                });
-            },
-            position: 'first',
-            id: 'del-user',
-            title: _('delete user'),
-            cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-users', {
-            caption: '',
-            buttonicon: 'ui-icon-pencil',
-            onClickButton: function () {
-                var objSelected = $gridUsers.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-scripts"][id$="_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                if (objSelected) {
-                    var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                    editUser(id);
-                } else {
-                    main.showMessage(_('Invalid object %s', objSelected), '', 'alert');
-                }
-            },
-            position: 'first',
-            id: 'edit-user',
-            title: _('edit user'),
-            cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-users', {
-            caption: '',
-            buttonicon: 'ui-icon-plus',
-            onClickButton: function () {
-                editUser();
-            },
-            position: 'first',
-            id: 'add-user',
-            title: _('new user'),
-            cursor: 'pointer'
-        });
-
-        $dialogUser.dialog({
-            autoOpen: false,
-            modal:    true,
-            width:    340,
-            height:   220,
-            buttons:  [
-                {
-                    text: _('Save'),
-                    click: saveUser
-                },
-                {
-                    text: _('Cancel'),
-                    click: function () {
-                        $dialogUser.dialog('close');
-
-                    }
-                }
-            ]
-        });
-        $('#edit-user-name').keydown(function (event) {
-            if (event.which == 13) $('#edit-user-pass').focus();
-        });
-        $('#edit-user-pass').keydown(function (event) {
-            if (event.which == 13) $('#edit-user-passconf').focus();
-        });
-        $('#edit-user-passconf').keydown(function (event) {
-            if (event.which == 13) saveUser();
-        });
-    }
-
-    function prepareGroups() {
-        var groupLastSelected;
-        $gridGroups.jqGrid({
-            datatype: 'local',
-            colNames: ['id', _('name'), _('desc'), _('users')],
-            colModel: [
-                {name: '_id',         index: '_id',         width: 250},
-                {name: 'name',        index: 'name',        editable: false, width: 150},
-                {name: 'description', index: 'description', editable: false, width: 200},
-                {name: 'users',       index: 'users',       editable: false, width: 400}
-            ],
-            pager: $('#pager-groups'),
-            rowNum: 100,
-            rowList: [20, 50, 100],
-            sortname: "id",
-            sortorder: "desc",
-            viewrecords: true,
-            caption: _('ioBroker groups'),
-            onSelectRow: function (id, e) {
-                if (id && id !== groupLastSelected) {
-                    $gridGroups.restoreRow(groupLastSelected);
-                    groupLastSelected = id;
-                }
-
-                id = $('tr[id="' + groupLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
-
-                if (!groups[id] || !groups[id].common || !groups[id].common.dontDelete) {
-                    $('#del-group').removeClass('ui-state-disabled');
-                }
-                $('#edit-group').removeClass('ui-state-disabled');
-
-                var rowData = $gridGroups.jqGrid('getRowData', id);
-                rowData.ack = false;
-                rowData.from = '';
-                $gridGroups.jqGrid('setRowData', id, rowData);
-            },
-            gridComplete: function () {
-                $('#del-group').addClass('ui-state-disabled');
-                $('#edit-group').addClass('ui-state-disabled');
-                $(".group-users-edit").multiselect({
-                    selectedList: 4,
-                    close: function () {
-                        var obj = {common: {members: $(this).val()}};
-                        var id  = $(this).attr('data-id');
-                        main.socket.emit('extendObject', id, obj, function (err, obj) {
-                            if (err) {
-                                // Cannot modify
-                                main.showMessage(_('Cannot change group'), '', 'alert');
-                            }
-                        });
-                    },
-                    checkAllText:     _('Check all'),
-                    uncheckAllText:   _('Uncheck All'),
-                    noneSelectedText: _('Select options')
-                });
-            }
-        }).jqGrid('filterToolbar', {
-            defaultSearch: 'cn',
-            autosearch:    true,
-            searchOnEnter: false,
-            enableClear:   false,
-            afterSearch:   function () {
-                //initGroupButtons();
-            }
-        }).navGrid('#pager-groups', {
-            search:  false,
-            edit:    false,
-            add:     false,
-            del:     false,
-            refresh: false
-        }).jqGrid('navButtonAdd', '#pager-groups', {
-            caption: '',
-            buttonicon: 'ui-icon-trash',
-            onClickButton: function () {
-                var objSelected = $gridGroups.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-objects"][id$="_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                main.confirmMessage(_('Are you sure?'), null, 'help', function (result) {
-                    if (result) {
-                        main.socket.emit('delGroup', id.replace("system.group.", ""), function (err) {
-                            if (err) {
-                                main.showMessage(_('Cannot delete group: %s', err), '', 'alert');
-                            }
-                        });
-                    }
-                });
-            },
-            position: 'first',
-            id: 'del-group',
-            title: _('delete group'),
-            cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-groups', {
-            caption: '',
-            buttonicon: 'ui-icon-pencil',
-            onClickButton: function () {
-                var objSelected = $gridGroups.jqGrid('getGridParam', 'selrow');
-                if (!objSelected) {
-                    $('[id^="grid-scripts"][id$="_t"]').each(function () {
-                        if ($(this).jqGrid('getGridParam', 'selrow')) {
-                            objSelected = $(this).jqGrid('getGridParam', 'selrow');
-                        }
-                    });
-                }
-                if (objSelected) {
-                    var id = $('tr[id="' + objSelected + '"]').find('td[aria-describedby$="_id"]').html();
-                    editGroup(id);
-                } else {
-                    main.showMessage(_('Invalid object %s', objSelected), '', 'alert');
-                }
-            },
-            position: 'first',
-            id: 'edit-group',
-            title: _('edit group'),
-            cursor: 'pointer'
-        }).jqGrid('navButtonAdd', '#pager-groups', {
-            caption: '',
-            buttonicon: 'ui-icon-plus',
-            onClickButton: function () {
-                editGroup();
-            },
-            position: 'first',
-            id: 'add-group',
-            title: _('new group'),
-            cursor: 'pointer'
-        });
-
-        $dialogGroup.dialog({
-            autoOpen: false,
-            modal:    true,
-            width:    430,
-            height:   205,
-            buttons:  [
-                {
-                    text: _('Save'),
-                    click: saveGroup
-                },
-                {
-                    text: _('Cancel'),
-                    click: function () {
-                        $dialogGroup.dialog('close');
-
-                    }
-                }
-            ]
-        });
-        $('#edit-group-name').keydown(function (event) {
-            if (event.which == 13) $('#edit-group-desc').focus();
-        });
-        $('#edit-group-desc').keydown(function (event) {
-            if (event.which == 13) saveGroup();
-        });
-    }
-
     function prepareRepos() {
         $gridRepo.jqGrid({
             datatype: 'local',
@@ -1233,6 +906,9 @@ $(document).ready(function () {
                 $('.cert-ok-submit[data-cert-id="' + id + '"]').show();
                 $('.cert-cancel-submit[data-cert-id="' + id + '"]').show();
                 $gridCerts.jqGrid('editRow', rowid, {"url": "clientArray"});
+            },
+            loadComplete: function () {
+                initCertButtons();
             },
             viewrecords: false,
             pgbuttons: false,
@@ -1412,6 +1088,7 @@ $(document).ready(function () {
 
         $gridCerts.trigger('reloadGrid');
     }
+
     function initCertButtons() {
         $('.cert-edit-submit').unbind('click').button({
             icons: {primary: 'ui-icon-pencil'},
@@ -1462,205 +1139,6 @@ $(document).ready(function () {
         // todo
     }
 
-    // ----------------------------- Users show and Edit ------------------------------------------------
-    function initUsers(update) {
-
-        if (!main.objectsLoaded) {
-            setTimeout(initUsers, 500);
-            return;
-        }
-
-        if (typeof $gridUsers != 'undefined' && (update || !$gridUsers[0]._isInited)) {
-            $gridUsers[0]._isInited = true;
-            $gridUsers.jqGrid('clearGridData');
-            for (var i = 0; i < users.length; i++) {
-                var obj = main.objects[users[i]];
-                var select = '<select class="user-groups-edit" multiple="multiple" data-id="' + users[i] + '">';
-                for (var j = 0; j < groups.length; j++) {
-                    var name = groups[j].substring('system.group.'.length);
-                    name = name.substring(0, 1).toUpperCase() + name.substring(1);
-                    select += '<option value="' + groups[j] + '"';
-                    if (main.objects[groups[j]].common && main.objects[groups[j]].common.members && main.objects[groups[j]].common.members.indexOf(users[i]) != -1) select += ' selected';
-                    select += '>' + name + '</option>';
-                }
-
-                $gridUsers.jqGrid('addRowData', 'user_' + users[i].replace(/ /g, '_'), {
-                    _id:     obj._id,
-                    name:    obj.common ? obj.common.name : '',
-                    enabled: '<input class="user-enabled-edit" type="checkbox" data-id="' + users[i] + '" ' + (obj.common && obj.common.enabled ? 'checked' : '') + '/>',
-                    groups:  select
-                });
-            }
-            $gridUsers.trigger('reloadGrid');
-        }
-    }
-    function editUser(id) {
-        if (id) {
-            var obj = main.objects[id];
-            $dialogUser.dialog('option', 'title', id);
-            $('#edit-user-id').val(obj._id);
-            $('#edit-user-name').val(obj.common.name);
-            $('#edit-user-name').prop('disabled', true);
-            $('#edit-user-pass').val('__pass_not_set__');
-            $('#edit-user-passconf').val('__pass_not_set__');
-            $dialogUser.dialog('open');
-        } else {
-            $dialogUser.dialog('option', 'title', 'new user');
-            $('#edit-user-id').val('');
-            $('#edit-user-name').val('');
-            $('#edit-user-name').prop('disabled', false);
-            $('#edit-user-pass').val('');
-            $('#edit-user-passconf').val('');
-            $dialogUser.dialog('open');
-        }
-    }
-    function saveUser() {
-        var pass = $('#edit-user-pass').val();
-        var passconf = $('#edit-user-passconf').val();
-
-        if (pass != passconf) {
-            main.showMessage(_('Password and confirmation are not equal!'), '', 'notice');
-            return;
-        }
-        var id = $('#edit-user-id').val();
-        var user = $('#edit-user-name').val();
-
-        if (!id) {
-            main.socket.emit('addUser', user, pass, function (err) {
-                if (err) {
-                    main.showMessage(_('Cannot set password: ') + err, '', 'alert');
-                } else {
-                    $dialogUser.dialog('close');
-                    setTimeout(function () {
-                        initUsers(true);
-                    }, 0);
-                }
-            });
-        } else {
-            // If password changed
-            if (pass != '__pass_not_set__') {
-                main.socket.emit('changePassword', user, pass, function (err) {
-                    if (err) {
-                        main.showMessage(_('Cannot set password: ') + err, '', 'alert');
-                    } else {
-                        $dialogUser.dialog('close');
-                    }
-                });
-            }
-        }
-    }
-    function synchronizeUser(userId, userGroups) {
-        var obj;
-        userGroups = userGroups || [];
-        for (var i = 0; i < groups.length; i++) {
-            // If user has no group, but group has user => delete user from group
-            if (userGroups.indexOf(groups[i]) == -1 &&
-                main.objects[groups[i]].common.members && main.objects[groups[i]].common.members.indexOf(userId) != -1) {
-                main.objects[groups[i]].common.members.splice(main.objects[groups[i]].common.members.indexOf(userId), 1);
-                obj = {common: {members: main.objects[groups[i]].common.members}};
-                main.socket.emit('extendObject', groups[i], obj);
-            }
-            if (userGroups.indexOf(groups[i]) != -1 &&
-                (!main.objects[groups[i]].common.members || main.objects[groups[i]].common.members.indexOf(userId) == -1)) {
-                main.objects[groups[i]].common.members = main.objects[groups[i]].common.members || [];
-                main.objects[groups[i]].common.members.push(userId);
-                obj = {common: {members: main.objects[groups[i]].common.members}};
-                main.socket.emit('extendObject', groups[i], obj);
-            }
-        }
-    }
-    function delUser(id) {
-        for (var i = 0; i < groups.length; i++) {
-            // If user has no group, but group has user => delete user from group
-            if (main.objects[groups[i]].common.members && main.objects[groups[i]].common.members.indexOf(id) != -1) {
-                main.objects[groups[i]].common.members.splice(main.objects[groups[i]].common.members.indexOf(id), 1);
-                main.socket.emit('extendObject', groups[i], {
-                    common: {
-                        members: main.objects[groups[i]].common.members
-                    }
-                });
-            }
-        }
-    }
-
-    // ----------------------------- Groups show and Edit ------------------------------------------------
-    function initGroups(update) {
-
-        if (!main.objectsLoaded) {
-            setTimeout(initGroups, 500);
-            return;
-        }
-
-        if (typeof $gridGroups != 'undefined' && (update || !$gridGroups[0]._isInited)) {
-            $gridGroups[0]._isInited = true;
-            $gridGroups.jqGrid('clearGridData');
-            for (var i = 0; i < groups.length; i++) {
-                var obj = main.objects[groups[i]];
-                var select = '<select class="group-users-edit" multiple="multiple" data-id="' + groups[i] + '">';
-                for (var j = 0; j < users.length; j++) {
-                    var name = users[j].substring('system.user.'.length);
-                    select += '<option value="' + users[j] + '"';
-                    if (obj.common && obj.common.members && obj.common.members.indexOf(users[j]) != -1) select += ' selected';
-                    select += '>' + name + '</option>';
-                }
-
-                $gridGroups.jqGrid('addRowData', 'group_' + groups[i].replace(/ /g, '_'), {
-                    _id:         obj._id,
-                    name:        obj.common ? obj.common.name : '',
-                    description: obj.common ? obj.common.desc : '',
-                    users:       select
-                });
-            }
-            $gridGroups.trigger('reloadGrid');
-        }
-    }
-    function editGroup(id) {
-        if (id) {
-            var obj = main.objects[id];
-            $dialogGroup.dialog('option', 'title', id);
-            $('#edit-group-id').val(obj._id);
-            $('#edit-group-name').val(obj.common.name);
-            $('#edit-group-name').prop('disabled', true);
-            $('#edit-group-desc').val(obj.common.desc);
-            $dialogGroup.dialog('open');
-        } else {
-            $dialogGroup.dialog('option', 'title', 'new group');
-            $('#edit-group-id').val('');
-            $('#edit-group-name').val('');
-            $('#edit-group-name').prop('disabled', false);
-            $('#edit-group-desc').val('');
-            $dialogGroup.dialog('open');
-        }
-    }
-    function saveGroup() {
-        var id    = $('#edit-group-id').val();
-        var group = $('#edit-group-name').val();
-        var desc  = $('#edit-group-desc').val();
-
-        if (!id) {
-            main.socket.emit('addGroup', group, desc, function (err) {
-                if (err) {
-                    main.showMessage(_('Cannot create group: ') + err, '', 'alert');
-                } else {
-                    $dialogGroup.dialog('close');
-                    setTimeout(function () {
-                        initGroups(true);
-                    }, 0);
-                }
-            });
-        } else {
-            var obj = {common: {desc: desc}};
-            // If description changed
-            main.socket.emit('extendObject', id, obj, function (err, res) {
-                if (err) {
-                    main.showMessage(_('Cannot change group: ') + err, '', 'alert');
-                } else {
-                    $dialogGroup.dialog('close');
-                }
-            });
-        }
-    }
-
     // ----------------------------- Objects show and Edit ------------------------------------------------
     function getObjects(callback) {
         main.socket.emit('getObjects', function (err, res) {
@@ -1675,8 +1153,8 @@ $(document).ready(function () {
                     if (obj.type === 'instance') main.instances.push(id);
                     if (obj.type === 'enum')     enums.push(id);
                     if (obj.type === 'script')   tabs.scripts.list.push(id);
-                    if (obj.type === 'user')     users.push(id);
-                    if (obj.type === 'group')    groups.push(id);
+                    if (obj.type === 'user')     tabs.users.list.push(id);
+                    if (obj.type === 'group')    tabs.groups.list.push(id);
                     if (obj.type === 'adapter')  tabs.adapters.list.push(id);
                     if (obj.type === 'enum')     enums.push(id);
                     if (obj.type === 'host') {
@@ -2171,6 +1649,10 @@ $(document).ready(function () {
         console.log(error);
     });
 
+    main.socket.on('permissionError', function (err) {
+        window.alert('permissionError: ' + JSON.stringify(err));
+    });
+
     function stateChange(id, state) {
         var rowData;
         id = id ? id.replace(/ /g, '_') : '';
@@ -2222,8 +1704,10 @@ $(document).ready(function () {
         addEventMessage(id, null, null, obj);
 
         tabs.objects.objectChange(id, obj);
+
         if (main.selectId) main.selectId.selectId('object', id, obj);
-        if ($gridEnums)    $gridEnums.selectId('object', id, obj);
+
+        if ($gridEnums) $gridEnums.selectId('object', id, obj);
 
         // If system config updated
         if (id == 'system.config') {
@@ -2235,128 +1719,38 @@ $(document).ready(function () {
             main.systemConfig = obj;
         }
 
-        // Update Instance Table
-        if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
-            if (obj) {
-                if (main.instances.indexOf(id) == -1) main.instances.push(id);
+        //tabs.adapters.objectChange(id, obj);
+        tabs.instances.objectChange(id, obj);
+
+        if (id.match(/^system\.adapter\.node-red\.[0-9]+$/)) {
+            if (obj && obj.common && obj.common.enabled) {
+                showNodeRed(obj, 7000);
             } else {
-                i = main.instances.indexOf(id);
-                if (i != -1) main.instances.splice(i, 1);
+                $("#a-tab-node-red").hide();
+                $("#tab-node-red").hide();
             }
-            if (id.match(/^system\.adapter\.history\.[0-9]+$/)) {
-                // Update all states if history enabled or disabled
-                tabs.objects.reinit();
-            }
+        }
 
-            if (id.match(/^system\.adapter\.node-red\.[0-9]+$/)) {
-                if (obj && obj.common && obj.common.enabled) {
-                    showNodeRed(obj, 7000);
-                } else {
-                    $("#a-tab-node-red").hide();
-                    $("#tab-node-red").hide();
-                }
-            }
+        if (id.match(/^system\.adapter\.history\.[0-9]+$/)) {
+            // Update all states if history enabled or disabled
+            tabs.objects.reinit();
+        }
 
+        if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
             // Disable scripts tab if no one script engine instance found
             var engines = tabs.scripts.fillEngines();
             $('#tabs').tabs('option', 'disabled', (engines && engines.length) ? [] : [4]);
-
-            tabs.instances.objectChange(id, obj);
         }
 
-        // Update Adapter Table
-        /*if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+$/)) {
-         if (obj) {
-         if (tabs.adapters.list.indexOf(id) == -1) tabs.adapters.list.push(id);
-         } else {
-         var j = tabs.adapters.list.indexOf(id);
-         if (j != -1) {
-         tabs.adapters.list.splice(j, 1);
-         }
-         }
-         if (typeof $gridAdapter != 'undefined' && $gridAdapter[0]._isInited) {
-         tabs.adapters.init(true);
-         }
-         }*/
-        // Update users
-        if (id.match(/^system\.user\./)) {
-            if (obj) {
-                if (users.indexOf(id) == -1) users.push(id);
-            } else {
-                var k = users.indexOf(id);
-                if (k != -1) users.splice(k, 1);
-            }
-            if (updateTimers.initUsersGroups) {
-                clearTimeout(updateTimers.initUsersGroups);
-            }
-            updateTimers.initUsersGroups = setTimeout(function () {
-                updateTimers.initUsersGroups = null;
-                initUsers(true);
-                initGroups(true);
-            }, 200);
-        }
+        tabs.hosts.objectChange(id, obj);
 
-        // Update hosts
-        if (id.match(/^system\.host\.[-\w]+$/)) {
-            var found = false;
-            for (i = 0; i < hosts.length; i++) {
-                if (hosts[i].id == id) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (obj) {
-                if (!found) hosts.push({id: id, address: obj.common.address ? obj.common.address[0]: '', name: obj.common.name});
-            } else {
-                if (found) hosts.splice(i, 1);
-            }
-            if (updateTimers.initHosts) {
-                clearTimeout(updateTimers.initHosts);
-            }
-            updateTimers.initHosts = setTimeout(function () {
-                updateTimers.initHosts = null;
-                tabs.hosts.init(true);
-                tabs.hosts.initList(true);
-            }, 200);
-        }
-
-        // Update scripts
-        if (id.match(/^script\./)) {
-            if (obj) {
-                if (tabs.scripts.list.indexOf(id) == -1) tabs.scripts.list.push(id);
-            } else {
-                j = tabs.scripts.list.indexOf(id);
-                if (j != -1) tabs.scripts.list.splice(j, 1);
-            }
-
-            if (updateTimers.initScripts) {
-                clearTimeout(updateTimers.initScripts);
-            }
-            updateTimers.initScripts = setTimeout(function () {
-                updateTimers.initScripts = null;
-                tabs.scripts.init(true);
-            }, 200);
-        }
+        tabs.scripts.objectChange(id, obj);
 
         // Update groups
-        if (id.match(/^system\.group\./)) {
-            if (obj) {
-                if (groups.indexOf(id) == -1) groups.push(id);
-            } else {
-                j = groups.indexOf(id);
-                if (j != -1) groups.splice(j, 1);
-            }
+        tabs.groups.objectChange(id, obj);
 
-            if (updateTimers.initUsersGroups) {
-                clearTimeout(updateTimers.initUsersGroups);
-            }
-            updateTimers.initUsersGroups = setTimeout(function () {
-                updateTimers.initUsersGroups = null;
-                initGroups(true);
-                initUsers(true);
-            }, 200);
-        }
+        // Update users
+        tabs.users.objectChange(id, obj);
 
         //Update enums
         if (id.match(/^enum\./)) {
@@ -2416,8 +1810,9 @@ $(document).ready(function () {
         if (firstConnect) {
             firstConnect = false;
 
-            main.socket.emit('authEnabled', function (auth) {
+            main.socket.emit('authEnabled', function (auth, user) {
                 if (!auth) $('#button-logout').remove();
+                $('#current-user').html(user ? user[0].toUpperCase() + user.substring(1).toLowerCase() : '');
             });
 
             // Read system configuration
@@ -2493,15 +1888,6 @@ $(document).ready(function () {
                                             $('#license_agree').button('disable');
                                         }
                                     });
-                                    $('#edit-user-name').keydown(function (event) {
-                                        if (event.which == 13) $('#edit-user-pass').focus();
-                                    });
-                                    $('#edit-user-pass').keydown(function (event) {
-                                        if (event.which == 13) $('#edit-user-passconf').focus();
-                                    });
-                                    $('#edit-user-passconf').keydown(function (event) {
-                                        if (event.which == 13) saveUser();
-                                    });
                                 }
                             } else {
                                 main.systemConfig = {
@@ -2534,8 +1920,8 @@ $(document).ready(function () {
                             tabs.states.prepare();
                             tabs.adapters.prepare();
                             tabs.instances.prepare();
-                            prepareUsers();
-                            prepareGroups();
+                            tabs.users.prepare();
+                            tabs.groups.prepare();
                             tabs.scripts.prepare();
                             tabs.objects.prepareHistory();
                             prepareRepos();
@@ -2543,8 +1929,6 @@ $(document).ready(function () {
                             resizeGrids();
 
                             $("#load_grid-enums").show();
-                            $("#load_grid-users").show();
-                            $("#load_grid-groups").show();
 
                             // bind "clear events" button
                             $('#event-clear').button({
@@ -2580,7 +1964,6 @@ $(document).ready(function () {
     main.socket.on('reauthenticate', function () {
         location.reload();
     });
-
     function resizeGrids() {
         var x = $(window).width();
         var y = $(window).height();
@@ -2598,12 +1981,8 @@ $(document).ready(function () {
         tabs.objects.resize(x, y);
         tabs.scripts.resize(x, y);
         tabs.hosts.resize(x, y);
-        $gridUsers.setGridHeight(y - 150).setGridWidth(x - 20);
-        $gridGroups.setGridHeight(y - 150).setGridWidth(x - 20);
-        $('.subgrid-level-1').setGridWidth(x - 67);
-        $('.subgrid-level-2').setGridWidth(x - 94);
-        $('.subgrid-level-3').setGridWidth(x - 121);
-        $('.subgrid-level-4').setGridWidth(x - 148);
+        tabs.users.resize(x, y);
+        tabs.groups.resize(x, y);
         $('#iframe-node-red').height(y - 55);
     }
     function navigation() {

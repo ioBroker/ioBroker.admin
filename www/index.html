@@ -41,6 +41,7 @@
     <script type="text/javascript" src="js/adminScripts.js"></script>
     <script type="text/javascript" src="js/adminStates.js"></script>
     <script type="text/javascript" src="js/adminUsers.js"></script>
+    <script type="text/javascript" src="js/adminGroups.js"></script>
     <script type="text/javascript" src="js/admin.js"></script>
 </head>
 <body>
@@ -350,14 +351,16 @@
     <div id="dialog-group" style="display:none">
         <table>
             <tr>
-                <td>name</td>
+                <td class="translate">name</td>
                 <td><input size="15" id="edit-group-name"></td>
             </tr>
             <tr>
-                <td>description</td>
+                <td class="translate">description</td>
                 <td><input size="40" id="edit-group-desc"></td>
             </tr>
-        </table><br/>
+        </table>
+        <table id="edit-group-table"></table>
+        <br/>
         <input type="hidden" id="edit-group-id">
     </div>
     <div id="dialog-select-member" style="display:none">

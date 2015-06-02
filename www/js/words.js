@@ -70,7 +70,7 @@ systemDictionary = {
     "new user":             {"en": "new user",              "de": "Neuen Benutzer anlegen", "ru": "Новый пользователь"},
     "delete group":         {"en": "delete group",          "de": "Gruppe löschen",         "ru": "Удалить группу"},
     "edit group":           {"en": "edit group",            "de": "Gruppe bearbtein",       "ru": "Редактироветь группу"},
-    "new group":            {"en": "new group",             "de": "Neue Gruppe anlegen",    "ru": "Новый группу"},
+    "new group":            {"en": "new group",             "de": "Neue Gruppe anlegen",    "ru": "Новая группа"},
     "delete script":        {"en": "delete script",         "de": "Script löschen",         "ru": "Удалить скрипт"},
     "edit script":          {"en": "edit script",           "de": "Script bearbeiten",      "ru": "Редактироветь скрипт"},
     "new script":           {"en": "new script",            "de": "Neues Script",           "ru": "Новый скрипт"},
@@ -291,6 +291,24 @@ systemDictionary = {
     "Installed from group": {"en": "Installed from group",  "de": "Installiert aus der Gruppe", "ru": "Установенно из группы"},
     "weather":              {"en": "Weather",               "de": "Wetter",                 "ru": "Погода"},
     "storage":              {"en": "Storage",               "de": "Aufbewarung",            "ru": "Хранилище"},
+    "name":                 {"en": "Name",                  "de": "Name",                   "ru": "Имя"},
+    "description":          {"en": "Description",           "de": "Beschreibung",           "ru": "Описание"},
+
+    "read operation":       {"en": "read",                  "de": "lesen",                  "ru": "Читать"},
+    "write operation":      {"en": "write",                 "de": "schreiben",              "ru": "Писать"},
+    "create operation":     {"en": "create",                "de": "erzeugen",               "ru": "Создавать"},
+    "list operation":       {"en": "list elements",         "de": "auflisten",              "ru": "Список"},
+    "delete operation":     {"en": "delete",                "de": "löschen",                "ru": "Удалять"},
+    "object permissions":   {"en": "Objects permissions",   "de": "Objekt-Zulassungen",     "ru": "Разрешения для объектов"},
+    "state permissions":    {"en": "States permissions",    "de": "Zustände-Zulassungen",   "ru": "Разрешения для состояний"},
+    "file permissions":     {"en": "Files permissions",     "de": "Datei-Zulassungen",      "ru": "Разрешения для файлов"},
+    "user permissions":     {"en": "User permissions",      "de": "Gruppen-Zulassungen",    "ru": "Разрешения для групп"},
+    "other permissions":    {"en": "Other permissions",     "de": "Andere Zulassungen",     "ru": "Разрешения"},
+    "http operation":       {"en": "http",                  "de": "http",                   "ru": "http"},
+    "execute operation":    {"en": "Execute operation",     "de": "ausführen",              "ru": "выполнить"},
+    "sendto operation":     {"en": "Send-to operation",     "de": "sendto",                 "ru": "sendto"},
+
+
     "license_checkbox": {
         "en": "I am agree with collection of anonymous statistics.<br>(can be disabled in settings)",
         "de": "Ich bin mit der Sammlung von anonymer Statistik einverstanden.<br>(konnte später über Konfiguration deaktiviert werden)",

@@ -38,6 +38,10 @@
     };
 
     function showHideSettings() {
+        if ($('#auth').prop('checked')) {
+            $('#secure').prop('checked', true);
+        }
+
         if ($('#secure').prop('checked')) {
             $('#_certPublic').show();
             $('#_certPrivate').show();

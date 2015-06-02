@@ -17,8 +17,8 @@ function Scripts(main) {
                 {name: '_obj_id',    index: '_obj_id'},
                 {name: 'name',       index: 'name',     editable: true},
                 {name: 'engineType', index: 'engineType'},
-                {name: 'enabled',    index: 'enabled',  editable: true, edittype: 'checkbox', editoptions: {value: "true:false"}},
-                {name: 'engine',     index: 'engine',   editable: true, edittype: 'select', editoptions: ''},
+                {name: 'enabled',    index: 'enabled',  editable: true, edittype: 'checkbox', editoptions: {value: _('true') + ':' + _('false')}},
+                {name: 'engine',     index: 'engine',   editable: true, edittype: 'select',   editoptions: ''},
                 {name: 'commands',   index: 'commands', editable: false, width: 80, align: 'center'}
             ],
             pager: $('#pager-scripts'),
@@ -185,7 +185,7 @@ function Scripts(main) {
             $('#' + id).html(text);
         }
         return engines;
-    }
+    };
 
     this.onEditLine = function (id) {
         $('#add-script').addClass('ui-state-disabled');
@@ -195,6 +195,19 @@ function Scripts(main) {
         $('.script-reload-submit').hide();
         $('.script-ok-submit[data-script-id="' + id + '"]').show();
         $('.script-cancel-submit[data-script-id="' + id + '"]').show();
+
+        // Set the colors
+        var a = $('td[aria-describedby="grid-scripts_enabled"]');
+        var htmlTrue  = that.htmlBoolean(true);
+        var htmlFalse = that.htmlBoolean(false);
+        a.each(function (index) {
+            var text = $(this).html();
+            if (text == htmlTrue) {
+                $(this).html(_('true'));
+            } else if (text == htmlFalse) {
+                $(this).html(_('false'));
+            }
+        });
 
         var list = {};
         for (var i = 0; i < this.main.instances.length; i++) {
@@ -211,7 +224,19 @@ function Scripts(main) {
         });
 
         this.$grid.jqGrid('editRow', 'script_' + id, {"url": "clientArray"});
-    }
+    };
+
+    this.htmlBoolean = function (value) {
+        if (value === 'true' || value === true) {
+            if (!this.lTrue) this.lTrue = '<span style="color:green;font-weight:bold">' + _('true') + '</span>';
+            return this.lTrue;
+        } else if (value === 'false' || value === false) {
+            if (!this.lFalse) this.lFalse = '<span style="color:red">' + _('false') + '</span>';
+            return this.lFalse;
+        } else {
+            return value;
+        }
+    };
 
     this.updateScript = function (id, newCommon) {
         this.main.socket.emit('getObject', id, function (err, _obj) {
@@ -221,8 +246,8 @@ function Scripts(main) {
                 if (newCommon.engine  !== undefined) obj.common.engine  = newCommon.engine;
                 if (newCommon.enabled !== undefined) obj.common.enabled = newCommon.enabled;
 
-                if (obj.common.enabled === 'true')  obj.common.enabled = true;
-                if (obj.common.enabled === 'false') obj.common.enabled = false;
+                if (obj.common.enabled === _('true'))  obj.common.enabled = true;
+                if (obj.common.enabled === _('false')) obj.common.enabled = false;
 
                 if (newCommon.source !== undefined) obj.common.source = newCommon.source;
 
@@ -254,7 +279,7 @@ function Scripts(main) {
                 }
             }, 0);
         });
-    }
+    };
 
     this.init = function (update) {
         if (!this.main.objectsLoaded) {
@@ -287,6 +312,8 @@ function Scripts(main) {
             this.$grid[0]._isInited = true;
             this.$grid.jqGrid('clearGridData');
             var id = 1;
+            var htmlTrue  = that.htmlBoolean(true);
+            var htmlFalse = that.htmlBoolean(false);
 
             this.list.sort();
             for (var i = 0; i < this.list.length; i++) {
@@ -298,7 +325,7 @@ function Scripts(main) {
                     _obj_id:    obj._id,
                     name:       obj.common ? obj.common.name     : '',
                     engineType: obj.common ? obj.common.engineType : '',
-                    enabled:    obj.common ? obj.common.enabled  : '',
+                    enabled:    obj.common ? (obj.common.enabled ? htmlTrue : htmlFalse) : '',
                     engine:     obj.common ? obj.common.engine   : '',
                     commands:
                         '<button data-script-id="' + id + '" class="script-edit-submit">'      + _('edit')   + '</button>' +
@@ -313,7 +340,7 @@ function Scripts(main) {
             this.$grid.trigger('reloadGrid');
             this.initButtons();
         }
-    }
+    };
 
     this.initButtons = function () {
         $('.script-edit-submit').unbind('click').button({
@@ -374,6 +401,20 @@ function Scripts(main) {
                 var objNew = that.$grid.jqGrid('getRowData', 'script_' + id);
                 that.updateScript(objNew._obj_id, objNew);
 
+                // Set the colors
+
+                var a = $('td[aria-describedby="grid-scripts_enabled"]');
+                var htmlTrue  = that.htmlBoolean(true);
+                var htmlFalse = that.htmlBoolean(false);
+
+                a.each(function (index) {
+                    var text = $(this).html();
+                    if (text == _('true')) {
+                        $(this).html(htmlTrue);
+                    } else if (text == _('false')) {
+                        $(this).html(htmlFalse);
+                    }
+                });
                 /* main.socket.emit('getObject', objNew._obj_id, function (err, _obj) {
                  var obj = {common:{}};
                  obj.common.engine  = objNew.engine;
@@ -418,8 +459,22 @@ function Scripts(main) {
             $('.script-cancel-submit').hide();
             $('#add-script').removeClass('ui-state-disabled');
             that.$grid.jqGrid('restoreRow', 'script_' + id, false);
+            // Set the colors
+
+            var a = $('td[aria-describedby="grid-scripts_enabled"]');
+            var htmlTrue  = that.htmlBoolean(true);
+            var htmlFalse = that.htmlBoolean(false);
+
+            a.each(function (index) {
+                var text = $(this).html();
+                if (text == _('true')) {
+                    $(this).html(htmlTrue);
+                } else if (text == _('false')) {
+                    $(this).html(htmlFalse);
+                }
+            });
         });
-    }
+    };
 
     this.editScript = function (id) {
 
@@ -473,7 +528,7 @@ function Scripts(main) {
              this.editor.setValue('');
              that.$dialog.dialog('open');*/
         }
-    }
+    };
 
     this.saveScript = function () {
         that.changed = false;
@@ -486,5 +541,25 @@ function Scripts(main) {
 
         this.updateScript(obj._id, obj);
         that.$dialog.dialog('close');
+    };
+
+    this.objectChange = function (id, obj) {
+        // Update scripts
+        if (id.match(/^script\./)) {
+            if (obj) {
+                if (this.list.indexOf(id) == -1) this.list.push(id);
+            } else {
+                j = this.list.indexOf(id);
+                if (j != -1) this.list.splice(j, 1);
+            }
+
+            if (this.updateTimer) {
+                clearTimeout(this.updateTimer);
+            }
+            this.updateTimer = setTimeout(function () {
+                that.updateTimer = null;
+                that.init(true);
+            }, 200);
+        }
     }
 }

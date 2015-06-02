@@ -224,5 +224,31 @@ function Hosts(main) {
         this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
     };
 
+    this.objectChange = function (id, obj) {
+        // Update hosts
+        if (id.match(/^system\.host\.[-\w]+$/)) {
+            var found = false;
+            for (i = 0; i < this.list.length; i++) {
+                if (this.list[i].id == id) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (obj) {
+                if (!found) this.list.push({id: id, address: obj.common.address ? obj.common.address[0]: '', name: obj.common.name});
+            } else {
+                if (found) this.list.splice(i, 1);
+            }
+            if (this.updateTimer) {
+                clearTimeout(this.updateTimer);
+            }
+            this.updateTimer = setTimeout(function () {
+                that.updateTimer = null;
+                that.init(true);
+                that.initList(true);
+            }, 200);
+        }
+    };
 }
 

@@ -152,11 +152,14 @@ function Instances(main) {
 
         // Set the colors
         var a = $('td[aria-describedby="grid-instances_enabled"]');
+        var htmlTrue  = that.htmlBoolean(true);
+        var htmlFalse = that.htmlBoolean(false);
+
         a.each(function (index) {
             var text = $(this).html();
-            if (text == '<span style="color:green;font-weight:bold">' + _('true') + '</span>') {
+            if (text == htmlTrue) {
                 $(this).html(_('true'));
-            } else if (text == '<span style="color:red">' + _('false') + '</span>') {
+            } else if (text == htmlFalse) {
                 $(this).html( _('false'));
             }
         });
@@ -264,22 +267,12 @@ function Instances(main) {
             for (var i = 0; i < this.list.length; i++) {
                 var obj = this.main.objects[this.list[i]];
                 if (!obj) continue;
-
-                var tmp      = obj._id.split('.');
-                var adapter  = tmp[2];
+                var tmp = obj._id.split('.');
+                var adapter = tmp[2];
                 var instance = tmp[3];
                 var title = obj.common ? obj.common.title : '';
                 var link  = obj.common.localLink || '';
-                if (link && link.indexOf('%ip%') != -1) {
-                    link = link.replace('%ip%', location.hostname);
-                    var t = 0;
-                    var web = 0;
-                    while (t < 10 && (!that.main.objects['system.adapter.web.' + t] || !that.main.objects['system.adapter.web.' + t].common.enabled)) {
-                        t++;
-                    }
-                    web = that.main.objects['system.adapter.web.' + t];
-                    if (web && web.native.secure) link = link.replace('http://', 'https://');
-                }
+                if (link && link.indexOf('%ip%') != -1) link = link.replace('%ip%', location.hostname);
 
                 var vars = link.match(/\%(\w+)\%/g);
                 if (vars) this.replaceLinks(vars, adapter, instance);
@@ -296,11 +289,11 @@ function Instances(main) {
                     mode:      obj.common.mode,
                     schedule:  obj.common.mode === 'schedule' ? obj.common.schedule : '',
                     buttons:   '<button data-instance-id="' + this.list[i] + '" class="instance-settings" data-instance-href="/adapter/' + adapter + '/?' + instance + '" >' + _('config') + '</button>' +
-                    '<button data-instance-id="' + this.list[i] + '" class="instance-edit">'   + _('edit')   + '</button>' +
-                    '<button data-instance-id="' + this.list[i] + '" class="instance-reload">' + _('reload') + '</button>' +
-                    '<button data-instance-id="' + this.list[i] + '" class="instance-del">'    + _('delete') + '</button>' +
-                    '<button data-instance-id="' + this.list[i] + '" class="instance-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
-                    '<button data-instance-id="' + this.list[i] + '" class="instance-cancel-submit" style="display:none">' + _('cancel') + '</button>',
+                               '<button data-instance-id="' + this.list[i] + '" class="instance-edit">'   + _('edit')   + '</button>' +
+                               '<button data-instance-id="' + this.list[i] + '" class="instance-reload">' + _('reload') + '</button>' +
+                               '<button data-instance-id="' + this.list[i] + '" class="instance-del">'    + _('delete') + '</button>' +
+                               '<button data-instance-id="' + this.list[i] + '" class="instance-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
+                               '<button data-instance-id="' + this.list[i] + '" class="instance-cancel-submit" style="display:none">' + _('cancel') + '</button>',
                     platform:  obj.common ? obj.common.platform : '',
                     loglevel:  obj.common ? obj.common.loglevel : '',
                     alive:     this.main.states[obj._id + '.alive'] ? this.htmlBoolean(this.main.states[obj._id + '.alive'].val) : '',
@@ -369,13 +362,23 @@ function Instances(main) {
     };
 
     this.objectChange = function (id, obj) {
-        if (this.$grid !== undefined && this.$grid[0]._isInited) {
-            if (this.updateTimer) clearTimeout(this.updateTimer);
+        // Update Instance Table
+        if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
+            if (obj) {
+                if (that.main.instances.indexOf(id) == -1) that.main.instances.push(id);
+            } else {
+                i = that.main.instances.indexOf(id);
+                if (i != -1) that.main.instances.splice(i, 1);
+            }
 
-            this.updateTimer = setTimeout(function () {
-                that.updateTimer = null;
-                that.init(true);
-            }, 200);
+            if (this.$grid !== undefined && this.$grid[0]._isInited) {
+                if (this.updateTimer) clearTimeout(this.updateTimer);
+
+                this.updateTimer = setTimeout(function () {
+                    that.updateTimer = null;
+                    that.init(true);
+                }, 200);
+            }
         }
     };
 
@@ -512,19 +515,10 @@ function Instances(main) {
                 var adapter  = tmp[2];
                 var instance = tmp[3];
 
-                var title   = obj.common ? obj.common.title : '';
-                var oldLink = obj.common.localLink || '';
-                var newLink = oldLink;
-                if (newLink && newLink.indexOf('%ip%') != -1) {
-                    newLink = newLink.replace('%ip%', location.hostname);
-                    var t = 0;
-                    var web = 0;
-                    while (t < 10 && (!that.main.objects['system.adapter.web.' + t] || !that.main.objects['system.adapter.web.' + t].common.enabled)) {
-                        t++;
-                    }
-                    web = that.main.objects['system.adapter.web.' + t];
-                    if (web && web.native.secure) link = link.replace('http://', 'https://');
-                }
+                var title = obj.common ? obj.common.title : '';
+                var oldLink  = obj.common.localLink || '';
+                var newLink  = oldLink;
+                if (newLink && newLink.indexOf('%ip%') != -1) newLink = newLink.replace('%ip%', location.hostname);
 
                 var vars = newLink.match(/\%(\w+)\%/g);
                 if (newLink) {
@@ -538,12 +532,15 @@ function Instances(main) {
 
             // Set the colors
             var a = $('td[aria-describedby="grid-instances_enabled"]');
+            var htmlTrue  = that.htmlBoolean(true);
+            var htmlFalse = that.htmlBoolean(false);
+
             a.each(function (index) {
                 var text = $(this).html();
                 if (text == _('true')) {
-                    $(this).html('<span style="color:green;font-weight:bold">' + _('true') + '</span>');
+                    $(this).html(htmlTrue);
                 } else if (text == _('false')) {
-                    $(this).html('<span style="color:red">' + _('false') + '</span>');
+                    $(this).html(htmlFalse);
                 }
             });
 

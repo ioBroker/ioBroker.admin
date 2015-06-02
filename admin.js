@@ -197,8 +197,16 @@ function delUser(user, callback) {
     });
 }
 
-function addGroup(group, desc, callback) {
+function addGroup(group, desc, acl, callback) {
     var name = group;
+    if (typeof acl == 'function') {
+        callback = acl;
+        acl = null;
+    }
+    if (typeof desc == 'function') {
+        callback = desc;
+        desc = null;
+    }
     if (name && name.substring(0, 1) != name.substring(0, 1).toUpperCase()) {
         name = name.substring(0, 1).toUpperCase() + name.substring(1);
     }
@@ -213,7 +221,8 @@ function addGroup(group, desc, callback) {
                 common: {
                     name:    name,
                     desc:    desc,
-                    members: []
+                    members: [],
+                    acl:     acl
                 }
             }, function (err, obj) {
                 if (callback) callback(err, obj);
@@ -271,6 +280,8 @@ function initWebServer(settings) {
 
             store = new AdapterStore({adapter: adapter});
 
+
+
             passport.use(new LocalStrategy(
                 function (username, password, done) {
 
@@ -307,13 +318,18 @@ function initWebServer(settings) {
             server.app.use(passport.session());
             server.app.use(flash());
 
-            server.app.post('/login',
-                passport.authenticate('local', {
-                    successRedirect: '/',
-                    failureRedirect: '/login',
+            server.app.post('/login', function (req, res) {
+                var redirect = '/';
+                if (req.body.origin) {
+                    var parts = req.body.origin.split('=');
+                    if (parts[1]) redirect = decodeURIComponent(parts[1]);
+                }
+                var authenticate = passport.authenticate('local', {
+                    successRedirect: redirect,
+                    failureRedirect: '/login/index.html' + req.body.origin + (req.body.origin ? '&error' : '?error'),
                     failureFlash: 'Invalid username or password.'
-                })
-            );
+                })(req, res);
+            });
 
             server.app.get('/logout', function (req, res) {
                 req.logout();
@@ -480,16 +496,40 @@ function getUserFromSocket(socket, callback) {
     if (!wait && callback) callback("Cannot detect user");
 }
 
+function calculatePermissions(socket, user, callback) {
+    // read all groups
+    socket._acl = {};
+    adapter.getForeignObjects('*', 'group', function (err, groups) {
+        // aggregate all groups permissions, where this user is
+        if (groups) {
+            for (var g in groups) {
+                if (groups[g].common.members.indexOf('system.user.' + user) != -1) {
+                    for (var type in groups[g].common.acl) {
+                        socket._acl[type] = socket._acl[type] || {};
+                        for (var op in groups[g].common.acl[type]) {
+                            socket._acl[type][op] = socket._acl[type][op] || groups[g].common.acl[type][op];
+                        }
+                    }
+                }
+            }
+        }
+
+        if (callback) callback(socket._acl);
+    });
+}
+
 function initSocket(socket) {
     if (adapter.config.auth) {
-        adapter.config.ttl = adapter.config.ttl || 3600;
+		adapter.config.ttl = adapter.config.ttl || 3600;
         getUserFromSocket(socket, function (err, user) {
             if (err || !user) {
                 adapter.log.error('socket.io ' + err);
                 return;
             } else {
                 adapter.log.debug('socket.io client ' + user + ' connected');
-                socketEvents(socket, user);
+                calculatePermissions(socket, user, function () {
+                    socketEvents(socket, user);
+                });
             }
         });
     } else {
@@ -522,8 +562,79 @@ function updateSession(socket) {
     return true;
 }
 
+function checkPermissions(socket, command, callback) {
+    if (adapter.config.auth && socket._user != 'admin') {
+        // type: file, object, state, other
+        // operation: create, read, write, list, delete, sendto, execute, sendto
+        if (commandsPermissions[command]) {
+            // If permission required
+            if (commandsPermissions[command].type) {
+                if (socket._acl[commandsPermissions[command].type] && socket._acl[commandsPermissions[command].type][commandsPermissions[command].operation]) {
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        }
+
+        console.log('No permission for "' + socket._user + '" to call ' + command);
+        if (callback) {
+            callback('permissionError');
+        } else {
+            socket.emit('permissionError', {
+                command:    command,
+                type:       commandsPermissions[command].type,
+                operation:  commandsPermissions[command].operation
+            });
+        }
+        return false;
+    } else {
+        return true;
+    }
+}
+
+// static information
+var commandsPermissions = {
+    getObject:          {type: 'object',    operation: 'read'},
+    getObjects:         {type: 'object',    operation: 'list'},
+    getObjectView:      {type: 'object',    operation: 'list'},
+    setObject:          {type: 'object',    operation: 'write'},
+    delObject:          {type: 'object',    operation: 'delete'},
+    extendObject:       {type: 'object',    operation: 'write'},
+    getHostByIp:        {type: 'object',    operation: 'list'},
+
+    getStates:          {type: 'state',     operation: 'list'},
+    getState:           {type: 'state',     operation: 'read'},
+    setState:           {type: 'state',     operation: 'write'},
+    delState:           {type: 'state',     operation: 'delete'},
+    getStateHistory:    {type: 'state',     operation: 'read'},
+    createState:        {type: 'state',     operation: 'create'},
+
+    addUser:            {type: 'user',      operation: 'create'},
+    delUser:            {type: 'user',      operation: 'delete'},
+    addGroup:           {type: 'user',      operation: 'create'},
+    delGroup:           {type: 'user',      operation: 'delete'},
+    changePassword:     {type: 'user',      operation: 'write'},
+
+    httpGet:            {type: 'other',     operation: 'http'},
+    cmdExec:            {type: 'other',     operation: 'execute'},
+    sendTo:             {type: 'other',     operation: 'sendto'},
+    sendToHost:         {type: 'other',     operation: 'sendto'},
+
+    readDir:            {type: 'file',      operation: 'list'},
+    createFile:         {type: 'file',      operation: 'create'},
+    writeFile:          {type: 'file',      operation: 'write'},
+    readFile:           {type: 'file',      operation: 'read'},
+    deleteFile:         {type: 'file',      operation: 'delete'},
+
+    authEnabled:        {type: '',          operation: ''},
+    disconnect:         {type: '',          operation: ''},
+    listPermissions:    {type: '',          operation: ''}
+};
+
 function socketEvents(socket, user) {
 
+    socket._user = user;
     // TODO Check if user may create and delete objects and so on
     if (socket.handshake.headers.cookie) {
         var cookie = decodeURIComponent(socket.handshake.headers.cookie);
@@ -566,43 +677,43 @@ function socketEvents(socket, user) {
      *      objects
      */
     socket.on('getObject', function (id, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) && checkPermissions(socket, 'getObject', callback)) {
             adapter.getForeignObject(id, callback);
         }
     });
 
     socket.on('getObjects', function (callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) && checkPermissions(socket, 'getObjects', callback)) {
             callback(null, objects);
         }
     });
 
     socket.on('getObjectView', function (design, search, params, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) && checkPermissions(socket, 'getObjectView', callback)) {
             adapter.objects.getObjectView(design, search, params, callback);
         }
     });
 
     socket.on('setObject', function (id, obj, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) && checkPermissions(socket, 'setObject', callback)) {
             adapter.setForeignObject(id, obj, callback);
         }
     });
 
     socket.on('delObject', function (id, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) && checkPermissions(socket, 'delObject', callback)) {
             adapter.delForeignObject(id, callback);
         }
     });
 
     socket.on('extendObject', function (id, obj, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) && checkPermissions(socket, 'extendObject', callback)) {
             adapter.extendForeignObject(id, obj, callback);
         }
     });
 
     socket.on('getHostByIp', function (ip, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) && checkPermissions(socket, 'getHostByIp')) {
             adapter.objects.getObjectView('system', 'host', {}, function (err, data) {
                 if (data.rows.length) {
                     for (var i = 0; i < data.rows.length; i++) {
@@ -633,81 +744,77 @@ function socketEvents(socket, user) {
      *      states
      */
     socket.on('getStates', function (callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) && checkPermissions(socket, 'getStates', callback)) {
             callback(null, states);
         }
     });
 
     socket.on('getState', function (id, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) && checkPermissions(socket, 'getState', callback)) {
             if (callback) callback(null, states[id]);
         }
     });
 
     socket.on('setState', function (id, state, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) && checkPermissions(socket, 'setState', callback)) {
             if (typeof state !== 'object') state = {val: state};
             adapter.setForeignState(id, state, function (err, res) {
                 if (typeof callback === 'function') callback(err, res);
             });
         }
     });
-
     socket.on('delState', function (id, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) && checkPermissions(socket, 'delState', callback)) {
             adapter.delForeignState(id, callback);
         }
     });
-
 
     /*
      *      History
      */
     socket.on('getStateHistory', function (id, start, end, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) && checkPermissions(socket, 'getStateHistory', callback)) {
             adapter.getForeignStateHistory(id, start, end, callback);
         }
     });
-
-
-
     /*
      *      user/group
      */
     socket.on('addUser', function (user, pass, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) || checkPermissions(socket, 'addUser', callback)) {
             addUser(user, pass, callback);
         }
     });
 
     socket.on('delUser', function (user, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) || checkPermissions(socket, 'delUser', callback)) {
             delUser(user, callback);
         }
     });
 
     socket.on('addGroup', function (group, desc, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) || checkPermissions(socket, 'addGroup', callback)) {
             addGroup(group, desc, callback);
         }
     });
 
     socket.on('delGroup', function (group, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) || checkPermissions(socket, 'delGroup', callback)) {
             delGroup(group, callback);
         }
     });
 
     socket.on('changePassword', function (user, pass, callback) {
         if (updateSession(socket)) {
-            adapter.setPassword(user, pass, callback);
+            if (user == socket._user || checkPermissions(socket, 'changePassword', callback)) {
+                adapter.setPassword(user, pass, callback);
+            }
         }
     });
 
-
     // HTTP
     socket.on('httpGet', function (url, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) || checkPermissions(socket, 'httpGet', callback)) {
             request(url, callback);
         }
     });
@@ -715,7 +822,7 @@ function socketEvents(socket, user) {
     // iobroker commands will be executed on host/controller
     // following response commands are expected: cmdStdout, cmdStderr, cmdExit
     socket.on('cmdExec', function (host, id, cmd) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) || checkPermissions(socket, 'cmdExec', callback)) {
             console.log('cmdExec on ' + host + '(' + id + ': ' + cmd);
             // remember socket for this ID.
             cmdSessions[id] = {socket: socket};
@@ -724,23 +831,23 @@ function socketEvents(socket, user) {
     });
 
     socket.on('readDir', function (_adapter, path, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) || checkPermissions(socket, 'readDir', callback)) {
             adapter.readDir(_adapter, path, callback);
         }
     });
 
     socket.on('writeFile', function (_adapter, filename, data, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) || checkPermissions(socket, 'writeFile', callback)) {
             adapter.writeFile(_adapter, filename, data, null, callback);
         }
     });
     socket.on('readFile', function (_adapter, filename, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) || checkPermissions(socket, 'readFile', callback)) {
             adapter.readFile(_adapter, filename, null, callback);
         }
     });
     socket.on('sendTo', function (adapterInstance, command, message, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) || checkPermissions(socket, 'sendTo', callback)) {
             adapter.sendTo(adapterInstance, command, message, function (res) {
                 if (callback) {
                     setTimeout(function () {
@@ -752,7 +859,7 @@ function socketEvents(socket, user) {
     });
 
     socket.on('sendToHost', function (host, command, message, callback) {
-        if (updateSession(socket)) {
+        if (updateSession(socket) || checkPermissions(socket, 'sendToHost', callback)) {
             adapter.sendToHost(host, command, message, function (res) {
                 if (callback) {
                     setTimeout(function () {
@@ -764,15 +871,19 @@ function socketEvents(socket, user) {
     });
 
     socket.on('authEnabled', function (callback) {
-        if (updateSession(socket)) {
-            callback(adapter.config.auth);
-        }
+        if (callback) callback(adapter.config.auth, socket._user);
     });
 
     socket.on('disconnect', function () {
         // Disable logging if no one browser is connected
         if (adapter.requireLog) adapter.requireLog(!!webServer.io.sockets.sockets.length);
     });
+
+    socket.on('listPermissions', function (callback) {
+        if (updateSession(socket)) {
+            if (callback) callback(commandsPermissions);
+        }
+    })
 }
 
 function onAuthorizeSuccess(data, accept) {

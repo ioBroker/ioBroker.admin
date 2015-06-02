@@ -176,11 +176,40 @@
     <div class="login">
         <h1>Login to Admin Interface</h1>
         <form action="/login" method="post" style="text-align:center;vertical-align: middle">
-            <p><input type="text" name="username"/></p>
-            <p><input type="password" name="password"/></p>
+            <p><input type="text"     id="username" name="username" placeholder="Enter login"/></p>
+            <p><input type="password" id="password" name="password" placeholder="Enter password"/></p>
+            <input type="hidden" id="origin" name="origin" value=""/>
             <p class="submit"><input type="submit" value="Submit"/></p>
         </form>
+        <div id="error" class="error" style="display:none"></div>
     </div>
 </section>
+<script>
+    document.getElementById("origin").value = window.location.search.replace('&error', '');
+    var userLang = navigator.language || navigator.userLanguage;
+    if (window.location.search.indexOf('error') != -1) {
+        if (userLang == 'ru') {
+            document.getElementById('error').innerHTML = 'Неверные имя пользователя или пароль';
+        } else if (userLang == 'de') {
+            document.getElementById('error').innerHTML = 'Name oder Kennwort sind falsch';
+        } else {
+            document.getElementById('error').innerHTML = 'Invalid username or password';
+        }
+        document.getElementById('error').style.display = '';
+    }
+    if (userLang == 'ru') {
+        if (document.getElementById('username').placeholder) {
+            document.getElementById('username').placeholder = 'Введите логин';
+            document.getElementById('password').placeholder = 'Введите пароль';
+        }
+        document.getElementById('submit').value = 'Ok';
+    } else if (userLang == 'de') {
+        if (document.getElementById('username').placeholder) {
+            document.getElementById('username').placeholder = 'Login eingeben';
+            document.getElementById('password').placeholder = 'Kennwort eingeben';
+        }
+        document.getElementById('submit').value = 'Ok';
+    }
+</script>
 </body>
 </html>

@@ -38,11 +38,8 @@ function Adapters(main) {
         "occ":          "schedule",
         "onkyo":        "hardware",
         "simple-api":   "communication",
-        "socketio":     "communication",
-        "web":          "visualisation",
         "artnet":       "hardware",
         "b-control-em": "hardware",
-        "email":        "communication",
         "knx":          "hardware",
         "legacy":       "visualisation",
         "pushover":     "communication",
@@ -666,4 +663,22 @@ function Adapters(main) {
             });
         });
     };
+
+    this.objectChange = function (id, obj) {
+        // Update Adapter Table
+        if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+$/)) {
+            if (obj) {
+                if (this.list.indexOf(id) == -1) this.list.push(id);
+            } else {
+                var j = this.list.indexOf(id);
+                if (j != -1) {
+                    this.list.splice(j, 1);
+                }
+            }
+
+            if (typeof this.$grid != 'undefined' && this.$grid[0]._isInited) {
+                this.init(true);
+            }
+        }
+    }
 }
