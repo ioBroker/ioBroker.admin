@@ -2577,6 +2577,10 @@ $(document).ready(function () {
         }
     });
 
+    main.socket.on('reauthenticate', function () {
+        location.reload();
+    });
+
     function resizeGrids() {
         var x = $(window).width();
         var y = $(window).height();

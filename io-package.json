@@ -33,7 +33,8 @@
         "bind":                     "0.0.0.0",
         "cache":                    false,
         "certPublic":               "",
-        "certPrivate":              ""
+        "certPrivate":              "",
+        "ttl":                      3600
     },
     "objects": [
 

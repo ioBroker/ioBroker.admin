@@ -264,12 +264,22 @@ function Instances(main) {
             for (var i = 0; i < this.list.length; i++) {
                 var obj = this.main.objects[this.list[i]];
                 if (!obj) continue;
-                var tmp = obj._id.split('.');
-                var adapter = tmp[2];
+
+                var tmp      = obj._id.split('.');
+                var adapter  = tmp[2];
                 var instance = tmp[3];
                 var title = obj.common ? obj.common.title : '';
                 var link  = obj.common.localLink || '';
-                if (link && link.indexOf('%ip%') != -1) link = link.replace('%ip%', location.hostname);
+                if (link && link.indexOf('%ip%') != -1) {
+                    link = link.replace('%ip%', location.hostname);
+                    var t = 0;
+                    var web = 0;
+                    while (t < 10 && (!that.main.objects['system.adapter.web.' + t] || !that.main.objects['system.adapter.web.' + t].common.enabled)) {
+                        t++;
+                    }
+                    web = that.main.objects['system.adapter.web.' + t];
+                    if (web && web.native.secure) link = link.replace('http://', 'https://');
+                }
 
                 var vars = link.match(/\%(\w+)\%/g);
                 if (vars) this.replaceLinks(vars, adapter, instance);
@@ -502,10 +512,19 @@ function Instances(main) {
                 var adapter  = tmp[2];
                 var instance = tmp[3];
 
-                var title = obj.common ? obj.common.title : '';
-                var oldLink  = obj.common.localLink || '';
-                var newLink  = oldLink;
-                if (newLink && newLink.indexOf('%ip%') != -1) newLink = newLink.replace('%ip%', location.hostname);
+                var title   = obj.common ? obj.common.title : '';
+                var oldLink = obj.common.localLink || '';
+                var newLink = oldLink;
+                if (newLink && newLink.indexOf('%ip%') != -1) {
+                    newLink = newLink.replace('%ip%', location.hostname);
+                    var t = 0;
+                    var web = 0;
+                    while (t < 10 && (!that.main.objects['system.adapter.web.' + t] || !that.main.objects['system.adapter.web.' + t].common.enabled)) {
+                        t++;
+                    }
+                    web = that.main.objects['system.adapter.web.' + t];
+                    if (web && web.native.secure) link = link.replace('http://', 'https://');
+                }
 
                 var vars = newLink.match(/\%(\w+)\%/g);
                 if (newLink) {

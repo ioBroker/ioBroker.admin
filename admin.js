@@ -46,7 +46,14 @@ adapter.on('objectChange', function (id, obj) {
     }
     // TODO Build in some threshold of messages
 
-    if (webServer && webServer.io) webServer.io.sockets.emit('objectChange', id, obj);
+    if (webServer && webServer.io) {
+        var clients = webServer.io.sockets.connected;
+
+        for (var i in clients) {
+            updateSession(clients[i]);
+        }
+        webServer.io.sockets.emit('objectChange', id, obj);
+    }
 });
 
 adapter.on('stateChange', function (id, state) {
@@ -55,7 +62,14 @@ adapter.on('stateChange', function (id, state) {
     } else {
         states[id] = state;
     }
-    if (webServer && webServer.io) webServer.io.sockets.emit('stateChange', id, state);
+    if (webServer && webServer.io) {
+        var clients = webServer.io.sockets.connected;
+
+        for (var i in clients) {
+            updateSession(clients[i]);
+        }
+        webServer.io.sockets.emit('stateChange', id, state);
+    }
 });
 
 adapter.on('ready', function () {
@@ -256,8 +270,6 @@ function initWebServer(settings) {
             flash =             require('connect-flash'); // TODO report error to user
 
             store = new AdapterStore({adapter: adapter});
-
-
 
             passport.use(new LocalStrategy(
                 function (username, password, done) {
@@ -470,6 +482,7 @@ function getUserFromSocket(socket, callback) {
 
 function initSocket(socket) {
     if (adapter.config.auth) {
+        adapter.config.ttl = adapter.config.ttl || 3600;
         getUserFromSocket(socket, function (err, user) {
             if (err || !user) {
                 adapter.log.error('socket.io ' + err);
@@ -484,9 +497,67 @@ function initSocket(socket) {
     }
 }
 
+// upadate session ID, but not offter than 60 seconds
+function updateSession(socket) {
+    if (socket._sessionID) {
+        var time = (new Date()).getTime();
+        if (socket._lastActivity && time - socket._lastActivity > adapter.config.ttl * 1000) {
+            socket.emit('reauthenticate');
+            return false;
+        }
+        socket._lastActivity = time;
+        if (!socket._sessionTimer) {
+            socket._sessionTimer = setTimeout(function () {
+                socket._sessionTimer = null;
+                adapter.getSession(socket._sessionID, function (obj) {
+                    if (obj) {
+                        adapter.setSession(socket._sessionID, adapter.config.ttl, obj);
+                    } else {
+                        socket.emit('reauthenticate');
+                    }
+                });
+            }, 60000);
+        }
+    }
+    return true;
+}
+
 function socketEvents(socket, user) {
 
     // TODO Check if user may create and delete objects and so on
+    if (socket.handshake.headers.cookie) {
+        var cookie = decodeURIComponent(socket.handshake.headers.cookie);
+        var m = cookie.match(/connect\.sid=(.+)/);
+        if (m) {
+            // If session cookie exists
+            var sessionID = cookieParser.signedCookie(m[1], secret);
+            if (sessionID) {
+                socket._user      = null;
+                socket._secure    = true;
+                socket._sessionID = sessionID;
+                // Get user for session
+                console.log('Connected. Request sessionID.')
+                adapter.getSession(sessionID, function (obj) {
+                    if (obj && obj.passport) {
+                        socket._user = obj.passport.user;
+                    } else {
+                        socket._user = '';
+                        socket.emit('reauthenticate');
+                    }
+                    if (socket._authPending) {
+                        socket._authPending(!!socket._user, true);
+                        delete socket._authPending;
+                    }
+                });
+            } else {
+                socket._user = adapter.config.defaultUser;
+            }
+        } else {
+            socket._user = adapter.config.defaultUser;
+        }
+    } else {
+        socket._user = adapter.config.defaultUser;
+    }
 
     // Enable logging, while some browser is connected
     if (adapter.requireLog) adapter.requireLog(true);
@@ -495,74 +566,97 @@ function socketEvents(socket, user) {
      *      objects
      */
     socket.on('getObject', function (id, callback) {
-        adapter.getForeignObject(id, callback);
+        if (updateSession(socket)) {
+            adapter.getForeignObject(id, callback);
+        }
     });
 
     socket.on('getObjects', function (callback) {
-        callback(null, objects);
+        if (updateSession(socket)) {
+            callback(null, objects);
+        }
     });
 
     socket.on('getObjectView', function (design, search, params, callback) {
-        adapter.objects.getObjectView(design, search, params, callback);
+        if (updateSession(socket)) {
+            adapter.objects.getObjectView(design, search, params, callback);
+        }
     });
 
     socket.on('setObject', function (id, obj, callback) {
-        adapter.setForeignObject(id, obj, callback);
+        if (updateSession(socket)) {
+            adapter.setForeignObject(id, obj, callback);
+        }
     });
 
     socket.on('delObject', function (id, callback) {
-        adapter.delForeignObject(id, callback);
+        if (updateSession(socket)) {
+            adapter.delForeignObject(id, callback);
+        }
     });
 
     socket.on('extendObject', function (id, obj, callback) {
-        adapter.extendForeignObject(id, obj, callback);
+        if (updateSession(socket)) {
+            adapter.extendForeignObject(id, obj, callback);
+        }
     });
 
     socket.on('getHostByIp', function (ip, callback) {
-        adapter.objects.getObjectView('system', 'host', {}, function (err, data) {
-            if (data.rows.length) {
-                for (var i = 0; i < data.rows.length; i++) {
-                    if (data.rows[i].value.common.hostname == ip) {
-                        if (callback) callback(ip, data.rows[i].value);
-                        return;
-                    }
-                    if (data.rows[i].value.native.hardware && data.rows[i].value.native.hardware.networkInterfaces) {
-                        var net = data.rows[i].value.native.hardware.networkInterfaces;
-                        for (var eth in net) {
-                            for (var j = 0; j < net[eth].length; j++) {
-                                if (net[eth][j].address == ip) {
-                                    if (callback) callback(ip, data.rows[i].value);
-                                    return;
+        if (updateSession(socket)) {
+            adapter.objects.getObjectView('system', 'host', {}, function (err, data) {
+                if (data.rows.length) {
+                    for (var i = 0; i < data.rows.length; i++) {
+                        if (data.rows[i].value.common.hostname == ip) {
+                            if (callback) callback(ip, data.rows[i].value);
+                            return;
+                        }
+                        if (data.rows[i].value.native.hardware && data.rows[i].value.native.hardware.networkInterfaces) {
+                            var net = data.rows[i].value.native.hardware.networkInterfaces;
+                            for (var eth in net) {
+                                for (var j = 0; j < net[eth].length; j++) {
+                                    if (net[eth][j].address == ip) {
+                                        if (callback) callback(ip, data.rows[i].value);
+                                        return;
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            if (callback) callback(ip, null);
-        });
+                if (callback) callback(ip, null);
+            });
+        }
     });
 
     /*
      *      states
      */
     socket.on('getStates', function (callback) {
-        callback(null, states);
+        if (updateSession(socket)) {
+            callback(null, states);
+        }
     });
 
     socket.on('getState', function (id, callback) {
-        if (callback) callback(null, states[id]);
+        if (updateSession(socket)) {
+            if (callback) callback(null, states[id]);
+        }
     });
 
     socket.on('setState', function (id, state, callback) {
-        if (typeof state !== 'object') state = {val: state};
-        adapter.setForeignState(id, state, function (err, res) {
-            if (typeof callback === 'function') callback(err, res);
-        });
+        if (updateSession(socket)) {
+            if (typeof state !== 'object') state = {val: state};
+            adapter.setForeignState(id, state, function (err, res) {
+                if (typeof callback === 'function') callback(err, res);
+            });
+        }
     });
+
     socket.on('delState', function (id, callback) {
-        adapter.delForeignState(id, callback);
+        if (updateSession(socket)) {
+            adapter.delForeignState(id, callback);
+        }
     });
 
 
@@ -570,7 +664,9 @@ function socketEvents(socket, user) {
      *      History
      */
     socket.on('getStateHistory', function (id, start, end, callback) {
-        adapter.getForeignStateHistory(id, start, end, callback);
+        if (updateSession(socket)) {
+            adapter.getForeignStateHistory(id, start, end, callback);
+        }
     });
 
 
@@ -579,72 +675,98 @@ function socketEvents(socket, user) {
      *      user/group
      */
     socket.on('addUser', function (user, pass, callback) {
-        addUser(user, pass, callback);
+        if (updateSession(socket)) {
+            addUser(user, pass, callback);
+        }
     });
 
     socket.on('delUser', function (user, callback) {
-        delUser(user, callback);
+        if (updateSession(socket)) {
+            delUser(user, callback);
+        }
     });
 
     socket.on('addGroup', function (group, desc, callback) {
-        addGroup(group, desc, callback);
+        if (updateSession(socket)) {
+            addGroup(group, desc, callback);
+        }
     });
 
     socket.on('delGroup', function (group, callback) {
-        delGroup(group, callback);
+        if (updateSession(socket)) {
+            delGroup(group, callback);
+        }
     });
 
     socket.on('changePassword', function (user, pass, callback) {
-        adapter.setPassword(user, pass, callback);
+        if (updateSession(socket)) {
+            adapter.setPassword(user, pass, callback);
+        }
     });
 
 
     // HTTP
     socket.on('httpGet', function (url, callback) {
-        request(url, callback);
+        if (updateSession(socket)) {
+            request(url, callback);
+        }
     });
 
     // iobroker commands will be executed on host/controller
     // following response commands are expected: cmdStdout, cmdStderr, cmdExit
     socket.on('cmdExec', function (host, id, cmd) {
-        console.log('cmdExec on ' + host + '(' + id + ': ' +  cmd);
-        // remember socket for this ID.
-        cmdSessions[id] = {socket: socket};
-        adapter.sendToHost(host, 'cmdExec', {data: cmd, id: id});
+        if (updateSession(socket)) {
+            console.log('cmdExec on ' + host + '(' + id + ': ' + cmd);
+            // remember socket for this ID.
+            cmdSessions[id] = {socket: socket};
+            adapter.sendToHost(host, 'cmdExec', {data: cmd, id: id});
+        }
     });
 
     socket.on('readDir', function (_adapter, path, callback) {
-        adapter.readDir(_adapter, path, callback);
+        if (updateSession(socket)) {
+            adapter.readDir(_adapter, path, callback);
+        }
     });
 
     socket.on('writeFile', function (_adapter, filename, data, callback) {
-        adapter.writeFile(_adapter, filename, data, null, callback);
+        if (updateSession(socket)) {
+            adapter.writeFile(_adapter, filename, data, null, callback);
+        }
     });
     socket.on('readFile', function (_adapter, filename, callback) {
-        adapter.readFile(_adapter, filename, null, callback);
+        if (updateSession(socket)) {
+            adapter.readFile(_adapter, filename, null, callback);
+        }
     });
     socket.on('sendTo', function (adapterInstance, command, message, callback) {
-        adapter.sendTo(adapterInstance, command, message, function (res) {
-            if (callback) {
-                setTimeout(function () {
-                    callback(res);
-                }, 0);
-            }
-        });
+        if (updateSession(socket)) {
+            adapter.sendTo(adapterInstance, command, message, function (res) {
+                if (callback) {
+                    setTimeout(function () {
+                        callback(res);
+                    }, 0);
+                }
+            });
+        }
     });
 
     socket.on('sendToHost', function (host, command, message, callback) {
-        adapter.sendToHost(host, command, message, function (res) {
-            if (callback) {
-                setTimeout(function () {
-                    callback(res);
-                }, 0);
-            }
-        });
+        if (updateSession(socket)) {
+            adapter.sendToHost(host, command, message, function (res) {
+                if (callback) {
+                    setTimeout(function () {
+                        callback(res);
+                    }, 0);
+                }
+            });
+        }
     });
 
     socket.on('authEnabled', function (callback) {
-        callback(adapter.config.auth);
+        if (updateSession(socket)) {
+            callback(adapter.config.auth);
+        }
     });
 
     socket.on('disconnect', function () {
