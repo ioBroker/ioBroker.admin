@@ -218,12 +218,18 @@ function Instances(main) {
             if (!parts[0].match(/\.[0-9]+$/)) parts[0] += '.0';
         }
 
+        if (parts[1] == 'protocol') parts[1] = 'secure';
+
         this.main.socket.emit('getObject', 'system.adapter.' + parts[0], function (err, obj) {
             if (obj) {
                 setTimeout(function () {
                     var link = $('#a_' + adapter + '_' + instance).attr('href');
                     if (link) {
-                        link = link.replace('%' + _var + '%', obj.native[parts[1]]);
+                        if (parts[1] == 'secure') {
+                            link = link.replace('%' + _var + '%', obj.native[parts[1]] ? 'https' : 'http');
+                        } else {
+                            link = link.replace('%' + _var + '%', obj.native[parts[1]]);
+                        }
                         $('#a_' + adapter + '_' + instance).attr('href', link);
                     }
                 }, 0);
@@ -525,11 +531,11 @@ function Instances(main) {
 
                 var vars = newLink.match(/\%(\w+)\%/g);
                 if (newLink) {
-                    if (vars) that.replaceLinks(vars, adapter, instance);
                     var _obj = that.$grid.jqGrid('getRowData', 'instance_' + obj._id);
                     _obj.title = obj.common ? (newLink ? '<a href="' + newLink + '" id="a_' + adapter + '_' + instance + '" target="_blank">' + title + '</a>' : title): '';
                     that.$grid.jqGrid('setRowData', 'instance_' + obj._id, _obj);
                     that.initButtons(obj._id);
+                    if (vars) that.replaceLinks(vars, adapter, instance);
                 }
             }
 
