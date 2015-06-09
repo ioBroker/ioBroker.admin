@@ -805,7 +805,7 @@ function socketEvents(socket, user) {
 
     socket.on('changePassword', function (user, pass, callback) {
         if (updateSession(socket)) {
-            if (user == socket._user && checkPermissions(socket, 'changePassword', callback, user)) {
+            if (user == socket._user || checkPermissions(socket, 'changePassword', callback, user)) {
                 adapter.setPassword(user, pass, callback);
             }
         }

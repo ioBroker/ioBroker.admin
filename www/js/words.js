@@ -1,4 +1,4 @@
-/*global systemDictionary */
+/*global systemDictionary:true */
 'use strict';
 
 systemDictionary = {
@@ -293,9 +293,8 @@ systemDictionary = {
     "Installed from group": {"en": "Installed from group",  "de": "Installiert aus der Gruppe", "ru": "Установенно из группы"},
     "weather":              {"en": "Weather",               "de": "Wetter",                 "ru": "Погода"},
     "storage":              {"en": "Storage",               "de": "Aufbewarung",            "ru": "Хранилище"},
-    "name":                 {"en": "Name",                  "de": "Name",                   "ru": "Имя"},
     "description":          {"en": "Description",           "de": "Beschreibung",           "ru": "Описание"},
-
+    "vis":                  {"en": "ioBroker.vis",          "de": "ioBroker.vis",           "ru": "ioBroker.vis"},
     "read operation":       {"en": "read",                  "de": "lesen",                  "ru": "Читать"},
     "write operation":      {"en": "write",                 "de": "schreiben",              "ru": "Писать"},
     "create operation":     {"en": "create",                "de": "erzeugen",               "ru": "Создавать"},
@@ -337,6 +336,16 @@ systemDictionary = {
         "en": "Cannot delete user: ",
         "de": "Kann Anwender nicht löschen: ",
         "ru": "Не могу удалить пользователя: "
+    },
+    "Cannot create user: ": {
+        "en": "Cannot create user: ",
+        "de": "Kann Anwender nicht erzeugen: ",
+        "ru": "Не могу создать пользователя: "
+    },
+    "User yet exists": {
+        "en": "User yet exists",
+        "de": "schon existiert",
+        "ru": "Имя занято"
     },
     "Cannot set password: ": {
         "en": "Cannot set password: ",

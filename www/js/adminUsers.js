@@ -256,7 +256,7 @@ function Users(main) {
         if (!id) {
             that.main.socket.emit('addUser', user, pass, function (err) {
                 if (err) {
-                    that.main.showMessage(_('Cannot set password: ') + err, '', 'alert');
+                    that.main.showMessage(_('Cannot create user: ') + _(err), '', 'alert');
                 } else {
                     that.$dialog.dialog('close');
                     setTimeout(function () {
@@ -269,7 +269,7 @@ function Users(main) {
             if (pass != '__pass_not_set__') {
                 that.main.socket.emit('changePassword', user, pass, function (err) {
                     if (err) {
-                        that.main.showMessage(_('Cannot set password: ') + err, '', 'alert');
+                        that.main.showMessage(_('Cannot set password: ') + _(err), '', 'alert');
                     } else {
                         that.$dialog.dialog('close');
                     }

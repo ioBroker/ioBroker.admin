@@ -1656,22 +1656,6 @@ $(document).ready(function () {
         });
     }
 
-
-    // ---------------------------- Socket.io methods ---------------------------------------------
-    main.socket.on('log', function (message) {
-        //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
-        tabs.logs.add(message);
-    });
-    main.socket.on('error', function (error) {
-        //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
-        //addMessageLog({message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()});
-        console.log(error);
-    });
-
-    main.socket.on('permissionError', function (err) {
-        main.showMessage(_('Has no permission to %s %s %s', err.operation, err.type, (err.id || '')));
-    });
-
     function stateChange(id, state) {
         var rowData;
         id = id ? id.replace(/ /g, '_') : '';
@@ -1689,10 +1673,6 @@ $(document).ready(function () {
         tabs.instances.stateChange(id, state);
         tabs.objects.stateChangeHistory(id, state);
     }
-
-    main.socket.on('stateChange', function (id, obj) {
-        setTimeout(stateChange, 0, id, obj);
-    });
 
     function objectChange(id, obj) {
         var changed = false;
@@ -1790,6 +1770,38 @@ $(document).ready(function () {
         }
     }
 
+    function monitor () {
+        if (main._timer) return;
+        var ts = (new Date()).getTime();
+        if (ts - main._lastTimer > 30000) {
+            // It seems, that PC was in a sleep => Reload page to request authentication anew
+            location.reload();
+        } else {
+            main._lastTimer = ts;
+        }
+        main._timer = setTimeout(function () {
+            main._timer = null;
+            monitor();
+        }, 10000);
+    }
+
+    // ---------------------------- Socket.io methods ---------------------------------------------
+    main.socket.on('log', function (message) {
+        //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
+        tabs.logs.add(message);
+    });
+    main.socket.on('error', function (error) {
+        //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
+        //addMessageLog({message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()});
+        console.log(error);
+    });1
+
+    main.socket.on('permissionError', function (err) {
+        main.showMessage(_('Has no permission to %s %s %s', err.operation, err.type, (err.id || '')));
+    });
+    main.socket.on('stateChange', function (id, obj) {
+        setTimeout(stateChange, 0, id, obj);
+    });
     main.socket.on('objectChange', function (id, obj) {
         setTimeout(objectChange, 0, id, obj);
     });
@@ -1832,6 +1844,10 @@ $(document).ready(function () {
             main.socket.emit('authEnabled', function (auth, user) {
                 if (!auth) $('#button-logout').remove();
                 $('#current-user').html(user ? user[0].toUpperCase() + user.substring(1).toLowerCase() : '');
+                if (auth) {
+                    main._lastTimer = (new Date()).getTime();
+                    monitor();
+                }
             });
             main.socket.emit('getUserPermissions', function (err, acl) {
                 main.acl = acl;

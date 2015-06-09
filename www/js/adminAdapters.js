@@ -18,7 +18,8 @@ function Adapters(main) {
         'visualisation':    '/img/visualisation.png',
         'storage':          '/img/storage.png',
         'weather':          '/img/weather.png',
-        'schedule':         '/img/schedule.png'
+        'schedule':         '/img/schedule.png',
+        'vis':              '/img/vis.png'
     };
 
     this.isList = false;
@@ -37,12 +38,10 @@ function Adapters(main) {
         "javascript":   "script",
         "occ":          "schedule",
         "onkyo":        "hardware",
-        "simple-api":   "communication",
         "artnet":       "hardware",
         "b-control-em": "hardware",
         "knx":          "hardware",
         "legacy":       "visualisation",
-        "pushover":     "communication",
         "zwave":        "hardware"
     };
     
