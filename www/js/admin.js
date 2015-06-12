@@ -556,6 +556,9 @@ $(document).ready(function () {
                                         }, 0);
                                     }
                                 }
+                            } else {
+                                main.showError(err);
+                                return;
                             }
 
                             main.socket.emit('extendObject', 'system.repositories', systemRepos, function (err) {

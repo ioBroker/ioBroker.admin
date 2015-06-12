@@ -21,6 +21,7 @@
             "hobbyquaker <hq@ccu.io>",
             "bluefox <bluefox@ccu.io>"
         ],
+        "dependencies":             [{"js-controller": ">=0.7.0"}],
         "type":                     "common adapters",
         "license":                  "MIT",
         "logTransporter":           true,
@@ -34,7 +35,8 @@
         "cache":                    false,
         "certPublic":               "",
         "certPrivate":              "",
-        "ttl":                      3600
+        "ttl":                      3600,
+        "defaultUser":              "admin"
     },
     "objects": [
 

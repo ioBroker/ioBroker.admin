@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.5.0 (2015-06-12)
+* (bluefox) support of permissions
+
 ### 0.4.8 (2015-05-17)
 * (bluefox) fix buttons after sort in jqGrid table
 

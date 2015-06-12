@@ -248,7 +248,6 @@ function delGroup(group, callback) {
     });
 }
 
-
 //settings: {
 //    "port":   8080,
 //    "auth":   false,
@@ -279,8 +278,6 @@ function initWebServer(settings) {
             flash =             require('connect-flash'); // TODO report error to user
 
             store = new AdapterStore({adapter: adapter});
-
-
 
             passport.use(new LocalStrategy(
                 function (username, password, done) {
@@ -549,8 +546,8 @@ function initSocket(socket) {
             }
         });
     } else {
-        calculatePermissions(socket, 'admin', function () {
-            socketEvents(socket);
+        calculatePermissions(socket, adapter.config.defaultUser || 'admin', function () {
+            socketEvents(socket, adapter.config.defaultUser || 'admin');
         });
     }
 }
@@ -581,7 +578,7 @@ function updateSession(socket) {
 }
 
 function checkPermissions(socket, command, callback, arg) {
-    if (adapter.config.auth && socket._user != 'admin') {
+    if (socket._user != 'admin') {
         // type: file, object, state, other
         // operation: create, read, write, list, delete, sendto, execute, sendto
         if (commandsPermissions[command]) {
@@ -840,11 +837,13 @@ function socketEvents(socket, user) {
             adapter.writeFile(_adapter, filename, data, null, callback);
         }
     });
+
     socket.on('readFile', function (_adapter, filename, callback) {
         if (updateSession(socket) && checkPermissions(socket, 'readFile', callback, filename)) {
             adapter.readFile(_adapter, filename, null, callback);
         }
     });
+
     socket.on('sendTo', function (adapterInstance, command, message, callback) {
         if (updateSession(socket) && checkPermissions(socket, 'sendTo', callback, command)) {
             adapter.sendTo(adapterInstance, command, message, function (res) {
@@ -883,6 +882,7 @@ function socketEvents(socket, user) {
             if (callback) callback(commandsPermissions);
         }
     });
+
     socket.on('getUserPermissions', function (callback) {
         if (updateSession(socket) && checkPermissions(socket, 'getUserPermissions', callback)) {
             if (callback) callback(null, socket._acl);
