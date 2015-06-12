@@ -25,7 +25,8 @@
         "type":                     "common adapters",
         "license":                  "MIT",
         "logTransporter":           true,
-        "wwwDontUpload":            true
+        "wwwDontUpload":            true,
+        "localLink":                "%protocol%://%ip%:%port%"
     },
     "native": {
         "port":                     8081,

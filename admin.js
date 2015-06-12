@@ -857,14 +857,18 @@ function socketEvents(socket, user) {
     });
 
     socket.on('sendToHost', function (host, command, message, callback) {
-        if (updateSession(socket) && checkPermissions(socket, 'sendToHost', callback, command)) {
-            adapter.sendToHost(host, command, message, function (res) {
-                if (callback) {
-                    setTimeout(function () {
-                        callback(res);
-                    }, 0);
-                }
-            });
+        // host can answer following commands
+        if (updateSession(socket)) {
+            if ( (command != 'cmdExec' && command != 'delLogs'  && checkPermissions(socket, 'sendToHost', callback, command)) ||
+                ((command == 'cmdExec' || command == 'delLogs') && checkPermissions(socket, 'cmdExec',    callback, command))) {
+                adapter.sendToHost(host, command, message, function (res) {
+                    if (callback) {
+                        setTimeout(function () {
+                            callback(res);
+                        }, 0);
+                    }
+                });
+            }
         }
     });
 
