@@ -496,41 +496,6 @@ function getUserFromSocket(socket, callback) {
     if (!wait && callback) callback("Cannot detect user");
 }
 
-function calculatePermissions(socket, user, callback) {
-    // read all groups
-    socket._acl = {};
-    if (user == 'admin') {
-        for (var c in commandsPermissions) {
-            socket._acl[commandsPermissions[c].type] = socket._acl[commandsPermissions[c].type] || {};
-            socket._acl[commandsPermissions[c].type][commandsPermissions[c].operation] = true;
-        }
-
-        if (callback) callback(socket._acl);
-        return;
-    }
-
-    adapter.getForeignObjects('*', 'group', function (err, groups) {
-        // aggregate all groups permissions, where this user is
-        if (groups) {
-            for (var g in groups) {
-                if (groups[g] &&
-                    groups[g].common &&
-                    groups[g].common.members &&
-                    groups[g].common.members.indexOf('system.user.' + user) != -1) {
-                    for (var type in groups[g].common.acl) {
-                        socket._acl[type] = socket._acl[type] || {};
-                        for (var op in groups[g].common.acl[type]) {
-                            socket._acl[type][op] = socket._acl[type][op] || groups[g].common.acl[type][op];
-                        }
-                    }
-                }
-            }
-        }
-
-        if (callback) callback(socket._acl);
-    });
-}
-
 function initSocket(socket) {
     if (adapter.config.auth) {
 		adapter.config.ttl = adapter.config.ttl || 3600;
@@ -540,13 +505,15 @@ function initSocket(socket) {
                 return;
             } else {
                 adapter.log.debug('socket.io client ' + user + ' connected');
-                calculatePermissions(socket, user, function () {
+                adapter.calculatePermissions(user, commandsPermissions, function (acl) {
+                    socket._acl = acl;
                     socketEvents(socket, user);
                 });
             }
         });
     } else {
-        calculatePermissions(socket, adapter.config.defaultUser || 'admin', function () {
+        adapter.calculatePermissions(adapter.config.defaultUser || 'admin', commandsPermissions, function (acl) {
+            socket._acl = acl;
             socketEvents(socket, adapter.config.defaultUser || 'admin');
         });
     }
@@ -900,7 +867,6 @@ function onAuthorizeSuccess(data, accept) {
 
     accept();
 }
-
 
 function onAuthorizeFail(data, message, error, accept) {
     if (error) adapter.log.error('failed connection to socket.io from ' + data.connection.remoteAddress + ':', message);
