@@ -513,7 +513,10 @@ $(document).ready(function () {
                 navigation();
             }
         });
-
+        main.socket.emit('authEnabled', function (auth, user) {
+            if (!auth) $('#button-logout').remove();
+            $('#current-user').html(user ? user[0].toUpperCase() + user.substring(1).toLowerCase() : '');
+        });
         resizeGrids();
     }
 
