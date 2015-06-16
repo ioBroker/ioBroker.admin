@@ -203,7 +203,7 @@ function Instances(main) {
         this.$grid.jqGrid('editRow', 'instance_' + id, {'url': 'clientArray'});
     };
 
-    this.replaceLink = function (_var, adapter, instance) {
+    this.replaceLink = function (_var, adapter, instance, elem) {
         _var = _var.replace(/\%/g, '');
         // like web.0_port
         var parts;
@@ -223,25 +223,82 @@ function Instances(main) {
         this.main.socket.emit('getObject', 'system.adapter.' + parts[0], function (err, obj) {
             if (obj) {
                 setTimeout(function () {
-                    var link = $('#a_' + adapter + '_' + instance).attr('href');
+                    var link;
+                    if (elem) {
+                        link = $('#' + elem).data('src');
+                    } else {
+                        link = $('#a_' + adapter + '_' + instance).attr('href');
+                    }
                     if (link) {
                         if (parts[1] == 'secure') {
                             link = link.replace('%' + _var + '%', obj.native[parts[1]] ? 'https' : 'http');
                         } else {
                             link = link.replace('%' + _var + '%', obj.native[parts[1]]);
                         }
-                        $('#a_' + adapter + '_' + instance).attr('href', link);
+                        if (elem) {
+                            $('#' + elem).data('src', link);
+                        } else {
+                            $('#a_' + adapter + '_' + instance).attr('href', link);
+                        }
                     }
                 }, 0);
             }
         });
     };
 
-    this.replaceLinks = function (vars, adapter, instance) {
+    this.replaceLinks = function (vars, adapter, instance, elem) {
         if (typeof vars != 'object') vars = [vars];
         for (var t = 0; t < vars.length; t++) {
-            this.replaceLink(vars[t], adapter, instance);
+            this.replaceLink(vars[t], adapter, instance, elem);
         }
+    };
+
+    this._replaceLink = function (link, _var, adapter, instance, callback) {
+        // remove %%
+        _var = _var.replace(/\%/g, '');
+
+        // like web.0_port
+        var parts;
+        if (_var.indexOf('_') == -1) {
+            parts = [adapter + '.' + instance, _var];
+        } else {
+            parts = _var.split('_');
+            // add .0 if not defined
+            if (!parts[0].match(/\.[0-9]+$/)) parts[0] += '.0';
+        }
+
+        if (parts[1] == 'protocol') parts[1] = 'secure';
+
+        this.main.socket.emit('getObject', 'system.adapter.' + parts[0], function (err, obj) {
+            setTimeout(function () {
+                if (obj && link) {
+                    if (parts[1] == 'secure') {
+                        link = link.replace('%' + _var + '%', obj.native[parts[1]] ? 'https' : 'http');
+                    } else {
+                        link = link.replace('%' + _var + '%', obj.native[parts[1]]);
+                    }
+                }
+                callback(link);
+            }, 0);
+        });
+    };
+
+    this._replaceLinks = function (link, adapter, instance, arg, callback) {
+        if (!link) {
+            return callback(link, adapter, instance, arg);
+        }
+        var vars = link.match(/\%(\w+)\%/g);
+        if (!vars) {
+            return callback(link, adapter, instance, arg);
+        }
+        if (vars[0] == '%ip%') {
+            link = link.replace('%ip%', location.hostname);
+            this._replaceLinks(link, adapter, instance, arg, callback);
+            return;
+        }
+        this._replaceLink(link, vars[0], adapter, instance, function (link, adapter, instance) {
+            this._replaceLinks(link, adapter, instance, arg, callback);
+        }.bind(this));
     };
 
     this.htmlBoolean = function (value) {

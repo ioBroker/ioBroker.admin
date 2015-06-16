@@ -265,16 +265,17 @@ $(document).ready(function () {
         logs:       new Logs(main),
         states:     new States(main),
         objects:    new Objects(main),
-        scripts:    new Scripts(main),
+//        scripts:    new Scripts(main),
         hosts:      new Hosts(main),
         users:      new Users(main),
         groups:     new Groups(main)
     };
+
     main.instances = tabs.instances.list;
     main.tabs      = tabs;
 
     var enums =                 [];
-    var scripts =               [];
+//    var scripts =               [];
     var children =              {};
     var updateTimers =          {};
     var enumCurrentParent =     '';
@@ -329,111 +330,6 @@ $(document).ready(function () {
         }
     }
 
-    // jQuery UI initializations
-    $('#tabs').tabs({
-        activate: function (event, ui) {
-            window.location.hash = '#' + ui.newPanel.selector.slice(5);
-            switch (ui.newPanel.selector) {
-                case '#tab-objects':
-                    tabs.objects.init();
-                    break;
-
-                case '#tab-hosts':
-                    tabs.hosts.init();
-                    break;
-
-                case '#tab-states':
-                    tabs.states.init();
-                    break;
-
-                case '#tab-scripts':
-                    tabs.scripts.init();
-                    break;
-
-                case '#tab-adapters':
-                    tabs.hosts.initList();
-                    break;
-
-                case '#tab-instances':
-                    tabs.instances.init();
-                    break;
-
-                case '#tab-users':
-                    tabs.users.init();
-                    break;
-
-                case '#tab-groups':
-                    tabs.groups.init();
-                    break;
-
-                case '#tab-enums':
-                    initEnums();
-                    break;
-
-                case '#tab-log':
-                    tabs.logs.init();
-                    break;
-            }
-        },
-        create: function () {
-            $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
-
-            $('.ui-tabs-nav')
-                .append('<button class="menu-button" id="button-logout">' + _('Logout') + '</button>' +
-                        '<button class="menu-button" id="button-system">' + _('System') + '</button>' +
-                        '<div id="current-user" class="menu-button" style="padding-right: 10px; padding-top: 5px; height: 16px"></div>');
-
-            $('#button-logout').button().click(function () {
-                window.location.href = '/logout/';
-            });
-            $('#button-system').button({
-                icons: {primary: 'ui-icon-gear'},
-                text: false
-            }).click(function () {
-                $('#system_activeRepo').html('');
-                if (systemRepos.native.repositories) {
-                    for (var repo in systemRepos.native.repositories) {
-                        $('#system_activeRepo').append('<option value="' + repo + '">' + repo + '</option>');
-                    }
-                }
-
-                $('#diagMode').val(main.systemConfig.common.diag).change(function () {
-                    main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
-                        $('#diagSample').html(JSON.stringify(obj, null, 2));
-                    });
-                });
-                $('#diagMode').trigger('change');
-
-
-                $('.system-settings.value').each(function () {
-                    var $this = $(this);
-                    var id = $this.attr('id').substring('system_'.length);
-
-                    $('.system-settings.value').each(function () {
-                        var $this = $(this);
-                        var id = $this.attr('id').substring('system_'.length);
-
-                        if ($this.attr('type') == 'checkbox') {
-                            $this.prop('checked', main.systemConfig.common[id]);
-                        } else {
-                            if (id == 'isFloatComma') {
-                                $this.val(main.systemConfig.common[id] ? "true" : "false");
-                            } else {
-                                $this.val(main.systemConfig.common[id]);
-                            }
-                        }
-
-                    });
-                });
-                $('#tabs-system').tabs();
-
-                $dialogSystem.dialog('open');
-            });
-            window.onhashchange = navigation;
-            navigation();
-        }
-    });
-
     function string2cert(name, str) {
         // expected format: -----BEGIN CERTIFICATE-----certif...icate==-----END CERTIFICATE-----
         if (str.length < '-----BEGIN CERTIFICATE-----==-----END CERTIFICATE-----'.length) {
@@ -479,9 +375,273 @@ $(document).ready(function () {
         return res;
     }
 
+    function initHtmlTabs(showTabs) {
+        // jQuery UI initializations
+        $('#tabs').show().tabs({
+            activate: function (event, ui) {
+                window.location.hash = '#' + ui.newPanel.selector.slice(5);
+
+                // Init source for iframe
+                if ($(ui.newPanel.selector).length && $(ui.newPanel.selector).data('src')) {
+                    var $iframe = $(ui.newPanel.selector).find('iframe');
+                    if ($iframe.length && !$iframe.attr('src')) {
+                        $iframe.attr('src', $(ui.newPanel.selector).data('src'));
+                    }
+                }
+
+                switch (ui.newPanel.selector) {
+                    case '#tab-objects':
+                        tabs.objects.init();
+                        break;
+
+                    case '#tab-hosts':
+                        tabs.hosts.init();
+                        break;
+
+                    case '#tab-states':
+                        tabs.states.init();
+                        break;
+
+                    case '#tab-scripts':
+//                    tabs.scripts.init();
+                        break;
+
+                    case '#tab-adapters':
+                        tabs.hosts.initList();
+                        break;
+
+                    case '#tab-instances':
+                        tabs.instances.init();
+                        break;
+
+                    case '#tab-users':
+                        tabs.users.init();
+                        break;
+
+                    case '#tab-groups':
+                        tabs.groups.init();
+                        break;
+
+                    case '#tab-enums':
+                        initEnums();
+                        break;
+
+                    case '#tab-log':
+                        tabs.logs.init();
+                        break;
+                }
+            },
+            create: function () {
+                $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
+
+                $('.ui-tabs-nav')
+                    .append('<button class="menu-button" id="button-logout">' + _('Logout') + '</button>' +
+                        '<button class="menu-button" id="button-system">' + _('System') + '</button>' +
+                        '<div id="current-user" class="menu-button" style="padding-right: 10px; padding-top: 5px; height: 16px"></div>' +
+                        '<select id="tabs-show"></select>');
+
+                if (showTabs) {
+                    $('#tabs-show').html('<option value="">' + _('Show...') + '</option>' + showTabs).show()
+
+                    $("#tabs-show").selectmenu({
+                        width: 150,
+                        change: function () {
+                            if ($(this).val()) {
+                                main.systemConfig.common.tabs.push($(this).val());
+                                // save
+                                main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
+                                    if (err) {
+                                        main.showError(err);
+                                        return;
+                                    }
+                                });
+                                initTabs();
+                            }
+                        }
+                    });
+                } else {
+                    $('#tabs-show').html('').hide();
+                }
+
+                $('#button-logout').button().click(function () {
+                    window.location.href = '/logout/';
+                });
+                $('#button-system').button({
+                    icons: {primary: 'ui-icon-gear'},
+                    text: false
+                }).click(function () {
+                    $('#system_activeRepo').html('');
+                    if (systemRepos.native.repositories) {
+                        for (var repo in systemRepos.native.repositories) {
+                            $('#system_activeRepo').append('<option value="' + repo + '">' + repo + '</option>');
+                        }
+                    }
+
+                    $('#diagMode').val(main.systemConfig.common.diag).change(function () {
+                        main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
+                            $('#diagSample').html(JSON.stringify(obj, null, 2));
+                        });
+                    });
+                    $('#diagMode').trigger('change');
+
+
+                    $('.system-settings.value').each(function () {
+                        var $this = $(this);
+                        var id = $this.attr('id').substring('system_'.length);
+
+                        $('.system-settings.value').each(function () {
+                            var $this = $(this);
+                            var id = $this.attr('id').substring('system_'.length);
+
+                            if ($this.attr('type') == 'checkbox') {
+                                $this.prop('checked', main.systemConfig.common[id]);
+                            } else {
+                                if (id == 'isFloatComma') {
+                                    $this.val(main.systemConfig.common[id] ? "true" : "false");
+                                } else {
+                                    $this.val(main.systemConfig.common[id]);
+                                }
+                            }
+
+                        });
+                    });
+                    $('#tabs-system').tabs();
+
+                    $dialogSystem.dialog('open');
+                });
+                window.onhashchange = navigation;
+                navigation();
+            }
+        });
+
+        resizeGrids();
+    }
+
+    function initTabs() {
+        // extract all additional instances
+        var text     = '';
+        var list     = [];
+        var showTabs = '';
+
+        var addTabs = [];
+        for (var i = 0; i < main.instances.length; i++) {
+            if (!main.objects[main.instances[i]].common ||
+                !main.objects[main.instances[i]].common.enabled ||
+                !main.objects[main.instances[i]].common.adminTab) continue;
+
+            if (main.objects[main.instances[i]].common.adminTab.singleton && addTabs.indexOf(main.instances[i]) == -1) {
+                addTabs.push(main.instances[i]);
+            } else {
+                addTabs.push(main.instances[i]);
+            }
+        }
+
+        // Build the standart tabs together
+        $('.admin-tab').each(function () {
+            list.push($(this).attr('id'));
+            if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf($(this).attr('id')) != -1) {
+                text += '<li><a href="#' + $(this).attr('id') + '">' + _($(this).data('name')) + '</a><button class="tab-close" data-tab="' + $(this).attr('id') + '"></button></li>\n';
+                $(this).show().appendTo($('#tabs'));
+            } else {
+                $(this).hide().appendTo($('body'));
+                showTabs += '<option value="' + $(this).attr('id') + '">' + _($(this).data('name')) + '</option>';
+            }
+        });
+
+        // Look for adapter tabs
+        for (var a = 0; a < addTabs.length; a++) {
+            var name = 'tab-' + main.objects[addTabs[a]].common.name;
+            var link = main.objects[addTabs[a]].common.adminTab.link;
+            var parts = addTabs[a].split('.');
+            var buttonName = _(main.objects[addTabs[a]].common.adminTab.name || main.objects[addTabs[a]].common.name);
+
+            if (!main.objects[addTabs[a]].common.adminTab.singleton) {
+                if (link.indexOf('?') != -1) {
+                    link += '&instance=' + parts[3];
+                } else {
+                    link += '?instance=' + parts[3];
+                }
+                buttonName += '.' + parts[3];
+                name += '-' + parts[3];
+            }
+
+            list.push(name);
+
+            if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(name) != -1) {
+                var isReplace = false;
+                if (!link) {
+                    link = '/adapter/' + parts[2] + '/tab.html';
+                } else {
+                    // convert "http://%ip%:%port%" to "http://localhost:1880"
+                    /*main.tabs.instances._replaceLinks(link, parts[2], parts[3], name, function (link, adapter, instance, arg) {
+                        $('#' + arg).data('src', link);
+                    });*/
+                    isReplace = (link.indexOf('%') != -1);
+                }
+
+                text += '<li><a href="#' + name + '">' + buttonName + '</a><button class="tab-close" data-tab="' + name + '"></button></li>\n';
+
+                if (!$('#' + name).length) {
+                    var div = '<div id="' + name + '" class="tab-custom ' + (isReplace ? 'link-replace': '') + '" data-src="' + link + '">' +
+                        '<iframe class="iframe-in-tab" style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%;"></iframe></div>';
+                    $(div).appendTo($('#tabs'));
+                } else {
+                    $('#' + name).show().appendTo($('#tabs'));
+                }
+            } else {
+                $('#' + name).hide().appendTo($('body'));
+                showTabs += '<option value="' + name + '">' + buttonName + '</option>';
+            }
+        }
+        $('.tab-custom').each(function () {
+            if (list.indexOf($(this).attr('id')) == -1) {
+                $('#' + $(this).attr('id')).hide().appendTo($('body'));
+            }
+        });
+
+
+        if (!main.systemConfig.common.tabs) main.systemConfig.common.tabs = list;
+        $('#tabs-ul').html(text);
+
+        $('.tab-close').button({
+            icons: {primary: 'ui-icon-close'},
+            text: false
+        }).unbind('click').click(function () {
+            var pos = main.systemConfig.common.tabs.indexOf($(this).data('tab'));
+            if (pos != -1) {
+                main.systemConfig.common.tabs.splice(pos, 1);
+                // save
+                main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
+                    if (err) {
+                        main.showError(err);
+                        return;
+                    }
+                });
+            }
+            initTabs();
+        }).css({width: 16, height: 16});
+
+        $('#tabs').hide();
+        if ($('#tabs').tabs('instance')) {
+            $('#tabs').tabs('destroy');
+        }
+        if ($('.link-replace').length) {
+            var countLink = 0;
+            $('.link-replace').each(function () {
+                // convert "http://%ip%:%port%" to "http://localhost:1880"
+                countLink++;
+                main.tabs.instances._replaceLinks(link, parts[2], parts[3], $(this).attr('id'), function (link, adapter, instance, arg) {
+                    $('#' + arg).data('src', link).removeClass('link-replace');
+                    if (!(--countLink)) initHtmlTabs(showTabs);
+                });
+            });
+        } else {
+            initHtmlTabs(showTabs);
+        }
+    }
+
     // Use the function for this because it must be done after the language was read
     function initAllDialogs() {
-
         initGridLanguage(main.systemConfig.common.language);
 
         $dialogSystem.dialog({
@@ -1156,6 +1316,7 @@ $(document).ready(function () {
             $gridCerts.jqGrid('restoreRow', 'cert_' + id, false);
         });
     }
+
     function updateCertListSelect() {
         // todo
     }
@@ -1171,9 +1332,11 @@ $(document).ready(function () {
 
                     obj = main.objects[id];
 
-                    if (obj.type === 'instance') main.instances.push(id);
+                    if (obj.type === 'instance') {
+                        main.instances.push(id);
+                    }
                     if (obj.type === 'enum')     enums.push(id);
-                    if (obj.type === 'script')   tabs.scripts.list.push(id);
+//                    if (obj.type === 'script')   tabs.scripts.list.push(id);
                     if (obj.type === 'user')     tabs.users.list.push(id);
                     if (obj.type === 'group')    tabs.groups.list.push(id);
                     if (obj.type === 'adapter')  tabs.adapters.list.push(id);
@@ -1194,23 +1357,21 @@ $(document).ready(function () {
                         }
                         if (addr) tabs.hosts.list.push({name: obj.common.hostname, address: addr, id: obj._id});
                     }
-
-                    if (id.match(/^system\.adapter\.node-red\.[0-9]+$/) && obj && obj.common && obj.common.enabled) {
-                        showNodeRed(obj, 0);
-                    }
                     //treeInsert(id);
                 }
                 //benchmark('finished getObjects loop');
                 main.objectsLoaded = true;
 
+                initTabs();
+
                 // If history enabled
                 tabs.objects.checkHistory();
 
                 // Detect if some script engine instance installed
-                var engines = tabs.scripts.fillEngines();
+//                var engines = tabs.scripts.fillEngines();
 
                 // Disable scripts tab if no one script engine instance found
-                if (!engines || !engines.length) $('#tabs').tabs('option', 'disabled', [4]);
+//              if (!engines || !engines.length) $('#tabs').tabs('option', 'disabled', [4]);
 
                 // Show if update available
                 tabs.hosts.initList();
@@ -1218,16 +1379,6 @@ $(document).ready(function () {
                 if (typeof callback === 'function') callback();
             }, 0);
         });
-    }
-    // Give to node-red some time to start up the WEB server
-    function showNodeRed (obj, timeout) {
-        setTimeout(function () {
-            if (location.protocol == 'https:') return;
-            $('#a-tab-node-red').show();
-            if ($('#tabs').tabs('option', 'active') == 5) $("#tab-node-red").show();
-            $('#iframe-node-red').height($(window).height() - 55);
-            $('#iframe-node-red').attr('src', 'http://' + location.hostname + ':' + obj.native.port);
-        }, timeout);
     }
     // ----------------------------- Enum show and Edit ------------------------------------------------
     var tasks = [];
@@ -1719,17 +1870,15 @@ $(document).ready(function () {
             }
 
             main.systemConfig = obj;
+            initTabs();
         }
 
         //tabs.adapters.objectChange(id, obj);
         tabs.instances.objectChange(id, obj);
 
-        if (id.match(/^system\.adapter\.node-red\.[0-9]+$/)) {
-            if (obj && obj.common && obj.common.enabled) {
-                showNodeRed(obj, 7000);
-            } else {
-                $("#a-tab-node-red").hide();
-                $("#tab-node-red").hide();
+        if (id.match(/^system\.adapter\.[\w-]+\.[0-9]+$/)) {
+            if (obj && obj.common && obj.common.adminTab) {
+                initTabs();
             }
         }
 
@@ -1738,15 +1887,15 @@ $(document).ready(function () {
             tabs.objects.reinit();
         }
 
-        if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
+        /*if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
             // Disable scripts tab if no one script engine instance found
             var engines = tabs.scripts.fillEngines();
             $('#tabs').tabs('option', 'disabled', (engines && engines.length) ? [] : [4]);
-        }
+        }*/
 
         tabs.hosts.objectChange(id, obj);
 
-        tabs.scripts.objectChange(id, obj);
+        //tabs.scripts.objectChange(id, obj);
 
         // Update groups
         tabs.groups.objectChange(id, obj);
@@ -1870,18 +2019,23 @@ $(document).ready(function () {
                                         if (language != 'en' && language != 'de' && language != 'ru') language = 'en';
 
                                         $('#license_text').html(license[language] || license.en);
+                                        $('#license_language_label').html(translateWord('Select language', language));
                                         $('#license_language').val(language).show();
                                         $('#license_checkbox').show();
                                         $('#license_checkbox').html(translateWord('license_checkbox', language));
                                         $('#license_agree .ui-button-text').html(translateWord('agree', language));
                                         $('#license_non_agree .ui-button-text').html(translateWord('not agree', language));
+                                        $('#license_terms').html(translateWord('License terms', language));
 
                                         $('#license_language').change(function () {
                                             language = $(this).val();
+                                            $('#license_language_label').html(translateWord('Select language', language));
                                             $('#license_text').html(license[language] || license.en);
                                             $('#license_checkbox').html(translateWord('license_checkbox', language));
                                             $('#license_agree .ui-button-text').html(translateWord('agree', language));
                                             $('#license_non_agree .ui-button-text').html(translateWord('not agree', language));
+                                            $('#license_terms').html(translateWord('License terms', language));
+                                            $dialogLicense.dialog('option', 'title', translateWord('license agreement', language));
                                         });
                                         $('#license_diag').change(function () {
                                             if ($(this).prop('checked')) {
@@ -1896,9 +2050,10 @@ $(document).ready(function () {
                                             modal: true,
                                             width: 600,
                                             height: 400,
+                                            title: translateWord('license agreement', language),
                                             buttons: [
                                                 {
-                                                    text: _('agree'),
+                                                    text: translateWord('agree', language),
                                                     click: function () {
                                                         main.socket.emit('extendObject', 'system.config', {
                                                             common: {
@@ -1913,7 +2068,7 @@ $(document).ready(function () {
                                                     id: 'license_agree'
                                                 },
                                                 {
-                                                    text: _('not agree'),
+                                                    text: translateWord('not agree', language),
                                                     click: function () {
                                                         location.reload();
                                                     },
@@ -1951,7 +2106,6 @@ $(document).ready(function () {
                                 translateAll();
 
                                 // Here we go!
-                                $('#tabs').show();
                                 initAllDialogs();
                                 prepareEnumMembers();
                                 tabs.hosts.prepare();
@@ -1961,7 +2115,7 @@ $(document).ready(function () {
                                 tabs.instances.prepare();
                                 tabs.users.prepare();
                                 tabs.groups.prepare();
-                                tabs.scripts.prepare();
+                                //tabs.scripts.prepare();
                                 tabs.objects.prepareHistory();
                                 prepareRepos();
                                 prepareCerts();
@@ -2020,11 +2174,10 @@ $(document).ready(function () {
         tabs.adapters.resize(x, y);
         tabs.instances.resize(x, y);
         tabs.objects.resize(x, y);
-        tabs.scripts.resize(x, y);
         tabs.hosts.resize(x, y);
         tabs.users.resize(x, y);
         tabs.groups.resize(x, y);
-        $('#iframe-node-red').height(y - 55);
+        $('.iframe-in-tab').height(y - 55);
     }
     function navigation() {
         if (window.location.hash) {

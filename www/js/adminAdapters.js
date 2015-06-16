@@ -250,6 +250,9 @@ function Adapters(main) {
     }
 
     this.getAdaptersInfo = function (host, update, updateRepo, callback) {
+        if (!host) {
+            return;
+        }
         if (!callback) throw 'Callback cannot be null or undefined';
         if (update) {
             // Do not update too offten

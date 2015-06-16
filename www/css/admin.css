@@ -73,7 +73,7 @@ table#events {
     box-shadow: none;
     resize:none;
 }
-#edit-script-source {
+/*#edit-script-source {
     font-size: 12px;
     width: 600px;
     height: 240px;
@@ -83,7 +83,7 @@ table#events {
     outline: none;
     box-shadow: none;
     resize:none;
-}
+}*/
 
 .menu-button {
     float: right;
@@ -91,13 +91,13 @@ table#events {
     margin: 1px 2px 1px 2px;
 }
 
-#script-editor {
+/*#script-editor {
     position: absolute;
     top: 80px;
     right: 0;
     bottom: 0;
     left: 0;
-}
+}*/
 
 .event-column-1 {
     width: 10%;
