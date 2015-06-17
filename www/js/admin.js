@@ -466,49 +466,57 @@ $(document).ready(function () {
                 $('#button-logout').button().click(function () {
                     window.location.href = '/logout/';
                 });
-                $('#button-system').button({
-                    icons: {primary: 'ui-icon-gear'},
-                    text: false
-                }).click(function () {
-                    $('#system_activeRepo').html('');
-                    if (systemRepos.native.repositories) {
-                        for (var repo in systemRepos.native.repositories) {
-                            $('#system_activeRepo').append('<option value="' + repo + '">' + repo + '</option>');
+
+                if (!main.systemConfig.error) {
+                    $('#button-system').button({
+                        icons: {primary: 'ui-icon-gear'},
+                        text: false
+                    }).click(function () {
+                        $('#system_activeRepo').html('');
+                        if (systemRepos && systemRepos.native.repositories) {
+                            for (var repo in systemRepos.native.repositories) {
+                                $('#system_activeRepo').append('<option value="' + repo + '">' + repo + '</option>');
+                            }
+                        } else {
+                            $('#tab-system-repo').html(_('permissionError'));
                         }
-                    }
 
-                    $('#diagMode').val(main.systemConfig.common.diag).change(function () {
-                        main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
-                            $('#diagSample').html(JSON.stringify(obj, null, 2));
+                        $('#diagMode').val(main.systemConfig.common.diag).change(function () {
+                            main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
+                                $('#diagSample').html(JSON.stringify(obj, null, 2));
+                            });
                         });
-                    });
-                    $('#diagMode').trigger('change');
+                        $('#diagMode').trigger('change');
 
-
-                    $('.system-settings.value').each(function () {
-                        var $this = $(this);
-                        var id = $this.attr('id').substring('system_'.length);
 
                         $('.system-settings.value').each(function () {
                             var $this = $(this);
                             var id = $this.attr('id').substring('system_'.length);
 
-                            if ($this.attr('type') == 'checkbox') {
-                                $this.prop('checked', main.systemConfig.common[id]);
-                            } else {
-                                if (id == 'isFloatComma') {
-                                    $this.val(main.systemConfig.common[id] ? "true" : "false");
+                            $('.system-settings.value').each(function () {
+                                var $this = $(this);
+                                var id = $this.attr('id').substring('system_'.length);
+
+                                if ($this.attr('type') == 'checkbox') {
+                                    $this.prop('checked', main.systemConfig.common[id]);
                                 } else {
-                                    $this.val(main.systemConfig.common[id]);
+                                    if (id == 'isFloatComma') {
+                                        $this.val(main.systemConfig.common[id] ? "true" : "false");
+                                    } else {
+                                        $this.val(main.systemConfig.common[id]);
+                                    }
                                 }
-                            }
 
+                            });
                         });
-                    });
-                    $('#tabs-system').tabs();
+                        $('#tabs-system').tabs();
 
-                    $dialogSystem.dialog('open');
-                });
+                        $dialogSystem.dialog('open');
+                    });
+                } else {
+                    $('#button-system').hide();
+                }
+
                 window.onhashchange = navigation;
                 navigation();
             }
@@ -630,12 +638,25 @@ $(document).ready(function () {
         }
         if ($('.link-replace').length) {
             var countLink = 0;
+
+            // If some objects cannot be read => go by timeout
+            var loadTimeout = setTimeout(function() {
+                loadTimeout = null;
+                initHtmlTabs(showTabs);
+            }, 1000);
+
             $('.link-replace').each(function () {
                 // convert "http://%ip%:%port%" to "http://localhost:1880"
                 countLink++;
                 main.tabs.instances._replaceLinks(link, parts[2], parts[3], $(this).attr('id'), function (link, adapter, instance, arg) {
                     $('#' + arg).data('src', link).removeClass('link-replace');
-                    if (!(--countLink)) initHtmlTabs(showTabs);
+                    if (!(--countLink)) {
+                        if (loadTimeout) {
+                            clearTimeout(loadTimeout);
+                            loadTimeout = null;
+                        }
+                        initHtmlTabs(showTabs);
+                    }
                 });
             });
         } else {
@@ -676,36 +697,43 @@ $(document).ready(function () {
 
                         // Fill the repositories list
                         var links = {};
-                        for (var r in systemRepos.native.repositories) {
-                            if (typeof systemRepos.native.repositories[r] == 'object' && systemRepos.native.repositories[r].json) {
-                                links[systemRepos.native.repositories[r].link] = systemRepos.native.repositories[r].json;
+                        if (systemRepos) {
+                            for (var r in systemRepos.native.repositories) {
+                                if (typeof systemRepos.native.repositories[r] == 'object' && systemRepos.native.repositories[r].json) {
+                                    links[systemRepos.native.repositories[r].link] = systemRepos.native.repositories[r].json;
+                                }
                             }
+                            systemRepos.native.repositories = {};
                         }
-                        systemRepos.native.repositories = {};
+
                         var data = $gridRepo.jqGrid('getRowData');
-                        var first = null;
-                        for (var i = 0; i < data.length; i++) {
-                            systemRepos.native.repositories[data[i].name] = {link: data[i].link, json: null};
-                            if (links[data[i].link]) systemRepos.native.repositories[data[i].name].json = links[data[i].link];
-                            if (!first) first = data[i].name;
-                        }
-                        // Check if the active repository still exist in the list
-                        if (!first) {
-                            if (common.activeRepo) {
-                                activeRepoChanged = true;
-                                common.activeRepo = '';
+                        if (systemRepos) {
+                            var first = null;
+                            for (var i = 0; i < data.length; i++) {
+                                systemRepos.native.repositories[data[i].name] = {link: data[i].link, json: null};
+                                if (links[data[i].link]) systemRepos.native.repositories[data[i].name].json = links[data[i].link];
+                                if (!first) first = data[i].name;
                             }
-                        } else if (!systemRepos.native.repositories[common.activeRepo]) {
-                            activeRepoChanged = true;
-                            common.activeRepo = first;
+                            // Check if the active repository still exist in the list
+                            if (!first) {
+                                if (common.activeRepo) {
+                                    activeRepoChanged = true;
+                                    common.activeRepo = '';
+                                }
+                            } else if (!systemRepos.native.repositories[common.activeRepo]) {
+                                activeRepoChanged = true;
+                                common.activeRepo = first;
+                            }
                         }
                         common.diag = $('#diagMode').val();
 
-                        // Fill the certificates list
-                        systemCerts.native.certificates = {};
-                        data = $gridCerts.jqGrid('getRowData');
-                        for (var j = 0; j < data.length; j++) {
-                            systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
+                        if (systemCerts) {
+                            // Fill the certificates list
+                            systemCerts.native.certificates = {};
+                            data = $gridCerts.jqGrid('getRowData');
+                            for (var j = 0; j < data.length; j++) {
+                                systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
+                            }
                         }
 
                         main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
@@ -1010,6 +1038,9 @@ $(document).ready(function () {
                 $('.repo-cancel-submit[data-repo-id="' + id + '"]').show();
                 $gridRepo.jqGrid('editRow', rowid, {"url":"clientArray"});
             },
+            loadComplete: function () {
+                initRepoButtons();
+            },
             viewrecords: false,
             pgbuttons: false,
             pginput: false,
@@ -1157,7 +1188,8 @@ $(document).ready(function () {
     // ----------------------------- Repositories show and Edit ------------------------------------------------
     function initRepoGrid(update) {
         $gridRepo.jqGrid('clearGridData');
-        if (systemRepos.native.repositories) {
+
+        if (systemRepos && systemRepos.native.repositories) {
             var id = 1;
             // list of the repositories
             for (var repo in systemRepos.native.repositories) {
@@ -1178,8 +1210,9 @@ $(document).ready(function () {
             }
 
             initRepoButtons();
+        } else {
+            $('#tab-system-repo').html(_('permissionError'));
         }
-
 
         $gridRepo.trigger('reloadGrid');
     }
@@ -1246,7 +1279,7 @@ $(document).ready(function () {
     // ----------------------------- Certificates show and Edit ------------------------------------------------
     function initCertsGrid(update) {
         $gridCerts.jqGrid('clearGridData');
-        if (systemCerts.native.certificates) {
+        if (systemCerts && systemCerts.native.certificates) {
             var id = 1;
             // list of the repositories
             for (var cert in systemCerts.native.certificates) {
@@ -1267,6 +1300,8 @@ $(document).ready(function () {
             }
 
             initCertButtons();
+        } else {
+            $('#tab-system-certs').html(_('permissionError'));
         }
 
 
@@ -1362,7 +1397,6 @@ $(document).ready(function () {
                     }
                     //treeInsert(id);
                 }
-                //benchmark('finished getObjects loop');
                 main.objectsLoaded = true;
 
                 initTabs();
@@ -2007,102 +2041,106 @@ $(document).ready(function () {
             main.socket.emit('getUserPermissions', function (err, acl) {
                 main.acl = acl;
                 // Read system configuration
-                main.socket.emit('getObject', 'system.config', function (err, data) {
+                main.socket.emit('getObject', 'system.config', function (errConfig, data) {
                     main.systemConfig = data;
-                    main.socket.emit('getObject', 'system.repositories', function (err, repo) {
+                    main.socket.emit('getObject', 'system.repositories', function (errRepo, repo) {
                         systemRepos = repo;
-                        main.socket.emit('getObject', 'system.certificates', function (err, certs) {
+                        main.socket.emit('getObject', 'system.certificates', function (errCerts, certs) {
                             setTimeout(function () {
                                 systemCerts = certs;
-                                if (!err && main.systemConfig && main.systemConfig.common) {
-                                    systemLang = main.systemConfig.common.language || systemLang;
-                                    if (!main.systemConfig.common.licenseConfirmed) {
-                                        // Show license agreement
-                                        var language = main.systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
-                                        if (language != 'en' && language != 'de' && language != 'ru') language = 'en';
+                                if (errConfig == 'permission denied') {
+                                    main.systemConfig = {common: {language: systemLang}, error: 'permission denied'};
+                                } else {
+                                    if (!errConfig && main.systemConfig && main.systemConfig.common) {
+                                        systemLang = main.systemConfig.common.language || systemLang;
+                                        if (!main.systemConfig.common.licenseConfirmed) {
+                                            // Show license agreement
+                                            var language = main.systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
+                                            if (language != 'en' && language != 'de' && language != 'ru') language = 'en';
 
-                                        $('#license_text').html(license[language] || license.en);
-                                        $('#license_language_label').html(translateWord('Select language', language));
-                                        $('#license_language').val(language).show();
-                                        $('#license_checkbox').show();
-                                        $('#license_checkbox').html(translateWord('license_checkbox', language));
-                                        $('#license_agree .ui-button-text').html(translateWord('agree', language));
-                                        $('#license_non_agree .ui-button-text').html(translateWord('not agree', language));
-                                        $('#license_terms').html(translateWord('License terms', language));
-
-                                        $('#license_language').change(function () {
-                                            language = $(this).val();
-                                            $('#license_language_label').html(translateWord('Select language', language));
                                             $('#license_text').html(license[language] || license.en);
+                                            $('#license_language_label').html(translateWord('Select language', language));
+                                            $('#license_language').val(language).show();
+                                            $('#license_checkbox').show();
                                             $('#license_checkbox').html(translateWord('license_checkbox', language));
                                             $('#license_agree .ui-button-text').html(translateWord('agree', language));
                                             $('#license_non_agree .ui-button-text').html(translateWord('not agree', language));
                                             $('#license_terms').html(translateWord('License terms', language));
-                                            $dialogLicense.dialog('option', 'title', translateWord('license agreement', language));
-                                        });
-                                        $('#license_diag').change(function () {
-                                            if ($(this).prop('checked')) {
-                                                $('#license_agree').button('enable');
-                                            } else {
-                                                $('#license_agree').button('disable');
-                                            }
-                                        });
-                                        $dialogLicense.css({'z-index': 200});
-                                        $dialogLicense.dialog({
-                                            autoOpen: true,
-                                            modal: true,
-                                            width: 600,
-                                            height: 400,
-                                            title: translateWord('license agreement', language),
-                                            buttons: [
-                                                {
-                                                    text: translateWord('agree', language),
-                                                    click: function () {
-                                                        main.socket.emit('extendObject', 'system.config', {
-                                                            common: {
-                                                                licenseConfirmed: true,
-                                                                language: language
-                                                            }
-                                                        }, function () {
-                                                            $dialogLicense.dialog('close');
-                                                            $('#license_language').hide();
-                                                        });
-                                                    },
-                                                    id: 'license_agree'
-                                                },
-                                                {
-                                                    text: translateWord('not agree', language),
-                                                    click: function () {
-                                                        location.reload();
-                                                    },
-                                                    id: 'license_non_agree'
+
+                                            $('#license_language').change(function () {
+                                                language = $(this).val();
+                                                $('#license_language_label').html(translateWord('Select language', language));
+                                                $('#license_text').html(license[language] || license.en);
+                                                $('#license_checkbox').html(translateWord('license_checkbox', language));
+                                                $('#license_agree .ui-button-text').html(translateWord('agree', language));
+                                                $('#license_non_agree .ui-button-text').html(translateWord('not agree', language));
+                                                $('#license_terms').html(translateWord('License terms', language));
+                                                $dialogLicense.dialog('option', 'title', translateWord('license agreement', language));
+                                            });
+                                            $('#license_diag').change(function () {
+                                                if ($(this).prop('checked')) {
+                                                    $('#license_agree').button('enable');
+                                                } else {
+                                                    $('#license_agree').button('disable');
                                                 }
-                                            ],
-                                            close: function () {
+                                            });
+                                            $dialogLicense.css({'z-index': 200});
+                                            $dialogLicense.dialog({
+                                                autoOpen: true,
+                                                modal: true,
+                                                width: 600,
+                                                height: 400,
+                                                title: translateWord('license agreement', language),
+                                                buttons: [
+                                                    {
+                                                        text: translateWord('agree', language),
+                                                        click: function () {
+                                                            main.socket.emit('extendObject', 'system.config', {
+                                                                common: {
+                                                                    licenseConfirmed: true,
+                                                                    language: language
+                                                                }
+                                                            }, function () {
+                                                                $dialogLicense.dialog('close');
+                                                                $('#license_language').hide();
+                                                            });
+                                                        },
+                                                        id: 'license_agree'
+                                                    },
+                                                    {
+                                                        text: translateWord('not agree', language),
+                                                        click: function () {
+                                                            location.reload();
+                                                        },
+                                                        id: 'license_non_agree'
+                                                    }
+                                                ],
+                                                close: function () {
 
-                                            },
-                                            open: function () {
-                                                $('#license_agree').button('disable');
-                                            }
-                                        });
-                                    }
-                                } else {
-                                    main.systemConfig = {
-                                        type: 'config',
-                                        common: {
-                                            name:             'system.config',
-                                            language:         '',           // Default language for adapters. Adapters can use different values.
-                                            tempUnit:         '°C',         // Default temperature units.
-                                            currency:         '€',          // Default currency sign.
-                                            dateFormat:       'DD.MM.YYYY', // Default date format.
-                                            isFloatComma:     true,         // Default float divider ('.' - false, ',' - true)
-                                            licenseConfirmed: false         // If license agreement confirmed
+                                                },
+                                                open: function () {
+                                                    $('#license_agree').button('disable');
+                                                }
+                                            });
                                         }
-                                    };
-                                    main.systemConfig.common.language = window.navigator.userLanguage || window.navigator.language;
+                                    } else {
+                                        main.systemConfig = {
+                                            type: 'config',
+                                            common: {
+                                                name:             'system.config',
+                                                language:         '',           // Default language for adapters. Adapters can use different values.
+                                                tempUnit:         '°C',         // Default temperature units.
+                                                currency:         '€',          // Default currency sign.
+                                                dateFormat:       'DD.MM.YYYY', // Default date format.
+                                                isFloatComma:     true,         // Default float divider ('.' - false, ',' - true)
+                                                licenseConfirmed: false         // If license agreement confirmed
+                                            }
+                                        };
+                                        main.systemConfig.common.language = window.navigator.userLanguage || window.navigator.language;
 
-                                    if (main.systemConfig.common.language !== 'en' && main.systemConfig.common.language !== 'de' && main.systemConfig.common.language !== 'ru') {
-                                        main.systemConfig.common.language = 'en';
+                                        if (main.systemConfig.common.language !== 'en' && main.systemConfig.common.language !== 'de' && main.systemConfig.common.language !== 'ru') {
+                                            main.systemConfig.common.language = 'en';
+                                        }
                                     }
                                 }
 
@@ -2197,13 +2235,3 @@ $(document).ready(function () {
 
 });
 })(jQuery);
-
-var benchTime = (new Date()).getTime();
-
-function benchmark(text) {
-    var ts = (new Date()).getTime();
-    console.log('-- execution time: ' + (ts - benchTime) + 'ms');
-    benchTime = ts;
-    console.log('-- ' + text);
-}
-

@@ -270,15 +270,18 @@ function Instances(main) {
         if (parts[1] == 'protocol') parts[1] = 'secure';
 
         this.main.socket.emit('getObject', 'system.adapter.' + parts[0], function (err, obj) {
-            setTimeout(function () {
-                if (obj && link) {
-                    if (parts[1] == 'secure') {
-                        link = link.replace('%' + _var + '%', obj.native[parts[1]] ? 'https' : 'http');
-                    } else {
-                        link = link.replace('%' + _var + '%', obj.native[parts[1]]);
-                    }
+            if (obj && link) {
+                if (parts[1] == 'secure') {
+                    link = link.replace('%' + _var + '%', obj.native[parts[1]] ? 'https' : 'http');
+                } else {
+                    link = link.replace('%' + _var + '%', obj.native[parts[1]]);
                 }
-                callback(link);
+            } else {
+                console.log('Cannot get link ' + parts[1]);
+                link = link.replace('%' + _var + '%', '');
+            }
+            setTimeout(function () {
+                callback(link, adapter, instance);
             }, 0);
         });
     };

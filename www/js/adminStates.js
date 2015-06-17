@@ -210,7 +210,7 @@ function States(main) {
     };
 
     this.stateChange = function (id, state) {
-        if (this.$grid && this.main.objectsLoaded) {
+        if (this.$grid && this.main.objectsLoaded && this.main.states) {
             var rowData;
             // Update gridStates
             if (state) {
