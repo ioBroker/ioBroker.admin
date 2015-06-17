@@ -554,7 +554,13 @@ $(document).ready(function () {
                 text += '<li><a href="#' + $(this).attr('id') + '">' + _($(this).data('name')) + '</a><button class="tab-close" data-tab="' + $(this).attr('id') + '"></button></li>\n';
                 $(this).show().appendTo($('#tabs'));
             } else {
-                $(this).hide().appendTo($('body'));
+                if ($(this).parent().prop('tagName') !== 'BODY') {
+                    $(this).appendTo($('body'));
+                    var $t = $(this);
+                    setTimeout(function () {
+                        $t.hide()
+                    }, 100);
+                }
                 showTabs += '<option value="' + $(this).attr('id') + '">' + _($(this).data('name')) + '</option>';
             }
         });
@@ -606,7 +612,7 @@ $(document).ready(function () {
         }
         $('.tab-custom').each(function () {
             if (list.indexOf($(this).attr('id')) == -1) {
-                $('#' + $(this).attr('id')).hide().appendTo($('body'));
+                $('#' + $(this).attr('id')).remove();
             }
         });
 

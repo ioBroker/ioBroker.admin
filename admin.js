@@ -134,6 +134,9 @@ function main() {
 
     var options = null;
 
+    adapter.config.defaultUser = adapter.config.defaultUser || 'admin';
+    if (!adapter.config.defaultUser.match(/^system\.user\./)) adapter.config.defaultUser = 'system.user.' + adapter.config.defaultUser;
+
     if (adapter.config.secure) {
         // Load certificates
         adapter.getForeignObject('system.certificates', function (err, obj) {
@@ -554,13 +557,16 @@ function checkPermissions(socket, command, callback, arg) {
                 if (socket._acl[commandsPermissions[command].type] &&
                     socket._acl[commandsPermissions[command].type][commandsPermissions[command].operation]) {
                     return true;
+                } else {
+                    adapter.log.warn('No permission for "' + socket._acl.user + '" to call ' + command + '. Need "' + commandsPermissions[command].type + '"."' + commandsPermissions[command].operation + '"');
                 }
             } else {
                 return true;
             }
+        } else {
+            adapter.log.warn('No rule for command: ' + command);
         }
 
-        console.log('No permission for "' + socket._acl.user + '" to call ' + command);
         if (callback) {
             callback('permissionError');
         } else {
