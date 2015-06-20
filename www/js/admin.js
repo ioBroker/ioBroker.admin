@@ -2054,8 +2054,8 @@ $(document).ready(function () {
                         main.socket.emit('getObject', 'system.certificates', function (errCerts, certs) {
                             setTimeout(function () {
                                 systemCerts = certs;
-                                if (errConfig == 'permission denied') {
-                                    main.systemConfig = {common: {language: systemLang}, error: 'permission denied'};
+                                if (errConfig == 'permissionError') {
+                                    main.systemConfig = {common: {language: systemLang}, error: 'permissionError'};
                                 } else {
                                     if (!errConfig && main.systemConfig && main.systemConfig.common) {
                                         systemLang = main.systemConfig.common.language || systemLang;

@@ -614,7 +614,6 @@ function checkObject(id, options, flag) {
     return true;
 }
 
-
 // static information
 var commandsPermissions = {
     getObject:          {type: 'object',    operation: 'read'},
@@ -769,6 +768,7 @@ function socketEvents(socket) {
     socket.on('setState', function (id, state, callback) {
         if (updateSession(socket) && checkPermissions(socket, 'setState', callback, id)) {
             if (typeof state !== 'object') state = {val: state};
+
             adapter.setForeignState(id, state, {user: this._acl.user}, function (err, res) {
                 if (typeof callback === 'function') callback(err, res);
             });
