@@ -309,6 +309,18 @@ systemDictionary = {
     "http operation":       {"en": "http",                  "de": "http",                   "ru": "http"},
     "execute operation":    {"en": "Execute operation",     "de": "ausführen",              "ru": "выполнить"},
     "sendto operation":     {"en": "Send-to operation",     "de": "sendto",                 "ru": "sendto"},
+    "Access control":       {"en": "Access control",        "de": "Zugriffskontrolle",      "ru": "Права доступа"},
+    "raw":                  {"en": "raw(experts only)",     "de": "raw(nur Experten)",      "ru": "raw(Эксперт)"},
+    "Owner user":           {"en": "Owner user",            "de": "Besitzer-Anwender",      "ru": "Ползователь-Владелец"},
+    "Owner group":          {"en": "Owner group",           "de": "Besitzer-Gruppe",        "ru": "Группа-Владелец"},
+    "Object rights":        {"en": "Object rights",         "de": "Für Objekt",             "ru": "Для объекта"},
+    "Owner":                {"en": "Owner",                 "de": "Anwender",               "ru": "Ползователь"},
+    "Group":                {"en": "Group",                 "de": "Group",                  "ru": "Группа"},
+    "Everyone":             {"en": "Everyone",              "de": "Jeder",                  "ru": "Все"},
+    "States rights":        {"en": "States rights",         "de": "Zustände",               "ru": "Состояние"},
+    "read":                 {"en": "read",                  "de": "lesen",                  "ru": "читать"},
+    "write":                {"en": "write",                 "de": "schreiben",              "ru": "писать"},
+
     "Password cannot be empty!": {
         "en": "Password cannot be empty!",
         "de": "Kennword darf nicht leer sein!",
@@ -326,6 +338,7 @@ systemDictionary = {
         "de": "Ich bin mit der Sammlung von anonymer Statistik einverstanden.<br>(konnte später über Konfiguration deaktiviert werden)",
         "ru": "Я соглашаюсь с анонимным сбором статистики.<br>(Можно деактивировать через настройки)"
     },
+    "node-red":             {"en": "node-red",              "de": "node-red",               "ru": "node-red"},
     "permissionError":      {"en": "Permission error",      "de": "Zulassungsfehler",       "ru": "Ошибка доступа"},
     "Error":                {"en": "Error",                 "de": "Fehler",                 "ru": "Ошибка"},
     "Are you sure to delete script %s?": {

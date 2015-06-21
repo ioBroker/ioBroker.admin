@@ -770,8 +770,17 @@
                 }
             },
             dblclick: function (event, _data) {
-                if (data.buttonsDlg && _data && _data.node && !_data.node.folder) {
-                    data.buttonsDlg[0].click();
+                if (data.buttonsDlg) {
+                    if (_data && _data.node && !_data.node.folder) {
+                        data.buttonsDlg[0].click();
+                    }
+                } else if (data.dblclick) {
+                    var tree = data.$tree.fancytree('getTree');
+
+                    var node = tree.getActiveNode();
+                    if (node) {
+                        data.dblclick(node.key);
+                    }
                 }
             }
         };
