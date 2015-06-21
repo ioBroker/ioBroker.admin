@@ -68,7 +68,7 @@
              customButtonFilter: null // if in the filter over the buttons some specific button must be shown. It has type like {icons:{primary: 'ui-icon-close'}, text: false, callback: function ()}
      }
  +  show(currentId, filter, callback) - all arguments are optional if set by "init"
- +  clear() - clear object tree to read and buildit anew (used only if objects set by "init")
+ +  clear() - clear object tree to read and build a new (used only if objects set by "init")
  +  getInfo(id) - get information about ID
  +  getTreeInfo(id) - get {id, parent, children, object}
  +  state(id, val) - update states in tree
@@ -329,6 +329,7 @@
         var c;
         var data = $dlg.data('selectId');
         var noStates = (data.objects && !data.states);
+        var multiselect = (!data.noDialog && !data.buttonsDlg);
         // Get all states
         getAllStates(data);
 
@@ -529,6 +530,7 @@
             quicksearch: true,
             source: data.tree.children,
             extensions: ["table", "gridnav", "filter", "themeroller"],
+            checkbox: multiselect,
             table: {
                 indentation: 20,
                 nodeColumnIdx: 1
@@ -545,25 +547,47 @@
                 // A node was activated: display its title:
                 // On change
                 //var $dlg = $('#' + data.instance + '-dlg');
+                if (!multiselect) {
+                    var _data = $dlg.data('selectId');
+                    var newId = data.node.key;
+
+                    if (_data.onChange) _data.onChange(newId, _data.selectedID);
+
+                    _data.selectedID = newId;
+                    if (!_data.noDialog) {
+                        // Set title of dialog box
+                        if (_data.objects[newId] && _data.objects[newId].common && _data.objects[newId].common.name) {
+                            $dlg.dialog('option', 'title', _data.texts.selectid + ' - ' + (_data.objects[newId].common.name || ' '));
+                        } else {
+                            $dlg.dialog('option', 'title', _data.texts.selectid + ' - ' + (newId || ' '));
+                        }
+                        // Enable/ disable "Select" button
+                        if (_data.objects[newId]) { // && _data.objects[newId].type == 'state') {
+                            $('#' + _data.instance + '-button-ok').removeClass('ui-state-disabled');
+                        } else {
+                            $('#' + _data.instance + '-button-ok').addClass('ui-state-disabled');
+                        }
+
+                    }
+                }
+            },
+            select: function(event, data) {
                 var _data = $dlg.data('selectId');
-                var newId = data.node.key;
-                if (_data.onChange) _data.onChange(newId, _data.selectedID);
+                var newIds = [];
+                var selectedNodes = data.tree.getSelectedNodes();
+                for	(var i = 0; i < selectedNodes.length; i++) {
+                    newIds.push(selectedNodes[i].key);
+                }
 
-                _data.selectedID = newId;
+                if (_data.onChange) _data.onChange(newIds, _data.selectedID);
 
-                if (!_data.noDialog) {
-                    // Set title of dialog box
-                    if (_data.objects[newId] && _data.objects[newId].common && _data.objects[newId].common.name) {
-                        $dlg.dialog('option', 'title', _data.texts.selectid +  ' - ' + (_data.objects[newId].common.name || ' '));
-                    } else {
-                        $dlg.dialog('option', 'title', _data.texts.selectid +  ' - ' + (newId || ' '));
-                    }
-                    // Enable/ disable "Select" button
-                    if (_data.objects[newId] && _data.objects[newId].type == 'state') {
-                        $('#' + _data.instance + '-button-ok').removeClass('ui-state-disabled');
-                    } else {
-                        $('#' + _data.instance + '-button-ok').addClass('ui-state-disabled');
-                    }
+                _data.selectedID = newIds;
+
+                // Enable/ disable "Select" button
+                if (newIds.length > 0) {
+                    $('#' + _data.instance + '-button-ok').removeClass('ui-state-disabled');
+                } else {
+                    $('#' + _data.instance + '-button-ok').addClass('ui-state-disabled');
                 }
             },
             renderColumns: function (event, _data) {

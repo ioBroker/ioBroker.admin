@@ -982,9 +982,21 @@ $(document).ready(function () {
 
                 sid.selectId('show', function (newId, oldId) {
                     var obj = main.objects[enumEdit];
-                    if (obj.common.members.indexOf(newId) === -1) {
-                        obj.common.members.push(newId);
-
+                    var changed = false;
+                    if (Array.isArray(newId)) {
+                        for (var id = 0; id < newId.length; id++) {
+                            if (obj.common.members.indexOf(newId[id]) === -1) {
+                                obj.common.members.push(newId[id]);
+                                changed = true;
+                            }
+                        }
+                    } else {
+                        if (obj.common.members.indexOf(newId) === -1) {
+                            obj.common.members.push(newId);
+                            changed = true;
+                        }
+                    }
+                    if (changed) {
                         main.socket.emit('setObject', enumEdit, obj, function () {
                             setTimeout(function () {
                                 enumMembers(enumEdit);
