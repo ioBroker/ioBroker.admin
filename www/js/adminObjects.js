@@ -31,7 +31,15 @@ function Objects(main) {
                         $('#json-object').val('');
                     }
                 }
-            ]
+            ],
+            close: function () {
+                that.main.saveConfig('object-edit-active',  $('#object-tabs').tabs('option', 'active'));
+            },
+            resize: function () {
+                that.main.saveConfig('object-edit-width',  $(this).parent().width());
+                that.main.saveConfig('object-edit-height', $(this).parent().height() + 10);
+                that.editor.resize();
+            }
         });
 
         $(document).on('click', '.jump', function (e) {
@@ -49,11 +57,11 @@ function Objects(main) {
                     if (!obj) {
                         return false;
                     }
-                    $('#view-object-raw').val(JSON.stringify(obj, null, 2));
+                    that.editor.setValue(JSON.stringify(obj, null, 2));
                 } else if (ui.oldPanel.selector == '#object-tab-raw') {
                     var obj;
                     try {
-                        obj = JSON.parse($('#view-object-raw').val());
+                        obj = JSON.parse(that.editor.getValue());
                     } catch (e) {
                         that.main.showMessage(e, _('Parse error'), 'alert');
                         $('#object-tabs').tabs({active: 4});
@@ -64,6 +72,11 @@ function Objects(main) {
                 return true;
             }
         });
+
+        if (!that.editor) {
+            that.editor = ace.edit("view-object-raw");
+            that.editor.getSession().setMode("ace/mode/json");
+        }
     };
 
     function loadObjectFields(htmlId, object, readonly) {
@@ -251,6 +264,16 @@ function Objects(main) {
     this.edit = function (id) {
         var obj = main.objects[id];
         if (!obj) return;
+
+        var width = 870;
+        var height = 640;
+
+        if (this.main.config['object-edit-width'])  width  = this.main.config['object-edit-width'];
+        if (this.main.config['object-edit-height']) height = this.main.config['object-edit-height'];
+        if (this.main.config['object-edit-active'] !== undefined) {
+            $('#object-tabs').tabs({active: this.main.config['object-edit-active']});
+        }
+
         that.$dialog.dialog('option', 'title', id);
 
         // fill users
@@ -267,7 +290,11 @@ function Objects(main) {
         }
         $('#object-tab-acl-group').html(text);
         that.load(obj);
-        that.$dialog.dialog('open');
+
+        that.$dialog
+            .dialog('option', 'width',  width)
+            .dialog('option', 'height', height)
+            .dialog('open');
     };
 
     this.load = function (obj) {
@@ -309,7 +336,8 @@ function Objects(main) {
         }
 
         var _obj = JSON.parse(JSON.stringify(obj));
-        $('#view-object-raw').val(JSON.stringify(_obj, null, '  '));
+        //$('#view-object-raw').val(JSON.stringify(_obj, null, '  '));
+        that.editor.setValue(JSON.stringify(_obj, null, 2));
         if (_obj._id)    delete _obj._id;
         if (_obj.common) delete _obj.common;
         if (_obj.type)   delete _obj.type;
@@ -370,7 +398,8 @@ function Objects(main) {
     this.saveFromRaw = function () {
         var obj;
         try {
-            obj = JSON.parse($('#view-object-raw').val());
+            obj = JSON.parse(that.editor.getValue());
+            //obj = JSON.parse($('#view-object-raw').val());
         } catch (e) {
             that.main.showMessage(e, _('Parse error'), 'alert');
             $('#object-tabs').tabs({active: 4});
