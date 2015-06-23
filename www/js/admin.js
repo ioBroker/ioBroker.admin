@@ -561,8 +561,8 @@ $(document).ready(function () {
         var addTabs = [];
         for (var i = 0; i < main.instances.length; i++) {
             if (!main.objects[main.instances[i]].common ||
-                !main.objects[main.instances[i]].common.enabled ||
-                !main.objects[main.instances[i]].common.adminTab) continue;
+                !main.objects[main.instances[i]].common.adminTab ||
+                !(main.objects[main.instances[i]].common.enabled || main.objects[main.instances[i]].common.adminTab.singleton)) continue;
 
             if (main.objects[main.instances[i]].common.adminTab.singleton && addTabs.indexOf(main.instances[i]) == -1) {
                 addTabs.push(main.instances[i]);
@@ -2025,7 +2025,7 @@ $(document).ready(function () {
         //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
         //addMessageLog({message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()});
         console.log(error);
-    });1
+    });
 
     main.socket.on('permissionError', function (err) {
         main.showMessage(_('Has no permission to %s %s %s', err.operation, err.type, (err.id || '')));

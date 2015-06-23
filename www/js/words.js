@@ -320,7 +320,8 @@ systemDictionary = {
     "States rights":        {"en": "States rights",         "de": "Zustände",               "ru": "Состояние"},
     "read":                 {"en": "read",                  "de": "lesen",                  "ru": "читать"},
     "write":                {"en": "write",                 "de": "schreiben",              "ru": "писать"},
-
+    "Script":               {"en": "Script",                "de": "Skript",                 "ru": "Скрипт"},
+    "copy":                 {"en": "copy",                  "de": "Kopieren",               "ru": "Копировать"},
     "Password cannot be empty!": {
         "en": "Password cannot be empty!",
         "de": "Kennword darf nicht leer sein!",
