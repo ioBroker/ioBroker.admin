@@ -403,7 +403,6 @@ $(document).ready(function () {
                         break;
 
                     case '#tab-scripts':
-//                    tabs.scripts.init();
                         break;
 
                     case '#tab-adapters':
@@ -438,12 +437,13 @@ $(document).ready(function () {
                     .append('<button class="menu-button" id="button-logout">' + _('Logout') + '</button>' +
                         '<button class="menu-button" id="button-system">' + _('System') + '</button>' +
                         '<div id="current-user" class="menu-button" style="padding-right: 10px; padding-top: 5px; height: 16px"></div>' +
+                        '<button class="menu-button" id="button-edit-tabs"></button>' +
                         '<select id="tabs-show"></select>');
 
                 if (showTabs) {
                     $('#tabs-show').html('<option value="">' + _('Show...') + '</option>' + showTabs).show()
 
-                    $("#tabs-show").selectmenu({
+                    $('#tabs-show').selectmenu({
                         width: 150,
                         change: function () {
                             if ($(this).val()) {
@@ -462,6 +462,30 @@ $(document).ready(function () {
                 } else {
                     $('#tabs-show').html('').hide();
                 }
+
+                $('#button-edit-tabs').button({
+                    icons: {primary: 'ui-icon-pencil'},
+                    text: false
+                }).click(function () {
+                    if (main.editTabs) {
+                        $('.tab-close').hide();
+                        $('#tabs-show-button').hide();
+                        main.editTabs = false;
+                        $(this).removeClass('ui-state-error');
+                    } else {
+                        $('.tab-close').show();
+                        $('#tabs-show-button').show();
+                        $(this).addClass('ui-state-error');
+                        main.editTabs = true;
+                    }
+                });
+                if (!main.editTabs) {
+                    $('.tab-close').hide();
+                    $('#tabs-show-button').hide();
+                } else {
+                    $('#button-edit-tabs').addClass('ui-state-error');
+                }
+
 
                 $('#button-logout').button().click(function () {
                     window.location.href = '/logout/';
