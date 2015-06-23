@@ -329,7 +329,7 @@
         var c;
         var data = $dlg.data('selectId');
         var noStates = (data.objects && !data.states);
-        var multiselect = (!data.noDialog && !data.buttonsDlg);
+        var multiselect = (!data.noDialog);
         // Get all states
         getAllStates(data);
 
@@ -1317,7 +1317,7 @@
                 }
                 data.selectedID = data.currentId;
 
-                if (!data.inited) {
+                if (!data.inited || !data.noDialog) {
                     data.$dlg = $dlg;
                     initTreeDialog($dlg);
                 } else {
