@@ -564,8 +564,18 @@ $(document).ready(function () {
                 !main.objects[main.instances[i]].common.adminTab ||
                 !(main.objects[main.instances[i]].common.enabled || main.objects[main.instances[i]].common.adminTab.singleton)) continue;
 
-            if (main.objects[main.instances[i]].common.adminTab.singleton && addTabs.indexOf(main.instances[i]) == -1) {
-                addTabs.push(main.instances[i]);
+            if (main.objects[main.instances[i]].common.adminTab.singleton) {
+                addTabs.indexOf() == -1
+                var isFound = false;
+                var inst1 = main.instances[i].replace(/\.(\d+)$/, '.');
+                for (var j = 0; j < addTabs.length; j++) {
+                    var inst2 = addTabs[j].replace(/\.(\d+)$/, '.');
+                    if (inst1 == inst2) {
+                        isFound = true;
+                        break;
+                    }
+                }
+                if (!isFound) addTabs.push(main.instances[i]);
             } else {
                 addTabs.push(main.instances[i]);
             }
