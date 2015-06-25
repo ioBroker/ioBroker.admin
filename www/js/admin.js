@@ -614,6 +614,8 @@ $(document).ready(function () {
                 }
                 buttonName += '.' + parts[3];
                 name += '-' + parts[3];
+            } else {
+                parts[3] = 0;
             }
 
             list.push(name);
@@ -633,7 +635,7 @@ $(document).ready(function () {
                 text += '<li><a href="#' + name + '">' + buttonName + '</a><button class="tab-close" data-tab="' + name + '"></button></li>\n';
 
                 if (!$('#' + name).length) {
-                    var div = '<div id="' + name + '" class="tab-custom ' + (isReplace ? 'link-replace': '') + '" data-src="' + link + '">' +
+                    var div = '<div id="' + name + '" class="tab-custom ' + (isReplace ? 'link-replace': '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
                         '<iframe class="iframe-in-tab" style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%;"></iframe></div>';
                     $(div).appendTo($('#tabs'));
                 } else {
@@ -688,7 +690,7 @@ $(document).ready(function () {
             $('.link-replace').each(function () {
                 // convert "http://%ip%:%port%" to "http://localhost:1880"
                 countLink++;
-                main.tabs.instances._replaceLinks(link, parts[2], parts[3], $(this).attr('id'), function (link, adapter, instance, arg) {
+                main.tabs.instances._replaceLinks($(this).data('src'), $(this).data('adapter'), $(this).data('instance'), $(this).attr('id'), function (link, adapter, instance, arg) {
                     $('#' + arg).data('src', link).removeClass('link-replace');
                     if (!(--countLink)) {
                         if (loadTimeout) {
