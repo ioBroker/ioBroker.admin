@@ -685,6 +685,8 @@
                                     from: data.states[node.key + '.from'],
                                     ack: (data.states[node.key + '.ack'] === undefined) ? '' : data.states[node.key + '.ack']
                                 };
+                            } else {
+                                state = JSON.parse(JSON.stringify(state));
                             }
 
                             var fullVal;

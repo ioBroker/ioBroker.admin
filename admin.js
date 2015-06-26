@@ -164,10 +164,10 @@ function main() {
     }
 }
 
-function addUser(user, pw, callback) {
-    adapter.getForeignObject("system.user." + user, function (err, obj) {
+function addUser(user, pw, options, callback) {
+    adapter.getForeignObject("system.user." + user, options, function (err, obj) {
         if (obj) {
-            if (callback) callback("User yet exists");
+            if (typeof callback == 'function') callback("User yet exists");
         } else {
             adapter.setForeignObject('system.user.' + user, {
                 type: 'user',
@@ -183,15 +183,15 @@ function addUser(user, pw, callback) {
     });
 }
 
-function delUser(user, callback) {
-    adapter.getForeignObject("system.user." + user, function (err, obj) {
+function delUser(user, options, callback) {
+    adapter.getForeignObject("system.user." + user, options, function (err, obj) {
         if (err || !obj) {
             if (callback) callback("User does not exist");
         } else {
             if (obj.common.dontDelete) {
                 if (callback) callback("Cannot delete user, while is system user");
             } else {
-                adapter.delForeignObject("system.user." + user, function (err) {
+                adapter.delForeignObject("system.user." + user, options, function (err) {
                     // Remove this user from all groups in web client
                     if (callback) callback(err);
                 });
@@ -200,7 +200,7 @@ function delUser(user, callback) {
     });
 }
 
-function addGroup(group, desc, acl, callback) {
+function addGroup(group, desc, acl, options, callback) {
     var name = group;
     if (typeof acl == 'function') {
         callback = acl;
@@ -210,16 +210,20 @@ function addGroup(group, desc, acl, callback) {
         callback = desc;
         desc = null;
     }
+    if (typeof options == 'function') {
+        callback = options;
+        options = null;
+    }
     if (name && name.substring(0, 1) != name.substring(0, 1).toUpperCase()) {
         name = name.substring(0, 1).toUpperCase() + name.substring(1);
     }
     group = group.substring(0, 1).toLowerCase() + group.substring(1);
 
-    adapter.getForeignObject("system.group." + group, function (err, obj) {
+    adapter.getForeignObject("system.group." + group, options, function (err, obj) {
         if (obj) {
             if (callback) callback("Group yet exists");
         } else {
-            adapter.setForeignObject('system.group.' + group, {
+            adapter.setForeignObject('system.group.' + group, options, {
                 type: 'group',
                 common: {
                     name:    name,
@@ -234,15 +238,15 @@ function addGroup(group, desc, acl, callback) {
     });
 }
 
-function delGroup(group, callback) {
-    adapter.getForeignObject("system.group." + group, function (err, obj) {
+function delGroup(group, options, callback) {
+    adapter.getForeignObject("system.group." + group, options, function (err, obj) {
         if (err || !obj) {
             if (callback) callback("Group does not exist");
         } else {
             if (obj.common.dontDelete) {
                 if (callback) callback("Cannot delete group, while is system group");
             } else {
-                adapter.delForeignObject("system.group." + group, function (err) {
+                adapter.delForeignObject("system.group." + group, options, function (err) {
                     // Remove this group from all users in web client
                     if (callback) callback(err);
                 });

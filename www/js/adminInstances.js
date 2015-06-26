@@ -220,6 +220,25 @@ function Instances(main) {
 
         if (parts[1] == 'protocol') parts[1] = 'secure';
 
+        if (_var == 'instance') {
+            setTimeout(function () {
+                var link;
+                if (elem) {
+                    link = $('#' + elem).data('src');
+                } else {
+                    link = $('#a_' + adapter + '_' + instance).attr('href');
+                }
+
+                link = link.replace('%instance%', instance);
+                if (elem) {
+                    $('#' + elem).data('src', link);
+                } else {
+                    $('#a_' + adapter + '_' + instance).attr('href', link);
+                }
+            }, 0);
+            return;
+        }
+
         this.main.socket.emit('getObject', 'system.adapter.' + parts[0], function (err, obj) {
             if (obj) {
                 setTimeout(function () {
@@ -296,6 +315,11 @@ function Instances(main) {
         }
         if (vars[0] == '%ip%') {
             link = link.replace('%ip%', location.hostname);
+            this._replaceLinks(link, adapter, instance, arg, callback);
+            return;
+        }
+        if (vars[0] == '%instance%') {
+            link = link.replace('%instance%', instance);
             this._replaceLinks(link, adapter, instance, arg, callback);
             return;
         }
