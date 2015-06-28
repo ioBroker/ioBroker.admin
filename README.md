@@ -8,6 +8,17 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.5.1 (2015-06-28)
+* (bluefox) support of permissions
+* (bluefox) confirm deleting of scripts
+* (bluefox) fix license agreement for adapters
+* (SmilingJack) fix scroll by adapter config
+* (bluefox) support of https link in instances
+* (bluefox) fix buttons after sort in jqGrid table
+* (siedi)implement multiselect for selectID tree
+* (bluefox) better edit object in raw mode.
+* (bluefox) adjustable tabs
+
 ### 0.5.0 (2015-06-12)
 * (bluefox) support of permissions
 

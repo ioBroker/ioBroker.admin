@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "admin",
-        "version": "0.5.0",
+        "version": "0.5.1",
         "title":                    "ioBroker Admin",
         "desc": {
             "en":                   "Opens a webserver for the ioBroker admin UI",
