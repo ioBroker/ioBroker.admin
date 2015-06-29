@@ -10,16 +10,16 @@ function Adapters(main) {
     this.tree = [];
     this.data = {};
     this.groupImages = {
-        'common adapters':  '/img/common.png',
-        'hardware':         '/img/hardware.png',
-        'script':           '/img/script.png',
-        'media':            '/img/media.png',
-        'communication':    '/img/communication.png',
-        'visualisation':    '/img/visualisation.png',
-        'storage':          '/img/storage.png',
-        'weather':          '/img/weather.png',
-        'schedule':         '/img/schedule.png',
-        'vis':              '/img/vis.png'
+        'common adapters_group':  '/img/common.png',
+        'hardware_group':         '/img/hardware.png',
+        'script_group':           '/img/script.png',
+        'media_group':            '/img/media.png',
+        'communication_group':    '/img/communication.png',
+        'visualisation_group':    '/img/visualisation.png',
+        'storage_group':          '/img/storage.png',
+        'weather_group':          '/img/weather.png',
+        'schedule_group':         '/img/schedule.png',
+        'vis_group':              '/img/vis.png'
     };
 
     this.isList = false;
@@ -422,7 +422,7 @@ function Adapters(main) {
                             '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
                             '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
                         platform:   obj.platform,
-                        group:      obj.type || that.types[adapter] || 'common adapters',
+                        group:      (obj.type || that.types[adapter] || 'common adapters') + '_group',
                         license:    obj.license || '',
                         licenseUrl: obj.licenseUrl || ''
                     };
@@ -495,12 +495,12 @@ function Adapters(main) {
                             version:    version,
                             installed:  '',
                             install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                                '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
-                                '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
+                                     '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
+                                     '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
                             platform:   obj.platform,
                             license:    obj.license || '',
                             licenseUrl: obj.licenseUrl || '',
-                            group:      obj.type || that.types[adapter] || 'common adapters'
+                            group:      (obj.type || that.types[adapter] || 'common adapters') + '_group'
                         };
 
                         if (!obj.type) console.log('"' + adapter + '": "common adapters",');

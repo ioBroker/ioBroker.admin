@@ -8,6 +8,10 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.5.2 (2015-06-29)
+* (bluefox) fix delete objects
+* (bluefox) fix vis group
+
 ### 0.5.1 (2015-06-28)
 * (bluefox) support of permissions
 * (bluefox) confirm deleting of scripts

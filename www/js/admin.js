@@ -200,7 +200,7 @@ $(document).ready(function () {
             } else {
                 if (main.objects[id] && main.objects[id].common && main.objects[id].common['object-non-deletable']) {
                     main.showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
-                    if (callback) callback(id);
+                    if (callback) callback(null, id);
                 } else {
                     main.socket.emit('delObject', id, function (err) {
                         if (err) {
@@ -214,7 +214,7 @@ $(document).ready(function () {
                             }
                             if (callback) {
                                 setTimeout(function () {
-                                    callback(id);
+                                    callback(null, id);
                                 }, 0);
                             }
                         });
