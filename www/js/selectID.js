@@ -33,6 +33,7 @@
              onSuccess:  null,     // callback function to be called if user press "Select". Can be overwritten in "show"
              onChange:   null,     // called every time the new object selected
              noDialog:   false,    // do not make dialog
+             noMultiselect: false, // do not make multiselect
              buttons:    null,     // array with buttons, that should be shown in last column
              list:       false,    // tree view or list view
              texts: {
@@ -329,7 +330,7 @@
         var c;
         var data = $dlg.data('selectId');
         var noStates = (data.objects && !data.states);
-        var multiselect = (!data.noDialog);
+        var multiselect = (!data.noDialog && !data.noMultiselect);
         // Get all states
         getAllStates(data);
 

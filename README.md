@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.5.3 (2015-06-29)
+* (bluefox) enable select objects in javascript
+
 ### 0.5.2 (2015-06-29)
 * (bluefox) fix delete objects
 * (bluefox) fix vis group
