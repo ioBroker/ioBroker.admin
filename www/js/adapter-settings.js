@@ -242,6 +242,20 @@ function getEnums(_enum, callback) {
     });
 }
 
+function getGroups(callback) {
+    socket.emit('getObjectView', 'system', 'group', {startkey: 'system.group.', endkey: 'system.group.\u9999'}, function (err, res) {
+        if (!err && res) {
+            var _res   = {};
+            for (var i = 0; i < res.rows.length; i++) {
+                _res[res.rows[i].id] = res.rows[i].value;
+            }
+            if (callback) callback(null, _res);
+        } else {
+            if (callback) callback(err, []);
+        }
+    });
+}
+
 function getUsers(callback) {
     socket.emit('getObjectView', 'system', 'user', {startkey: 'system.user.', endkey: 'system.user.\u9999'}, function (err, res) {
         if (!err && res) {

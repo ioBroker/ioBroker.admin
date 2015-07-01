@@ -176,7 +176,7 @@ function addUser(user, pw, options, callback) {
                     enabled: true,
                     groups:  []
                 }
-            }, function () {
+            }, options, function () {
                 adapter.setPassword(user, pw, callback);
             });
         }
@@ -223,7 +223,7 @@ function addGroup(group, desc, acl, options, callback) {
         if (obj) {
             if (callback) callback("Group yet exists");
         } else {
-            adapter.setForeignObject('system.group.' + group, options, {
+            adapter.setForeignObject('system.group.' + group, {
                 type: 'group',
                 common: {
                     name:    name,
@@ -231,7 +231,7 @@ function addGroup(group, desc, acl, options, callback) {
                     members: [],
                     acl:     acl
                 }
-            }, function (err, obj) {
+            }, options, function (err, obj) {
                 if (callback) callback(err, obj);
             });
         }
@@ -808,9 +808,9 @@ function socketEvents(socket) {
         }
     });
 
-    socket.on('addGroup', function (group, desc, callback) {
+    socket.on('addGroup', function (group, desc, acl, callback) {
         if (updateSession(socket) && checkPermissions(socket, 'addGroup', callback, group)) {
-            addGroup(group, desc, {user: this._acl.user}, callback);
+            addGroup(group, desc, acl, {user: this._acl.user}, callback);
         }
     });
 

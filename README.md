@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.5.4 (2015-07-01)
+* (bluefox) fix error in "create new group"
+
 ### 0.5.3 (2015-06-29)
 * (bluefox) enable select objects in javascript
 

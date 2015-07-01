@@ -106,7 +106,6 @@ systemDictionary = {
         "de": "Mitlied selektrieren durch Doppelklick",
         "ru": "select member by double click"
     },
-    "schedule":             {"en": "schedule",              "de": "Zeitplanung",            "ru": "Расписание"},
     "config instance":      {"en": "config instance",       "de": "Instanz konfigurieren",  "ru": "config instance"},
     "add instance":         {"en": "add instance",          "de": "Instanz hinzufügen",     "ru": "Установить драйвер"},
     "readme":               {"en": "readme",                "de": "Lies mich",              "ru": "Описание драйвера"},
@@ -290,6 +289,7 @@ systemDictionary = {
     "weather_group":        {"en": "Weather",               "de": "Wetter",                 "ru": "Погода"},
     "storage_group":        {"en": "Storage",               "de": "Aufbewarung",            "ru": "Хранилище"},
     "vis_group":            {"en": "ioBroker.vis",          "de": "ioBroker.vis",           "ru": "ioBroker.vis"},
+    "schedule_group":       {"en": "schedule",              "de": "Zeitplanung",            "ru": "Расписание"},
 
     "agree":                {"en": "agree",                 "de": "Einverstanden",          "ru": "Согласен(на)"},
     "not agree":            {"en": "not agree",             "de": "Nicht einverstanden",    "ru": "Не согласен(на)"},

@@ -349,7 +349,12 @@ function Objects(main) {
     this.saveFromTabs = function () {
         var obj;
         try {
-            obj = JSON.parse($('#view-object-rest').val());
+            obj = $('#view-object-rest').val();
+            if (!obj) {
+                obj = {};
+            } else {
+                obj = JSON.parse(obj);
+            }
         } catch (e) {
             that.main.showMessage(_('Cannot parse.'), 'Error in ' + e, 'alert');
             return false;
