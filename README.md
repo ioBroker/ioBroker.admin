@@ -8,6 +8,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.5.5 (2015-07-29)
+* (bluefox) update packages
+
 ### 0.5.4 (2015-07-01)
 * (bluefox) fix error in "create new group"
 
