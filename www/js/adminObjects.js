@@ -539,7 +539,7 @@ function Objects(main) {
         var port = 0;
         var chart = false;
         if (ids.length == 1) {
-            this.$dialogHistory.dialog('option', 'height', 575);
+            this.$dialogHistory.dialog('option', 'height', 600);
             this.$dialogHistory.dialog('open');
             _tabs[0]._id = ids[0];
             _tabs.show();
@@ -615,7 +615,7 @@ function Objects(main) {
             });
             _tabs.tabs('option', 'disabled', (port && chart && currentHistory) ? [] : [1]);
         } else {
-            this.$dialogHistory.dialog('option', 'height', 150);
+            this.$dialogHistory.dialog('option', 'height', 175);
             _tabs.hide();
             this.$dialogHistory.dialog('open');
         }
