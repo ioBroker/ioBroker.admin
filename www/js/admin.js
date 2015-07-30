@@ -602,9 +602,25 @@ $(document).ready(function () {
         // Look for adapter tabs
         for (var a = 0; a < addTabs.length; a++) {
             var name = 'tab-' + main.objects[addTabs[a]].common.name;
-            var link = main.objects[addTabs[a]].common.adminTab.link;
+            var link = main.objects[addTabs[a]].common.adminTab.link || '';
             var parts = addTabs[a].split('.');
-            var buttonName = _(main.objects[addTabs[a]].common.adminTab.name || main.objects[addTabs[a]].common.name);
+            var buttonName;
+
+            if (main.objects[addTabs[a]].common.adminTab.name) {
+                if (typeof main.objects[addTabs[a]].common.adminTab.name == 'object') {
+                    if (main.objects[addTabs[a]].common.adminTab.name[systemLang]) {
+                        buttonName = main.objects[addTabs[a]].common.adminTab.name[systemLang];
+                    } else if (main.objects[addTabs[a]].common.adminTab.name.en) {
+                        buttonName = _(main.objects[addTabs[a]].common.adminTab.name.en);
+                    } else {
+                        buttonName = _(main.objects[addTabs[a]].common.name);
+                    }
+                } else {
+                    buttonName = _(main.objects[addTabs[a]].common.adminTab.name);
+                }
+            } else {
+                buttonName = _(main.objects[addTabs[a]].common.name);
+            }
 
             if (!main.objects[addTabs[a]].common.adminTab.singleton) {
                 if (link.indexOf('?') != -1) {

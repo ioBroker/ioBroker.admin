@@ -35,7 +35,6 @@ function Adapters(main) {
         "history":      "storage",
         "hmm":          "hardware",
         "hue":          "hardware",
-        "javascript":   "script",
         "occ":          "schedule",
         "onkyo":        "hardware",
         "artnet":       "hardware",
