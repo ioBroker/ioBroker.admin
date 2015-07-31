@@ -36,6 +36,7 @@
              noMultiselect: false, // do not make multiselect
              buttons:    null,     // array with buttons, that should be shown in last column
              list:       false,    // tree view or list view
+             name:       null,     // name of the dialog to store filter settings
              texts: {
                  select:   'Select',
                  cancel:   'Cancel',
@@ -58,8 +59,11 @@
                  edit:     'Edit',
                  ok:       'Ok',
                  wait:     'Processing...',
-                 list:     'Show list view'
-                 tree:     'Show tree view'
+                 list:     'Show list view',
+                 tree:     'Show tree view',
+                 selectAll: 'Select all',
+                 unselectAll: 'Unselect all',
+                 invertSelection: 'Invert selection'
              },
              columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'value', 'button'],
              widths:    null,   // array with width for every column
@@ -329,7 +333,7 @@
     function initTreeDialog($dlg) {
         var c;
         var data = $dlg.data('selectId');
-        var noStates = (data.objects && !data.states);
+        //var noStates = (data.objects && !data.states);
         var multiselect = (!data.noDialog && !data.noMultiselect);
         // Get all states
         getAllStates(data);
@@ -343,6 +347,7 @@
                         var _data = $dlg.data('selectId');
                         if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId);
                         _data.currentId = _data.selectedID;
+                        storeSettings(data);
                         $dlg.dialog('close');
                     }
                 },
@@ -350,6 +355,7 @@
                     id:   data.instance + '-button-cancel',
                     text: data.texts.cancel,
                     click: function () {
+                        storeSettings(data);
                         $(this).dialog('close');
                     }
                 }
@@ -359,6 +365,9 @@
                 autoOpen: false,
                 modal:    true,
                 width:    '90%',
+                close:    function () {
+                    storeSettings(data);
+                },
                 height:   500,
                 buttons:  data.buttonsDlg
             });
@@ -396,7 +405,7 @@
         var textTypes;
         if (data.columns.indexOf('type') != -1) {
             textTypes = '<select id="filter_type_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-            for (k = 0; k < data.types.length; k++) {
+            for (var k = 0; k < data.types.length; k++) {
                 textTypes += '<option value="' + data.types[k] + '">' + data.types[k] + '</option>';
             }
             textTypes += '</select>';
@@ -435,6 +444,12 @@
         text += '<td><button id="btn_list_' + data.instance + '"></button></td>';
         text += '<td><button id="btn_collapse_' + data.instance + '"></button></td>';
         text += '<td><button id="btn_expand_' + data.instance + '"></button></td>';
+        if (data.filter && data.filter.type == 'state' && multiselect) {
+            text += '<td style="padding-left: 10px"><button id="btn_select_all_' + data.instance + '"></button></td>';
+            text += '<td><button id="btn_unselect_all_' + data.instance + '"></button></td>';
+            text += '<td><button id="btn_invert_selection_' + data.instance + '"></button></td>';
+        }
+
         if (data.panelButtons) {
             for (c = 0; c < data.panelButtons.length; c++) {
                 text += '<td><button id="btn_custom_' + data.instance + '_' + c + '"></button></td>';
@@ -528,10 +543,10 @@
 
         var foptions = {
             titlesTabbable: true,     // Add all node titles to TAB chain
-            quicksearch: true,
-            source: data.tree.children,
-            extensions: ["table", "gridnav", "filter", "themeroller"],
-            checkbox: multiselect,
+            quicksearch:    true,
+            source:         data.tree.children,
+            extensions:     ["table", "gridnav", "filter", "themeroller"],
+            checkbox:       multiselect,
             table: {
                 indentation: 20,
                 nodeColumnIdx: 1
@@ -598,6 +613,11 @@
                 var isCommon = data.objects[node.key] && data.objects[node.key].common;
                 $tdList.eq(1).css({'overflow': 'hidden'});
                 var base = 2;
+
+                // hide checkbox if only states should be selected
+                if (data.filter && data.filter.type == 'state' && (!data.objects[node.key] || data.objects[node.key].type != 'state')) {
+                    $tdList.eq(1).find('.fancytree-checkbox').hide();
+                }
 
                 for (var c = 0; c < data.columns.length; c++) {
                     if (data.columns[c] == 'image') {
@@ -988,6 +1008,8 @@
                         }
                     }
                 }
+                // if no clear "close" event => store on change
+                if (data.noDialog) storeSettings(data);
             }
 
             var isCommon = null;
@@ -1103,7 +1125,8 @@
                 initTreeDialog(data.$dlg);
                 $('#process_running_' + data.instance).hide();
             }, 200);
-        }).attr('title', data.texts.tree)
+        }).attr('title', data.texts.tree);
+
         if (data.list) {
             $('#btn_list_' + data.instance).addClass('ui-state-error');
             $('#btn_expand_' + data.instance).hide();
@@ -1117,6 +1140,45 @@
             initTreeDialog(data.$dlg);
             $('#process_running_' + data.instance).hide();
         }).attr('title', data.texts.refresh);
+
+        $('#btn_select_all_' + data.instance).button({icons: {primary: 'ui-icon-circle-check'}, text: false}).css({width: 18, height: 18}).click(function () {
+            $('#process_running_' + data.instance).show();
+            setTimeout(function () {
+                data.$tree.fancytree('getRootNode').visit(function (node) {
+                    if (!data.filterVals.length || node.match || node.subMatch) {
+                        // hide checkbox if only states should be selected
+                        if (data.objects[node.key] && data.objects[node.key].type == 'state') {
+                            node.setSelected(true);
+                        }
+                    }
+                });
+                $('#process_running_' + data.instance).hide();
+            }, 100);
+        }).attr('title', data.texts.selectAll);
+
+        $('#btn_unselect_all_' + data.instance).button({icons: {primary: 'ui-icon-circle-close'}, text: false}).css({width: 18, height: 18}).click(function () {
+            $('#process_running_' + data.instance).show();
+            setTimeout(function () {
+                data.$tree.fancytree('getRootNode').visit(function (node) {
+                    node.setSelected(false);
+                });
+                $('#process_running_' + data.instance).hide();
+            }, 100);
+        }).attr('title', data.texts.unselectAll);
+
+        $('#btn_invert_selection_' + data.instance).button({icons: {primary: 'ui-icon-transferthick-e-w'}, text: false}).css({width: 18, height: 18}).click(function () {
+            $('#process_running_' + data.instance).show();
+            setTimeout(function () {
+                data.$tree.fancytree('getRootNode').visit(function (node) {
+                    if (!data.filterVals.length || node.match || node.subMatch){
+                        if (data.objects[node.key] && data.objects[node.key].type == 'state') {
+                            node.toggleSelected();
+                        }
+                    }
+                });
+                $('#process_running_' + data.instance).hide();
+            }, 100);
+        }).attr('title', data.texts.invertSelection);
 
         for (var f in filter) {
             if (f) $('#filter_' + f + '_' + data.instance).val(filter[f]).trigger('change');
@@ -1134,6 +1196,36 @@
         }
 
         showActive($dlg);
+        loadSettings(data);
+    }
+
+    function storeSettings(data) {
+        if (data.timer) {
+            clearTimeout(data.timer);
+        }
+        data.timer = setTimeout(function () {
+            if (typeof(Storage) !== "undefined" && data.name) {
+                window.localStorage.setItem(data.name + '-filter', JSON.stringify(data.filterVals));
+            }
+        }, 500);
+    }
+
+    function loadSettings(data) {
+        if (typeof(Storage) !== "undefined" && data.name) {
+            var f = window.localStorage.getItem(data.name + '-filter');
+            if (f) {
+                try{
+                    f = JSON.parse(f);
+                    for (var field in f) {
+                        if (field == 'length') continue;
+                        $('#filter_' + field + '_' + data.instance).val(f[field]).trigger('change');
+                    }
+
+                } catch(e) {
+                    console.error('Cannot parse settings: ' + e);
+                }
+            }
+        }
     }
 
     var methods = {
@@ -1150,6 +1242,7 @@
                 onChange:   null,
                 zindex:     null,
                 list:       false,
+                name:       null,
                 columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'value', 'button']
             }, options);
 
@@ -1177,7 +1270,10 @@
                 ok:       'Ok',
                 wait:     'Processing...',
                 list:     'Show list view',
-                tree:     'Show tree view'
+                tree:     'Show tree view',
+                selectAll: 'Select all',
+                unselectAll: 'Unselect all',
+                invertSelection: 'Invert selection'
             }, settings.texts);
 
             var that = this;
