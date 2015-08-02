@@ -237,6 +237,7 @@ $(document).ready(function () {
                 objects: main.objects,
                 states:  main.states,
                 filter: {type: 'state'},
+                name:   'admin-select-member',
                 texts: {
                     select:   _('Select'),
                     cancel:   _('Cancel'),

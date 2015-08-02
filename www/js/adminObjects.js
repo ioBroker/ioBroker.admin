@@ -157,6 +157,7 @@ function Objects(main) {
                 objects:  main.objects,
                 states:   main.states,
                 noDialog: true,
+                name:     'admin-objects',
                 texts: {
                     select:   _('Select'),
                     cancel:   _('Cancel'),
