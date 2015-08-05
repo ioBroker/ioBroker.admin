@@ -4,9 +4,14 @@
 
 user interface for configuration and administration
 
-## Todo
 
 ## Changelog
+
+### 0.5.6 (2015-08-05)
+* (bluefox) fix translate.js
+* (bluefox) support of multilanguage for tabs
+* (bluefox) improve selectID.js
+* (bluefox) store settings of selectId dialog
 
 ### 0.5.5 (2015-07-29)
 * (bluefox) update packages

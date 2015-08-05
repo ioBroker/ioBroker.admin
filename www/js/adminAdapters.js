@@ -22,17 +22,15 @@ function Adapters(main) {
         'vis_group':              '/img/vis.png'
     };
 
-    this.isList = false;
-    this.filterVals = {length: 0};
+    this.isList        = false;
+    this.filterVals    = {length: 0};
     this.onlyInstalled = false;
     this.onlyUpdatable = false;
     this.currentFilter = '';
-    this.isCollapsed = {};
+    this.isCollapsed   = {};
 
     this.types = {
-        "S7":           "hardware",
         "dwd":          "weather",
-        "history":      "storage",
         "hmm":          "hardware",
         "hue":          "hardware",
         "occ":          "schedule",

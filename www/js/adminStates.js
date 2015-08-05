@@ -93,11 +93,15 @@ function States(main) {
                         edittype: 'checkbox',
                         editoptions: {value: 'true:false'}
                     });
-                } else if (main.objects[_id] && main.objects[_id].common && main.objects[_id].common.type == 'number' && main.objects[_id].common.states) {
+                } else if (
+                    main.objects[_id] &&
+                    main.objects[_id].common &&
+                    main.objects[_id].common.type == 'number' &&
+                    main.objects[_id].common.states) {
                     that.$grid.setColProp('val', {
                         editable: true,
                         edittype: 'select',
-                        editoptions: {value: main.objects[_id].common.states.join(':')},
+                        editoptions: {value: main.objects[_id].common.states},
                         align: 'center'
                     });
                 } else {
