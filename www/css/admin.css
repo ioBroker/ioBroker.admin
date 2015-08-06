@@ -197,16 +197,17 @@ table#events {
 
 /* ------------ Log table ------------ */
 .log-column-1 {
-    width: 103;
+    width: 103px;
     text-align: right;
 }
 .log-column-2 {
-    width: 123;
+    width: 123px;
     font-weight: normal;
     text-align: center;
+    white-space: nowrap;
 }
 .log-column-3 {
-    width: 67;
+    width: 67px;
     text-align: center;
     font-weight: bold;
 }
@@ -214,13 +215,13 @@ table#events {
     font-weight: normal;
 }
 .log-column-1-header {
-    width: 100;
+    width: 100px;
 }
 .log-column-2-header {
-    width: 140;
+    width: 140px;
 }
 .log-column-3-header {
-    width: 62;
+    width: 62px;
 }
 .log-column-4-header {
 }

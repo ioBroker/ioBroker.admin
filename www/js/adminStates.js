@@ -87,11 +87,26 @@ function States(main) {
                     stateLastSelected = id;
                 }
                 var _id = id.substring(6);//'state_'.length
-                if (main.objects[_id] && main.objects[_id].common && main.objects[_id].common.type == 'boolean') {
+
+                if (main.objects[_id] &&
+                    main.objects[_id].common &&
+                    main.objects[_id].common.type == 'boolean' &&
+                    main.objects[_id].common.states) {
                     that.$grid.setColProp('val', {
-                        editable: true,
-                        edittype: 'checkbox',
-                        editoptions: {value: 'true:false'}
+                        editable:    true,
+                        edittype:    'select',
+                        editoptions: {value: main.objects[_id].common.states},
+                        align:       'center'
+                    });
+                } else if (
+                    main.objects[_id] &&
+                    main.objects[_id].common &&
+                    main.objects[_id].common.type == 'boolean') {
+                    that.$grid.setColProp('val', {
+                        editable:    true,
+                        edittype:    'checkbox',
+                        editoptions: {value: 'true:false'},
+                        align:       'center'
                     });
                 } else if (
                     main.objects[_id] &&
@@ -99,17 +114,17 @@ function States(main) {
                     main.objects[_id].common.type == 'number' &&
                     main.objects[_id].common.states) {
                     that.$grid.setColProp('val', {
-                        editable: true,
-                        edittype: 'select',
+                        editable:    true,
+                        edittype:    'select',
                         editoptions: {value: main.objects[_id].common.states},
-                        align: 'center'
+                        align:       'center'
                     });
                 } else {
                     that.$grid.setColProp('val', {
-                        editable: true,
-                        edittype: 'text',
+                        editable:    true,
+                        edittype:    'text',
                         editoptions: null,
-                        align: 'center'
+                        align:       'center'
                     });
                 }
 
