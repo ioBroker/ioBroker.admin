@@ -7,6 +7,12 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.5.7 (2015-08-11)
+* (bluefox) try to fix log columns
+* (bluefox) show boolean in States as enumerations.
+* (bluefox) implement upload indicator
+* (bluefox) update packages
+
 ### 0.5.6 (2015-08-05)
 * (bluefox) fix translate.js
 * (bluefox) support of multilanguage for tabs
