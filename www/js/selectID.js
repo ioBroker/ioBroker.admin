@@ -1032,7 +1032,7 @@
                     if (!data.objects[node.key] || data.objects[node.key][f] === undefined || data.objects[node.key][f] != data.filterVals[f]) return false;
                 } else
                 if (f == 'value') {
-                    if (!data.states[node.key] || data.states[node.key].val === undefined || data.states[node.key].val.toString().toLowerCase().indexOf(data.filterVals[f]) == -1) return false;
+                    if (!data.states[node.key] || data.states[node.key].val === undefined || data.states[node.key].val === null || data.states[node.key].val.toString().toLowerCase().indexOf(data.filterVals[f]) == -1) return false;
                 } else
                 if (f == 'button') {
                     if (data.filterVals[f] === 'true') {

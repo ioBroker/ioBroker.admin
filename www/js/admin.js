@@ -1934,6 +1934,7 @@ $(document).ready(function () {
         // Update alive and connecetd of main.instances
         tabs.instances.stateChange(id, state);
         tabs.objects.stateChangeHistory(id, state);
+        tabs.adapters.stateChange(id, state);
     }
 
     function objectChange(id, obj) {

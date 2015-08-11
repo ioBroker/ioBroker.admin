@@ -116,6 +116,7 @@ systemDictionary = {
     "severity":             {"en": "severity",              "de": "Schweregrad",            "ru": "важность"},
     "message":              {"en": "message",               "de": "Nachricht",              "ru": "Сообщение"},
     "log changes only":     {"en": "log changes only",      "de": "Nur Änderungen aufzeichnen", "ru": "Только изменения"},
+    "Upload":               {"en": "File upload",           "de": "Dateiupload",            "ru": "Загрузка файлов"},
     "minimum datapoint count in Redis": {
         "en": "minimum datapoint count in Redis",
         "de": "minimale Anzahl Datenpunkte in Redis",

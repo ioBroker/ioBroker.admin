@@ -61,6 +61,7 @@ function Adapters(main) {
                     // Calculate total count of adapter and count of installed adapter
                     for (var c = 0; c < that.tree.length; c++) {
                         if (that.tree[c].key == node.key) {
+                            $tdList.eq(1).html(that.tree[c].desc).css({'overflow': 'hidden', "white-space": "nowrap", position: 'relative'});
                             var installed = 0;
                             for (var k = 0; k < that.tree[c].children.length; k++) {
                                 if (that.data[that.tree[c].children[k].key].installed) installed++;
@@ -78,10 +79,10 @@ function Adapters(main) {
                     return;
                 }
                 $tdList.eq(0).css({'overflow': 'hidden', "white-space": "nowrap"});
-                $tdList.eq(1).html(that.data[node.key].desc).css({'overflow': 'hidden', "white-space": "nowrap"});
+                $tdList.eq(1).html(that.data[node.key].desc).css({'overflow': 'hidden', "white-space": "nowrap", position: 'relative'});
                 $tdList.eq(2).html(that.data[node.key].keywords).css({'overflow': 'hidden', "white-space": "nowrap"}).attr('title', that.data[node.key].keywords);
 
-                $tdList.eq(3).html(that.data[node.key].version).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
+                $tdList.eq(3).html(that.data[node.key].version).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap", position: 'relative'});
                 $tdList.eq(4).html(that.data[node.key].installed).css({'padding-left': '10px', 'overflow': 'hidden', "white-space": "nowrap"});
                 $tdList.eq(5).html(that.data[node.key].platform).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
                 $tdList.eq(6).html(that.data[node.key].license).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
@@ -407,11 +408,15 @@ function Adapters(main) {
                         }
                     }
 
+                    var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
+                    var desc  = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
+                    desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
+
                     that.data[adapter] = {
                         image:      icon ? '<img src="' + icon + '" width="22px" height="22px" />' : '',
                         name:       adapter,
                         title:      obj.title,
-                        desc:       (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc,
+                        desc:       desc,
                         keywords:   obj.keywords ? obj.keywords.join(' ') : '',
                         version:    version,
                         installed:  installed,
@@ -419,7 +424,7 @@ function Adapters(main) {
                             '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
                             '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
                         platform:   obj.platform,
-                        group:      (obj.type || that.types[adapter] || 'common adapters') + '_group',
+                        group:      group,
                         license:    obj.license || '',
                         licenseUrl: obj.licenseUrl || ''
                     };
@@ -438,6 +443,7 @@ function Adapters(main) {
                         if (igroup < 0) {
                             that.tree.push({
                                 title:    _(that.data[adapter].group),
+                                desc:    showUploadProgress(group),
                                 key:      that.data[adapter].group,
                                 folder:   true,
                                 expanded: !that.isCollapsed[that.data[adapter].group],
@@ -483,11 +489,15 @@ function Adapters(main) {
                             }
                         }
 
+                        var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
+                        var desc = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
+                        desc += showUploadProgress(adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
+
                         that.data[adapter] = {
                             image:      repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" width="22px" height="22px" />' : '',
                             name:       adapter,
                             title:      obj.title,
-                            desc:       (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc,
+                            desc:       desc,
                             keywords:   obj.keywords ? obj.keywords.join(' ') : '',
                             version:    version,
                             installed:  '',
@@ -497,7 +507,7 @@ function Adapters(main) {
                             platform:   obj.platform,
                             license:    obj.license || '',
                             licenseUrl: obj.licenseUrl || '',
-                            group:      (obj.type || that.types[adapter] || 'common adapters') + '_group'
+                            group:      group
                         };
 
                         if (!obj.type) console.log('"' + adapter + '": "common adapters",');
@@ -525,6 +535,7 @@ function Adapters(main) {
                             that.tree[igroup].children.push({
                                 title:    that.data[adapter].title || adapter,
                                 icon:     repository[adapter].extIcon,
+                                desc:     showUploadProgress(group),
                                 key:      adapter
                             });
                         } else {
@@ -688,5 +699,35 @@ function Adapters(main) {
                 this.init(true);
             }
         }
+    };
+
+    function showUploadProgress(group, adapter, percent) {
+        var text = '';
+        if (adapter || typeof group === 'string') {
+            if (adapter) {
+                text += '<div class="adapter-upload-progress" data-adapter-name="' + adapter + '"';
+            } else {
+                text += '<div class="group-upload-progress"';
+            }
+            text += ' data-adapter-group="' + group + '" style="position: absolute; width: 100%; height: 100%; opacity: ' + (percent ? 0.7 : 0) + '; top: 0; left: 0">';
+        } else {
+            percent = group;
+        }
+        text += percent ? '<table title="' + _('Upload') + ' ' + percent + '%" class="no-space" style="width:100%; height: 100%; opacity: 0.7"><tr style="height: 100%" class="no-space"><td class="no-space" style="width:' + percent + '%;background: blue"></td><td style="width:' + (100 - percent) + '%;opacity: 0.1" class="no-space"></td></tr></table>' : '';
+
+        if (adapter) text += '</div>';
+        return text;
     }
+
+    this.stateChange = function (id, state) {
+        if (id && state) {
+            var adapter = id.match(/^system\.adapter\.([\w\d-]+)\.upload$/);
+            if (adapter) {
+                var $adapter = $('.adapter-upload-progress[data-adapter-name="' + adapter[1] + '"]');
+                var text = showUploadProgress(state.val);
+                $adapter.html(text).css({opacity: state.val ? 0.7 : 0});
+                $('.group-upload-progress[data-adapter-group="' + $adapter.data('adapter-group') + '"]').html(text).css({opacity: state.val ? 0.7 : 0});
+            }
+        }
+    };
 }
