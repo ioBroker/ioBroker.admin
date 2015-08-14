@@ -73,7 +73,7 @@
              customButtonFilter: null // if in the filter over the buttons some specific button must be shown. It has type like {icons:{primary: 'ui-icon-close'}, text: false, callback: function ()}
      }
  +  show(currentId, filter, callback) - all arguments are optional if set by "init"
- +  clear() - clear object tree to read and build a new (used only if objects set by "init")
+ +  clear() - clear object tree to read and build anew (used only if objects set by "init")
  +  getInfo(id) - get information about ID
  +  getTreeInfo(id) - get {id, parent, children, object}
  +  state(id, val) - update states in tree
@@ -322,12 +322,32 @@
         if (data.selectedID) {
             data.$tree.fancytree('getTree').visit(function (node) {
                 if (node.key == data.selectedID) {
-                    node.setActive();
-                    node.makeVisible({scrollIntoView: scrollIntoView || false});
+                    try {
+                        node.setActive();
+                        node.makeVisible({scrollIntoView: scrollIntoView || false});
+                    } catch (e) {
+                        //console.warn(e);
+                    }
                     return false;
                 }
             });
         }
+    }
+
+    function findRoomsForObject(data, id, rooms) {
+        rooms = rooms || [];
+        for (var i = 0; i < data.enums.length; i++) {
+            if (data.objects[data.enums[i]].common.members.indexOf(id) != -1 &&
+                rooms.indexOf(data.objects[data.enums[i]].common.name) == -1) {
+                rooms.push(data.objects[data.enums[i]].common.name);
+            }
+        }
+        var parts = id.split('.');
+        parts.pop();
+        id = parts.join('.');
+        if (data.objects[id]) findRoomsForObject(data, id, rooms);
+
+        return rooms;
     }
 
     function initTreeDialog($dlg) {
@@ -679,19 +699,10 @@
                     if (data.columns[c] == 'room') {
                         // Try to find room
                         if (data.rooms) {
-                            var rooms = data.rooms[node.key];
-                            if (!rooms) {
-                                rooms = [];
-                                for (var i = 0; i < data.enums.length; i++) {
-                                    if (data.objects[data.enums[i]].common.members.indexOf(node.key) != -1 &&
-                                        rooms.indexOf(data.objects[data.enums[i]].common.name) == -1) rooms.push(data.objects[data.enums[i]].common.name);
-                                }
-                                data.rooms[node.key] = rooms;
-                            }
-                            $tdList.eq(base++).text(rooms.join(', '));
+                            if (!data.rooms[node.key]) data.rooms[node.key] = findRoomsForObject(data, node.key);
+                            $tdList.eq(base++).text(data.rooms[node.key].join(', '));
                         } else {
                             $tdList.eq(base++).text('');
-
                         }
 
                     } else
@@ -1045,20 +1056,8 @@
                     if (!data.objects[node.key]) return false;
 
                     // Try to find room
-                    var rooms = data.rooms[node.key];
-                    if (!data.rooms[node.key]) {
-                        rooms = [];
-
-                        for (var i = 0; i < data.enums.length; i++) {
-                            if (data.objects[data.enums[i]].common.members.indexOf(node.key) != -1 &&
-                                rooms.indexOf(data.objects[data.enums[i]].common.name) == -1) {
-                                rooms.push(data.objects[data.enums[i]].common.name);
-                            }
-                        }
-                        data.rooms[node.key] = rooms;
-                    }
-
-                    if (rooms.indexOf(data.filterVals[f]) == -1) return false;
+                    if (!data.rooms[node.key]) data.rooms[node.key] = findRoomsForObject(data, node.key);
+                    if (data.rooms[node.key].indexOf(data.filterVals[f]) == -1) return false;
                 }
             }
 
@@ -1662,6 +1661,12 @@
                 }
             }
             return this;
+        },
+        "objectAll": function (id, obj) {
+            $('.select-id-dialog-marker').selectId('object', id, obj);
+        },
+        "stateAll": function (id, state) {
+            $('.select-id-dialog-marker').selectId('state', id, state);
         },
         "getFilteredIds": function () {
             for (var k = 0; k < this.length; k++) {
