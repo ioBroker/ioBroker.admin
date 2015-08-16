@@ -177,7 +177,8 @@ function Objects(main) {
                     edit:     _('Edit'),
                     ok:       _('Ok'),
                     with:     _('With'),
-                    without:  _('Without')
+                    without:  _('Without'),
+                    copyTpClipboard: _('Copy to clipboard')
                 },
                 columns: ['image', 'name', 'type', 'role', 'room', 'value', 'button'],
                 buttons: [

@@ -117,6 +117,7 @@ systemDictionary = {
     "message":              {"en": "message",               "de": "Nachricht",              "ru": "Сообщение"},
     "log changes only":     {"en": "log changes only",      "de": "Nur Änderungen aufzeichnen", "ru": "Только изменения"},
     "Upload":               {"en": "File upload",           "de": "Dateiupload",            "ru": "Загрузка файлов"},
+    "Copy to clipboard":    {"en": "Copy to clipboard",     "de": "Kopieren in der Zwischenablage", "ru": "Скопировать в буфер обмена"},
     "minimum datapoint count in Redis": {
         "en": "minimum datapoint count in Redis",
         "de": "minimale Anzahl Datenpunkte in Redis",
