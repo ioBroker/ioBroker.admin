@@ -7,6 +7,10 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.5.8 (2015-08-18)
+* (bluefox) update select ID dialog
+* (bluefox) copy to clipboard functionality
+
 ### 0.5.7 (2015-08-11)
 * (bluefox) try to fix log columns
 * (bluefox) show boolean in States as enumerations.
