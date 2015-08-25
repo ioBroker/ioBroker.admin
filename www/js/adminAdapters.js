@@ -19,7 +19,8 @@ function Adapters(main) {
         'storage_group':          '/img/storage.png',
         'weather_group':          '/img/weather.png',
         'schedule_group':         '/img/schedule.png',
-        'vis_group':              '/img/vis.png'
+        'vis_group':              '/img/vis.png',
+        'service_group':          '/img/service.png'
     };
 
     this.isList        = false;
@@ -79,7 +80,7 @@ function Adapters(main) {
                     return;
                 }
                 $tdList.eq(0).css({'overflow': 'hidden', "white-space": "nowrap"});
-                $tdList.eq(1).html(that.data[node.key].desc).css({'overflow': 'hidden', "white-space": "nowrap", position: 'relative'});
+                $tdList.eq(1).html(that.data[node.key].desc).css({'overflow': 'hidden', "white-space": "nowrap", position: 'relative', 'font-weight': that.data[node.key].bold ? 'bold' : null});
                 $tdList.eq(2).html(that.data[node.key].keywords).css({'overflow': 'hidden', "white-space": "nowrap"}).attr('title', that.data[node.key].keywords);
 
                 $tdList.eq(3).html(that.data[node.key].version).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap", position: 'relative'});
@@ -420,6 +421,7 @@ function Adapters(main) {
                         keywords:   obj.keywords ? obj.keywords.join(' ') : '',
                         version:    version,
                         installed:  installed,
+                        bold:       obj.highlight,
                         install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
                             '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
                             '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
@@ -443,7 +445,7 @@ function Adapters(main) {
                         if (igroup < 0) {
                             that.tree.push({
                                 title:    _(that.data[adapter].group),
-                                desc:    showUploadProgress(group),
+                                desc:     showUploadProgress(group),
                                 key:      that.data[adapter].group,
                                 folder:   true,
                                 expanded: !that.isCollapsed[that.data[adapter].group],
@@ -500,6 +502,7 @@ function Adapters(main) {
                             desc:       desc,
                             keywords:   obj.keywords ? obj.keywords.join(' ') : '',
                             version:    version,
+                            bold:       obj.highlight,
                             installed:  '',
                             install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
                                      '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +

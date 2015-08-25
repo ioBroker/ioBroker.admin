@@ -293,7 +293,7 @@ systemDictionary = {
     "storage_group":        {"en": "Storage",               "de": "Aufbewarung",            "ru": "Хранилище"},
     "vis_group":            {"en": "ioBroker.vis",          "de": "ioBroker.vis",           "ru": "ioBroker.vis"},
     "schedule_group":       {"en": "schedule",              "de": "Zeitplanung",            "ru": "Расписание"},
-
+    "service_group":        {"en": "Maintenance",           "de": "Wartung",                "ru": "Сервисные приложения"},
     "agree":                {"en": "agree",                 "de": "Einverstanden",          "ru": "Согласен(на)"},
     "not agree":            {"en": "not agree",             "de": "Nicht einverstanden",    "ru": "Не согласен(на)"},
     "Filter:":              {"en": "Filter:",               "de": "Filter:",                "ru": "Искать:"},
