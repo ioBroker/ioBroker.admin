@@ -7,6 +7,11 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.5.9 (2015-08-26)
+* (bluefox) add button "create object"
+* (bluefox) Übersetzungen
+* (bluefox) add service group (for terminal)
+
 ### 0.5.8 (2015-08-18)
 * (bluefox) update select ID dialog
 * (bluefox) copy to clipboard functionality

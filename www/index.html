@@ -259,11 +259,13 @@
                 <li><a href="#object-tab-raw" class="translate">raw</a></li>
             </ul>
             <div id="object-tab-common" style="width: calc(100% - 15px); height: calc(100% - 50px); overflow: auto">
+                <button id="object-tab-new-common" class="translateB">New</button>
                 <table style="width: 100%">
                     <thead>
                         <tr>
                             <th class="translate ui-widget-header" style="width: 100px">Name</th>
                             <th class="translate ui-widget-header" style="width: 100%">Value</th>
+                            <th class="translate ui-widget-header" style="width: 25px"></th>
                         </tr>
                     </thead>
                     <tbody id="object-tab-common-table">
@@ -272,11 +274,13 @@
                 </table>
             </div>
             <div id="object-tab-native" style="width: calc(100% - 15px); height: calc(100% - 50px); overflow: auto">
+                <button id="object-tab-new-native" class="translateB">New</button>
                 <table style="width: 100%">
                     <thead>
                     <tr>
                         <th class="translate ui-widget-header" style="width: 100px">Name</th>
                         <th class="translate ui-widget-header" style="width: 100%">Value</th>
+                        <th class="translate ui-widget-header" style="width: 25px"></th>
                     </tr>
                     </thead>
                     <tbody id="object-tab-native-table">
@@ -365,6 +369,42 @@
                 </td>
             </tr>
         </table-->
+    </div>
+    <div id="dialog-new-field" class="translateT" title="Add new field" style="display:none">
+        <table>
+            <tr>
+                <td><label for="object-tab-new-name" class="translate">Name</label></td>
+                <td><input id="object-tab-new-name" type="text" size="40"/></td>
+            </tr>
+        </table>
+    </div>
+    <div id="dialog-new-object" class="translateT" title="Add new object" style="display: none">
+        <table>
+            <tr>
+                <td><label for="object-tab-new-object-name" class="translate">Name</label></td>
+                <td><input id="object-tab-new-object-name" type="text" size="40"/></td>
+            </tr>
+            <tr>
+                <td><label for="object-tab-new-object-type" class="translate">Type</label></td>
+                <td><select id="object-tab-new-object-type">
+                    <option value="state"   class="translate">State</option>
+                    <option value="channel" class="translate">Channel</option>
+                    <option value="device"  class="translate">Device</option>
+                </select></td>
+            </tr>
+            <tr id="object-tabe-new-object-tr">
+                <td><label for="object-tab-new-state-type" class="translate">State&nbsp;type</label></td>
+                <td><select id="object-tab-new-state-type">
+                    <option value="boolean" class="translate">boolean</option>
+                    <option value="string"  class="translate">string</option>
+                    <option value="number"  class="translate">number</option>
+                    <option value="array"   class="translate">enum</option>
+                    <option value="array"   class="translate">array</option>
+                    <option value="object"  class="translate">object</option>
+                    <option value="mixed"   class="translate">mixed</option>
+                </select></td>
+            </tr>
+        </table>
     </div>
     <div id="dialog-enum" class="translateT" title="edit enum" style="display:none">
         <table>

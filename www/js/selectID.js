@@ -482,7 +482,7 @@
         text += '<td><button id="btn_refresh_' + data.instance + '"></button></td>';
         text += '<td><button id="btn_list_' + data.instance + '"></button></td>';
         text += '<td><button id="btn_collapse_' + data.instance + '"></button></td>';
-        text += '<td><button id="btn_expand_' + data.instance + '"></button></td>';
+        text += '<td><button id="btn_expand_' + data.instance + '"></button></td><td class="select-id-custom-buttons"></td>';
         if (data.filter && data.filter.type == 'state' && multiselect) {
             text += '<td style="padding-left: 10px"><button id="btn_select_all_' + data.instance + '"></button></td>';
             text += '<td><button id="btn_unselect_all_' + data.instance + '"></button></td>';
@@ -1725,6 +1725,14 @@
                 return nodes;
             }
             return null;
+        },
+        "getActual": function () {
+            for (var k = 0; k < this.length; k++) {
+                var dlg = this[k];
+                var $dlg = $(dlg);
+                var data = $dlg.data('selectId');
+                return data ? data.selectedID : null;
+            }
         }
     };
 

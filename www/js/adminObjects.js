@@ -77,13 +77,192 @@ function Objects(main) {
             that.editor = ace.edit("view-object-raw");
             that.editor.getSession().setMode("ace/mode/json");
         }
+
+        $('#dialog-new-field').dialog( {
+            autoOpen:   false,
+            modal:      true,
+            width:      400,
+            height:     160,
+            buttons: [
+                {
+                    id: 'dialog-object-tab-new',
+                    text: _('Ok'),
+                    click: function () {
+                        var type  = $('#object-tab-new-name').data('type') || 'common';
+                        var field = $('#object-tab-new-name').val().trim();
+                        var obj   = that.saveFromTabs();
+
+                        if (!field || field.indexOf(' ') != -1) {
+                            showError(_('Invalid field name: %s', field));
+                            return;
+                        }
+                        if (obj[type][field] !== undefined) {
+                            showError(_('Field %s yet exists!', field));
+                            return;
+                        }
+
+                        obj[type][field] = '';
+
+                        that.load(obj);
+
+                        $('#dialog-new-field').dialog('close');
+                    }
+                },
+                {
+                    text: _('Cancel'),
+                    click: function () {
+                        $('#dialog-new-field').dialog('close');
+                        $('#object-tab-new-name').val('');
+                    }
+                }
+            ]
+        });
+
+        $('#dialog-new-object').dialog( {
+            autoOpen:   false,
+            modal:      true,
+            width:      450,
+            height:     200,
+            buttons: [
+                {
+                    id: 'dialog-object-tab-new',
+                    text: _('Ok'),
+                    click: function () {
+                        var id   = $('#object-tab-new-object-name').val().trim();
+                        var type = $('#object-tab-new-object-type').val();
+                        var stype = $('#object-tab-new-state-type').val();
+                        id = id.replace(/\s/g, '_');
+
+                        if (that.main.objects[id]) {
+                            showError(_('Object "%s" yet exists!', id));
+                            return;
+                        }
+
+                        var obj;
+                        var name = id.split('.').pop();
+                        if (type == 'state') {
+                            obj = {
+                                _id:   id,
+                                type: 'state',
+                                common: {
+                                    name: name,
+                                    role: '',
+                                    type: stype,
+                                    read: true,
+                                    write: true,
+                                    desc: _('Manually created')
+                                },
+                                native: {}
+                            };
+                            if (stype == 'boolean') {
+                                obj.common.min = false;
+                                obj.common.max = true;
+                                obj.common.def = false;
+                            } else if (stype == 'string') {
+                                obj.common.def = '';
+                            } else if (stype == 'number') {
+                                obj.common.min = 0;
+                                obj.common.max = 100;
+                                obj.common.def = 0;
+                            } else if (stype == 'enum') {
+                                obj.common.min = 0;
+                                obj.common.max = 5;
+                                obj.common.def = 0;
+                                obj.common.states = '0:zero;1:one;2:two;3:three;4:four;5:five';
+                            }
+                        } else if (type == 'channel') {
+                            obj = {
+                                _id:   id,
+                                type: 'channel',
+                                common: {
+                                    name: name,
+                                    role: '',
+                                    icon: '',
+                                    desc: _('Manually created')
+                                },
+                                native: {}
+                            };
+                        } else {
+                            obj = {
+                                _id:   id,
+                                type: 'device',
+                                common: {
+                                    name: name,
+                                    role: '',
+                                    icon: '',
+                                    desc: _('Manually created')
+                                },
+                                native: {}
+                            };
+                        }
+
+                        that.main.socket.emit('setObject', id, obj, function (err) {
+                            if (err) {
+                                that.main.showError(err);
+                                return;
+                            }
+                            setTimeout(function () {
+                                that.edit(id);
+                            }, 2000);
+                        });
+
+                        $('#dialog-new-object').dialog('close');
+                    }
+                },
+                {
+                    text: _('Cancel'),
+                    click: function () {
+                        $('#dialog-new-object').dialog('close');
+                        $('#object-tab-new-object-name').val('');
+                    }
+                }
+            ]
+        });
+
+        $('#object-tab-new-object-type').change(function () {
+            if ($(this).val() == state) {
+                $('#object-tabe-new-object-tr').show();
+            } else {
+                $('#object-tabe-new-object-tr').hide();
+            }
+        });
+
+        $('#object-tab-new-name').keydown(function (e) {
+            if (e.keyCode == 13) {
+                $('#dialog-object-tab-new').trigger('click');
+            }
+        });
+
+        $('#object-tab-new-common').button({
+            icons: {primary: 'ui-icon-plus'}
+        }).click(function () {
+            $('#object-tab-new-name').data('type', 'common');
+            $('#dialog-new-field').dialog('open');
+        });
+
+        $('#object-tab-new-native').button({
+            icons: {primary: 'ui-icon-plus'}
+        }).click(function () {
+            $('#object-tab-new-name').data('type', 'native');
+            $('#dialog-new-field').dialog('open');
+        });
     };
 
-    function loadObjectFields(htmlId, object, readonly) {
+    function loadObjectFields(htmlId, object, part) {
         var text = '';
         for (var attr in object) {
             text += '<tr><td>' + attr + '</td><td>';
-            if (typeof object[attr] == 'string') {
+            if (part == 'common' && attr == 'type') {
+                text += '<select id="object-tab-new-state-type">' +
+                    '<option value="boolean" ' + (object[attr] == 'boolean' ? 'selected' : '') + '>' + _('boolean') + '</option>' +
+                    '<option value="string"  ' + (object[attr] == 'string'  ? 'selected' : '') + '>' + _('string')  + '</option>' +
+                    '<option value="number"  ' + (object[attr] == 'number'  ? 'selected' : '') + '>' + _('number')  + '</option>' +
+                    '<option value="array"   ' + (object[attr] == 'enum'    ? 'selected' : '') + '>' + _('enum')    + '</option>' +
+                    '<option value="array"   ' + (object[attr] == 'array'   ? 'selected' : '') + '>' + _('array')   + '</option>' +
+                    '<option value="object"  ' + (object[attr] == 'object'  ? 'selected' : '') + '>' + _('object')  + '</option>' +
+                    '<option value="mixed"   ' + (object[attr] == 'mixed'   ? 'selected' : '') + '>' + _('mixed')   + '</option>' +
+                    '</select>';
+            } else if (typeof object[attr] == 'string') {
                 text += '<input type="text" class="object-tab-edit-string" style="width: 100%" data-attr="' + attr + '" value="' + object[attr] + '" />';
             } else if (typeof object[attr] == 'number') {
                 text += '<input type="text" class="object-tab-edit-number" style="width: 100%" data-attr="' + attr + '" value="' + object[attr] + '" />';
@@ -92,7 +271,7 @@ function Objects(main) {
             } else {
                 text += '<textarea type="text" class="object-tab-edit-object"  style="width: 100%" rows="3" data-attr="' + attr + '">' + JSON.stringify(object[attr], null, 2) + '</textarea>';
             }
-            text += '</td></tr>';
+            text += '</td><td><button class="object-tab-field-delete" data-attr="' + attr + '" data-part="' + part + '"></button></td></tr>';
         }
 
         $('#' + htmlId).html(text);
@@ -233,6 +412,7 @@ function Objects(main) {
                             }
                         }
                     }
+
                 ],
                 dblclick: function (id) {
                     that.edit(id);
@@ -260,6 +440,27 @@ function Objects(main) {
             }
 
             that.$grid.selectId('init', settings).selectId('show');
+            $('#grid-objects .select-id-custom-buttons').append('<button title="Add new object" class="select-id-plus translateT"></button>');
+            $('#grid-objects .select-id-plus').button({
+                text: false,
+                icons: {
+                    primary: 'ui-icon-plus'
+                }
+            })
+            .click(function () {
+                var id = that.$grid.selectId('getActual') || '';
+                $('#object-tab-new-object-name').val(id ? id + '.newObject' : '');
+                if (that.main.objects[id] && that.main.objects[id].type == 'device') {
+                    $('#object-tab-new-object-type').val('channel');
+                } else if (that.main.objects[id] && that.main.objects[id].type == 'channel') {
+                    $('#object-tab-new-object-type').val('state');
+                } else {
+                    $('#object-tab-new-object-type').val('state');
+                }
+
+                $('#dialog-new-object').dialog('open');
+            })
+            .css({width: 18, height: 18});
         }
     };
 
@@ -312,6 +513,21 @@ function Objects(main) {
 
         loadObjectFields('object-tab-common-table', obj.common || {}, 'common');
         loadObjectFields('object-tab-native-table', obj.native || {}, 'native');
+
+        $('.object-tab-field-delete').button({
+            icons: {primary: 'ui-icon-trash'},
+            text: false
+        }).click(function () {
+            var part  = $(this).data('part');
+            var field = $(this).data('attr');
+            that.main.confirmMessage(_('Are you sure?'), _('Delete attribute'), 'alert', function (result) {
+                if (result) {
+                    var _obj  = that.saveFromTabs();
+                    delete _obj[part][field];
+                    that.load(_obj);
+                }
+            });
+        }).css({width: 22, height: 22});
 
         obj.acl = obj.acl || {};
         if (obj.acl.object === undefined) obj.acl.object = 0x666;
