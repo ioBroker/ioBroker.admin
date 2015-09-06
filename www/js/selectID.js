@@ -35,6 +35,7 @@
              noDialog:   false,    // do not make dialog
              noMultiselect: false, // do not make multiselect
              buttons:    null,     // array with buttons, that should be shown in last column
+             panelButtons: null,   // array with buttons, that should be shown at the top of dialog (near expand all)
              list:       false,    // tree view or list view
              name:       null,     // name of the dialog to store filter settings
              texts: {

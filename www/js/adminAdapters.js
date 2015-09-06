@@ -186,6 +186,44 @@ function Adapters(main) {
             }, 200);
         });
 
+        $('#btn_filter_custom_url').button({icons: {primary: 'ui-icon-tag'}, text: false}).css({width: 18, height: 18}).unbind('click').click(function () {
+            $('#dialog-install-url').dialog({
+                autoOpen:   true,
+                modal:      true,
+                width:      600,
+                height:     170,
+                buttons:    [
+                    {
+                        id: 'dialog-install-url-button',
+                        text: _('Install'),
+                        click: function () {
+                            $('#dialog-install-url').dialog('close');
+                            var url   = $('#install-url-link').val();
+                            var debug = $('#install-url-debug').prop('checked') ? ' --debug' : '';
+                            if (!url) {
+                                that.main.showError(_('Invalid link'));
+                                return;
+                            }
+                            that.main.cmdExec(null, 'url "' + url + '"' + debug, function (exitCode) {
+                                if (!exitCode) that.init(true, true);
+                            });
+                        }
+                    },
+                    {
+                        text: _('Cancel'),
+                        click: function () {
+                            $('#dialog-install-url').dialog('close');
+                        }
+                    }
+                ]
+            });
+        });
+        $('#install-url-link').keyup(function (event) {
+            if (event.which == 13) {
+                $('#dialog-install-url-button').trigger('click');
+            }
+        });
+
         // Load settings
         that.isList = that.main.config.adaptersIsList || false;
         that.onlyInstalled = that.main.config.adaptersOnlyInstalled || false;

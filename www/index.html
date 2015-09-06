@@ -54,6 +54,7 @@
             <td></td>
             <td><button id="btn_filter_adapters" class="translateT" title="installed adapters"></button></td>
             <td><button id="btn_filter_updates" class="translateT" title="adapter with updates"></button></td>
+            <td><button id="btn_filter_custom_url" class="translateT" title="Install from custom URL"></button></td>
             <td style="width:30px"></td>
             <td><button id="btn_refresh_adapters" class="translateT" title="update adapter information"></button></td>
             <td><button id="btn_list_adapters" class="translateT" title="list"></button></td>
@@ -378,8 +379,12 @@
             </tr>
         </table>
     </div>
-    <div id="dialog-new-object" class="translateT" title="Add new object" style="display: none">
+    <div id="dialog-new-object" class="translateT" title="Add new object: " style="display: none">
         <table>
+            <tr>
+                <td><label for="object-tab-new-object-parent" class="translate">Parent</label></td>
+                <td><input id="object-tab-new-object-parent" type="text" size="40" readonly style="background: lightgrey"/></td>
+            </tr>
             <tr>
                 <td><label for="object-tab-new-object-name" class="translate">Name</label></td>
                 <td><input id="object-tab-new-object-name" type="text" size="40"/></td>
@@ -396,9 +401,10 @@
                 <td><label for="object-tab-new-state-type" class="translate">State&nbsp;type</label></td>
                 <td><select id="object-tab-new-state-type">
                     <option value="boolean" class="translate">boolean</option>
+                    <option value="switch"  class="translate">switch</option>
                     <option value="string"  class="translate">string</option>
                     <option value="number"  class="translate">number</option>
-                    <option value="array"   class="translate">enum</option>
+                    <option value="enum"    class="translate">multi</option>
                     <option value="array"   class="translate">array</option>
                     <option value="object"  class="translate">object</option>
                     <option value="mixed"   class="translate">mixed</option>
@@ -442,8 +448,6 @@
         <!--<textarea id="edit-script-source"></textarea>-->
         <div id="script-editor">Test!</div>
         <input type="hidden" id="edit-script-id">
-
-
     </div>
     <div id="dialog-user" style="display:none">
         <table>
@@ -635,7 +639,17 @@
             </div>
         </div>
     </div>
-
+    <div id="dialog-install-url" class="translateT" title="Install from custom URL" style="display: none">
+        <table style="width: 100%">
+            <tr>
+                <td><label for="install-url-link" class="translate">URL or file path:</label></td>
+                <td><input id="install-url-link" type="text" style="width: 100%"/></td>
+            </tr>
+            <tr>
+                <td><label for="install-url-debug" class="translate">Debug outputs:</label></td>
+                <td><input id="install-url-debug" type="checkbox" /></td>
+            </tr>        </table>
+    </div>
     <div id="log-copy-text"  title="Copy log" style="display:none; width:100%; height: 100%; background: white; top:0; left:0; position: absolute; z-index:2000">
     </div>
     <div id="dialog-message" title="Message" style="display: none">

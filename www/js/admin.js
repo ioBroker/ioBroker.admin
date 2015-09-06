@@ -102,6 +102,8 @@ $(document).ready(function () {
                     $stdout.val(stdout);
                     cmdCallback = null;
                     callback(err);
+                } else {
+                    if (callback) callback();
                 }
             });
         },

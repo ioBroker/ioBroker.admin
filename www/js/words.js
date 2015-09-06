@@ -237,12 +237,24 @@ systemDictionary = {
     "Clear on disk permanent": {"en": "Clear on disk permanent", "de": "Löschen log auf dem host", "ru": "Удалить протокол на сервере"},
     "daemon":               {"en": "daemon",                "de": "daemon",                 "ru": "Демон"},
     "subscribe":            {"en": "subscribe",             "de": "abonnieren",             "ru": "Подписка"},
+    "stable":               {"en": "stable",                "de": "stabil",                 "ru": "стабильно"},
+    "Install":              {"en": "Install",               "de": "Installieren",           "ru": "Установить"},
+    "State":                {"en": "State",                 "de": "Zustand",                "ru": "Состояние"},
+    "Channel":              {"en": "Channel",               "de": "Kanal",                  "ru": "Канал"},
+    "Device":               {"en": "Device",                "de": "Gerät",                  "ru": "Устройство"},
+    "URL or file path:":    {"en": "URL or file path:",     "de": "URL oder Dateipfad:",    "ru": "URL или путь к файлу:"},
+    "Debug outputs:":       {"en": "Debug outputs:",        "de": "Debug-Ausgänge:",        "ru": "Debug вывод:"},
+    "Install from custom URL": {"en": "Install from custom URL", "de": "Installieren aus eigenem URL", "ru": "Установить с собственного источника"},
+    "Add new child object to selected parent": {
+        "en": "Add new child object to selected parent",
+        "de": "Ein Objekt zu selektiertem Objekt hinzufügen",
+        "ru": "Добавить объект к выделенному элементу"
+    },
     "Are you sure to delete %s and all children?": {
         "en": "Are you sure to delete \"%s\" and all children?",
         "de": "Wollen Sie wirklich \"%s\" und alle unterliegende Objekte löschen?",
         "ru": "Вы действительно хотите удалить \"%s\" и все нижележащие объекты?"
-    },
-    "Are you sure?":        {"en": "Are you sure?",         "de": "Sind sie sicher?",       "ru": "Вы уверены?"},
+    },    "Are you sure?":        {"en": "Are you sure?",         "de": "Sind sie sicher?",       "ru": "Вы уверены?"},
     "Log size:":            {"en": "Log size:",             "de": "Log-Größe:",             "ru": "Размер файла протокола:"},
     "Log file will be deleted. Are you sure?": {
         "en": "Log file will be deleted. Are you sure?",
@@ -327,23 +339,23 @@ systemDictionary = {
     "write":                {"en": "write",                 "de": "schreiben",              "ru": "писать"},
     "Script":               {"en": "Script",                "de": "Skript",                 "ru": "Скрипт"},
     "copy":                 {"en": "copy",                  "de": "Kopieren",               "ru": "Копировать"},
-    "State&nbsp;type":      {"en": "State&nbsp;type",       "de": "Zustandstyp",            "ru": "State&nbsp;type"},
-    "boolean":              {"en": "boolean",               "de": "boolesch",               "ru": "Логическая переменная"},
-    "string":               {"en": "string",                "de": "Zeichenkett",            "ru": "Строка"},
-    "number":               {"en": "number",                "de": "Nummer",                 "ru": "Число"},
-    "enum":                 {"en": "enum",                  "de": "Aufzählung ",            "ru": "Перечисление"},
-    "array":                {"en": "array",                 "de": "Array",                  "ru": "Мвссив"},
+    "State&nbsp;type":      {"en": "State&nbsp;type",       "de": "Datenpunkttyp",          "ru": "State&nbsp;type"},
+    "boolean":              {"en": "boolean",               "de": "Logikwert",              "ru": "Логическая переменная"},
+    "switch":               {"en": "switch",                "de": "Schalter",               "ru": "Переключатель"},
+    "string":               {"en": "string",                "de": "Zeichenkette",           "ru": "Строка"},
+    "number":               {"en": "number",                "de": "Zahl",                   "ru": "Число"},
+    "multi":                {"en": "multistate",            "de": "Werteliste",             "ru": "Перечисление"},
+    "array":                {"en": "array",                 "de": "Feld",                   "ru": "Мвссив"},
     "object":               {"en": "object",                "de": "Objekt",                 "ru": "Объект"},
-    "mixed":                {"en": "mixed",                 "de": "genischt",               "ru": "смешанный"},
+    "mixed":                {"en": "mixed",                 "de": "gemischt",               "ru": "смешанный"},
     "New":                  {"en": "New",                   "de": "Hinzufügen",             "ru": "Добавить"},
     "Add new field":        {"en": "Add new field",         "de": "Neues Attribut hinzufügen", "ru": "Добавить атрибут"},
-    "Add new object":       {"en": "Add new object",        "de": "Neues Objekt hinzufügen", "ru": "Добавить новый объект"},
+    "Add new object: ":      {"en": "Add new object: ",       "de": "Neues Objekt hinzufügen: ", "ru": "Добавить новый объект: "},
     "Password cannot be empty!": {
         "en": "Password cannot be empty!",
         "de": "Kennword darf nicht leer sein!",
         "ru": "Пустой пароль!"
-    },
-    "Password and confirmation are not equal!": {
+    },    "Password and confirmation are not equal!": {
         "en": "Password and confirmation are not equal!",
         "de": "Kennwort und Bestэtigung sind unterschiedlich!",
         "ru": "Пароль и подтверждение разные!"
