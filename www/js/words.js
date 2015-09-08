@@ -355,7 +355,8 @@ systemDictionary = {
         "en": "Password cannot be empty!",
         "de": "Kennword darf nicht leer sein!",
         "ru": "Пустой пароль!"
-    },    "Password and confirmation are not equal!": {
+    },
+    "Password and confirmation are not equal!": {
         "en": "Password and confirmation are not equal!",
         "de": "Kennwort und Bestэtigung sind unterschiedlich!",
         "ru": "Пароль и подтверждение разные!"

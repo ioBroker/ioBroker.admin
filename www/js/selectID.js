@@ -491,6 +491,7 @@
         }
 
         if (data.panelButtons) {
+            text += '<td style="width: 20px">&nbsp;&nbsp;</td>';
             for (c = 0; c < data.panelButtons.length; c++) {
                 text += '<td><button id="btn_custom_' + data.instance + '_' + c + '"></button></td>';
             }
