@@ -35,7 +35,7 @@ function Adapters(main) {
         "hmm":          "hardware",
         "hue":          "hardware",
         "occ":          "schedule",
-        "onkyo":        "hardware",
+        "onkyo":        "media",
         "artnet":       "hardware",
         "b-control-em": "hardware",
         "knx":          "hardware",
