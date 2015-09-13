@@ -7,6 +7,12 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.5.10 (2015-09-13)
+* (bluefox) change "add new object" behaviour
+* (bluefox) add "install from custom URL" button (required new js-controller >= 0.7.12)
+* (bluefox) add service.png
+* (bluefox) show hostst in green if updates available
+
 ### 0.5.9 (2015-08-26)
 * (bluefox) add button "create object"
 * (bluefox) Übersetzungen

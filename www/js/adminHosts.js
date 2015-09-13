@@ -130,6 +130,7 @@ function Hosts(main) {
 
             that.main.tabs.adapters.init(true);
         });
+        that.init();
     };
     
     this.initButtons = function () {
