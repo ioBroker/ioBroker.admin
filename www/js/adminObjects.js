@@ -171,7 +171,7 @@ function Objects(main) {
                                 obj.common.max  = 100;
                                 obj.common.def  = 0;
                                 obj.common.unit = '%';
-                            } else if (stype == 'multi') {
+                            } else if (stype == 'enum') {
                                 obj.common.type   = 'number';
                                 obj.common.min    = 0;
                                 obj.common.max    = 5;
