@@ -143,7 +143,7 @@ function Objects(main) {
                         }
 
                         var obj;
-                        name = name.split('.').pop();
+                        // = name.split('.').pop();
                         if (type == 'state') {
                             obj = {
                                 _id:   id,
@@ -261,7 +261,7 @@ function Objects(main) {
         for (var attr in object) {
             text += '<tr><td>' + attr + '</td><td>';
             if (part == 'common' && attr == 'type') {
-                text += '<select id="object-tab-edit-string">' +
+                text += '<select class="object-tab-edit-string" data-attr="' + attr + '">' +
                     '<option value="boolean" ' + (object[attr] == 'boolean' ? 'selected' : '') + '>' + _('boolean') + '</option>' +
                     '<option value="string"  ' + (object[attr] == 'string'  ? 'selected' : '') + '>' + _('string')  + '</option>' +
                     '<option value="number"  ' + (object[attr] == 'number'  ? 'selected' : '') + '>' + _('number')  + '</option>' +
@@ -314,10 +314,12 @@ function Objects(main) {
     this.objectChange = function (id, obj) {
         if (this.$grid) this.$grid.selectId('object', id, obj);
     };
+
     this.reinit = function () {
         this.checkHistory();
         if (this.$grid) this.$grid.selectId('reinit');
     };
+
     this.resize = function (width, height) {
         if (this.$grid) this.$grid.height(height - 100).width(width - 20);
     };
