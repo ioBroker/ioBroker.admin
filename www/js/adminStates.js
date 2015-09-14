@@ -37,6 +37,10 @@ function States(main) {
 
         if (typeof obj.val == 'object') obj.val = JSON.stringify(obj.val);
 
+        if ( that.main.objects[obj._id] &&  that.main.objects[obj._id].common &&  that.main.objects[obj._id].common.role == 'value.time') {
+            obj.val = main.formatDate(obj.val);
+        }
+
         obj.gridId = 'state_' + key.replace(/ /g, '_');
         obj.from = obj.from ? obj.from.replace('system.adapter.', '').replace('system.', '') : '';
         return obj;
@@ -113,12 +117,44 @@ function States(main) {
                     main.objects[_id].common &&
                     main.objects[_id].common.type == 'number' &&
                     main.objects[_id].common.states) {
-                    that.$grid.setColProp('val', {
-                        editable:    true,
-                        edittype:    'select',
-                        editoptions: {value: main.objects[_id].common.states},
-                        align:       'center'
-                    });
+                    var states = main.objects[_id].common.states;
+                    if (typeof main.objects[_id].common.states == 'string' && main.objects[_id].common.states[0] == '{') {
+                        try {
+                            states = JSON.parse(main.objects[_id].common.states);
+                            var text = '';
+                            for (var s in states) {
+                                text += text ? ';' : '';
+                                text += s + ':' + states[s];
+                            }
+                            states = text;
+                        } catch (ex) {
+                            console.error('Cannot parse states: ' + main.objects[_id].common.states);
+                            states = null;
+                        }
+                    } else if (typeof main.objects[_id].common.states == 'object') {
+                        var text = '';
+                        for (var s in states) {
+                            text += text ? ';' : '';
+                            text += s + ':' + states[s];
+                        }
+                        states = text;
+                    }
+
+                    if (states) {
+                        that.$grid.setColProp('val', {
+                            editable:    true,
+                            edittype:    'select',
+                            editoptions: {value: main.objects[_id].common.states},
+                            align:       'center'
+                        });
+                    } else {
+                        that.$grid.setColProp('val', {
+                            editable:    true,
+                            edittype:    'text',
+                            editoptions: null,
+                            align:       'center'
+                        });
+                    }
                 } else {
                     that.$grid.setColProp('val', {
                         editable:    true,
@@ -149,7 +185,13 @@ function States(main) {
                     if (ack === 'true')  ack = true;
                     if (ack === 'false') ack = false;
 
+
                     var id = $('tr[id="' + stateLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
+
+                    if (that.main.objects[id] &&  that.main.objects[id].common &&  that.main.objects[id].common.role == 'value.time') {
+                        val = (new Date(val)).getTime();
+                    }
+
                     that.main.socket.emit('setState', id, {val: val, ack: ack}, function (err) {
                         if (err) {
                             that.$grid.jqGrid('setCell', oldSelected, 'val',  main.states[id].val);
@@ -243,6 +285,10 @@ function States(main) {
                         if (state.ts) rowData.ts = main.formatDate(state.ts, true);
                         if (state.lc) rowData.lc = main.formatDate(state.lc, true);
                         rowData.from = state.from ? state.from.replace('system.adapter.', '').replace('system.', '') : '';
+                        if (main.objects[id] && main.objects[id].common && main.objects[id].common.role == 'value.time') {
+                            rowData.val = main.formatDate(rowData.val);
+                        }
+
                         var a = this.$grid.jqGrid('getRowData', 'state_' + id, rowData);
                         if (a && a._id) this.$grid.jqGrid('setRowData', 'state_' + id, rowData);
                     } else {

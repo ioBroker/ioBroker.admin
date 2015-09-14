@@ -749,6 +749,10 @@
                                 state = JSON.parse(JSON.stringify(state));
                             }
 
+                            if (data.objects[node.key] && data.objects[node.key].common && data.objects[node.key].common.role == 'value.time') {
+                                state.val = state.val ? (new Date(state.val)).toString() : state.val;
+                            }
+
                             var fullVal;
                             if (state.val === undefined) {
                                 state.val = '';

@@ -208,6 +208,11 @@ function Objects(main) {
                             if (err) {
                                 that.main.showError(err);
                                 return;
+                            } else {
+                                if (obj.type == 'state') {
+                                    // create state
+                                    that.main.socket.emit('setState', id, obj.common.def || null);
+                                }
                             }
                             setTimeout(function () {
                                 that.edit(id);
@@ -265,7 +270,6 @@ function Objects(main) {
                     '<option value="boolean" ' + (object[attr] == 'boolean' ? 'selected' : '') + '>' + _('boolean') + '</option>' +
                     '<option value="string"  ' + (object[attr] == 'string'  ? 'selected' : '') + '>' + _('string')  + '</option>' +
                     '<option value="number"  ' + (object[attr] == 'number'  ? 'selected' : '') + '>' + _('number')  + '</option>' +
-                    '<option value="enum"    ' + (object[attr] == 'enum'    ? 'selected' : '') + '>' + _('multi')   + '</option>' +
                     '<option value="array"   ' + (object[attr] == 'array'   ? 'selected' : '') + '>' + _('array')   + '</option>' +
                     '<option value="object"  ' + (object[attr] == 'object'  ? 'selected' : '') + '>' + _('object')  + '</option>' +
                     '<option value="mixed"   ' + (object[attr] == 'mixed'   ? 'selected' : '') + '>' + _('mixed')   + '</option>' +
