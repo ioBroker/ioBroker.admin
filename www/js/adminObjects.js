@@ -208,15 +208,15 @@ function Objects(main) {
                             if (err) {
                                 that.main.showError(err);
                                 return;
-                            } else {
-                                if (obj.type == 'state') {
-                                    // create state
-                                    that.main.socket.emit('setState', id, obj.common.def || null);
-                                }
                             }
                             setTimeout(function () {
-                                that.edit(id);
-                            }, 2000);
+                                that.edit(id, function (_obj) {
+                                    if (_obj.type == 'state') {
+                                        // create state
+                                        that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
+                                    }
+                                });
+                            }, 1000);
                         });
 
                         $('#dialog-new-object').dialog('close');
@@ -492,7 +492,7 @@ function Objects(main) {
         }
     };
 
-    this.edit = function (id) {
+    this.edit = function (id, callback) {
         var obj = main.objects[id];
         if (!obj) return;
 
@@ -521,6 +521,8 @@ function Objects(main) {
         }
         $('#object-tab-acl-group').html(text);
         that.load(obj);
+
+        that.$dialog.data('cb', callback);
 
         that.$dialog
             .dialog('option', 'width',  width)
@@ -667,6 +669,9 @@ function Objects(main) {
             main.socket.emit('setObject', obj._id, obj, function (err) {
                 if (err) {
                     that.main.showError(err);
+                } else {
+                    var cb = that.$dialog.data('cb');
+                    if (cb) cb(obj);
                 }
             });
             that.$dialog.dialog('close');
@@ -684,6 +689,9 @@ function Objects(main) {
                 main.socket.emit('setObject', obj._id, _obj, function (err) {
                     if (err) {
                         that.main.showError(err);
+                    } else {
+                        var cb = that.$dialog.data('cb');
+                        if (cb) cb(obj);
                     }
                 });
             });
