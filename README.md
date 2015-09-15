@@ -7,6 +7,14 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.5.11 (2015-09-15)
+* (bluefox) create state of object after attributes editing
+* (bluefox) remove common.type=='enum'. It must be a number
+* (bluefox) show "level.time" as Time
+* (bluefox) fixed: Reiter Objekte: "common.type" verschwindet / Name wird verkürzt
+* (bluefox) fix Multistate-Attribute
+* (homoran) Update adminAdapters.js
+
 ### 0.5.10 (2015-09-13)
 * (bluefox) change "add new object" behaviour
 * (bluefox) add "install from custom URL" button (required new js-controller >= 0.7.12)
