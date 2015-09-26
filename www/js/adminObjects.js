@@ -76,6 +76,7 @@ function Objects(main) {
         if (!that.editor) {
             that.editor = ace.edit("view-object-raw");
             that.editor.getSession().setMode("ace/mode/json");
+            that.editor.$blockScrolling = true;
         }
 
         $('#dialog-new-field').dialog( {

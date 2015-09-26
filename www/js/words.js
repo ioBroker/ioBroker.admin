@@ -371,6 +371,7 @@ systemDictionary = {
     "node-red":             {"en": "node-red",              "de": "node-red",               "ru": "node-red"},
     "permissionError":      {"en": "Permission error",      "de": "Zugriffsfehler",         "ru": "Ошибка доступа"},
     "Error":                {"en": "Error",                 "de": "Fehler",                 "ru": "Ошибка"},
+    "Running: ":            {"en": "Running: ",             "de": "Ausgeführt: ",           "ru": "Рабочая: "},
     "Are you sure to delete script %s?": {
         "en": "Are you sure to delete script '%s'?",
         "de": "Wollen Sie wirklich Skript '%s' löschen?",

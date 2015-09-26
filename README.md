@@ -7,6 +7,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.5.12 (2015-09-26)
+* (bluefox) update ace aditor for json
+
 ### 0.5.11 (2015-09-15)
 * (bluefox) create state of object after attributes editing
 * (bluefox) remove common.type=='enum'. It must be a number
