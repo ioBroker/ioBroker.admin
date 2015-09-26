@@ -451,6 +451,11 @@ function Adapters(main) {
                     var desc  = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
                     desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
+                    if (adapter == 'vis') {
+                        //todo
+                        obj.highlight = true;
+                    }
+
                     that.data[adapter] = {
                         image:      icon ? '<img src="' + icon + '" width="22px" height="22px" />' : '',
                         name:       adapter,

@@ -7,6 +7,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.5.13 (2015-09-26)
+* (bluefox) add to ace editor the javascript option
+
 ### 0.5.12 (2015-09-26)
 * (bluefox) update ace aditor for json
 
