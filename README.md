@@ -4,6 +4,14 @@
 
 user interface for configuration and administration
 
+## Using common.localLink
+%ip% - ioBroker ip address (address of the admin)
+%secure% or %protocol% - read from native.secure the value and use http or https
+%web_protocol% - looking for the first instance of web (e.g. web.0) and get "native.secure" from "system.adapter.web.0"
+%instance% - instance of the adapter
+%someField% - get someField from "native" of this adapter instance
+%web.0_ip% - get native.ip from "system.adapter.web.0"
+%native_someField% - get someField from "native" of this adapter instance
 
 ## Changelog
 

@@ -205,6 +205,7 @@ function Instances(main) {
 
     this.replaceLink = function (_var, adapter, instance, elem) {
         _var = _var.replace(/\%/g, '');
+        if (_var.match(/^native_/))  _var = _var.substring(7);
         // like web.0_port
         var parts;
         if (_var.indexOf('_') == -1) {
@@ -252,7 +253,11 @@ function Instances(main) {
                         if (parts[1] == 'secure') {
                             link = link.replace('%' + _var + '%', obj.native[parts[1]] ? 'https' : 'http');
                         } else {
-                            link = link.replace('%' + _var + '%', obj.native[parts[1]]);
+                            if (link.indexOf('%' + _var + '%') == -1) {
+                                link = link.replace('%native_' + _var + '%', obj.native[parts[1]]);
+                            } else {
+                                link = link.replace('%' + _var + '%', obj.native[parts[1]]);
+                            }
                         }
                         if (elem) {
                             $('#' + elem).data('src', link);
@@ -276,6 +281,7 @@ function Instances(main) {
         // remove %%
         _var = _var.replace(/\%/g, '');
 
+        if (_var.match(/^native_/)) _var = _var.substring(7);
         // like web.0_port
         var parts;
         if (_var.indexOf('_') == -1) {
@@ -293,7 +299,11 @@ function Instances(main) {
                 if (parts[1] == 'secure') {
                     link = link.replace('%' + _var + '%', obj.native[parts[1]] ? 'https' : 'http');
                 } else {
-                    link = link.replace('%' + _var + '%', obj.native[parts[1]]);
+                    if (link.indexOf('%' + _var + '%') == -1) {
+                        link = link.replace('%native_' + _var + '%', obj.native[parts[1]]);
+                    } else {
+                        link = link.replace('%' + _var + '%', obj.native[parts[1]]);
+                    }
                 }
             } else {
                 console.log('Cannot get link ' + parts[1]);

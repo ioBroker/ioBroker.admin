@@ -324,8 +324,12 @@
         if (data.selectedID) {
             data.$tree.fancytree('getTree').visit(function (node) {
                 if (node.key == data.selectedID) {
-                    node.setActive();
-                    node.makeVisible({scrollIntoView: scrollIntoView || false});
+                    try {
+                        node.setActive();
+                        node.makeVisible({scrollIntoView: scrollIntoView || false});
+                    } catch (err) {
+                        console.error(err);
+                    }
                     return false;
                 }
             });
