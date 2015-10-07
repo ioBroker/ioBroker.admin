@@ -420,6 +420,9 @@ function Instances(main) {
             });
 
             this.initButtons();
+            // set cursor
+            $('.ui-jqgrid-resize').css('cursor', 'e-resize');
+
         }
     };
 

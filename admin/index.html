@@ -35,7 +35,16 @@
             "en": "Set certificates or load it first in the system settings (right top).",
             "de": "Setze Zertificate oder lade die erst unter System/Einstellungen (oben rechts).",
             "ru": "Нужно выбрать сертификаты или сначала загрузить их в системных настройках (вверху справа)."
-        }
+        },
+        "Auto update:":         {"en": "Updates check:",            "de": "Updates prüfen:",        "ru": "Проверка обновлений:"},
+        "manually":             {"en": "manually",                  "de": "manuell",                "ru": "вручную"},
+        "every 12 hours":       {"en": "every 12 hours",            "de": "alle 12 Stunden",        "ru": "каждые 12 часов"},
+        "every day":            {"en": "every day",                 "de": "jeden Tag",              "ru": "каждый день"},
+        "every 2 days":         {"en": "every 2 days",              "de": "alle 2 Tage",            "ru": "каждые 2 дня"},
+        "every 3 days":         {"en": "every 3 days",              "de": "alle 3 Tage",            "ru": "каждые 3 дня"},
+        "every week":           {"en": "every week",                "de": "jede Woche",             "ru": "каждую неделю"},
+        "every 2 weeks":        {"en": "every 2 weeks",             "de": "alle 2 Wochen",          "ru": "каждые 2 недели"},
+        "monthly":              {"en": "monthly",                   "de": "monatlich",              "ru": "раз в месяц"}
     };
 
     function showHideSettings() {
@@ -68,6 +77,8 @@
             }
             $('#bind.value').val(settings.bind);
         });
+
+        if (settings.autoUpdate === undefined) settings.autoUpdate = 24;
 
         $('.value').each(function () {
             var key = $(this).attr('id');
@@ -149,6 +160,18 @@
         <tr><td class="translate">Authentication:</td><td><input  class="value" id="auth"   type="checkbox" /></td></tr>
         <tr><td class="translate">Cache:</td><td>         <input  class="value" id="cache"  type="checkbox" /></td></tr>
         <tr class="defaultUser"><td class="translate">Run as:</td><td><select class="value" id="defaultUser" /></td></tr>
+        <tr><td class="translate">Auto update:</td><td>
+            <select  class="value" id="autoUpdate">
+                <option value="0" class="translate">manually</option>
+                <option value="12" class="translate">every 12 hours</option>
+                <option value="24" class="translate">every day</option>
+                <option value="48" class="translate">every 2 days</option>
+                <option value="72" class="translate">every 3 days</option>
+                <option value="168" class="translate">every week</option>
+                <option value="336" class="translate">every 2 weeks</option>
+                <option value="720" class="translate">monthly</option>
+            </select>
+        </td></tr>
     </table>
 
     <p class="translate">help_tip</p>

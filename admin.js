@@ -162,6 +162,16 @@ function main() {
         webServer = initWebServer(adapter.config);
         getData();
     }
+
+    // By default update repository every 24 hours
+    if (adapter.config.autoUpdate === undefined) adapter.config.autoUpdate = 24;
+    adapter.config.autoUpdate = parseInt(adapter.config.autoUpdate, 10) || 0;
+    if (adapter.config.autoUpdate) {
+        setInterval(function () {
+            updateRegister();
+        }, adapter.config.autoUpdate * 3600000);
+        updateRegister();
+    }
 }
 
 function addUser(user, pw, options, callback) {
@@ -931,4 +941,24 @@ function onAuthorizeFail(data, message, error, accept) {
     }
     // this error will be sent to the user as a special error-package
     // see: http://socket.io/docs/client-api/#socket > error-object
+}
+
+// read repository information from active repository
+function updateRegister() {
+    adapter.log.info('Request actual repository...');
+    adapter.getForeignObject('system.config', function (err, data) {
+        if (data && data.common) {
+            adapter.sendToHost(adapter.host, 'getRepository', {
+                repo: data.common.activeRepo,
+                update: true
+            }, function (_repository) {
+                if (_repository === 'permissionError') {
+                    adapter.log.error('May not read "getRepository"');
+                } else {
+                    adapter.log.info('Repository received successfully.');
+                    webServer.io.sockets.emit('repoUpdated');
+                }
+            });
+        }
+    });
 }

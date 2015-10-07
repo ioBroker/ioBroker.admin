@@ -336,6 +336,17 @@
         }
     }
 
+    function syncHeader($dlg) {
+        // read width of data.$tree and set the same width for header
+        var data = $dlg.data('selectId');
+        var $header = $('#selectID_header_' + data.instance);
+        var thDest = $header.find('>colgroup>col');	//if table headers are specified in its semantically correct tag, are obtained
+        var thSrc = data.$tree.find('>thead>tr>th');
+        for (var i = 1; i < thSrc.length; i++) {
+            $(thDest[i]).attr('width', $(thSrc[i]).width());
+        }
+    }
+
     function findRoomsForObject(data, id, rooms) {
         rooms = rooms || [];
         for (var i = 0; i < data.enums.length; i++) {
@@ -372,6 +383,24 @@
 
     function clippyHide(e) {
         $(this).find('.clippy-button').remove();
+    }
+
+    function installColResize($dlg) {
+        if (!$.fn.colResizable) return;
+
+        var data = $dlg.data('selectId');
+        if (data.$tree.is(':visible')) {
+            data.$tree.colResizable({
+                liveDrag: true,
+                onResize: function (event) {
+                    syncHeader($dlg);
+                }
+            });
+        } else {
+            setTimeout(function () {
+                installColResize($dlg);
+            }, 400)
+        }
     }
 
     function initTreeDialog($dlg) {
@@ -1244,6 +1273,7 @@
 
         showActive($dlg);
         loadSettings(data);
+        installColResize($dlg);
     }
 
     function storeSettings(data) {

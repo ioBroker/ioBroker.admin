@@ -15,6 +15,10 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.6.0 (2015-10-07)
+* (bluefox) enable table resizing
+* (bluefox) enable auto update of repositories
+
 ### 0.5.13 (2015-09-26)
 * (bluefox) add to ace editor the javascript option
 

@@ -2269,6 +2269,11 @@ $(document).ready(function () {
             location.reload();
         }
     });
+    main.socket.on('repoUpdated', function () {
+        setTimeout(function () {
+            tabs.adapters.init(true);
+        }, 0);
+    })
 
     main.socket.on('reauthenticate', function () {
         location.reload();

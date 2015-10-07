@@ -340,7 +340,7 @@ function Adapters(main) {
         $('#grid-adapters-div').height($(window).height() - $('#tabs .ui-tabs-nav').height() - 50);
     }
 
-    // ----------------------------- Adpaters show and Edit ------------------------------------------------
+    // ----------------------------- Adapters show and Edit ------------------------------------------------
     this.init = function (update, updateRepo) {
         if (!this.main.objectsLoaded) {
             setTimeout(function () {
@@ -349,9 +349,10 @@ function Adapters(main) {
             return;
         }
 
-
         if (typeof this.$grid !== 'undefined' && (!this.$grid[0]._isInited || update)) {
             this.$grid[0]._isInited = true;
+
+            this.$grid.colResizable({liveDrag:true});
 
             $('#process_running_adapters').show();
 

@@ -5,7 +5,6 @@ function Logs(main) {
     this.curRepoLastUpdate = null;
     this.curInstalled = null;
     this.list = [];
-    this.$grid = $('#grid-adapters');
     this.main = main;
 
     this.logLinesCount =         0;
@@ -28,8 +27,9 @@ function Logs(main) {
             }
         });
         $('#log-filter-message-clear').button({icons:{primary: 'ui-icon-close'}, text: false}).css({height: 18, width: 18}).click(function () {
-            if ($('#log-filter-message').val() !== '') {
-                $('#log-filter-message').val('').trigger('change');
+            var $log_filter = $('#log-filter-message');
+            if ($log_filter.val() !== '') {
+                $log_filter.val('').trigger('change');
             }
         });
 
@@ -73,6 +73,29 @@ function Logs(main) {
         }).css({width: 20, height: 20});
     };
 
+    function installColResize() {
+        if (!$.fn.colResizable) return;
+        var $outer = $('#log-outer');
+
+        if ($outer.is(':visible')) {
+            $outer.colResizable({
+                liveDrag: true,
+                onResize: function (event) {
+                    // read width of data.$tree and set the same width for header
+                    var thDest = $('#log-outer-header >thead>tr>th');	//if table headers are specified in its semantically correct tag, are obtained
+                    var thSrc = $outer.find('>tbody>tr:first>td');
+                    for (var i = 1; i < thSrc.length; i++) {
+                        $(thDest[i]).attr('width', $(thSrc[i]).width());
+                    }
+                }
+            });
+        } else {
+            setTimeout(function () {
+                installColResize();
+            }, 400)
+        }
+    }
+
     // -------------------------------- Logs ------------------------------------------------------------
     this.init = function () {
         if (!this.main.currentHost) {
@@ -113,9 +136,11 @@ function Logs(main) {
                     }
                     that.add(message);
                 }
+
+                installColResize();
             }, 0);
         });
-    }
+    };
 
     this.add = function (message) {
         //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
@@ -127,14 +152,15 @@ function Logs(main) {
             this.logLinesCount++;
         }
 
-        var hostFilter = $('#log-filter-host').val();
+        var $log_filter_host = $('#log-filter-host');
+        var hostFilter = $log_filter_host.val();
 
         if (message.from && this.logHosts.indexOf(message.from) == -1) {
             this.logHosts.push(message.from);
             this.logHosts.sort();
-            $('#log-filter-host').html('<option value="">' + _('all') + '</option>');
+            $log_filter_host.html('<option value="">' + _('all') + '</option>');
             for (var i = 0; i < this.logHosts.length; i++) {
-                $('#log-filter-host').append('<option value="' + this.logHosts[i].replace(/\./g, '-') + '" ' + ((this.logHosts[i] == hostFilter) ? 'selected' : '') + '>' + this.logHosts[i] + '</option>');
+                $log_filter_host.append('<option value="' + this.logHosts[i].replace(/\./g, '-') + '" ' + ((this.logHosts[i] == hostFilter) ? 'selected' : '') + '>' + this.logHosts[i] + '</option>');
             }
         }
         var visible = '';
@@ -161,7 +187,7 @@ function Logs(main) {
         text += '<td class="log-column-4" title="' + message.message.replace(/"/g, "'") + '">' + message.message.substring(0, 200) + '</td></tr>';
 
         $('#log-table').prepend(text);
-    }
+    };
 
     this.filter = function () {
         if (this.logFilterTimeout) {
@@ -195,7 +221,7 @@ function Logs(main) {
             $('#log-outer .log-severity-error').show();
         }
         if (filterHost || filterMsg) {
-            $('#log-outer .log-line').each(function (index) {
+            $('#log-outer .log-line').each(function () {
                 if (filterHost && !$(this).hasClass('log-from-' + filterHost)) {
                     $(this).hide();
                 } else
@@ -204,7 +230,7 @@ function Logs(main) {
                 }
             });
         }
-    }
+    };
 
     this.clear = function (isReload) {
         if (isReload === undefined) isReload = true;

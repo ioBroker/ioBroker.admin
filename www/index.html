@@ -14,6 +14,7 @@
     <script type="text/javascript" src="lib/js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js"></script>
     <script type="text/javascript" src="lib/js/jqGrid/grid.locale-all.js"></script>
+    <script type="text/javascript" src="lib/js/colResizable-1.5.min.js"></script>
     <script type="text/javascript" src="lib/js/jquery.multiselect-1.13.min.js"></script>
     <script type="text/javascript" src="./socket.io/socket.io.js"></script>
     <script type="text/javascript" src="lib/js/ace-1.2.0/ace.js"></script>
@@ -66,14 +67,14 @@
         <div id="process_running_adapters" class="translate" style="position:absolute; top:50%; left:50%; width: 150; height: 25; padding: 12; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">Processing...</div>
         <div style="width:100%;height:400px;overflow-y: auto" id="grid-adapters-div"><table id="grid-adapters" style="width:100%;table-layout:fixed;">
             <colgroup>
-                <col width="320px"></col>
-                <col width="*"></col>
-                <col width="200px"></col>
-                <col width="70px"></col>
-                <col width="135px"></col>
-                <col width="140px"></col>
-                <col width="140px"></col>
-                <col width="140px"></col>
+                <col width="320px"/>
+                <col width="*"/>
+                <col width="200px"/>
+                <col width="70px"/>
+                <col width="135px"/>
+                <col width="140px"/>
+                <col width="140px"/>
+                <col width="140px"/>
             </colgroup>
             <thead>
             <tr>
@@ -176,38 +177,21 @@
                     <td ><button id="log-clear-on-disk"class="translateT" title="Clear on disk permanent">Clear on disk</button></td>
                 </tr></table>
             </div>
-            <table style="width: 100%; border-collapse: collapse;" class="ui-widget ui-state-default ui-corner-bottom">
+            <table id="log-outer-header" style="width: 100%; border-collapse: collapse;" class="ui-widget ui-state-default ui-corner-bottom">
                 <thead>
-                <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
-                    <th class="log-column-1-header ui-state-default ui-th-column ui-th-ltr" style="text-align: right"><select id="log-filter-host"></select></th>
-                    <th class="log-column-2-header ui-state-default ui-th-column ui-th-ltr translate">ts</th>
-                    <th class="log-column-3-header ui-state-default ui-th-column ui-th-ltr"><select id="log-filter-severity">
-                        <option value=""      class="translate">debug</option>
-                        <option value="info"  class="translate">info</option>
-                        <option value="warn"  class="translate">warn</option>
-                        <option value="error" class="translate">error</option>
-                    </select></th>
-                    <th class="log-column-4-header ui-state-default ui-th-column ui-th-ltr" style="text-align: left"><span class="translate" style="padding-right: 10;padding-left: 5">message</span><input id="log-filter-message" type="text" size="10"/><button id="log-filter-message-clear">x</button></th>
-                </tr>
+                    <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
+                        <th class="log-column-1-header ui-state-default ui-th-column ui-th-ltr" style="text-align: right"><select id="log-filter-host"></select></th>
+                        <th class="log-column-2-header ui-state-default ui-th-column ui-th-ltr translate">ts</th>
+                        <th class="log-column-3-header ui-state-default ui-th-column ui-th-ltr"><select id="log-filter-severity">
+                            <option value=""      class="translate">debug</option>
+                            <option value="info"  class="translate">info</option>
+                            <option value="warn"  class="translate">warn</option>
+                            <option value="error" class="translate">error</option>
+                        </select></th>
+                        <th class="log-column-4-header ui-state-default ui-th-column ui-th-ltr" style="text-align: left"><span class="translate" style="padding-right: 10;padding-left: 5">message</span><input id="log-filter-message" type="text" size="10"/><button id="log-filter-message-clear">x</button></th>
+                    </tr>
                 </thead>
             </table>
-            <!--table style="width: 100%; border-collapse: collapse;" class="ui-widget ui-state-default ui-corner-bottom">
-                <thead>
-                <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
-                    <th class="log-column-1-header ui-state-default ui-th-column ui-th-ltr">
-                        <select id="log-filter-host"></select>
-                    </th>
-                    <th class="log-column-2-header ui-state-default ui-th-column ui-th-ltr"></th>
-                    <th class="log-column-3-header ui-state-default ui-th-column ui-th-ltr"><select id="log-filter-severity">
-                        <option value=""      class="translate">debug</option>
-                        <option value="info"  class="translate">info</option>
-                        <option value="warn"  class="translate">warn</option>
-                        <option value="error" class="translate">error</option>
-                    </select></th>
-                    <th class="log-column-4-header ui-state-default ui-th-column ui-th-ltr"></th>
-                </tr>
-                </thead>
-            </table-->
             <div id="grid-log-inner" style="width: 100%; overflow-y: scroll;">
                 <table id="log-outer" style="width: 100%; border-collapse: collapse; margin-top: -1px" class="ui-widget ui-state-default ui-corner-bottom">
                     <tbody id="log-table">
