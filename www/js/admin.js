@@ -536,7 +536,15 @@ $(document).ready(function () {
 
                             });
                         });
-                        $('#tabs-system').tabs();
+                        $('#tabs-system').tabs({
+                            activate: function (event, ui)  {
+                                if (ui.newPanel.selector == '#tab-system-certs') {
+                                    $('#drop-zone').show().css({opacity: 1}).animate({opacity: 0}, 2000, function () {
+                                        $('#drop-zone').hide().css({opacity: 1});
+                                    });
+                                }
+                            }
+                        });
 
                         $dialogSystem.dialog('open');
                     });
@@ -1172,6 +1180,43 @@ $(document).ready(function () {
         });
     }
 
+    function addCert(name, text) {
+        // Find last id;
+        var id = 1;
+        var ids = $gridCerts.jqGrid('getDataIDs');
+        while (ids.indexOf('cert_' + id) != -1) {
+            id++;
+        }
+        // Find new unique name
+        var found;
+        var newText = name || _('New');
+        var idx = 1;
+        do {
+            found = true;
+            for (var _id = 0; _id < ids.length; _id++) {
+                var obj = $gridCerts.jqGrid('getRowData', ids[_id]);
+                if (obj && obj.name == newText + idx)  {
+                    idx++;
+                    found = false;
+                    break;
+                }
+            }
+        } while (!found);
+
+        $gridCerts.jqGrid('addRowData', 'cert_' + id, {
+            _id:         id,
+            name:        newText + idx,
+            certificate: text || '',
+            commands:
+                '<button data-cert-id="' + id + '" class="cert-edit-submit">'   + _('edit')   + '</button>' +
+                '<button data-cert-id="' + id + '" class="cert-delete-submit">' + _('delete') + '</button>' +
+                '<button data-cert-id="' + id + '" class="cert-ok-submit" style="display:none">' + _('ok') + '</button>' +
+                '<button data-cert-id="' + id + '" class="cert-cancel-submit" style="display:none">' + _('cancel') + '</button>'
+        });
+
+        initCertButtons();
+    }
+
     function prepareCerts() {
         $gridCerts.jqGrid({
             datatype: 'local',
@@ -1214,44 +1259,21 @@ $(document).ready(function () {
             caption: '',
             buttonicon: 'ui-icon-plus',
             onClickButton: function () {
-                // Find last id;
-                var id = 1;
-                var ids = $gridCerts.jqGrid('getDataIDs');
-                while (ids.indexOf('cert_' + id) != -1) {
-                    id++;
-                }
-                // Find new unique name
-                var found;
-                var newText = _("New");
-                var idx = 1;
-                do {
-                    found = true;
-                    for (var _id = 0; _id < ids.length; _id++) {
-                        var obj = $gridCerts.jqGrid('getRowData', ids[_id]);
-                        if (obj && obj.name == newText + idx)  {
-                            idx++;
-                            found = false;
-                            break;
-                        }
-                    }
-                } while (!found);
-
-                $gridCerts.jqGrid('addRowData', 'cert_' + id, {
-                    _id:         id,
-                    name:        newText + idx,
-                    certificate: '',
-                    commands:
-                        '<button data-cert-id="' + id + '" class="cert-edit-submit">'   + _('edit')   + '</button>' +
-                        '<button data-cert-id="' + id + '" class="cert-delete-submit">' + _('delete') + '</button>' +
-                        '<button data-cert-id="' + id + '" class="cert-ok-submit" style="display:none">' + _('ok') + '</button>' +
-                        '<button data-cert-id="' + id + '" class="cert-cancel-submit" style="display:none">' + _('cancel') + '</button>'
-                });
-
-                initCertButtons();
+                addCert();
             },
             position: 'first',
             id:       'add-cert',
             title:    _('new certificate'),
+            cursor:   'pointer'
+        }).jqGrid('navButtonAdd', '#pager-certs', {
+            caption: '',
+            buttonicon: 'ui-icon-disk',
+            onClickButton: function () {
+                $("#drop-file").trigger('click');
+            },
+            position: 'second',
+            id:       'add-cert-from-file',
+            title:    _('Add certificate from file'),
             cursor:   'pointer'
         });
     }
@@ -1349,6 +1371,53 @@ $(document).ready(function () {
         if (isFound) $('#system_activeRepo').val(selectedRepo);
     }
 
+    function fileHandler(event) {
+        event.preventDefault();
+        var file = event.dataTransfer ? event.dataTransfer.files[0] : event.target.files[0];
+
+        if (file.size > 10000) {
+            $('#drop-text').html(_('File is too big!'));
+            $dz.addClass('dropZone-error').animate({opacity: 0}, 1000, function () {
+                $dz.hide().removeClass('dropZone-error').css({opacity: 1});
+                main.showError(_('File is too big!'));
+                $('#drop-text').html(_('Drop the files here'));
+            });
+            return false;
+        }
+        var $dz = $('#drop-zone').show();
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+            var text;
+            try {
+                text = atob(evt.target.result.split(',')[1]); // string has form data:;base64,TEXT==
+            } catch(err) {
+                $('#drop-text').html(_('Cannot read file!'));
+                $dz.addClass('dropZone-error').animate({opacity: 0}, 1000, function () {
+                    $dz.hide().removeClass('dropZone-error').css({opacity: 1});
+                    main.showError(_('Cannot read file!'));
+                    $('#drop-text').html(_('Drop the files here'));
+                });
+                return;
+            }
+            text = text.replace(/(\r\n|\n|\r)/gm, '');
+            if (text.indexOf('BEGIN RSA PRIVATE KEY') != -1) {
+                $dz.hide();
+                addCert('private', text);
+            } else if (text.indexOf('BEGIN CERTIFICATE') != -1) {
+                $dz.hide();
+                addCert('public', text);
+            } else {
+                $('#drop-text').html(_('Unknown file format!'));
+                $dz.addClass('dropZone-error').animate({opacity: 0}, 1000, function () {
+                    $dz.hide().removeClass('dropZone-error').css({opacity: 1});
+                    main.showError(_('Unknown file format!'));
+                    $('#drop-text').html(_('Drop the files here'));
+                });
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
     // ----------------------------- Certificates show and Edit ------------------------------------------------
     function initCertsGrid(update) {
         $gridCerts.jqGrid('clearGridData');
@@ -1379,6 +1448,30 @@ $(document).ready(function () {
 
 
         $gridCerts.trigger('reloadGrid');
+
+        var $dropZone = $('#tab-system-certs');
+        if (typeof(window.FileReader) !== 'undefined' && !$dropZone.data('installed')) {
+            $dropZone.data('installed', true);
+            var $dz = $('#drop-zone');
+            $('#drop-text').html(_('Drop the files here'));
+            $dropZone[0].ondragover = function() {
+                $dz.unbind('click');
+                $dz.show();
+                return false;
+            };
+            $dz.click(function () {
+                $dz.hide();
+            })
+
+            $dz[0].ondragleave = function() {
+                $dz.hide();
+                return false;
+            };
+
+            $dz[0].ondrop = fileHandler;
+        }
+
+        $("#drop-file").change(fileHandler);
     }
 
     function initCertButtons() {

@@ -206,6 +206,11 @@ systemDictionary = {
         "ru": "Нажмите Ctrl+A и Ctrl+C, что бы скопировать в буффер обмена и после этого нажмите мышкой в любом месте."
     },
     "debug":                {"en": "debug",                 "de": "Debug",                  "ru": "отладка"},
+    "Parent":               {"en": "Parent",                "de": "Parent",                 "ru": "Родитель"},
+    "Drop the files here":  {"en": "Drop the files here",   "de": "Die Datei hier platzieren", "ru": "Перетащить файлы сюда"},
+    "Unknown file format!": {"en": "Unknown file format!",  "de": "Unbekannter Dateiformat!", "ru": "Неизвестный формат файла"},
+    "Cannot read file!":    {"en": "Cannot read file!",     "de": "Kann die Datei nicht lesen!", "ru": "Невозможно прочитать файл!"},
+    "File is too big!":     {"en": "File is too big!",      "de": "Datei ist zu groß!",     "ru": "Слишком большой файл!"},
     "info":                 {"en": "info",                  "de": "Info",                   "ru": "инфо"},
     "warn":                 {"en": "warn",                  "de": "Warnung",                "ru": "предупреждения"},
     "error":                {"en": "error",                 "de": "Fehler",                 "ru": "ошибки"},
