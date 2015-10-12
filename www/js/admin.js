@@ -410,6 +410,7 @@ $(document).ready(function () {
 
                     case '#tab-adapters':
                         tabs.hosts.initList();
+                        tabs.adapters.enableColResize();
                         break;
 
                     case '#tab-instances':
