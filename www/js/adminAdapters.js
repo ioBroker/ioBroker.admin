@@ -338,7 +338,18 @@ function Adapters(main) {
 
     this.resize = function (width, height) {
         $('#grid-adapters-div').height($(window).height() - $('#tabs .ui-tabs-nav').height() - 50);
+    };
+
+    function enableColResize() {
+        if (that.$grid.is(':visible')) {
+            that.$grid.colResizable({liveDrag: true});
+        } else {
+            setTimeout(function () {
+                enableColResize();
+            }, 1000);
+        }
     }
+
 
     // ----------------------------- Adapters show and Edit ------------------------------------------------
     this.init = function (update, updateRepo) {
@@ -351,8 +362,6 @@ function Adapters(main) {
 
         if (typeof this.$grid !== 'undefined' && (!this.$grid[0]._isInited || update)) {
             this.$grid[0]._isInited = true;
-
-            this.$grid.colResizable({liveDrag:true});
 
             $('#process_running_adapters').show();
 
@@ -601,6 +610,10 @@ function Adapters(main) {
                 });
                 $('#process_running_adapters').hide();
                 if (that.currentFilter) that.$grid.fancytree('getTree').filterNodes(customFilter, false);
+
+                if ($.fn.colResizable) {
+                    enableColResize();
+                }
             });
         }
     };

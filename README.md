@@ -15,6 +15,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.6.1 (2015-10-12)
+* (bluefox) fix columns resizing in adapters
+
 ### 0.6.0 (2015-10-07)
 * (bluefox) enable table resizing
 * (bluefox) enable auto update of repositories
