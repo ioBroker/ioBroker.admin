@@ -15,6 +15,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.6.2 (2015-10-18)
+* (bluefox) add confirmation by instance deletion
+
 ### 0.6.1 (2015-10-12)
 * (bluefox) fix columns resizing in adapters
 

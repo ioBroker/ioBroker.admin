@@ -356,6 +356,11 @@ systemDictionary = {
     "New":                  {"en": "New",                   "de": "Hinzufügen",             "ru": "Добавить"},
     "Add new field":        {"en": "Add new field",         "de": "Neues Attribut hinzufügen", "ru": "Добавить атрибут"},
     "Add new object: ":      {"en": "Add new object: ",       "de": "Neues Objekt hinzufügen: ", "ru": "Добавить новый объект: "},
+    "Add certificate from file": {
+        "en": "Add certificate from file",
+        "de": "Zertifikat aus der Datei hinzufügen",
+        "ru": "Добавить сертификат из файла"
+    },
     "Password cannot be empty!": {
         "en": "Password cannot be empty!",
         "de": "Kennword darf nicht leer sein!",

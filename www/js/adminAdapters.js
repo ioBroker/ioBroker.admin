@@ -716,8 +716,12 @@ function Adapters(main) {
             icons: {primary: 'ui-icon-trash'},
             text:  false
         }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
-            that.main.cmdExec(null, 'del ' + $(this).attr('data-adapter-name'), function (exitCode) {
-                if (!exitCode) that.init(true);
+            that.main.confirmMessage(_('Are you sure?'), 'Question', 'question', function (result) {
+                if (result) {
+                    that.main.cmdExec(null, 'del ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                        if (!exitCode) that.init(true);
+                    });
+                }
             });
         });
 
