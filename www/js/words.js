@@ -355,7 +355,8 @@ systemDictionary = {
     "mixed":                {"en": "mixed",                 "de": "gemischt",               "ru": "смешанный"},
     "New":                  {"en": "New",                   "de": "Hinzufügen",             "ru": "Добавить"},
     "Add new field":        {"en": "Add new field",         "de": "Neues Attribut hinzufügen", "ru": "Добавить атрибут"},
-    "Add new object: ":      {"en": "Add new object: ",       "de": "Neues Objekt hinzufügen: ", "ru": "Добавить новый объект: "},
+    "Add new object: ":     {"en": "Add new object: ",      "de": "Neues Objekt hinzufügen: ", "ru": "Добавить новый объект: "},
+    "Question":             {"en": "Question",              "de": "Frage",                  "ru": "Вопрос"},
     "Add certificate from file": {
         "en": "Add certificate from file",
         "de": "Zertifikat aus der Datei hinzufügen",

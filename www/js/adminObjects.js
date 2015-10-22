@@ -11,7 +11,7 @@ function Objects(main) {
     this.currentHistory =        null; // Id of the currently shown history dialog
     //this.historyIds =            [];
     // Todo put this in adapter instance config
-    this.historyMaxAge =         86400; // Maxmimum datapoint age to be shown in gridHistory (seconds)
+    this.historyMaxAge =         86400; // Maximum data point age to be shown in gridHistory (seconds)
 
     this.prepare = function () {
         this.$dialog.dialog({

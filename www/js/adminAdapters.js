@@ -31,16 +31,10 @@ function Adapters(main) {
     this.isCollapsed   = {};
 
     this.types = {
-        "dwd":          "weather",
         "hmm":          "hardware",
         "hue":          "hardware",
         "occ":          "schedule",
-        "onkyo":        "media",
-        "artnet":       "hardware",
-        "b-control-em": "hardware",
-        "knx":          "hardware",
-        "legacy":       "visualisation",
-        "zwave":        "hardware"
+        "artnet":       "hardware"
     };
     
     this.prepare = function () {
@@ -716,9 +710,10 @@ function Adapters(main) {
             icons: {primary: 'ui-icon-trash'},
             text:  false
         }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
-            that.main.confirmMessage(_('Are you sure?'), 'Question', 'question', function (result) {
+            var name = $(this).attr('data-adapter-name');
+            that.main.confirmMessage(_('Are you sure?'), _('Question'), 'help', function (result) {
                 if (result) {
-                    that.main.cmdExec(null, 'del ' + $(this).attr('data-adapter-name'), function (exitCode) {
+                    that.main.cmdExec(null, 'del ' + name, function (exitCode) {
                         if (!exitCode) that.init(true);
                     });
                 }
