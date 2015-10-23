@@ -8,7 +8,7 @@ function Instances(main) {
     this.main =   main;
     this.list =   [];
     this.lTrue =  '';
-    this.lFalse = '';
+    this.lFalse = ''; 
 
     this.prepare = function () {
         this.$grid.jqGrid({
@@ -488,14 +488,17 @@ function Instances(main) {
     this.initButtons = function (id) {
         id = id ? '[data-instance-id="' + id + '"]' : '';
 
-        $('.instance-edit' + id).unbind('click').button({
-            icons: {primary: 'ui-icon-pencil'},
-            text:  false
-        }).css('width', '22px').css('height', '18px').click(function () {
+        var $e = $('.instance-edit' + id).unbind('click').click(function () {
             that.onEdit($(this).attr('data-instance-id'));
         });
+        if (!$e.find('.ui-button-icon-primary').length) {
+            $e.button({
+                icons: {primary: 'ui-icon-pencil'},
+                text:  false
+            }).css('width', '22px').css('height', '18px');
+        }
 
-        $('.instance-settings' + id).button({icons: {primary: 'ui-icon-note'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
+        $e = $('.instance-settings' + id).unbind('click')
             .click(function () {
                 $iframeDialog = that.$dialogConfig;
                 that.$configFrame.attr('src', $(this).attr('data-instance-href'));
@@ -527,15 +530,19 @@ function Instances(main) {
                 if (that.main.config['adapter-config-top-'  + name])   that.$dialogConfig.parent().css({top: that.main.config['adapter-config-top-' + name]});
                 if (that.main.config['adapter-config-left-' + name])   that.$dialogConfig.parent().css({left: that.main.config['adapter-config-left-' + name]});
             });
-
-        $('.instance-reload' + id).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click')
+        if (!$e.find('.ui-button-icon-primary').length) {
+            $e.button({icons: {primary: 'ui-icon-note'}, text: false}).css('width', '22px').css('height', '18px');
+        }
+        $e = $('.instance-reload' + id).unbind('click')
             .click(function () {
                 that.main.socket.emit('extendObject', $(this).attr('data-instance-id'), {}, function (err) {
                     if (err) that.main.showError(err);
                 });
             });
-
-        $('.instance-del' + id).button({icons: {primary: 'ui-icon-trash'}, text: false}).css('width', '22px').css('height', '18px').unbind('click')
+        if (!$e.find('.ui-button-icon-primary').length) {
+            $e.button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18});
+        }
+        $e = $('.instance-del' + id).unbind('click')
             .click(function () {
                 var id = $(this).attr('data-instance-id');
                 if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.host) {
@@ -548,8 +555,10 @@ function Instances(main) {
                     });
                 }
             });
-
-        $('.instance-ok-submit' + id).unbind('click').button({
+        if (!$e.find('.ui-button-icon-primary').length) {
+            $e.button({icons: {primary: 'ui-icon-trash'}, text: false}).css('width', '22px').css('height', '18px');
+        }
+        $e = $('.instance-ok-submit' + id).unbind('click').button({
             icons: {primary: 'ui-icon-check'},
             text:  false
         }).css('width', '22px').css('height', '18px').click(function () {
@@ -597,11 +606,10 @@ function Instances(main) {
                 });
             }, 100);
         });
-
-        $('.instance-cancel-submit' + id).unbind('click').button({
-            icons: {primary: 'ui-icon-close'},
-            text:  false
-        }).css('width', '22px').css('height', '18px').click(function () {
+        if (!$e.find('.ui-button-icon-primary').length) {
+            $e.button({icons: {primary: 'ui-icon-note'}, text: false}).css('width', '22px').css('height', '18px');
+        }
+        $e = $('.instance-cancel-submit' + id).unbind('click').click(function () {
             var id = $(this).attr('data-instance-id');
             $('.instance-edit').show();
             $('.instance-settings').show();
@@ -651,6 +659,12 @@ function Instances(main) {
             });
 
         });
+        if (!$e.find('.ui-button-icon-primary').length) {
+            $e.button({
+                icons: {primary: 'ui-icon-close'},
+                text:  false
+            }).css('width', '22px').css('height', '18px');
+        }
     };
 
     this.resize = function (width, height) {

@@ -262,11 +262,11 @@ function Objects(main) {
         });
     };
 
-    function loadObjectFields(htmlId, object, part) {
+    function loadObjectFields(htmlId, object, part, objectType) {
         var text = '';
         for (var attr in object) {
             text += '<tr><td>' + attr + '</td><td>';
-            if (part == 'common' && attr == 'type') {
+            if (objectType == 'state' && part == 'common' && attr == 'type') {
                 text += '<select class="object-tab-edit-string" data-attr="' + attr + '">' +
                     '<option value="boolean" ' + (object[attr] == 'boolean' ? 'selected' : '') + '>' + _('boolean') + '</option>' +
                     '<option value="string"  ' + (object[attr] == 'string'  ? 'selected' : '') + '>' + _('string')  + '</option>' +
@@ -542,8 +542,8 @@ function Objects(main) {
         $('#object-tab-acl-owner').val(obj.acl.owner || 'system.user.admin');
         $('#object-tab-acl-group').val(obj.acl.ownerGroup || 'system.group.administrator');
 
-        loadObjectFields('object-tab-common-table', obj.common || {}, 'common');
-        loadObjectFields('object-tab-native-table', obj.native || {}, 'native');
+        loadObjectFields('object-tab-common-table', obj.common || {}, 'common', obj.type);
+        loadObjectFields('object-tab-native-table', obj.native || {}, 'native', obj.type);
 
         $('.object-tab-field-delete').button({
             icons: {primary: 'ui-icon-trash'},
