@@ -15,6 +15,10 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.6.4 (2015-10-27)
+* (bluefox) fix write of enums
+* (bluefox) fix buttons in instance tab
+
 ### 0.6.3 (2015-10-22)
 * (bluefox) fix delete of adapter
 

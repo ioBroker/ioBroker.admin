@@ -173,20 +173,56 @@ function States(main) {
                     // afterSave
                     stateEdit = false;
                     var val = that.$grid.jqGrid('getCell', stateLastSelected, 'val');
+                    var id = $('tr[id="' + stateLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
+
                     var oldSelected = stateLastSelected;
+
+                    if (main.objects[id] &&
+                        main.objects[id].common &&
+                        main.objects[id].common.type == 'number' &&
+                        main.objects[id].common.states) {
+                        if (typeof main.objects[_id].common.states == 'string' && main.objects[_id].common.states[0] == '{') {
+                            try {
+                                states = JSON.parse(main.objects[_id].common.states);
+                                for (var v = 0; v < main.objects[id].common.states.length; v++) {
+                                    if (main.objects[id].common.states[val] == val) {
+                                        val = v;
+                                        break;
+                                    }
+                                }
+                            } catch (ex) {
+                                console.error('Cannot parse states: ' + main.objects[_id].common.states);
+                                states = null;
+                            }
+                        } else if (typeof main.objects[_id].common.states == 'object') {
+                            for (var v in main.objects[id].common.states) {
+                                if (main.objects[id].common.states[v] == val) {
+                                    val = v;
+                                    break;
+                                }
+                            }
+                        } else if (typeof main.objects[_id].common.states == 'string') {
+                            var states = main.objects[_id].common.states;
+                            var s = states.split(';');
+                            for (var v = 0; v < s.length; v++) {
+                                var parts = s.split(':');
+                                if (parts[1].trim() == val) {
+                                    val = parts[0].trim();
+                                    break;
+                                }
+                            }
+                        }
+                    }
 
                     if (val === 'true')  val = true;
                     if (val === 'false') val = false;
 
-                    if (parseFloat(val) == val) val = parseFloat(val);
+                    if (parseFloat(val).toString() == val) val = parseFloat(val);
 
                     var ack = that.$grid.jqGrid('getCell', stateLastSelected, 'ack');
 
                     if (ack === 'true')  ack = true;
                     if (ack === 'false') ack = false;
-
-
-                    var id = $('tr[id="' + stateLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
 
                     if (that.main.objects[id] &&  that.main.objects[id].common &&  that.main.objects[id].common.role == 'value.time') {
                         val = (new Date(val)).getTime();
