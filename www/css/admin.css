@@ -261,3 +261,21 @@ table#events {
     color: #f00;
 }
 
+.icon-large {
+    position: absolute;
+    z-index: 1;
+    -webkit-box-shadow: 10px 10px 12px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 12px 0px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 12px 0px rgba(0,0,0,0.75);
+    background: white;
+    border-radius: 10px 10px 10px 10px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border: 0px solid #000000;
+    overflow: hidden;
+}
+.icon-large img {
+    width: 12em;
+    height: 12em;
+}
+

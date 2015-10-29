@@ -205,7 +205,7 @@ function States(main) {
                             var states = main.objects[_id].common.states;
                             var s = states.split(';');
                             for (var v = 0; v < s.length; v++) {
-                                var parts = s.split(':');
+                                var parts = s[v].split(':');
                                 if (parts[1].trim() == val) {
                                     val = parts[0].trim();
                                     break;

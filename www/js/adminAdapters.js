@@ -32,7 +32,6 @@ function Adapters(main) {
 
     this.types = {
         "hmm":          "hardware",
-        "hue":          "hardware",
         "occ":          "schedule",
         "artnet":       "hardware"
     };
@@ -601,6 +600,25 @@ function Adapters(main) {
                 that.$grid.fancytree('getTree').reload(that.tree);
                 $('#grid-adapters .fancytree-icon').each(function () {
                     if ($(this).attr('src')) $(this).css({width: 22, height: 22});
+
+                    $(this).hover(function () {
+                        var text = '<div class="icon-large" style="' +
+                            'left: ' + Math.round($(this).position().left + $(this).width() + 5) + 'px;"><img src="' + $(this).attr('src') + '"/></div>';
+                        var $big = $(text);
+                        $big.insertAfter($(this));
+                        $(this).data('big', $big[0]);
+                        var h = parseFloat($big.height());
+                        var top = Math.round($(this).position().top - ((h - parseFloat($(this).height())) / 2));
+                        if (h + top > (window.innerHeight || document.documentElement.clientHeight)) {
+                            top = (window.innerHeight || document.documentElement.clientHeight) - h;
+                        }
+                        $big.css({top: top});
+
+                    }, function () {
+                        var big = $(this).data('big');
+                        $(big).remove();
+                        $(this).data('big', undefined);
+                    });
                 });
                 $('#process_running_adapters').hide();
                 if (that.currentFilter) that.$grid.fancytree('getTree').filterNodes(customFilter, false);
