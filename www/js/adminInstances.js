@@ -380,7 +380,7 @@ function Instances(main) {
                 this.$grid.jqGrid('addRowData', 'instance_' + this.list[i].replace(/ /g, '_'), {
                     _id:       obj._id,
                     availableModes: obj.common ? obj.common.availableModes : null,
-                    image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px"/>' : '',
+                    image:     obj.common && obj.common.icon ? '<img src="/adapter/' + obj.common.name + '/' + obj.common.icon + '" width="22px" height="22px" class="instance-image" data-instance-id="' + this.list[i] + '"/>' : '',
                     name:      obj.common ? obj.common.name : '',
                     instance:  obj._id.slice(15),
                     title:     obj.common ? (link ? '<a href="' + link + '" id="a_' + adapter + '_' + instance + '" target="_blank">' + title + '</a>': title): '',
@@ -665,6 +665,32 @@ function Instances(main) {
                 text:  false
             }).css('width', '22px').css('height', '18px');
         }
+        $('.instance-image' + id).each(function () {
+            if (!$(this).data('installed')) {
+                $(this).data('installed', true);
+                $(this).hover(function () {
+                    var text = '<div class="icon-large" style="' +
+                        'left: ' + Math.round($(this).position().left + $(this).width() + 5) + 'px;"><img src="' + $(this).attr('src') + '"/></div>';
+                    var $big = $(text);
+                    $big.insertAfter($(this));
+                    $(this).data('big', $big[0]);
+                    var h = parseFloat($big.height());
+                    var top = Math.round($(this).position().top - ((h - parseFloat($(this).height())) / 2));
+                    if (h + top > (window.innerHeight || document.documentElement.clientHeight)) {
+                        top = (window.innerHeight || document.documentElement.clientHeight) - h;
+                    }
+                    if (top < 0) {
+                        top = 0;
+                    }
+                    $big.css({top: top});
+                }, function () {
+                    var big = $(this).data('big');
+                    $(big).remove();
+                    $(this).data('big', undefined);
+                });
+            }
+        });
+
     };
 
     this.resize = function (width, height) {

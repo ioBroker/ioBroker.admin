@@ -15,6 +15,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.6.5 (2015-10-31)
+* (bluefox) maginfy icon by mouseover
+
 ### 0.6.4 (2015-10-27)
 * (bluefox) fix write of enums
 * (bluefox) fix buttons in instance tab
