@@ -15,6 +15,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.6.6 (2015-11-02)
+* (bluefox) add support of certificates (-----BEGIN PRIVATE KEY-----)
+
 ### 0.6.5 (2015-10-31)
 * (bluefox) maginfy icon by mouseover
 

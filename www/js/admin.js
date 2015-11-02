@@ -353,7 +353,20 @@ $(document).ready(function () {
                 str = str.substring(64);
             }
             return '-----BEGIN RSA PRIVATE KEY-----\r\n' + lines.join('\r\n') + '\r\n-----END RSA PRIVATE KEY-----\r\n';
-        } else {
+        } else if (str.substring(0, '-----BEGIN PRIVATE KEY-----'.length) == '-----BEGIN PRIVATE KEY-----') {
+            if (str.substring(str.length -  '-----END PRIVATE KEY-----'.length) != '-----END PRIVATE KEY-----') {
+                main.showMessage(_('Certificate "%s" must end with "-----BEGIN PRIVATE KEY-----".', name), '', 'notice');
+                return '';
+            }
+            str = str.substring('-----BEGIN PRIVATE KEY-----'.length);
+            str = str.substring(0, str.length - '-----END PRIVATE KEY-----'.length);
+            str = str.replace(/ /g, '');
+            while (str.length) {
+                lines.push(str.substring(0, 64));
+                str = str.substring(64);
+            }
+            return '-----BEGIN PRIVATE KEY-----\r\n' + lines.join('\r\n') + '\r\n-----END PRIVATE KEY-----\r\n';
+        }else {
             if (str.substring(0, '-----BEGIN CERTIFICATE-----'.length) != '-----BEGIN CERTIFICATE-----') {
                 main.showMessage(_('Certificate "%s" must start with "-----BEGIN CERTIFICATE-----".', name), '', 'notice');
                 return '';

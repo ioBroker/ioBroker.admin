@@ -121,7 +121,7 @@ $(document).ready(function () {
                             if (!res.native.certificates[c]) continue;
                             certs.push({
                                 name: c,
-                                type: (res.native.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) == '-----BEGIN RSA PRIVATE KEY') ? 'private' : 'public'
+                                type: (res.native.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) == '-----BEGIN RSA PRIVATE KEY' || res.native.certificates[c].substring(0, '-----BEGIN PRIVATE KEY'.length) == '-----BEGIN PRIVATE KEY') ? 'private' : 'public'
                             });
                         }
                     }
