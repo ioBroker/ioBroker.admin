@@ -469,51 +469,21 @@
         <!--div id="tree-select-member" style="width:100%; height:100%"></div-->
     </div>
     <div id="dialog-history" style="display:none">
-        <table style="font-size: 12px">
-            <tr>
-                <td class="translate">enabled</td>
-                <td><input type="checkbox" id="edit-history-enabled"></td>
-                <td style="width: 40px">&nbsp;</td>
-                <td class="translate">log changes only</td>
-                <td><input type="checkbox" id="edit-history-changesOnly"></td>
-                <td class="translate">De-bounce interval(ms)</td>
-                <td><input type="number" id="edit-history-debounce"  min="500" max="86400000"></td>
-            </tr>
-            <tr>
-                <td class="translate">minimum datapoint count in Redis</td>
-                <td><input type="number" id="edit-history-minLength" min="100" max="5000"></td>
-                <td style="width: 40px">&nbsp;</td>
-                <td class="translate">CouchDB retention</td>
-                <td>
-                    <select id="edit-history-retention">
-                        <option value="0"            class="translate">keep forever</option>
-                        <option value="63072000"    class="translate">2 years</option>
-                        <option value="31536000"    class="translate">1 year</option>
-                        <option value="15811200"    class="translate">6 months</option>
-                        <option value="7948800"     class="translate">3 months</option>
-                        <option value="2678400"     class="translate">1 months</option>
-                        <option value="1209600"     class="translate">2 weeks</option>
-                        <option value="604800"      class="translate">1 week</option>
-                        <option value="432000"      class="translate">5 days</option>
-                        <option value="259200"      class="translate">3 days</option>
-                        <option value="86400"       class="translate">1 day</option>
-                    </select>
-                </td>
-                <td></td>
-                <td></td>
-            </tr>
-        </table>
         <div id="tabs-history">
             <ul>
+                <li><a href="#tab-history-settings" class="translate">Settings</a></li>
                 <li><a href="#tab-history-table" class="translate">Table</a></li>
                 <li><a href="#tab-history-chart" class="translate">Chart</a></li>
             </ul>
-            <div id="tab-history-table">
-                <input type="hidden" id="edit-history-ids">
+            <div id="tab-history-settings" style="height: calc(100% - 60px)">
+                <div id="storage-tabs" style="width: 100%"></div>
+                <div style="display: none" id="storage-templates"></div>
+            </div>
+            <div id="tab-history-table" style="height: calc(100% - 60px)">
                 <table id="grid-history"></table>
                 <div id="pager-history"></div>
             </div>
-            <div id="tab-history-chart">
+            <div id="tab-history-chart" style="height: calc(100% - 60px)">
                 <iframe id="iframe-history-chart"></iframe>
             </div>
         </div>

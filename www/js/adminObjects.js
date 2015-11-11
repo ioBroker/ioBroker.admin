@@ -17,8 +17,8 @@ function Objects(main) {
         this.$dialog.dialog({
             autoOpen:   false,
             modal:      true,
-            width: 870,
-            height: 640,
+            width:      870,
+            height:     640,
             buttons: [
                 {
                     text: _('Save'),
@@ -339,6 +339,7 @@ function Objects(main) {
 
         if (typeof this.$grid !== 'undefined' && (!this.$grid[0]._isInited || update)) {
             this.$grid[0]._isInited = true;
+            if (this.historyEnabled === null) this.checkHistory();
 
             var x = $(window).width();
             var y = $(window).height();
@@ -411,13 +412,23 @@ function Objects(main) {
                         click: function (id) {
                             that.openHistoryDlg(id);
                         },
-                        width: 26,
+                        width:  26,
                         height: 20,
                         match: function (id) {
                             // Show history button only if history adapter enabled
                             if (main.objects[id] && that.historyEnabled && !id.match(/\.messagebox$/) && main.objects[id].type == 'state') {
                                 // Check if history enabled
-                                if (main.objects[id] && main.objects[id].common && main.objects[id].common.history && main.objects[id].common.history.enabled) {
+                                var enabled = false;
+                                if (main.objects[id] && main.objects[id].common && main.objects[id].common.history) {
+                                    if (main.objects[id].common.history.enabled !== undefined) {
+                                        main.objects[id].common.history = main.objects[id].common.history.enabled ? {'history.0': main.objects[id].common.history} : {};
+                                    }
+                                    for (var h in main.objects[id].common.history) {
+                                        enabled = true;
+                                        break;
+                                    }
+                                }
+                                if (enabled) {
                                     this.addClass('history-enabled').removeClass('history-disabled').css({'background': 'lightgreen'});
                                 } else {
                                     this.addClass('history-disabled').removeClass('history-enabled').css({'background': ''});
@@ -704,22 +715,28 @@ function Objects(main) {
 
     // ----------------------------- HISTORY ------------------------------------------------
     this.checkHistory = function () {
-        if (main.objects && main.objects['system.adapter.history.0'] && main.objects['system.adapter.history.0'].common.enabled) {
-            if (this.historyEnabled !== null && this.historyEnabled != true) {
-                this.historyEnabled = true;
-                // update history buttons
-                that.init(true);
-            } else {
-                this.historyEnabled = true;
+        var found = false;
+        for (var u = 0; u < this.main.instances.length; u++) {
+            if (this.main.objects[this.main.instances[u]].common &&
+                this.main.objects[this.main.instances[u]].common.type === 'storage' &&
+                this.main.objects[this.main.instances[u]].common.enabled) {
+                if (this.historyEnabled !== null && this.historyEnabled != true) {
+                    this.historyEnabled = true;
+                    // update history buttons
+                    this.init(true);
+                } else {
+                    this.historyEnabled = true;
+                }
+                found = true;
+                return;
             }
+        }
+        if (this.historyEnabled !== null && this.historyEnabled != false) {
+            this.historyEnabled = false;
+            // update history buttons
+            this.init(true);
         } else {
-            if (this.historyEnabled !== null && this.historyEnabled != false) {
-                this.historyEnabled = false;
-                // update history buttons
-                that.init(true);
-            } else {
-                this.historyEnabled = false;
-            }
+            this.historyEnabled = false;
         }
     };
 
@@ -737,52 +754,84 @@ function Objects(main) {
         }
     };
 
-    this.openHistoryDlg = function (ids) {
-        if (typeof ids != 'object') ids = [ids];
+    this.initStorageTabs = function (ids, instances) {
+        var $storageTabs = $('#storage-tabs');
+        $storageTabs.html('');
+        var history = main.objects[ids[0]].common.history;
+        if (!history) history = {};
 
-        for (var i = 0; i < ids.length; i++) {
-            if (!main.objects[ids[i]]) {
-                var p = ids[i].split('.');
-                p.splice(2);
-                main.objects[ids[i]] = {
-                    type:   'state',
-                    parent: p.join('.'),
-                    common: {
-                        // TODO define role somehow
-                        type: main.states[ids[i]] ? getType(main.states[ids[i]].val) : 'mixed',
-                        name: ids[i]
+        // convert old format of storage
+        if (history.enabled !== undefined) {
+            history.instance = 'history.0';
+            history = history.enabled ? {'history.0': history} : {};
+        }
+
+        for (var i = 0; i < instances.length; i++) {
+            // try to find settings
+            var parts    = instances[i].split('.');
+            var settings = history[parts[2] + '.' + parts[3]] || {};
+
+            var adapter = parts[2];
+            var tab = '<div class="storage-row-title ui-widget-header">' + _('Settings for %s', parts[2] + '.' + parts[3]) + '</div><div class="storage-settings">' +
+                $("script[data-template-name='" + adapter + "']").html() +
+                '</div>';
+
+            var $tab = $(tab);
+            // set values
+            $tab.find('input, select').each(function() {
+                var $this = $(this);
+                $this.attr('data-instance', parts[2] + '.' + parts[3]);
+
+                var id = $this.data('field');
+
+                if (settings[id] !== undefined) {
+                    if ($this.attr('type') == 'checkbox') {
+                        $this.prop('checked', settings[id]);
+                    } else {
+                        $this.val(settings[id]);
                     }
-                };
-            }
-            if (!main.objects[ids[i]].common.history) {
-                main.objects[ids[i]].common.history = {
-                    enabled:        false,
-                    changesOnly:    true,
-                    debounce:       10000, // de-bounce interval
-                    // use default value from history-adadpter config
-                    minLength:      (main.objects['system.adapter.history.0'] && main.objects['system.adapter.history.0'].native) ? main.objects['system.adapter.history.0'].native.minLength || 480 : 480,
-                    retention:      604800 // one week by default
-                };
-            }
+                } else {
+                    var def = $this.data('default');
+                    if (def !== undefined) {
+                        if ($this.attr('type') == 'checkbox') {
+                            $this.prop('checked', def);
+                        } else {
+                            $this.val(def);
+                        }
+                    }
+                }
+
+                if ($this.attr('type') == 'checkbox') {
+                    $this.change(function () {
+                        $('#history-button-save').button('enable');
+                    });
+                } else {
+                    $this.change(function () {
+                        $('#history-button-save').button('enable');
+                    }).keyup(function () {
+                        $(this).tigger('change');
+                    });
+                }
+            });
+            $('#storage-tabs').append($tab);
         }
 
-        var title;
-        if (ids.length == 1) {
-            title = _('History of %s', ids[0]);
-            currentHistory = main.objects[ids[0]].common.history.enabled ? ids[0]: null;
-        } else {
-            title = _('History of %s states', ids.length);
-            currentHistory = null;
-        }
-        $('#edit-history-ids').val(JSON.stringify(ids));
+        $('.storage-row-title').click(function () {
+            var $form = $(this).next();
+            if ($form.is(':visible')) {
+                $form.hide();
+            } else {
+                $form.show();
+            }
+            that.resizeHistory();
+        });
+        this.showHistoryData(ids.length > 1 ? null : ids[0]);
+        $('#history-button-save').button('disable');
+        translateAll();
+        this.resizeHistory();
+    };
 
-        $('#edit-history-enabled').prop('checked', main.objects[ids[0]].common.history.enabled);
-        $('#edit-history-changesOnly').prop('checked', main.objects[ids[0]].common.history.changesOnly);
-
-        $('#edit-history-minLength').val(main.objects[ids[0]].common.history.minLength);
-        $('#edit-history-debounce').val(main.objects[ids[0]].common.history.debounce);
-        $('#edit-history-retention').val(main.objects[ids[0]].common.history.retention);
-        this.$dialogHistory.dialog('option', 'title', title);
+    this.showHistoryData = function(id) {
         this.$gridHistory.jqGrid('clearGridData');
         $("#load_grid-history").show();
 
@@ -793,11 +842,10 @@ function Objects(main) {
 
         var port = 0;
         var chart = false;
-        if (ids.length == 1) {
+        if (id) {
             this.$dialogHistory.dialog('option', 'height', 600);
             this.$dialogHistory.dialog('open');
-            _tabs[0]._id = ids[0];
-            _tabs.show();
+            _tabs[0]._id = id;
             if (!_tabs[0]._inited) {
                 _tabs[0]._inited = true;
                 _tabs.tabs({
@@ -831,6 +879,7 @@ function Objects(main) {
                     }
                 });
             } else {
+                _tabs.tabs('option', 'enabled', [1, 2]);
                 _tabs.tabs({active: 0});
             }
 
@@ -845,13 +894,14 @@ function Objects(main) {
                 if (chart && port) break;
             }
 
-            main.socket.emit('getStateHistory', ids[0], start, end, function (err, res) {
+            main.socket.emit('getStateHistory', id, start, end, function (err, res) {
                 setTimeout(function () {
                     if (!err) {
                         var rows = [];
                         //console.log('got ' + res.length + ' history datapoints for ' + id);
                         for (var i = 0; i < res.length; i++) {
                             rows.push({
+                                gid: i,
                                 gid: i,
                                 id:  res[i].id,
                                 ack: res[i].ack,
@@ -868,12 +918,89 @@ function Objects(main) {
                     }
                 }, 0);
             });
-            _tabs.tabs('option', 'disabled', (port && chart && currentHistory) ? [] : [1]);
+            _tabs.tabs('option', 'disabled', (port && chart && currentHistory) ? [] : [2]);
         } else {
-            this.$dialogHistory.dialog('option', 'height', 175);
-            _tabs.hide();
+            _tabs.tabs({active: 0});
+            _tabs.tabs('option', 'disabled', (port && chart && currentHistory) ? [] : [1, 2]);
             this.$dialogHistory.dialog('open');
         }
+    };
+
+    this.openHistoryDlg = function (ids) {
+        if (typeof ids != 'object') ids = [ids];
+        var instances = [];
+        // collect all storage instances
+        var count = 0;
+        var found = false;
+        var data = '';
+        var urls = [];
+        for (var u = 0; u < this.main.instances.length; u++) {
+            if (this.main.objects[this.main.instances[u]].common &&
+                this.main.objects[this.main.instances[u]].common.type === 'storage') {
+                instances.push(this.main.instances[u]);
+                var url = this.main.instances[u].split('.');
+                if (urls.indexOf(url[2]) == -1) {
+                    urls.push(url[2]);
+                    count++;
+                    $.ajax({
+                        headers: {
+                            Accept: 'text/html'
+                        },
+                        cache: true,
+                        url:   '/adapter/' + url[2] + '/storage.html',
+                        success: function(_data) {
+                            data += _data;
+                            if (!--count) {
+                                $('#storage-templates').html(data);
+                                that.initStorageTabs(ids, instances);
+                            }
+                            //$("script[data-template-name='"+type+"']").html());
+                        },
+                        error: function(jqXHR) {
+                            console.error(jqXHR.responseText);
+                            if (!--count) {
+                                $('#storage-templates').html(data);
+                                that.initStorageTabs(ids, instances);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        for (var i = ids.length - 1; i >= 0; i--) {
+            if (!this.main.objects[ids[i]]) {
+                console.warn('Null object: ' + ids[i]);
+                ids.splice(i, 1);
+            } else {
+                if (this.main.objects[ids[i]].history) {
+                    // convert old struct
+                    if (this.main.objects[ids[i]].history.enabled !== undefined) {
+                        this.main.objects[ids[i]].history = {'history.0': this.main.objects[ids[i]].history};
+                    }
+
+                    // delete disabled entries
+                    for (var h in this.main.objects[ids[i]].history) {
+                        if (!this.main.objects[ids[i]].history[h].enabled) {
+                            delete this.main.objects[ids[i]].history[h];
+                        } else {
+                            found = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        var title;
+        if (ids.length == 1) {
+            title = _('Storage of %s', ids[0]);
+            currentHistory = found ? ids[0]: null;
+        } else {
+            title = _('Storage of %s states', ids.length);
+            currentHistory = null;
+        }
+        $('#storage-tabs').data('ids', ids);
+        this.$dialogHistory.dialog('option', 'title', title);
     };
 
     // Set modified history states
@@ -895,6 +1022,13 @@ function Objects(main) {
             if (callback) callback();
         }
     }
+
+    this.resizeHistory = function () {
+        var w = this.$dialogHistory.width();
+        var h = this.$dialogHistory.height() - 115;
+        this.$gridHistory.setGridHeight(h - 20).setGridWidth(w - 30);
+        $('#iframe-history-chart').css({height: h, width: w - 30});
+    };
 
     this.prepareHistory = function () {
         this.$gridHistory.jqGrid({
@@ -932,24 +1066,35 @@ function Objects(main) {
             closeOnEscape: false,
             buttons: [
                 {
+                    id: 'history-button-save',
                     text: _('Save'),
                     click: function () {
-                        var ids =       JSON.parse($('#edit-history-ids').val());
-                        var minLength = parseInt($('#edit-history-minLength').val(), 10) || 480;
+                        var ids       = $('#storage-tabs').data('ids');
 
                         // do not update charts
                         that.currentHistory = null;
+
                         //that.historyIds = ids;
+                        var history = {};
+                        $('#storage-tabs').find('input, select').each(function () {
+                            var instance = $(this).data('instance');
+                            var field    = $(this).data('field');
+                            history[instance] = history[instance] || {};
+                            if ($(this).attr('type') == 'checkbox') {
+                                history[instance][field] = $(this).prop('checked');
+                            } else {
+                                history[instance][field] = $(this).val();
+                            }
+                        });
+
+                        for (var inst in history) {
+                            if (!history[inst].enabled) {
+                                delete history[inst];
+                            }
+                        }
 
                         for (var i = 0; i < ids.length; i++) {
-                            main.objects[ids[i]].common.history = {
-                                enabled:     $('#edit-history-enabled').is(':checked'),
-                                changesOnly: $('#edit-history-changesOnly').is(':checked'),
-                                minLength:   minLength,
-                                maxLength:   minLength * 2,
-                                retention:   parseInt($('#edit-history-retention').val(), 10) || 0,
-                                debounce:    parseInt($('#edit-history-debounce').val(),  10) || 1000
-                            };
+                            main.objects[ids[i]].common.history = history;
                         }
                         that.setHistory(ids, function () {
                             that.$dialogHistory.dialog('close');
@@ -959,7 +1104,13 @@ function Objects(main) {
                 {
                     text: _('Cancel'),
                     click: function () {
-                        that.$dialogHistory.dialog('close');
+                        if (!$('#history-button-save').is(":disabled")) {
+                            that.main.confirmMessage(_('Are you sure? Changes are not saved.'), _('Question'), 'alert', function (result) {
+                                if (result) that.$dialogHistory.dialog('close');
+                            });
+                        } else {
+                            that.$dialogHistory.dialog('close');
+                        }
                     }
                 }
             ],
@@ -971,8 +1122,7 @@ function Objects(main) {
                 $('#iframe-history-chart').attr('src', '');
             },
             resize: function () {
-                that.$gridHistory.setGridHeight($(this).height() - 180).setGridWidth($(this).width() - 30);
-                $('#iframe-history-chart').css({height: $(this).height() - 115, width: $(this).width() - 30});
+                that.resizeHistory();
             }
         });
     };

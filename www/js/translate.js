@@ -28,9 +28,8 @@ function translateAll(lang, dictionary) {
     lang       = lang       || systemLang;
     dictionary = dictionary || systemDictionary;
 
-
     // translate <div class="translate">textToTranslate</div>
-    $(".translate").each(function (idx) {
+    $('.translate').each(function (idx) {
         var text = $(this).attr('data-lang');
         if (!text) {
             text = $(this).html();
@@ -43,7 +42,7 @@ function translateAll(lang, dictionary) {
         }
     });
     // translate <input type="button" class="translateV" value="textToTranslate">
-    $(".translateV").each(function (idx) {
+    $('.translateV').each(function (idx) {
         var text = $(this).attr('data-lang');
         if (!text) {
             text = $(this).attr('value');
@@ -55,7 +54,7 @@ function translateAll(lang, dictionary) {
             $(this).attr('value', transText);
         }
     });
-    $(".translateB").each(function (idx) {
+    $('.translateB').each(function (idx) {
         //<span class="ui-button-text" >Save</span>
         var text = $(this).attr('data-lang');
         if (!text) {
@@ -77,7 +76,7 @@ function translateAll(lang, dictionary) {
             }
         }
     });
-    $(".translateT").each(function (idx) {
+    $('.translateT').each(function (idx) {
         //<span class="ui-button-text translateT" title="TextToTranslate">Save</span>
         var text = $(this).attr('data-lang');
         if (!text) {
