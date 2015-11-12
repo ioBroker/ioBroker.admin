@@ -719,8 +719,7 @@ function Objects(main) {
         var found = false;
         for (var u = 0; u < this.main.instances.length; u++) {
             if (this.main.objects[this.main.instances[u]].common &&
-                this.main.objects[this.main.instances[u]].common.type === 'storage' &&
-                this.main.objects[this.main.instances[u]].common.enabled) {
+                this.main.objects[this.main.instances[u]].common.type === 'storage') {
                 if (this.historyEnabled !== null && this.historyEnabled != true) {
                     this.historyEnabled = true;
                     // update history buttons
@@ -810,7 +809,7 @@ function Objects(main) {
                     $this.change(function () {
                         $('#history-button-save').button('enable');
                     }).keyup(function () {
-                        $(this).tigger('change');
+                        $(this).trigger('change');
                     });
                 }
             });

@@ -1557,11 +1557,8 @@ $(document).ready(function () {
 
                     obj = main.objects[id];
 
-                    if (obj.type === 'instance') {
-                        main.instances.push(id);
-                    }
+                    if (obj.type === 'instance') main.instances.push(id);
                     if (obj.type === 'enum')     enums.push(id);
-//                    if (obj.type === 'script')   tabs.scripts.list.push(id);
                     if (obj.type === 'user')     tabs.users.list.push(id);
                     if (obj.type === 'group')    tabs.groups.list.push(id);
                     if (obj.type === 'adapter')  tabs.adapters.list.push(id);
@@ -1581,8 +1578,15 @@ $(document).ready(function () {
                             }
                         }
                         if (addr) tabs.hosts.list.push({name: obj.common.hostname, address: addr, id: obj._id});
+                    } else if (obj.type === 'state') {
+
+                        // convert old history to new
+                        if (obj.common && obj.common.history) {
+                            if (obj.common.history.enabled !== undefined) {
+                                obj.common.history = obj.common.history.enabled ? {'history.0': obj.common.history} : null;
+                            }
+                        }
                     }
-                    //treeInsert(id);
                 }
                 main.objectsLoaded = true;
 
