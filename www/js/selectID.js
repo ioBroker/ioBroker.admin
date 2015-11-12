@@ -139,10 +139,9 @@
         if (data.filter) {
             if (data.filter.type && data.filter.type != data.objects[id].type) return false;
 
-            if (data.filter.common && data.filter.common.history && data.filter.common.history.enabled) {
+            if (data.filter.common && data.filter.common.history) {
                 if (!data.objects[id].common ||
-                    !data.objects[id].common.history ||
-                    !data.objects[id].common.history.enabled) return false;
+                    !data.objects[id].common.history) return false;
             }
         }
         return true;
@@ -153,6 +152,7 @@
         var isType  = data.columns.indexOf('type') != -1;
         var isRoom  = data.columns.indexOf('room') != -1;
         var isRole  = data.columns.indexOf('role') != -1;
+        var isHist  = data.columns.indexOf('button') != -1;
         data.tree = {title: '', children: [], count: 0, root: true};
 
         for (var id in objects) {
@@ -167,6 +167,9 @@
                     role += (role ? '.' : '') + parts[u];
                     if (data.roles.indexOf(role) == -1) data.roles.push(role);
                 }
+            }
+            if (isHist && objects[id].type === 'instance' && objects[id].common.type === 'storage') {
+                if (data.histories.indexOf(role) == -1) data.histories.push(id.substring('system.adapter.'.length));
             }
 
             if (!filterId(data, id)) continue;
@@ -188,6 +191,7 @@
         data.roles.sort();
         data.types.sort();
         data.enums.sort();
+        data.histories.sort();
     }
 
     function treeSplit(data, id) {
@@ -364,10 +368,10 @@
     }
 
     function clippyCopy(e) {
-        var $temp = $("<input>");
+        var $temp = $('<input>');
         $("body").append($temp);
         $temp.val($(this).parent().data('clippy')).select();
-        document.execCommand("copy");
+        document.execCommand('copy');
         $temp.remove();
     }
 
@@ -560,6 +564,10 @@
                     t += '<option value="">'      + data.texts.all     + '</option>';
                     t += '<option value="true">'  + data.texts.with    + '</option>';
                     t += '<option value="false">' + data.texts.without + '</option>';
+                    for (var h = 0; h < data.histories.length; h++) {
+                        t += '<option value="' + data.histories[h] + '">' + data.histories[h] + '</option>';
+                    }
+
                     t += '</select>';
 
                     text += '<table cellpadding="0" cellspacing="0" style="border-spacing: 0px 0px"><tr><td>' + t + '</td>' + '<td><button id="filter_' + data.columns[c] + '_'  + data.instance + '_btn"></button></td></tr></table>'
@@ -1124,9 +1132,11 @@
                 } else
                 if (f == 'button') {
                     if (data.filterVals[f] === 'true') {
-                        if (!isCommon || !data.objects[node.key].common.history || !data.objects[node.key].common.history.enabled) return false;
+                        if (!isCommon || !data.objects[node.key].common.history || data.objects[node.key].common.history.enabled === false) return false;
                     } else if (data.filterVals[f] === 'false') {
-                        if (!isCommon || data.objects[node.key].type != 'state' || (data.objects[node.key].common.history && data.objects[node.key].common.history.enabled)) return false;
+                        if (!isCommon || data.objects[node.key].type != 'state' || data.objects[node.key].common.history) return false;
+                    } else if (data.filterVals[f]) {
+                        if (!isCommon || !data.objects[node.key].common.history || !data.objects[node.key].common.history[data.filterVals[f]]) return false;
                     }
                 } else
                 if (f == 'room') {
@@ -1369,6 +1379,7 @@
                         enums:              [],
                         rooms:              {},
                         roles:              [],
+                        histories:          [],
                         types:              [],
                         regexSystemAdapter: new RegExp('^system.adapter.'),
                         regexSystemHost:    new RegExp('^system.host.'),

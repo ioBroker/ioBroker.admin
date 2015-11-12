@@ -529,6 +529,13 @@ $(document).ready(function () {
                         });
                         $('#diagMode').trigger('change');
 
+                        // collect all history instances
+                        $('#system_defaultHistory').html('<option value=""></option>');
+                        for (var id = 0; id < main.instances.length; id++) {
+                            if (main.objects[main.instances[id]].common.type === 'storage') {
+                                $('#system_defaultHistory').append('<option value="' + main.instances[id].substring('system.adapter.'.length) + '">' + main.instances[id].substring('system.adapter.'.length) + '</option>');
+                            }
+                        }
 
                         $('.system-settings.value').each(function () {
                             var $this = $(this);
@@ -542,7 +549,7 @@ $(document).ready(function () {
                                     $this.prop('checked', main.systemConfig.common[id]);
                                 } else {
                                     if (id == 'isFloatComma') {
-                                        $this.val(main.systemConfig.common[id] ? "true" : "false");
+                                        $this.val(main.systemConfig.common[id] ? 'true' : 'false');
                                     } else {
                                         $this.val(main.systemConfig.common[id]);
                                     }
@@ -774,7 +781,7 @@ $(document).ready(function () {
                                 if (id == 'language'   && common.language   != $this.val()) languageChanged   = true;
                                 if (id == 'activeRepo' && common.activeRepo != $this.val()) activeRepoChanged = true;
                                 common[id] = $this.val();
-                                if (id == 'isFloatComma') common[id] = (common[id] === "true" || common[id] === true);
+                                if (id == 'isFloatComma') common[id] = (common[id] === 'true' || common[id] === true);
                             }
                         });
 
@@ -2314,7 +2321,8 @@ $(document).ready(function () {
                                                 currency:         '€',          // Default currency sign.
                                                 dateFormat:       'DD.MM.YYYY', // Default date format.
                                                 isFloatComma:     true,         // Default float divider ('.' - false, ',' - true)
-                                                licenseConfirmed: false         // If license agreement confirmed
+                                                licenseConfirmed: false,        // If license agreement confirmed,
+                                                defaultHistory:   ''            // Default history instance
                                             }
                                         };
                                         main.systemConfig.common.language = window.navigator.userLanguage || window.navigator.language;

@@ -431,6 +431,7 @@ function Objects(main) {
                                 if (enabled) {
                                     this.addClass('history-enabled').removeClass('history-disabled').css({'background': 'lightgreen'});
                                 } else {
+                                    delete main.objects[id].common.history;
                                     this.addClass('history-disabled').removeClass('history-enabled').css({'background': ''});
                                 }
                             } else {
@@ -835,9 +836,6 @@ function Objects(main) {
         this.$gridHistory.jqGrid('clearGridData');
         $("#load_grid-history").show();
 
-        var start = Math.round((new Date()).getTime() / 1000) - this.historyMaxAge;
-        var end =   Math.round((new Date()).getTime() / 1000) + 5000;
-        //console.log('getStateHistory', id, start, end)
         var _tabs = $('#tabs-history');
 
         var port = 0;
@@ -893,8 +891,9 @@ function Objects(main) {
                 }
                 if (chart && port) break;
             }
+            var end = Math.round((new Date()).getTime() / 1000) + 10; // now
 
-            main.socket.emit('getStateHistory', id, start, end, function (err, res) {
+            main.socket.emit('getStateHistory', id, end, 50, function (err, res) {
                 setTimeout(function () {
                     if (!err) {
                         var rows = [];
@@ -986,6 +985,9 @@ function Objects(main) {
                         } else {
                             found = true;
                         }
+                    }
+                    if (!found) {
+                        delete this.main.objects[ids[i]].history;
                     }
                 }
             }
@@ -1086,16 +1088,24 @@ function Objects(main) {
                                 history[instance][field] = $(this).val();
                             }
                         });
-
+                        var found = false;
                         for (var inst in history) {
                             if (!history[inst].enabled) {
                                 delete history[inst];
+                            } else {
+                                found = true;
+                            }
+                        }
+                        if (!found) {
+                            for (var i = 0; i < ids.length; i++) {
+                                main.objects[ids[i]].common.history = null;
+                            }
+                        } else {
+                            for (var i = 0; i < ids.length; i++) {
+                                main.objects[ids[i]].common.history = history;
                             }
                         }
 
-                        for (var i = 0; i < ids.length; i++) {
-                            main.objects[ids[i]].common.history = history;
-                        }
                         that.setHistory(ids, function () {
                             that.$dialogHistory.dialog('close');
                         });

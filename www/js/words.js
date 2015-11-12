@@ -145,6 +145,11 @@ systemDictionary = {
     "Main settings":        {"en": "Main settings",         "de": "Haupteinstellungen",     "ru": "Основные настройки"},
     "Repositories":         {"en": "Repositories",          "de": "Verwahrungsorte",        "ru": "Репозитории"},
     "Active repository:":   {"en": "Active repository:",    "de": "Aktiver Verwahrungsort:", "ru": "Активный репозиторий:"},
+    "Default history instance:":   {
+        "en": "Default history instance:",
+        "de": "Default Historyinstanz",
+        "ru": "Инстанция истории по умолчанию:"
+    },
     "Generated&nbsp;ID:":   {"en": "Generated&nbsp;ID:",    "de": "Generated&nbsp;ID:",     "ru": "Сгенерированный&nbsp;ID:"},
     "license agreement":    {"en": "license agreement",     "de": "Lizenzvertrag",          "ru": "Лицензионное соглашение"},
     "link":                 {"en": "link",                  "de": "Link",                   "ru": "Ссылка"},
@@ -154,6 +159,7 @@ systemDictionary = {
     "delete":               {"en": "delete",                "de": "löschen",                "ru": "удалить"},
     "ok":                   {"en": "Ok",                    "de": "Ok",                     "ru": "Ok"},
     "cancel":               {"en": "Cancel",                "de": "Abbrechen",              "ru": "отменить"},
+    "Settings for %s":      {"en": "Settings for %s",       "de": "Einstellungen for %s",   "ru": "Настройки для %s"},
     "Are you sure? Changes are not saved.": {
         "en": "Are you sure? Changes are not saved.",
         "de": "Änderungen sind nicht gespeichert. Sicher?",
