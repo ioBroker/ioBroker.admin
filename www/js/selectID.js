@@ -169,7 +169,8 @@
                 }
             }
             if (isHist && objects[id].type === 'instance' && objects[id].common.type === 'storage') {
-                if (data.histories.indexOf(role) == -1) data.histories.push(id.substring('system.adapter.'.length));
+                var h = id.substring('system.adapter.'.length);
+                if (data.histories.indexOf(h) == -1) data.histories.push(h);
             }
 
             if (!filterId(data, id)) continue;
@@ -1565,11 +1566,12 @@
                 var data = $dlg.data('selectId');
                 // Init data
                 if (data) {
-                    data.tree    = {title: '', children: [], count: 0, root: true};
-                    data.rooms   = {};
-                    data.enums   = [];
-                    data.roles   = [];
-                    data.typse   = [];
+                    data.tree      = {title: '', children: [], count: 0, root: true};
+                    data.rooms     = {};
+                    data.enums     = [];
+                    data.roles     = [];
+                    data.typse     = [];
+                    data.histories = [];
                 }
             }
             return this;

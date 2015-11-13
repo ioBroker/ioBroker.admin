@@ -8,10 +8,7 @@ function Objects(main) {
 
     this.main = main;
     this.historyEnabled = null;
-    this.currentHistory =        null; // Id of the currently shown history dialog
-    //this.historyIds =            [];
-    // Todo put this in adapter instance config
-    this.historyMaxAge =         86400; // Maximum data point age to be shown in gridHistory (seconds)
+    this.currentHistory = null; // Id of the currently shown history dialog
 
     this.prepare = function () {
         this.$dialog.dialog({
@@ -719,7 +716,8 @@ function Objects(main) {
         var found = false;
         for (var u = 0; u < this.main.instances.length; u++) {
             if (this.main.objects[this.main.instances[u]].common &&
-                this.main.objects[this.main.instances[u]].common.type === 'storage') {
+                this.main.objects[this.main.instances[u]].common.type === 'storage' &&
+                this.main.objects[this.main.instances[u]].common.enabled) {
                 if (this.historyEnabled !== null && this.historyEnabled != true) {
                     this.historyEnabled = true;
                     // update history buttons
@@ -742,15 +740,19 @@ function Objects(main) {
 
     this.stateChangeHistory = function (id, state) {
         if (this.currentHistory == id) {
-            var gid = this.$gridHistory[0]._maxGid++;
-            this.$gridHistory.jqGrid('addRowData', gid, {
-                gid: gid,
-                id:  id,
-                ack: state.ack,
-                val: state.val,
-                ts:  main.formatDate(state.ts, true),
-                lc:  main.formatDate(state.lc, true)
-            });
+            var $body = $('#grid-history-body');
+            if ($body.find('tr').length >= 50) {
+                $body.find('tr:last').remove();
+            }
+
+            $body.prepend('<tr class="grid-history-' + ($body.data('odd') ? 'even' : 'odd') + '">' +
+                '<td>' + state.val + '</td>' +
+                '<td>' + state.ack + '</td>' +
+                '<td>' + state.from + '</td>' +
+                '<td>' + main.formatDate(state.ts, true) + '</td>' +
+                '<td>' + main.formatDate(state.lc, true) + '</td>' +
+                '</tr>');
+            $body.data('odd', !$body.data('odd'));
         }
     };
 
@@ -809,7 +811,7 @@ function Objects(main) {
                     $this.change(function () {
                         $('#history-button-save').button('enable');
                     }).keyup(function () {
-                        $(this).trigger('change');
+                        $(this).tigger('change');
                     });
                 }
             });
@@ -831,10 +833,61 @@ function Objects(main) {
         this.resizeHistory();
     };
 
-    this.showHistoryData = function(id) {
-        this.$gridHistory.jqGrid('clearGridData');
-        $("#load_grid-history").show();
+    this.loadHistoryTable = function (id) {
+        var end = Math.round((new Date()).getTime() / 1000) + 10; // now
+        $('#grid-history-body').html('<tr><td colspan="5" style="text-align: center">' + _('Loading...') + '</td></tr>');
 
+
+        main.socket.emit('getStateHistory', id, {end: end, count: 50, instance: $('#history-table-instance').val()}, function (err, res) {
+            setTimeout(function () {
+                if (!err) {
+                    var text = '';
+                    if (res && res.length) {
+                        for (var i = res.length - 1; i >= 0; i--) {
+                            text += '<tr class="grid-history-' + ((i % 2) ? 'odd' : 'even') + '">' +
+                                '<td>' + res[i].val  + '</td>' +
+                                '<td>' + res[i].ack  + '</td>' +
+                                '<td>' + res[i].from.replace('system.adapter.', '').replace('system.', '') + '</td>' +
+                                '<td>' + main.formatDate(res[i].ts, true) + '</td>' +
+                                '<td>' + main.formatDate(res[i].lc, true) + '</td>' +
+                                '</tr>\n'
+                        }
+                    } else {
+                        text = '<tr><td colspan="5" style="text-align: center">' + _('No data') + '</td></tr>'
+                    }
+                    $('#grid-history-body').html(text);
+                    $('#grid-history-body').data('odd', true);
+                } else {
+                    console.error(err);
+                    $('#grid-history-body').html('<tr><td colspan="5" style="text-align: center, color: red">' + err + '</td></tr>');
+                }
+            }, 0);
+        });
+    };
+
+    this.loadHistoryChart = function (id) {
+        if (id) {
+            var port = 0;
+            var chart = false;
+            var _id = this._id;
+            for (var i = 0; i < this.main.instances.length; i++) {
+                if (this.main.objects[main.instances[i]].common.name == 'rickshaw' && this.main.objects[this.main.instances[i]].common.enabled) {
+                    chart = 'rickshaw';
+                } else
+                if (this.main.objects[this.main.instances[i]].common.name == 'web' && this.main.objects[this.main.instances[i]].common.enabled) {
+                    port = this.main.objects[this.main.instances[i]].native.port;
+                }
+                if (chart && port) break;
+            }
+            var $chart = $('#iframe-history-chart');
+
+            $chart.attr('src', 'http://' + location.hostname + ':' + port + '/' + chart + '/index.html?axeX=lines&axeY=inside&_ids=' + encodeURI(id) + '&width=' + ($chart.width() - 10) + '&hoverDetail=true&height=' + ($chart.height() - 10) + '&instance=' + $('#history-chart-instance').val());
+        } else {
+            $('#iframe-history-chart').attr('src', '');
+        }
+    };
+
+    this.showHistoryData = function (id) {
         var _tabs = $('#tabs-history');
 
         var port = 0;
@@ -849,30 +902,13 @@ function Objects(main) {
                     activate: function (event, ui) {
                         switch (ui.newPanel.selector) {
                             case '#tab-history-table':
-                                $('#iframe-history-chart').attr('src', '');
+                                that.loadHistoryChart(null);
                                 break;
 
                             case '#tab-history-chart':
-                                var port = 0;
-                                var chart = false;
-                                var _id = this._id;
-                                for (var i = 0; i < main.instances.length; i++) {
-                                    if (main.objects[main.instances[i]].common.name == 'rickshaw' && main.objects[main.instances[i]].common.enabled) {
-                                        chart = 'rickshaw';
-                                    } else
-                                    if (main.objects[main.instances[i]].common.name == 'web' && main.objects[main.instances[i]].common.enabled) {
-                                        port = main.objects[main.instances[i]].native.port;
-                                    }
-                                    if (chart && port) break;
-                                }
-                                var $chart = $('#iframe-history-chart');
-
-                                $chart.attr('src', 'http://' + location.hostname + ':' + port + '/' + chart + '/index.html?axeX=lines&axeY=inside&_ids=' + encodeURI(_id) + '&width=' + ($chart.width() - 10) + '&hoverDetail=true&height=' + ($chart.height() - 10));
+                                that.loadHistoryChart(this._id);
                                 break;
-
                         }
-                    },
-                    create: function () {
                     }
                 });
             } else {
@@ -890,36 +926,11 @@ function Objects(main) {
                 }
                 if (chart && port) break;
             }
-            var end = Math.round((new Date()).getTime() / 1000) + 10; // now
-
-            main.socket.emit('getStateHistory', id, end, 50, function (err, res) {
-                setTimeout(function () {
-                    if (!err) {
-                        var rows = [];
-                        //console.log('got ' + res.length + ' history datapoints for ' + id);
-                        for (var i = 0; i < res.length; i++) {
-                            rows.push({
-                                gid: i,
-                                gid: i,
-                                id:  res[i].id,
-                                ack: res[i].ack,
-                                val: res[i].val,
-                                ts:  main.formatDate(res[i].ts, true),
-                                lc:  main.formatDate(res[i].lc, true)
-                            });
-                        }
-                        that.$gridHistory[0]._maxGid = res.length;
-                        that.$gridHistory.jqGrid('addRowData', 'gid', rows);
-                        that.$gridHistory.trigger('reloadGrid');
-                    } else {
-                        console.log(err);
-                    }
-                }, 0);
-            });
-            _tabs.tabs('option', 'disabled', (port && chart && currentHistory) ? [] : [2]);
+            that.loadHistoryTable(id);
+            _tabs.tabs('option', 'disabled', (port && chart && that.currentHistory) ? [] : [2]);
         } else {
             _tabs.tabs({active: 0});
-            _tabs.tabs('option', 'disabled', (port && chart && currentHistory) ? [] : [1, 2]);
+            _tabs.tabs('option', 'disabled', [1, 2]);
             this.$dialogHistory.dialog('open');
         }
     };
@@ -929,7 +940,6 @@ function Objects(main) {
         var instances = [];
         // collect all storage instances
         var count = 0;
-        var found = false;
         var data = '';
         var urls = [];
         for (var u = 0; u < this.main.instances.length; u++) {
@@ -965,28 +975,30 @@ function Objects(main) {
                 }
             }
         }
-
+        var _instances = [];
         for (var i = ids.length - 1; i >= 0; i--) {
             if (!this.main.objects[ids[i]]) {
                 console.warn('Null object: ' + ids[i]);
                 ids.splice(i, 1);
             } else {
-                if (this.main.objects[ids[i]].history) {
-                    // convert old struct
-                    if (this.main.objects[ids[i]].history.enabled !== undefined) {
-                        this.main.objects[ids[i]].history = {'history.0': this.main.objects[ids[i]].history};
+                if (this.main.objects[ids[i]].common.history) {
+                    // convert old structure
+                    if (this.main.objects[ids[i]].common.history.enabled !== undefined) {
+                        this.main.objects[ids[i]].common.history = this.main.objects[ids[i]].common.history.enabled ? {'history.0': this.main.objects[ids[i]].common.history} : {};
                     }
+                    var found = false;
 
                     // delete disabled entries
-                    for (var h in this.main.objects[ids[i]].history) {
-                        if (!this.main.objects[ids[i]].history[h].enabled) {
-                            delete this.main.objects[ids[i]].history[h];
+                    for (var h in this.main.objects[ids[i]].common.history) {
+                        if (this.main.objects[ids[i]].common.history[h].enabled === false) {
+                            delete this.main.objects[ids[i]].common.history[h];
                         } else {
+                            if (ids.length == 1) _instances.push(h);
                             found = true;
                         }
                     }
                     if (!found) {
-                        delete this.main.objects[ids[i]].history;
+                        delete this.main.objects[ids[i]].common.history;
                     }
                 }
             }
@@ -995,10 +1007,34 @@ function Objects(main) {
         var title;
         if (ids.length == 1) {
             title = _('Storage of %s', ids[0]);
-            currentHistory = found ? ids[0]: null;
+            this.currentHistory = _instances.length ? ids[0]: null;
+            var text = '';
+            for (var k = 0; k < _instances.length; k++) {
+                if (this.main.objects['system.adapter.' + _instances[k]].common.enabled ||
+                    (this.main.states['system.adapter.' + _instances[k] + '.alive'] && this.main.states['system.adapter.' + _instances[k] + '.alive'].val)) {
+                    text += '<option value="' + _instances[k] + '" ' + (!k ? 'selected' : '') + ' >' + _instances[k] + '</option>\n';
+                }
+            }
+            if (text) {
+                $('#history-table-instance').data('id', ids[0]);
+                $('#history-table-instance').html(text).show();
+                $('#history-table-instance').unbind('change').bind('change', function () {
+                    that.loadHistoryTable($(this).data('id'));
+                });
+                $('#history-chart-instance').data('id', ids[0]);
+                $('#history-chart-instance').html(text).show();
+                $('#history-chart-instance').unbind('change').bind('change', function () {
+                    that.loadHistoryChart($(this).data('id'));
+                });
+            } else {
+                $('#history-table-instance').hide();
+                $('#history-chart-instance').hide();
+            }
         } else {
+            $('#history-table-instance').hide();
+            $('#history-chart-instance').hide();
             title = _('Storage of %s states', ids.length);
-            currentHistory = null;
+            this.currentHistory = null;
         }
         $('#storage-tabs').data('ids', ids);
         this.$dialogHistory.dialog('option', 'title', title);
@@ -1022,39 +1058,15 @@ function Objects(main) {
         } else {
             if (callback) callback();
         }
-    }
+    };
 
     this.resizeHistory = function () {
         var w = this.$dialogHistory.width();
         var h = this.$dialogHistory.height() - 115;
-        this.$gridHistory.setGridHeight(h - 20).setGridWidth(w - 30);
         $('#iframe-history-chart').css({height: h, width: w - 30});
     };
 
     this.prepareHistory = function () {
-        this.$gridHistory.jqGrid({
-            datatype: 'local',
-            colNames: [_('val'), _('ack'), _('from'), _('ts'), _('lc')],
-            colModel: [
-                {name: 'val',  index: 'val',  width: 160, editable: true},
-                {name: 'ack',  index: 'ack',  width: 60,  fixed: false},
-                {name: 'from', index: 'from', width: 80,  fixed: false},
-                {name: 'ts',   index: 'ts',   width: 140, fixed: false},
-                {name: 'lc',   index: 'lc',   width: 140, fixed: false}
-            ],
-            width: 750,
-            height: 300,
-            pager: $('#pager-history'),
-            rowNum: 100,
-            rowList: [15, 100, 1000],
-            sortname: "id",
-            sortorder: "desc",
-            viewrecords: true,
-            caption: _('history data'),
-            ignoreCase: true
-
-        });
-
         $(document).on('click', '.history', function () {
             that.openHistoryDlg($(this).attr('data-id'));
         });
@@ -1124,7 +1136,6 @@ function Objects(main) {
                 }
             ],
             open: function (event, ui) {
-                that.$gridHistory.setGridHeight($(this).height() - 180).setGridWidth($(this).width() - 30);
                 $('#iframe-history-chart').css({height: $(this).height() - 115, width: $(this).width() - 30});
             },
             close: function () {

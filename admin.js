@@ -798,9 +798,11 @@ function socketEvents(socket) {
     /*
      *      History
      */
-    socket.on('getStateHistory', function (id, end, count, callback) {
+    socket.on('getStateHistory', function (id, options, callback) {
         if (updateSession(socket) && checkPermissions(socket, 'getStateHistory', callback)) {
-            adapter.getHistory(id, {count: count, end: end, user: this._acl.user, aggregate: 'none'}, callback);
+            options.user = this._acl.user;
+            options.aggregate = options.aggregate || 'none';
+            adapter.getHistory(id, options, callback);
         }
     });
     /*

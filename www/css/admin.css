@@ -96,7 +96,7 @@ table#events {
 /*    font-weight: bold;*/
     cursor: pointer;
 }
-storage-settings {
+.storage-settings {
     width: 100%
     border: 1px solid gray;
     padding-bottom: 15px;
@@ -180,6 +180,15 @@ storage-settings {
 }
 .history-enabled {
     color: red;
+}
+#grid-history {
+    font-size: small;
+}
+.grid-history-odd {
+    background: #eee;
+}
+.grid-history-even {
+
 }
 
 @-moz-keyframes spin    { 100% { -moz-transform:    rotate(360deg); } }
