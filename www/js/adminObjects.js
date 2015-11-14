@@ -759,64 +759,137 @@ function Objects(main) {
     this.initStorageTabs = function (ids, instances) {
         var $storageTabs = $('#storage-tabs');
         $storageTabs.html('');
-        var history = main.objects[ids[0]].common.history;
-        if (!history) history = {};
-
-        // convert old format of storage
-        if (history.enabled !== undefined) {
-            history.instance = 'history.0';
-            history = history.enabled ? {'history.0': history} : {};
-        }
-
+        this.defaults = {};
+        var wordDifferent = _('__different__');
+        // add all tabs to div
         for (var i = 0; i < instances.length; i++) {
             // try to find settings
             var parts    = instances[i].split('.');
-            var settings = history[parts[2] + '.' + parts[3]] || {};
-
-            var adapter = parts[2];
-            var tab = '<div class="storage-row-title ui-widget-header">' + _('Settings for %s', parts[2] + '.' + parts[3]) + '</div><div class="storage-settings">' +
+            var adapter  = parts[2];
+            var instance = parts[3];
+            var tab = '<div class="storage-row-title ui-widget-header">' + _('Settings for %s', adapter + '.' + instance) + '</div><div class="storage-settings">' +
                 $("script[data-template-name='" + adapter + "']").html() +
                 '</div>';
 
             var $tab = $(tab);
+            this.defaults[adapter] = {};
+
             // set values
             $tab.find('input, select').each(function() {
                 var $this = $(this);
-                $this.attr('data-instance', parts[2] + '.' + parts[3]);
+                $this.attr('data-instance', adapter + '.' + instance);
+                var field = $this.attr('data-field');
+                var def   = $this.attr('data-default');
+                if (def === 'true')  def = true;
+                if (def === 'false') def = false;
+                if (def == parseFloat(def).toString()) def = parseFloat(def);
 
-                var id = $this.data('field');
-
-                if (settings[id] !== undefined) {
-                    if ($this.attr('type') == 'checkbox') {
-                        $this.prop('checked', settings[id]);
-                    } else {
-                        $this.val(settings[id]);
-                    }
-                } else {
-                    var def = $this.data('default');
-                    if (def !== undefined) {
-                        if ($this.attr('type') == 'checkbox') {
-                            $this.prop('checked', def);
-                        } else {
-                            $this.val(def);
-                        }
-                    }
-                }
-
-                if ($this.attr('type') == 'checkbox') {
-                    $this.change(function () {
-                        $('#history-button-save').button('enable');
-                    });
-                } else {
-                    $this.change(function () {
-                        $('#history-button-save').button('enable');
-                    }).keyup(function () {
-                        $(this).tigger('change');
-                    });
-                }
+                that.defaults[adapter][field] = def;
             });
             $('#storage-tabs').append($tab);
         }
+
+        var commons = {};
+        // calculate common settings
+        for (var i = 0; i < instances.length; i++) {
+            var inst = instances[i].replace('system.adapter.', '');
+            commons[inst] = {};
+            for (var id = 0; id < ids.length; id++) {
+                // convert old format of storage
+                if (main.objects[ids[id]].common.history && main.objects[ids[id]].common.history.enabled !== undefined) {
+                    main.objects[ids[id]].common.history[inst] = main.objects[ids[id]].common.history.enabled ? {'history.0': main.objects[ids[id]].common.history} : {};
+                }
+                var sett = main.objects[ids[id]].common.history ? main.objects[ids[id]].common.history[inst] : null;
+                if (sett) {
+                    for (var attr in sett) {
+                        if (commons[inst][attr] === undefined) {
+                            commons[inst][attr] = sett[attr];
+                        } else if (commons[inst][attr] != sett[attr]) {
+                            commons[inst][attr] = '__different__';
+                        }
+                    }
+                } else {
+                    var a = inst.split('.')[0];
+                    var _default = null;
+                    // Try to get default values
+                    if (defaults[a]) {
+                        _default = defaults[a](that.main.objects[ids[id]], that.main.objects['system.adapter.' + inst]);
+                    } else {
+                        _default = this.defaults[a];
+                    }
+
+                    for (var attr in _default) {
+                        if (commons[inst][attr] === undefined) {
+                            commons[inst][attr] = _default[attr];
+                        } else if (commons[inst][attr] != _default[attr]) {
+                            commons[inst][attr] = '__different__';
+                        }
+                    }
+                }
+            }
+        }
+
+        // set values
+        $storageTabs.find('input, select').each(function() {
+            var $this    = $(this);
+            var instance = $this.attr('data-instance');
+            var adapter  = instance.split('.')[0];
+            var attr     = $this.attr('data-field');
+
+            if (commons[instance][attr] !== undefined) {
+                if ($this.attr('type') == 'checkbox') {
+                    if (commons[instance][attr] === '__different__') {
+                        /*$('<select data-field="' + attr + '" data-instance="' + instance + '">\n' +
+                            '   <option value="' + wordDifferent + '" selected>' + wordDifferent + '</option>\n' +
+                            '   <option value="false">' + _('false') + '</option>\n' +
+                            '   <option value="true">'  + _('true')  + '</option>\n' +
+                            '</select>').insertBefore($this);
+                        $this.hide().attr('data-field', '').data('field', '');*/
+                        $this[0].indeterminate = true;
+                    } else {
+                        $this.prop('checked', commons[instance][attr]);
+                    }
+                } else {
+                    if (commons[instance][attr] === '__different__') {
+                        if ($this.attr('type') == 'number') {
+                            $this.attr('type', 'text');
+                        }
+                        if ($this.prop('tagName').toUpperCase() == 'SELECT'){
+                            $this.prepend('<option value="' + wordDifferent + '">' + wordDifferent + '</option>');
+                            $this.val(wordDifferent);
+                        } else {
+                            $this.val('').attr('placeholder', wordDifferent);
+                        }
+                    } else {
+                        $this.val(commons[instance][attr]);
+                    }
+                }
+            } else {
+                var def;
+                if (that.defaults[adapter] && that.defaults[adapter][attr] !== undefined) {
+                    def = that.defaults[adapter][attr];
+                }
+                if (def !== undefined) {
+                    if ($this.attr('type') == 'checkbox') {
+                        $this.prop('checked', def);
+                    } else {
+                        $this.val(def);
+                    }
+                }
+            }
+
+            if ($this.attr('type') == 'checkbox') {
+                $this.change(function () {
+                    $('#history-button-save').button('enable');
+                });
+            } else {
+                $this.change(function () {
+                    $('#history-button-save').button('enable');
+                }).keyup(function () {
+                    $(this).trigger('change');
+                });
+            }
+        });
 
         $('.storage-row-title').click(function () {
             var $form = $(this).next();
@@ -938,6 +1011,10 @@ function Objects(main) {
     this.openHistoryDlg = function (ids) {
         if (typeof ids != 'object') ids = [ids];
         var instances = [];
+
+        // clear global defaults object
+        defaults = {};
+
         // collect all storage instances
         var count = 0;
         var data = '';
@@ -1082,38 +1159,63 @@ function Objects(main) {
                     id: 'history-button-save',
                     text: _('Save'),
                     click: function () {
-                        var ids       = $('#storage-tabs').data('ids');
+                        var ids = $('#storage-tabs').data('ids');
 
                         // do not update charts
                         that.currentHistory = null;
+                        var wordDifferent = _('__different__');
+
+                        // collect default values
+                        var $inputs = $('#storage-tabs').find('input, select');
 
                         //that.historyIds = ids;
-                        var history = {};
-                        $('#storage-tabs').find('input, select').each(function () {
+                        $inputs.each(function () {
                             var instance = $(this).data('instance');
                             var field    = $(this).data('field');
-                            history[instance] = history[instance] || {};
+                            if (!field) return;
+
+                            var val;
                             if ($(this).attr('type') == 'checkbox') {
-                                history[instance][field] = $(this).prop('checked');
+                                if (this.indeterminate) return;
+                                val = $(this).prop('checked');
                             } else {
-                                history[instance][field] = $(this).val();
+                                val = $(this).val();
+                            }
+                            // if not changed
+                            if (val == wordDifferent) return;
+
+                            if (val === 'false') val = false;
+                            if (val === 'true')  val = true;
+                            if (val == parseFloat(val).toString()) val = parseFloat(val);
+
+                            for (var i = 0; i < ids.length; i++) {
+                                that.main.objects[ids[i]].common.history = that.main.objects[ids[i]].common.history || {};
+                                if (that.main.objects[ids[i]].common.history[instance] === undefined) {
+                                    var adapter = instance.split('.')[0];
+                                    var _default;
+                                    // Try to get default values
+                                    if (defaults[adapter]) {
+                                        _default = defaults[adapter](that.main.objects[ids[i]], that.main.objects['system.adapter.' + instance]);
+                                    } else {
+                                        _default = that.defaults[adapter];
+                                    }
+                                    that.main.objects[ids[i]].common.history[instance] = _default || {};
+                                }
+                                that.main.objects[ids[i]].common.history[instance][field] = val;
                             }
                         });
-                        var found = false;
-                        for (var inst in history) {
-                            if (!history[inst].enabled) {
-                                delete history[inst];
-                            } else {
-                                found = true;
+
+                        for (var i = 0; i < ids.length; i++) {
+                            var found = false;
+                            for (var inst in main.objects[ids[i]].common.history) {
+                                if (!main.objects[ids[i]].common.history[inst].enabled) {
+                                    delete main.objects[ids[i]].common.history[inst];
+                                } else {
+                                    found = true;
+                                }
                             }
-                        }
-                        if (!found) {
-                            for (var i = 0; i < ids.length; i++) {
+                            if (!found) {
                                 main.objects[ids[i]].common.history = null;
-                            }
-                        } else {
-                            for (var i = 0; i < ids.length; i++) {
-                                main.objects[ids[i]].common.history = history;
                             }
                         }
 

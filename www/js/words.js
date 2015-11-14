@@ -132,6 +132,12 @@ systemDictionary = {
         "de": "Adapter Informationen aktualisieren",
         "ru": "update adapter information"
     },
+    "Show values of instance": {
+        "en": "Show values of instance",
+        "de": "Zeige Werte aus",
+        "ru": "Показать знаяения из"
+    },
+    "__different__":        {"en": "different",             "de": "unterschiedlich",        "ru": "разное"},
     "history data":         {"en": "history data",          "de": "Historische Daten",      "ru": "history data"},
     "alpha":                {"en": "alpha",                 "de": "alpha",                  "ru": "alpha"},
     "update":               {"en": "update",                "de": "Aktualisieren",          "ru": "обновить"},

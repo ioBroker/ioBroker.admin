@@ -33,6 +33,7 @@ Array.prototype.remove = function () {
 };
 
 var $iframeDialog = null; // used in adapter settings window
+var defaults = {};
 
 (function ($) {
 $(document).ready(function () {
