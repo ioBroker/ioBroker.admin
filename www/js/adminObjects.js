@@ -1224,6 +1224,8 @@ function Objects(main) {
                         }
 
                         that.setHistory(ids, function () {
+                            // disable iframe
+                            that.loadHistoryChart();
                             that.$dialogHistory.dialog('close');
                         });
                     }
@@ -1233,9 +1235,15 @@ function Objects(main) {
                     click: function () {
                         if (!$('#history-button-save').is(":disabled")) {
                             that.main.confirmMessage(_('Are you sure? Changes are not saved.'), _('Question'), 'alert', function (result) {
-                                if (result) that.$dialogHistory.dialog('close');
+                                if (result) {
+                                    // disable iframe
+                                    that.loadHistoryChart();
+                                    that.$dialogHistory.dialog('close');
+                                }
                             });
                         } else {
+                            // disable iframe
+                            that.loadHistoryChart();
                             that.$dialogHistory.dialog('close');
                         }
                     }
