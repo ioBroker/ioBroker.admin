@@ -942,7 +942,6 @@ function Objects(main) {
         if (id) {
             var port = 0;
             var chart = false;
-            var _id = this._id;
             for (var i = 0; i < this.main.instances.length; i++) {
                 if (this.main.objects[main.instances[i]].common.name == 'rickshaw' && this.main.objects[this.main.instances[i]].common.enabled) {
                     chart = 'rickshaw';
@@ -954,24 +953,25 @@ function Objects(main) {
             }
             var $chart = $('#iframe-history-chart');
 
-            $chart.attr('src', 'http://' + location.hostname + ':' + port + '/' + chart + '/index.html?axeX=lines&axeY=inside&_ids=' + encodeURI(id) + '&width=' + ($chart.width() - 10) + '&hoverDetail=true&height=' + ($chart.height() - 10) + '&instance=' + $('#history-chart-instance').val());
+            $chart.attr('src', 'http://' + location.hostname + ':' + port + '/' + chart + '/index.html?range=1440&axeX=lines&axeY=inside&_ids=' + encodeURI(id) + '&width=' + ($chart.width() - 50) + '&hoverDetail=true&height=' + ($chart.height() - 50) + '&instance=' + $('#history-chart-instance').val());
         } else {
             $('#iframe-history-chart').attr('src', '');
         }
     };
 
     this.showHistoryData = function (id) {
-        var _tabs = $('#tabs-history');
+        var $tabs = $('#tabs-history');
 
         var port = 0;
         var chart = false;
         if (id) {
             this.$dialogHistory.dialog('option', 'height', 600);
             this.$dialogHistory.dialog('open');
-            _tabs[0]._id = id;
-            if (!_tabs[0]._inited) {
-                _tabs[0]._inited = true;
-                _tabs.tabs({
+            $('#tabs-history').data('id', id);
+
+            if (!$('#tabs-history').data('inited')) {
+                $('#tabs-history').data('inited', true);
+                $tabs.tabs({
                     activate: function (event, ui) {
                         switch (ui.newPanel.selector) {
                             case '#tab-history-table':
@@ -979,14 +979,14 @@ function Objects(main) {
                                 break;
 
                             case '#tab-history-chart':
-                                that.loadHistoryChart(this._id);
+                                that.loadHistoryChart($tabs.data('id'));
                                 break;
                         }
                     }
                 });
             } else {
-                _tabs.tabs('option', 'enabled', [1, 2]);
-                _tabs.tabs({active: 0});
+                $tabs.tabs('option', 'enabled', [1, 2]);
+                $tabs.tabs({active: 0});
             }
 
             // Check if chart enabled and set
@@ -1000,10 +1000,10 @@ function Objects(main) {
                 if (chart && port) break;
             }
             that.loadHistoryTable(id);
-            _tabs.tabs('option', 'disabled', (port && chart && that.currentHistory) ? [] : [2]);
+            $tabs.tabs('option', 'disabled', (port && chart && that.currentHistory) ? [] : [2]);
         } else {
-            _tabs.tabs({active: 0});
-            _tabs.tabs('option', 'disabled', [1, 2]);
+            $tabs.tabs({active: 0});
+            $tabs.tabs('option', 'disabled', [1, 2]);
             this.$dialogHistory.dialog('open');
         }
     };
@@ -1138,9 +1138,13 @@ function Objects(main) {
     };
 
     this.resizeHistory = function () {
-        var w = this.$dialogHistory.width();
-        var h = this.$dialogHistory.height() - 115;
-        $('#iframe-history-chart').css({height: h, width: w - 30});
+        $('#iframe-history-chart').css({height: this.$dialogHistory.height() - 60, width: this.$dialogHistory.width() - 10});
+        var timeout = $('#iframe-history-chart').data('timeout');
+        if (timeout) clearTimeout(timeout);
+
+        $('#iframe-history-chart').data('timeout', setTimeout(function () {
+            that.loadHistoryChart($('#tabs-history').data('id'));
+        }, 1000));
     };
 
     this.prepareHistory = function () {

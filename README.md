@@ -15,6 +15,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.7.0 (2015-11-15)
+* (bluefox) suport of multi history
+
 ### 0.6.6 (2015-11-02)
 * (bluefox) add support of certificates (-----BEGIN PRIVATE KEY-----)
 
