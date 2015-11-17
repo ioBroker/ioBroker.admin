@@ -740,14 +740,22 @@ function Objects(main) {
 
     this.stateChangeHistory = function (id, state) {
         if (this.currentHistory == id) {
+            var instance = $('#history-table-instance').val();
             var $body = $('#grid-history-body');
+            if (this.main.objects[id].common.history &&
+                this.main.objects[id].common.history[instance] &&
+                this.main.objects[id].common.history[instance].changesOnly){
+                var val = $body.find('tr:first td:first').html();
+                if (val == state.val) return;
+            }
+
             if ($body.find('tr').length >= 50) {
                 $body.find('tr:last').remove();
             }
 
             $body.prepend('<tr class="grid-history-' + ($body.data('odd') ? 'even' : 'odd') + '">' +
-                '<td>' + state.val + '</td>' +
-                '<td>' + state.ack + '</td>' +
+                '<td>' + state.val  + '</td>' +
+                '<td>' + state.ack  + '</td>' +
                 '<td>' + state.from + '</td>' +
                 '<td>' + main.formatDate(state.ts, true) + '</td>' +
                 '<td>' + main.formatDate(state.lc, true) + '</td>' +
@@ -910,8 +918,7 @@ function Objects(main) {
         var end = Math.round((new Date()).getTime() / 1000) + 10; // now
         $('#grid-history-body').html('<tr><td colspan="5" style="text-align: center">' + _('Loading...') + '</td></tr>');
 
-
-        main.socket.emit('getStateHistory', id, {end: end, count: 50, instance: $('#history-table-instance').val()}, function (err, res) {
+        main.socket.emit('getStateHistory', id, {end: end, count: 50, instance: $('#history-table-instance').val(), from: true, ack: true, q: true}, function (err, res) {
             setTimeout(function () {
                 if (!err) {
                     var text = '';
@@ -975,7 +982,7 @@ function Objects(main) {
                     activate: function (event, ui) {
                         switch (ui.newPanel.selector) {
                             case '#tab-history-table':
-                                that.loadHistoryChart(null);
+                                that.loadHistoryChart();
                                 break;
 
                             case '#tab-history-chart':
@@ -1096,13 +1103,22 @@ function Objects(main) {
                 $('#history-table-instance').data('id', ids[0]);
                 $('#history-table-instance').html(text).show();
                 $('#history-table-instance').unbind('change').bind('change', function () {
+                    that.main.saveConfig('object-history-table',  $('#history-table-instance').val());
                     that.loadHistoryTable($(this).data('id'));
                 });
                 $('#history-chart-instance').data('id', ids[0]);
                 $('#history-chart-instance').html(text).show();
                 $('#history-chart-instance').unbind('change').bind('change', function () {
+                    that.main.saveConfig('object-history-chart',  $('#history-chart-instance').val());
                     that.loadHistoryChart($(this).data('id'));
                 });
+                if (this.main.config['object-history-table'] !== undefined) {
+                    $('#history-table-instance').val(this.main.config['object-history-table'])
+                }
+                if (this.main.config['object-history-chart'] !== undefined) {
+                    $('#history-chart-instance').val(this.main.config['object-history-chart'])
+                }
+
             } else {
                 $('#history-table-instance').hide();
                 $('#history-chart-instance').hide();
