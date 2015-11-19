@@ -154,6 +154,7 @@
         var isRole  = data.columns.indexOf('role') != -1;
         var isHist  = data.columns.indexOf('button') != -1;
         data.tree = {title: '', children: [], count: 0, root: true};
+        data.enums = [];
 
         for (var id in objects) {
             if (isRoom && objects[id].type == 'enum' && data.regexEnumRooms.test(id)) data.enums.push(id);
@@ -370,7 +371,8 @@
 
     function clippyCopy(e) {
         var $temp = $('<input>');
-        $("body").append($temp);
+        //$('body').append($temp);
+        $(this).append($temp);
         $temp.val($(this).parent().data('clippy')).select();
         document.execCommand('copy');
         $temp.remove();
@@ -1285,6 +1287,16 @@
         showActive($dlg);
         loadSettings(data);
         installColResize($dlg);
+
+        // set preset filters
+        for (var field in data.filterPresets) {
+            if (!data.filterPresets[field]) continue;
+            if (typeof data.filterPresets[field] == 'object') {
+                $('#filter_' + field + '_' + data.instance).val(data.filterPresets[field][0]).trigger('change');
+            } else {
+                $('#filter_' + field + '_' + data.instance).val(data.filterPresets[field]).trigger('change');
+            }
+        }
     }
 
     function storeSettings(data) {
@@ -1306,9 +1318,9 @@
                     f = JSON.parse(f);
                     for (var field in f) {
                         if (field == 'length') continue;
+                        if (data.filterPresets[field]) continue;
                         $('#filter_' + field + '_' + data.instance).val(f[field]).trigger('change');
                     }
-
                 } catch(e) {
                     console.error('Cannot parse settings: ' + e);
                 }
@@ -1756,6 +1768,20 @@
                 }
             }
             return this;
+        },
+        "option": function (name, value) {
+            for (var k = 0; k < this.length; k++) {
+                var dlg = this[k];
+                var $dlg = $(dlg);
+                var data = $dlg.data('selectId');
+                if (!data) continue;
+
+                if (data[name] !== undefined) {
+                    data[name] = value;
+                } else {
+                    console.error('Unknown options for selectID: ' + name);
+                }
+            }
         },
         "objectAll": function (id, obj) {
             $('.select-id-dialog-marker').selectId('object', id, obj);
