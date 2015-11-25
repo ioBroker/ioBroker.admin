@@ -927,7 +927,7 @@ function Objects(main) {
                             text += '<tr class="grid-history-' + ((i % 2) ? 'odd' : 'even') + '">' +
                                 '<td>' + res[i].val  + '</td>' +
                                 '<td>' + res[i].ack  + '</td>' +
-                                '<td>' + res[i].from.replace('system.adapter.', '').replace('system.', '') + '</td>' +
+                                '<td>' + (res[i].from || '').replace('system.adapter.', '').replace('system.', '') + '</td>' +
                                 '<td>' + main.formatDate(res[i].ts, true) + '</td>' +
                                 '<td>' + main.formatDate(res[i].lc, true) + '</td>' +
                                 '</tr>\n'
