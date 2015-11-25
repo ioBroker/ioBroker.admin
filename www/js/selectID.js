@@ -1398,7 +1398,8 @@
                         regexSystemHost:    new RegExp('^system.host.'),
                         regexEnumRooms:     new RegExp('^enum.rooms.'),
                         instance:           instance++,
-                        inited:             false
+                        inited:             false,
+                        filterPresets:      {}
                     };
                     $dlg.data('selectId', data);
                 }
