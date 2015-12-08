@@ -182,14 +182,14 @@ systemDictionary = {
     "Note:":                {"en": "Note:",                 "de": "Notiz:",                 "ru": "Замечание:"},
     "diag-note":            {
         "en": "We worked hard to create this project. As equivalent we expect from you some statistics about the usage.<br>\n" +
-              "No private information will be sent to ioBroker.org. Every time you press update adapter list the anonymized statistics will be sent.<br>\n" +
-              "Thank you!",
+        "No private information will be sent to ioBroker.org. Every time you press update adapter list the anonymized statistics will be sent.<br>\n" +
+        "Thank you!",
         "de": "Wir haben hart gearbeitet um dieses Projekt auf die Beine zu stelln. Als Gegenleistung bitten wir Sie uns die Statistik über die Benutzung an uns zu schicken.<br>\n" +
-              "Keine private Information wird zu ioBroker.org gesendet. Jedes Mal wenn Adapterliste upgedated wird, wird die anonymisierte Statistik gesendet.<br>\n" +
-              "Vielen Dank!",
+        "Keine private Information wird zu ioBroker.org gesendet. Jedes Mal wenn Adapterliste upgedated wird, wird die anonymisierte Statistik gesendet.<br>\n" +
+        "Vielen Dank!",
         "ru": "Мы долго работали над этим проектом. Мы просим вас переслать нам статистику использования, как компенсацию.<br>\n" +
-              "Никакой приватной информации не отсылается в ioBroker.org. Каждый раз, когда список драйверов обновляется, будет отсылатся анонимная статистика.<br>\n" +
-              "Большое спасибо!"
+        "Никакой приватной информации не отсылается в ioBroker.org. Каждый раз, когда список драйверов обновляется, будет отсылатся анонимная статистика.<br>\n" +
+        "Большое спасибо!"
     },
     "ts":                   {"en": "Timestamp",             "de": "Zeit",                   "ru": "Время"},
     "Statistics:":          {"en": "Statistics:",           "de": "Statistik:",             "ru": "Статистика:"},
@@ -405,5 +405,25 @@ systemDictionary = {
         "en": "Has no permission to %s %s %s",
         "de": "Kein Zugriff '%s' für %s %s",
         "ru": "Нет разрешения '%s' для %s %s"
+    },
+    "Add Objecttree from JSON File": {
+        "en": "Add Objecttree from JSON File",
+        "de": "Eine Objektstruktur mittels JSON Datei hochladen",
+        "ru": "Добавить дерево объектов из JSON файл"
+    },
+    "Save Objecttree as JSON File": {
+        "en": "Save Objecttree as JSON File",
+        "de": "Die ausgewählte Objektstruktur als JSON Datei herunterladen",
+        "ru": "Сохранить объекты, как JSON файл"
+    },
+    "Save Objecttree is not possible": {
+        "en": "Save Objecttree is not possible",
+        "de": "Speichern ist nicht möglich",
+        "ru": "Сохранить объекты НЕВОЗМОЖНО"
+    },
+    "Failed to open JSON File": {
+        "en": "Failed to open JSON File",
+        "de": "Diese Datei ist keine gültige JSON Datei",
+        "ru": "Не удалось открыть файл в формате JSON"
     }
 };
