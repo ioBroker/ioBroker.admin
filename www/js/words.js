@@ -238,7 +238,7 @@ systemDictionary = {
     "subscribe":            {"en": "subscribe",             "de": "abonnieren",             "ru": "Подписка"},
     "stable":               {"en": "stable",                "de": "stabil",                 "ru": "стабильно"},
     "Install":              {"en": "Install",               "de": "Installieren",           "ru": "Установить"},
-    "State":                {"en": "State",                 "de": "Zustand",                "ru": "Состояние"},
+    "State":                {"en": "Datapoint",             "de": "Datenpunkt",             "ru": "Состояние"},
     "Channel":              {"en": "Channel",               "de": "Kanal",                  "ru": "Канал"},
     "Device":               {"en": "Device",                "de": "Gerät",                  "ru": "Устройство"},
     "URL or file path:":    {"en": "URL or file path:",     "de": "URL oder Dateipfad:",    "ru": "URL или путь к файлу:"},
