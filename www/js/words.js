@@ -407,12 +407,12 @@ systemDictionary = {
         "ru": "Нет разрешения '%s' для %s %s"
     },
     "Add Objecttree from JSON File": {
-        "en": "Add Objecttree from JSON File",
+        "en": "Add objects-tree from JSON file",
         "de": "Eine Objektstruktur mittels JSON Datei hochladen",
-        "ru": "Добавить дерево объектов из JSON файл"
+        "ru": "Добавить дерево объектов из JSON файла"
     },
     "Save Objecttree as JSON File": {
-        "en": "Save Objecttree as JSON File",
+        "en": "Save objects-tree as JSON file",
         "de": "Die ausgewählte Objektstruktur als JSON Datei herunterladen",
         "ru": "Сохранить объекты, как JSON файл"
     },

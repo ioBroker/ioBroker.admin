@@ -464,22 +464,26 @@ function Objects(main) {
                     },
                     {
                         text: false,
+                        id:   'add_object_tree',
                         icons: {
                             primary: 'ui-icon-arrowthickstop-1-n'
                         },
                         title: _('Add Objecttree from JSON File'),
                         click: function () {
                             var id = that.$grid.selectId('getActual') || '';
-                            var input = document.createElement("input");
-                            input.setAttribute("type", "file");
-                            input.setAttribute("id", "files");
-                            input.setAttribute("opacity", 0);
-                            input.addEventListener("change", function(e){handleFileSelect(e, function(){})}, false);
+                            var input = document.createElement('input');
+                            input.setAttribute('type', 'file');
+                            input.setAttribute('id', 'files');
+                            input.setAttribute('opacity', 0);
+                            input.addEventListener('change', function (e) {
+                                handleFileSelect(e, function () {});
+                            }, false);
                             (input.click)();
                         }
                     },
                     {
                         text: false,
+                        id:   'save_object_tree',
                         icons: {
                             primary: 'ui-icon-arrowthickstop-1-s'
                         },
@@ -487,15 +491,13 @@ function Objects(main) {
                         click: function () {
                             var id = that.$grid.selectId('getActual') || '';
                             var result = {};
-                            var arr = $.map(that.main.objects,function(val,key){
-                                if (key.search(id) == 0) {
-                                    result[key] = val;
-                                }
+                            var arr = $.map(that.main.objects, function (val, key) {
+                                if (key.search(id) == 0) result[key] = val;
                             });
                             if (result != undefined) {
-                                window.open('data:application/iobroker;content-disposition=attachment;filename='+ id +'.json,' + JSON.stringify(result));
+                                window.open('data:application/iobroker;content-disposition=attachment;filename=' + id + '.json,' + JSON.stringify(result));
                             } else {
-                                alert("Save Objecttree is not possible");
+                                alert(_('Save of objects-tree is not possible'));
                             }
                         }
                     }
