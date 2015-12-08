@@ -286,7 +286,7 @@ function Objects(main) {
 
         $('#' + htmlId).html(text);
     }
-    
+
     function saveObjectFields(htmlId, object) {
         $('#' + htmlId).find('.object-tab-edit-string').each(function () {
             object[$(this).data('attr')] = $(this).val();
@@ -460,6 +460,43 @@ function Objects(main) {
 
                             $('#dialog-new-object').dialog('open');
                             $('#dialog-new-object').dialog('option', 'title', _('Add new object: %s', (id ? id + '.' : '') + _('newObject')))
+                        }
+                    },
+                    {
+                        text: false,
+                        icons: {
+                            primary: 'ui-icon-arrowthickstop-1-n'
+                        },
+                        title: _('Add Objecttree from JSON File'),
+                        click: function () {
+                            var id = that.$grid.selectId('getActual') || '';
+                            var input = document.createElement("input");
+                            input.setAttribute("type", "file");
+                            input.setAttribute("id", "files");
+                            input.setAttribute("opacity", 0);
+                            input.addEventListener("change", function(e){handleFileSelect(e, function(){})}, false);
+                            (input.click)();
+                        }
+                    },
+                    {
+                        text: false,
+                        icons: {
+                            primary: 'ui-icon-arrowthickstop-1-s'
+                        },
+                        title: _('Save Objecttree as JSON File'),
+                        click: function () {
+                            var id = that.$grid.selectId('getActual') || '';
+                            var result = {};
+                            var arr = $.map(that.main.objects,function(val,key){
+                                if (key.search(id) == 0) {
+                                    result[key] = val;
+                                }
+                            });
+                            if (result != undefined) {
+                                window.open('data:application/iobroker;content-disposition=attachment;filename='+ id +'.json,' + JSON.stringify(result));
+                            } else {
+                                alert("Save Objecttree is not possible");
+                            }
                         }
                     }
                 ],
@@ -848,11 +885,11 @@ function Objects(main) {
                 if ($this.attr('type') == 'checkbox') {
                     if (commons[instance][attr] === '__different__') {
                         /*$('<select data-field="' + attr + '" data-instance="' + instance + '">\n' +
-                            '   <option value="' + wordDifferent + '" selected>' + wordDifferent + '</option>\n' +
-                            '   <option value="false">' + _('false') + '</option>\n' +
-                            '   <option value="true">'  + _('true')  + '</option>\n' +
-                            '</select>').insertBefore($this);
-                        $this.hide().attr('data-field', '').data('field', '');*/
+                         '   <option value="' + wordDifferent + '" selected>' + wordDifferent + '</option>\n' +
+                         '   <option value="false">' + _('false') + '</option>\n' +
+                         '   <option value="true">'  + _('true')  + '</option>\n' +
+                         '</select>').insertBefore($this);
+                         $this.hide().attr('data-field', '').data('field', '');*/
                         $this[0].indeterminate = true;
                     } else {
                         $this.prop('checked', commons[instance][attr]);
@@ -1276,4 +1313,48 @@ function Objects(main) {
             }
         });
     };
+
+    function handleFileSelect(evt) {
+        var f = evt.target.files[0];
+        if (f) {
+            var r = new FileReader();
+            r.onload = function(e) {
+                var contents = e.target.result;
+                var json = JSON.parse(contents);
+                var len = Object.keys(json).length;
+                var id = json._id;
+                if (id == undefined && len > 1) {
+                    for (var obj in (json)) {
+                        id = json[obj]._id;
+                        that.main.socket.emit('setObject', id, json[obj], function (err) {
+                            if (err) {
+                                that.main.showError(err);
+                                return;
+                            }
+                            var _obj = json[obj];
+                            console.log(id + " = " + _obj.type);
+                            if (json[obj].type == 'state') {
+                                that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
+                            }
+                        });
+                    }
+                } else {
+                    that.main.socket.emit('setObject', id, json, function (err) {
+                        if (err) {
+                            that.main.showError(err);
+                            return;
+                        }
+                        var _obj = json[obj];
+                        console.log(id + " = " + obj_.type);
+                        if (json[obj].type == 'state') {
+                            that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
+                        }
+                    });
+                }
+            }
+            r.readAsText(f);
+        } else {
+            alert("Failed to open JSON File");
+        }
+    }
 }

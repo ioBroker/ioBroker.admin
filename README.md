@@ -15,6 +15,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.7.1 (2015-12-08)
+* (husky-koglhof) added support for up-/download of objecttrees
+
 ### 0.7.0 (2015-11-15)
 * (bluefox) suport of multi history
 
