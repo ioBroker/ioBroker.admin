@@ -426,10 +426,10 @@ function Objects(main) {
                                     }
                                 }
                                 if (enabled) {
-                                    this.addClass('history-enabled').removeClass('history-disabled').css({'background': 'lightgreen'});
+                                    this.addClass('history-enabled').removeClass('history-disabled');
                                 } else {
                                     delete main.objects[id].common.history;
-                                    this.addClass('history-disabled').removeClass('history-enabled').css({'background': ''});
+                                    this.addClass('history-disabled').removeClass('history-enabled');
                                 }
                             } else {
                                 this.hide();
@@ -939,7 +939,7 @@ function Objects(main) {
                     $('#grid-history-body').data('odd', true);
                 } else {
                     console.error(err);
-                    $('#grid-history-body').html('<tr><td colspan="5" style="text-align: center, color: red">' + err + '</td></tr>');
+                    $('#grid-history-body').html('<tr><td colspan="5" style="text-align: center" class="error">' + err + '</td></tr>');
                 }
             }, 0);
         });

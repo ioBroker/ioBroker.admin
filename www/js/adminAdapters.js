@@ -420,15 +420,15 @@ function Adapters(main) {
                         }
                         if (_instances) {
                             installed += '<td style="border: 0px;padding: 0;width:40px">[<span title="' + _('Installed instances') + '">' + _instances + '</span>';
-                            if (_enabled) installed += '/<span title="' + _('Active instances') + '" style="color: green">' + _enabled + '</span>';
+                            if (_enabled) installed += '/<span title="' + _('Active instances') + '" class="true">' + _enabled + '</span>';
                             installed += ']</td>';
                         } else {
-                            installed += '<td style="border: 0px;padding: 0;width:40px"></td>';
+                            installed += '<td style="border: 0px;padding: 0;width: 40px"></td>';
                         }
 
                         tmp = installed.split('.');
                         if (!that.main.upToDate(version, obj.version)) {
-                            installed += '<td style="border: 0px;padding: 0;width:30px"><button class="adapter-update-submit" data-adapter-name="' + adapter + '">' + _('update') + '</button></td>';
+                            installed += '<td style="border: 0px;padding: 0;width:30px"><button class="adapter-update-submit" data-adapter-name="' + adapter + '" title="' + _('update') + '"></button></td>';
                             version = version.replace('class="', 'class="updateReady ');
                             $('a[href="#tab-adapters"]').addClass('updateReady');
                         } else if (that.onlyUpdatable) {
@@ -468,9 +468,9 @@ function Adapters(main) {
                         version:    version,
                         installed:  installed,
                         bold:       obj.highlight,
-                        install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                            '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
-                            '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
+                        install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit" title="' + _('add instance') + '"></button>' +
+                            '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit" title="' + _('readme') + '"></button>' +
+                            '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit" title="' + _('delete adapter') + '"></button>',
                         platform:   obj.platform,
                         group:      group,
                         license:    obj.license || '',
@@ -698,7 +698,7 @@ function Adapters(main) {
             icons: {
                 primary: 'ui-icon-plusthick'
             }
-        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
+        }).css({width: 22, height: 18}).unbind('click').on('click', function () {
             var adapter = $(this).attr('data-adapter-name');
             that.getAdaptersInfo(that.main.currentHost, false, false, function (repo, installed) {
                 var obj = repo[adapter];
@@ -727,7 +727,7 @@ function Adapters(main) {
         $('.adapter-delete-submit[data-adapter-name="' + adapter + '"]').button({
             icons: {primary: 'ui-icon-trash'},
             text:  false
-        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
+        }).css({width: 22, height: 18}).unbind('click').on('click', function () {
             var name = $(this).attr('data-adapter-name');
             that.main.confirmMessage(_('Are you sure?'), _('Question'), 'help', function (result) {
                 if (result) {
@@ -741,14 +741,14 @@ function Adapters(main) {
         $('.adapter-readme-submit[data-adapter-name="' + adapter + '"]').button({
             icons: {primary: 'ui-icon-help'},
             text: false
-        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
+        }).css({width: 22, height: 18}).unbind('click').on('click', function () {
             window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
         });
 
         $('.adapter-update-submit[data-adapter-name="' + adapter + '"]').button({
             icons: {primary: 'ui-icon-refresh'},
             text:  false
-        }).css('width', '22px').css('height', '18px').unbind('click').on('click', function () {
+        }).css({width: 22, height: 18}).unbind('click').on('click', function () {
             var aName = $(this).attr('data-adapter-name');
             if (aName == 'admin') that.main.waitForRestart = true;
 

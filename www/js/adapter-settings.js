@@ -33,11 +33,11 @@ $(document).ready(function () {
         if (typeof translateAll === 'function') translateAll();
         loadSettings();
     });
-
-    $('body').prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" >' +
+    $('body').wrapInner('<div style="height: calc(100% - 44px); width: 100%; overflow:auto"></div>');
+    $('body').prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" style="padding: 2px" >' +
         '<button id="save" class="translateB">save</button>&nbsp;' +
         '<button id="saveclose" class="translateB">saveclose</button>&nbsp;' +
-        '<button id="close" class="translateB">cancel</button>&nbsp;' +
+        '<button id="close" class="translateB" style="float: right;">cancel</button>&nbsp;' +
         '</div>');
 
     $('button#save').button({icons: {primary: 'ui-icon-disk'}}).click(function () {

@@ -88,7 +88,7 @@ table#events {
 .menu-button {
     float: right;
     height: 26px;
-    margin: 1px 2px 1px 2px;
+    margin: 4px 2px 1px 2px;
 }
 
 .storage-row-title {
@@ -97,7 +97,7 @@ table#events {
     cursor: pointer;
 }
 .storage-settings {
-    width: 100%
+    width: 100%;
     border: 1px solid gray;
     padding-bottom: 15px;
 }
@@ -176,11 +176,15 @@ table#events {
 }
 .updateReady {
     font-weight: bold;
-    color: green !important;
+    color: #06960E !important;
 }
 .history-enabled {
-    color: red;
+    background: rgb(151, 191, 255) !important;
 }
+.history-disabled {
+
+}
+
 #grid-history {
     font-size: small;
 }
@@ -189,6 +193,18 @@ table#events {
 }
 .grid-history-even {
 
+}
+.true {
+    color: #06960E;
+    font-weight: bold;
+}
+.false {
+    color: #D92626;
+    font-weight: normal;
+}
+.error {
+    color: #D92626;
+    font-weight: normal;
 }
 
 @-moz-keyframes spin    { 100% { -moz-transform:    rotate(360deg); } }

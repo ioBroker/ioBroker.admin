@@ -61,7 +61,7 @@ function Logs(main) {
         });
 
         $('#log-copy').button({icons:{primary: 'ui-icon-copy'}, text: false}).click(function () {
-            var text = '<span style="color: red">' + _('copy note') + '</span>';
+            var text = '<span class="error">' + _('copy note') + '</span>';
             $('#tabs').hide();
             $('#log-copy-text').show().html(text + '<br><table style="width: 100%; font-size:12px" id="log-copy-table">' + $('#log-table').html() + '</table>');
             var lines = $('#log-copy-table .log-column-4');

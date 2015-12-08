@@ -340,10 +340,10 @@ function Instances(main) {
 
     this.htmlBoolean = function (value) {
         if (value === 'true' || value === true) {
-            if (!this.lTrue) this.lTrue = '<span style="color:green;font-weight:bold">' + _('true') + '</span>';
+            if (!this.lTrue) this.lTrue = '<span class="true">' + _('true') + '</span>';
             return this.lTrue;
         } else if (value === 'false' || value === false) {
-            if (!this.lFalse) this.lFalse = '<span style="color:red">' + _('false') + '</span>';
+            if (!this.lFalse) this.lFalse = '<span class="false">' + _('false') + '</span>';
             return this.lFalse;
         } else {
             return value;
@@ -388,12 +388,12 @@ function Instances(main) {
                     host:      obj.common ? obj.common.host : '',
                     mode:      obj.common.mode,
                     schedule:  obj.common.mode === 'schedule' ? obj.common.schedule : '',
-                    buttons:   '<button data-instance-id="' + this.list[i] + '" class="instance-settings" data-instance-href="/adapter/' + adapter + '/?' + instance + '" >' + _('config') + '</button>' +
-                               '<button data-instance-id="' + this.list[i] + '" class="instance-edit">'   + _('edit')   + '</button>' +
-                               '<button data-instance-id="' + this.list[i] + '" class="instance-reload">' + _('reload') + '</button>' +
-                               '<button data-instance-id="' + this.list[i] + '" class="instance-del">'    + _('delete') + '</button>' +
-                               '<button data-instance-id="' + this.list[i] + '" class="instance-ok-submit"     style="display:none">' + _('ok')     + '</button>' +
-                               '<button data-instance-id="' + this.list[i] + '" class="instance-cancel-submit" style="display:none">' + _('cancel') + '</button>',
+                    buttons:   '<button data-instance-id="' + this.list[i] + '" class="instance-settings" data-instance-href="/adapter/' + adapter + '/?' + instance + '" ></button>' +
+                               '<button data-instance-id="' + this.list[i] + '" class="instance-edit"></button>' +
+                               '<button data-instance-id="' + this.list[i] + '" class="instance-reload"></button>' +
+                               '<button data-instance-id="' + this.list[i] + '" class="instance-del"></button>' +
+                               '<button data-instance-id="' + this.list[i] + '" class="instance-ok-submit"     style="display:none"></button>' +
+                               '<button data-instance-id="' + this.list[i] + '" class="instance-cancel-submit" style="display:none"></button>',
                     platform:  obj.common ? obj.common.platform : '',
                     loglevel:  obj.common ? obj.common.loglevel : '',
                     alive:     this.main.states[obj._id + '.alive'] ? this.htmlBoolean(this.main.states[obj._id + '.alive'].val) : '',
@@ -495,7 +495,7 @@ function Instances(main) {
             $e.button({
                 icons: {primary: 'ui-icon-pencil'},
                 text:  false
-            }).css('width', '22px').css('height', '18px');
+            }).css({width: 22, height: 18}).attr('title', _('edit'));
         }
 
         $e = $('.instance-settings' + id).unbind('click')
@@ -526,12 +526,13 @@ function Instances(main) {
                     .dialog('option', 'width',  width)
                     .dialog('option', 'height', height)
                     .dialog('open');
+                that.$dialogConfig.parent().find('.ui-widget-header button .ui-button-text').html('');
 
                 if (that.main.config['adapter-config-top-'  + name])   that.$dialogConfig.parent().css({top: that.main.config['adapter-config-top-' + name]});
                 if (that.main.config['adapter-config-left-' + name])   that.$dialogConfig.parent().css({left: that.main.config['adapter-config-left-' + name]});
             });
         if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({icons: {primary: 'ui-icon-note'}, text: false}).css('width', '22px').css('height', '18px');
+            $e.button({icons: {primary: 'ui-icon-note'}, text: false}).css({width: 22, height: 18}).attr('title', _('config'));
         }
         $e = $('.instance-reload' + id).unbind('click')
             .click(function () {
@@ -540,7 +541,7 @@ function Instances(main) {
                 });
             });
         if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18});
+            $e.button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).attr('title', _('reload'));
         }
         $e = $('.instance-del' + id).unbind('click')
             .click(function () {
@@ -556,12 +557,12 @@ function Instances(main) {
                 }
             });
         if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({icons: {primary: 'ui-icon-trash'}, text: false}).css('width', '22px').css('height', '18px');
+            $e.button({icons: {primary: 'ui-icon-trash'}, text: false}).css({width: 22, height: 18}).attr('title', _('delete'));
         }
         $e = $('.instance-ok-submit' + id).unbind('click').button({
             icons: {primary: 'ui-icon-check'},
             text:  false
-        }).css('width', '22px').css('height', '18px').click(function () {
+        }).css({width: 22, height: 18}).attr('title', _('ok')).click(function () {
             var id = $(this).attr('data-instance-id');
             $('.instance-edit').show();
             $('.instance-settings').show();
@@ -607,7 +608,7 @@ function Instances(main) {
             }, 100);
         });
         if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({icons: {primary: 'ui-icon-note'}, text: false}).css('width', '22px').css('height', '18px');
+            $e.button({icons: {primary: 'ui-icon-note'}, text: false}).css({width: 22, height: 18}).attr('title', _('ok'));
         }
         $e = $('.instance-cancel-submit' + id).unbind('click').click(function () {
             var id = $(this).attr('data-instance-id');
@@ -663,7 +664,7 @@ function Instances(main) {
             $e.button({
                 icons: {primary: 'ui-icon-close'},
                 text:  false
-            }).css('width', '22px').css('height', '18px');
+            }).css({width: 22, height: 18}).attr('title', _('cancel'));
         }
         $('.instance-image' + id).each(function () {
             if (!$(this).data('installed')) {

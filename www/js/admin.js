@@ -452,8 +452,8 @@ $(document).ready(function () {
                 $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
 
                 $('#tabs ul.ui-tabs-nav')
-                    .append('<button class="menu-button" id="button-logout">' + _('Logout') + '</button>' +
-                        '<button class="menu-button" id="button-system">' + _('System') + '</button>' +
+                    .append('<button class="menu-button" id="button-logout" title="' + _('Logout') + '"></button>' +
+                        '<button class="menu-button" id="button-system" title="' + _('System') + '"></button>' +
                         '<div id="current-user" class="menu-button" style="padding-right: 10px; padding-top: 5px; height: 16px"></div>' +
                         '<button class="menu-button" id="button-edit-tabs"></button>' +
                         '<select id="tabs-show"></select>');
