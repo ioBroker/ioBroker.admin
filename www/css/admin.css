@@ -229,13 +229,13 @@ table#events {
     text-align: right;
 }
 .log-column-2 {
-    width: 123px;
+    width: 150px;
     font-weight: normal;
     text-align: center;
     white-space: nowrap;
 }
 .log-column-3 {
-    width: 67px;
+    width: 75px;
     text-align: center;
     font-weight: bold;
 }

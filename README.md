@@ -15,8 +15,15 @@ user interface for configuration and administration
 
 ## Changelog
 
-### 0.7.1 (2015-12-08)
+### 0.7.1 (2015-12-14)
 * (husky-koglhof) added support for up-/download of objecttrees
+* (bluefox) disable chart if dialog closed.
+* (bluefox) store selected history type in history dialog
+* (bluefox) fix selectId dialog
+* (bluefox) fix graph
+* (bluefox) add title to index.html
+* (bluefox) change theme
+* (bluefox) fix buttons
 
 ### 0.7.0 (2015-11-15)
 * (bluefox) suport of multi history
