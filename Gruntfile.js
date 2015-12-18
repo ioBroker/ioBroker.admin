@@ -167,10 +167,10 @@ module.exports = function (grunt) {
 
     grunt.registerTask('updateReadme', function () {
         var readme = grunt.file.read('README.md');
-        var pos = readme.indexOf('## Changelog\r\n');
+        var pos = readme.indexOf('## Changelog\n');
         if (pos != -1) {
-            var readmeStart = readme.substring(0, pos + '## Changelog\r\n'.length);
-            var readmeEnd   = readme.substring(pos + '## Changelog\r\n'.length);
+            var readmeStart = readme.substring(0, pos + '## Changelog\n'.length);
+            var readmeEnd   = readme.substring(pos + '## Changelog\n'.length);
 
             if (iopackage.common && readme.indexOf(iopackage.common.version) == -1) {
                 var timestamp = new Date();
@@ -182,14 +182,14 @@ module.exports = function (grunt) {
                 if (iopackage.common.whatsNew) {
                     for (var i = 0; i < iopackage.common.whatsNew.length; i++) {
                         if (typeof iopackage.common.whatsNew[i] == 'string') {
-                            news += '* ' + iopackage.common.whatsNew[i] + '\r\n';
+                            news += '* ' + iopackage.common.whatsNew[i] + '\n';
                         } else {
-                            news += '* ' + iopackage.common.whatsNew[i].en + '\r\n';
+                            news += '* ' + iopackage.common.whatsNew[i].en + '\n';
                         }
                     }
                 }
 
-                grunt.file.write('README.md', readmeStart + '### ' + iopackage.common.version + ' (' + date + ')\r\n' + (news ? news + '\r\n\r\n' : '\r\n') + readmeEnd);
+                grunt.file.write('README.md', readmeStart + '### ' + iopackage.common.version + ' (' + date + ')\n' + (news ? news + '\n\n' : '\n') + readmeEnd);
             }
         }
     });
@@ -213,5 +213,9 @@ module.exports = function (grunt) {
         'copy',
         'jshint',
         'jscs'
+    ]);
+    grunt.registerTask('p', [
+        'replace',
+        'updateReadme'
     ]);
 };

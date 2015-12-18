@@ -15,6 +15,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.7.2 (2015-12-18)
+* (bluefox) translate "clear"-event button 
+
 ### 0.7.1 (2015-12-14)
 * (husky-koglhof) added support for up-/download of objecttrees
 * (bluefox) disable chart if dialog closed.
@@ -26,7 +29,7 @@ user interface for configuration and administration
 * (bluefox) fix buttons
 
 ### 0.7.0 (2015-11-15)
-* (bluefox) suport of multi history
+* (bluefox) support of multi history
 
 ### 0.6.6 (2015-11-02)
 * (bluefox) add support of certificates (-----BEGIN PRIVATE KEY-----)
