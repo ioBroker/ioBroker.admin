@@ -92,6 +92,7 @@ $(document).ready(function () {
             host = host || main.currentHost;
             $stdout.val('');
             $dialogCommand.dialog('open');
+            $dialogCommand.parent().find('.ui-widget-header button .ui-button-text').html('');
             stdout = '$ ./iobroker ' + cmd;
             $stdout.val(stdout);
             // genereate the unique id to coordinate the outputs
