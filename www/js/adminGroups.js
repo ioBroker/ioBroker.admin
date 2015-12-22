@@ -75,8 +75,8 @@ function Groups(main) {
         that.$dialog.dialog({
             autoOpen: false,
             modal:    true,
-            width:    440,
-            height:   820,
+            width:    512,
+            height:   830,
             buttons:  [
                 {
                     text: _('Save'),
