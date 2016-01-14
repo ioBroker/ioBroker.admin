@@ -13,7 +13,7 @@ function Instances(main) {
     this.prepare = function () {
         this.$grid.jqGrid({
             datatype: 'local',
-            colNames: ['id', 'availableModes',  '', _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('alive'), _('connected')],
+            /*colNames: ['id', 'availableModes',  '', _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('alive'), _('connected')],
             colModel: [
                 {name: '_id',       index: '_id',       hidden: true},
                 {name: 'availableModes', index:'availableModes', hidden: true},
@@ -30,6 +30,26 @@ function Instances(main) {
                 {name: 'loglevel',  index: 'loglevel',  width: 60,   align: 'center', editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}},
                 {name: 'alive',     index: 'alive',     width: 60,   align: 'center'},
                 {name: 'connected', index: 'connected', width: 60,   align: 'center'}
+            ],*/
+
+            colNames: ['id', 'availableModes',  '', _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('memlimit'), _('alive'), _('connected')],
+            colModel: [
+                {name: '_id',       index: '_id',       hidden: true},
+                {name: 'availableModes', index:'availableModes', hidden: true},
+                {name: 'image',     index: 'image',     width: 22,   editable: false, sortable: false, search: false, align: 'center'},
+                {name: 'name',      index: 'name',      width: 100},
+                {name: 'instance',  index: 'instance',  width: 70},
+                {name: 'title',     index: 'title',     width: 180,  editable: true},
+                {name: 'enabled',   index: 'enabled',   width: 50,   editable: true, edittype: 'checkbox', editoptions: {value: _('true') + ':' + _('false')}, align: 'center'},
+                {name: 'host',      index: 'host',      width: 80,   editable: true, edittype: 'select',   editoptions: ''},
+                {name: 'mode',      index: 'mode',      width: 60,   editable: true, edittype: 'select',   editoptions: {value: null}, align: 'center'},
+                {name: 'schedule',  index: 'schedule',  width: 60,   align: 'center', editable: true},
+                {name: 'buttons',   index: 'buttons',   width: 90,   align: 'center', sortable: false, search: false},
+                {name: 'platform',  index: 'platform',  width: 60,   hidden: true},
+                {name: 'loglevel',  index: 'loglevel',  width: 50,   align: 'center', editable: true, edittype: 'select', editoptions: {value: 'debug:debug;info:info;warn:warn;error:error'}},
+                {name: 'memlimit',  index: 'memlimit',  width: 40,   editable: true, search: false},
+                {name: 'alive',     index: 'alive',     width: 50,   align: 'center'},
+                {name: 'connected', index: 'connected', width: 50,   align: 'center'}
             ],
             pager:         $('#pager-instances'),
             rowNum:        100,
@@ -121,7 +141,7 @@ function Instances(main) {
             },
             resize: function () {
                 var name = $(this).data('name');
-                that.main.saveConfig('adapter-config-width-' + name, $(this).parent().width());
+                that.main.saveConfig('adapter-config-width-'  + name, $(this).parent().width());
                 that.main.saveConfig('adapter-config-height-' + name, $(this).parent().height() + 10);
             }
         });
@@ -396,6 +416,7 @@ function Instances(main) {
                                '<button data-instance-id="' + this.list[i] + '" class="instance-cancel-submit" style="display:none"></button>',
                     platform:  obj.common ? obj.common.platform : '',
                     loglevel:  obj.common ? obj.common.loglevel : '',
+                    memlimit:  obj.common ? (obj.common.memoryLimitMB || '') : '',
                     alive:     this.main.states[obj._id + '.alive'] ? this.htmlBoolean(this.main.states[obj._id + '.alive'].val) : '',
                     connected: this.main.states[obj._id + '.connected'] ? this.htmlBoolean(this.main.states[obj._id + '.connected'].val) : ''
                 });
@@ -589,12 +610,13 @@ function Instances(main) {
                 }
 
                 var obj = {common:{}};
-                obj.common.host     = _obj.host;
-                obj.common.loglevel = _obj.loglevel;
-                obj.common.schedule = _obj.schedule;
-                obj.common.enabled  = _obj.enabled;
-                obj.common.mode     = _obj.mode;
-                obj.common.title    = _obj.title;
+                obj.common.host          = _obj.host;
+                obj.common.loglevel      = _obj.loglevel;
+                obj.common.memoryLimitMB = _obj.memlimit;
+                obj.common.schedule      = _obj.schedule;
+                obj.common.enabled       = _obj.enabled;
+                obj.common.mode          = _obj.mode;
+                obj.common.title         = _obj.title;
 
                 if (obj.common.enabled === _('true'))  obj.common.enabled = true;
                 if (obj.common.enabled === _('false')) obj.common.enabled = false;
@@ -695,6 +717,6 @@ function Instances(main) {
     };
 
     this.resize = function (width, height) {
-        this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
+        this.$grid.setGridHeight(height - 150).setGridWidth(width);
     };
 }

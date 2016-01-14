@@ -48,6 +48,7 @@ systemDictionary = {
     "mode":                 {"en": "mode",                  "de": "Modus",                  "ru": "Режим"},
     "config":               {"en": "Settings",              "de": "Konfiguration",          "ru": "настроить"},
     "loglevel":             {"en": "loglevel",              "de": "Log Stufe",              "ru": "Уровень"},
+    "memlimit":             {"en": "RAM limit",             "de": "RAM Limit",              "ru": "Макс. RAM"},
     "alive":                {"en": "alive",                 "de": "Läuft",                  "ru": "Активен"},
     "connected":            {"en": "connected",             "de": "Verbunden",              "ru": "Соединение"},
     "groups":               {"en": "groups",                "de": "Gruppen",                "ru": "Группы"},
