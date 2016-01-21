@@ -1859,7 +1859,7 @@ $(document).ready(function () {
         id = id ? id.replace(/ /g, '_') : '';
 
         if (id && id.match(/\.messagebox$/)) {
-            addEventMessage(id, state);
+            main.addEventMessage(id, state);
         } else {
             tabs.states.stateChange(id, state);
             tabs.objects.stateChange(id, state);
@@ -1899,7 +1899,7 @@ $(document).ready(function () {
         }
 
         // update to event table
-        addEventMessage(id, null, null, obj);
+        main.addEventMessage(id, null, null, obj);
 
         tabs.objects.objectChange(id, obj);
 

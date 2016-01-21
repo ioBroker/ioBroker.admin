@@ -16,10 +16,6 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: pkg,
-        clean: {
-            all: ['tmp/*.json', 'tmp/*.zip', 'tmp/*.jpg', 'tmp/*.jpeg', 'tmp/*.png',
-                  dstDir + '*.json', dstDir + '*.zip', dstDir + '*.jpg', dstDir + '*.jpeg', dstDir + '*.png']
-        },
         replace: {
             core: {
                 options: {
@@ -99,69 +95,6 @@ module.exports = function (grunt) {
                 dest: dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.png'
 
             }
-        },
-        compress: {
-            adapter: {
-                options: {
-                    archive: dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.zip'
-                },
-                files: [
-                    {
-                        expand: true,
-                        src: ['**', '!tasks/*', '!Gruntfile.js', '!node_modules/**/*', '!build/**/*'],
-                        dest: '/',
-                        cwd: srcDir
-                    }
-                ]
-            },
-            adapterOffline: {
-                options: {
-                    archive: dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.zip'
-                },
-                files: [
-                    {
-                        expand: true,
-                        src: ['**',
-                            '!tasks/*',
-                            '!Gruntfile.js',
-                            '!build/**/*',
-                            '!node_modules/grunt/**/*',
-                            '!node_modules/grunt*/**/*'
-                        ],
-                        dest: '/',
-                        cwd: srcDir
-                    }
-                ]
-            }
-        },
-        exec: {
-            npm: {
-                cmd: 'npm install'
-            }
-        },
-        copy: {
-            json: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: srcDir,
-                        src: ['io-package.json'],
-                        dest: dstDir,
-                        rename: function (dest, src) {
-                            return dstDir + 'ioBroker.adapter.offline.' + iopackage.common.name + '.json';
-                        }
-                    },
-                    {
-                        expand: true,
-                        cwd: srcDir,
-                        src: ['io-package.json'],
-                        dest: dstDir,
-                        rename: function (dest, src) {
-                            return dstDir + 'ioBroker.adapter.' + iopackage.common.name + '.json';
-                        }
-                    }
-                ]
-            }
         }
     });
 
@@ -198,19 +131,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-jscs');
     grunt.loadNpmTasks('grunt-http');
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-compress');
-    grunt.loadNpmTasks('grunt-exec');
-    grunt.loadNpmTasks('grunt-contrib-copy');
 
     grunt.registerTask('default', [
-        'exec',
         'http',
-        'clean',
         'replace',
         'updateReadme',
-        'compress',
-        'copy',
         'jshint',
         'jscs'
     ]);

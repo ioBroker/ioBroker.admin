@@ -15,6 +15,10 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.7.3 (2016-01-21)
+* (bluefox) fix groups dialog
+* (bluefox) allow set max memory limit for adapters
+
 ### 0.7.2 (2015-12-18)
 * (bluefox) translate "clear"-event button 
 
