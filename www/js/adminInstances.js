@@ -512,6 +512,8 @@ function Instances(main) {
         var $e = $('.instance-edit' + id).unbind('click').click(function () {
             that.onEdit($(this).attr('data-instance-id'));
         });
+
+
         if (!$e.find('.ui-button-icon-primary').length) {
             $e.button({
                 icons: {primary: 'ui-icon-pencil'},
@@ -555,6 +557,13 @@ function Instances(main) {
         if (!$e.find('.ui-button-icon-primary').length) {
             $e.button({icons: {primary: 'ui-icon-note'}, text: false}).css({width: 22, height: 18}).attr('title', _('config'));
         }
+		$e.each(function () {
+            var _id = $(this).attr('data-instance-id');
+            if (main.objects[_id] && main.objects[_id].common && main.objects[_id].common.noConfig) {
+                $(this).button('disable');
+            }
+        });
+		
         $e = $('.instance-reload' + id).unbind('click')
             .click(function () {
                 that.main.socket.emit('extendObject', $(this).attr('data-instance-id'), {}, function (err) {
