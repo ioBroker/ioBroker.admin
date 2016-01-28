@@ -1,16 +1,18 @@
 function Logs(main) {
-    var that = this;
+    var that =                 this;
+    this.main =                main;
+    this.logLimit =            2000; //const
 
-    this.curRepository = null;
-    this.curRepoLastUpdate = null;
-    this.curInstalled = null;
-    this.list = [];
-    this.main = main;
-
-    this.logLinesCount =         0;
-    this.logLinesStart =         0;
-    this.logHosts =              [];
-    this.logFilterTimeout =      null;
+    this.logLinesCount =       0;
+    this.logLinesStart =       0;
+    this.logHosts =            [];
+    this.logFilterTimeout =    null;
+    
+    this.logPauseList =        [];
+    this.logPauseMode =        false;
+    this.logPauseOverflow =    false;
+    this.logPauseCounterSpan = null;
+    this.logPauseCounter =     [];
 
 
     this.prepare = function () {
@@ -45,11 +47,21 @@ function Logs(main) {
                     });
                 }
             });
-        }).css({width: 20, height: 20}).addClass("ui-state-error");
+        }).css({width: 20, height: 20}).addClass('ui-state-error');
 
         $('#log-refresh').button({icons:{primary: 'ui-icon-refresh'}, text: false}).click(function () {
             that.clear();
         }).css({width: 20, height: 20});
+
+        $('#log-pause')
+            .button({icons:{primary: 'ui-icon-pause'}, text: false})
+            .css({height: 20})
+            .attr('title', _('Pause output'))
+            .click(function () {
+                that.pause();
+            });
+
+        this.logPauseCounterSpan = $('#log-pause .ui-button-text');
 
         $('#log-clear').button({icons:{primary: 'ui-icon-trash'}, text: false}).click(function () {
             that.clear(false);
@@ -143,8 +155,24 @@ function Logs(main) {
     };
 
     this.add = function (message) {
+        if (this.logPauseMode) {
+            this.logPauseList.push(message);
+            this.logPauseCounter++;
+
+            if (this.logPauseCounter > this.logLimit) {
+                if (!this.logPauseOverflow) {
+                    $('#log-pause').addClass('ui-state-error')
+                        .attr('title', _('Message buffer overflow. Losing oldest'));
+                    this.logPauseOverflow = true;
+                }
+                this.logPauseList.shift();
+            }
+            this.logPauseCounterSpan.html(this.logPauseCounter);
+            return;
+        }
+
         //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
-        if (this.logLinesCount >= 2000) {
+        if (this.logLinesCount >= this.logLimit) {
             var line = document.getElementById('log-line-' + (this.logLinesStart + 1));
             if (line) line.outerHTML = '';
             this.logLinesStart++;
@@ -244,5 +272,32 @@ function Logs(main) {
                 that.init();
             }, 0);
         }
-    }
+    };
+
+    this.pause = function () {
+        if (!this.logPauseMode) {
+            $('#log-pause')
+                .addClass('ui-state-focus')
+                .button('option', 'text', true)
+                .button('option', 'icons', {primary: null});
+
+            this.logPauseCounterSpan = $('#log-pause .ui-button-text');
+            this.logPauseCounterSpan.html('0').css({'padding-top': '1px', 'padding-bottom': '0px'});
+            this.logPauseCounter  = 0;
+            this.logPauseMode     = true;
+        } else {
+            this.logPauseMode     = false;
+            for (var i = 0; i < this.logPauseList.length; i++) {
+                this.add(this.logPauseList[i]);
+            }
+            this.logPauseOverflow = false;
+            this.logPauseList     = [];
+            this.logPauseCounter  = 0;
+
+            $('#log-pause')
+                .removeClass('ui-state-error ui-state-focus')
+                .attr('title', _('Pause output'))
+                .button('option', 'text', false).button('option', 'icons', {primary: 'ui-icon-pause'});
+        }
+    };
 }

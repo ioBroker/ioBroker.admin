@@ -1,16 +1,20 @@
 function Events(main) {
-    var that      = this;
-    this.main     =   main;
-    this.list     = [];
-    this.$table   = $('#event-table');
+    var that =                   this;
+    this.main =                  main;
+    this.$table =                $('#event-table');
 
-    var eventsLinesCount =      0;
-    var eventsLinesStart =      0;
-    var eventTypes =            [];
-    var eventFroms =            [];
-    var eventFilterTimeout =    null;
+    var eventsLinesCount =       0;
+    var eventsLinesStart =       0;
+    var eventTypes =             [];
+    var eventFroms =             [];
+    var eventFilterTimeout =     null;
 
-
+    this.eventLimit =            500;
+    this.eventPauseList =        [];
+    this.eventPauseMode =        false;
+    this.eventPauseOverflow =    false;
+    this.eventPauseCounterSpan = null;
+    this.eventPauseCounter =     [];
 
     this.prepare = function () {
         $('#event-filter-type').change(filterEvents);
@@ -47,6 +51,16 @@ function Events(main) {
             }
         });
 
+        $('#event-pause')
+            .button({icons:{primary: 'ui-icon-pause'}, text: false})
+            .css({height: 25})
+            .attr('title', _('Pause output'))
+            .click(function () {
+                that.pause();
+            });
+
+        this.eventPauseCounterSpan = $('#event-pause .ui-button-text');
+
         // bind "clear events" button
         $('#event-clear').button({
             icons: {
@@ -57,7 +71,9 @@ function Events(main) {
             eventsLinesCount = 0;
             eventsLinesStart = 0;
             $('#event-table').html('');
-        }).css({height: 28});
+        }).css({height: 25});
+
+        $('#event-clear .ui-button-text').css({'padding-top': 1, 'padding-bottom' : 0});
 
     };
 
@@ -91,12 +107,15 @@ function Events(main) {
                 }
             }
         }
-        if (eventsLinesCount >= 500) {
-            eventsLinesStart++;
-            var e = document.getElementById('event_' + eventsLinesStart);
-            if (e) e.outerHTML = '';
-        } else {
-            eventsLinesCount++;
+
+        if (!this.eventPauseMode) {
+            if (eventsLinesCount >= that.eventLimit) {
+                eventsLinesStart++;
+                var e = document.getElementById('event_' + eventsLinesStart);
+                if (e) e.outerHTML = '';
+            } else {
+                eventsLinesCount++;
+            }
         }
 
         if (state) {
@@ -109,7 +128,7 @@ function Events(main) {
                 eventFroms.sort();
                 $('#event-filter-from').html('<option value="">' + _('all') + '</option>');
                 for (var i = 0; i < eventFroms.length; i++) {
-                    var e = eventFroms[i].replace('.', '-')
+                    var e = eventFroms[i].replace('.', '-');
                     $('#event-filter-from').append('<option value="' + e + '" ' + ((e == fromFilter) ? 'selected' : '') + '>' + eventFroms[i] + '</option>');
                 }
             }
@@ -160,8 +179,23 @@ function Events(main) {
         text += '<td class="event-column-7">' + lc    + '</td>';
         text += '</tr>';
 
-        this.$table.prepend(text);
-    }
+        if (this.eventPauseMode) {
+            this.eventPauseList.push(text);
+            this.eventPauseCounter++;
+
+            if (this.eventPauseCounter > this.eventLimit) {
+                if (!this.eventPauseOverflow) {
+                    $('#event-pause').addClass('ui-state-error')
+                        .attr('title', _('Message buffer overflow. Losing oldest'));
+                    this.eventPauseOverflow = true;
+                }
+                this.eventPauseList.shift();
+            }
+            this.eventPauseCounterSpan.html(this.eventPauseCounter);
+        } else {
+            this.$table.prepend(text);
+        }
+    };
 
     function filterEvents() {
         if (eventFilterTimeout) {
@@ -205,6 +239,40 @@ function Events(main) {
 
     this.resize = function (width, height) {
         $('#grid-events-inner').css('height', (height - 130) + 'px');
+    };
+
+    this.pause = function () {
+        if (!this.eventPauseMode) {
+            $('#event-pause')
+                .addClass('ui-state-focus')
+                .button('option', 'text', true)
+                .button('option', 'icons', {primary: null});
+
+            this.eventPauseCounterSpan = $('#event-pause .ui-button-text');
+            this.eventPauseCounterSpan.html('0').css({'padding-top': '1px', 'padding-bottom': '0px'});
+            this.eventPauseCounter  = 0;
+            this.eventPauseMode     = true;
+        } else {
+            this.eventPauseMode     = false;
+            for (var i = 0; i < this.eventPauseList.length; i++) {
+                if (eventsLinesCount >= 500) {
+                    eventsLinesStart++;
+                    var e = document.getElementById('event_' + eventsLinesStart);
+                    if (e) e.outerHTML = '';
+                } else {
+                    eventsLinesCount++;
+                }
+                this.$table.prepend(this.eventPauseList[i]);
+            }
+            this.eventPauseOverflow = false;
+            this.eventPauseList     = [];
+            this.eventPauseCounter  = 0;
+
+            $('#event-pause')
+                .removeClass('ui-state-error ui-state-focus')
+                .attr('title', _('Pause output'))
+                .button('option', 'text', false).button('option', 'icons', {primary: 'ui-icon-pause'});
+        }
     };
 }
 

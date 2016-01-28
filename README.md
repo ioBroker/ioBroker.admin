@@ -15,6 +15,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.7.4 (2016-01-28)
+* (bluefox) pause button for logs and events
+
 ### 0.7.3 (2016-01-21)
 * (bluefox) fix groups dialog
 * (bluefox) allow set max memory limit for adapters

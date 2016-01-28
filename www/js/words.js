@@ -351,6 +351,12 @@ systemDictionary = {
     "Add new field":        {"en": "Add new field",         "de": "Neues Attribut hinzufügen", "ru": "Добавить атрибут"},
     "Add new object: ":     {"en": "Add new object: ",      "de": "Neues Objekt hinzufügen: ", "ru": "Добавить новый объект: "},
     "Question":             {"en": "Question",              "de": "Frage",                  "ru": "Вопрос"},
+    "Pause output":         {"en": "Pause output",          "de": "Ausgabe pausieren",      "ru": "Задержать вывод сообщений"},
+    "Message buffer overflow. Losing oldest":     {
+        "en": "Message buffer overflow. Losing oldest.",
+        "de": "Zu viele Meldungen. Äleste werden gelöscht.",
+        "ru": "Слишком много сообщений. Старые выбрасываются."
+    },
     "Add certificate from file": {
         "en": "Add certificate from file",
         "de": "Zertifikat aus der Datei hinzufügen",

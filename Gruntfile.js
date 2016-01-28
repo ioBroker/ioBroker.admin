@@ -105,7 +105,7 @@ module.exports = function (grunt) {
             var readmeStart = readme.substring(0, pos + '## Changelog\n'.length);
             var readmeEnd   = readme.substring(pos + '## Changelog\n'.length);
 
-            if (iopackage.common && readme.indexOf(iopackage.common.version) == -1) {
+            if (readme.indexOf(version) == -1) {
                 var timestamp = new Date();
                 var date = timestamp.getFullYear() + '-' +
                     ("0" + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
@@ -122,7 +122,7 @@ module.exports = function (grunt) {
                     }
                 }
 
-                grunt.file.write('README.md', readmeStart + '### ' + iopackage.common.version + ' (' + date + ')\n' + (news ? news + '\n\n' : '\n') + readmeEnd);
+                grunt.file.write('README.md', readmeStart + '### ' + version + ' (' + date + ')\n' + (news ? news + '\n\n' : '\n') + readmeEnd);
             }
         }
     });
