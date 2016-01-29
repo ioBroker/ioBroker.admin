@@ -454,7 +454,7 @@ $(document).ready(function () {
                         '<select id="tabs-show"></select>');
 
                 if (showTabs) {
-                    $('#tabs-show').html('<option value="">' + _('Show...') + '</option>' + showTabs).show()
+                    $('#tabs-show').html('<option value="">' + _('Show...') + '</option>' + showTabs).show();
 
                     $('#tabs-show').selectmenu({
                         width: 150,
@@ -589,11 +589,9 @@ $(document).ready(function () {
         var addTabs = [];
         for (var i = 0; i < main.instances.length; i++) {
             if (!main.objects[main.instances[i]].common ||
-                !main.objects[main.instances[i]].common.adminTab ||
-                !(main.objects[main.instances[i]].common.enabled || main.objects[main.instances[i]].common.adminTab.singleton)) continue;
+                !main.objects[main.instances[i]].common.adminTab) continue;
 
             if (main.objects[main.instances[i]].common.adminTab.singleton) {
-                addTabs.indexOf() == -1
                 var isFound = false;
                 var inst1 = main.instances[i].replace(/\.(\d+)$/, '.');
                 for (var j = 0; j < addTabs.length; j++) {
@@ -609,7 +607,7 @@ $(document).ready(function () {
             }
         }
 
-        // Build the standart tabs together
+        // Build the standard tabs together
         $('.admin-tab').each(function () {
             list.push($(this).attr('id'));
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf($(this).attr('id')) != -1) {
@@ -630,7 +628,7 @@ $(document).ready(function () {
         // Look for adapter tabs
         for (var a = 0; a < addTabs.length; a++) {
             var name = 'tab-' + main.objects[addTabs[a]].common.name;
-            var link = main.objects[addTabs[a]].common.adminTab.link || '';
+            var link = main.objects[addTabs[a]].common.adminTab.link || '/adapter/' + main.objects[addTabs[a]].common.name + '/tab.html';
             var parts = addTabs[a].split('.');
             var buttonName;
 
