@@ -1920,7 +1920,7 @@ $(document).ready(function () {
         tabs.instances.objectChange(id, obj);
 
         if (id.match(/^system\.adapter\.[\w-]+\.[0-9]+$/)) {
-            if (obj && obj.common && obj.common.adminTab) {
+            if (obj && obj.common && obj.common.adminTab && !obj.common.adminTab.ignoreConfigUpdate) {
                 initTabs();
             }
         }
