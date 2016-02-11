@@ -909,7 +909,7 @@ $(document).ready(function () {
             height:        480,
             closeOnEscape: false,
             open: function (event, ui) {
-                $(".ui-dialog-titlebar-close", ui.dialog || ui).hide();
+                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                 $('#stdout').width($(this).width() - 10).height($(this).height() - 20);
             },
             resize: function (event, ui) {

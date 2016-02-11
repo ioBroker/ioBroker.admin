@@ -21,6 +21,12 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.7.5 (2016-02-11)
+* (bluefox) support of text2command
+* (bluefox) support of noConfig flag
+* (bluefox) fix tabs
+* (bluefox) add support of adminTab.ignoreConfigUpdate
+
 ### 0.7.4 (2016-01-28)
 * (bluefox) pause button for logs and events
 
