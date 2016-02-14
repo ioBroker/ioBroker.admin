@@ -1,17 +1,17 @@
 function Enums(main) {
-    var that            = this;
-    this.main           = main;
-    this.list           = [];
-    this.$grid          = $('#grid-enums');
-    that.$gridMembers   = $('#grid-enum-members');
-    this.enumEdit       = null;
-    
-    var $dialogEnumMembers =    $('#dialog-enum-members');
-    var $dialogEnum =           $('#dialog-enum');
-    var enumCurrentParent =     '';
-    var tasks = [];
-    this.updateTimers   = null;
-    
+    var that               = this;
+    this.main              = main;
+    this.list              = [];
+    this.$grid             = $('#grid-enums');
+    this.$gridMembers      = $('#grid-enum-members');
+    this.enumEdit          = null;
+    this.updateTimers      = null;
+
+    var $dialogEnumMembers = $('#dialog-enum-members');
+    var $dialogEnum        = $('#dialog-enum');
+    var enumCurrentParent  = '';
+    var tasks              = [];
+
     
     function enumRename(oldId, newId, newName, callback) {
         if (tasks.length) {
@@ -95,7 +95,6 @@ function Enums(main) {
         }
     }
 
-
     function enumAddChild(parent, newId, name) {
         if (main.objects[newId]) {
             main.showMessage(_('Name yet exists!'), '', 'notice');
@@ -112,6 +111,7 @@ function Enums(main) {
         });
         return true;
     }
+
     function enumMembers(id) {
         that.enumEdit = id;
         $dialogEnumMembers.dialog('option', 'title', id);
@@ -297,11 +297,8 @@ function Enums(main) {
             return;
         }
 
-        if (typeof this.$grid !== 'undefined' && (!this.$grid[0]._isInited || update)) {
-            //var gridEnumsData = [];
-            //var i;
-            //that.$grid.jqGrid('clearGridData');
-            this.$grid[0]._isInited = true;
+        if (typeof this.$grid !== 'undefined' && (!this.$grid.data('inited') || update)) {
+            this.$grid.data('inited', true);
 
             var x = $(window).width();
             var y = $(window).height();

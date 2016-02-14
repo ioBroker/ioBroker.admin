@@ -38,6 +38,8 @@
              panelButtons: null,   // array with buttons, that should be shown at the top of dialog (near expand all)
              list:       false,    // tree view or list view
              name:       null,     // name of the dialog to store filter settings
+             noCopyToClipboard: false, // do not show button for copy to clipboard
+             root:       null,     // root node, e.g. "script.js"
              texts: {
                  select:   'Select',
                  cancel:   'Cancel',
@@ -491,7 +493,7 @@
             textTypes += '</select>';
         }
 
-        var text = '<div id="' + data.instance + '-div" style="width:100%; height:100%"><table id="selectID_header_' + data.instance + '" style="width: 100%;padding:0; height: 50" cellspacing="0" cellpadding="0">';
+        var text = '<div id="' + data.instance + '-div" style="width:100%; height:100%"><table id="selectID_header_' + data.instance + '" style="width: 100%; padding: 0; height: 50px" cellspacing="0" cellpadding="0">';
         text += '<colgroup>';
         text += '            <col width="1px"/>';
         text += '            <col width="400px"/>';
@@ -537,23 +539,23 @@
             }
         }
 
-        text += '<td style="width: 100%; text-align: center; font-weight: bold">' + data.texts.id + '</td></tr></table></th>';
+        text += '<td class="ui-widget" style="width: 100%; text-align: center; font-weight: bold; font-size: medium">' + data.texts.id + '</td></tr></table></th>';
 
         for (c = 0; c < data.columns.length; c++) {
-            text += '<th>' + (data.texts[data.columns[c]] || '') + '</th>';
+            text += '<th class="ui-widget" style="font-size: medium">' + (data.texts[data.columns[c]] || '') + '</th>';
         }
 
         text += '<th></th></tr>';
         text += '        </thead>';
         text += '        <tbody>';
         text += '            <tr><td></td>';
-        text += '               <td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%;padding:0" type="text" id="filter_ID_'    + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_ID_'    + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
+        text += '               <td><table style="width: 100%"><tr><td style="width: 100%"><input style="width: 100%;padding:0" type="text" id="filter_ID_'    + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_ID_'    + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
 
         for (c = 0; c < data.columns.length; c++) {
             if (data.columns[c] == 'image') {
                 text += '<td></td>';
             } else if (data.columns[c] == 'name' || data.columns[c] == 'value' || data.columns[c] == 'enum') {
-                text += '<td><table style="width:100%"><tr><td style="width:100%"><input style="width:100%;padding:0" type="text" id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
+                text += '<td><table style="width: 100%"><tr><td style="width: 100%"><input style="width: 100%; padding: 0" type="text" id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
             } else if (data.columns[c] == 'type') {
                 text += '<td>' + textTypes + '</td>';
             } else if (data.columns[c] == 'role') {
@@ -583,8 +585,9 @@
         text += '        </tbody>';
         text += '    </table>';
 
-        text += '<div style="width: 100%; height: ' + (data.buttons ? 100 : 85) + '%;padding:0; overflow-y: scroll">';
-        text +=' <table id="selectID_' + data.instance + '" style="width: 100%;padding:0;table-layout:fixed; overflow:hidden;white-space:nowrap" cellspacing="0" cellpadding="0">';
+        //text += '<div style="width: 100%; height: ' + (data.buttons ? 100 : 85) + '%; padding:0; overflow-y: scroll">';
+        text += '<div style="width: 100%; height: ' + (data.buttons ? 'calc(100% - 50px)' : 'calc(100% - 50px)') + '; padding:0; overflow-y: scroll">';
+        text +=' <table id="selectID_' + data.instance + '" style="width: calc(100% - 5px);padding:0;table-layout:fixed; overflow:hidden;white-space:nowrap" cellspacing="0" cellpadding="0">';
         text += '        <colgroup>';
         text += '            <col width="1px"/>';
         text += '            <col width="400px"/>';
@@ -703,13 +706,19 @@
                 if (data.filter && data.filter.type == 'state' && (!data.objects[node.key] || data.objects[node.key].type != 'state')) {
                     $tdList.eq(1).find('.fancytree-checkbox').hide();
                 }
+
                 $tdList.eq(1)
                     .addClass('clippy')
                     .data('clippy', node.key)
-                    .css({position: 'relative'})
-                    .data('copyTpClipboard', data.texts.copyTpClipboard)
-                    .mouseenter(clippyShow)
-                    .mouseleave(clippyHide);
+                    .css({position: 'relative'});
+
+                if (!data.noCopyToClipboard) {
+                    $tdList.eq(1)
+                        .data('copyTpClipboard', data.texts.copyTpClipboard)
+                        .mouseenter(clippyShow)
+                        .mouseleave(clippyHide);
+                }
+
 
                 for (var c = 0; c < data.columns.length; c++) {
                     if (data.columns[c] == 'image') {
@@ -812,11 +821,16 @@
                                 .text(state.val)
                                 .attr('title', fullVal)
                                 .addClass('clippy')
-                                .css({position: 'relative'})
-                                .data('clippy', state.val)
-                                .data('copyTpClipboard', data.texts.copyTpClipboard)
-                                .mouseenter(clippyShow)
-                                .mouseleave(clippyHide).css({color: state.ack ? '' : 'red'});
+                                .css({position: 'relative'});
+
+
+                            if (!data.noCopyToClipboard) {
+                                $tdList.eq(base)
+                                    .data('clippy', state.val)
+                                    .data('copyTpClipboard', data.texts.copyTpClipboard)
+                                    .mouseenter(clippyShow)
+                                    .mouseleave(clippyHide).css({color: state.ack ? '' : 'red'});
+                            }
                         } else {
                             $tdList.eq(base)
                                 .text('')
@@ -1377,7 +1391,7 @@
                 selectAll: 'Select all',
                 unselectAll: 'Unselect all',
                 invertSelection: 'Invert selection',
-                copyTpClipboard: "Copy to clipboard"
+                copyTpClipboard: 'Copy to clipboard'
             }, settings.texts);
 
             var that = this;
