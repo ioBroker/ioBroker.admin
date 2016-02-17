@@ -40,6 +40,9 @@
              name:       null,     // name of the dialog to store filter settings
              noCopyToClipboard: false, // do not show button for copy to clipboard
              root:       null,     // root node, e.g. "script.js"
+             useNameAsId: false,   // use name of object as ID
+             noColumnResize: false, // do not allow column resize
+             firstMinWidth: null,  // width if ID column, default 400
              texts: {
                  select:   'Select',
                  cancel:   'Cancel',
@@ -138,6 +141,10 @@
     }
 
     function filterId(data, id) {
+        if (data.rootExp) {
+            if (!data.rootExp.test(id)) return false;
+        }
+
         if (data.filter) {
             if (data.filter.type && data.filter.type != data.objects[id].type) return false;
 
@@ -199,10 +206,11 @@
     }
 
     function treeSplit(data, id) {
-        if (!id) {
-            console.log('AAAA');
-            return null;
+        if (!id) return null;
+        if (data.root) {
+            id = id.substring(data.root.length);
         }
+
         var parts = id.split('.');
         if (data.regexSystemAdapter.test(id)) {
             if (parts.length > 3) {
@@ -215,7 +223,7 @@
         } else if (data.regexSystemHost.test(id)) {
             parts[0] = 'system.host.' + parts[2];
             parts.splice(1, 2);
-        } else if (parts.length > 1) {
+        } else if (parts.length > 1 && !data.root) {
             parts[0] = parts[0] + '.' + parts[1];
             parts.splice(1, 1);
         }
@@ -278,9 +286,9 @@
     }
 
     function treeInsert(data, id, isExpanded, addedNodes) {
-        return _treeInsert(data.tree, data.list ? [id] : treeSplit(data, id, false), id, 0, isExpanded, addedNodes);
+        return _treeInsert(data.tree, data.list ? [id] : treeSplit(data, id, false), id, 0, isExpanded, addedNodes, data);
     }
-    function _treeInsert(tree, parts, id, index, isExpanded, addedNodes) {
+    function _treeInsert(tree, parts, id, index, isExpanded, addedNodes, data) {
         if (!index) index = 0;
 
         var num = -1;
@@ -302,7 +310,7 @@
                 fullName += ((fullName) ? '.' : '') + parts[i];
             }
             var obj = {
-                key:      fullName,
+                key:      (data.root || '') + fullName,
                 children: [],
                 title:    parts[index],
                 folder:   false,
@@ -322,7 +330,7 @@
             tree.children[num].id = id;
         } else {
             tree.children[num].expanded = tree.children[num].expanded || isExpanded;
-            _treeInsert(tree.children[num], parts, id, index + 1, isExpanded, addedNodes);
+            _treeInsert(tree.children[num], parts, id, index + 1, isExpanded, addedNodes, data);
         }
     }
 
@@ -394,8 +402,8 @@
         $(this).find('.clippy-button').remove();
     }
 
-    function installColResize($dlg) {
-        if (!$.fn.colResizable) return;
+    function installColResize(data, $dlg) {
+        if (data.noColumnResize || !$.fn.colResizable) return;
 
         var data = $dlg.data('selectId');
         if (data.$tree.is(':visible')) {
@@ -407,7 +415,7 @@
             });
         } else {
             setTimeout(function () {
-                installColResize($dlg);
+                installColResize(data, $dlg);
             }, 400)
         }
     }
@@ -590,7 +598,7 @@
         text +=' <table id="selectID_' + data.instance + '" style="width: calc(100% - 5px);padding:0;table-layout:fixed; overflow:hidden;white-space:nowrap" cellspacing="0" cellpadding="0">';
         text += '        <colgroup>';
         text += '            <col width="1px"/>';
-        text += '            <col width="400px"/>';
+        text += '            <col ' + (data.firstMinWidth ? ('width="' + data.firstMinWidth + '"') : 'width="400px"') + '/>';
 
         for (c = 0; c < data.columns.length; c++) {
             if (data.columns[c] == 'image') {
@@ -707,18 +715,19 @@
                     $tdList.eq(1).find('.fancytree-checkbox').hide();
                 }
 
-                $tdList.eq(1)
-                    .addClass('clippy')
-                    .data('clippy', node.key)
-                    .css({position: 'relative'});
-
                 if (!data.noCopyToClipboard) {
                     $tdList.eq(1)
+                        .addClass('clippy')
+                        .data('clippy', node.key)
+                        .css({position: 'relative'})
                         .data('copyTpClipboard', data.texts.copyTpClipboard)
                         .mouseenter(clippyShow)
                         .mouseleave(clippyHide);
                 }
 
+                if (data.useNameAsId && data.objects[node.key] && data.objects[node.key].common && data.objects[node.key].common.name) {
+                    $tdList.eq(1).find('.fancytree-title').html(data.objects[node.key].common.name);
+                }
 
                 for (var c = 0; c < data.columns.length; c++) {
                     if (data.columns[c] == 'image') {
@@ -1300,7 +1309,7 @@
 
         showActive($dlg);
         loadSettings(data);
-        installColResize($dlg);
+        installColResize(data, $dlg);
 
         // set preset filters
         for (var field in data.filterPresets) {
@@ -1314,18 +1323,17 @@
     }
 
     function storeSettings(data) {
-        if (data.timer) {
-            clearTimeout(data.timer);
-        }
+        if (data.timer) clearTimeout(data.timer);
+
         data.timer = setTimeout(function () {
-            if (typeof(Storage) !== "undefined" && data.name) {
+            if (typeof Storage !== 'undefined' && data.name) {
                 window.localStorage.setItem(data.name + '-filter', JSON.stringify(data.filterVals));
             }
         }, 500);
     }
 
     function loadSettings(data) {
-        if (typeof(Storage) !== "undefined" && data.name) {
+        if (typeof Storage !== 'undefined' && data.name) {
             var f = window.localStorage.getItem(data.name + '-filter');
             if (f) {
                 try{
@@ -1408,9 +1416,9 @@
                         roles:              [],
                         histories:          [],
                         types:              [],
-                        regexSystemAdapter: new RegExp('^system.adapter.'),
-                        regexSystemHost:    new RegExp('^system.host.'),
-                        regexEnumRooms:     new RegExp('^enum.rooms.'),
+                        regexSystemAdapter: new RegExp('^system\\.adapter\\.'),
+                        regexSystemHost:    new RegExp('^system\\.host\\.'),
+                        regexEnumRooms:     new RegExp('^enum\\.rooms\\.'),
                         instance:           instance++,
                         inited:             false,
                         filterPresets:      {}
@@ -1438,7 +1446,9 @@
 
                 data = $.extend(data, settings);
 
-                data.selectedID = data.currentId;
+                data.rootExp = data.root ? new RegExp('^' + data.root.replace('.', '\\.')) : null;
+
+                    data.selectedID = data.currentId;
 
                 // make a copy of filter
                 data.filter = JSON.parse(JSON.stringify(data.filter));
