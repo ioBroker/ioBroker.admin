@@ -41,6 +41,10 @@ adapter.on('objectChange', function (id, obj) {
     if (obj) {
         //console.log('objectChange: ' + id);
         objects[id] = obj;
+
+        if (id === 'system.repositories') {
+            writeUpdateInfo();
+        }
     } else {
         //console.log('objectDeleted: ' + id);
         if (objects[id]) delete objects[id];
@@ -131,46 +135,43 @@ adapter.on('log', function (obj) {
 
 function createUpdateInfo() {
     // create connected object and state
-    adapter.getObject('info.updatesNumber', function (err, obj) {
-        if (!obj || !obj.common || obj.common.type !== 'number') {
-            obj = {
-                _id:  'info.updatesNumber',
-                type: 'state',
-                common: {
-                    role:  'indicator.updates',
-                    name:  'Number of adapters to update',
-                    type:  'number',
-                    read:  true,
-                    write: false,
-                    def:   0
-                },
-                native: {}
-            };
+    var obj = objects[adapter.namespace + '.info.updatesNumber'];
 
-            adapter.setObject(obj._id, obj);
-        }
+    if (!obj || !obj.common || obj.common.type !== 'number') {
+        obj = {
+            _id:  'info.updatesNumber',
+            type: 'state',
+            common: {
+                role:  'indicator.updates',
+                name:  'Number of adapters to update',
+                type:  'number',
+                read:  true,
+                write: false,
+                def:   0
+            },
+            native: {}
+        };
 
-        // create connected object and state
-        adapter.getObject('info.updatesList', function (err, obj) {
-            if (!obj || !obj.common || obj.common.type !== 'string') {
-                obj = {
-                    _id:  'info.updatesList',
-                    type: 'state',
-                    common: {
-                        role:  'indicator.updates',
-                        name:  'Number of adapters to update',
-                        type:  'string',
-                        read:  true,
-                        write: false,
-                        def:   ''
-                    },
-                    native: {}
-                };
+        adapter.setObject(obj._id, obj);
+    }
+    obj = objects[adapter.namespace + '.info.updatesList'];
+    if (!obj || !obj.common || obj.common.type !== 'string') {
+        obj = {
+            _id:  'info.updatesList',
+            type: 'state',
+            common: {
+                role:  'indicator.updates',
+                name:  'List of adapters to update',
+                type:  'string',
+                read:  true,
+                write: false,
+                def:   ''
+            },
+            native: {}
+        };
 
-                adapter.setObject(obj._id, obj);
-            }
-        });
-    });
+        adapter.setObject(obj._id, obj);
+    }
 }
 
 // Helper methods
@@ -181,11 +182,15 @@ function upToDate(a, b) {
     b[0] = parseInt(b[0], 10);
     if (a[0] > b[0]) {
         return false;
+    } else if (a[0] < b[0]) {
+        return true;
     } else if (a[0] === b[0]) {
         a[1] = parseInt(a[1], 10);
         b[1] = parseInt(b[1], 10);
         if (a[1] > b[1]) {
             return false;
+        } else if (a[1] < b[1]) {
+            return true;
         } else if (a[1] === b[1]) {
             a[2] = parseInt(a[2], 10);
             b[2] = parseInt(b[2], 10);
@@ -197,6 +202,21 @@ function upToDate(a, b) {
 }
 
 function writeUpdateInfo(sources) {
+    if (!sources) {
+        var obj        = objects['system.repositories'];
+        var activeRepo = objects['system.config'].common.activeRepo;
+
+        if (obj && obj.native && obj.native.repositories && obj.native.repositories[activeRepo] &&
+            obj.native.repositories[activeRepo].json) {
+            sources = obj.native.repositories[activeRepo].json;
+        } else {
+            adapter.setState('info.updatesNumber', 0, true);
+            adapter.setState('info.updatesList',  '', true);
+            adapter.log.warn('No repository source configured');
+            return;
+        }
+    }
+
     var installed = tools.getInstalledInfo();
     var list  = [];
 
@@ -210,13 +230,11 @@ function writeUpdateInfo(sources) {
             }
         }
     }
-    adapter.setObject('info.updatesNumber', list.length, true);
-    adapter.setObject('info.updatesList', list.join(', '), true);
+    adapter.setState('info.updatesNumber', list.length, true);
+    adapter.setState('info.updatesList', list.join(', '), true);
 }
 
 function main() {
-    createUpdateInfo();
-
     adapter.subscribeForeignStates('*');
     adapter.subscribeForeignObjects('*');
 
@@ -579,6 +597,8 @@ function getData() {
         for (var i = 0; i < res.length; i++) {
             objects[res[i].doc._id] = res[i].doc;
         }
+        createUpdateInfo();
+        writeUpdateInfo();
     });
 }
 
@@ -1047,7 +1067,6 @@ function updateRegister() {
                 } else {
                     adapter.log.info('Repository received successfully.');
                     webServer.io.sockets.emit('repoUpdated');
-                    writeUpdateInfo(_repository);
                 }
             });
         }
