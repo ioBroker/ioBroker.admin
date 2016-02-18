@@ -21,6 +21,11 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.8.0 (2016-02-18)
+* (bluefox) move enums into own file
+* (bluefox) modify selectID.js to support new javascript layout
+* (bluefox) add new variables: admin.x.info.updatesNumber and admin.x.info.updatesList to show available updates
+
 ### 0.7.5 (2016-02-11)
 * (bluefox) support of text2command
 * (bluefox) support of noConfig flag

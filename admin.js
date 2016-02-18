@@ -8,6 +8,7 @@ var request =  require('request');
 var fs =       require('fs');
 var Stream =   require('stream');
 var utils =    require(__dirname + '/lib/utils'); // Get common adapter utils
+var tools =    require(utils.controllerDir + '/lib/tools.js');
 
 var session;
 var cookieParser;
@@ -128,7 +129,94 @@ adapter.on('log', function (obj) {
     }
 });
 
+function createUpdateInfo() {
+    // create connected object and state
+    adapter.getObject('info.updatesNumber', function (err, obj) {
+        if (!obj || !obj.common || obj.common.type !== 'number') {
+            obj = {
+                _id:  'info.updatesNumber',
+                type: 'state',
+                common: {
+                    role:  'indicator.updates',
+                    name:  'Number of adapters to update',
+                    type:  'number',
+                    read:  true,
+                    write: false,
+                    def:   0
+                },
+                native: {}
+            };
+
+            adapter.setObject(obj._id, obj);
+        }
+
+        // create connected object and state
+        adapter.getObject('info.updatesList', function (err, obj) {
+            if (!obj || !obj.common || obj.common.type !== 'string') {
+                obj = {
+                    _id:  'info.updatesList',
+                    type: 'state',
+                    common: {
+                        role:  'indicator.updates',
+                        name:  'Number of adapters to update',
+                        type:  'string',
+                        read:  true,
+                        write: false,
+                        def:   ''
+                    },
+                    native: {}
+                };
+
+                adapter.setObject(obj._id, obj);
+            }
+        });
+    });
+}
+
+// Helper methods
+function upToDate(a, b) {
+    a = a.split('.');
+    b = b.split('.');
+    a[0] = parseInt(a[0], 10);
+    b[0] = parseInt(b[0], 10);
+    if (a[0] > b[0]) {
+        return false;
+    } else if (a[0] === b[0]) {
+        a[1] = parseInt(a[1], 10);
+        b[1] = parseInt(b[1], 10);
+        if (a[1] > b[1]) {
+            return false;
+        } else if (a[1] === b[1]) {
+            a[2] = parseInt(a[2], 10);
+            b[2] = parseInt(b[2], 10);
+            return a[2] <= b[2];
+        }
+    } else {
+        return true;
+    }
+}
+
+function writeUpdateInfo(sources) {
+    var installed = tools.getInstalledInfo();
+    var list  = [];
+
+    for (var name in sources) {
+        if (installed[name] && installed[name].version && sources[name].version) {
+            if (sources[name].version != installed[name].version &&
+                !upToDate(sources[name].version, installed[name].version)) {
+                // remove first part of the name
+                var n = name.indexOf('.');
+                list.push(n === -1 ? name : name.substring(n + 1));
+            }
+        }
+    }
+    adapter.setObject('info.updatesNumber', list.length, true);
+    adapter.setObject('info.updatesList', list.join(', '), true);
+}
+
 function main() {
+    createUpdateInfo();
+
     adapter.subscribeForeignStates('*');
     adapter.subscribeForeignObjects('*');
 
@@ -847,7 +935,7 @@ function socketEvents(socket) {
         }
     });
 
-    // iobroker commands will be executed on host/controller
+    // commands will be executed on host/controller
     // following response commands are expected: cmdStdout, cmdStderr, cmdExit
     socket.on('cmdExec', function (host, id, cmd, callback) {
         if (updateSession(socket) && checkPermissions(socket, 'cmdExec', callback, cmd)) {
@@ -951,7 +1039,7 @@ function updateRegister() {
     adapter.getForeignObject('system.config', function (err, data) {
         if (data && data.common) {
             adapter.sendToHost(adapter.host, 'getRepository', {
-                repo: data.common.activeRepo,
+                repo:   data.common.activeRepo,
                 update: true
             }, function (_repository) {
                 if (_repository === 'permissionError') {
@@ -959,6 +1047,7 @@ function updateRegister() {
                 } else {
                     adapter.log.info('Repository received successfully.');
                     webServer.io.sockets.emit('repoUpdated');
+                    writeUpdateInfo(_repository);
                 }
             });
         }
