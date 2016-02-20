@@ -1194,7 +1194,7 @@
 
         $('.filter_btn_' + data.instance).button({icons: {primary: 'ui-icon-close'}, text: false}).css({width: 18, height: 18}).click(function () {
             $('#' + $(this).attr('data-id')).val('').trigger('change');
-        }).attr('title', data.texts.collapse);
+        });
 
         $('#btn_collapse_' + data.instance).button({icons: {primary: 'ui-icon-folder-collapsed'}, text: false}).css({width: 18, height: 18}).click(function () {
             $('#process_running_' + data.instance).show();
@@ -1204,7 +1204,7 @@
                 });
                 $('#process_running_' + data.instance).hide();
             }, 100);
-        });
+        }).attr('title', data.texts.collapse);
 
         $('#btn_expand_' + data.instance).button({icons: {primary: 'ui-icon-folder-open'}, text: false}).css({width: 18, height: 18}).click(function () {
             $('#process_running_' + data.instance).show();
