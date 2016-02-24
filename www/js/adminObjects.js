@@ -119,8 +119,8 @@ function Objects(main) {
         $('#dialog-new-object').dialog( {
             autoOpen:   false,
             modal:      true,
-            width:      450,
-            height:     230,
+            width:      520,
+            height:     250,
             buttons: [
                 {
                     id: 'dialog-object-tab-new',
