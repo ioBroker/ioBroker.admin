@@ -119,6 +119,7 @@ systemDictionary = {
     "message":              {"en": "message",               "de": "Nachricht",              "ru": "Сообщение"},
     "Upload":               {"en": "File upload",           "de": "Dateiupload",            "ru": "Загрузка файлов"},
     "Copy to clipboard":    {"en": "Copy to clipboard",     "de": "In die Zwischenablage kopieren", "ru": "Скопировать в буфер обмена"},
+    "Toggle expert mode":   {"en": "Toggle expert mode",    "de": "Zeige Systemobjekte",    "ru": "Показать системные объекты"},
     "process":              {"en": "process",               "de": "Prozess",                "ru": "Процесс"},
     "os":                   {"en": "os",                    "de": "Betriebssystem",         "ru": "ОС"},
     "version":              {"en": "version",               "de": "Version",                "ru": "Версия"},
@@ -244,27 +245,32 @@ systemDictionary = {
     "Device":               {"en": "Device",                "de": "Gerät",                  "ru": "Устройство"},
     "URL or file path:":    {"en": "URL or file path:",     "de": "URL oder Dateipfad:",    "ru": "URL или путь к файлу:"},
     "Debug outputs:":       {"en": "Debug outputs:",        "de": "Debug-Ausgänge:",        "ru": "Debug вывод:"},
-    "Install from custom URL": {"en": "Install from custom URL", "de": "Installieren aus eigenem URL", "ru": "Установить с собственного источника"},
+    "Install from custom URL": {
+        "en": "Install from custom URL",
+        "de": "Installieren aus eigenem URL",
+        "ru": "Установить с собственного источника"
+    },
     "Add new child object to selected parent": {
         "en": "Add new child object to selected parent",
         "de": "Ein Objekt zu selektiertem Objekt hinzufügen",
         "ru": "Добавить объект к выделенному элементу"
     },
-    "Are you sure to delete %s and all children?": {
-        "en": "Are you sure to delete \"%s\" and all children?",
-        "de": "Wollen Sie wirklich \"%s\" und alle unterliegende Objekte löschen?",
-        "ru": "Вы действительно хотите удалить \"%s\" и все нижележащие объекты?"
-    },    "Are you sure?":        {"en": "Are you sure?",         "de": "Sind sie sicher?",       "ru": "Вы уверены?"},
+    "Are you sure to delete all children of %s?": {
+        "en": 'Are you sure to delete <b>"%s"</b> and <span style="color: red; font-weight: bold">all</span> children?',
+        "de": 'Wollen Sie wirklich <b>"%s"</b> und <span style="color: red; font-weight: bold">alle</span> unterliegende Objekte löschen?',
+        "ru": 'Вы действительно хотите удалить <b>"%s"</b> и <span style="color: red; font-weight: bold">все</span> нижележащие объекты?'
+    },
+    "Are you sure?":        {"en": "Are you sure?",         "de": "Sind sie sicher?",       "ru": "Вы уверены?"},
     "Log size:":            {"en": "Log size:",             "de": "Log-Größe:",             "ru": "Размер файла протокола:"},
     "Log file will be deleted. Are you sure?": {
         "en": "Log file will be deleted. Are you sure?",
         "de": "Log/Datei wird gelöscht. Sind Sie sicher?",
         "ru": "Файл протокола будет удален. Вы уверены?"
     },
-    "Are you sure to delete": {
-        "en": "Are you sure to delete?",
-        "de": "Wollen Sie wirklich löschen?",
-        "ru": "Удалить?"},
+    "Are you sure to delete %s?": {
+        "en": 'Are you sure to delete <b>"%s"</b>?',
+        "de": 'Wollen Sie wirklich <b>"%s"</b> löschen?',
+        "ru": 'Удалить <b>"%s"</b>?'},
     "Show...":              {"en": "Show...",               "de": "Zeige...",               "ru": "Показать..."},
     "ID":                   {"en": "ID",                    "de": "ID",                     "ru": "ID"},
     "Role":                 {"en": "Role",                  "de": "Funktion",               "ru": "Роль"},
@@ -352,6 +358,19 @@ systemDictionary = {
     "Add new object: ":     {"en": "Add new object: ",      "de": "Neues Objekt hinzufügen: ", "ru": "Добавить новый объект: "},
     "Question":             {"en": "Question",              "de": "Frage",                  "ru": "Вопрос"},
     "Pause output":         {"en": "Pause output",          "de": "Ausgabe pausieren",      "ru": "Задержать вывод сообщений"},
+    "Only one":             {"en": 'Only one',              "de": 'Nur eins',               "ru": 'Только один'},
+    "_All":                 {"en": 'All',                   "de": 'Alle',                   "ru": 'Все'},
+    'Are you sure to delete <span style="color: red">all</span> children of %s?': {
+        "en": 'Are you sure to delete <span style="color: red">all</span> children of <b>%s</b>?',
+        "de": 'Wollen Sie wirklich <span style="color: red; font-weight: bold">alle</span> unterliegende Objekte von <b>"%s"</b> löschen?',
+        "ru": 'Вы действительно хотите удалить <span style="color: red; font-weight: bold">все</span> нижележащие под <b>"%s"</b> объекты?'
+    },
+    'Object "<b>%s</b>" does not exists. Update the page.': {
+        "en": 'Object "<b>%s</b>" does not exists. Update the page.',
+        "de": 'Object "<b>%s</b>" existstiert nicht. Seite updaten.',
+        "ru": 'Объекб "<b>%s</b>" не существует. Обновите страницу.'
+    },
+    "Not exists":           {"en": "Not exists",             "de": "Not exists",            "ru": "Not exists"},
     "Message buffer overflow. Losing oldest":     {
         "en": "Message buffer overflow. Losing oldest.",
         "de": "Zu viele Meldungen. Äleste werden gelöscht.",

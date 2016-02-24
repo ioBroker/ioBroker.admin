@@ -350,6 +350,8 @@ function Objects(main) {
                 states:   main.states,
                 noDialog: true,
                 name:     'admin-objects',
+                showButtonsForNotExistingObjects: true,
+                expertModeRegEx: /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin/,
                 texts: {
                     select:   _('Select'),
                     cancel:   _('Cancel'),
@@ -370,7 +372,8 @@ function Objects(main) {
                     ok:       _('Ok'),
                     with:     _('With'),
                     without:  _('Without'),
-                    copyTpClipboard: _('Copy to clipboard')
+                    copyToClipboard: _('Copy to clipboard'),
+                    expertMode: _('Toggle expert mode')
                 },
                 columns: ['image', 'name', 'type', 'role', 'room', 'value', 'button'],
                 buttons: [
@@ -381,6 +384,9 @@ function Objects(main) {
                         },
                         click: function (id) {
                             that.edit(id);
+                        },
+                        match: function (id) {
+                            if (!that.main.objects[id]) this[0].outerHTML = '<div style="width: 26px; height: 1px; display: inline-block;"></div>';
                         },
                         width: 26,
                         height: 20
@@ -495,7 +501,7 @@ function Objects(main) {
                                 if (key.search(id) == 0) result[key] = val;
                             });
                             if (result != undefined) {
-                                window.open('data:application/iobroker;content-disposition=attachment;filename=' + id + '.json,' + JSON.stringify(result));
+                                window.open('data:application/iobroker; content-disposition=attachment; filename=' + id + '.json,' + JSON.stringify(result));
                             } else {
                                 alert(_('Save of objects-tree is not possible'));
                             }
@@ -504,8 +510,26 @@ function Objects(main) {
                 ],
                 dblclick: function (id) {
                     that.edit(id);
+                },
+                quickEdit: ['name', 'value'],
+                quickEditCallback: function (id, attr, newValue, oldValue) {
+                    if (attr === 'value') {
+                        main.socket.emit('setState', id, newValue, function (err) {
+                            if (err) return that.main.showError(err);
+                        });
+                    } else {
+                        main.socket.emit('getObject', id, function (err, _obj) {
+                            if (err) return that.main.showError(err);
+
+                            _obj.common[attr] = newValue;
+                            main.socket.emit('setObject', _obj._id, _obj, function (err) {
+                                if (err) that.main.showError(err);
+                            });
+                        });
+                    }
                 }
             };
+
             $('#object-tab-new-object-name').keyup(function (){
                 $(this).trigger('change');
             }).change(function () {
@@ -514,7 +538,7 @@ function Objects(main) {
                 id = parent ? parent + '.' + id : id;
 
                 $('#dialog-new-object').dialog('option', 'title', _('Add new object: %s', id));
-            })
+            });
 
             if (this.historyEnabled) {
                 settings.customButtonFilter = {
@@ -641,7 +665,7 @@ function Objects(main) {
         if (_obj.native) delete _obj.native;
         if (_obj.acl)    delete _obj.acl;
         $('#view-object-rest').val(JSON.stringify(_obj, null, '  '));
-    }
+    };
 
     this.saveFromTabs = function () {
         var obj;

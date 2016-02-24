@@ -306,3 +306,7 @@ table#events {
     width: 12em;
     height: 12em;
 }
+
+.select-id-quick-edit:hover {
+    cursor: text;
+}

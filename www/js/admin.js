@@ -108,7 +108,44 @@ $(document).ready(function () {
                 }
             });
         },
-        confirmMessage: function (message, title, icon, callback) {
+        confirmMessage: function (message, title, icon, buttons, callback) {
+            if (typeof buttons === 'function') {
+                callback = buttons;
+                $dialogConfirm.dialog('option', 'buttons', [
+                    {
+                        text: _('Ok'),
+                        click: function () {
+                            var cb = $(this).data('callback');
+                            $(this).dialog('close');
+                            if (cb) cb(true);
+                        }
+                    },
+                    {
+                        text: _('Cancel'),
+                        click: function () {
+                            var cb = $(this).data('callback');
+                            $(this).dialog('close');
+                            if (cb) cb(false);
+                        }
+                    }
+
+                ]);
+            } else if (typeof buttons === 'object') {
+                for (var b = 0; b < buttons.length; b++) {
+                    buttons[b] = {
+                        text: buttons[b],
+                        id: 'dialog-confirm-button-' + b,
+                        click: function (e) {
+                            var id = parseInt(e.currentTarget.id.substring('dialog-confirm-button-'.length), 10);
+                            var cb = $(this).data('callback');
+                            $(this).dialog('close');
+                            if (cb) cb(id);
+                        }
+                    }
+                }
+                $dialogConfirm.dialog('option', 'buttons', buttons);
+            }
+
             $dialogConfirm.dialog('option', 'title', title || _('Message'));
             $('#dialog-confirm-text').html(message);
             if (icon) {
@@ -191,7 +228,7 @@ $(document).ready(function () {
             return text;
         },
         _delObject:     function ($tree, id, callback) {
-            var leaf = $tree.selectId('getTreeInfo', id);
+            var leaf = $tree ? $tree.selectId('getTreeInfo', id) : null;
             //var leaf = treeFindLeaf(id);
             if (leaf && leaf.children) {
                 for (var e = 0; e < leaf.children.length; e++) {
@@ -206,12 +243,12 @@ $(document).ready(function () {
                     if (callback) callback(null, id);
                 } else {
                     main.socket.emit('delObject', id, function (err) {
-                        if (err) {
+                        if (err && err != 'Not exists') {
                             main.showError(err);
                             return;
                         }
                         main.socket.emit('delState', id, function (err) {
-                            if (err) {
+                            if (err && err != 'Not exists') {
                                 main.showError(err);
                                 return;
                             }
@@ -229,9 +266,37 @@ $(document).ready(function () {
             if (hideConfirm) {
                 main._delObject($tree, id, callback);
             } else {
-                main.confirmMessage(_('Are you sure to delete %s and all children?', id), null, 'help', function (result) {
-                    if (result) main._delObject($tree, id, callback);
-                });
+                var leaf = $tree ? $tree.selectId('getTreeInfo', id) : null;
+                if (main.objects[id]) {
+                    if (leaf && leaf.children) {
+                        // ask if only object must be deleted or just this one
+                        main.confirmMessage(_('Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?', id), null, 'help', [_('_All'), _('Only one'), _('Cancel')], function (result) {
+                            // If all
+                            if (result === 0) {
+                                main._delObject($tree, id, callback);
+                            } else
+                            // if only one object
+                            if (result === 1) {
+                                main._delObject(null, id, callback);
+                            } // else do nothing
+                        });
+                    } else {
+                        main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
+                            // If all
+                            if (result) main._delObject($tree, id, callback);
+                        });
+                    }
+                } else if (leaf && leaf.children) {
+                    main.confirmMessage(_('Are you sure to delete all children of %s?', id), null, 'help', function (result) {
+                        // If all
+                        if (result) main._delObject($tree, id, callback);
+                    });
+                } else {
+                    main.showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id), null, 'help', function (result) {
+                        // If all
+                        if (result) main._delObject($tree, id, callback);
+                    });
+                }
             }
         },
         initSelectId: function () {
@@ -893,6 +958,8 @@ $(document).ready(function () {
         $dialogConfirm.dialog({
             autoOpen: false,
             modal:    true,
+            width:    450,
+            height:   200,
             buttons: [
                 {
                     text: _('Ok'),

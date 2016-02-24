@@ -35,6 +35,21 @@
              noDialog:   false,    // do not make dialog
              noMultiselect: false, // do not make multiselect
              buttons:    null,     // array with buttons, that should be shown in last column
+                                   // if array is not empty it can has following fields
+                                   // [{
+                                   //   text: false, // same as jquery button
+                                   //   icons: {     // same as jquery button
+                                   //       primary: 'ui-icon-gear'
+                                   //   },
+                                   //   click: function (id) {
+                                   //                // do on click
+                                   //   },
+                                   //   match: function (id) {
+                                   //                // you have here object "this" pointing to $('button')
+                                   //   },
+                                   //   width: 26,   // same as jquery button
+                                   //   height: 20   // same as jquery button
+                                   // }],
              panelButtons: null,   // array with buttons, that should be shown at the top of dialog (near expand all)
              list:       false,    // tree view or list view
              name:       null,     // name of the dialog to store filter settings
@@ -43,6 +58,7 @@
              useNameAsId: false,   // use name of object as ID
              noColumnResize: false, // do not allow column resize
              firstMinWidth: null,  // width if ID column, default 400
+             showButtonsForNotExistingObjects: false,
              texts: {
                  select:   'Select',
                  cancel:   'Cancel',
@@ -70,14 +86,18 @@
                  selectAll: 'Select all',
                  unselectAll: 'Unselect all',
                  invertSelection: 'Invert selection',
-                 copyTpClipboard: "Copy to clipboard",
+                 copyToClipboard: 'Copy to clipboard',
+                 expertMode: 'Toggle expert mode'
              },
              columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'value', 'button'],
              widths:    null,   // array with width for every column
              editEnd:   null,   // function (id, newValues) for edit lines (only id and name can be edited)
              editStart: null,   // function (id, $inputs) called after edit start to correct input fields (inputs are jquery objects),
              zindex:    null,   // z-index of dialog or table
-             customButtonFilter: null // if in the filter over the buttons some specific button must be shown. It has type like {icons:{primary: 'ui-icon-close'}, text: false, callback: function ()}
+             customButtonFilter: null, // if in the filter over the buttons some specific button must be shown. It has type like {icons:{primary: 'ui-icon-close'}, text: false, callback: function ()}
+             expertModeRegEx: null // list of regex with objects, that will be shown only in expert mode, like  /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin/
+             quickEdit:  null,   // list of fields with edit on click
+             quickEditCallback: null // function (id, attr, newValue, oldValue)
      }
  +  show(currentId, filter, callback) - all arguments are optional if set by "init"
  +  clear() - clear object tree to read and build anew (used only if objects set by "init")
@@ -166,6 +186,9 @@
         data.enums = [];
 
         for (var id in objects) {
+            // ignore system objects in expert mode
+            if (data.expertModeRegEx && !data.expertMode && data.expertModeRegEx.test(id)) continue;
+
             if (isRoom && objects[id].type == 'enum' && data.regexEnumRooms.test(id)) data.enums.push(id);
 
             if (isType && objects[id].type && data.types.indexOf(objects[id].type) == -1) data.types.push(objects[id].type);
@@ -386,16 +409,20 @@
         $temp.val($(this).parent().data('clippy')).select();
         document.execCommand('copy');
         $temp.remove();
+        e.preventDefault();
+        e.stopPropagation();
     }
 
     function clippyShow(e) {
-        var text = '<button class="clippy-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" ' +
-            'role="button" title="' + $(this).data('copyTpClipboard') + '" ' +
-            'style="position: absolute; right: 0; top: 0; width: 36px; height: 18px;">' +
-            '<span class="ui-button-icon-primary ui-icon ui-icon-clipboard"></span></button>';
+        if ($(this).hasClass('clippy')) {
+            var text = '<button class="clippy-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" ' +
+                'role="button" title="' + $(this).data('copyToClipboard') + '" ' +
+                'style="position: absolute; right: 0; top: 0; width: 36px; height: 18px;z-index: 1">' +
+                '<span class="ui-button-icon-primary ui-icon ui-icon-clipboard"></span></button>';
 
-        $(this).append(text);
-        $(this).find('.clippy-button').click(clippyCopy);
+            $(this).append(text);
+            $(this).find('.clippy-button').click(clippyCopy);
+        }
     }
 
     function clippyHide(e) {
@@ -420,11 +447,131 @@
         }
     }
 
+    function getStates(data, id) {
+        var states;
+        if (data.objects[id] &&
+            data.objects[id].common &&
+            data.objects[id].common.states) {
+            states = data.objects[id].common.states;
+        }
+        if (states) {
+            if (typeof states == 'string' && states[0] == '{') {
+                try {
+                    states = JSON.parse(states);
+                } catch (ex) {
+                    console.error('Cannot parse states: ' + states);
+                    states = null;
+                }
+            } else
+            // if odl format val1:text1;val2:text2
+            if (typeof states == 'string') {
+                var parts = states.split(';');
+                states = {};
+                for (var p = 0; p < parts.length; p++) {
+                    var s = parts[p].split(':');
+                    states[s[0]] = s[1];
+                }
+            }
+        }
+        return states;
+    }
+
+    function onQuickEditField(e) {
+        var $this   = $(this);
+        var id      = $this.data('id');
+        var attr    = $this.data('name');
+        var data    = $this.data('selectId');
+        var type    = $this.data('type');
+        var clippy  = $this.hasClass('clippy');
+        var states  = null;
+
+        if (clippy)  $this.removeClass('clippy');
+
+        $this.unbind('click').removeClass('select-id-quick-edit').css('position', 'relative');
+
+        var css = 'cursor: pointer; position: absolute;width: 16px; height: 16px; top: 2px; border-radius: 6px; z-index: 3; background-color: lightgray';
+        if (type === 'boolean') {
+            type = 'checkbox';
+        } else {
+            type = 'text';
+        }
+        var text = '<input style="' + (type !== 'checkbox' ? 'width: 100%;' : '') + ' z-index: 2" type="' + type + '"/>';
+
+        if (attr == 'value') {
+            states = getStates(data, id);
+            if (states) {
+                text = '<select style="width: calc(100% - 50px); z-index: 2">';
+                for (var t in states) {
+                    text += '<option value="' + t + '">' + states[t] + '</option>';
+                }
+                text += '</select>';
+            }
+        }
+
+        var timeout = null;
+
+        $this.html(text +
+            '<div class="ui-icon ui-icon-check        select-id-quick-edit-ok"     style="' + css + ';right: 22px"></div>' +
+            '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '" style="' + css + ';right: 2px"></div>');
+
+        var $input = states ? $this.find('select') : $this.find('input');
+
+        $this.find('.select-id-quick-edit-cancel').click(function (e)  {
+            if (timeout) clearTimeout(timeout);
+            timeout = null;
+            e.preventDefault();
+            e.stopPropagation();
+            $this.html($this.data('old-value').toString()).click(onQuickEditField).addClass('select-id-quick-edit');
+            if (clippy) $this.addClass('clippy');
+        });
+        $this.find('.select-id-quick-edit-ok').click(function ()  {
+            $this.trigger('blur');
+        });
+        if (type == 'checkbox') {
+            $input.prop('checked', $this.data('old-value'));
+        } else {
+            $input.val($this.data('old-value'));
+        }
+
+        $input.blur(function () {
+            timeout = setTimeout(function () {
+                var _oldText = $this.data('old-value');
+                var val = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();
+                if (val != _oldText) {
+                    data.quickEditCallback(id, attr, val, data.objects[id].common[attr]);
+
+                    _oldText = '<span style="color: pink">' + _oldText + '</span>';
+                }
+                if (clippy) $this.addClass('clippy');
+                $this.html(_oldText).click(onQuickEditField).addClass('select-id-quick-edit');
+            }.bind(this), 100);
+        }).keyup(function (e) {
+            if (e.which == 13) $(this).trigger('blur');
+            if (e.which == 27) {
+                if (clippy) $this.addClass('clippy');
+                $this.html($this.data('old-value').toString()).click(onQuickEditField).addClass('select-id-quick-edit');
+            }
+        });
+
+        e.preventDefault();
+        e.stopPropagation();
+        setTimeout(function () {
+            $input.focus().select();
+        }, 100);
+    }
+
     function initTreeDialog($dlg) {
         var c;
         var data = $dlg.data('selectId');
         //var noStates = (data.objects && !data.states);
         var multiselect = (!data.noDialog && !data.noMultiselect);
+
+        // load expert mode flag
+        if (typeof Storage !== 'undefined' && data.name && data.expertModeRegEx) {
+            data.expertMode = window.localStorage.getItem(data.name + '-expert');
+            data.expertMode = (data.expertMode === true || data.expertMode === 'true');
+        }
+
         // Get all states
         getAllStates(data);
 
@@ -538,6 +685,9 @@
             text += '<td style="padding-left: 10px"><button id="btn_select_all_' + data.instance + '"></button></td>';
             text += '<td><button id="btn_unselect_all_' + data.instance + '"></button></td>';
             text += '<td><button id="btn_invert_selection_' + data.instance + '"></button></td>';
+        }
+        if (data.expertModeRegEx) {
+            text += '<td style="padding-left: 10px"><button id="btn_expert_' + data.instance + '"></button></td>';
         }
 
         if (data.panelButtons) {
@@ -720,7 +870,7 @@
                         .addClass('clippy')
                         .data('clippy', node.key)
                         .css({position: 'relative'})
-                        .data('copyTpClipboard', data.texts.copyTpClipboard)
+                        .data('copyToClipboard', data.texts.copyToClipboard || data.texts.copyTpClipboard)
                         .mouseenter(clippyShow)
                         .mouseleave(clippyHide);
                 }
@@ -778,7 +928,14 @@
                         base++;
                     } else
                     if (data.columns[c] == 'name') {
-                        $tdList.eq(base++).text(isCommon ? data.objects[node.key].common.name : '').css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '');
+                        var $elem = $tdList.eq(base);
+                        $elem.text(isCommon ? data.objects[node.key].common.name : '').css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '');
+                        if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
+                            $elem.data('old-value', isCommon ? data.objects[node.key].common.name : '');
+                            $elem.click(onQuickEditField).data('id', node.key).data('name', 'name').data('selectId', data).addClass('select-id-quick-edit');
+                        }
+
+                        base++;
                     } else
                     if (data.columns[c] == 'type') {
                         $tdList.eq(base++).text(data.objects[node.key] ? data.objects[node.key].type: '');
@@ -798,7 +955,9 @@
                     } else
                     if (data.columns[c] == 'value') {
                         if (data.states && (data.states[node.key] || data.states[node.key + '.val'] !== undefined)) {
+                            var $elem = $tdList.eq(base);
                             var state = data.states[node.key];
+                            var states = getStates(data, node.key);
                             if (!state) {
                                 state = {
                                     val:  data.states[node.key + '.val'],
@@ -814,48 +973,58 @@
                             if (data.objects[node.key] && data.objects[node.key].common && data.objects[node.key].common.role == 'value.time') {
                                 state.val = state.val ? (new Date(state.val)).toString() : state.val;
                             }
+                            if (states && states[state.val] !== undefined) {
+                                state.val = states[state.val];
+                            }
 
                             var fullVal;
                             if (state.val === undefined) {
                                 state.val = '';
                             } else {
                                 if (isCommon && data.objects[node.key].common.unit) state.val += ' ' + data.objects[node.key].common.unit;
-                                fullVal  =          data.texts.value + ': ' + state.val;
+                                fullVal  =          data.texts.value + ': ' + state;
                                 fullVal += '\x0A' + data.texts.ack   + ': ' + state.ack;
                                 fullVal += '\x0A' + data.texts.ts    + ': ' + (state.ts ? formatDate(new Date(state.ts * 1000)) : '');
                                 fullVal += '\x0A' + data.texts.lc    + ': ' + (state.lc ? formatDate(new Date(state.lc * 1000)) : '');
                                 fullVal += '\x0A' + data.texts.from  + ': ' + (state.from || '');
                             }
-                            $tdList.eq(base)
-                                .text(state.val)
+                            $elem.text(state.val)
                                 .attr('title', fullVal)
                                 .addClass('clippy')
                                 .css({position: 'relative'});
 
 
                             if (!data.noCopyToClipboard) {
-                                $tdList.eq(base)
-                                    .data('clippy', state.val)
-                                    .data('copyTpClipboard', data.texts.copyTpClipboard)
+                                $elem.data('clippy', state.val)
+                                    .data('copyToClipboard', data.texts.copyToClipboard || data.texts.copyTpClipboard)
                                     .mouseenter(clippyShow)
                                     .mouseleave(clippyHide).css({color: state.ack ? '' : 'red'});
                             }
+
                         } else {
-                            $tdList.eq(base)
-                                .text('')
+                            $elem.text('')
                                 .attr('title', '')
                                 .removeClass('clippy');
                         }
-                        $tdList.eq(base).dblclick(function (e) {
+                        $elem.dblclick(function (e) {
                             e.preventDefault();
                         });
+
+                        if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
+                            var val = data.states[node.key];
+                            val = val ? val.val : '';
+                            $elem.data('old-value', val).data('type', data.objects[node.key] && data.objects[node.key].common ? data.objects[node.key].common.type : typeof val);
+
+                            $elem.click(onQuickEditField).data('id', node.key).data('name', 'value').data('selectId', data).addClass('select-id-quick-edit');
+                        }
+
                         base++;
                     } else
                     if (data.columns[c] == 'button') {
                         // Show buttons
                         var text;
                         if (data.buttons) {
-                            if (data.objects[node.key]) {
+                            if (data.objects[node.key] || data.showButtonsForNotExistingObjects) {
                                 text = '';
                                 if (data.editEnd) {
                                     text += '<button data-id="' + node.key + '" class="select-button-edit"></button>' +
@@ -1004,7 +1173,6 @@
                     return _data.node.editFinished;
                 },
                 save: function (event, _data) {
-                    var node = _data.node;
                     var editValues = {id: _data.input.val()};
 
                     for (var c = 0; c < data.columns.length; c++) {
@@ -1030,13 +1198,13 @@
                     // Editor was removed
                     if (data.save) {
                         // Since we started an async request, mark the node as preliminary
-                        $(data.node.span).addClass("pending");
+                        $(data.node.span).addClass('pending');
                     }
                 }
             };
         }
 
-        data.$tree.fancytree(foptions).on("nodeCommand", function (event, data) {
+        data.$tree.fancytree(foptions).on('nodeCommand', function (event, data) {
             // Custom event handler that is triggered by keydown-handler and
             // context menu:
             var refNode;
@@ -1248,9 +1416,11 @@
 
         $('#btn_refresh_' + data.instance).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 18, height: 18}).click(function () {
             $('#process_running_' + data.instance).show();
-            data.inited = false;
-            initTreeDialog(data.$dlg);
-            $('#process_running_' + data.instance).hide();
+            setTimeout(function () {
+                data.inited = false;
+                initTreeDialog(data.$dlg);
+                $('#process_running_' + data.instance).hide();
+            }, 100);
         }).attr('title', data.texts.refresh);
 
         $('#btn_select_all_' + data.instance).button({icons: {primary: 'ui-icon-circle-check'}, text: false}).css({width: 18, height: 18}).click(function () {
@@ -1267,6 +1437,28 @@
                 $('#process_running_' + data.instance).hide();
             }, 100);
         }).attr('title', data.texts.selectAll);
+
+        if (data.expertModeRegEx) {
+            $('#btn_expert_' + data.instance).button({icons: {primary: 'ui-icon-gear'}, text: false}).css({width: 18, height: 18}).click(function () {
+                $('#process_running_' + data.instance).show();
+
+                data.expertMode = !data.expertMode;
+                if (data.expertMode) {
+                    $('#btn_expert_' + data.instance).addClass('ui-state-error');
+                } else {
+                    $('#btn_expert_' + data.instance).removeClass('ui-state-error');
+                }
+                storeSettings(data, true);
+
+                setTimeout(function () {
+                    data.inited = false;
+                    initTreeDialog(data.$dlg);
+                    $('#process_running_' + data.instance).hide();
+                }, 200);
+            }).attr('title', data.texts.expertMode);
+
+            if (data.expertMode) $('#btn_expert_' + data.instance).addClass('ui-state-error');
+        }
 
         $('#btn_unselect_all_' + data.instance).button({icons: {primary: 'ui-icon-circle-close'}, text: false}).css({width: 18, height: 18}).click(function () {
             $('#process_running_' + data.instance).show();
@@ -1322,14 +1514,21 @@
         }
     }
 
-    function storeSettings(data) {
+    function storeSettings(data, force) {
+        if (typeof Storage === 'undefined' || !data.name) return;
+
         if (data.timer) clearTimeout(data.timer);
 
-        data.timer = setTimeout(function () {
-            if (typeof Storage !== 'undefined' && data.name) {
+        if (force) {
+            window.localStorage.setItem(data.name + '-filter', JSON.stringify(data.filterVals));
+            window.localStorage.setItem(data.name + '-expert', JSON.stringify(data.expertMode));
+            data.timer = null;
+        } else {
+            data.timer = setTimeout(function () {
                 window.localStorage.setItem(data.name + '-filter', JSON.stringify(data.filterVals));
-            }
-        }, 500);
+                window.localStorage.setItem(data.name + '-expert', JSON.stringify(data.expertMode));
+            }, 500);
+        }
     }
 
     function loadSettings(data) {
@@ -1354,7 +1553,7 @@
     }
 
     var methods = {
-        "init": function (options) {
+        init: function (options) {
             // done, just to show possible settings, this is not required
             var settings = $.extend({
                 currentId:  '',
@@ -1399,7 +1598,7 @@
                 selectAll: 'Select all',
                 unselectAll: 'Unselect all',
                 invertSelection: 'Invert selection',
-                copyTpClipboard: 'Copy to clipboard'
+                copyToClipboard: 'Copy to clipboard'
             }, settings.texts);
 
             var that = this;
@@ -1503,7 +1702,7 @@
 
             return this;
         },
-        "show": function (currentId, filter, onSuccess) {
+        show: function (currentId, filter, onSuccess) {
             if (typeof filter == 'function') {
                 onSuccess = filter;
                 filter = undefined;
@@ -1583,7 +1782,7 @@
 
             return this;
         },
-        "hide": function () {
+        hide: function () {
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
                 var $dlg = $(dlg);
@@ -1596,7 +1795,7 @@
             }
             return this;
         },
-        "clear": function () {
+        clear: function () {
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
                 var $dlg = $(dlg);
@@ -1613,7 +1812,7 @@
             }
             return this;
         },
-        "getInfo": function (id) {
+        getInfo: function (id) {
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
                 var $dlg = $(dlg);
@@ -1624,7 +1823,7 @@
             }
             return null;
         },
-        "getTreeInfo": function (id) {
+        getTreeInfo: function (id) {
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
                 var $dlg = $(dlg);
@@ -1657,7 +1856,7 @@
             }
             return null;
         },
-        "destroy": function () {
+        destroy: function () {
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
                 var $dlg = $(dlg);
@@ -1666,7 +1865,7 @@
             }
             return this;
         },
-        "reinit": function () {
+        reinit: function () {
             for (var i = 0; i < this.length; i++) {
                 var dlg = this[i];
                 var $dlg = $(dlg);
@@ -1679,7 +1878,7 @@
             return this;
         },
         // update states
-        "state": function (id, state) {
+        state: function (id, state) {
             for (var i = 0; i < this.length; i++) {
                 var dlg  = this[i];
                 var $dlg = $(dlg);
@@ -1700,7 +1899,7 @@
             return this;
         },
         // update objects
-        "object": function (id, obj) {
+        object: function (id, obj) {
             for (var k = 0; k < this.length; k++) {
                 var dlg = this[k];
                 var $dlg = $(dlg);
@@ -1794,7 +1993,7 @@
             }
             return this;
         },
-        "option": function (name, value) {
+        option: function (name, value) {
             for (var k = 0; k < this.length; k++) {
                 var dlg = this[k];
                 var $dlg = $(dlg);
@@ -1808,13 +2007,13 @@
                 }
             }
         },
-        "objectAll": function (id, obj) {
+        objectAll: function (id, obj) {
             $('.select-id-dialog-marker').selectId('object', id, obj);
         },
-        "stateAll": function (id, state) {
+        stateAll: function (id, state) {
             $('.select-id-dialog-marker').selectId('state', id, state);
         },
-        "getFilteredIds": function () {
+        getFilteredIds: function () {
             for (var k = 0; k < this.length; k++) {
                 var dlg = this[k];
                 var $dlg = $(dlg);
@@ -1830,7 +2029,7 @@
             }
             return null;
         },
-        "getActual": function () {
+        getActual: function () {
             for (var k = 0; k < this.length; k++) {
                 var dlg = this[k];
                 var $dlg = $(dlg);
