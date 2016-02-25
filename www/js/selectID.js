@@ -68,6 +68,7 @@
                  role:     'Role',
                  type:     'Type',
                  room:     'Room',
+                 'function': 'Function',
                  enum:     'Members',
                  value:    'Value',
                  selectid: 'Select ID',
@@ -89,7 +90,7 @@
                  copyToClipboard: 'Copy to clipboard',
                  expertMode: 'Toggle expert mode'
              },
-             columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'value', 'button'],
+             columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button'],
              widths:    null,   // array with width for every column
              editEnd:   null,   // function (id, newValues) for edit lines (only id and name can be edited)
              editStart: null,   // function (id, $inputs) called after edit start to correct input fields (inputs are jquery objects),
@@ -180,31 +181,39 @@
         var objects = data.objects;
         var isType  = data.columns.indexOf('type') != -1;
         var isRoom  = data.columns.indexOf('room') != -1;
+        var isFunc  = data.columns.indexOf('function') != -1;
         var isRole  = data.columns.indexOf('role') != -1;
         var isHist  = data.columns.indexOf('button') != -1;
         data.tree = {title: '', children: [], count: 0, root: true};
-        data.enums = [];
+        data.roomEnums = [];
+        data.funcEnums = [];
 
         for (var id in objects) {
-            // ignore system objects in expert mode
-            if (data.expertModeRegEx && !data.expertMode && data.expertModeRegEx.test(id)) continue;
 
-            if (isRoom && objects[id].type == 'enum' && data.regexEnumRooms.test(id)) data.enums.push(id);
+            if (isRoom && objects[id].type == 'enum' && data.regexEnumRooms.test(id)) data.roomEnums.push(id);
+            if (isFunc && objects[id].type == 'enum' && data.regexEnumFuncs.test(id)) data.funcEnums.push(id);
 
             if (isType && objects[id].type && data.types.indexOf(objects[id].type) == -1) data.types.push(objects[id].type);
 
             if (isRole && objects[id].common && objects[id].common.role) {
-                var parts = objects[id].common.role.split('.');
-                var role = '';
-                for (var u = 0; u < parts.length; u++) {
-                    role += (role ? '.' : '') + parts[u];
-                    if (data.roles.indexOf(role) == -1) data.roles.push(role);
+                try {
+                    var parts = objects[id].common.role.split('.');
+                    var role = '';
+                    for (var u = 0; u < parts.length; u++) {
+                        role += (role ? '.' : '') + parts[u];
+                        if (data.roles.indexOf(role) == -1) data.roles.push(role);
+                    }
+                } catch (e) {
+                    console.error('Cannot parse role "' + objects[id].common.role + '" by ' + id);
                 }
             }
             if (isHist && objects[id].type === 'instance' && objects[id].common.type === 'storage') {
                 var h = id.substring('system.adapter.'.length);
                 if (data.histories.indexOf(h) == -1) data.histories.push(h);
             }
+
+            // ignore system objects in expert mode
+            if (data.expertModeRegEx && !data.expertMode && data.expertModeRegEx.test(id)) continue;
 
             if (!filterId(data, id)) continue;
 
@@ -224,7 +233,8 @@
         data.inited = true;
         data.roles.sort();
         data.types.sort();
-        data.enums.sort();
+        data.roomEnums.sort();
+        data.funcEnums.sort();
         data.histories.sort();
     }
 
@@ -386,20 +396,61 @@
         }
     }
 
-    function findRoomsForObject(data, id, rooms) {
+    function findRoomsForObject(data, id, isColored, rooms) {
+        var first = false;//!isColored || !rooms;
         rooms = rooms || [];
-        for (var i = 0; i < data.enums.length; i++) {
-            if (data.objects[data.enums[i]].common.members.indexOf(id) != -1 &&
-                rooms.indexOf(data.objects[data.enums[i]].common.name) == -1) {
-                rooms.push(data.objects[data.enums[i]].common.name);
+        for (var i = 0; i < data.roomEnums.length; i++) {
+            if (data.objects[data.roomEnums[i]].common.members.indexOf(id) != -1 &&
+                rooms.indexOf(data.objects[data.roomEnums[i]].common.name) == -1) {
+                rooms.push(first ? '<span style="color: gray">' + data.objects[data.roomEnums[i]].common.name + '</span>' : data.objects[data.roomEnums[i]].common.name);
             }
         }
         var parts = id.split('.');
         parts.pop();
         id = parts.join('.');
-        if (data.objects[id]) findRoomsForObject(data, id, rooms);
+        if (data.objects[id]) findRoomsForObject(data, id, isColored, rooms);
 
         return rooms;
+    }
+
+    function findRoomsForObjectAsIds(data, id, rooms) {
+        rooms = rooms || [];
+        for (var i = 0; i < data.roomEnums.length; i++) {
+            if (data.objects[data.roomEnums[i]].common.members.indexOf(id) != -1 &&
+                rooms.indexOf(data.roomEnums[i]) == -1) {
+                rooms.push(data.roomEnums[i]);
+            }
+        }
+        return rooms;
+    }
+
+    function findFunctionsForObject(data, id, isColored, funcs) {
+        var first = isColored && !funcs;
+        funcs = funcs || [];
+        for (var i = 0; i < data.funcEnums.length; i++) {
+            if (data.objects[data.funcEnums[i]].common.members.indexOf(id) != -1 &&
+                funcs.indexOf(data.objects[data.funcEnums[i]].common.name) == -1) {
+                funcs.push(first ? '<span style="color: gray">' + data.objects[data.funcEnums[i]].common.name + '</span>' : data.objects[data.funcEnums[i]].common.name);
+            }
+        }
+        var parts = id.split('.');
+        parts.pop();
+        id = parts.join('.');
+        if (data.objects[id]) findFunctionsForObject(data, id, isColored, funcs);
+
+        return funcs;
+    }
+
+    function findFunctionsForObjectAsIds(data, id, funcs) {
+        funcs = funcs || [];
+        for (var i = 0; i < data.funcEnums.length; i++) {
+            if (data.objects[data.funcEnums[i]].common.members.indexOf(id) != -1 &&
+                funcs.indexOf(data.funcEnums[i]) == -1) {
+                funcs.push(data.funcEnums[i]);
+            }
+        }
+
+        return funcs;
     }
 
     function clippyCopy(e) {
@@ -483,6 +534,8 @@
         var data    = $this.data('selectId');
         var type    = $this.data('type');
         var clippy  = $this.hasClass('clippy');
+        var options = $this.data('options');
+        var oldVal  = $this.data('old-value');
         var states  = null;
 
         if (clippy)  $this.removeClass('clippy');
@@ -495,7 +548,7 @@
         } else {
             type = 'text';
         }
-        var text = '<input style="' + (type !== 'checkbox' ? 'width: 100%;' : '') + ' z-index: 2" type="' + type + '"/>';
+        var text;
 
         if (attr == 'value') {
             states = getStates(data, id);
@@ -506,7 +559,22 @@
                 }
                 text += '</select>';
             }
+        } else if (attr == 'room') {
+            states = findRoomsForObjectAsIds(data, id) || [];
+            text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
+            for (var e = 0; e < data.roomEnums.length; e++) {
+                text += '<option value="' + data.roomEnums[e] + '" ' + (states.indexOf(data.roomEnums[e]) !== -1 ? 'selected' : '') + '>' + data.objects[data.roomEnums[e]].common.name + '</option>';
+            }
+            text += '</select>';
+        } else if (attr == 'function') {
+            states = findFunctionsForObjectAsIds(data, id) || [];
+            text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
+            for (var e = 0; e < data.funcEnums.length; e++) {
+                text += '<option value="' + data.funcEnums[e] + '" ' + (states.indexOf(data.funcEnums[e]) !== -1 ? 'selected' : '') + '>' + data.objects[data.funcEnums[e]].common.name + '</option>';
+            }
+            text += '</select>';
         }
+        text = text || '<input style="' + (type !== 'checkbox' ? 'width: 100%;' : '') + ' z-index: 2" type="' + type + '"/>';
 
         var timeout = null;
 
@@ -514,31 +582,52 @@
             '<div class="ui-icon ui-icon-check        select-id-quick-edit-ok"     style="' + css + ';right: 22px"></div>' +
             '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '" style="' + css + ';right: 2px"></div>');
 
-        var $input = states ? $this.find('select') : $this.find('input');
+        var $input = (attr == 'function' || attr == 'room' || states) ? $this.find('select') : $this.find('input');
+
+        if (attr === 'room' || attr === 'function') {
+            $input.multiselect({
+                autoOpen: true,
+                close: function () {
+                    $input.trigger('blur');
+                }
+            });
+        } else if (attr == 'role')  {
+            $input.autocomplete({
+                minLength: 0,
+                source: data.roles
+            }).on("focus", function () {
+                $(this).autocomplete("search", "");
+            });
+        }
 
         $this.find('.select-id-quick-edit-cancel').click(function (e)  {
             if (timeout) clearTimeout(timeout);
             timeout = null;
             e.preventDefault();
             e.stopPropagation();
-            $this.html($this.data('old-value').toString()).click(onQuickEditField).addClass('select-id-quick-edit');
+            var old = $this.data('old-value');
+            if (old === undefined) old = '';
+            $this.html(old).click(onQuickEditField).addClass('select-id-quick-edit');
             if (clippy) $this.addClass('clippy');
         });
+
         $this.find('.select-id-quick-edit-ok').click(function ()  {
             $this.trigger('blur');
         });
         if (type == 'checkbox') {
-            $input.prop('checked', $this.data('old-value'));
+            $input.prop('checked', oldVal);
         } else {
-            $input.val($this.data('old-value'));
+            if (attr !== 'room' && attr !== 'function') $input.val(oldVal);
         }
 
         $input.blur(function () {
             timeout = setTimeout(function () {
                 var _oldText = $this.data('old-value');
                 var val = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();
-                if (val != _oldText) {
-                    data.quickEditCallback(id, attr, val, data.objects[id].common[attr]);
+                if ((attr == 'room' || attr == 'function') && !val) val = [];
+
+                if (JSON.stringify(val) != JSON.stringify(_oldText)) {
+                    data.quickEditCallback(id, attr, val, _oldText);
 
                     _oldText = '<span style="color: pink">' + _oldText + '</span>';
                 }
@@ -549,12 +638,17 @@
             if (e.which == 13) $(this).trigger('blur');
             if (e.which == 27) {
                 if (clippy) $this.addClass('clippy');
-                $this.html($this.data('old-value').toString()).click(onQuickEditField).addClass('select-id-quick-edit');
+                var old = $this.data('old-value');
+                if (old === undefined) old = '';
+                $this.html(old).click(onQuickEditField).addClass('select-id-quick-edit');
             }
         });
 
-        e.preventDefault();
-        e.stopPropagation();
+        if (typeof e === 'object') {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
         setTimeout(function () {
             $input.focus().select();
         }, 100);
@@ -621,13 +715,26 @@
 
         var textRooms;
         if (data.columns.indexOf('room') != -1) {
-            textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-            for (var i = 0; i < data.enums.length; i++) {
-                textRooms += '<option value="' + data.objects[data.enums[i]].common.name + '">' + data.objects[data.enums[i]].common.name + '</option>';
+            textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
+            for (var i = 0; i < data.roomEnums.length; i++) {
+                textRooms += '<option value="' + data.objects[data.roomEnums[i]].common.name + '">' + data.objects[data.roomEnums[i]].common.name + '</option>';
             }
             textRooms += '</select>';
         } else {
-            if (data.rooms) delete data.rooms;
+            if (data.rooms)        delete data.rooms;
+            if (data.roomsColored) delete data.roomsColored;
+        }
+
+        var textFuncs;
+        if (data.columns.indexOf('function') != -1) {
+            textFuncs = '<select id="filter_function_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
+            for (var i = 0; i < data.funcEnums.length; i++) {
+                textFuncs += '<option value="' + data.objects[data.funcEnums[i]].common.name + '">' + data.objects[data.funcEnums[i]].common.name + '</option>';
+            }
+            textFuncs += '</select>';
+        } else {
+            if (data.funcs)        delete data.funcs;
+            if (data.funcsColored) delete data.funcsColored;
         }
 
         var textRoles;
@@ -663,6 +770,8 @@
             } else if (data.columns[c] == 'role') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
             } else if (data.columns[c] == 'room') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
+            } else if (data.columns[c] == 'function') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
             } else if (data.columns[c] == 'value') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
@@ -720,6 +829,8 @@
                 text += '<td>' + textRoles + '</td>';
             } else if (data.columns[c] == 'room') {
                 text += '<td>' + textRooms + '</td>';
+            } else if (data.columns[c] == 'function') {
+                text += '<td>' + textFuncs + '</td>';
             } else if (data.columns[c] == 'button') {
                 text += '<td style="text-align: center">';
                 if (data.customButtonFilter) {
@@ -760,6 +871,8 @@
             } else if (data.columns[c] == 'role') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
             } else if (data.columns[c] == 'room') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
+            } else if (data.columns[c] == 'function') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
             } else if (data.columns[c] == 'value') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
@@ -878,7 +991,8 @@
                 if (data.useNameAsId && data.objects[node.key] && data.objects[node.key].common && data.objects[node.key].common.name) {
                     $tdList.eq(1).find('.fancytree-title').html(data.objects[node.key].common.name);
                 }
-
+                var $elem;
+                var val;
                 for (var c = 0; c < data.columns.length; c++) {
                     if (data.columns[c] == 'image') {
                         var icon = '';
@@ -928,32 +1042,64 @@
                         base++;
                     } else
                     if (data.columns[c] == 'name') {
-                        var $elem = $tdList.eq(base);
+                        $elem = $tdList.eq(base);
                         $elem.text(isCommon ? data.objects[node.key].common.name : '').css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '');
                         if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
                             $elem.data('old-value', isCommon ? data.objects[node.key].common.name : '');
                             $elem.click(onQuickEditField).data('id', node.key).data('name', 'name').data('selectId', data).addClass('select-id-quick-edit');
                         }
-
                         base++;
                     } else
                     if (data.columns[c] == 'type') {
                         $tdList.eq(base++).text(data.objects[node.key] ? data.objects[node.key].type: '');
                     } else
                     if (data.columns[c] == 'role') {
-                        $tdList.eq(base++).text(isCommon ? data.objects[node.key].common.role : '');
+                        $elem = $tdList.eq(base);
+                        val = isCommon ? data.objects[node.key].common.role : '';
+                        $elem.text(val);
+
+                        if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
+                            $elem.data('old-value', val);
+                            $elem.click(onQuickEditField).data('id', node.key).data('name', 'role').data('selectId', data).addClass('select-id-quick-edit');
+                        }
+                        base++;
                     } else
                     if (data.columns[c] == 'room') {
+                        $elem = $tdList.eq(base);
                         // Try to find room
-                        if (data.rooms) {
-                            if (!data.rooms[node.key]) data.rooms[node.key] = findRoomsForObject(data, node.key);
-                            $tdList.eq(base++).text(data.rooms[node.key].join(', '));
+                        if (data.roomsColored) {
+                            if (!data.roomsColored[node.key]) data.roomsColored[node.key] = findRoomsForObject(data, node.key, true);
+                            val = data.roomsColored[node.key].join(', ');
                         } else {
-                            $tdList.eq(base++).text('');
+                            val = '';
                         }
+                        $elem.text(val);
 
+                        if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
+                            $elem.data('old-value', val);
+                            $elem.click(onQuickEditField).data('id', node.key).data('name', 'room').data('selectId', data).addClass('select-id-quick-edit');
+                        }
+                        base++;
+                    } else
+                    if (data.columns[c] == 'function') {
+                        $elem = $tdList.eq(base);
+                        // Try to find function
+                        if (data.funcsColored) {
+                            if (!data.funcsColored[node.key]) data.funcsColored[node.key] = findFunctionsForObject(data, node.key, true);
+                            val = data.funcsColored[node.key].join(', ');
+                        } else {
+                            val = '';
+                        }
+                        $elem.text(val);
+
+                        if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
+                            $elem.data('old-value', val);
+                            $elem.click(onQuickEditField).data('id', node.key).data('name', 'function').data('selectId', data).addClass('select-id-quick-edit');
+                        }
+                        base++;
                     } else
                     if (data.columns[c] == 'value') {
+                        $elem = $tdList.eq(base);
                         if (data.states && (data.states[node.key] || data.states[node.key + '.val'] !== undefined)) {
                             var $elem = $tdList.eq(base);
                             var state = data.states[node.key];
@@ -1243,11 +1389,11 @@
                     CLIPBOARD = null;
                     break;
                 default:
-                    alert("Unhandled command: " + data.cmd);
+                    alert('Unhandled command: ' + data.cmd);
                     return;
             }
 
-        }).on("keydown", function (e) {
+        }).on('keydown', function (e) {
             var c   = String.fromCharCode(e.which);
             var cmd = null;
 
@@ -1283,7 +1429,7 @@
                 for (var c = 0; c < data.columns.length; c++) {
                     if (data.columns[c] == 'image') {
                         continue;
-                    } else if (data.columns[c] == 'role' || data.columns[c] == 'type' || data.columns[c] == 'room') {
+                    } else if (data.columns[c] == 'role' || data.columns[c] == 'type' || data.columns[c] == 'room' || data.columns[c] == 'function') {
                         value = $('#filter_' + data.columns[c] + '_' + data.instance).val();
                         if (value) {
                             data.filterVals[data.columns[c]] = value;
@@ -1339,6 +1485,13 @@
                     // Try to find room
                     if (!data.rooms[node.key]) data.rooms[node.key] = findRoomsForObject(data, node.key);
                     if (data.rooms[node.key].indexOf(data.filterVals[f]) == -1) return false;
+                } else
+                if (f == 'function') {
+                    if (!data.objects[node.key]) return false;
+
+                    // Try to find functions
+                    if (!data.funcs[node.key]) data.funcs[node.key] = findFunctionsForObject(data, node.key);
+                    if (data.funcs[node.key].indexOf(data.filterVals[f]) == -1) return false;
                 }
             }
 
@@ -1567,7 +1720,7 @@
                 zindex:     null,
                 list:       false,
                 name:       null,
-                columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'value', 'button']
+                columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button']
             }, options);
 
             settings.texts = settings.texts || {};
@@ -1580,6 +1733,7 @@
                 role:     'Role',
                 type:     'Type',
                 room:     'Room',
+                'function': 'Function',
                 enum:     'Members',
                 value:    'Value',
                 selectid: 'Select ID',
@@ -1610,14 +1764,19 @@
                 if (!data) {
                     data = {
                         tree:               {title: '', children: [], count: 0, root: true},
-                        enums:              [],
+                        roomEnums:          [],
                         rooms:              {},
+                        roomsColored:       {},
+                        funcEnums:          [],
+                        funcs:              {},
+                        funcsColored:       {},
                         roles:              [],
                         histories:          [],
                         types:              [],
                         regexSystemAdapter: new RegExp('^system\\.adapter\\.'),
                         regexSystemHost:    new RegExp('^system\\.host\\.'),
                         regexEnumRooms:     new RegExp('^enum\\.rooms\\.'),
+                        regexEnumFuncs:     new RegExp('^enum\\.functions\\.'),
                         instance:           instance++,
                         inited:             false,
                         filterPresets:      {}
@@ -1804,9 +1963,11 @@
                 if (data) {
                     data.tree      = {title: '', children: [], count: 0, root: true};
                     data.rooms     = {};
-                    data.enums     = [];
+                    data.roomEnums = [];
+                    data.funcs     = {};
+                    data.funcEnums = [];
                     data.roles     = [];
-                    data.typse     = [];
+                    data.types     = [];
                     data.histories = [];
                 }
             }
@@ -1906,7 +2067,14 @@
                 var data = $dlg.data('selectId');
                 if (!data || !data.$tree || !data.objects) continue;
 
-                if (id.match(/^enum\.rooms/)) data.rooms = {};
+                if (id.match(/^enum\.rooms/))     {
+                    data.rooms = {};
+                    data.roomsColored = {};
+                }
+                if (id.match(/^enum\.functions/)) {
+                    data.funcs = {};
+                    data.funcsColored = {};
+                }
 
                 var tree = data.$tree.fancytree('getTree');
                 var node = null;

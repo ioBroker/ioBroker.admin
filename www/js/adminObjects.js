@@ -326,6 +326,72 @@ function Objects(main) {
         if (this.$grid) this.$grid.height(height - 100).width(width - 20);
     };
 
+    function _syncEnum(id, enumIds, newArray, cb) {
+        if (!enumIds || !enumIds.length) {
+            cb && cb();
+            return;
+        }
+
+        var enumId = enumIds.pop();
+        if (that.main.objects[enumId] && that.main.objects[enumId].common) {
+            var count = 0;
+            if (that.main.objects[enumId].common.members && that.main.objects[enumId].common.members.length) {
+                var pos = that.main.objects[enumId].common.members.indexOf(id);
+                if (pos !== -1 && newArray.indexOf(enumId) === -1) {
+                    // delete from members
+                    that.main.objects[enumId].common.members.splice(pos, 1);
+                    count++;
+                    main.socket.emit('setObject', enumId, that.main.objects[enumId], function (err) {
+                        if (err) that.main.showError(err);
+                        if (!--count) {
+                            setTimeout(function () {
+                                _syncEnum(id, enumIds, newArray, cb);
+                            }, 0);
+                        }
+                    });
+                }
+            }
+
+            // add to it
+            if (newArray.indexOf(enumId) !== -1 && (!that.main.objects[enumId].common.members || that.main.objects[enumId].common.members.indexOf(id) === -1)) {
+                // add to object
+                that.main.objects[enumId].common.members = that.main.objects[enumId].common.members || [];
+                that.main.objects[enumId].common.members.push(id);
+                count++;
+                main.socket.emit('setObject', enumId, that.main.objects[enumId], function (err) {
+                    if (err) that.main.showError(err);
+                    if (!--count) {
+                        setTimeout(function () {
+                            _syncEnum(id, enumIds, newArray, cb);
+                        }, 0);
+                    }
+                });
+            }
+        }
+
+        if (!count) {
+            setTimeout(function () {
+                _syncEnum(id, enumIds, newArray, cb);
+            }, 0);
+        }
+    }
+
+    function syncEnum(id, enumName, newArray) {
+        var enums = that.main.tabs.enums.list;
+        var toCheck = [];
+        for (var e = 0; e < enums.length; e++) {
+            if (enums[e].substring(0, 'enum.'.length + enumName.length + 1) == 'enum.' + enumName + '.') {
+                toCheck.push(enums[e]);
+            }
+        }
+
+        _syncEnum(id, toCheck, newArray, function (err) {
+            if (err) that.main.showError(err);
+            // force update of object
+            that.$grid.selectId('object', id, that.main.objects[id]);
+        });
+    }
+
     this.init = function (update) {
         if (!main.objectsLoaded) {
             setTimeout(function () {
@@ -360,6 +426,7 @@ function Objects(main) {
                     name:     _('Name'),
                     role:     _('Role'),
                     room:     _('Room'),
+                    'function':     _('Function'),
                     value:    _('Value'),
                     type:     _('Type'),
                     selectid: _('Select ID'),
@@ -375,7 +442,7 @@ function Objects(main) {
                     copyToClipboard: _('Copy to clipboard'),
                     expertMode: _('Toggle expert mode')
                 },
-                columns: ['image', 'name', 'type', 'role', 'room', 'value', 'button'],
+                columns: ['image', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
                 buttons: [
                     {
                         text: false,
@@ -511,8 +578,13 @@ function Objects(main) {
                 dblclick: function (id) {
                     that.edit(id);
                 },
-                quickEdit: ['name', 'value'],
+                quickEdit: ['name', 'value', 'role', 'function'],
                 quickEditCallback: function (id, attr, newValue, oldValue) {
+                    if (attr === 'room') {
+                        syncEnum(id, 'rooms', newValue);
+                    } else if (attr === 'function') {
+                        syncEnum(id, 'functions', newValue);
+                    } else
                     if (attr === 'value') {
                         main.socket.emit('setState', id, newValue, function (err) {
                             if (err) return that.main.showError(err);

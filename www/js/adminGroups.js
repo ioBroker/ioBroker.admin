@@ -15,17 +15,17 @@ function Groups(main) {
                 {name: 'name',        index: 'name',        editable: false, width: 150},
                 {name: 'description', index: 'description', editable: false, width: 200},
                 {name: 'users',       index: 'users',       editable: false, width: 400},
-                {name: 'buttons',     index: 'buttons',     editable: false, width: 80,  align: 'center', sortable: false, search: false},
+                {name: 'buttons',     index: 'buttons',     editable: false, width: 80,  align: 'center', sortable: false, search: false}
             ],
-            pager: $('#pager-groups'),
-            rowNum: 100,
-            rowList: [20, 50, 100],
-            sortname: "id",
-            sortorder: "desc",
+            pager:      $('#pager-groups'),
+            rowNum:     100,
+            rowList:    [20, 50, 100],
+            sortname:   'id',
+            sortorder:  'desc',
             viewrecords: true,
             caption: _('ioBroker groups'),
             gridComplete: function () {
-                $(".group-users-edit").multiselect({
+                $('.group-users-edit').multiselect({
                     selectedList: 4,
                     close: function () {
                         var obj = {common: {members: $(this).val()}};
@@ -45,7 +45,7 @@ function Groups(main) {
             },
             loadComplete: function () {
                 that.initButtons();
-            },
+            }
         }).jqGrid('filterToolbar', {
             defaultSearch: 'cn',
             autosearch:    true,

@@ -247,6 +247,7 @@ function Enums(main) {
 
         $dialogEnumMembers.trigger('resize');
     }
+
     this.prepare = function () {
         prepareEnumMembers();
         
