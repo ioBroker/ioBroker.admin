@@ -86,42 +86,50 @@ function Instances(main) {
 
         var common   = that.main.objects[instanceId] ? that.main.objects[instanceId].common || {} : {};
         var state = (common.mode === 'daemon') ? 'green' : 'blue';
-        var title = _('Connected to host: ');
-        if (!that.main.states[instanceId + '.connected'] || !that.main.states[instanceId + '.connected'].val) {
-            title += ((common.mode === 'daemon') ? '<span style="color: red">' + _('false') + '</span>' : _('false'));
-            state = (common.mode === 'daemon') ? 'red' : 'blue';
-        } else {
-            title += '<span style="color: green">' + _('true') + '</span>';
-        }
-        title += '<br>';
-        title += _('Alive: ');
-        if (!that.main.states[instanceId + '.alive'] || !that.main.states[instanceId + '.alive'].val) {
-            title += ((common.mode === 'daemon') ? '<span style="color: red">' + _('false') + '</span>' : _('false'));
-            state = (common.mode === 'daemon') ? 'red' : 'blue';
-        } else {
-            title += '<span style="color: green">' + _('true') + '</span>';
-        }
-
-        if (that.main.states[adapter + '.' + instance + '.info.connection']) {
-            title += '<br>';
-            title += _('Connected to %s: ', adapter);
-            var val = that.main.states[adapter + '.' + instance + '.info.connection'].val;
-            if (!val) {
-                state = 'orange';
-                title += '<span style="color: red">' + _('false') + '</span>';
+        var title = '';
+        if (common.enabled) {
+            title = '<table style="border: 0">';
+            title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to host: ') + '</td><td style="border: 0">';
+            if (!that.main.states[instanceId + '.connected'] || !that.main.states[instanceId + '.connected'].val) {
+                title += ((common.mode === 'daemon') ? '<span style="color: red">' + _('false') + '</span>' : _('false'));
+                state = (common.mode === 'daemon') ? 'red' : 'blue';
             } else {
-                if (val === true) {
-                    title += '<span style="color: green">' + _('true') + '</span>';
-                } else {
-                    title += '<span style="color: green">' + val + '</span>';
-                }
+                title += '<span style="color: green">' + _('true') + '</span>';
             }
+            title += '</td></tr><tr style="border: 0"><td style="border: 0">' + _('Alive: ') + '</td><td style="border: 0">';
+            if (!that.main.states[instanceId + '.alive'] || !that.main.states[instanceId + '.alive'].val) {
+                title += ((common.mode === 'daemon') ? '<span style="color: red">' + _('false') + '</span>' : _('false'));
+                state = (common.mode === 'daemon') ? 'red' : 'blue';
+            } else {
+                title += '<span style="color: green">' + _('true') + '</span>';
+            }
+            title += '</td></tr>';
+
+            if (that.main.states[adapter + '.' + instance + '.info.connection']) {
+                title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to %s: ', adapter) + '</td><td>';
+                var val = that.main.states[adapter + '.' + instance + '.info.connection'].val;
+                if (!val) {
+                    state = 'orange';
+                    title += '<span style="color: red">' + _('false') + '</span>';
+                } else {
+                    if (val === true) {
+                        title += '<span style="color: green">' + _('true') + '</span>';
+                    } else {
+                        title += '<span style="color: green">' + val + '</span>';
+                    }
+                }
+                title += '</td></tr>';
+            }
+            title += '</table>';
+        } else {
+            state = 'gray'
         }
 
         state = (state == 'blue') ? '' : state;
 
         $led.removeClass('led-red led-green led-orange led-blue').addClass('led-' + state).data('title', title);
-        if (!$led.data('inited')) {
+
+        if (!$led.data('inited') && state !== 'gray') {
             $led.data('inited', true);
 
             $led.hover(function () {
@@ -139,11 +147,17 @@ function Instances(main) {
                 if (top < 0) {
                     top = 0;
                 }
-                $big.css({top: top});
+                $big.css({top: top}).click(function () {
+                    var big = $(this).data('big');
+                    $(big).remove();
+                    $(this).data('big', undefined);
+                });
             }, function () {
                 var big = $(this).data('big');
                 $(big).remove();
                 $(this).data('big', undefined);
+            }).click(function () {
+                $(this).trigger('hover');
             });
         }
     }
@@ -206,7 +220,7 @@ function Instances(main) {
                 '</td>';
 
             // title
-            text += '<td data-name="title" data-value="' + (common.title || '') + '" class="instance-editable" data-instance-id="' + instanceId + '">' + link + (common.title || '') + (link ? '</a>': '') + '</td>';
+            text += '<td  style="padding-left: 0.5em" data-name="title" data-value="' + (common.title || '') + '" class="instance-editable" data-instance-id="' + instanceId + '">' + link + (common.title || '') + (link ? '</a>': '') + '</td>';
 
 
             // host - hide it if only one host
@@ -215,10 +229,10 @@ function Instances(main) {
                     that.hostsText = '';
                     for(var h = 0; h < that.main.tabs.hosts.list.length;h++) {
                         var host = that.main.tabs.hosts.list[h] || '';
-                        that.hostsText += (that.hostsText ? ';' : '') + host.id + ':' + host.name;
+                        that.hostsText += (that.hostsText ? ';' : '') + host.name;
                     }
                 }
-                text += '<td data-name="host" data-value="' + (common.host || '') + '" class="instance-editable" data-instance-id="' + instanceId + '" data-options="' + that.hostsText + '">' + (common.host || '') + '</td>';
+                text += '<td  style="padding-left: 0.5em" data-name="host" data-value="' + (common.host || '') + '" class="instance-editable" data-instance-id="' + instanceId + '" data-options="' + that.hostsText + '">' + (common.host || '') + '</td>';
             }
             // schedule
             text += '<td data-name="schedule" data-value="' + (common.mode === 'schedule' ? (common.schedule || '') : '') + '" style="text-align: center" class="' + (common.mode === 'schedule' ? 'instance-editable' : '') + '" data-instance-id="' + instanceId + '">' + (common.mode === 'schedule' ? (common.schedule || '') : '') + '</td>';

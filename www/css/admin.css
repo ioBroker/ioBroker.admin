@@ -331,41 +331,43 @@ table#events {
     border: 1px solid #c8c8c8;
 }
 .instance-state-hover {
-    border: 2px solid #66b6d6;
-    border-radius: 1em;
-    padding: 1em;
+    border: 1px solid #66b6d6;
+    border-radius: 0.3em;
+    padding: 0.5em;
     shadow-box: 1em 1em;
     position: absolute;
     z-index: 100;
-    background-color: rgba(145, 220, 255, 0.90);
+    background-color: rgba(145, 220, 255, 0.95);
 }
 /* -------------------------- LEDS ------------------------------------ */
 .led-red {
-    background-color: #cc2e02;
+    background-color: #FF9999;
     border-radius: 50%;
-    box-shadow: #000 0 -1px 7px 1px, inset #600 0 -1px 9px, #F00 0 2px 12px;
+    box-shadow: #5F5D5D 0 -1px 7px 1px, inset #985A5A 0 -1px 9px, #F99 0 2px 12px;
 }
-
 .led-yellow {
     background-color: #A90;
     border-radius: 50%;
     box-shadow: #000 0 -1px 7px 1px, inset #660 0 -1px 9px, #DD0 0 2px 12px;
 }
-
 .led-green {
-    background-color: #690;
+    background-color: rgb(134, 214, 134);
     border-radius: 50%;
-    box-shadow: #000 0 -1px 7px 1px, inset #460 0 -1px 9px, #7D0 0 2px 12px;
+    box-shadow: #5F5D5D 0 -1px 7px 1px, inset rgb(68, 111, 68) 0 -1px 9px, #81CE81 0 2px 12px;
 }
 .led-orange {
-    background-color: #FF8132;
+    background-color: #F7E43B;
     border-radius: 50%;
-    box-shadow: #000 0 -1px 7px 1px, inset #FF6A00 0 -1px 9px, #FFB587 0 2px 12px;
+    box-shadow: #616060 0 -1px 7px 1px, inset #660 0 -1px 9px, #DD0 0 2px 12px;
 }
 .led-blue {
-
     background-color: #4AB;
     border-radius: 50%;
     box-shadow: #000 0 -1px 7px 1px, inset #006 0 -1px 9px, #06F 0 2px 14px;
+}
+.led-gray {
+    background-color: #bababa;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.54) 0 -1px 7px 1px, inset #666666 0 -1px 9px, #ffffff 0 2px 14px;
 }
 
