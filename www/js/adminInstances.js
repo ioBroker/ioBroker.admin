@@ -89,7 +89,7 @@ function Instances(main) {
         var title = _('Connected to host: ');
         if (!that.main.states[instanceId + '.connected'] || !that.main.states[instanceId + '.connected'].val) {
             title += ((common.mode === 'daemon') ? '<span style="color: red">' + _('false') + '</span>' : _('false'));
-            state = 'red';
+            state = (common.mode === 'daemon') ? 'red' : 'blue';
         } else {
             title += '<span style="color: green">' + _('true') + '</span>';
         }
@@ -97,7 +97,7 @@ function Instances(main) {
         title += _('Alive: ');
         if (!that.main.states[instanceId + '.alive'] || !that.main.states[instanceId + '.alive'].val) {
             title += ((common.mode === 'daemon') ? '<span style="color: red">' + _('false') + '</span>' : _('false'));
-            state = 'red';
+            state = (common.mode === 'daemon') ? 'red' : 'blue';
         } else {
             title += '<span style="color: green">' + _('true') + '</span>';
         }
@@ -117,6 +117,9 @@ function Instances(main) {
                 }
             }
         }
+
+        state = (state == 'blue') ? '' : state;
+
         $led.removeClass('led-red led-green led-orange led-blue').addClass('led-' + state).data('title', title);
         if (!$led.data('inited')) {
             $led.data('inited', true);
@@ -210,9 +213,10 @@ function Instances(main) {
             if (that.main.tabs.hosts.list.length > 1) {
                 if (!that.hostsText) {
                     that.hostsText = '';
-                    that.main.tabs.hosts.list.map(function (hostId) {
-                        that.hostsText += (that.hostsText ? ';' : '') + hostId + ':' + hostId.substring('system.host.'.length);
-                    });
+                    for(var h = 0; h < that.main.tabs.hosts.list.length;h++) {
+                        var host = that.main.tabs.hosts.list[h] || '';
+                        that.hostsText += (that.hostsText ? ';' : '') + host.id + ':' + host.name;
+                    }
                 }
                 text += '<td data-name="host" data-value="' + (common.host || '') + '" class="instance-editable" data-instance-id="' + instanceId + '" data-options="' + that.hostsText + '">' + (common.host || '') + '</td>';
             }
