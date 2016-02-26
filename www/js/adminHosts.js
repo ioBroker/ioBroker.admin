@@ -99,9 +99,6 @@ function Hosts(main) {
             }
         }
 
-        // Change editoptions for gridInstances column host
-        that.main.tabs.instances.updateHosts(that.list);
-
         for (i = 0; i < that.list.length; i++) {
             found = false;
             for (j = 0; j < myOpts.length; j++) {

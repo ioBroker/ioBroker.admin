@@ -120,7 +120,7 @@ systemDictionary = {
     "Upload":               {"en": "File upload",           "de": "Dateiupload",            "ru": "Загрузка файлов"},
     "Copy to clipboard":    {"en": "Copy to clipboard",     "de": "In die Zwischenablage kopieren", "ru": "Скопировать в буфер обмена"},
     "Toggle expert mode":   {"en": "Toggle expert mode",    "de": "Zeige Systemobjekte",    "ru": "Показать системные объекты"},
-    "_Toggle expert mode":  {"en": "Toggle expert mode",    "de": "Experten-Einstellugen",  "ru": "Режим эксперта"},
+    "_Toggle expert mode":  {"en": "Toggle expert mode",    "de": "Experten-Einstellungen",  "ru": "Режим эксперта"},
     "process":              {"en": "process",               "de": "Prozess",                "ru": "Процесс"},
     "os":                   {"en": "os",                    "de": "Betriebssystem",         "ru": "ОС"},
     "version":              {"en": "version",               "de": "Version",                "ru": "Версия"},
@@ -130,6 +130,16 @@ systemDictionary = {
     "parent name":          {"en": "parent name",           "de": "Eltern Name",            "ru": "Имя родителя"},
     "history":              {"en": "history",               "de": "Historie",               "ru": "История"},
     "license":              {"en": "license",               "de": "Lizenz",                 "ru": "Лицензия"},
+    "Deactivated. Click to start.": {
+        "en": "Deactivated. Click to start.",
+        "de": "Deaktiviert. Klicken zum Starten.",
+        "ru": "Неактивно. Нажать для старта."
+    },
+    "Activated. Click to stop.": {
+        "en": "Activated. Click to stop.",
+        "de": "Aktiviert. Klicken zum Stoppen.",
+        "ru": "Активно. Нажать для старта."
+    },
     "update adapter information": {
         "en": "update adapter information",
         "de": "Adapter Informationen aktualisieren",
@@ -217,7 +227,7 @@ systemDictionary = {
     "Chart":                {"en": "Chart",                 "de": "Graphik ",               "ru": "График"},
     "Copy log":             {"en": "Copy log",              "de": "Log kopieren",           "ru": "Скопировать протокол"},
     "Ok":                   {"en": "Ok",                    "de": "Ok",                     "ru": "Ok"},
-    "role":                 {"en": "role",                  "de": "Funktion",               "ru": "Функция"},
+    "role":                 {"en": "role",                  "de": "Rolle",                  "ru": "Функция"},
     "Update objects":       {"en": "Update objects",        "de": "Objekte aktualisieren",  "ru": "Обновить объекты"},
     "All":                  {"en": "All",                   "de": "Alle",                   "ru": "все"},
     "With":                 {"en": "With",                  "de": "mit",                    "ru": "с"},
@@ -274,10 +284,10 @@ systemDictionary = {
         "de": 'Wollen Sie wirklich <b>"%s"</b> löschen?',
         "ru": 'Удалить <b>"%s"</b>?'},
     "Connected to host: ":  {"en": "Connected to host: ",   "de": "Verbunden mit Host: ",   "ru": "Общается с хостом: "},
-    "Alive: ":              {"en": "Alive: ",               "de": "Funktioniert: ",         "ru": "Работает: "},
+    "Heartbeat: ":          {"en": "Heartbeat: ",           "de": "Lebenszeichen: ",        "ru": "Heartbeat: "},
     "Show...":              {"en": "Show...",               "de": "Zeige...",               "ru": "Показать..."},
     "ID":                   {"en": "ID",                    "de": "ID",                     "ru": "ID"},
-    "Role":                 {"en": "Role",                  "de": "Funktion",               "ru": "Роль"},
+    "Role":                 {"en": "Role",                  "de": "Rolle",                  "ru": "Роль"},
     "Room":                 {"en": "Room",                  "de": "Raum",                   "ru": "Комната"},
     "Value":                {"en": "Value",                 "de": "Wert",                   "ru": "Значение"},
     "Type":                 {"en": "Type",                  "de": "Typ",                    "ru": "Тип"},
@@ -364,6 +374,13 @@ systemDictionary = {
     "Pause output":         {"en": "Pause output",          "de": "Ausgabe pausieren",      "ru": "Задержать вывод сообщений"},
     "Only one":             {"en": 'Only one',              "de": 'Nur eins',               "ru": 'Только один'},
     "_All":                 {"en": 'All',                   "de": 'Alle',                   "ru": 'Все'},
+    "Connected to %s: ":    {"en": "Connected to %s: ",     "de": "Verbunden mit %s: ",     "ru": "Соединён с %s: "},
+    "Function":             {"en": "Function",              "de": "Funktion",               "ru": "Функция"},
+    "Click on icon":        {
+        "en": "Click on icon to open a link",
+        "de": "Auf das Bildchen klicken",
+        "ru": "Что бы открыть линк надо нажать на картинку"
+    },
     'Are you sure to delete <span style="color: red">all</span> children of %s?': {
         "en": 'Are you sure to delete <span style="color: red">all</span> children of <b>%s</b>?',
         "de": 'Wollen Sie wirklich <span style="color: red; font-weight: bold">alle</span> unterliegende Objekte von <b>"%s"</b> löschen?',
@@ -406,6 +423,7 @@ systemDictionary = {
     "permissionError":      {"en": "Permission error",      "de": "Zugriffsfehler",         "ru": "Ошибка доступа"},
     "Error":                {"en": "Error",                 "de": "Fehler",                 "ru": "Ошибка"},
     "Running: ":            {"en": "Running: ",             "de": "Ausgeführt: ",           "ru": "Рабочая: "},
+    "Listen on all IPs":    {"en": "Listen on all IPs",     "de": "Auf allen IP Adressen hören",           "ru": "Слушать на всех адресах"},
     "Are you sure to delete script %s?": {
         "en": "Are you sure to delete script '%s'?",
         "de": "Wollen Sie wirklich Skript '%s' löschen?",
@@ -423,7 +441,7 @@ systemDictionary = {
     },
     "User yet exists": {
         "en": "User yet exists",
-        "de": "Benutzer existiert schon",
+        "de": "Benutzer bereits vorhanden",
         "ru": "Имя занято"
     },
     "Cannot set password: ": {

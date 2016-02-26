@@ -1608,7 +1608,7 @@
         }).attr('title', data.texts.selectAll);
 
         if (data.expertModeRegEx) {
-            $('#btn_expert_' + data.instance).button({icons: {primary: 'ui-icon-gear'}, text: false}).css({width: 18, height: 18}).click(function () {
+            $('#btn_expert_' + data.instance).button({icons: {primary: 'ui-icon-person'}, text: false}).css({width: 18, height: 18}).click(function () {
                 $('#process_running_' + data.instance).show();
 
                 data.expertMode = !data.expertMode;
