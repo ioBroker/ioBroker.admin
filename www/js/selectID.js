@@ -396,19 +396,22 @@
         }
     }
 
-    function findRoomsForObject(data, id, isColored, rooms) {
-        var first = false;//!isColored || !rooms;
+    function findRoomsForObject(data, id, withParentInfo, rooms) {
         rooms = rooms || [];
         for (var i = 0; i < data.roomEnums.length; i++) {
             if (data.objects[data.roomEnums[i]].common.members.indexOf(id) != -1 &&
                 rooms.indexOf(data.objects[data.roomEnums[i]].common.name) == -1) {
-                rooms.push(first ? '<span style="color: gray">' + data.objects[data.roomEnums[i]].common.name + '</span>' : data.objects[data.roomEnums[i]].common.name);
+                if (!withParentInfo) {
+                    rooms.push(data.objects[data.roomEnums[i]].common.name);
+                } else {
+                    rooms.push({name: data.objects[data.roomEnums[i]].common.name, origin: id});
+                }
             }
         }
         var parts = id.split('.');
         parts.pop();
         id = parts.join('.');
-        if (data.objects[id]) findRoomsForObject(data, id, isColored, rooms);
+        if (data.objects[id]) findRoomsForObject(data, id, withParentInfo, rooms);
 
         return rooms;
     }
@@ -424,19 +427,22 @@
         return rooms;
     }
 
-    function findFunctionsForObject(data, id, isColored, funcs) {
-        var first = isColored && !funcs;
+    function findFunctionsForObject(data, id, withParentInfo, funcs) {
         funcs = funcs || [];
         for (var i = 0; i < data.funcEnums.length; i++) {
             if (data.objects[data.funcEnums[i]].common.members.indexOf(id) != -1 &&
                 funcs.indexOf(data.objects[data.funcEnums[i]].common.name) == -1) {
-                funcs.push(first ? '<span style="color: gray">' + data.objects[data.funcEnums[i]].common.name + '</span>' : data.objects[data.funcEnums[i]].common.name);
+                if (!withParentInfo) {
+                    funcs.push(data.objects[data.funcEnums[i]].common.name);
+                } else {
+                    funcs.push({name: data.objects[data.funcEnums[i]].common.name, origin: id});
+                }
             }
         }
         var parts = id.split('.');
         parts.pop();
         id = parts.join('.');
-        if (data.objects[id]) findFunctionsForObject(data, id, isColored, funcs);
+        if (data.objects[id]) findFunctionsForObject(data, id, withParentInfo, funcs);
 
         return funcs;
     }
@@ -1069,7 +1075,12 @@
                         // Try to find room
                         if (data.roomsColored) {
                             if (!data.roomsColored[node.key]) data.roomsColored[node.key] = findRoomsForObject(data, node.key, true);
-                            val = data.roomsColored[node.key].join(', ');
+                            val = data.roomsColored[node.key].map(function (e) {return e.name;}).join(', ');
+                            if (data.roomsColored[node.key].length && data.roomsColored[node.key][0].origin != node.key) {
+                                $elem.css({color: 'gray'}).attr('title', data.roomsColored[node.key][0].origin);
+                            } else {
+                                $elem.css({color: 'inherit'}).attr('title', null);
+                            }
                         } else {
                             val = '';
                         }
@@ -1086,7 +1097,12 @@
                         // Try to find function
                         if (data.funcsColored) {
                             if (!data.funcsColored[node.key]) data.funcsColored[node.key] = findFunctionsForObject(data, node.key, true);
-                            val = data.funcsColored[node.key].join(', ');
+                            val = data.funcsColored[node.key].map(function (e) {return e.name;}).join(', ');
+                            if (data.funcsColored[node.key].length && data.funcsColored[node.key][0].origin != node.key) {
+                                $elem.css({color: 'gray'}).attr('title', data.funcsColored[node.key][0].origin);
+                            } else {
+                                $elem.css({color: 'inherit'}).attr('title', null);
+                            }
                         } else {
                             val = '';
                         }

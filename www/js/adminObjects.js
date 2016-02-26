@@ -426,7 +426,7 @@ function Objects(main) {
                     name:     _('Name'),
                     role:     _('Role'),
                     room:     _('Room'),
-                    'function':     _('Function'),
+                    'function': _('Function'),
                     value:    _('Value'),
                     type:     _('Type'),
                     selectid: _('Select ID'),

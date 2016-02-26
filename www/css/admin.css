@@ -310,3 +310,62 @@ table#events {
 .select-id-quick-edit:hover {
     cursor: text;
 }
+
+/* -------------------------- LEDS ------------------------------------ */
+.instance-odd {
+    background-color: #c1c1c1;
+    height: 2em;
+}
+.instance-even {
+    background-color: #e9e9e9;
+    height: 2em;
+}
+.instance-table {
+    table-layout: fixed;
+    border: 1px solid #c8c8c8;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 0;
+}
+.instance-table tr, .instance-table td{
+    border: 1px solid #c8c8c8;
+}
+.instance-state-hover {
+    border: 2px solid #66b6d6;
+    border-radius: 1em;
+    padding: 1em;
+    shadow-box: 1em 1em;
+    position: absolute;
+    z-index: 100;
+    background-color: rgba(145, 220, 255, 0.90);
+}
+/* -------------------------- LEDS ------------------------------------ */
+.led-red {
+    background-color: #cc2e02;
+    border-radius: 50%;
+    box-shadow: #000 0 -1px 7px 1px, inset #600 0 -1px 9px, #F00 0 2px 12px;
+}
+
+.led-yellow {
+    background-color: #A90;
+    border-radius: 50%;
+    box-shadow: #000 0 -1px 7px 1px, inset #660 0 -1px 9px, #DD0 0 2px 12px;
+}
+
+.led-green {
+    background-color: #690;
+    border-radius: 50%;
+    box-shadow: #000 0 -1px 7px 1px, inset #460 0 -1px 9px, #7D0 0 2px 12px;
+}
+.led-orange {
+    background-color: #FF8132;
+    border-radius: 50%;
+    box-shadow: #000 0 -1px 7px 1px, inset #FF6A00 0 -1px 9px, #FFB587 0 2px 12px;
+}
+.led-blue {
+
+    background-color: #4AB;
+    border-radius: 50%;
+    box-shadow: #000 0 -1px 7px 1px, inset #006 0 -1px 9px, #06F 0 2px 14px;
+}
+

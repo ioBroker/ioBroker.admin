@@ -271,6 +271,8 @@ systemDictionary = {
         "en": 'Are you sure to delete <b>"%s"</b>?',
         "de": 'Wollen Sie wirklich <b>"%s"</b> löschen?',
         "ru": 'Удалить <b>"%s"</b>?'},
+    "Connected to host: ":  {"en": "Connected to host: ",   "de": "Verbunden mit Host: ",   "ru": "Общается с хостом: "},
+    "Alive: ":              {"en": "Alive: ",               "de": "Funktioniert: ",         "ru": "Работает: "},
     "Show...":              {"en": "Show...",               "de": "Zeige...",               "ru": "Показать..."},
     "ID":                   {"en": "ID",                    "de": "ID",                     "ru": "ID"},
     "Role":                 {"en": "Role",                  "de": "Funktion",               "ru": "Роль"},

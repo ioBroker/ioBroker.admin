@@ -97,8 +97,24 @@
         </table></div>
     </div>
     <div id="tab-instances" class="admin-tab" style="display:none" data-name="Instances">
-        <table id="grid-instances"></table>
-        <div id="pager-instances"></div>
+        <table style="width: 100%; height: 30px">
+            <tr>
+                <td><button id="btn-instances-expert-mode"></button></td>
+                <td><button id="btn-instances-reload"></button></td>
+                <td style="padding-left: 100px"><span class="translate" style="display: inline-block">Filter:</span></td>
+                <td><input style="display: inline-block" id="instances-filter" style="width: 100px; margin-right: 3px"></td>
+                <td><button style="display: inline-block" id="instances-filter-clear"></button></td>
+                <td style="width: 100%"></td>
+            </tr>
+        </table>
+        <!--table id="grid-instances"></table>
+        <div id="pager-instances"></div-->
+        <table class="instance-table" style="width: 100%;">
+            <thead id="grid-instances-head">
+            </thead>
+            <tbody id="grid-instances">
+            </tbody>
+        </table>
     </div>
     <div id="tab-objects"   class="admin-tab" style="display:none" data-name="Objects">
         <div id="grid-objects"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>

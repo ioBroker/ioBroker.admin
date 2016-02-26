@@ -253,7 +253,7 @@ function Adapters(main) {
                 that.main.saveConfig('adaptersCurrentFilter', that.currentFilter);
                 that.$grid.fancytree('getTree').filterNodes(customFilter, false);
             }, 400);
-        })
+        });
 
         $('#adapters-filter-clear').button({icons: {primary: 'ui-icon-close'}, text: false}).css({width: 16, height: 16}).click(function () {
             $('#adapters-filter').val('').trigger('change');
