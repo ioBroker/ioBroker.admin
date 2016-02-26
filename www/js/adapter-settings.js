@@ -172,10 +172,10 @@ function showMessage(message, title, icon) {
     if (!$dialogMessage.length) {
         $('body').append('<div id="dialog-message-settings" title="Message" style="display: none">\n' +
             '<p>' +
-                '<span id="dialog-message-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
-                '<span id="dialog-message-text-settings"></span>\n' +
+            '<span id="dialog-message-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
+            '<span id="dialog-message-text-settings"></span>\n' +
             '</p>\n' +
-        '</div>');
+            '</div>');
         $dialogMessage = $('#dialog-message-settings');
         $dialogMessage.dialog({
             autoOpen: false,
@@ -289,7 +289,7 @@ function getIPs(host, callback) {
     socket.emit('getHostByIp', host || common.host, function (ip, _host) {
         if (_host) {
             host = _host;
-            var IPs4 = [{name: '[IPv4] 0.0.0.0', address: '0.0.0.0', family: 'ipv4'}];
+            var IPs4 = [{name: '[IPv4] 0.0.0.0 - ' + _('Listen on all IPs'), address: '0.0.0.0', family: 'ipv4'}];
             var IPs6 = [{name: '[IPv6] ::',      address: '::',      family: 'ipv6'}];
             if (host.native.hardware && host.native.hardware.networkInterfaces) {
                 for (var eth in host.native.hardware.networkInterfaces) {
