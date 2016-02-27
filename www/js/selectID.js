@@ -91,13 +91,15 @@
                  expertMode: 'Toggle expert mode'
              },
              columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button'],
+                                // some elements of columns could be an object {name: field, data: function (id, name){}, title: function (id, name) {}}
              widths:    null,   // array with width for every column
              editEnd:   null,   // function (id, newValues) for edit lines (only id and name can be edited)
              editStart: null,   // function (id, $inputs) called after edit start to correct input fields (inputs are jquery objects),
              zindex:    null,   // z-index of dialog or table
              customButtonFilter: null, // if in the filter over the buttons some specific button must be shown. It has type like {icons:{primary: 'ui-icon-close'}, text: false, callback: function ()}
              expertModeRegEx: null // list of regex with objects, that will be shown only in expert mode, like  /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin/
-             quickEdit:  null,   // list of fields with edit on click
+             quickEdit:  null,   // list of fields with edit on click. Elements can be just names from standard list or objects like:
+                                 // {name: 'field', options: {a1: 'a111_Text', a2: 'a22_Text'}}, options can be a function (id, name), that give back such an object
              quickEditCallback: null // function (id, attr, newValue, oldValue)
      }
  +  show(currentId, filter, callback) - all arguments are optional if set by "init"
@@ -579,6 +581,15 @@
                 text += '<option value="' + data.funcEnums[e] + '" ' + (states.indexOf(data.funcEnums[e]) !== -1 ? 'selected' : '') + '>' + data.objects[data.funcEnums[e]].common.name + '</option>';
             }
             text += '</select>';
+        } else if (options) {
+            if (typeof options === 'function') {
+                options = options(id, attr);
+            }
+            text = '<select style="width: calc(100% - 50px); z-index: 2">';
+            for (var t in options) {
+                text += '<option value="' + t + '">' + options[t] + '</option>';
+            }
+            text += '</select>';
         }
         text = text || '<input style="' + (type !== 'checkbox' ? 'width: 100%;' : '') + ' z-index: 2" type="' + type + '"/>';
 
@@ -601,8 +612,8 @@
             $input.autocomplete({
                 minLength: 0,
                 source: data.roles
-            }).on("focus", function () {
-                $(this).autocomplete("search", "");
+            }).on('focus', function () {
+                $(this).autocomplete('search', '');
             });
         }
 
@@ -716,7 +727,9 @@
         // Store current filter
         var filter = {ID: $('#filter_ID_' + data.instance).val()};
         for (var u = 0; u < data.columns.length; u++) {
-            filter[data.columns[u]] = $('#filter_' + data.columns[u] + '_' + data.instance).val();
+            var name = data.columns[u];
+            if (typeof name === 'object') name = name.name;
+            filter[data.columns[u]] = $('#filter_' + name + '_' + data.instance).val();
         }
 
         var textRooms;
@@ -767,23 +780,27 @@
         text += '            <col width="400px"/>';
 
         for (c = 0; c < data.columns.length; c++) {
-            if (data.columns[c] == 'image') {
+            var name = data.columns[c];
+            if (typeof name === 'object') name = name.name;
+            if (name == 'image') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '20px') + '"/>';
-            } else if (data.columns[c] == 'name') {
+            } else if (name == 'name') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
-            } else if (data.columns[c] == 'type') {
+            } else if (name == 'type') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (data.columns[c] == 'role') {
+            } else if (name == 'role') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (data.columns[c] == 'room') {
+            } else if (name == 'room') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (data.columns[c] == 'function') {
+            } else if (name == 'function') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (data.columns[c] == 'value') {
+            } else if (name == 'value') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (data.columns[c] == 'button') {
+            } else if (name == 'button') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '100px') + '"/>';
-            } else if (data.columns[c] == 'enum') {
+            } else if (name == 'enum') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
+            } else {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
             }
         }
@@ -792,10 +809,10 @@
         text += '        </colgroup>';
         text += '        <thead>';
         text += '            <tr><th></th><th><table style="width: 100%; padding:0" cellspacing="0" cellpadding="0"><tr>';
-        text += '<td><button id="btn_refresh_' + data.instance + '"></button></td>';
-        text += '<td><button id="btn_list_' + data.instance + '"></button></td>';
+        text += '<td><button id="btn_refresh_'  + data.instance + '"></button></td>';
+        text += '<td><button id="btn_list_'     + data.instance + '"></button></td>';
         text += '<td><button id="btn_collapse_' + data.instance + '"></button></td>';
-        text += '<td><button id="btn_expand_' + data.instance + '"></button></td><td class="select-id-custom-buttons"></td>';
+        text += '<td><button id="btn_expand_'   + data.instance + '"></button></td><td class="select-id-custom-buttons"></td>';
         if (data.filter && data.filter.type == 'state' && multiselect) {
             text += '<td style="padding-left: 10px"><button id="btn_select_all_' + data.instance + '"></button></td>';
             text += '<td><button id="btn_unselect_all_' + data.instance + '"></button></td>';
@@ -825,22 +842,24 @@
         text += '               <td><table style="width: 100%"><tr><td style="width: 100%"><input style="width: 100%;padding:0" type="text" id="filter_ID_'    + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_ID_'    + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
 
         for (c = 0; c < data.columns.length; c++) {
-            if (data.columns[c] == 'image') {
+            var name = data.columns[c];
+            if (typeof name === 'object') name = name.name;
+            if (name == 'image') {
                 text += '<td></td>';
-            } else if (data.columns[c] == 'name' || data.columns[c] == 'value' || data.columns[c] == 'enum') {
+            } else if (name == 'name' || name == 'value' || name == 'enum') {
                 text += '<td><table style="width: 100%"><tr><td style="width: 100%"><input style="width: 100%; padding: 0" type="text" id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
-            } else if (data.columns[c] == 'type') {
+            } else if (name == 'type') {
                 text += '<td>' + textTypes + '</td>';
-            } else if (data.columns[c] == 'role') {
+            } else if (name== 'role') {
                 text += '<td>' + textRoles + '</td>';
-            } else if (data.columns[c] == 'room') {
+            } else if (name == 'room') {
                 text += '<td>' + textRooms + '</td>';
-            } else if (data.columns[c] == 'function') {
+            } else if (name == 'function') {
                 text += '<td>' + textFuncs + '</td>';
-            } else if (data.columns[c] == 'button') {
+            } else if (name == 'button') {
                 text += '<td style="text-align: center">';
                 if (data.customButtonFilter) {
-                    var t = '<select id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_' + data.instance + '">';
+                    var t = '<select id="filter_' + name + '_'  + data.instance + '" class="filter_' + data.instance + '">';
                     t += '<option value="">'      + data.texts.all     + '</option>';
                     t += '<option value="true">'  + data.texts.with    + '</option>';
                     t += '<option value="false">' + data.texts.without + '</option>';
@@ -853,6 +872,8 @@
                     text += '<table cellpadding="0" cellspacing="0" style="border-spacing: 0px 0px"><tr><td>' + t + '</td>' + '<td><button id="filter_' + data.columns[c] + '_'  + data.instance + '_btn"></button></td></tr></table>'
                 }
                 text += '</td>';
+            } else {
+                text += '<td></td>';
             }
         }
 
@@ -868,23 +889,27 @@
         text += '            <col ' + (data.firstMinWidth ? ('width="' + data.firstMinWidth + '"') : 'width="400px"') + '/>';
 
         for (c = 0; c < data.columns.length; c++) {
-            if (data.columns[c] == 'image') {
+            var name = data.columns[c];
+            if (typeof name === 'object') name = name.name;
+            if (name == 'image') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '20px') + '"/>';
-            } else if (data.columns[c] == 'name') {
+            } else if (name == 'name') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
-            } else if (data.columns[c] == 'type') {
+            } else if (name == 'type') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (data.columns[c] == 'role') {
+            } else if (name == 'role') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (data.columns[c] == 'room') {
+            } else if (name == 'room') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (data.columns[c] == 'function') {
+            } else if (name == 'function') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (data.columns[c] == 'value') {
+            } else if (name == 'value') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (data.columns[c] == 'button') {
+            } else if (name == 'button') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '100px') + '"/>';
-            } else if (data.columns[c] == 'enum') {
+            } else if (name == 'enum') {
+                text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
+            } else {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
             }
         }
@@ -899,7 +924,7 @@
         text += '        </thead>';
         text += '        <tbody>';
         text += '        </tbody>';
-        text += '    </table></div><div id="process_running_' + data.instance + '" style="position:absolute; top: 50%; left: 50%; width: 150px; height: 25px; padding: 12px; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">' + data.texts.wait + '</div>';
+        text += '    </table></div><div id="process_running_' + data.instance + '" style="position: absolute; top: 50%; left: 50%; width: 150px; height: 25px; padding: 12px; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">' + data.texts.wait + '</div>';
 
         $dlg.html(text);
 
@@ -921,7 +946,7 @@
                 handleCursorKeys: true
             },
             filter: {
-                mode: "hide",
+                mode: 'hide',
                 autoApply: true
             },
             activate: function (event, data) {
@@ -1000,7 +1025,9 @@
                 var $elem;
                 var val;
                 for (var c = 0; c < data.columns.length; c++) {
-                    if (data.columns[c] == 'image') {
+                    var name = data.columns[c];
+                    if (typeof name === 'object') name = name.name;
+                    if (name == 'image') {
                         var icon = '';
                         var alt = '';
                         var _id_ = 'system.adapter.' + node.key;
@@ -1047,7 +1074,7 @@
                         }
                         base++;
                     } else
-                    if (data.columns[c] == 'name') {
+                    if (name == 'name') {
                         $elem = $tdList.eq(base);
                         $elem.text(isCommon ? data.objects[node.key].common.name : '').css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '');
                         if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
@@ -1056,10 +1083,10 @@
                         }
                         base++;
                     } else
-                    if (data.columns[c] == 'type') {
+                    if (name == 'type') {
                         $tdList.eq(base++).text(data.objects[node.key] ? data.objects[node.key].type: '');
                     } else
-                    if (data.columns[c] == 'role') {
+                    if (name == 'role') {
                         $elem = $tdList.eq(base);
                         val = isCommon ? data.objects[node.key].common.role : '';
                         $elem.text(val);
@@ -1070,7 +1097,7 @@
                         }
                         base++;
                     } else
-                    if (data.columns[c] == 'room') {
+                    if (name == 'room') {
                         $elem = $tdList.eq(base);
                         // Try to find room
                         if (data.roomsColored) {
@@ -1088,11 +1115,15 @@
 
                         if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
                             $elem.data('old-value', val);
-                            $elem.click(onQuickEditField).data('id', node.key).data('name', 'room').data('selectId', data).addClass('select-id-quick-edit');
+                            $elem.click(onQuickEditField)
+                                .data('id', node.key)
+                                .data('name', 'room')
+                                .data('selectId', data)
+                                .addClass('select-id-quick-edit');
                         }
                         base++;
                     } else
-                    if (data.columns[c] == 'function') {
+                    if (name == 'function') {
                         $elem = $tdList.eq(base);
                         // Try to find function
                         if (data.funcsColored) {
@@ -1110,11 +1141,15 @@
 
                         if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
                             $elem.data('old-value', val);
-                            $elem.click(onQuickEditField).data('id', node.key).data('name', 'function').data('selectId', data).addClass('select-id-quick-edit');
+                            $elem.click(onQuickEditField)
+                                .data('id', node.key)
+                                .data('name', 'function')
+                                .data('selectId', data)
+                                .addClass('select-id-quick-edit');
                         }
                         base++;
                     } else
-                    if (data.columns[c] == 'value') {
+                    if (name == 'value') {
                         $elem = $tdList.eq(base);
                         if (data.states && (data.states[node.key] || data.states[node.key + '.val'] !== undefined)) {
                             var $elem = $tdList.eq(base);
@@ -1177,12 +1212,16 @@
                             val = val ? val.val : '';
                             $elem.data('old-value', val).data('type', data.objects[node.key] && data.objects[node.key].common ? data.objects[node.key].common.type : typeof val);
 
-                            $elem.click(onQuickEditField).data('id', node.key).data('name', 'value').data('selectId', data).addClass('select-id-quick-edit');
+                            $elem.click(onQuickEditField)
+                                .data('id', node.key)
+                                .data('name', 'value')
+                                .data('selectId', data)
+                                .addClass('select-id-quick-edit');
                         }
 
                         base++;
                     } else
-                    if (data.columns[c] == 'button') {
+                    if (name == 'button') {
                         // Show buttons
                         var text;
                         if (data.buttons) {
@@ -1253,7 +1292,7 @@
 
                         base++;
                     } else
-                    if (data.columns[c] == 'enum') {
+                    if (name == 'enum') {
                         if (isCommon && data.objects[node.key].common.members && data.objects[node.key].common.members.length > 0) {
                             if (data.objects[node.key].common.members.length < 4) {
                                 $tdList.eq(base).text('(' + data.objects[node.key].common.members.length + ')' + data.objects[node.key].common.members.join(', '));
@@ -1264,6 +1303,30 @@
                         } else {
                             $tdList.eq(base).text('');
                             $tdList.eq(base).attr('title', '');
+                        }
+                        base++;
+                    } else if (typeof data.columns[c].data === 'function') {
+                        $elem = $tdList.eq(base);
+                        var val = data.columns[c].data(node.key, data.columns[c].name);
+                        var title = '';
+                        if (data.columns[c].title) title = data.columns[c].title(node.key, data.columns[c].name);
+                        $elem.html(val).attr('title', title);
+                        if (data.quickEdit && data.objects[node.key]) {
+                            for (var q = 0; q < data.quickEdit.length; q++) {
+                                if (data.quickEdit[q] === data.columns[c].name ||
+                                    data.quickEdit[q].name === data.columns[c].name) {
+                                    $elem.data('old-value', val).data('type', typeof val);
+
+                                    $elem.click(onQuickEditField)
+                                        .data('id', node.key)
+                                        .data('name', data.columns[c].name)
+                                        .data('selectId', data)
+                                        .data('options', data.quickEdit[q].options)
+                                        .addClass('select-id-quick-edit');
+
+                                    break;
+                                }
+                            }
                         }
                         base++;
                     }
@@ -1305,9 +1368,12 @@
                     var inputs = {id: _data.input};
 
                     for (var c = 0; c < data.columns.length; c++) {
-                        if (data.columns[c] == 'name') {
-                            $tdList.eq(2 + c).html('<input type="text" id="select_edit_' + data.columns[c] + '" value="' + data.objects[_data.node.key].common[data.columns[c]] + '" style="width: 100%"/>');
-                            inputs[data.columns[c]] = $('#select_edit_' + data.columns[c]);
+                        var name = data.columns[c];
+                        if (typeof name === 'object') name = name.name;
+
+                        if (name == 'name') {
+                            $tdList.eq(2 + c).html('<input type="text" id="select_edit_' + name + '" value="' + data.objects[_data.node.key].common[name] + '" style="width: 100%"/>');
+                            inputs[name] = $('#select_edit_' + name);
                         }
                     }
                     for (var i in inputs) {
@@ -1338,8 +1404,10 @@
                     var editValues = {id: _data.input.val()};
 
                     for (var c = 0; c < data.columns.length; c++) {
-                        if (data.columns[c] == 'name') {
-                            editValues[data.columns[c]] = $('#select_edit_' + data.columns[c]).val();
+                        var name = data.columns[c];
+                        if (typeof name === 'object') name = name.name;
+                        if (name == 'name') {
+                            editValues[name] = $('#select_edit_' + name).val();
                         }
                     }
 
@@ -1443,19 +1511,21 @@
                 }
 
                 for (var c = 0; c < data.columns.length; c++) {
-                    if (data.columns[c] == 'image') {
+                    var name = data.columns[c];
+                    if (typeof name === 'object') name = name.name;
+                    if (name == 'image') {
                         continue;
-                    } else if (data.columns[c] == 'role' || data.columns[c] == 'type' || data.columns[c] == 'room' || data.columns[c] == 'function') {
-                        value = $('#filter_' + data.columns[c] + '_' + data.instance).val();
+                    } else if (name == 'role' || name == 'type' || name == 'room' || name == 'function') {
+                        value = $('#filter_' + name + '_' + data.instance).val();
                         if (value) {
-                            data.filterVals[data.columns[c]] = value;
+                            data.filterVals[name] = value;
                             data.filterVals.length++;
                         }
                     } else {
-                        value = $('#filter_' + data.columns[c] + '_' + data.instance).val();
+                        value = $('#filter_' + name + '_' + data.instance).val();
                         if (value) {
                             value = value.toLowerCase();
-                            data.filterVals[data.columns[c]] = value;
+                            data.filterVals[name] = value;
                             data.filterVals.length++;
                         }
                     }
@@ -1654,7 +1724,11 @@
         }).attr('title', data.texts.invertSelection);
 
         for (var f in filter) {
-            if (f) $('#filter_' + f + '_' + data.instance).val(filter[f]).trigger('change');
+            try {
+                if (f) $('#filter_' + f + '_' + data.instance).val(filter[f]).trigger('change');
+            } catch (err) {
+                console.error('Cannot apply filter: ' + err)
+            }
         }
 
         if (data.panelButtons) {
