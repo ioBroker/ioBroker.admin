@@ -16,10 +16,15 @@ user interface for configuration and administration
 %web_protocol% - looking for the first instance of web (e.g. web.0) and get "native.secure" from "system.adapter.web.0"
 %instance% - instance of the adapter
 %someField% - get someField from "native" of this adapter instance
-%web.0_ip% - get native.ip from "system.adapter.web.0"
+%web.0_bind% - get native.bind from "system.adapter.web.0"
 %native_someField% - get someField from "native" of this adapter instance
 
 ## Changelog
+
+### 0.8.1 (2016-02-27)
+* (bluefox) expert mode
+* (bluefox) new instances page
+* (bluefox) edit objects directly on the page and not in the dialog
 
 ### 0.8.0 (2016-02-18)
 * (bluefox) move enums into own file
