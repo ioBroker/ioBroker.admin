@@ -122,7 +122,7 @@ function Instances(main) {
             }
             title += '</table>';
         } else {
-            state = 'gray'
+            state = (common.mode === 'daemon') ? 'gray' : 'blue';
         }
 
         state = (state == 'blue') ? '' : state;
