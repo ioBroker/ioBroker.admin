@@ -789,6 +789,8 @@ function Instances(main) {
             });
         if (!$e.find('.ui-button-icon-primary').length) {
             $e.button({icons: {primary: 'ui-icon-trash'}, text: false}).css({width: '2em', height: '2em'}).attr('title', _('delete'));
+        } else {
+            $e.button('enable');
         }
         /*
          $e = $('.instance-ok-submit' + id).unbind('click').button({
@@ -927,6 +929,7 @@ function Instances(main) {
         $e = $('.instance-stop-run' + id).unbind('click')
             .click(function () {
                 var id = $(this).attr('data-instance-id');
+                $(this).button('disable');
                 that.main.socket.emit('extendObject', id, {common: {enabled: !that.main.objects[id].common.enabled}}, function (err) {
                     if (err) that.main.showError(err);
                 });
