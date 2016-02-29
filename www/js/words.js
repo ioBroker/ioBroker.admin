@@ -412,6 +412,11 @@ systemDictionary = {
         "de": "Kennwort und Bestэtigung sind unterschiedlich!",
         "ru": "Пароль и подтверждение разные!"
     },
+    'Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?': {
+        "en": 'Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?',
+        "de": 'Wollen Sie nur <span style="color: blue">ein Objekt</span> löschen oder <span style="color: red">alle</span> Kinder von %s auch?',
+        "ru": 'Хотите удалить только <span style="color: blue">один объект</span> или <span style="color: red">все</span> ниже лежащие от %s тоже?'
+    },
     "password":             {"en": "Password",              "de": "Kennwort",               "ru": "Пароль"},
     "confirm password":     {"en": "Confirm password",      "de": "Bestätigung",            "ru": "Подтверждение"},
     "license_checkbox": {

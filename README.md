@@ -21,6 +21,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.8.3 (2016-02-29)
+* (bluefox) fix delete of objects tree
+
 ### 0.8.2 (2016-02-29)
 * (bluefox) disable start button if in process
 

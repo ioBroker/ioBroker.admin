@@ -1242,7 +1242,7 @@
                                 for (var p = 0; p < data.buttons.length; p++) {
                                     var btn = $('.select-button-' + p + '[data-id="' + node.key + '"]').button(data.buttons[p]).click(function () {
                                         var cb = $(this).data('callback');
-                                        if (cb) cb($(this).attr('data-id'));
+                                        if (cb) cb.call($(this), $(this).attr('data-id'));
                                     }).data('callback', data.buttons[p].click).attr('title', data.buttons[p].title || '');
                                     if (data.buttons[p].width) btn.css({width: data.buttons[p].width});
                                     if (data.buttons[p].height) btn.css({height: data.buttons[p].height});

@@ -227,7 +227,93 @@ $(document).ready(function () {
 
             return text;
         },
-        _delObject:     function ($tree, id, callback) {
+
+        _delObject: function (idOrList, callback) {
+            var id;
+            if (typeof idOrList == 'object') {
+                if (!idOrList || !idOrList.length) {
+                    if (callback) callback(null);
+                    return;
+                }
+                id = idOrList.pop();
+            } else {
+                id = idOrList;
+            }
+
+            if (main.objects[id] && main.objects[id].common && main.objects[id].common['object-non-deletable']) {
+                main.showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
+                if (typeof idOrList == 'object') {
+                    setTimeout(function () {
+                        this._delObject(idOrList, callback);
+                    }.bind(this), 0);
+                } else {
+                    if (callback) {
+                        setTimeout(function () {
+                            callback(null, idOrList);
+                        }, 0);
+                    }
+                }
+            } else {
+                var obj = main.objects[id];
+                main.socket.emit('delObject', id, function (err) {
+                    if (err && err != 'Not exists') {
+                        main.showError(err);
+                        return;
+                    }
+                    if (obj && obj.type === 'state') {
+                        main.socket.emit('delState', id, function (err) {
+                            if (err && err != 'Not exists') {
+                                main.showError(err);
+                                return;
+                            }
+                            if (typeof idOrList == 'object') {
+                                setTimeout(function () {
+                                    this._delObject(idOrList, callback);
+                                }.bind(this), 0);
+                            } else {
+                                if (callback) {
+                                    setTimeout(function () {
+                                        callback(null, idOrList);
+                                    }, 0);
+                                }
+                            }
+                        }.bind(this));
+                    } else {
+                        if (typeof idOrList == 'object') {
+                            setTimeout(function () {
+                                this._delObject(idOrList, callback);
+                            }.bind(this), 0);
+                        } else {
+                            if (callback) {
+                                setTimeout(function () {
+                                    callback(null, idOrList);
+                                }, 0);
+                            }
+                        }
+                    }
+                }.bind(this));
+            }
+        },
+        _delObjects: function (rootId, isAll, callback) {
+            if (!isAll) {
+                this._delObject(rootId, callback);
+            } else {
+                var list = [];
+                for (var id in main.objects) {
+                    if (id.substring(0, rootId.length + 1) == rootId + '.') {
+                        list.push(id);
+                    }
+                }
+                list.push(rootId);
+                list.sort();
+                var len = list.length;
+                this._delObject(list, function () {
+                    if (callback) callback();
+                });
+            }
+        },
+
+        __delObject:    function ($tree, id, callback) {
             var leaf = $tree ? $tree.selectId('getTreeInfo', id) : null;
             //var leaf = treeFindLeaf(id);
             if (leaf && leaf.children) {
@@ -262,41 +348,37 @@ $(document).ready(function () {
                 }
             }
         },
-        delObject:      function ($tree, id, callback, hideConfirm) {
-            if (hideConfirm) {
-                main._delObject($tree, id, callback);
-            } else {
-                var leaf = $tree ? $tree.selectId('getTreeInfo', id) : null;
-                if (main.objects[id]) {
-                    if (leaf && leaf.children) {
-                        // ask if only object must be deleted or just this one
-                        main.confirmMessage(_('Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?', id), null, 'help', [_('_All'), _('Only one'), _('Cancel')], function (result) {
-                            // If all
-                            if (result === 0) {
-                                main._delObject($tree, id, callback);
-                            } else
-                            // if only one object
-                            if (result === 1) {
-                                main._delObject(null, id, callback);
-                            } // else do nothing
-                        });
-                    } else {
-                        main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
-                            // If all
-                            if (result) main._delObject($tree, id, callback);
-                        });
-                    }
-                } else if (leaf && leaf.children) {
-                    main.confirmMessage(_('Are you sure to delete all children of %s?', id), null, 'help', function (result) {
+        delObject:      function ($tree, id, callback) {
+            var leaf = $tree ? $tree.selectId('getTreeInfo', id) : null;
+            if (main.objects[id]) {
+                if (leaf && leaf.children) {
+                    // ask if only object must be deleted or just this one
+                    main.confirmMessage(_('Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?', id), null, 'help', [_('_All'), _('Only one'), _('Cancel')], function (result) {
                         // If all
-                        if (result) main._delObject($tree, id, callback);
+                        if (result === 0) {
+                            main._delObjects(id, true, callback);
+                        } else
+                        // if only one object
+                        if (result === 1) {
+                            main._delObjects(id, false, callback);
+                        } // else do nothing
                     });
                 } else {
-                    main.showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id), null, 'help', function (result) {
+                    main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
                         // If all
-                        if (result) main._delObject($tree, id, callback);
+                        if (result) main._delObjects(id, true, callback);
                     });
                 }
+            } else if (leaf && leaf.children) {
+                main.confirmMessage(_('Are you sure to delete all children of %s?', id), null, 'help', function (result) {
+                    // If all
+                    if (result) main._delObjects(id, true, callback);
+                });
+            } else {
+                main.showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id), null, 'help', function (result) {
+                    // If all
+                    if (result) main._delObjects(id, true, callback);
+                });
             }
         },
         initSelectId: function () {
