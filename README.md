@@ -21,6 +21,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.8.2 (2016-02-29)
+* (bluefox) disable start button if in process
+
 ### 0.8.1 (2016-02-27)
 * (bluefox) expert mode
 * (bluefox) new instances page
