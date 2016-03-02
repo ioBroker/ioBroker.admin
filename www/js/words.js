@@ -72,7 +72,7 @@ systemDictionary = {
     "edit instance":        {"en": "edit instance",         "de": "Instanz bearbeiten",     "ru": "Редактироветь экземпляр"},
     "reload instance":      {"en": "reload instance",       "de": "Instanz neu starten",    "ru": "reload экземпляр"},
     "delete user":          {"en": "delete user",           "de": "Benutzer löschen",       "ru": "Удалить пользователя"},
-    "edit user":            {"en": "edit user",             "de": "Benutzer bearbeiten",    "ru": "Редактироветь user"},
+    "edit user":            {"en": "edit user",             "de": "Benutzer bearbeiten",    "ru": "Редактировать данные"},
     "new user":             {"en": "new user",              "de": "Neuer Benutzer",         "ru": "Новый пользователь"},
     "delete group":         {"en": "delete group",          "de": "Gruppe löschen",         "ru": "Удалить группу"},
     "edit group":           {"en": "edit group",            "de": "Gruppe bearbeiten",      "ru": "Редактироветь группу"},
@@ -138,7 +138,7 @@ systemDictionary = {
     "Activated. Click to stop.": {
         "en": "Activated. Click to stop.",
         "de": "Aktiviert. Klicken zum Stoppen.",
-        "ru": "Активно. Нажать для старта."
+        "ru": "Активно. Нажать для остановки."
     },
     "update adapter information": {
         "en": "update adapter information",
@@ -148,7 +148,7 @@ systemDictionary = {
     "Show values of instance": {
         "en": "Show values of instance",
         "de": "Zeige Werte aus",
-        "ru": "Показать знаяения из"
+        "ru": "Показать значения из"
     },
     "__different__":        {"en": "different",             "de": "unterschiedlich",        "ru": "разное"},
     "history data":         {"en": "history data",          "de": "Historische Daten",      "ru": "history data"},
@@ -364,7 +364,7 @@ systemDictionary = {
     "string":               {"en": "string",                "de": "Zeichenkette",           "ru": "Строка"},
     "number":               {"en": "number",                "de": "Zahl",                   "ru": "Число"},
     "multi":                {"en": "multistate",            "de": "Werteliste",             "ru": "Перечисление"},
-    "array":                {"en": "array",                 "de": "Feld",                   "ru": "Мвссив"},
+    "array":                {"en": "array",                 "de": "Feld",                   "ru": "Массив"},
     "object":               {"en": "object",                "de": "Objekt",                 "ru": "Объект"},
     "mixed":                {"en": "mixed",                 "de": "gemischt",               "ru": "смешанный"},
     "New":                  {"en": "New",                   "de": "Hinzufügen",             "ru": "Добавить"},
@@ -410,7 +410,7 @@ systemDictionary = {
     "Password and confirmation are not equal!": {
         "en": "Password and confirmation are not equal!",
         "de": "Kennwort und Bestэtigung sind unterschiedlich!",
-        "ru": "Пароль и подтверждение разные!"
+        "ru": "Пароль и подтверждение не совпадают!"
     },
     'Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?': {
         "en": 'Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?',
