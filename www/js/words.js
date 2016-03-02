@@ -63,22 +63,22 @@ systemDictionary = {
         "de": "Adapterkonfiguration",
         "ru": "Настройки драйвера"
     },
-    "Edit object":          {"en": "Edit object",           "de": "Objekt bearbeiten",      "ru": "Редактироветь объект"},
+    "Edit object":          {"en": "Edit object",           "de": "Objekt bearbeiten",      "ru": "Редактировать объект"},
     "New objekt":           {"en": "New objekt",            "de": "Neues Objekt",           "ru": "Новый объект"},
     "Delete enum":          {"en": "Delete enum",           "de": "Aufzählung löschen",     "ru": "Удалить категорию"},
-    "Edit enum":            {"en": "Edit enum",             "de": "Aufzählung bearbeiten",  "ru": "Редактироветь категорию"},
+    "Edit enum":            {"en": "Edit enum",             "de": "Aufzählung bearbeiten",  "ru": "Редактировать категорию"},
     "New object":           {"en": "New objekt",            "de": "Neues Objekt",           "ru": "Новый объект"},
     "delete instance":      {"en": "delete instance",       "de": "Instanz löschen",        "ru": "Удалить экземпляр"},
-    "edit instance":        {"en": "edit instance",         "de": "Instanz bearbeiten",     "ru": "Редактироветь экземпляр"},
-    "reload instance":      {"en": "reload instance",       "de": "Instanz neu starten",    "ru": "reload экземпляр"},
+    "edit instance":        {"en": "edit instance",         "de": "Instanz bearbeiten",     "ru": "Редактировать экземпляр"},
+    "reload instance":      {"en": "reload instance",       "de": "Instanz neu starten",    "ru": "Перезагрузить экземпляр"},
     "delete user":          {"en": "delete user",           "de": "Benutzer löschen",       "ru": "Удалить пользователя"},
-    "edit user":            {"en": "edit user",             "de": "Benutzer bearbeiten",    "ru": "Редактироветь user"},
+    "edit user":            {"en": "edit user",             "de": "Benutzer bearbeiten",    "ru": "Редактировать данные"},
     "new user":             {"en": "new user",              "de": "Neuer Benutzer",         "ru": "Новый пользователь"},
     "delete group":         {"en": "delete group",          "de": "Gruppe löschen",         "ru": "Удалить группу"},
-    "edit group":           {"en": "edit group",            "de": "Gruppe bearbeiten",      "ru": "Редактироветь группу"},
+    "edit group":           {"en": "edit group",            "de": "Gruppe bearbeiten",      "ru": "Редактировать группу"},
     "new group":            {"en": "new group",             "de": "Neue Gruppe",            "ru": "Новая группа"},
     "delete script":        {"en": "delete script",         "de": "Script löschen",         "ru": "Удалить скрипт"},
-    "edit script":          {"en": "edit script",           "de": "Script bearbeiten",      "ru": "Редактироветь скрипт"},
+    "edit script":          {"en": "edit script",           "de": "Script bearbeiten",      "ru": "Редактировать скрипт"},
     "new script":           {"en": "new script",            "de": "Neues Script",           "ru": "Новый скрипт"},
     "ioBroker Enums":       {"en": "ioBroker Enums",        "de": "ioBroker Aufzählungen",  "ru": "ioBroker категории"},
     "ioBroker States":      {"en": "ioBroker States",       "de": "ioBroker Zustände",      "ru": "ioBroker состояния"},
@@ -97,8 +97,8 @@ systemDictionary = {
     },
     "Hosts":                {"en": "Hosts",                 "de": "Hosts",                  "ru": "Сервера"},
     "Settings":             {"en": "Settings",              "de": "Einstellungen",          "ru": "Настройки"},
-    "Delete member":        {"en": "Delete member",         "de": "Mitglied löschen",       "ru": "Удалить member"},
-    "Add member":           {"en": "Add member",            "de": "Mitglied hinzufügen",    "ru": "Add member"},
+    "Delete member":        {"en": "Delete member",         "de": "Mitglied löschen",       "ru": "Удалить участника"},
+    "Add member":           {"en": "Add member",            "de": "Mitglied hinzufügen",    "ru": "Добавить участника"},
     "all":                  {"en": "all",                   "de": "Alle",                   "ru": "все"},
     "device":               {"en": "device",                "de": "Gerät",                  "ru": "Устройство"},
     "channel":              {"en": "channel",               "de": "Kanal",                  "ru": "Канал"},
@@ -106,9 +106,9 @@ systemDictionary = {
     "select member by double click": {
         "en": "select member by double click",
         "de": "Mitglied durch Doppelklick auswählen",
-        "ru": "select member by double click"
+        "ru": "Выберите участника двойным щелчком"
     },
-    "config instance":      {"en": "config instance",       "de": "Instanz konfigurieren",  "ru": "config instance"},
+    "config instance":      {"en": "config instance",       "de": "Instanz konfigurieren",  "ru": "Настройка экземпляра"},
     "add instance":         {"en": "add instance",          "de": "Instanz hinzufügen",     "ru": "Установить драйвер"},
     "readme":               {"en": "readme",                "de": "Lies mich",              "ru": "Описание драйвера"},
     "delete adapter":       {"en": "delete adapter",        "de": "Adapter löschen",        "ru": "Удалить драйвер"},
@@ -138,26 +138,26 @@ systemDictionary = {
     "Activated. Click to stop.": {
         "en": "Activated. Click to stop.",
         "de": "Aktiviert. Klicken zum Stoppen.",
-        "ru": "Активно. Нажать для старта."
+        "ru": "Активно. Нажать для остановки."
     },
     "update adapter information": {
         "en": "update adapter information",
         "de": "Adapter Informationen aktualisieren",
-        "ru": "update adapter information"
+        "ru": "Обновить информацию драйвера"
     },
     "Show values of instance": {
         "en": "Show values of instance",
         "de": "Zeige Werte aus",
-        "ru": "Показать знаяения из"
+        "ru": "Показать значения из"
     },
     "__different__":        {"en": "different",             "de": "unterschiedlich",        "ru": "разное"},
-    "history data":         {"en": "history data",          "de": "Historische Daten",      "ru": "history data"},
+    "history data":         {"en": "history data",          "de": "Historische Daten",      "ru": "История данных"},
     "alpha":                {"en": "alpha",                 "de": "alpha",                  "ru": "alpha"},
-    "update":               {"en": "update",                "de": "Aktualisieren",          "ru": "обновить"},
+    "update":               {"en": "update",                "de": "Aktualisieren",          "ru": "Обновить"},
     "restart":              {"en": "restart",               "de": "Neu starten",            "ru": "Перезапустить"},
     "beta":                 {"en": "beta",                  "de": "beta",                   "ru": "beta"},
     "planned":              {"en": "planned",               "de": "geplant",                "ru": "в планах"},
-    "clear":                {"en": "clear",                 "de": "löschen",                "ru": "очистить"},
+    "clear":                {"en": "clear",                 "de": "löschen",                "ru": "Очистить"},
     "Name:":                {"en": "Name:",                 "de": "Name:",                  "ru": "Имя:"},
     "Select language":      {"en": "Select language",       "de": "Sprache:",               "ru": "Язык:"},
     "License terms":        {"en": "License terms",         "de": "Lizenzbedingungen",      "ru": "Содержание лицензии"},
@@ -212,15 +212,15 @@ systemDictionary = {
         "de": "Drücke Strg+A und danach Strg+C, um den Inhalt in die Zwischenablage zu kopieren. Klicke irgendwo, um das Fenster zu schliessen.",
         "ru": "Нажмите Ctrl+A и Ctrl+C, что бы скопировать в буффер обмена и после этого нажмите мышкой в любом месте."
     },
-    "debug":                {"en": "debug",                 "de": "Debug",                  "ru": "отладка"},
+    "debug":                {"en": "debug",                 "de": "Debug",                  "ru": "Отладка"},
     "Parent":               {"en": "Parent",                "de": "Parent",                 "ru": "Родитель"},
     "Drop the files here":  {"en": "Drop the files here",   "de": "Die Datei hier platzieren", "ru": "Перетащить файлы сюда"},
     "Unknown file format!": {"en": "Unknown file format!",  "de": "Unbekannter Dateiformat!", "ru": "Неизвестный формат файла"},
     "Cannot read file!":    {"en": "Cannot read file!",     "de": "Kann die Datei nicht lesen!", "ru": "Невозможно прочитать файл!"},
     "File is too big!":     {"en": "File is too big!",      "de": "Datei ist zu groß!",     "ru": "Слишком большой файл!"},
-    "info":                 {"en": "info",                  "de": "Info",                   "ru": "инфо"},
-    "warn":                 {"en": "warn",                  "de": "Warnung",                "ru": "предупреждения"},
-    "error":                {"en": "error",                 "de": "Fehler",                 "ru": "ошибки"},
+    "info":                 {"en": "info",                  "de": "Info",                   "ru": "Инфо"},
+    "warn":                 {"en": "warn",                  "de": "Warnung",                "ru": "Предупреждения"},
+    "error":                {"en": "error",                 "de": "Fehler",                 "ru": "Ошибки"},
     "engine type":          {"en": "engine type",           "de": "Enginetyp",              "ru": "Тип движка"},
     "Insert":               {"en": "Insert",                "de": "Einfügen",               "ru": "Вставить"},
     "Table":                {"en": "Table",                 "de": "Tabelle",                "ru": "Таблица"},
@@ -364,7 +364,7 @@ systemDictionary = {
     "string":               {"en": "string",                "de": "Zeichenkette",           "ru": "Строка"},
     "number":               {"en": "number",                "de": "Zahl",                   "ru": "Число"},
     "multi":                {"en": "multistate",            "de": "Werteliste",             "ru": "Перечисление"},
-    "array":                {"en": "array",                 "de": "Feld",                   "ru": "Мвссив"},
+    "array":                {"en": "array",                 "de": "Feld",                   "ru": "Массив"},
     "object":               {"en": "object",                "de": "Objekt",                 "ru": "Объект"},
     "mixed":                {"en": "mixed",                 "de": "gemischt",               "ru": "смешанный"},
     "New":                  {"en": "New",                   "de": "Hinzufügen",             "ru": "Добавить"},
@@ -389,7 +389,7 @@ systemDictionary = {
     'Object "<b>%s</b>" does not exists. Update the page.': {
         "en": 'Object "<b>%s</b>" does not exists. Update the page.',
         "de": 'Object "<b>%s</b>" existstiert nicht. Seite updaten.',
-        "ru": 'Объекб "<b>%s</b>" не существует. Обновите страницу.'
+        "ru": 'Объект "<b>%s</b>" не существует. Обновите страницу.'
     },
     "Not exists":           {"en": "Not exists",             "de": "Not exists",            "ru": "Not exists"},
     "Message buffer overflow. Losing oldest":     {
@@ -410,7 +410,7 @@ systemDictionary = {
     "Password and confirmation are not equal!": {
         "en": "Password and confirmation are not equal!",
         "de": "Kennwort und Bestэtigung sind unterschiedlich!",
-        "ru": "Пароль и подтверждение разные!"
+        "ru": "Пароль и подтверждение не совпадают!"
     },
     'Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?': {
         "en": 'Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?',
