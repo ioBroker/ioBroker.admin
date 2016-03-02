@@ -440,7 +440,8 @@ function Objects(main) {
                     with:     _('With'),
                     without:  _('Without'),
                     copyToClipboard: _('Copy to clipboard'),
-                    expertMode: _('Toggle expert mode')
+                    expertMode: _('Toggle expert mode'),
+                    refresh:	_('Update')
                 },
                 columns: ['image', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
                 buttons: [
