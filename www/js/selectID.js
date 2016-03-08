@@ -583,11 +583,13 @@
             text += '</select>';
         } else if (options) {
             if (typeof options === 'function') {
-                options = options(id, attr);
+                states = options(id, attr);
+            } else {
+                states = options;
             }
             text = '<select style="width: calc(100% - 50px); z-index: 2">';
-            for (var t in options) {
-                text += '<option value="' + t + '">' + options[t] + '</option>';
+            for (var t in states) {
+                text += '<option value="' + t + '">' + states[t] + '</option>';
             }
             text += '</select>';
         }
@@ -629,7 +631,8 @@
         });
 
         $this.find('.select-id-quick-edit-ok').click(function ()  {
-            $this.trigger('blur');
+            var _$input = (attr == 'function' || attr == 'room' || states) ? $this.find('select') : $this.find('input');
+            _$input.trigger('blur');
         });
         if (type == 'checkbox') {
             $input.prop('checked', oldVal);
@@ -638,6 +641,7 @@
         }
 
         $input.blur(function () {
+            if (timeout) clearTimeout(timeout);
             timeout = setTimeout(function () {
                 var _oldText = $this.data('old-value');
                 var val = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();

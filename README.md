@@ -21,6 +21,10 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.8.4 (2016-03-08)
+(bluefox) remove script.js.* from non-expert-view
+(bluefox) fix selectId for javascript tab
+
 ### 0.8.3 (2016-02-29)
 * (bluefox) fix delete of objects tree
 

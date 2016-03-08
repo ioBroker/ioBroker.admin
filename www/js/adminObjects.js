@@ -417,7 +417,7 @@ function Objects(main) {
                 noDialog: true,
                 name:     'admin-objects',
                 showButtonsForNotExistingObjects: true,
-                expertModeRegEx: /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin/,
+                expertModeRegEx: /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin|script\./,
                 texts: {
                     select:   _('Select'),
                     cancel:   _('Cancel'),
