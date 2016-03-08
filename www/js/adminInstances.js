@@ -105,7 +105,7 @@ function Instances(main) {
             }
             title += '</td></tr>';
 
-            if (that.main.states[adapter + '.' + instance + '.info.connection']) {
+            if (that.main.states[adapter + '.' + instance + '.info.connection'] || that.main.objects[adapter + '.' + instance + '.info.connection']) {
                 title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to %s: ', adapter) + '</td><td>';
                 var val = that.main.states[adapter + '.' + instance + '.info.connection'].val;
                 if (!val) {
