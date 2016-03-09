@@ -1840,7 +1840,16 @@ $(document).ready(function () {
                                                 dateFormat:       'DD.MM.YYYY', // Default date format.
                                                 isFloatComma:     true,         // Default float divider ('.' - false, ',' - true)
                                                 licenseConfirmed: false,        // If license agreement confirmed,
-                                                defaultHistory:   ''            // Default history instance
+                                                defaultHistory:   '',           // Default history instance
+                                                tabs: [                         // Show by default only these tabs
+                                                    "tab-adapters",
+                                                    "tab-instances",
+                                                    "tab-objects",
+                                                    "tab-log",
+                                                    "tab-scenes",
+                                                    "tab-javascript",
+                                                    "tab-text2command-0"
+                                                ],
                                             }
                                         };
                                         main.systemConfig.common.language = window.navigator.userLanguage || window.navigator.language;

@@ -15,8 +15,8 @@ systemDictionary = {
     "Users":                {"en": "Users",                 "de": "Benutzer",               "ru": "Пользователи"},
     "Groups":               {"en": "Groups",                "de": "Gruppen",                "ru": "Группы"},
     "System language:":     {"en": "System language:",      "de": "System Sprache:",        "ru": "Системный язык:"},
-    "Temperature units:":   {"en": "Temperature units:",    "de": "Einheit Temperatur:",    "ru": "Еденицы измерения температуры:"},
-    "unit":                 {"en": "unit",                  "de": "Einheit",                "ru": "Еденицы измерения"},
+    "Temperature units:":   {"en": "Temperature units:",    "de": "Einheit Temperatur:",    "ru": "Единицы измерения температуры:"},
+    "unit":                 {"en": "unit",                  "de": "Einheit",                "ru": "Единицы измерения"},
     "Currency:":            {"en": "Currency:",             "de": "Währung:",               "ru": "Знак валюты:"},
     "Date format:":         {"en": "Date format:",          "de": "Datumsformat:",          "ru": "Формат даты:"},
     "DD.MM.YYYY":           {"en": "DD.MM.YYYY",            "de": "DD.MM.YYYY",             "ru": "ДД.ММ.ГГГГ"},
@@ -46,7 +46,7 @@ systemDictionary = {
     "enabled":              {"en": "enabled",               "de": "Aktiviert",              "ru": "активно"},
     "host":                 {"en": "host",                  "de": "Server",                 "ru": "Сервер"},
     "mode":                 {"en": "mode",                  "de": "Modus",                  "ru": "Режим"},
-    "config":               {"en": "Settings",              "de": "Konfiguration",          "ru": "настроить"},
+    "config":               {"en": "Settings",              "de": "Konfiguration",          "ru": "Настроить"},
     "loglevel":             {"en": "loglevel",              "de": "Log Stufe",              "ru": "Уровень"},
     "memlimit":             {"en": "RAM limit",             "de": "RAM Limit",              "ru": "Макс. RAM"},
     "alive":                {"en": "alive",                 "de": "Läuft",                  "ru": "Активен"},
@@ -72,7 +72,7 @@ systemDictionary = {
     "edit instance":        {"en": "edit instance",         "de": "Instanz bearbeiten",     "ru": "Редактировать экземпляр"},
     "reload instance":      {"en": "reload instance",       "de": "Instanz neu starten",    "ru": "Перезагрузить экземпляр"},
     "delete user":          {"en": "delete user",           "de": "Benutzer löschen",       "ru": "Удалить пользователя"},
-    "edit user":            {"en": "edit user",             "de": "Benutzer bearbeiten",    "ru": "Редактировать данные"},
+    "edit user":            {"en": "edit user",             "de": "Benutzer bearbeiten",    "ru": "Редактировать пользователя"},
     "new user":             {"en": "new user",              "de": "Neuer Benutzer",         "ru": "Новый пользователь"},
     "delete group":         {"en": "delete group",          "de": "Gruppe löschen",         "ru": "Удалить группу"},
     "edit group":           {"en": "edit group",            "de": "Gruppe bearbeiten",      "ru": "Редактировать группу"},
@@ -174,8 +174,8 @@ systemDictionary = {
     "link":                 {"en": "link",                  "de": "Link",                   "ru": "Ссылка"},
     "ioBroker repositories": {"en": "ioBroker repositories", "de": "ioBroker Verwahrungsorte", "ru": "Репозитории ioBroker"},
     "add repository":       {"en": "add repository",        "de": "Verwahrungsort hinzufügen", "ru": "Добавить репозиторий"},
-    "edit":                 {"en": "edit",                  "de": "ändern",                 "ru": "редактировать"},
-    "delete":               {"en": "delete",                "de": "löschen",                "ru": "удалить"},
+    "edit":                 {"en": "edit",                  "de": "ändern",                 "ru": "Редактировать"},
+    "delete":               {"en": "delete",                "de": "löschen",                "ru": "Удалить"},
     "ok":                   {"en": "Ok",                    "de": "Ok",                     "ru": "Ok"},
     "cancel":               {"en": "Cancel",                "de": "Abbrechen",              "ru": "отменить"},
     "Settings for %s":      {"en": "Settings for %s",       "de": "Einstellungen for %s",   "ru": "Настройки для %s"},
@@ -189,9 +189,9 @@ systemDictionary = {
     "none":                 {"en": "none",                  "de": "nichts",                 "ru": "ничего"},
     "normal":               {"en": "normal",                "de": "normal",                 "ru": "обычный"},
     "extended":             {"en": "extended",              "de": "erweitert",              "ru": "расширенный"},
-    "certificate":          {"en": "certificate",           "de": "Zertifikate",            "ru": "cертификаты"},
-    "ioBroker certificates": {"en": "ioBroker certificates", "de": "ioBroker Zertifikate",  "ru": "ioBroker cертификаты"},
-    "new certificate":      {"en": "new certificate",       "de": "neues Zertifikat",       "ru": "новый cертификат"},
+    "certificate":          {"en": "certificate",           "de": "Zertifikate",            "ru": "сертификат"},
+    "ioBroker certificates": {"en": "ioBroker certificates", "de": "ioBroker Zertifikate",  "ru": "ioBroker сертификат"},
+    "new certificate":      {"en": "new certificate",       "de": "neues Zertifikat",       "ru": "новый сертификат"},
     "Note:":                {"en": "Note:",                 "de": "Notiz:",                 "ru": "Замечание:"},
     "diag-note":            {
         "en": "We worked hard to create this project. As equivalent we expect from you some statistics about the usage.<br>\n" +
@@ -201,7 +201,7 @@ systemDictionary = {
         "Keine private Information wird zu ioBroker.org gesendet. Jedes Mal wenn Adapterliste upgedated wird, wird die anonymisierte Statistik gesendet.<br>\n" +
         "Vielen Dank!",
         "ru": "Мы долго работали над этим проектом. Мы просим вас переслать нам статистику использования, как компенсацию.<br>\n" +
-        "Никакой приватной информации не отсылается в ioBroker.org. Каждый раз, когда список драйверов обновляется, будет отсылатся анонимная статистика.<br>\n" +
+        "Никакой приватной информации не отсылается в ioBroker.org. Каждый раз, когда список драйверов обновляется, будет отсылаться анонимная статистика.<br>\n" +
         "Большое спасибо!"
     },
     "ts":                   {"en": "Timestamp",             "de": "Zeit",                   "ru": "Время"},
@@ -210,17 +210,17 @@ systemDictionary = {
     "copy note": {
         "en": "Press Ctrl+A and Ctrl+C to copy log to clipboard and click with mouse anywhere to close.",
         "de": "Drücke Strg+A und danach Strg+C, um den Inhalt in die Zwischenablage zu kopieren. Klicke irgendwo, um das Fenster zu schliessen.",
-        "ru": "Нажмите Ctrl+A и Ctrl+C, что бы скопировать в буффер обмена и после этого нажмите мышкой в любом месте."
+        "ru": "Нажмите Ctrl+A и Ctrl+C, что бы скопировать в буфер обмена и после этого нажмите мышкой в любом месте."
     },
-    "debug":                {"en": "debug",                 "de": "Debug",                  "ru": "Отладка"},
+    "debug":                {"en": "debug",                 "de": "Debug",                  "ru": "отладка"},
     "Parent":               {"en": "Parent",                "de": "Parent",                 "ru": "Родитель"},
     "Drop the files here":  {"en": "Drop the files here",   "de": "Die Datei hier platzieren", "ru": "Перетащить файлы сюда"},
     "Unknown file format!": {"en": "Unknown file format!",  "de": "Unbekannter Dateiformat!", "ru": "Неизвестный формат файла"},
     "Cannot read file!":    {"en": "Cannot read file!",     "de": "Kann die Datei nicht lesen!", "ru": "Невозможно прочитать файл!"},
     "File is too big!":     {"en": "File is too big!",      "de": "Datei ist zu groß!",     "ru": "Слишком большой файл!"},
-    "info":                 {"en": "info",                  "de": "Info",                   "ru": "Инфо"},
-    "warn":                 {"en": "warn",                  "de": "Warnung",                "ru": "Предупреждения"},
-    "error":                {"en": "error",                 "de": "Fehler",                 "ru": "Ошибки"},
+    "info":                 {"en": "info",                  "de": "Info",                   "ru": "инфо"},
+    "warn":                 {"en": "warn",                  "de": "Warnung",                "ru": "предупреждения"},
+    "error":                {"en": "error",                 "de": "Fehler",                 "ru": "ошибки"},
     "engine type":          {"en": "engine type",           "de": "Enginetyp",              "ru": "Тип движка"},
     "Insert":               {"en": "Insert",                "de": "Einfügen",               "ru": "Вставить"},
     "Table":                {"en": "Table",                 "de": "Tabelle",                "ru": "Таблица"},
@@ -260,7 +260,7 @@ systemDictionary = {
     "Install from custom URL": {
         "en": "Install from custom URL",
         "de": "Installieren aus eigenem URL",
-        "ru": "Установить с собственного источника"
+        "ru": "Установить из собственного источника"
     },
     "Add new child object to selected parent": {
         "en": "Add new child object to selected parent",
@@ -315,7 +315,7 @@ systemDictionary = {
     "expand all":           {"en": "expand all",            "de": "Aufmachen alle",         "ru": "Развернуть все группы"},
 
     "common adapters_group": {"en": "common",                "de": "Allgemein",              "ru": "Общие"},
-    "hardware_group":       {"en": "hardware",              "de": "Hardware",               "ru": "Hardware"},
+    "hardware_group":       {"en": "hardware",              "de": "Hardware",               "ru": "Оборудование"},
     "script_group":         {"en": "scripts and logic",     "de": "Skripte und Logik",      "ru": "Скрипты и логика"},
     "media_group":          {"en": "media",                 "de": "Medien",                 "ru": "Медиа"},
     "visualisation_group":  {"en": "visualisation",         "de": "Visualisierung",         "ru": "Визуализация"},
@@ -330,7 +330,7 @@ systemDictionary = {
     "Filter:":              {"en": "Filter:",               "de": "Filter:",                "ru": "Искать:"},
     "adapter with updates": {"en": "adapters with updates", "de": "Adapter mit Aktualisierung",   "ru": "Драйвера с обновлениями"},
     "Total count in group": {"en": "Total count in group",  "de": "Insgesamt in der Gruppe", "ru": "Всего в группе"},
-    "Installed from group": {"en": "Installed from group",  "de": "Installiert aus der Gruppe", "ru": "Установенно из группы"},
+    "Installed from group": {"en": "Installed from group",  "de": "Installiert aus der Gruppe", "ru": "Установлено из группы"},
     "description":          {"en": "Description",           "de": "Beschreibung",           "ru": "Описание"},
     "read operation":       {"en": "read",                  "de": "lesen",                  "ru": "Читать"},
     "write operation":      {"en": "write",                 "de": "schreiben",              "ru": "Писать"},
@@ -347,10 +347,10 @@ systemDictionary = {
     "sendto operation":     {"en": "Send-to operation",     "de": "Senden an",              "ru": "Послать к"},
     "Access control":       {"en": "Access control",        "de": "Zugriffskontrolle",      "ru": "Права доступа"},
     "raw":                  {"en": "raw(experts only)",     "de": "raw(nur Experten)",      "ru": "raw(Эксперт)"},
-    "Owner user":           {"en": "Owner user",            "de": "Besitzer-Anwender",      "ru": "Ползователь-Владелец"},
+    "Owner user":           {"en": "Owner user",            "de": "Besitzer-Anwender",      "ru": "Пользователь-Владелец"},
     "Owner group":          {"en": "Owner group",           "de": "Besitzer-Gruppe",        "ru": "Группа-Владелец"},
     "Object rights":        {"en": "Object rights",         "de": "Für Objekt",             "ru": "Для объекта"},
-    "Owner":                {"en": "Owner",                 "de": "Besitzer",               "ru": "Ползователь"},
+    "Owner":                {"en": "Owner",                 "de": "Besitzer",               "ru": "Пользователь"},
     "Group":                {"en": "Group",                 "de": "Gruppe",                 "ru": "Группа"},
     "Everyone":             {"en": "Everyone",              "de": "Jeder",                  "ru": "Все"},
     "States rights":        {"en": "States rights",         "de": "Zustände",               "ru": "Состояние"},
@@ -379,7 +379,7 @@ systemDictionary = {
     "Click on icon":        {
         "en": "Click on icon to open a link",
         "de": "Auf das Bildchen klicken",
-        "ru": "Что бы открыть линк надо нажать на картинку"
+        "ru": "Что бы открыть ссылку надо нажать на иконку"
     },
     'Are you sure to delete <span style="color: red">all</span> children of %s?': {
         "en": 'Are you sure to delete <span style="color: red">all</span> children of <b>%s</b>?',
@@ -391,7 +391,7 @@ systemDictionary = {
         "de": 'Object "<b>%s</b>" existstiert nicht. Seite updaten.',
         "ru": 'Объект "<b>%s</b>" не существует. Обновите страницу.'
     },
-    "Not exists":           {"en": "Not exists",             "de": "Not exists",            "ru": "Not exists"},
+    "Not exists":           {"en": "Not exists",             "de": "Existiert nicht",       "ru": "Не существует"},
     "Message buffer overflow. Losing oldest":     {
         "en": "Message buffer overflow. Losing oldest.",
         "de": "Zu viele Meldungen. Äleste werden gelöscht.",
@@ -410,12 +410,12 @@ systemDictionary = {
     "Password and confirmation are not equal!": {
         "en": "Password and confirmation are not equal!",
         "de": "Kennwort und Bestэtigung sind unterschiedlich!",
-        "ru": "Пароль и подтверждение не совпадают!"
+        "ru": "Пароль и подтверждение пароля не совпадают!"
     },
     'Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?': {
         "en": 'Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?',
         "de": 'Wollen Sie nur <span style="color: blue">ein Objekt</span> löschen oder <span style="color: red">alle</span> Kinder von %s auch?',
-        "ru": 'Хотите удалить только <span style="color: blue">один объект</span> или <span style="color: red">все</span> ниже лежащие от %s тоже?'
+        "ru": 'Хотите удалить только <span style="color: blue">один объект</span> или <span style="color: red">все</span> нижележащие от %s тоже?'
     },
     "password":             {"en": "Password",              "de": "Kennwort",               "ru": "Пароль"},
     "confirm password":     {"en": "Confirm password",      "de": "Bestätigung",            "ru": "Подтверждение"},

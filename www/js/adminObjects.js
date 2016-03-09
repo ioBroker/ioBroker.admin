@@ -417,7 +417,7 @@ function Objects(main) {
                 noDialog: true,
                 name:     'admin-objects',
                 showButtonsForNotExistingObjects: true,
-                expertModeRegEx: /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin|script\./,
+                expertModeRegEx: /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin|^script\./,
                 texts: {
                     select:   _('Select'),
                     cancel:   _('Cancel'),
@@ -440,7 +440,8 @@ function Objects(main) {
                     with:     _('With'),
                     without:  _('Without'),
                     copyToClipboard: _('Copy to clipboard'),
-                    expertMode: _('Toggle expert mode')
+                    expertMode: _('Toggle expert mode'),
+                    refresh:	_('Update')
                 },
                 columns: ['image', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
                 buttons: [
