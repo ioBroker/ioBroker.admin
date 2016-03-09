@@ -22,14 +22,14 @@ user interface for configuration and administration
 ## Changelog
 
 ### 0.8.5 (2016-03-09)
-(bluefox) return javascript.x to non-experts view
-(bluefox) show quality of states
-(bluefox) hide experts tabs by new installations
-(installator / vtec83) russian translations
+* (bluefox) return javascript.x to non-experts view
+* (bluefox) show quality of states
+* (bluefox) hide experts tabs by new installations
+* (installator / vtec83) russian translations
 
 ### 0.8.4 (2016-03-08)
-(bluefox) remove script.js.* from non-expert-view
-(bluefox) fix selectId for javascript tab
+* (bluefox) remove script.js.* from non-expert-view
+* (bluefox) fix selectId for javascript tab
 
 ### 0.8.3 (2016-02-29)
 * (bluefox) fix delete of objects tree
