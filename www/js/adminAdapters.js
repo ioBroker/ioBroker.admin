@@ -297,7 +297,8 @@ function Adapters(main) {
                     console.error('May not read "getRepository"');
                     _repository = {};
                 }
-                that.curRepository = _repository;
+
+                that.curRepository = _repository || {};
                 if (that.curRepository && that.curInstalled) {
                     that.curRepoLastUpdate = (new Date()).getTime();
                     setTimeout(function () {
@@ -310,10 +311,10 @@ function Adapters(main) {
             this.main.socket.emit('sendToHost', host, 'getInstalled', null, function (_installed) {
                 if (_installed === 'permissionError') {
                     console.error('May not read "getInstalled"');
-
                     _installed = {};
                 }
-                that.curInstalled = _installed;
+
+                that.curInstalled = _installed || {};
                 if (that.curRepository && that.curInstalled) {
                     that.curRepoLastUpdate = (new Date()).getTime();
                     setTimeout(function () {

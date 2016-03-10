@@ -376,6 +376,7 @@ systemDictionary = {
     "_All":                 {"en": 'All',                   "de": 'Alle',                   "ru": 'Все'},
     "Connected to %s: ":    {"en": "Connected to %s: ",     "de": "Verbunden mit %s: ",     "ru": "Соединён с %s: "},
     "Function":             {"en": "Function",              "de": "Funktion",               "ru": "Функция"},
+    "Delete attribute":     {"en": "Delete attribute",      "de": "Attribut löschen",       "ru": "Удалить атрибут"},
     "Click on icon":        {
         "en": "Click on icon to open a link",
         "de": "Auf das Bildchen klicken",

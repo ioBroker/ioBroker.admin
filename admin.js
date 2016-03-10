@@ -212,7 +212,11 @@ function writeUpdateInfo(sources) {
         } else {
             adapter.setState('info.updatesNumber', 0, true);
             adapter.setState('info.updatesList',  '', true);
-            adapter.log.warn('No repository source configured');
+            if (obj && obj.native && obj.native.repositories && obj.native.repositories[activeRepo]) {
+                adapter.log.warn('Repository cannot be read');
+            } else {
+                adapter.log.warn('No repository source configured');
+            }
             return;
         }
     }

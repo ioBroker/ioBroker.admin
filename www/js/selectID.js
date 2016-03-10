@@ -675,6 +675,19 @@
         }, 100);
     }
 
+    function quality2text(q) {
+        if (!q) return 'ok';
+        var custom = q & 0xFFFF0000;
+        var text = '';
+        if (q & 0x40) text += 'device';
+        if (q & 0x80) text += 'sensor';
+        if (q & 0x01) text += ' bad';
+        if (q & 0x02) text += ' not connected';
+        if (q & 0x04) text += ' error';
+
+        return text + (custom ? '|' + custom >> 16 : 0);
+    }
+
     function initTreeDialog($dlg) {
         var c;
         var data = $dlg.data('selectId');
@@ -1165,7 +1178,8 @@
                                     ts:   data.states[node.key + '.ts'],
                                     lc:   data.states[node.key + '.lc'],
                                     from: data.states[node.key + '.from'],
-                                    ack: (data.states[node.key + '.ack'] === undefined) ? '' : data.states[node.key + '.ack']
+                                    ack: (data.states[node.key + '.ack'] === undefined) ? '' : data.states[node.key + '.ack'],
+                                    q:   (data.states[node.key + '.q']   === undefined) ? 0  : data.states[node.key + '.q']
                                 };
                             } else {
                                 state = JSON.parse(JSON.stringify(state));
@@ -1183,23 +1197,25 @@
                                 state.val = '';
                             } else {
                                 if (isCommon && data.objects[node.key].common.unit) state.val += ' ' + data.objects[node.key].common.unit;
-                                fullVal  =          data.texts.value + ': ' + state;
-                                fullVal += '\x0A' + data.texts.ack   + ': ' + state.ack;
-                                fullVal += '\x0A' + data.texts.ts    + ': ' + (state.ts ? formatDate(new Date(state.ts * 1000)) : '');
-                                fullVal += '\x0A' + data.texts.lc    + ': ' + (state.lc ? formatDate(new Date(state.lc * 1000)) : '');
-                                fullVal += '\x0A' + data.texts.from  + ': ' + (state.from || '');
+                                fullVal  =          data.texts.value   + ': ' + state.val;
+                                fullVal += '\x0A' + data.texts.ack     + ': ' + state.ack;
+                                fullVal += '\x0A' + data.texts.ts      + ': ' + (state.ts ? formatDate(new Date(state.ts * 1000)) : '');
+                                fullVal += '\x0A' + data.texts.lc      + ': ' + (state.lc ? formatDate(new Date(state.lc * 1000)) : '');
+                                fullVal += '\x0A' + data.texts.from    + ': ' + (state.from || '');
+                                fullVal += '\x0A' + data.texts.quality + ': ' + quality2text(state.q || 0);
                             }
                             $elem.text(state.val)
                                 .attr('title', fullVal)
                                 .addClass('clippy')
                                 .css({position: 'relative'});
 
+                            $elem.css({color: state.ack ? (state.q ? 'orange' : '') : 'red'});
 
                             if (!data.noCopyToClipboard) {
                                 $elem.data('clippy', state.val)
                                     .data('copyToClipboard', data.texts.copyToClipboard || data.texts.copyTpClipboard)
                                     .mouseenter(clippyShow)
-                                    .mouseleave(clippyHide).css({color: state.ack ? '' : 'red'});
+                                    .mouseleave(clippyHide);
                             }
 
                         } else {
@@ -1832,6 +1848,7 @@
                 value:    'Value',
                 selectid: 'Select ID',
                 from:     'From',
+                quality:  'Quality',
                 lc:       'Last changed',
                 ts:       'Time stamp',
                 ack:      'Acknowledged',

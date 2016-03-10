@@ -167,7 +167,7 @@ function Instances(main) {
         // _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('memlimit'), _('alive'), _('connected')],
         text += '<th style="width: 2em"></th>';
         text += '<th style="width: 2em"></th>';
-        text += '<th style="width: 10em">' + _('instance') + '</th>';
+        text += '<th style="width: 14em">' + _('instance') + '</th>';
         text += '<th style="width: 11em"></th>';
         text += '<th style="text-align: left">' + _('title') + '</th>';
 

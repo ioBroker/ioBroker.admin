@@ -21,6 +21,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.8.6 (2016-03-10)
+* (bluefox) show quality
+
 ### 0.8.5 (2016-03-09)
 * (bluefox) return javascript.x to non-experts view
 * (bluefox) show quality of states
