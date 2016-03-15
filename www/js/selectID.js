@@ -1189,7 +1189,7 @@
                                 state.val = state.val ? (new Date(state.val)).toString() : state.val;
                             }
                             if (states && states[state.val] !== undefined) {
-                                state.val = states[state.val];
+                                state.val = states[state.val]  + '(' + state.val + ')';
                             }
 
                             var fullVal;

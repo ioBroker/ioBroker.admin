@@ -107,7 +107,7 @@ function Instances(main) {
 
             if (that.main.states[adapter + '.' + instance + '.info.connection'] || that.main.objects[adapter + '.' + instance + '.info.connection']) {
                 title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to %s: ', adapter) + '</td><td>';
-                var val = that.main.states[adapter + '.' + instance + '.info.connection'].val;
+                var val = that.main.states[adapter + '.' + instance + '.info.connection'] ? that.main.states[adapter + '.' + instance + '.info.connection'].val : false;
                 if (!val) {
                     state = 'orange';
                     title += '<span style="color: red">' + _('false') + '</span>';
@@ -123,6 +123,39 @@ function Instances(main) {
             title += '</table>';
         } else {
             state = (common.mode === 'daemon') ? 'gray' : 'blue';
+            title = '<table style="border: 0">';
+            title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to host: ') + '</td><td style="border: 0">';
+
+            if (!that.main.states[instanceId + '.connected'] || !that.main.states[instanceId + '.connected'].val) {
+                title +=  _('false');
+            } else {
+                title += '<span style="color: green">' + _('true') + '</span>';
+            }
+            title += '</td></tr><tr style="border: 0">';
+
+            title += '<td style="border: 0">' + _('Heartbeat: ') + '</td><td style="border: 0">';
+            if (!that.main.states[instanceId + '.alive'] || !that.main.states[instanceId + '.alive'].val) {
+                title +=  _('false');
+            } else {
+                title += '<span style="color: green">' + _('true') + '</span>';
+            }
+            title += '</td></tr>';
+
+            if (that.main.states[adapter + '.' + instance + '.info.connection'] || that.main.objects[adapter + '.' + instance + '.info.connection']) {
+                title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to %s: ', adapter) + '</td><td>';
+                var val = that.main.states[adapter + '.' + instance + '.info.connection'] ? that.main.states[adapter + '.' + instance + '.info.connection'].val : false;
+                if (!val) {
+                    title += _('false');
+                } else {
+                    if (val === true) {
+                        title += '<span style="color: green">' + _('true') + '</span>';
+                    } else {
+                        title += '<span style="color: green">' + val + '</span>';
+                    }
+                }
+                title += '</td></tr>';
+            }
+            title += '</table>';
         }
 
         state = (state == 'blue') ? '' : state;
@@ -645,9 +678,11 @@ function Instances(main) {
     };
 
     this.stateChange = function (id, state) {
+        this.main.states[id] = state;
         if (this.$grid) {
             var parts = id.split('.');
             var last = parts.pop();
+            console.log(id + ' ' + parts.join('.') + ' ' + (this.list.indexOf(id) !== -1).toString());
             id = parts.join('.');
             if (this.list.indexOf(id) !== -1) {
                 if (last === 'alive' || last === 'connected') {
@@ -655,7 +690,7 @@ function Instances(main) {
                 }
                 return;
             }
-            id = 'system.adapter.' + parts[0] + parts[1];
+            id = 'system.adapter.' + parts[0] + '.' + parts[1];
             if (this.list.indexOf(id) !== -1 && last === 'connection') {
                 updateLed(id);
             }

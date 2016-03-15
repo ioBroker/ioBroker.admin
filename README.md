@@ -21,6 +21,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 0.8.7 (2016-03-15)
+* (bluefox) fix LED status
+
 ### 0.8.6 (2016-03-10)
 * (bluefox) show quality
 

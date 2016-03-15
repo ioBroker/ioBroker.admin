@@ -1573,7 +1573,6 @@ $(document).ready(function () {
     }
 
     function stateChange(id, state) {
-        var rowData;
         id = id ? id.replace(/ /g, '_') : '';
 
         if (id && id.match(/\.messagebox$/)) {
@@ -1585,7 +1584,7 @@ $(document).ready(function () {
             if (main.selectId) main.selectId.selectId('state', id, state);
         }
 
-        // Update alive and connecetd of main.instances
+        // Update alive and connected of main.instances
         tabs.instances.stateChange(id, state);
         tabs.objects.stateChangeHistory(id, state);
         tabs.adapters.stateChange(id, state);
