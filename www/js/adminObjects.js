@@ -576,9 +576,9 @@ function Objects(main) {
                         }
                     }
                 ],
-                dblclick: function (id) {
+                 /*dblclick: function (id) {
                     that.edit(id);
-                },
+                },*/
                 quickEdit: ['name', 'value', 'role', 'function'],
                 quickEditCallback: function (id, attr, newValue, oldValue) {
                     if (attr === 'room') {

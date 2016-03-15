@@ -21,6 +21,11 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 1.0.0 (2016-03-15)
+* (bluefox) adapter is good enough to be released
+* (bluefox) fix LEDs
+* (bluefox) disable double-click in Objects
+
 ### 0.8.7 (2016-03-15)
 * (bluefox) fix LED status
 

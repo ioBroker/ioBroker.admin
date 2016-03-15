@@ -359,7 +359,9 @@
                 num = j;
                 tree.children.splice(num, 0, obj);
             }
-            if (addedNodes) addedNodes.push(tree.children[num]);
+            if (addedNodes) {
+                addedNodes.push(tree.children[num]);
+            }
         }
         if (parts.length - 1 == index) {
             tree.children[num].id = id;
@@ -685,7 +687,7 @@
         if (q & 0x02) text += ' not connected';
         if (q & 0x04) text += ' error';
 
-        return text + (custom ? '|' + custom >> 16 : 0);
+        return text + (custom ? '|0x' + (custom >> 16).toString(16).toUpperCase() : '') + ' [0x' + q.toString(16).toUpperCase() + ']';
     }
 
     function initTreeDialog($dlg) {
@@ -1353,7 +1355,7 @@
                 }
             },
             dblclick: function (event, _data) {
-                if (data.buttonsDlg) {
+                if (data.buttonsDlg && !data.quickEditCallback) {
                     if (_data && _data.node && !_data.node.folder) {
                         data.buttonsDlg[0].click();
                     }
@@ -1370,8 +1372,8 @@
         if (data.editEnd) {
             foptions.extensions.push('edit');
             foptions.edit = {
-                triggerStart: ["f2", "dblclick", "shift+click", "mac+enter"],
-                triggerStop:  ["esc"],
+                triggerStart: ['f2', 'dblclick', 'shift+click', 'mac+enter'],
+                triggerStop:  ['esc'],
                 beforeEdit: function (event, _data) {
                     // Return false to prevent edit mode
                     if (!data.objects[_data.node.key]) return false;
@@ -1463,25 +1465,25 @@
             var node = tree.getActiveNode();
 
             switch (data.cmd) {
-                case "moveUp":
-                    node.moveTo(node.getPrevSibling(), "before");
+                case 'moveUp':
+                    node.moveTo(node.getPrevSibling(), 'before');
                     node.setActive();
                     break;
-                case "moveDown":
-                    node.moveTo(node.getNextSibling(), "after");
+                case 'moveDown':
+                    node.moveTo(node.getNextSibling(), 'after');
                     node.setActive();
                     break;
-                case "indent":
+                case 'indent':
                     refNode = node.getPrevSibling();
-                    node.moveTo(refNode, "child");
+                    node.moveTo(refNode, 'child');
                     refNode.setExpanded();
                     node.setActive();
                     break;
-                case "outdent":
-                    node.moveTo(node.getParent(), "after");
+                case 'outdent':
+                    node.moveTo(node.getParent(), 'after');
                     node.setActive();
                     break;
-                case "copy":
+                case 'copy':
                     CLIPBOARD = {
                         mode: data.cmd,
                         data: node.toDict(function (n) {
@@ -1489,7 +1491,7 @@
                         })
                     };
                     break;
-                case "clear":
+                case 'clear':
                     CLIPBOARD = null;
                     break;
                 default:
@@ -1502,18 +1504,18 @@
             var cmd = null;
 
             if (e.which === 'c' && e.ctrlKey) {
-                cmd = "copy";
+                cmd = 'copy';
             }else if (e.which === $.ui.keyCode.UP && e.ctrlKey) {
-                cmd = "moveUp";
+                cmd = 'moveUp';
             } else if (e.which === $.ui.keyCode.DOWN && e.ctrlKey) {
-                cmd = "moveDown";
+                cmd = 'moveDown';
             } else if (e.which === $.ui.keyCode.RIGHT && e.ctrlKey) {
-                cmd = "indent";
+                cmd = 'indent';
             } else if (e.which === $.ui.keyCode.LEFT && e.ctrlKey) {
-                cmd = "outdent";
+                cmd = 'outdent';
             }
             if (cmd) {
-                $(this).trigger("nodeCommand", {cmd: cmd});
+                $(this).trigger('nodeCommand', {cmd: cmd});
                 return false;
             }
         });

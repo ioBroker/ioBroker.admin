@@ -8,8 +8,6 @@ function Instances(main) {
 
     this.main          = main;
     this.list          = [];
-    this.lTrue         = '';
-    this.lFalse        = '';
     this.hostsText     = null;
 
     function replaceInLink(link, adapter, instance) {
@@ -109,7 +107,7 @@ function Instances(main) {
                 title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to %s: ', adapter) + '</td><td>';
                 var val = that.main.states[adapter + '.' + instance + '.info.connection'] ? that.main.states[adapter + '.' + instance + '.info.connection'].val : false;
                 if (!val) {
-                    state = 'orange';
+                    state = state === 'red' ? 'red' : 'orange';
                     title += '<span style="color: red">' + _('false') + '</span>';
                 } else {
                     if (val === true) {
@@ -662,9 +660,21 @@ function Instances(main) {
 
         if (typeof this.$grid !== 'undefined' && (!this.$grid.data('inited') || update)) {
             this.$grid.data('inited', true);
-            //this.$grid.jqGrid('clearGridData');
-
             this.list.sort();
+            var onlyWWW = [];
+            // move all adapters with onlyWWW to the bottom
+            for (var l = this.list.length - 1; l >= 0; l--) {
+                if (this.main.objects[this.list[l]] && this.main.objects[this.list[l]].common && this.main.objects[this.list[l]].common.onlyWWW) {
+                    onlyWWW.push(this.list[l]);
+                    this.list.splice(l, 1);
+                }
+            }
+            this.list.sort();
+            onlyWWW.sort;
+            for (l = 0; l < onlyWWW.length; l++) {
+                this.list.push(onlyWWW[l]);
+            }
+
             createHead();
             this.$grid.html('');
 
@@ -682,7 +692,6 @@ function Instances(main) {
         if (this.$grid) {
             var parts = id.split('.');
             var last = parts.pop();
-            console.log(id + ' ' + parts.join('.') + ' ' + (this.list.indexOf(id) !== -1).toString());
             id = parts.join('.');
             if (this.list.indexOf(id) !== -1) {
                 if (last === 'alive' || last === 'connected') {
