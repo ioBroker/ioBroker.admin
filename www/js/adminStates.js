@@ -96,12 +96,44 @@ function States(main) {
                     main.objects[_id].common &&
                     main.objects[_id].common.type == 'boolean' &&
                     main.objects[_id].common.states) {
-                    that.$grid.setColProp('val', {
-                        editable:    true,
-                        edittype:    'select',
-                        editoptions: {value: main.objects[_id].common.states},
-                        align:       'center'
-                    });
+                    var states = main.objects[_id].common.states;
+                    if (typeof main.objects[_id].common.states == 'string' && main.objects[_id].common.states[0] == '{') {
+                        try {
+                            states = JSON.parse(main.objects[_id].common.states);
+                            var text = '';
+                            for (var s in states) {
+                                text += text ? ';' : '';
+                                text += s + ':' + states[s];
+                            }
+                            states = text;
+                        } catch (ex) {
+                            console.error('Cannot parse states: ' + main.objects[_id].common.states);
+                            states = null;
+                        }
+                    } else if (typeof main.objects[_id].common.states == 'object') {
+                        var text = '';
+                        for (var s in states) {
+                            text += text ? ';' : '';
+                            text += s + ':' + states[s];
+                        }
+                        states = text;
+                    }
+                    if (states) {
+                        that.$grid.setColProp('val', {
+                            editable:    true,
+                            edittype:    'select',
+                            editoptions: {value: states},
+                            align:       'center'
+                        });
+                    } else {
+                        that.$grid.setColProp('val', {
+                            editable:    true,
+                            edittype:    'select',
+                            editoptions: {value: 'true:false'},
+                            align:       'center'
+                        });
+
+                    }
                 } else if (
                     main.objects[_id] &&
                     main.objects[_id].common &&
@@ -144,7 +176,7 @@ function States(main) {
                         that.$grid.setColProp('val', {
                             editable:    true,
                             edittype:    'select',
-                            editoptions: {value: main.objects[_id].common.states},
+                            editoptions: {value: states},
                             align:       'center'
                         });
                     } else {
