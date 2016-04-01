@@ -302,7 +302,7 @@ systemDictionary = {
     "visualisation_group":  {"en": "visualisation",         "de": "Visualisierung",         "ru": "Визуализация"},
     "communication_group":  {"en": "communication",         "de": "Kommunikation",          "ru": "Сетевые"},
     "weather_group":        {"en": "Weather",               "de": "Wetter",                 "ru": "Погода"},
-    "storage_group":        {"en": "Storage",               "de": "Aufbewarung",            "ru": "Хранилище"},
+    "storage_group":        {"en": "Storage",               "de": "Aufbewahrung",            "ru": "Хранилище"},
     "vis_group":            {"en": "ioBroker.vis",          "de": "ioBroker.vis",           "ru": "ioBroker.vis"},
     "schedule_group":       {"en": "schedule",              "de": "Zeitplanung",            "ru": "Расписание"},
     "service_group":        {"en": "Maintenance",           "de": "Wartung",                "ru": "Сервисные приложения"},
