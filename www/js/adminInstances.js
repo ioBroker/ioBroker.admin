@@ -199,7 +199,7 @@ function Instances(main) {
         text += '<th style="width: 2em"></th>';
         text += '<th style="width: 2em"></th>';
         text += '<th style="width: 14em">' + _('instance') + '</th>';
-        text += '<th style="width: 11em"></th>';
+        text += '<th style="width: 12em"></th>';
         text += '<th style="text-align: left">' + _('title') + '</th>';
 
         if (that.main.tabs.hosts.list.length > 1) {
@@ -228,7 +228,8 @@ function Instances(main) {
             text = justContent ? '' : '<tr class="instance-adapter" data-instance-id="' + instanceId + '">';
 
             var link = common.localLink || '';
-            if (link) link = '<a href="' + replaceInLink(link, adapter, instance) + '" target="_blank">';
+            var url  = link ? replaceInLink(link, adapter, instance) : '';
+            if (link) link = '<a href="' + url + '" target="_blank">';
 
             // State -
             //             red - adapter is not connected or not alive,
@@ -243,11 +244,12 @@ function Instances(main) {
             text += '<td style="padding-left: 0.5em" data-instance-id="' + instanceId + '" class="instance-name"><b>' + adapter + '.' + instance + '</b></td>';
 
             // buttons
-            text += '<td style="text-align: center">' +
+            text += '<td style="text-align: left; padding-left: 1em;">' +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-stop-run"></button>' +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-settings" data-instance-href="/adapter/' + adapter + '/?' + instance + '" ></button>' +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-del"></button>'+
+                (url ? '<button style="display: inline-block" data-link="' + url +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '')
                 '</td>';
 
             // title
@@ -818,6 +820,7 @@ function Instances(main) {
         if (!$e.find('.ui-button-icon-primary').length) {
             $e.button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: '2em', height: '2em'}).attr('title', _('reload'));
         }
+
         $e = $('.instance-del' + id).unbind('click')
             .click(function () {
                 var id = $(this).attr('data-instance-id');
@@ -836,115 +839,7 @@ function Instances(main) {
         } else {
             $e.button('enable');
         }
-        /*
-         $e = $('.instance-ok-submit' + id).unbind('click').button({
-         icons: {primary: 'ui-icon-check'},
-         text:  false
-         }).css({width: '2em', height: '2em'}).attr('title', _('ok')).click(function () {
-         var id = $(this).attr('data-instance-id');
-         $('.instance-edit').show();
-         $('.instance-settings').show();
-         $('.instance-reload').show();
-         $('.instance-del').show();
-         $('.instance-ok-submit').hide();
-         $('.instance-cancel-submit').hide();
-         $('#reload-instances').removeClass('ui-state-disabled');
-         $('#edit-instance').removeClass('ui-state-disabled');
 
-         that.$grid.jqGrid('saveRow', 'instance_' + id, {'url': 'clientArray'});
-         // afterSave
-         setTimeout(function () {
-         var _obj = that.$grid.jqGrid('getRowData', 'instance_' + id);
-
-         // Translate mode back
-         var modes = that.$grid.jqGrid('getColProp', 'mode');
-         if (modes) modes = modes.editoptions.value;
-         for (var mode in modes) {
-         if (modes[mode] == _obj.mode) {
-         _obj.mode = mode;
-         break;
-         }
-         }
-
-         var obj = {common:{}};
-         obj.common.host          = _obj.host;
-         obj.common.loglevel      = _obj.loglevel;
-         obj.common.memoryLimitMB = _obj.memlimit;
-         obj.common.schedule      = _obj.schedule;
-         obj.common.enabled       = _obj.enabled;
-         obj.common.mode          = _obj.mode;
-         obj.common.title         = _obj.title;
-
-         if (obj.common.enabled === _('true'))  obj.common.enabled = true;
-         if (obj.common.enabled === _('false')) obj.common.enabled = false;
-
-         that.main.socket.emit('extendObject', _obj._id, obj, function (err) {
-         if (err) {
-         that.main.showError(err);
-         that.init(true);
-         }
-         });
-         }, 100);
-         });
-         if (!$e.find('.ui-button-icon-primary').length) {
-         $e.button({icons: {primary: 'ui-icon-note'}, text: false}).css({width: 22, height: 18}).attr('title', _('ok'));
-         }
-         $e = $('.instance-cancel-submit' + id).unbind('click').click(function () {
-         var id = $(this).attr('data-instance-id');
-         $('.instance-edit').show();
-         $('.instance-settings').show();
-         $('.instance-reload').show();
-         $('.instance-del').show();
-         $('.instance-ok-submit').hide();
-         $('.instance-cancel-submit').hide();
-         $('#reload-instances').removeClass('ui-state-disabled');
-         $('#edit-instance').removeClass('ui-state-disabled');
-         that.$grid.jqGrid('restoreRow', 'instance_' + id, false);
-
-         // Restore links
-         for (var i = 0; i < that.list.length; i++) {
-         var obj = that.main.objects[that.list[i]];
-         if (!obj) continue;
-         var tmp      = obj._id.split('.');
-         var adapter  = tmp[2];
-         var instance = tmp[3];
-
-         var title = obj.common ? obj.common.title : '';
-         var oldLink  = obj.common.localLink || '';
-         var newLink  = oldLink;
-         if (newLink && newLink.indexOf('%ip%') != -1) newLink = newLink.replace('%ip%', location.hostname);
-
-         var vars = newLink.match(/\%(\w+)\%/g);
-         if (newLink) {
-         var _obj = that.$grid.jqGrid('getRowData', 'instance_' + obj._id);
-         _obj.title = obj.common ? (newLink ? '<a href="' + newLink + '" id="a_' + adapter + '_' + instance + '" target="_blank">' + title + '</a>' : title): '';
-         that.$grid.jqGrid('setRowData', 'instance_' + obj._id, _obj);
-         that.initButtons(obj._id);
-         if (vars) that.replaceLinks(vars, adapter, instance);
-         }
-         }
-
-         // Set the colors
-         var a = $('td[aria-describedby="grid-instances_enabled"]');
-         var htmlTrue  = that.htmlBoolean(true);
-         var htmlFalse = that.htmlBoolean(false);
-
-         a.each(function (index) {
-         var text = $(this).html();
-         if (text == _('true')) {
-         $(this).html(htmlTrue);
-         } else if (text == _('false')) {
-         $(this).html(htmlFalse);
-         }
-         });
-
-         });
-         if (!$e.find('.ui-button-icon-primary').length) {
-         $e.button({
-         icons: {primary: 'ui-icon-close'},
-         text:  false
-         }).css({width: '2em', height: '2em'}).attr('title', _('cancel'));
-         }*/
         $('.instance-image' + id).each(function () {
             if (!$(this).data('installed')) {
                 $(this).data('installed', true);
@@ -986,6 +881,16 @@ function Instances(main) {
                     .css({width: '2em', height: '2em', 'background-color': that.main.objects[id].common.enabled ? 'lightgreen' : '#FF9999'})
                     .attr('title', that.main.objects[id].common.enabled ? _('Activated. Click to stop.') : _('Deactivated. Click to start.'));
             });
+        }
+
+        $e = $('.instance-web' + id).unbind('click')
+            .click(function () {
+                window.open($(this).attr('data-link'), $(this).attr('data-instance-id'));
+            });
+        if (!$e.find('.ui-button-icon-primary').length) {
+            $e.button({icons: {primary: 'ui-icon-image'}, text: false}).css({width: '2em', height: '2em'}).attr('title', _('open web page'));
+        } else {
+            $e.button('enable');
         }
     };
 

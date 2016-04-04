@@ -21,6 +21,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 1.0.1 (2016-03-22)
+* (bluefox) show web link button
+
 ### 1.0.0 (2016-03-15)
 * (bluefox) adapter is good enough to be released
 * (bluefox) fix LEDs

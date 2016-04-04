@@ -377,6 +377,7 @@ systemDictionary = {
     "Connected to %s: ":    {"en": "Connected to %s: ",     "de": "Verbunden mit %s: ",     "ru": "Соединён с %s: "},
     "Function":             {"en": "Function",              "de": "Funktion",               "ru": "Функция"},
     "Delete attribute":     {"en": "Delete attribute",      "de": "Attribut löschen",       "ru": "Удалить атрибут"},
+    "open web page":        {"en": "Open web page of adapter", "de": "Adapter-Webseite aufmachen", "ru": "Открыть приложение"},
     "Click on icon":        {
         "en": "Click on icon to open a link",
         "de": "Auf das Bildchen klicken",

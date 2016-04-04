@@ -1563,22 +1563,22 @@
 
                 if (isCommon === null) isCommon = data.objects[node.key] && data.objects[node.key].common;
 
-                if (f == 'ID') {
-                    if (node.key.toLowerCase().indexOf(data.filterVals[f]) == -1) return false;
+                if (f === 'ID') {
+                    if (node.key.toLowerCase().indexOf(data.filterVals[f]) === -1) return false;
                 } else
-                if (f == 'name' || f == 'enum') {
+                if (f === 'name' || f === 'enum') {
                     if (!isCommon || data.objects[node.key].common[f] === undefined || data.objects[node.key].common[f].toLowerCase().indexOf(data.filterVals[f]) == -1) return false;
                 } else
-                if (f == 'role') {
+                if (f === 'role') {
                     if (!isCommon || data.objects[node.key].common[f] === undefined || data.objects[node.key].common[f].indexOf(data.filterVals[f]) == -1) return false;
                 } else
-                if (f == 'type') {
+                if (f === 'type') {
                     if (!data.objects[node.key] || data.objects[node.key][f] === undefined || data.objects[node.key][f] != data.filterVals[f]) return false;
                 } else
-                if (f == 'value') {
+                if (f === 'value') {
                     if (!data.states[node.key] || data.states[node.key].val === undefined || data.states[node.key].val === null || data.states[node.key].val.toString().toLowerCase().indexOf(data.filterVals[f]) == -1) return false;
                 } else
-                if (f == 'button') {
+                if (f === 'button') {
                     if (data.filterVals[f] === 'true') {
                         if (!isCommon || !data.objects[node.key].common.history || data.objects[node.key].common.history.enabled === false) return false;
                     } else if (data.filterVals[f] === 'false') {
@@ -1587,19 +1587,19 @@
                         if (!isCommon || !data.objects[node.key].common.history || !data.objects[node.key].common.history[data.filterVals[f]]) return false;
                     }
                 } else
-                if (f == 'room') {
+                if (f === 'room') {
                     if (!data.objects[node.key]) return false;
 
                     // Try to find room
                     if (!data.rooms[node.key]) data.rooms[node.key] = findRoomsForObject(data, node.key);
-                    if (data.rooms[node.key].indexOf(data.filterVals[f]) == -1) return false;
+                    if (data.rooms[node.key].indexOf(data.filterVals[f]) === -1) return false;
                 } else
-                if (f == 'function') {
+                if (f === 'function') {
                     if (!data.objects[node.key]) return false;
 
                     // Try to find functions
                     if (!data.funcs[node.key]) data.funcs[node.key] = findFunctionsForObject(data, node.key);
-                    if (data.funcs[node.key].indexOf(data.filterVals[f]) == -1) return false;
+                    if (data.funcs[node.key].indexOf(data.filterVals[f]) === -1) return false;
                 }
             }
 
