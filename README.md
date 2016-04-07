@@ -21,6 +21,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 1.0.2 (2016-04-07)
+* (bluefox) show npm errors of version
+
 ### 1.0.1 (2016-03-22)
 * (bluefox) show web link button
 

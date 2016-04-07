@@ -446,6 +446,8 @@ function Adapters(main) {
                             version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
                         } else if (tmp[0] === '0') {
                             version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
+                        } else if (version === 'npm error') {
+                            version = '<span class="error" title="' + _("Cannot read version from NPM") + '">' + _('npm error') + '</span>';
                         } else {
                             version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
                         }
@@ -455,20 +457,15 @@ function Adapters(main) {
                     var desc  = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
                     desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
-                    if (adapter == 'vis') {
-                        //todo
-                        obj.highlight = true;
-                    }
-
                     that.data[adapter] = {
                         image:      icon ? '<img src="' + icon + '" width="22px" height="22px" />' : '',
                         name:       adapter,
-                        title:      obj.title,
+                        title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),
                         desc:       desc,
                         keywords:   obj.keywords ? obj.keywords.join(' ') : '',
                         version:    version,
                         installed:  installed,
-                        bold:       obj.highlight,
+                        bold:       obj.highlight || false,
                         install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit" title="' + _('add instance') + '"></button>' +
                             '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit" title="' + _('readme') + '"></button>' +
                             '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit" title="' + _('delete adapter') + '"></button>',
@@ -533,6 +530,8 @@ function Adapters(main) {
                                 version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
                             } else if (tmp[0] === '0') {
                                 version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
+                            } else if (version === 'npm error') {
+                                version = '<span class="error" title="' + _("Cannot read version from NPM") + '">' + _('npm error') + '</span>';
                             } else {
                                 version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
                             }
@@ -545,7 +544,7 @@ function Adapters(main) {
                         that.data[adapter] = {
                             image:      repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" width="22px" height="22px" />' : '',
                             name:       adapter,
-                            title:      obj.title,
+                            title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),
                             desc:       desc,
                             keywords:   obj.keywords ? obj.keywords.join(' ') : '',
                             version:    version,

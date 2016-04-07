@@ -378,6 +378,15 @@ systemDictionary = {
     "Function":             {"en": "Function",              "de": "Funktion",               "ru": "Функция"},
     "Delete attribute":     {"en": "Delete attribute",      "de": "Attribut löschen",       "ru": "Удалить атрибут"},
     "open web page":        {"en": "Open web page of adapter", "de": "Adapter-Webseite aufmachen", "ru": "Открыть приложение"},
+    "newObject":            {"en": "New object",            "de": "Neues Objekt",           "ru": "Новый объект"},
+    "Add new object: %s":   {"en": "Add new object: %s",    "de": "Neues Objekt hinzufügen: %s", "ru": "Добавить новый объект: %s"},
+    "Manually created":     {"en": "Manually created",      "de": "Manuell erzeugt",        "ru": "Создан в админ"},
+    "npm error":            {"en": "npm error",             "de": "Fehler",                 "ru": "ошибка"},
+    "Cannot read version from NPM": {
+        "en": "Could not read version from NPM",
+        "de": "Die Version aus NPM konnt nicht gelesen werden",
+        "ru": "Невозможно было считать версию драйвера с NPM"
+    },
     "Click on icon":        {
         "en": "Click on icon to open a link",
         "de": "Auf das Bildchen klicken",
