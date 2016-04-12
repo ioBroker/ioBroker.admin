@@ -30,8 +30,8 @@
              filter:     null,     // filter
              imgPath:    'lib/css/fancytree/', // Path to images device.png, channel.png and state.png
              connCfg:    null,     // configuration for dialog, ti read objects itself: {socketUrl: socketUrl, socketSession: socketSession}
-             onSuccess:  null,     // callback function to be called if user press "Select". Can be overwritten in "show"
-             onChange:   null,     // called every time the new object selected
+             onSuccess:  null,     // callback function to be called if user press "Select". Can be overwritten in "show" - function (newId, oldId, newObj)
+             onChange:   null,     // called every time the new object selected - function (newId, oldId, newObj)
              noDialog:   false,    // do not make dialog
              noMultiselect: false, // do not make multiselect
              buttons:    null,     // array with buttons, that should be shown in last column
@@ -712,7 +712,7 @@
                     text: data.texts.select,
                     click: function () {
                         var _data = $dlg.data('selectId');
-                        if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId);
+                        if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId, _data.objects[_data.selectedID]);
                         _data.currentId = _data.selectedID;
                         storeSettings(data);
                         $dlg.dialog('close');
@@ -976,7 +976,7 @@
                     var _data = $dlg.data('selectId');
                     var newId = data.node.key;
 
-                    if (_data.onChange) _data.onChange(newId, _data.selectedID);
+                    if (_data.onChange) _data.onChange(newId, _data.selectedID, _data.objects[newId]);
 
                     _data.selectedID = newId;
                     if (!_data.noDialog) {
