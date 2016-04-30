@@ -565,6 +565,7 @@
             if (states) {
                 text = '<select style="width: calc(100% - 50px); z-index: 2">';
                 for (var t in states) {
+                    if (typeof states[t] !== 'string') continue;
                     text += '<option value="' + t + '">' + states[t] + '</option>';
                 }
                 text += '</select>';
@@ -2158,7 +2159,15 @@
                 var $dlg = $(dlg);
                 var data = $dlg.data('selectId');
                 if (!data || !data.states || !data.$tree) continue;
-                if (data.states[id] && state && data.states[id].val == state.val) return;
+                if (data.states[id] &&
+                    state &&
+                    data.states[id].val  == state.val &&
+                    data.states[id].q    == state.q   &&
+                    data.states[id].from == state.from  &&
+                    data.states[id].ts   == state.ts  &&
+                    data.states[id].lc   == state.lc  &&
+                    data.states[id].ack  == state.ack
+                ) return;
                 data.states[id] = state;
                 var tree = data.$tree.fancytree('getTree');
                 var node = null;

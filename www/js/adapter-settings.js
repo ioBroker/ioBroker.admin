@@ -294,7 +294,7 @@ function getIPs(host, callback) {
             if (host.native.hardware && host.native.hardware.networkInterfaces) {
                 for (var eth in host.native.hardware.networkInterfaces) {
                     for (var num = 0; num < host.native.hardware.networkInterfaces[eth].length; num++) {
-                        if (host.native.hardware.networkInterfaces[eth][num].family != "IPv6") {
+                        if (host.native.hardware.networkInterfaces[eth][num].family != 'IPv6') {
                             IPs4.push({name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv4'});
                         } else {
                             IPs6.push({name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv6'});
