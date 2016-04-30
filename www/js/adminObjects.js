@@ -587,6 +587,10 @@ function Objects(main) {
                         syncEnum(id, 'functions', newValue);
                     } else
                     if (attr === 'value') {
+                        if (newValue === 'true') newValue = true;
+                        if (newValue === 'false') newValue = false;
+                        if (parseFloat(newValue).toString() == newValue) newValue = parseFloat(newValue);
+
                         main.socket.emit('setState', id, newValue, function (err) {
                             if (err) return that.main.showError(err);
                         });

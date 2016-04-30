@@ -63,7 +63,7 @@ function Hosts(main) {
             cursor:        'pointer'
         });
 
-        $("#load_grid-hosts").show();
+        $('#load_grid-hosts').show();
     };
 
     // ----------------------------- Hosts show and Edit ------------------------------------------------

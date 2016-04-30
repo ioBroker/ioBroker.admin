@@ -21,6 +21,9 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 1.0.3 (2016-04-30)
+* (bluefox) fix write of state in the objects tab
+
 ### 1.0.2 (2016-04-07)
 * (bluefox) show npm errors of version
 

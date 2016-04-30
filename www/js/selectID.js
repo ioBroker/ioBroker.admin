@@ -59,6 +59,7 @@
              noColumnResize: false, // do not allow column resize
              firstMinWidth: null,  // width if ID column, default 400
              showButtonsForNotExistingObjects: false,
+             webServer:    null,   // link to webserver, by default ":8082"
              texts: {
                  select:   'Select',
                  cancel:   'Cancel',
@@ -650,7 +651,7 @@
                 var val = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();
                 if ((attr == 'room' || attr == 'function') && !val) val = [];
 
-                if (JSON.stringify(val) != JSON.stringify(_oldText)) {
+                if (attr === 'value' || JSON.stringify(val) != JSON.stringify(_oldText)) {
                     data.quickEditCallback(id, attr, val, _oldText);
 
                     _oldText = '<span style="color: pink">' + _oldText + '</span>';
@@ -1111,7 +1112,7 @@
                         val = isCommon ? data.objects[node.key].common.role : '';
                         $elem.text(val);
 
-                        if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
+                        if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('role') !== -1) {
                             $elem.data('old-value', val);
                             $elem.click(onQuickEditField).data('id', node.key).data('name', 'role').data('selectId', data).addClass('select-id-quick-edit');
                         }
@@ -1133,7 +1134,7 @@
                         }
                         $elem.text(val);
 
-                        if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
+                        if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('room') !== -1) {
                             $elem.data('old-value', val);
                             $elem.click(onQuickEditField)
                                 .data('id', node.key)
@@ -1159,7 +1160,7 @@
                         }
                         $elem.text(val);
 
-                        if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
+                        if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('function') !== -1) {
                             $elem.data('old-value', val);
                             $elem.click(onQuickEditField)
                                 .data('id', node.key)
@@ -1171,6 +1172,7 @@
                     } else
                     if (name == 'value') {
                         $elem = $tdList.eq(base);
+                        var common = data.objects[node.key] ? data.objects[node.key].common || {} : {};
                         if (data.states && (data.states[node.key] || data.states[node.key + '.val'] !== undefined)) {
                             var $elem = $tdList.eq(base);
                             var state = data.states[node.key];
@@ -1188,7 +1190,7 @@
                                 state = JSON.parse(JSON.stringify(state));
                             }
 
-                            if (data.objects[node.key] && data.objects[node.key].common && data.objects[node.key].common.role == 'value.time') {
+                            if (common.role === 'value.time') {
                                 state.val = state.val ? (new Date(state.val)).toString() : state.val;
                             }
                             if (states && states[state.val] !== undefined) {
@@ -1199,7 +1201,7 @@
                             if (state.val === undefined) {
                                 state.val = '';
                             } else {
-                                if (isCommon && data.objects[node.key].common.unit) state.val += ' ' + data.objects[node.key].common.unit;
+                                if (isCommon && common.unit) state.val += ' ' + common.unit;
                                 fullVal  =          data.texts.value   + ': ' + state.val;
                                 fullVal += '\x0A' + data.texts.ack     + ': ' + state.ack;
                                 fullVal += '\x0A' + data.texts.ts      + ': ' + (state.ts ? formatDate(new Date(state.ts * 1000)) : '');
@@ -1207,15 +1209,16 @@
                                 fullVal += '\x0A' + data.texts.from    + ': ' + (state.from || '');
                                 fullVal += '\x0A' + data.texts.quality + ': ' + quality2text(state.q || 0);
                             }
+
                             $elem.text(state.val)
                                 .attr('title', fullVal)
-                                .addClass('clippy')
                                 .css({position: 'relative'});
 
                             $elem.css({color: state.ack ? (state.q ? 'orange' : '') : 'red'});
 
-                            if (!data.noCopyToClipboard) {
+                            if (!data.noCopyToClipboard && data.objects[node.key] && data.objects[node.key].type === 'state' && common.type !== 'file') {
                                 $elem.data('clippy', state.val)
+                                    .addClass('clippy')
                                     .data('copyToClipboard', data.texts.copyToClipboard || data.texts.copyTpClipboard)
                                     .mouseenter(clippyShow)
                                     .mouseleave(clippyHide);
@@ -1230,16 +1233,26 @@
                             e.preventDefault();
                         });
 
-                        if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
-                            var val = data.states[node.key];
-                            val = val ? val.val : '';
-                            $elem.data('old-value', val).data('type', data.objects[node.key] && data.objects[node.key].common ? data.objects[node.key].common.type : typeof val);
+                        if (data.quickEdit && data.objects[node.key] && data.objects[node.key].type === 'state' && data.quickEdit.indexOf('value') !== -1) {
+                            if (!data.objects[node.key].common || data.objects[node.key].common.type !== 'file') {
+                                var val = data.states[node.key];
+                                val = val ? val.val : '';
+                                $elem.data('old-value', val).data('type', common.type || typeof val);
 
-                            $elem.click(onQuickEditField)
-                                .data('id', node.key)
-                                .data('name', 'value')
-                                .data('selectId', data)
-                                .addClass('select-id-quick-edit');
+                                $elem.click(onQuickEditField)
+                                    .data('id', node.key)
+                                    .data('name', 'value')
+                                    .data('selectId', data)
+                                    .addClass('select-id-quick-edit');
+                            }
+                        }
+
+                        if (common.type === 'file') {
+                            data.webServer = data.webServer || (window.location.protocol + '//' + window.location.hostname + ':8082');
+
+                            // link
+                            $elem.html('<a href="' + data.webServer + '/state/' + node.key + '">' + data.webServer + '/state/' + node.key + '</a>')
+                                .attr('title', data.texts.linkToFile);
                         }
 
                         base++;
@@ -2161,13 +2174,13 @@
                 if (!data || !data.states || !data.$tree) continue;
                 if (data.states[id] &&
                     state &&
-                    data.states[id].val  == state.val &&
-                    data.states[id].q    == state.q   &&
-                    data.states[id].from == state.from  &&
-                    data.states[id].ts   == state.ts  &&
-                    data.states[id].lc   == state.lc  &&
-                    data.states[id].ack  == state.ack
-                ) return;
+                    data.states[id].val  === state.val  &&
+                    data.states[id].ack  === state.ack  &&
+                    data.states[id].q    === state.q    &&
+                    data.states[id].from === state.from &&
+                    data.states[id].ts   === state.ts
+                    ) return;
+
                 data.states[id] = state;
                 var tree = data.$tree.fancytree('getTree');
                 var node = null;
