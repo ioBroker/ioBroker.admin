@@ -1098,11 +1098,11 @@ function Objects(main) {
                 if (this.main.objects[this.main.instances[i]].common.name == 'web' && this.main.objects[this.main.instances[i]].common.enabled) {
                     port = this.main.objects[this.main.instances[i]].native.port;
                 }
-                if (chart && port) break;
+                if (chart === 'flot' && port) break;
             }
             var $chart = $('#iframe-history-chart');
 
-            $chart.attr('src', 'http://' + location.hostname + ':' + port + '/' + chart + '/index.html?range=1440&axeX=lines&axeY=inside&_ids=' + encodeURI(id) + '&width=' + ($chart.width() - 50) + '&hoverDetail=true&height=' + ($chart.height() - 50) + '&instance=' + $('#history-chart-instance').val());
+            $chart.attr('src', 'http://' + location.hostname + ':' + port + '/' + chart + '/index.html?range=1440&zoom=true&axeX=lines&axeY=inside&_ids=' + encodeURI(id) + '&width=' + ($chart.width() - 50) + '&hoverDetail=true&height=' + ($chart.height() - 50) + '&instance=' + $('#history-chart-instance').val());
         } else {
             $('#iframe-history-chart').attr('src', '');
         }
@@ -1149,7 +1149,7 @@ function Objects(main) {
                 if (main.objects[main.instances[i]].common.name == 'web'      && main.objects[main.instances[i]].common.enabled) {
                     port = main.objects[main.instances[i]].native.port;
                 }
-                if (chart && port) break;
+                if (chart === 'flot' && port) break;
             }
             that.loadHistoryTable(id);
             $tabs.tabs('option', 'disabled', (port && chart && that.currentHistory) ? [] : [2]);
@@ -1299,7 +1299,7 @@ function Objects(main) {
     };
 
     this.resizeHistory = function () {
-        $('#iframe-history-chart').css({height: this.$dialogHistory.height() - 60, width: this.$dialogHistory.width() - 10});
+        $('#iframe-history-chart').css({height: this.$dialogHistory.height() - 70, width: this.$dialogHistory.width() - 10});
         var timeout = $('#iframe-history-chart').data('timeout');
         if (timeout) clearTimeout(timeout);
 
@@ -1411,7 +1411,7 @@ function Objects(main) {
                 }
             ],
             open: function (event, ui) {
-                $('#iframe-history-chart').css({height: $(this).height() - 115, width: $(this).width() - 30});
+                $('#iframe-history-chart').css({height: $(this).height() - 120, width: $(this).width() - 30});
             },
             close: function () {
                 $('#iframe-history-chart').attr('src', '');
