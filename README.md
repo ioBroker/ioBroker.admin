@@ -21,6 +21,12 @@ user interface for configuration and administration
 
 ## Changelog
 
+### 1.1.1 (2016-05-02)
+* (bluefox) fix set of states in States-Tab
+
+### 1.1.0 (2016-04-30)
+* (bluefox) change seconds to milliseconds by ts and lc
+
 ### 1.0.3 (2016-04-30)
 * (bluefox) fix write of state in the objects tab
 

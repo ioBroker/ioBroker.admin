@@ -4,7 +4,6 @@ function Objects(main) {
     this.$dialogHistory = $('#dialog-history');
 
     this.$grid          = $('#grid-objects');
-    this.$gridHistory   = $('#grid-history');
 
     this.main = main;
     this.historyEnabled = null;
@@ -897,8 +896,8 @@ function Objects(main) {
                 '<td>' + state.val  + '</td>' +
                 '<td>' + state.ack  + '</td>' +
                 '<td>' + state.from + '</td>' +
-                '<td>' + main.formatDate(state.ts, true) + '</td>' +
-                '<td>' + main.formatDate(state.lc, true) + '</td>' +
+                '<td>' + main.formatDate(state.ts) + '</td>' +
+                '<td>' + main.formatDate(state.lc) + '</td>' +
                 '</tr>');
             $body.data('odd', !$body.data('odd'));
         }
@@ -1055,7 +1054,7 @@ function Objects(main) {
     };
 
     this.loadHistoryTable = function (id) {
-        var end = Math.round((new Date()).getTime() / 1000) + 10; // now
+        var end = (new Date()).getTime() + 10000; // now
         $('#grid-history-body').html('<tr><td colspan="5" style="text-align: center">' + _('Loading...') + '</td></tr>');
 
         main.socket.emit('getStateHistory', id, {end: end, count: 50, instance: $('#history-table-instance').val(), from: true, ack: true, q: true}, function (err, res) {
@@ -1068,8 +1067,8 @@ function Objects(main) {
                                 '<td>' + res[i].val  + '</td>' +
                                 '<td>' + res[i].ack  + '</td>' +
                                 '<td>' + (res[i].from || '').replace('system.adapter.', '').replace('system.', '') + '</td>' +
-                                '<td>' + main.formatDate(res[i].ts, true) + '</td>' +
-                                '<td>' + main.formatDate(res[i].lc, true) + '</td>' +
+                                '<td>' + main.formatDate(res[i].ts) + '</td>' +
+                                '<td>' + main.formatDate(res[i].lc) + '</td>' +
                                 '</tr>\n'
                         }
                     } else {
@@ -1090,7 +1089,10 @@ function Objects(main) {
             var port = 0;
             var chart = false;
             for (var i = 0; i < this.main.instances.length; i++) {
-                if (this.main.objects[main.instances[i]].common.name == 'rickshaw' && this.main.objects[this.main.instances[i]].common.enabled) {
+                if (this.main.objects[main.instances[i]].common.name == 'flot' && this.main.objects[this.main.instances[i]].common.enabled) {
+                    chart = 'flot';
+                } else
+                if (!chart && this.main.objects[main.instances[i]].common.name == 'rickshaw' && this.main.objects[this.main.instances[i]].common.enabled) {
                     chart = 'rickshaw';
                 } else
                 if (this.main.objects[this.main.instances[i]].common.name == 'web' && this.main.objects[this.main.instances[i]].common.enabled) {
@@ -1138,7 +1140,10 @@ function Objects(main) {
 
             // Check if chart enabled and set
             for (var i = 0; i < main.instances.length; i++) {
-                if (main.objects[main.instances[i]].common.name == 'rickshaw' && main.objects[main.instances[i]].common.enabled) {
+                if (main.objects[main.instances[i]].common.name == 'flot' && main.objects[main.instances[i]].common.enabled) {
+                    chart = 'flot';
+                } else
+                if (!chart && main.objects[main.instances[i]].common.name == 'rickshaw' && main.objects[main.instances[i]].common.enabled) {
                     chart = 'rickshaw';
                 } else
                 if (main.objects[main.instances[i]].common.name == 'web'      && main.objects[main.instances[i]].common.enabled) {

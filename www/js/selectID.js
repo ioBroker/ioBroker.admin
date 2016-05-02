@@ -161,6 +161,15 @@
             text += ':' + v;
         }
 
+        v = dateObj.getMilliseconds();
+        if (v < 10) {
+            text += '.00' + v;
+        } else if (v < 100) {
+            text += '.0' + v;
+        } else {
+            text += '.' + v;
+        }
+        
         return text;
     }
 
@@ -1201,11 +1210,15 @@
                             if (state.val === undefined) {
                                 state.val = '';
                             } else {
+                                // if less 2000.01.01 00:00:00
+                                if (state.ts < 946681200000)  state.ts *= 1000;
+                                if (state.lc < 946681200000)  state.lc *= 1000;
+
                                 if (isCommon && common.unit) state.val += ' ' + common.unit;
                                 fullVal  =          data.texts.value   + ': ' + state.val;
                                 fullVal += '\x0A' + data.texts.ack     + ': ' + state.ack;
-                                fullVal += '\x0A' + data.texts.ts      + ': ' + (state.ts ? formatDate(new Date(state.ts * 1000)) : '');
-                                fullVal += '\x0A' + data.texts.lc      + ': ' + (state.lc ? formatDate(new Date(state.lc * 1000)) : '');
+                                fullVal += '\x0A' + data.texts.ts      + ': ' + (state.ts ? formatDate(new Date(state.ts)) : '');
+                                fullVal += '\x0A' + data.texts.lc      + ': ' + (state.lc ? formatDate(new Date(state.lc)) : '');
                                 fullVal += '\x0A' + data.texts.from    + ': ' + (state.from || '');
                                 fullVal += '\x0A' + data.texts.quality + ': ' + quality2text(state.q || 0);
                             }

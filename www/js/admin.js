@@ -173,7 +173,7 @@ $(document).ready(function () {
         showError:    function (error) {
             main.showMessage(_(error),  _('Error'), 'alert');
         },
-        formatDate:     function (dateObj, isSeconds) {
+        formatDate:     function (dateObj, justTime) {
             //return dateObj.getFullYear() + '-' +
             //    ("0" + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
             //    ("0" + (dateObj.getDate()).toString(10)).slice(-2) + ' ' +
@@ -184,25 +184,38 @@ $(document).ready(function () {
             if (!dateObj) return '';
             var text = typeof dateObj;
             if (text == 'string') {
-                var pos = dateObj.indexOf('.');
-                if (pos != -1) dateObj = dateObj.substring(0, pos);
-                return dateObj;
+                if (justTime) {
+                    return dateObj.substring(8);
+                } else {
+                    return dateObj;
+                }
             }
-            if (text != 'object') dateObj = isSeconds ? new Date(dateObj * 1000) : new Date(dateObj);
+            // if less 2000.01.01 00:00:00
+            if (text != 'object') dateObj = dateObj < 946681200000 ? new Date(dateObj * 1000) : new Date(dateObj);
 
-            text = dateObj.getFullYear();
-            var v = dateObj.getMonth() + 1;
-            if (v < 10) {
-                text += '-0' + v;
-            } else {
-                text += '-' + v;
-            }
+            var v;
+            if (!justTime) {
+                text = dateObj.getFullYear();
+                v = dateObj.getMonth() + 1;
+                if (v < 10) {
+                    text += '-0' + v;
+                } else {
+                    text += '-' + v;
+                }
 
-            v = dateObj.getDate();
-            if (v < 10) {
-                text += '-0' + v;
+                v = dateObj.getDate();
+                if (v < 10) {
+                    text += '-0' + v;
+                } else {
+                    text += '-' + v;
+                }
             } else {
-                text += '-' + v;
+                v = dateObj.getDate();
+                if (v < 10) {
+                    text = '0' + v;
+                } else {
+                    text = v;
+                }
             }
 
             v = dateObj.getHours();
@@ -223,6 +236,15 @@ $(document).ready(function () {
                 text += ':0' + v;
             } else {
                 text += ':' + v;
+            }
+
+            v = dateObj.getMilliseconds();
+            if (v < 10) {
+                text += '.00' + v;
+            } else if (v < 100) {
+                text += '.0' + v;
+            } else {
+                text += '.' + v;
             }
 
             return text;

@@ -32,8 +32,8 @@ function States(main) {
         }
 
         obj.type = that.main.objects[obj._id] && that.main.objects[obj._id].common ? that.main.objects[obj._id].common.type : '';
-        if (obj.ts) obj.ts = that.main.formatDate(obj.ts, true);
-        if (obj.lc) obj.lc = that.main.formatDate(obj.lc, true);
+        if (obj.ts) obj.ts = that.main.formatDate(obj.ts);
+        if (obj.lc) obj.lc = that.main.formatDate(obj.lc);
 
         if (typeof obj.val == 'object') obj.val = JSON.stringify(obj.val);
 
@@ -205,46 +205,20 @@ function States(main) {
                     // afterSave
                     stateEdit = false;
                     var val = that.$grid.jqGrid('getCell', stateLastSelected, 'val');
-                    var id = $('tr[id="' + stateLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
-
-                    var oldSelected = stateLastSelected;
-
-                    if (main.objects[id] &&
-                        main.objects[id].common &&
-                        main.objects[id].common.type == 'number' &&
-                        main.objects[id].common.states) {
-                        if (typeof main.objects[_id].common.states == 'string' && main.objects[_id].common.states[0] == '{') {
-                            try {
-                                states = JSON.parse(main.objects[_id].common.states);
-                                for (var v = 0; v < main.objects[id].common.states.length; v++) {
-                                    if (main.objects[id].common.states[val] == val) {
-                                        val = v;
-                                        break;
-                                    }
-                                }
-                            } catch (ex) {
-                                console.error('Cannot parse states: ' + main.objects[_id].common.states);
-                                states = null;
-                            }
-                        } else if (typeof main.objects[_id].common.states == 'object') {
-                            for (var v in main.objects[id].common.states) {
-                                if (main.objects[id].common.states[v] == val) {
-                                    val = v;
-                                    break;
-                                }
-                            }
-                        } else if (typeof main.objects[_id].common.states == 'string') {
-                            var states = main.objects[_id].common.states;
-                            var s = states.split(';');
-                            for (var v = 0; v < s.length; v++) {
-                                var parts = s[v].split(':');
-                                if (parts[1].trim() == val) {
-                                    val = parts[0].trim();
-                                    break;
-                                }
+                    if (states) {
+                        var parts = states.split(';');
+                        for (var p = 0; p < parts.length; p++) {
+                            var _parts = parts[p].split(':');
+                            if (_parts[1].trim() == val) {
+                                val = _parts[0].trim();
+                                break;
                             }
                         }
                     }
+
+                    var id = $('tr[id="' + stateLastSelected + '"]').find('td[aria-describedby$="_id"]').html();
+
+                    var oldSelected = stateLastSelected;
 
                     if (val === 'true')  val = true;
                     if (val === 'false') val = false;
@@ -256,7 +230,7 @@ function States(main) {
                     if (ack === 'true')  ack = true;
                     if (ack === 'false') ack = false;
 
-                    if (that.main.objects[id] &&  that.main.objects[id].common &&  that.main.objects[id].common.role == 'value.time') {
+                    if (that.main.objects[id] &&  that.main.objects[id].common && that.main.objects[id].common.role == 'value.time') {
                         val = (new Date(val)).getTime();
                     }
 
@@ -309,7 +283,7 @@ function States(main) {
                 }
             }
         }
-        $("#load_grid-states").show();
+        $('#load_grid-states').show();
     };
 
     this.init = function (update) {
@@ -350,8 +324,8 @@ function States(main) {
                     if (rowData) {
                         rowData.val = state.val;
                         rowData.ack = state.ack;
-                        if (state.ts) rowData.ts = main.formatDate(state.ts, true);
-                        if (state.lc) rowData.lc = main.formatDate(state.lc, true);
+                        if (state.ts) rowData.ts = main.formatDate(state.ts);
+                        if (state.lc) rowData.lc = main.formatDate(state.lc);
                         rowData.from = state.from ? state.from.replace('system.adapter.', '').replace('system.', '') : '';
                         if (main.objects[id] && main.objects[id].common && main.objects[id].common.role == 'value.time') {
                             rowData.val = main.formatDate(rowData.val);
