@@ -1556,8 +1556,11 @@ $(document).ready(function () {
                                 if (addr) break;
                             }
                         }
-                        if (addr) tabs.hosts.list.push({name: obj.common.hostname, address: addr, id: obj._id});
-                    }
+                        if (addr) {
+                            tabs.hosts.list.push({name: obj.common.hostname, address: addr, id: obj._id});
+                        } else {
+                            tabs.hosts.list.push({name: obj.common.hostname, address: '127.0.0.1', id: obj._id});
+                        }                    }
                     //treeInsert(id);
                 }
                 main.objectsLoaded = true;

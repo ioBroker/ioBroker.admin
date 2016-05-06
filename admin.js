@@ -917,7 +917,13 @@ function socketEvents(socket) {
             adapter.getHistory(id, options, callback);
         }
     });
-    /*
+    socket.on('getHistory', function (id, options, callback) {
+        if (updateSession(socket) && checkPermissions(socket, 'getStateHistory', callback)) {
+            options.user = this._acl.user;
+            options.aggregate = options.aggregate || 'none';
+            adapter.getHistory(id, options, callback);
+        }
+    });    /*
      *      user/group
      */
     socket.on('addUser', function (user, pass, callback) {

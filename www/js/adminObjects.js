@@ -1057,7 +1057,7 @@ function Objects(main) {
         var end = (new Date()).getTime() + 10000; // now
         $('#grid-history-body').html('<tr><td colspan="5" style="text-align: center">' + _('Loading...') + '</td></tr>');
 
-        main.socket.emit('getStateHistory', id, {end: end, count: 50, instance: $('#history-table-instance').val(), from: true, ack: true, q: true}, function (err, res) {
+        main.socket.emit('getHistory', id, {end: end, count: 50, aggregate: 'none', instance: $('#history-table-instance').val(), from: true, ack: true, q: true}, function (err, res) {
             setTimeout(function () {
                 if (!err) {
                     var text = '';
