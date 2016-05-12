@@ -8,6 +8,7 @@ var adapter =  '';
 var onChangeSupported = false;
 
 $(document).ready(function () {
+    "use strict";
 
     var tmp = window.location.pathname.split('/');
     adapter = tmp[2];

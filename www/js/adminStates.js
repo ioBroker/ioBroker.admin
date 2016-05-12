@@ -1,4 +1,6 @@
 function States(main) {
+    "use strict";
+
     var that = this;
 
     this.$grid = $('#grid-states');

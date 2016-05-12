@@ -112,6 +112,8 @@
  +  reinit() - draw tree anew
  */
 (function ($) {
+    "use strict";
+
     if ($.fn.selectId) return;
 
     var instance = 0;
@@ -1487,7 +1489,6 @@
             // Custom event handler that is triggered by keydown-handler and
             // context menu:
             var refNode;
-            var moveMode;
             var tree = $(this).fancytree('getTree');
             var node = tree.getActiveNode();
 
@@ -1510,7 +1511,7 @@
                     node.moveTo(node.getParent(), 'after');
                     node.setActive();
                     break;
-                case 'copy':
+                /*case 'copy':
                     CLIPBOARD = {
                         mode: data.cmd,
                         data: node.toDict(function (n) {
@@ -1520,7 +1521,7 @@
                     break;
                 case 'clear':
                     CLIPBOARD = null;
-                    break;
+                    break;*/
                 default:
                     alert('Unhandled command: ' + data.cmd);
                     return;

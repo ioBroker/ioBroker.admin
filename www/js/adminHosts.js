@@ -1,4 +1,6 @@
 function Hosts(main) {
+    "use strict";
+
     var that      = this;
     this.main     =   main;
     this.list     = [];
@@ -41,7 +43,7 @@ function Hosts(main) {
             searchOnEnter: false,
             enableClear:   false,
             afterSearch:   function () {
-                initHostButtons();
+                that.initButtons();
             }
         }).navGrid('#pager-hosts', {
             search:  false,
@@ -53,7 +55,7 @@ function Hosts(main) {
             caption:       '',
             buttonicon:    'ui-icon-refresh',
             onClickButton: function () {
-                initHosts(true, true, function () {
+                that.initList(true, true, function () {
                     tabs.adapters.init(true, false);
                 });
             },
@@ -191,9 +193,10 @@ function Hosts(main) {
 
                     if (!installed && obj.common && obj.common.installedVersion) installed = obj.common.installedVersion;
 
-                    if (installed && version) {
+                    if ((installed && version)) {
                         if (!main.upToDate(version, installed)) {
-                            installed += ' <button class="host-update-submit" data-host-name="' + obj.common.hostname + '">' + _('update') + '</button>';
+                            // hide button, because it is not always work
+                            installed += ' <button class="host-update-submit" data-host-name="' + obj.common.hostname + '" style="opacity: 0">' + _('update') + '</button>';
                             version = '<span class="updateReady">' + version + '<span>';
                             $('a[href="#tab-hosts"]').addClass('updateReady');
                         }
@@ -226,6 +229,7 @@ function Hosts(main) {
         // Update hosts
         if (id.match(/^system\.host\.[-\w]+$/)) {
             var found = false;
+            var i;
             for (i = 0; i < this.list.length; i++) {
                 if (this.list[i].id == id) {
                     found = true;
@@ -238,9 +242,9 @@ function Hosts(main) {
             } else {
                 if (found) this.list.splice(i, 1);
             }
-            if (this.updateTimer) {
-                clearTimeout(this.updateTimer);
-            }
+            
+            if (this.updateTimer) clearTimeout(this.updateTimer);
+
             this.updateTimer = setTimeout(function () {
                 that.updateTimer = null;
                 that.init(true);

@@ -1,4 +1,6 @@
 function Groups(main) {
+    "use strict";
+
     var that     = this;
     this.list    = [];
     this.$grid   = $('#grid-groups');

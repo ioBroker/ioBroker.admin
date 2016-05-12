@@ -1,4 +1,6 @@
 function Adapters(main) {
+    "use strict";
+
     var that = this;
 
     this.curRepository =         null;
@@ -223,7 +225,7 @@ function Adapters(main) {
         that.onlyUpdatable = that.main.config.adaptersOnlyUpdatable || false;
         that.currentFilter = that.main.config.adaptersCurrentFilter || '';
         that.isCollapsed = that.main.config.adaptersIsCollapsed ? JSON.parse(that.main.config.adaptersIsCollapsed) : {};
-        $('#adapters-filter').val(that.currentFilter)
+        $('#adapters-filter').val(that.currentFilter);
 
         if (that.isList) {
             $('#btn_list_adapters').addClass('ui-state-error');
@@ -362,7 +364,6 @@ function Adapters(main) {
             this.$grid.find('tbody').html('');
 
             this.getAdaptersInfo(this.main.currentHost, update, updateRepo, function (repository, installedList) {
-                var id = 1;
                 var obj;
                 var version;
                 var tmp;
@@ -407,7 +408,7 @@ function Adapters(main) {
                     if (repository[adapter] && repository[adapter].extIcon) icon = repository[adapter].extIcon;
 
                     if (obj.version) {
-                        installed = '<table style="border: 0px;border-collapse: collapse;" cellspacing="0" cellpadding="0" class="ui-widget"><tr><td style="border: 0px;padding: 0;width:50px">' + obj.version + '</td>';
+                        installed = '<table style="border: 0; border-collapse: collapse;" cellspacing="0" cellpadding="0" class="ui-widget"><tr><td style="border: 0; padding: 0; width: 50px">' + obj.version + '</td>';
 
                         var _instances = 0;
                         var _enabled   = 0;
@@ -420,16 +421,16 @@ function Adapters(main) {
                             }
                         }
                         if (_instances) {
-                            installed += '<td style="border: 0px;padding: 0;width:40px">[<span title="' + _('Installed instances') + '">' + _instances + '</span>';
+                            installed += '<td style="border: 0; padding: 0; width:40px">[<span title="' + _('Installed instances') + '">' + _instances + '</span>';
                             if (_enabled) installed += '/<span title="' + _('Active instances') + '" class="true">' + _enabled + '</span>';
                             installed += ']</td>';
                         } else {
-                            installed += '<td style="border: 0px;padding: 0;width: 40px"></td>';
+                            installed += '<td style="border: 0; padding: 0; width: 40px"></td>';
                         }
 
                         tmp = installed.split('.');
                         if (!that.main.upToDate(version, obj.version)) {
-                            installed += '<td style="border: 0px;padding: 0;width:30px"><button class="adapter-update-submit" data-adapter-name="' + adapter + '" title="' + _('update') + '"></button></td>';
+                            installed += '<td style="border: 0; padding: 0; width: 30px"><button class="adapter-update-submit" data-adapter-name="' + adapter + '" title="' + _('update') + '"></button></td>';
                             version = version.replace('class="', 'class="updateReady ');
                             $('a[href="#tab-adapters"]').addClass('updateReady');
                         } else if (that.onlyUpdatable) {

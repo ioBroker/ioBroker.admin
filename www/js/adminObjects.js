@@ -1,4 +1,6 @@
 function Objects(main) {
+    "use strict";
+
     var that = this;
     this.$dialog        = $('#dialog-object');
     this.$dialogHistory = $('#dialog-history');
@@ -50,20 +52,20 @@ function Objects(main) {
             activate: function (event, ui) {
                 if (ui.newPanel.selector == '#object-tab-raw') {
                     var obj = that.saveFromTabs();
-                    if (!obj) {
-                        return false;
-                    }
+
+                    if (!obj) return false;
+
                     that.editor.setValue(JSON.stringify(obj, null, 2));
                 } else if (ui.oldPanel.selector == '#object-tab-raw') {
-                    var obj;
+                    var _obj;
                     try {
-                        obj = JSON.parse(that.editor.getValue());
+                        _obj = JSON.parse(that.editor.getValue());
                     } catch (e) {
                         that.main.showMessage(e, _('Parse error'), 'alert');
                         $('#object-tabs').tabs({active: 4});
                         return false;
                     }
-                    that.load(obj);
+                    that.load(_obj);
                 }
                 return true;
             }
@@ -85,16 +87,17 @@ function Objects(main) {
                     id: 'dialog-object-tab-new',
                     text: _('Ok'),
                     click: function () {
-                        var type  = $('#object-tab-new-name').data('type') || 'common';
-                        var field = $('#object-tab-new-name').val().trim();
+                        var $tab = $('#object-tab-new-name');
+                        var type  = $tab.data('type') || 'common';
+                        var field = $tab.val().trim();
                         var obj   = that.saveFromTabs();
 
                         if (!field || field.indexOf(' ') != -1) {
-                            showError(_('Invalid field name: %s', field));
+                            that.main.showError(_('Invalid field name: %s', field));
                             return;
                         }
                         if (obj[type][field] !== undefined) {
-                            showError(_('Field %s yet exists!', field));
+                            that.main.showError(_('Field %s yet exists!', field));
                             return;
                         }
 
@@ -135,7 +138,7 @@ function Objects(main) {
                         id = id.replace(/\s/g, '_');
 
                         if (that.main.objects[id]) {
-                            showError(_('Object "%s" yet exists!', id));
+                            that.main.showError(_('Object "%s" yet exists!', id));
                             return;
                         }
 
@@ -278,7 +281,7 @@ function Objects(main) {
             } else if (typeof object[attr] == 'boolean') {
                 text += '<input type="checkbox" class="object-tab-edit-boolean" data-attr="' + attr + '" ' + (object[attr] ? 'checked' : '') + ' />';
             } else {
-                text += '<textarea type="text" class="object-tab-edit-object"  style="width: 100%" rows="3" data-attr="' + attr + '">' + JSON.stringify(object[attr], null, 2) + '</textarea>';
+                text += '<textarea class="object-tab-edit-object"  style="width: 100%" rows="3" data-attr="' + attr + '">' + JSON.stringify(object[attr], null, 2) + '</textarea>';
             }
             text += '</td><td><button class="object-tab-field-delete" data-attr="' + attr + '" data-part="' + part + '"></button></td></tr>';
         }
@@ -287,17 +290,18 @@ function Objects(main) {
     }
 
     function saveObjectFields(htmlId, object) {
-        $('#' + htmlId).find('.object-tab-edit-string').each(function () {
+        var $htmlId = $('#' + htmlId);
+        $htmlId.find('.object-tab-edit-string').each(function () {
             object[$(this).data('attr')] = $(this).val();
         });
-        $('#' + htmlId).find('.object-tab-edit-number').each(function () {
+        $htmlId.find('.object-tab-edit-number').each(function () {
             object[$(this).data('attr')] = parseFloat($(this).val());
         });
-        $('#' + htmlId).find('.object-tab-edit-boolean').each(function () {
+        $htmlId.find('.object-tab-edit-boolean').each(function () {
             object[$(this).data('attr')] = $(this).prop('checked');
         });
         var err = null;
-        $('#' + htmlId).find('.object-tab-edit-object').each(function () {
+        $htmlId.find('.object-tab-edit-object').each(function () {
             try {
                 object[$(this).data('attr')] = JSON.parse($(this).val());
             } catch (e) {
@@ -531,8 +535,9 @@ function Objects(main) {
                                 $('#object-tab-new-object-type').val('state');
                             }
 
-                            $('#dialog-new-object').dialog('open');
-                            $('#dialog-new-object').dialog('option', 'title', _('Add new object: %s', (id ? id + '.' : '') + _('newObject')))
+                            $('#dialog-new-object')
+                                .dialog('open')
+                                .dialog('option', 'title', _('Add new object: %s', (id ? id + '.' : '') + _('newObject')));
                         }
                     },
                     {
@@ -564,7 +569,7 @@ function Objects(main) {
                         click: function () {
                             var id = that.$grid.selectId('getActual') || '';
                             var result = {};
-                            var arr = $.map(that.main.objects, function (val, key) {
+                            $.map(that.main.objects, function (val, key) {
                                 if (key.search(id) == 0) result[key] = val;
                             });
                             if (result != undefined) {
@@ -578,7 +583,7 @@ function Objects(main) {
                  /*dblclick: function (id) {
                     that.edit(id);
                 },*/
-                quickEdit: ['name', 'value', 'role', 'function'],
+                quickEdit: ['name', 'value', 'role', 'function', 'room'],
                 quickEditCallback: function (id, attr, newValue, oldValue) {
                     if (attr === 'room') {
                         syncEnum(id, 'rooms', newValue);
@@ -657,14 +662,14 @@ function Objects(main) {
         that.$dialog.dialog('option', 'title', id);
 
         // fill users
-        var text = 0;
+        var text = '';
         for (var u = 0; u < that.main.tabs.users.list.length; u++) {
             text += '<option value="' + that.main.tabs.users.list[u] + '">' + (that.main.objects[that.main.tabs.users.list[u]].common.name || that.main.tabs.users.list[u]) + '</option>';
         }
         $('#object-tab-acl-owner').html(text);
 
         // fill groups
-        var text = 0;
+        text = '';
         for (u = 0; u < that.main.tabs.groups.list.length; u++) {
             text += '<option value="' + that.main.tabs.groups.list[u] + '">' + (that.main.objects[that.main.tabs.groups.list[u]].common.name || that.main.tabs.groups.list[u]) + '</option>';
         }
@@ -812,15 +817,15 @@ function Objects(main) {
 
     this.save = function () {
         if ($("#object-tabs").tabs('option', 'active') == 4) {
-            var obj = that.saveFromRaw();
-            if (!obj) return;
+            var _obj = that.saveFromRaw();
+            if (!_obj) return;
 
-            main.socket.emit('setObject', obj._id, obj, function (err) {
+            main.socket.emit('setObject', _obj._id, _obj, function (err) {
                 if (err) {
                     that.main.showError(err);
                 } else {
                     var cb = that.$dialog.data('cb');
-                    if (cb) cb(obj);
+                    if (cb) cb(_obj);
                 }
             });
             that.$dialog.dialog('close');
@@ -909,9 +914,9 @@ function Objects(main) {
         this.defaults = {};
         var wordDifferent = _('__different__');
         // add all tabs to div
-        for (var i = 0; i < instances.length; i++) {
+        for (var j = 0; j < instances.length; j++) {
             // try to find settings
-            var parts    = instances[i].split('.');
+            var parts    = instances[j].split('.');
             var adapter  = parts[2];
             var instance = parts[3];
             var tab = '<div class="storage-row-title ui-widget-header">' + _('Settings for %s', adapter + '.' + instance) + '</div><div class="storage-settings">' +
@@ -933,7 +938,7 @@ function Objects(main) {
 
                 that.defaults[adapter][field] = def;
             });
-            $('#storage-tabs').append($tab);
+            $storageTabs.append($tab);
         }
 
         var commons = {};
@@ -948,11 +953,11 @@ function Objects(main) {
                 }
                 var sett = main.objects[ids[id]].common.history ? main.objects[ids[id]].common.history[inst] : null;
                 if (sett) {
-                    for (var attr in sett) {
-                        if (commons[inst][attr] === undefined) {
-                            commons[inst][attr] = sett[attr];
-                        } else if (commons[inst][attr] != sett[attr]) {
-                            commons[inst][attr] = '__different__';
+                    for (var _attr in sett) {
+                        if (commons[inst][_attr] === undefined) {
+                            commons[inst][_attr] = sett[_attr];
+                        } else if (commons[inst][_attr] != sett[_attr]) {
+                            commons[inst][_attr] = '__different__';
                         }
                     }
                 } else {
@@ -1074,8 +1079,8 @@ function Objects(main) {
                     } else {
                         text = '<tr><td colspan="5" style="text-align: center">' + _('No data') + '</td></tr>'
                     }
-                    $('#grid-history-body').html(text);
-                    $('#grid-history-body').data('odd', true);
+                    $('#grid-history-body').html(text)
+                        .data('odd', true);
                 } else {
                     console.error(err);
                     $('#grid-history-body').html('<tr><td colspan="5" style="text-align: center" class="error">' + err + '</td></tr>');
@@ -1116,10 +1121,10 @@ function Objects(main) {
         if (id) {
             this.$dialogHistory.dialog('option', 'height', 600);
             this.$dialogHistory.dialog('open');
-            $('#tabs-history').data('id', id);
+            $tabs.data('id', id);
 
-            if (!$('#tabs-history').data('inited')) {
-                $('#tabs-history').data('inited', true);
+            if (!$tabs.data('inited')) {
+                $tabs.data('inited', true);
                 $tabs.tabs({
                     activate: function (event, ui) {
                         switch (ui.newPanel.selector) {
@@ -1245,18 +1250,23 @@ function Objects(main) {
                 }
             }
             if (text) {
-                $('#history-table-instance').data('id', ids[0]);
-                $('#history-table-instance').html(text).show();
-                $('#history-table-instance').unbind('change').bind('change', function () {
-                    that.main.saveConfig('object-history-table',  $('#history-table-instance').val());
-                    that.loadHistoryTable($(this).data('id'));
-                });
-                $('#history-chart-instance').data('id', ids[0]);
-                $('#history-chart-instance').html(text).show();
-                $('#history-chart-instance').unbind('change').bind('change', function () {
-                    that.main.saveConfig('object-history-chart',  $('#history-chart-instance').val());
-                    that.loadHistoryChart($(this).data('id'));
-                });
+                $('#history-table-instance')
+                    .data('id', ids[0])
+                    .html(text)
+                    .show()
+                    .unbind('change').bind('change', function () {
+                        that.main.saveConfig('object-history-table',  $('#history-table-instance').val());
+                        that.loadHistoryTable($(this).data('id'));
+                    });
+                $('#history-chart-instance')
+                    .data('id', ids[0])
+                    .html(text)
+                    .show()
+                    .unbind('change')
+                    .bind('change', function () {
+                        that.main.saveConfig('object-history-chart',  $('#history-chart-instance').val());
+                        that.loadHistoryChart($(this).data('id'));
+                    });
                 if (this.main.config['object-history-table'] !== undefined) {
                     $('#history-table-instance').val(this.main.config['object-history-table'])
                 }
@@ -1299,11 +1309,12 @@ function Objects(main) {
     };
 
     this.resizeHistory = function () {
-        $('#iframe-history-chart').css({height: this.$dialogHistory.height() - 70, width: this.$dialogHistory.width() - 10});
-        var timeout = $('#iframe-history-chart').data('timeout');
+        var $iFrame = $('#iframe-history-chart');
+        $iFrame.css({height: this.$dialogHistory.height() - 70, width: this.$dialogHistory.width() - 10});
+        var timeout = $iFrame.data('timeout');
         if (timeout) clearTimeout(timeout);
 
-        $('#iframe-history-chart').data('timeout', setTimeout(function () {
+        $iFrame.data('timeout', setTimeout(function () {
             that.loadHistoryChart($('#tabs-history').data('id'));
         }, 1000));
     };
@@ -1324,14 +1335,15 @@ function Objects(main) {
                     id: 'history-button-save',
                     text: _('Save'),
                     click: function () {
-                        var ids = $('#storage-tabs').data('ids');
+                        var $tabs = $('#storage-tabs');
+                        var ids = $tabs.data('ids');
 
                         // do not update charts
                         that.currentHistory = null;
                         var wordDifferent = _('__different__');
 
                         // collect default values
-                        var $inputs = $('#storage-tabs').find('input, select');
+                        var $inputs = $tabs.find('input, select');
 
                         //that.historyIds = ids;
                         $inputs.each(function () {
@@ -1440,7 +1452,7 @@ function Objects(main) {
                                 return;
                             }
                             var _obj = json[obj];
-                            console.log(id + " = " + _obj.type);
+                            console.log(id + ' = ' + _obj.type);
                             if (json[obj].type == 'state') {
                                 that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
                             }
@@ -1453,13 +1465,13 @@ function Objects(main) {
                             return;
                         }
                         var _obj = json[obj];
-                        console.log(id + " = " + obj_.type);
+                        console.log(id + ' = ' + _obj.type);
                         if (json[obj].type == 'state') {
                             that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
                         }
                     });
                 }
-            }
+            };
             r.readAsText(f);
         } else {
             alert("Failed to open JSON File");

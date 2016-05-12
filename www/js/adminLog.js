@@ -1,4 +1,6 @@
 function Logs(main) {
+    "use strict";
+
     var that =                 this;
     this.main =                main;
     this.logLimit =            2000; //const
@@ -225,31 +227,32 @@ function Logs(main) {
         var filterSev  = $('#log-filter-severity').val();
         var filterHost = $('#log-filter-host').val();
         var filterMsg  = $('#log-filter-message').val();
+        var $logOuter  = $('#log-outer');
         if (filterSev == 'error') {
-            $('#log-outer .log-severity-debug').hide();
-            $('#log-outer .log-severity-info').hide();
-            $('#log-outer .log-severity-warn').hide();
-            $('#log-outer .log-severity-error').show();
+            $logOuter.find('.log-severity-debug').hide();
+            $logOuter.find('.log-severity-info').hide();
+            $logOuter.find('.log-severity-warn').hide();
+            $logOuter.find('.log-severity-error').show();
         } else
         if (filterSev == 'warn') {
-            $('#log-outer .log-severity-debug').hide();
-            $('#log-outer .log-severity-info').hide();
-            $('#log-outer .log-severity-warn').show();
-            $('#log-outer .log-severity-error').show();
+            $logOuter.find('.log-severity-debug').hide();
+            $logOuter.find('.log-severity-info').hide();
+            $logOuter.find('.log-severity-warn').show();
+            $logOuter.find('.log-severity-error').show();
         }else
         if (filterSev == 'info') {
-            $('#log-outer .log-severity-debug').hide();
-            $('#log-outer .log-severity-info').show();
-            $('#log-outer .log-severity-warn').show();
-            $('#log-outer .log-severity-error').show();
+            $logOuter.find('.log-severity-debug').hide();
+            $logOuter.find('.log-severity-info').show();
+            $logOuter.find('.log-severity-warn').show();
+            $logOuter.find('.log-severity-error').show();
         } else {
-            $('#log-outer .log-severity-debug').show();
-            $('#log-outer .log-severity-info').show();
-            $('#log-outer .log-severity-warn').show();
-            $('#log-outer .log-severity-error').show();
+            $logOuter.find('.log-severity-debug').show();
+            $logOuter.find('.log-severity-info').show();
+            $logOuter.find('.log-severity-warn').show();
+            $logOuter.find('.log-severity-error').show();
         }
         if (filterHost || filterMsg) {
-            $('#log-outer .log-line').each(function () {
+            $logOuter.find('.log-line').each(function () {
                 if (filterHost && !$(this).hasClass('log-from-' + filterHost)) {
                     $(this).hide();
                 } else

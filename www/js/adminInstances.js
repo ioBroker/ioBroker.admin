@@ -1,4 +1,6 @@
 function Instances(main) {
+    "use strict";
+
     var that = this;
 
     this.$grid         = $('#grid-instances');
@@ -245,11 +247,11 @@ function Instances(main) {
 
             // buttons
             text += '<td style="text-align: left; padding-left: 1em;">' +
-                '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-stop-run"></button>' +
+                (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-stop-run"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-settings" data-instance-href="/adapter/' + adapter + '/?' + instance + '" ></button>' +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-del"></button>'+
-                (url ? '<button style="display: inline-block" data-link="' + url +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '')
+                (url ? '<button style="display: inline-block" data-link="' + url +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '') +
                 '</td>';
 
             // title

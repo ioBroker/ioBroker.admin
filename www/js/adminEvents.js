@@ -1,4 +1,6 @@
 function Events(main) {
+    "use strict";
+
     var that =                   this;
     this.main =                  main;
     this.$table =                $('#event-table');

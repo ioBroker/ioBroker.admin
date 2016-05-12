@@ -1,4 +1,6 @@
 function Enums(main) {
+    "use strict";
+    
     var that               = this;
     this.main              = main;
     this.list              = [];
@@ -18,11 +20,15 @@ function Enums(main) {
             var task = tasks.shift();
             if (task.name == 'delObject') {
                 main.socket.emit(task.name, task.id, function () {
-                    setTimeout(enumRename, 0, undefined, undefined, undefined, callback);
+                    setTimeout(function () {
+                        enumRename(undefined, undefined, undefined, callback);
+                    }, 0);
                 });
             } else {
                 main.socket.emit(task.name, task.id, task.obj, function () {
-                    setTimeout(enumRename, 0, undefined, undefined, undefined, callback);
+                    setTimeout(function () {
+                        enumRename(undefined, undefined, undefined, callback);
+                    }, 0);
                 });
             }
         } else {
@@ -442,7 +448,7 @@ function Enums(main) {
             if (obj) {
                 if (this.list.indexOf(id) == -1) this.list.push(id);
             } else {
-                j = this.list.indexOf(id);
+                var j = this.list.indexOf(id);
                 if (j != -1) this.list.splice(j, 1);
             }
 
