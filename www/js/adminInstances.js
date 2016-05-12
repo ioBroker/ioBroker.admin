@@ -664,15 +664,19 @@ function Instances(main) {
             this.$grid.data('inited', true);
             this.list.sort();
             var onlyWWW = [];
-            // move all adapters with onlyWWW to the bottom
+            // move all adapters with not onlyWWW and noConfig to the bottom
             for (var l = this.list.length - 1; l >= 0; l--) {
-                if (this.main.objects[this.list[l]] && this.main.objects[this.list[l]].common && this.main.objects[this.list[l]].common.onlyWWW) {
+                if (this.main.objects[this.list[l]] &&
+                    this.main.objects[this.list[l]].common &&
+                    !this.main.objects[this.list[l]].common.localLink &&
+                    this.main.objects[this.list[l]].common.noConfig
+                ) {
                     onlyWWW.push(this.list[l]);
                     this.list.splice(l, 1);
                 }
             }
             this.list.sort();
-            onlyWWW.sort;
+            onlyWWW.sort();
             for (l = 0; l < onlyWWW.length; l++) {
                 this.list.push(onlyWWW[l]);
             }
