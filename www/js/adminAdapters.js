@@ -251,7 +251,7 @@ function Adapters(main) {
             }
             that.filterTimer = setTimeout(function () {
                 that.filterTimer = null;
-                that.currentFilter = $('#adapters-filter').val();
+                that.currentFilter = $('#adapters-filter').val().toLowerCase();
                 that.main.saveConfig('adaptersCurrentFilter', that.currentFilter);
                 that.$grid.fancytree('getTree').filterNodes(customFilter, false);
             }, 400);
