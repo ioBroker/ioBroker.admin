@@ -21,8 +21,14 @@ user interface for configuration and administration
 
 ## Changelog
 
-### 1.1.1 (2016-05-02)
+### 1.1.1 (2016-05-17)
 * (bluefox) fix set of states in States-Tab
+* (bluefox) show history data from adapter and not from updates
+* (bluefox) change default chart to flot
+* (bluefox) fix error if host has no IP address
+* (bluefox) show on the bottom only adapters without config and without links
+* (bluefox) fix filter in adapters if upper case
+* (bluefox) change file open from selectID Dialog
 
 ### 1.1.0 (2016-04-30)
 * (bluefox) change seconds to milliseconds by ts and lc

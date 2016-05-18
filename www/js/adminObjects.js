@@ -883,28 +883,14 @@ function Objects(main) {
     };
 
     this.stateChangeHistory = function (id, state) {
-        if (this.currentHistory == id) {
-            var instance = $('#history-table-instance').val();
-            var $body = $('#grid-history-body');
-            if (this.main.objects[id].common.history &&
-                this.main.objects[id].common.history[instance] &&
-                this.main.objects[id].common.history[instance].changesOnly){
-                var val = $body.find('tr:first td:first').html();
-                if (val == state.val) return;
-            }
+        if (this.currentHistory === id) {
+            // Load data again from adapter
+            if (this.historyTimeout) return;
 
-            if ($body.find('tr').length >= 50) {
-                $body.find('tr:last').remove();
-            }
-
-            $body.prepend('<tr class="grid-history-' + ($body.data('odd') ? 'even' : 'odd') + '">' +
-                '<td>' + state.val  + '</td>' +
-                '<td>' + state.ack  + '</td>' +
-                '<td>' + state.from + '</td>' +
-                '<td>' + main.formatDate(state.ts) + '</td>' +
-                '<td>' + main.formatDate(state.lc) + '</td>' +
-                '</tr>');
-            $body.data('odd', !$body.data('odd'));
+            this.historyTimeout = setTimeout(function () {
+                that.historyTimeout = null;
+                that.loadHistoryTable($('#history-table-instance').data('id'), true);
+            }, 5000);
         }
     };
 
@@ -1058,11 +1044,21 @@ function Objects(main) {
         this.resizeHistory();
     };
 
-    this.loadHistoryTable = function (id) {
+    this.loadHistoryTable = function (id, isSilent) {
         var end = (new Date()).getTime() + 10000; // now
-        $('#grid-history-body').html('<tr><td colspan="5" style="text-align: center">' + _('Loading...') + '</td></tr>');
+        if (!isSilent) {
+            $('#grid-history-body').html('<tr><td colspan="5" style="text-align: center">' + _('Loading...') + '</td></tr>');
+        }
 
-        main.socket.emit('getHistory', id, {end: end, count: 50, aggregate: 'none', instance: $('#history-table-instance').val(), from: true, ack: true, q: true}, function (err, res) {
+        main.socket.emit('getHistory', id, {
+            end:        end,
+            count:      50,
+            aggregate: 'none',
+            instance:   $('#history-table-instance').val(),
+            from:       true,
+            ack:        true,
+            q:          true
+        }, function (err, res) {
             setTimeout(function () {
                 if (!err) {
                     var text = '';
@@ -1116,7 +1112,7 @@ function Objects(main) {
     this.showHistoryData = function (id) {
         var $tabs = $('#tabs-history');
 
-        var port = 0;
+        var port  = 0;
         var chart = false;
         if (id) {
             this.$dialogHistory.dialog('option', 'height', 600);
@@ -1426,6 +1422,11 @@ function Objects(main) {
                 $('#iframe-history-chart').css({height: $(this).height() - 120, width: $(this).width() - 30});
             },
             close: function () {
+                if (that.historyTimeout) {
+                    clearTimeout(that.historyTimeout);
+                    that.historyTimeout = null;
+                }
+                that.currentHistory = null;
                 $('#iframe-history-chart').attr('src', '');
             },
             resize: function () {
