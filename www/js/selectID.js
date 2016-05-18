@@ -761,7 +761,7 @@
         for (var u = 0; u < data.columns.length; u++) {
             var name = data.columns[u];
             if (typeof name === 'object') name = name.name;
-            filter[data.columns[u]] = $('#filter_' + name + '_' + data.instance).val();
+            filter[name] = $('#filter_' + name + '_' + data.instance).val();
         }
 
         var textRooms;
@@ -864,14 +864,16 @@
         text += '<td class="ui-widget" style="width: 100%; text-align: center; font-weight: bold; font-size: medium">' + data.texts.id + '</td></tr></table></th>';
 
         for (c = 0; c < data.columns.length; c++) {
-            text += '<th class="ui-widget" style="font-size: medium">' + (data.texts[data.columns[c]] || '') + '</th>';
+            var name = data.columns[c];
+            if (typeof name === 'object') name = name.name;
+            text += '<th class="ui-widget" style="font-size: medium">' + (data.texts[name] || '') + '</th>';
         }
 
         text += '<th></th></tr>';
         text += '        </thead>';
         text += '        <tbody>';
         text += '            <tr><td></td>';
-        text += '               <td><table style="width: 100%"><tr><td style="width: 100%"><input style="width: 100%;padding:0" type="text" id="filter_ID_'    + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_ID_'    + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
+        text += '               <td><table style="width: 100%"><tr><td style="width: 100%"><input style="width: 100%; padding: 0" type="text" id="filter_ID_'    + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_ID_'    + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
 
         for (c = 0; c < data.columns.length; c++) {
             var name = data.columns[c];
