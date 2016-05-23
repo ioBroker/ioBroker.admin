@@ -3,6 +3,11 @@
         "name":                     "admin",
         "version": "1.1.1",
         "title":                    "ioBroker Admin",
+        "news": {
+            "en":                   "(bluefox) fix set of states in States-Tab\n(bluefox) show history data from adapter and not from updates\n(bluefox) change default chart to flot\n(bluefox) fix error if host has no IP address\n(bluefox) show on the bottom only adapters without config and without links\n(bluefox) fix filter in adapters if upper case\n(bluefox) change file open from selectID Dialog",
+            "de":                   "(bluefox) fix set of states in States-Tab\n(bluefox) show history data from adapter and not from updates\n(bluefox) change default chart to flot\n(bluefox) fix error if host has no IP address\n(bluefox) show on the bottom only adapters without config and without links\n(bluefox) fix filter in adapters if upper case\n(bluefox) change file open from selectID Dialog",
+            "ru":                   "(bluefox) fix set of states in States-Tab\n(bluefox) show history data from adapter and not from updates\n(bluefox) change default chart to flot\n(bluefox) fix error if host has no IP address\n(bluefox) show on the bottom only adapters without config and without links\n(bluefox) fix filter in adapters if upper case\n(bluefox) change file open from selectID Dialog"
+        },
         "desc": {
             "en":                   "Opens a webserver for the ioBroker admin UI",
             "de":                   "Stellt Webserver für 'ioBroker Admin UI' zur Verfügung",
