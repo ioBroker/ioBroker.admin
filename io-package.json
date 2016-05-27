@@ -1,12 +1,19 @@
 {
     "common": {
         "name":                     "admin",
-        "version": "1.1.1",
         "title":                    "ioBroker Admin",
+        "version": "1.2.0",
         "news": {
-            "en":                   "(bluefox) fix set of states in States-Tab\n(bluefox) show history data from adapter and not from updates\n(bluefox) change default chart to flot\n(bluefox) fix error if host has no IP address\n(bluefox) show on the bottom only adapters without config and without links\n(bluefox) fix filter in adapters if upper case\n(bluefox) change file open from selectID Dialog",
-            "de":                   "(bluefox) fix set of states in States-Tab\n(bluefox) show history data from adapter and not from updates\n(bluefox) change default chart to flot\n(bluefox) fix error if host has no IP address\n(bluefox) show on the bottom only adapters without config and without links\n(bluefox) fix filter in adapters if upper case\n(bluefox) change file open from selectID Dialog",
-            "ru":                   "(bluefox) fix set of states in States-Tab\n(bluefox) show history data from adapter and not from updates\n(bluefox) change default chart to flot\n(bluefox) fix error if host has no IP address\n(bluefox) show on the bottom only adapters without config and without links\n(bluefox) fix filter in adapters if upper case\n(bluefox) change file open from selectID Dialog"
+            "1.2.0": {
+                "en": "show RAM utilization\nshow change log in admin tab",
+                "de": "show RAM utilization\nshow change log in admin tab",
+                "ru": "show RAM utilization\nshow change log in admin tab"
+            },
+            "1.1.1": {
+                "en": "fix set of states in States-Tab\nshow history data from adapter and not from updates\nchange default chart to flot\nfix error if host has no IP address\nshow on the bottom only adapters without config and without links\nfix filter in adapters if upper case\nchange file open from selectID Dialog",
+                "de": "fix set of states in States-Tab\nshow history data from adapter and not from updates\nchange default chart to flot\nfix error if host has no IP address\nshow on the bottom only adapters without config and without links\nfix filter in adapters if upper case\nchange file open from selectID Dialog",
+                "ru": "fix set of states in States-Tab\nshow history data from adapter and not from updates\nchange default chart to flot\nfix error if host has no IP address\nshow on the bottom only adapters without config and without links\nfix filter in adapters if upper case\nchange file open from selectID Dialog"
+            }
         },
         "desc": {
             "en":                   "Opens a webserver for the ioBroker admin UI",
@@ -23,8 +30,8 @@
         "keywords":                 ["setup", "config", "update", "upgrade", "system", "konfiguration", "administration", "einrichtung", "wartung"],
         "readme":                   "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
         "authors": [
-            "hobbyquaker <hq@ccu.io>",
-            "bluefox <bluefox@ccu.io>"
+            "bluefox <bluefox@ccu.io>",
+            "hobbyquaker <hq@ccu.io>"
         ],
         "dependencies":             [{"js-controller": ">=0.8.0"}],
         "type":                     "common adapters",

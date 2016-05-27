@@ -207,6 +207,26 @@ table#events {
     font-weight: normal;
 }
 
+.high-mem {
+    color: #FF9999
+}
+
+@keyframes highlight {
+    0% {
+        color: #00f900
+    }
+    80% {
+        color: green
+    }
+    100% {
+        color: black;
+    }
+}
+
+.highlight {
+    animation: highlight 2s;
+}
+
 @-moz-keyframes spin    { 100% { -moz-transform:    rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin         { 100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }

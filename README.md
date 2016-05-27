@@ -8,7 +8,7 @@
 [![NPM](https://nodei.co/npm/iobroker.admin.png?downloads=true)](https://nodei.co/npm/iobroker.admin/)
 
 
-user interface for configuration and administration
+User interface for configuration and administration.
 
 ## Using common.localLink
 %ip% - ioBroker ip address (address of the admin)
@@ -20,6 +20,9 @@ user interface for configuration and administration
 %native_someField% - get someField from "native" of this adapter instance
 
 ## Changelog
+### 1.2.0 (2016-05-28)
+* (bluefox) show RAM utilization
+* (bluefox) show change log in admin tab
 
 ### 1.1.1 (2016-05-17)
 * (bluefox) fix set of states in States-Tab

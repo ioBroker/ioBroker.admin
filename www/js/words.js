@@ -95,6 +95,11 @@ systemDictionary = {
         "de": "ioBroker Adapter Skripte",
         "ru": "ioBroker adapter скрипты"
     },
+    "RAM usage":            {"en": "RAM usage",             "de": "RAM Benutzung",          "ru": "Использование RAM"},
+    "RAM total usage:":     {"en": "RAM total usage:",      "de": "RAM insgesamt:",         "ru": "Использование RAM всего:"},
+    "MB":                   {"en": "Mb",                    "de": "MB",                     "ru": "Мб"},
+    "Host":                 {"en": "Host",                  "de": "Host",                   "ru": "Сервер"},
+    "Free RAM:":            {"en": "Free RAM:",             "de": "Freies RAM:",            "ru": "Свободно RAM:"},
     "Hosts":                {"en": "Hosts",                 "de": "Hosts",                  "ru": "Сервера"},
     "Settings":             {"en": "Settings",              "de": "Einstellungen",          "ru": "Настройки"},
     "Delete member":        {"en": "Delete member",         "de": "Mitglied löschen",       "ru": "Удалить участника"},

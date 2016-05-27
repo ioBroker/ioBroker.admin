@@ -212,7 +212,55 @@ function Instances(main) {
             text += '<th style="width: 8em">' + _('loglevel') + '</th>';
             text += '<th style="width: 8em">' + _('memlimit') + '</th>';
         }
+        text += '<th style="width: 8em">' + _('RAM usage') + '</th>';
         that.$gridhead.html(text);
+    }
+
+    function calculateTotalRam() {
+        var host = that.main.states['system.host.' + that.main.currentHost + '.memRss'];
+        var mem = host ? host.val : 0;
+        for (var i = 0; i < that.list.length; i++) {
+            var obj = that.main.objects[that.list[i]];
+            if (!obj || !obj.common) continue;
+            if (obj.common.host !== that.main.currentHost) continue;
+            if (obj.common.enabled && obj.common.mode === 'daemon') {
+                var m = that.main.states[obj._id + '.memRss'];
+                mem += m ? m.val : 0;
+            }
+        }
+        mem = Math.round(mem);
+        if (mem.toString() !== $('#totalRam').text()) {
+            $('#totalRam').html('<span class="highlight">' + mem + '</span>');
+        }
+
+    }
+    function calculateFreeMem() {
+        var host = that.main.states['system.host.' + that.main.currentHost + '.freemem'];
+        if (host) {
+            //that.main.objects['system.host.' + that.main.currentHost].native.hardware.totalmem
+
+            if (host.val.toString() !== $('#freeMem').text()) {
+                $('#freeMem').html('<span class="highlight">' + host.val + '</span>');
+            }
+        } else {
+            $('.free-mem-label').hide();
+        }
+    }
+
+    function calculateRam(instanceId) {
+        var mem;
+        var common   = that.main.objects[instanceId] ? that.main.objects[instanceId].common || {} : {};
+        if (common.enabled && common.mode === 'daemon') {
+            mem = that.main.states[instanceId + '.memRss'].val;
+            if (common.memoryLimitMB && common.memoryLimitMB <= mem) {
+                mem = '<span class="high-mem">' + mem.toFixed(1) + ' MB</span>';
+            } else {
+                mem = mem.toFixed(1) + ' MB'
+            }
+        } else {
+            mem = '';
+        }
+        return mem;
     }
 
     function showOneAdapter(rootElem, instanceId, form, justContent) {
@@ -282,6 +330,8 @@ function Instances(main) {
             if (that.main.config.expertMode) {
                 text += '<td data-name="memoryLimitMB" data-value="' + (common.memoryLimitMB || '') + '" style="text-align: center" class="instance-editable" data-instance-id="' + instanceId + '">' + (common.memoryLimitMB || '') + '</td>';
             }
+
+            text += '<td class="memUsage" style="text-align: center" data-instance-id="' + instanceId + '">' + calculateRam(instanceId) + '</td>';
 
             text += justContent ? '' : '</tr>';
         }
@@ -662,7 +712,7 @@ function Instances(main) {
             return;
         }
 
-        if (typeof this.$grid !== 'undefined' && (!this.$grid.data('inited') || update)) {
+        if (this.main.currentHost && typeof this.$grid !== 'undefined' && (!this.$grid.data('inited') || update)) {
             this.$grid.data('inited', true);
             this.list.sort();
             var onlyWWW = [];
@@ -692,6 +742,10 @@ function Instances(main) {
                 showOneAdapter(this.$grid, this.list[i], this.main.config.instanceForm);
             }
             applyFilter();
+
+            $('#currentHost').html(this.main.currentHost);
+            calculateTotalRam();
+            calculateFreeMem();
         }
     };
 
@@ -701,6 +755,21 @@ function Instances(main) {
             var parts = id.split('.');
             var last = parts.pop();
             id = parts.join('.');
+
+            if (last === 'freemem') {
+                // update total ram
+                calculateFreeMem();
+            } else if (last === 'memRss') {
+                // update total ram
+                calculateTotalRam();
+                // update instance ram
+                var $mem = $('.memUsage[data-instance-id="' + id + '"]');
+                var mem = calculateRam(id);
+                if ($mem.length && $mem.text() !== mem) {
+                    $('.memUsage[data-instance-id="' + id + '"]').html('<span class="highlight">' + mem + '</span>');
+                }
+            }
+
             if (this.list.indexOf(id) !== -1) {
                 if (last === 'alive' || last === 'connected') {
                     updateLed(id);
@@ -711,6 +780,7 @@ function Instances(main) {
             if (this.list.indexOf(id) !== -1 && last === 'connection') {
                 updateLed(id);
             }
+
         }
     };
 

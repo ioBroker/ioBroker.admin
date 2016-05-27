@@ -347,6 +347,19 @@ function Adapters(main) {
         }*/
     };
 
+    function getNews(actualVersion, adapter) {
+        var text = '';
+        if (adapter.news) {
+            for (var v in adapter.news) {
+                if (systemLang === v) text += (text ? '\n' : '') + adapter.news[v];
+                if (v === 'en' || v === 'ru'  || v === 'de') continue;
+                if (v === actualVersion) break;
+                text += (text ? '\n' : '') + (adapter.news[v][systemLang] || adapter.news[v].en);
+            }
+        }
+        return text;
+    }
+
     // ----------------------------- Adapters show and Edit ------------------------------------------------
     this.init = function (update, updateRepo) {
         if (!this.main.objectsLoaded) {
@@ -408,7 +421,13 @@ function Adapters(main) {
                     if (repository[adapter] && repository[adapter].extIcon) icon = repository[adapter].extIcon;
 
                     if (obj.version) {
-                        installed = '<table style="border: 0; border-collapse: collapse;" cellspacing="0" cellpadding="0" class="ui-widget"><tr><td style="border: 0; padding: 0; width: 50px">' + obj.version + '</td>';
+                        var news = '';
+                        var updatable = false;
+                        if (!that.main.upToDate(version, obj.version)) {
+                            news = getNews(obj.version, repository[adapter]);
+                            updatable = true;
+                        }
+                        installed = '<table style="border: 0; border-collapse: collapse;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget"><tr><td style="border: 0; padding: 0; width: 50px" title="' + news + '">' + obj.version + '</td>';
 
                         var _instances = 0;
                         var _enabled   = 0;
@@ -429,7 +448,7 @@ function Adapters(main) {
                         }
 
                         tmp = installed.split('.');
-                        if (!that.main.upToDate(version, obj.version)) {
+                        if (updatable) {
                             installed += '<td style="border: 0; padding: 0; width: 30px"><button class="adapter-update-submit" data-adapter-name="' + adapter + '" title="' + _('update') + '"></button></td>';
                             version = version.replace('class="', 'class="updateReady ');
                             $('a[href="#tab-adapters"]').addClass('updateReady');
@@ -481,7 +500,7 @@ function Adapters(main) {
 
                     if (!that.isList) {
                         var igroup = -1;
-                        for (var j = 0; j < that.tree.length; j++){
+                        for (var j = 0; j < that.tree.length; j++) {
                             if (that.tree[j].key == that.data[adapter].group) {
                                 igroup = j;
                                 break;

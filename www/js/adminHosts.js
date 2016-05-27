@@ -79,12 +79,15 @@ function Hosts(main) {
         }
 
         // fill the host list (select) on adapter tab
-        var selHosts = document.getElementById('host-adapters');
+        var $selHosts = $('#host-adapters');
+        var selHosts = $selHosts[0];
         var myOpts   = selHosts.options;
-        var $selHosts = $(selHosts);
         if (!isUpdate && $selHosts.data('inited')) return;
 
         $selHosts.data('inited', true);
+
+        that.main.currentHost = that.main.currentHost || that.main.config.currentHost || '';
+
         var found;
         var j;
         // first remove non-existing hosts
@@ -96,9 +99,7 @@ function Hosts(main) {
                     break;
                 }
             }
-            if (!found) {
-                selHosts.remove(i);
-            }
+            if (!found) selHosts.remove(i);
         }
 
         for (i = 0; i < that.list.length; i++) {
@@ -113,10 +114,17 @@ function Hosts(main) {
                 $selHosts.append('<option value="' + that.list[i].name + '">' + that.list[i].name + '</option>');
             }
         }
-        if ($selHosts.val() != that.main.currentHost) {
+
+        if (that.main.currentHost) {
+            $selHosts.val(that.main.currentHost);
+            that.main.tabs.adapters.init(true);
+            that.main.tabs.instances.init(true);
+        } else if ($selHosts.val() != that.main.currentHost) {
             that.main.currentHost = $selHosts.val();
             that.main.tabs.adapters.init(true);
+            that.main.tabs.instances.init(true);
         }
+
         $selHosts.unbind('change').change(function () {
             if (!that.main.states['system.host.' + $(this).val() + '.alive'] ||
                 !that.main.states['system.host.' + $(this).val() + '.alive'].val) {
@@ -125,9 +133,12 @@ function Hosts(main) {
                 return;
             }
 
+
             that.main.currentHost = $(this).val();
 
+            that.main.saveConfig('currentHost', that.main.currentHost);
             that.main.tabs.adapters.init(true);
+            that.main.tabs.instances.init(true);
         });
         that.init();
     };

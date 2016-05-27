@@ -266,7 +266,7 @@ function Users(main) {
             });
         } else {
             // If password changed
-            if (pass != '__pass_not_set__') {
+            if (pass !== '__pass_not_set__') {
                 that.main.socket.emit('changePassword', user, pass, function (err) {
                     if (err) {
                         that.main.showMessage(_('Cannot set password: ') + _(err), '', 'alert');
@@ -274,6 +274,8 @@ function Users(main) {
                         that.$dialog.dialog('close');
                     }
                 });
+            } else {
+                that.$dialog.dialog('close');
             }
         }
     }

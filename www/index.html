@@ -66,10 +66,10 @@
             <td><button id="btn_list_adapters" class="translateT" title="list"></button></td>
             <td><button id="btn_collapse_adapters" class="translateT" title="collapse all"></button></td>
             <td><button id="btn_expand_adapters" class="translateT" title="expand all"></button></td>
-            <td><div style="padding-left: 120px"><span class="translate">Host:</span> <select id="host-adapters"></select></div></td>
-            <td><div style="padding-left: 100px"><span class="translate">Filter:</span> <input id="adapters-filter" style="width:100px;margin-right:3px"/><button id="adapters-filter-clear"></button></div></td>
+            <td><div style="padding-left: 120px"><label class="translate" for="host-adapters">Host:</label> <select id="host-adapters"></select></div></td>
+            <td><div style="padding-left: 100px"><label class="translate" for="adapters-filter">Filter:</label> <input id="adapters-filter" style="width:100px;margin-right:3px"/><button id="adapters-filter-clear"></button></div></td>
         </tr></table>
-        <div id="process_running_adapters" class="translate" style="position:absolute; top:50%; left:50%; width: 150; height: 25; padding: 12; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">Processing...</div>
+        <div id="process_running_adapters" class="translate" style="position:absolute; top: 50%; left: 50%; width: 150px; height: 25px; padding: 12px; background: rgba(30, 30, 30, 0.5); display: none; text-align: center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">Processing...</div>
         <div style="width:100%;height:400px;overflow-y: auto" id="grid-adapters-div"><table id="grid-adapters" style="width:100%;table-layout:fixed;">
             <colgroup>
                 <col width="320px"/>
@@ -101,10 +101,11 @@
             <tr>
                 <td><button id="btn-instances-expert-mode"></button></td>
                 <td><button id="btn-instances-reload"></button></td>
-                <td style="padding-left: 100px"><span class="translate" style="display: inline-block">Filter:</span></td>
-                <td><input style="display: inline-block" id="instances-filter" style="width: 100px; margin-right: 3px"></td>
+                <td style="padding-left: 100px"><label class="translate" style="display: inline-block" for="instances-filter">Filter:</label></td>
+                <td><input style="display: inline-block; width: 100px; margin-right: 3px" id="instances-filter"></td>
                 <td><button style="display: inline-block" id="instances-filter-clear"></button></td>
                 <td style="width: 100%"></td>
+                <td style="white-space: nowrap"><span class="translate">RAM total usage:</span> <span id="totalRam" style="font-weight: bold"></span> <span class="translate">MB</span> <span class="translate free-mem-label">/</span> <span class="translate free-mem-label">Free RAM:</span> <span id="freeMem" style="font-weight: bold"></span> <span class="translate freeMemLabel">MB</span> [<span class="translate">Host</span>: <span id="currentHost" style="font-weight: bold"></span>]</td>
             </tr>
         </table>
         <!--table id="grid-instances"></table>
@@ -119,7 +120,7 @@
     <div id="tab-objects"   class="admin-tab" style="display:none" data-name="Objects">
         <div id="grid-objects"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>
     </div>
-    <div id="tab-states"    class="admin-tab" style="display:none" data-name="States" style="display:none">
+    <div id="tab-states"    class="admin-tab" data-name="States" style="display: none">
         <table id="grid-states"></table>
         <div id="pager-states"></div>
     </div>
@@ -129,11 +130,11 @@
     <!--div id="tab-node-red"  class="admin-tab" style="display:none" data-name="Node-red" style="display: none" >
         <iframe class="iframe-in-tab" id="iframe-node-red" style="width:100%"></iframe>
     </div-->
-    <div id="tab-events"    class="admin-tab" style="display:none" data-name="Events" style="display:none">
+    <div id="tab-events"    class="admin-tab" data-name="Events" style="display:none">
         <div id="grid-events" class="ui-jqgrid" style="display: block;">
-            <div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix" style="height:23">
+            <div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix" style="height: 23px">
                 <div class="">
-                    <span class="ui-jqgrid-title translate" style="padding-top:3">Events</span>
+                    <span class="ui-jqgrid-title translate" style="padding-top: 3px">Events</span>
                     <table style="border-collapse: collapse; position: absolute; right: 10px;  top: 1px"><tr>
                         <td><button id="event-pause"></button></td>
                         <td><button id="event-clear"></button></td>
@@ -195,7 +196,7 @@
             <div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">
                 <table style="padding: 0; margin: 0; border-spacing: 0" class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix"><tr>
                     <td width="100%"><span class="ui-jqgrid-title translate">Log</span></td>
-                    <td id="log-size" style="width: 100; font-size: 10px; font-weight: normal"></td>
+                    <td id="log-size" style="width: 100px; font-size: 10px; font-weight: normal"></td>
                     <td><button id="log-pause"         class="translateT" title="Pause output"></button></td>
                     <td><button id="log-refresh"       class="translateT" title="Refresh log"></button></td>
                     <td><button id="log-copy"          class="translateT" title="Copy log"></button></td>
@@ -214,7 +215,7 @@
                             <option value="warn"  class="translate">warn</option>
                             <option value="error" class="translate">error</option>
                         </select></th>
-                        <th class="log-column-4-header ui-state-default ui-th-column ui-th-ltr" style="text-align: left"><span class="translate" style="padding-right: 10;padding-left: 5">message</span><input id="log-filter-message" type="text" size="10"/><button id="log-filter-message-clear">x</button></th>
+                        <th class="log-column-4-header ui-state-default ui-th-column ui-th-ltr" style="text-align: left"><span class="translate" style="padding-right: 10px;padding-left: 5px">message</span><input id="log-filter-message" type="text" size="10"/><button id="log-filter-message-clear">x</button></th>
                     </tr>
                 </thead>
             </table>
@@ -232,15 +233,15 @@
     <div id="dialog-object" style="display:none">
         <table>
             <tr>
-                <td class="translate">ID</td>
+                <td><label class="translate" for="edit-object-id">ID</label></td>
                 <td><input size="60" id="edit-object-id" readonly style="opacity: 0.7"></td>
                 <td></td>
                 <td></td>
             </tr>
             <tr>
-                <td class="translate">name</td>
+                <td><label class="translate" for="edit-object-name">name</label></td>
                 <td><input size="60" id="edit-object-name"></td>
-                <td class="translate">type</td>
+                <td><label class="translate" for="edit-object-type">type</label></td>
                 <td>
                     <select id="edit-object-type" disabled="disabled">
                         <option>device</option>
@@ -301,9 +302,9 @@
             </div>
             <div id="object-tab-acl" style="width: calc(100% - 15px); height: calc(100% - 50px); overflow: auto">
                 <table id="object-tab-acl-table" style="width: 100%">
-                    <tr><td class="translate">Owner user</td><td><select id="object-tab-acl-owner"></select></td></tr>
-                    <tr><td class="translate">Owner group</td><td><select id="object-tab-acl-group"></select></td></tr>
-                    <tr><td class="translate">Object rights</td><td>
+                    <tr><td><label class="translate" for="object-tab-acl-owner">Owner user</label></td><td><select id="object-tab-acl-owner"></select></td></tr>
+                    <tr><td><label class="translate" for="object-tab-acl-group">Owner group</label></td><td><select id="object-tab-acl-group"></select></td></tr>
+                    <tr><td><label class="translate">Object rights</label></td><td>
                         <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
                             <tr>
                                 <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
@@ -435,19 +436,19 @@
         </table>
     </div>
     <div id="dialog-enum-members" style="display:none">
-        <span class="translate" style="padding-right: 10">Name:</span><input id="enum-name-edit" size="20" disabled/>
+        <label class="translate" style="padding-right: 10px" for="enum-name-edit">Name:</label><input id="enum-name-edit" size="20" disabled/>
         <table id="grid-enum-members"></table>
         <div id="pager-enum-members"></div>
     </div>
     <div id="dialog-script" style="display:none">
         <table style="width: 100%">
             <tr>
-                <td class="translate" style="width:100">name</td>
+                <td style="width: 100px"><label class="translate" for="edit-script-name">name</label></td>
                 <td colspan="2"><input size="60" id="edit-script-name"></td>
             </tr>
             <tr>
-                <td class="translate">engine type</td>
-                <td style="width:100">
+                <td><label class="translate" for="edit-script-engine-type">engine type</label></td>
+                <td style="width: 100px">
                     <select id="edit-script-engine-type"></select>
                 </td>
                 <td style="text-align:right">
@@ -462,15 +463,15 @@
     <div id="dialog-user" style="display:none">
         <table>
             <tr>
-                <td class="translate">name</td>
+                <td><label class="translate" for="edit-user-name">name</label></td>
                 <td><input size="15" id="edit-user-name"></td>
             </tr>
             <tr>
-                <td class="translate">password</td>
+                <td><label class="translate" for="edit-user-pass">password</label></td>
                 <td><input size="15" id="edit-user-pass" type="password"></td>
             </tr>
             <tr>
-                <td class="translate">confirm password</td>
+                <td><label class="translate" for="edit-user-passconf">confirm password</label></td>
                 <td><input size="15" id="edit-user-passconf" type="password"></td>
             </tr>
         </table><br/>
@@ -479,11 +480,11 @@
     <div id="dialog-group" style="display:none">
         <table>
             <tr>
-                <td class="translate">name</td>
+                <td><label class="translate" for="edit-group-name">name</label></td>
                 <td><input size="15" id="edit-group-name"></td>
             </tr>
             <tr>
-                <td class="translate">description</td>
+                <td><label class="translate" for="edit-group-desc">description</label></td>
                 <td><input size="40" id="edit-group-desc"></td>
             </tr>
         </table>
@@ -506,7 +507,7 @@
                 <div style="display: none" id="storage-templates"></div>
             </div>
             <div id="tab-history-table" style="height: calc(100% - 65px); overflow-y: scroll">
-                <div><span class="translate">Show values of instance</span><select id="history-table-instance"></select></div>
+                <div><label class="translate" for="history-table-instance">Show values of instance</label><select id="history-table-instance"></select></div>
                 <table id="grid-history" style="width: 100%; max-height: calc(100% - 30px)">
                     <thead>
                         <col width="160" valign="top">
@@ -527,7 +528,7 @@
                 </table>
             </div>
             <div id="tab-history-chart" style="height: calc(100% - 65px)">
-                <div><span class="translate">Show values of instance</span><select id="history-chart-instance"></select></div>
+                <div><label class="translate" for="history-chart-instance">Show values of instance</label><select id="history-chart-instance"></select></div>
                 <iframe id="iframe-history-chart" style="border: 0; overflow: hidden"></iframe>
             </div>
         </div>
@@ -539,7 +540,7 @@
         <iframe style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%; height: 100%" id="config-iframe" name="config-iframe"></iframe>
     </div>
     <div id="dialog-license" title="license agreement" class="translateT" style="display:none; z-index: 102">
-        <table><tr><td class="translate" id="license_language_label">Select language</td>
+        <table><tr><td id="license_language_label"><label class="translate" for="license_language">Select language</label></td>
             <td><select id="license_language">
                 <option value="en">English</option>
                 <option value="de">Deutsch</option>
@@ -561,7 +562,7 @@
             </ul>
             <div id="tab-system-main">
                 <table>
-                    <tr><td class="translate">System language:</td>
+                    <tr><td><label class="translate" for="system_language">System language:</label></td>
                         <td>
                             <select id="system_language" class="system-settings value">
                                 <option value="en">English</option>
@@ -570,7 +571,7 @@
                             </select>
                         </td>
                     </tr>
-                    <tr><td class="translate">Temperature units:</td>
+                    <tr><td><label class="translate" for="system_tempUnit">Temperature units:</label></td>
                         <td>
                             <select id="system_tempUnit" class="system-settings value">
                                 <option value="°C">°C</option>
@@ -578,12 +579,12 @@
                             </select>
                         </td>
                     </tr>
-                    <tr><td class="translate">Currency:</td>
+                    <tr><td><label class="translate" for="system_currency">Currency:</label></td>
                         <td>
                             <input type="text" size="5" maxlength="5" id="system_currency" class="system-settings value"/>
                         </td>
                     </tr>
-                    <tr><td class="translate">Date format:</td>
+                    <tr><td><label class="translate" for="system_dateFormat">Date format:</label></td>
                         <td>
                             <select id="system_dateFormat" class="system-settings value">
                                 <option value="DD.MM.YYYY" class="translate">DD.MM.YYYY</option>
@@ -592,7 +593,7 @@
                             </select>
                         </td>
                     </tr>
-                    <tr><td class="translate">Float divider:</td>
+                    <tr><td ><label class="translate" for="system_isFloatComma">Float divider:</label></td>
                         <td>
                             <select id="system_isFloatComma" class="system-settings value">
                                 <option value="true"  class="translate">comma</option>
@@ -600,13 +601,13 @@
                             </select>
                         </td>
                     </tr>
-                    <tr><td class="translate">Default history instance:</td>
+                    <tr><td><label class="translate" for="system_defaultHistory">Default history instance:</label></td>
                         <td>
                             <select id="system_defaultHistory" class="system-settings value">
                             </select>
                         </td>
                     </tr>
-                    <tr><td class="translate">Active repository:</td>
+                    <tr><td><label class="translate" for="system_activeRepo">Active repository:</label></td>
                         <td>
                             <select id="system_activeRepo" class="system-settings value">
                             </select>
@@ -632,7 +633,7 @@
                         <td class="translate">diag-note</td>
                     </tr>
                     <tr>
-                        <td class="translate">Statistics:</td>
+                        <td><label  class="translate" for="diagMode">Statistics:</label></td>
                         <td><select id="diagMode">
                             <option value="none" class="translate">none</option>
                             <option value="normal" class="translate">normal</option>
