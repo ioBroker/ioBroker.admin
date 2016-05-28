@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.2.0",
+        "version": "1.2.1",
         "news": {
+            "1.2.1": {
+                "en": "highlight changes of states\nshow number of processes and free memory in %",
+                "de": "highlight changes of states\nshow number of processes and free memory in %",
+                "ru": "highlight changes of states\nshow number of processes and free memory in %"
+            },
             "1.2.0": {
                 "en": "show RAM utilization\nshow change log in admin tab",
                 "de": "show RAM utilization\nshow change log in admin tab",

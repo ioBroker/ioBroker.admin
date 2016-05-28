@@ -1032,7 +1032,7 @@
             },
             renderColumns: function (event, _data) {
                 var node = _data.node;
-                var $tdList = $(node.tr).find(">td");
+                var $tdList = $(node.tr).find('>td');
 
                 var isCommon = data.objects[node.key] && data.objects[node.key].common;
                 $tdList.eq(1).css({'overflow': 'hidden'});
@@ -1102,7 +1102,7 @@
                             }
                         }
                         if (icon) {
-                            $tdList.eq(base).html('<img width=20 height=20 src="' + icon + '" alt="' + alt + '"/>');
+                            $tdList.eq(base).html('<img width="20px" height="20px" src="' + icon + '" alt="' + alt + '"/>');
                         } else {
                             $tdList.eq(base).text('');
                         }
@@ -1227,7 +1227,7 @@
                                 fullVal += '\x0A' + data.texts.quality + ': ' + quality2text(state.q || 0);
                             }
 
-                            $elem.text(state.val)
+                            $elem.html('<span class="highlight">' + state.val + '</span>')
                                 .attr('title', fullVal)
                                 .css({position: 'relative'});
 

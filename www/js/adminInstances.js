@@ -217,7 +217,8 @@ function Instances(main) {
     }
 
     function calculateTotalRam() {
-        var host = that.main.states['system.host.' + that.main.currentHost + '.memRss'];
+        var host      = that.main.states['system.host.' + that.main.currentHost + '.memRss'];
+        var processes = 1;
         var mem = host ? host.val : 0;
         for (var i = 0; i < that.list.length; i++) {
             var obj = that.main.objects[that.list[i]];
@@ -226,21 +227,27 @@ function Instances(main) {
             if (obj.common.enabled && obj.common.mode === 'daemon') {
                 var m = that.main.states[obj._id + '.memRss'];
                 mem += m ? m.val : 0;
+                processes++;
             }
         }
         mem = Math.round(mem);
         if (mem.toString() !== $('#totalRam').text()) {
             $('#totalRam').html('<span class="highlight">' + mem + '</span>');
         }
-
+        var text = _('%s processes', processes);
+        if (text !== $('#running_processes').text()) {
+            $('#running_processes').html('<span class="highlight">' + text + '</span>')
+        }
     }
     function calculateFreeMem() {
         var host = that.main.states['system.host.' + that.main.currentHost + '.freemem'];
         if (host) {
-            //that.main.objects['system.host.' + that.main.currentHost].native.hardware.totalmem
+            that.totalmem = that.totalmem || that.main.objects['system.host.' + that.main.currentHost].native.hardware.totalmem / (1024 * 1024);
+            var percent = Math.round((host.val / that.totalmem) * 100);
 
             if (host.val.toString() !== $('#freeMem').text()) {
-                $('#freeMem').html('<span class="highlight">' + host.val + '</span>');
+                $('#freeMem').html('<span class="highlight ' + (percent < 10 ? 'high-mem' : '') + '">' + host.val + '</span>');
+                $('#freeMemPercent').html('<span class="highlight">(' + percent + '%)</span>');
             }
         } else {
             $('.free-mem-label').hide();
