@@ -313,7 +313,7 @@ systemDictionary = {
     "Host %s is offline":   {"en": "Host %s is offline",    "de": "Host %s ist offline",    "ru": "Хост %s недоступен"},
     "command execution":    {"en": "Command execution",     "de": "Kommando-Ausführung",    "ru": "Выполнение команды"},
     "Installed instances":  {"en": "Installed instances",   "de": "Installierte Instanzen", "ru": "Добавлено драйверов"},
-    "Active instances":     {"en": "Active instances",      "de": "Aktivierte Instanze",    "ru": "Драйверов активно"},
+    "Active instances":     {"en": "Active instances",      "de": "Aktivierte Instanzen",    "ru": "Драйверов активно"},
     "Host:":                {"en": "Host:",                 "de": "Host:",                  "ru": "Хост:"},
     "installed adapters":   {"en": "Filter installed adapters",    "de": "Filter installierte Adapters",     "ru": "Только установленные драйвера"},
     "list":                 {"en": "list",                  "de": "Liste",                  "ru": "Список"},
