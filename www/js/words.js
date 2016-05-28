@@ -100,7 +100,7 @@ systemDictionary = {
     "MB":                   {"en": "Mb",                    "de": "MB",                     "ru": "Мб"},
     "Host":                 {"en": "Host",                  "de": "Host",                   "ru": "Сервер"},
     "Free RAM:":            {"en": "Free RAM:",             "de": "Freies RAM:",            "ru": "Свободно RAM:"},
-    "%s processes":         {"en": "%s processes",          "de": "%s Prozessen",           "ru": "%s процессов"},
+    "%s processes":         {"en": "%s processes",          "de": "%s Prozesse",           "ru": "%s процессов"},
     "Hosts":                {"en": "Hosts",                 "de": "Hosts",                  "ru": "Сервера"},
     "Settings":             {"en": "Settings",              "de": "Einstellungen",          "ru": "Настройки"},
     "Delete member":        {"en": "Delete member",         "de": "Mitglied löschen",       "ru": "Удалить участника"},
