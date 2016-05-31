@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.2.1",
+        "version": "1.2.2",
         "news": {
+            "1.2.2": {
+                "en": "fix memory displaying if adapter does not run",
+                "de": "fix memory displaying if adapter does not run",
+                "ru": "fix memory displaying if adapter does not run"
+            },
             "1.2.1": {
                 "en": "highlight changes of states\nshow number of processes and free memory in %",
                 "de": "highlight changes of states\nshow number of processes and free memory in %",

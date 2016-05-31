@@ -20,6 +20,9 @@ User interface for configuration and administration.
 %native_someField% - get someField from "native" of this adapter instance
 
 ## Changelog
+### 1.2.2 (2016-05-31)
+* (bluefox) fix memory displaying if adapter does not run
+
 ### 1.2.1 (2016-05-28)
 * (bluefox) highlight changes of states
 * (bluefox) show number of processes and free memory in %

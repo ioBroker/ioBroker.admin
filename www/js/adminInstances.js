@@ -257,7 +257,7 @@ function Instances(main) {
     function calculateRam(instanceId) {
         var mem;
         var common   = that.main.objects[instanceId] ? that.main.objects[instanceId].common || {} : {};
-        if (common.enabled && common.mode === 'daemon') {
+        if (common.enabled && common.mode === 'daemon' && that.main.states[instanceId + '.memRss']) {
             mem = that.main.states[instanceId + '.memRss'].val;
             if (common.memoryLimitMB && common.memoryLimitMB <= mem) {
                 mem = '<span class="high-mem">' + mem.toFixed(1) + ' MB</span>';
