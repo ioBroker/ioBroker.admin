@@ -212,7 +212,7 @@ function Logs(main) {
 
         var text = '<tr id="log-line-' + (this.logLinesStart + this.logLinesCount) + '" class="log-line log-severity-' + message.severity + ' ' + (message.from ? 'log-from-' + message.from : '') + '" style="' + visible + '">';
         text += '<td class="log-column-1">' + (message.from || '') + '</td>';
-        text += '<td class="log-column-2">' + this.main.formatDate(message.ts, true) + '</td>';
+        text += '<td class="log-column-2">' + this.main.formatDate(message.ts) + '</td>';
         text += '<td class="log-column-3">' + message.severity + '</td>';
         text += '<td class="log-column-4" title="' + message.message.replace(/"/g, "'") + '">' + message.message.substring(0, 200) + '</td></tr>';
 
