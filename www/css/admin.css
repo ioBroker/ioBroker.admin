@@ -249,7 +249,7 @@ table#events {
     text-align: right;
 }
 .log-column-2 {
-    width: 150px;
+    width: 180px;
     font-weight: normal;
     text-align: center;
     white-space: nowrap;
@@ -266,7 +266,7 @@ table#events {
     width: 100px;
 }
 .log-column-2-header {
-    width: 140px;
+    width: 170px;
 }
 .log-column-3-header {
     width: 62px;
