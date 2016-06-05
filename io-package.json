@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.2.2",
+        "version": "1.2.3",
         "news": {
+            "1.2.3": {
+                "en": "fix memory displaying",
+                "de": "fix memory displaying",
+                "ru": "fix memory displaying"
+            },
             "1.2.2": {
                 "en": "fix memory displaying if adapter does not run",
                 "de": "fix memory displaying if adapter does not run",

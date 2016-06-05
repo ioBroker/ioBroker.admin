@@ -259,6 +259,8 @@ function Instances(main) {
         var common   = that.main.objects[instanceId] ? that.main.objects[instanceId].common || {} : {};
         if (common.enabled && common.mode === 'daemon' && that.main.states[instanceId + '.memRss']) {
             mem = that.main.states[instanceId + '.memRss'].val;
+            mem = parseFloat(mem) || 0;
+
             if (common.memoryLimitMB && common.memoryLimitMB <= mem) {
                 mem = '<span class="high-mem">' + mem.toFixed(1) + ' MB</span>';
             } else {
