@@ -4,11 +4,13 @@ function Objects(main) {
     var that = this;
     this.$dialog        = $('#dialog-object');
     this.$dialogHistory = $('#dialog-history');
+    this.$dialogSyncClient = $('#dialog-sync-client');
 
     this.$grid          = $('#grid-objects');
 
     this.main = main;
     this.historyEnabled = null;
+    this.syncClientEnabled = null;
     this.currentHistory = null; // Id of the currently shown history dialog
 
     this.prepare = function () {
@@ -77,7 +79,7 @@ function Objects(main) {
             that.editor.$blockScrolling = true;
         }
 
-        $('#dialog-new-field').dialog( {
+        $('#dialog-new-field').dialog({
             autoOpen:   false,
             modal:      true,
             width:      400,
@@ -118,7 +120,7 @@ function Objects(main) {
             ]
         });
 
-        $('#dialog-new-object').dialog( {
+        $('#dialog-new-object').dialog({
             autoOpen:   false,
             modal:      true,
             width:      520,
@@ -406,6 +408,7 @@ function Objects(main) {
         if (typeof this.$grid !== 'undefined' && (!this.$grid[0]._isInited || update)) {
             this.$grid[0]._isInited = true;
             if (this.historyEnabled === null) this.checkHistory();
+            if (this.syncClientEnabled === null) this.checkSyncClient();
 
             var x = $(window).width();
             var y = $(window).height();
@@ -512,6 +515,38 @@ function Objects(main) {
                                 this.hide();
                             }
                         }
+                    },
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-transferthick-e-w'
+                        },
+                        click: function (id) {
+                            that.openSyncClientDlg(id);
+                        },
+                        width:  26,
+                        height: 20,
+                        match: function (id) {
+                            // Show sync-client button only if sync-client adapter enabled
+                            if (main.objects[id] && that.syncClientEnabled && !id.match(/\.messagebox$/) && main.objects[id].type == 'state') {
+                                // Check if sync-client enabled
+                                var enabled = false;
+                                if (main.objects[id] && main.objects[id].common && main.objects[id].common.sync) {
+                                    for (var h in main.objects[id].common.sync) {
+                                        enabled = true;
+                                        break;
+                                    }
+                                }
+                                if (enabled) {
+                                    this.addClass('sync-client-enabled').removeClass('sync-client-disabled');
+                                } else {
+                                    delete main.objects[id].common.sync;
+                                    this.addClass('sync-client-disabled').removeClass('sync-client-enabled');
+                                }
+                            } else {
+                                this.hide();
+                            }
+                        }
                     }
 
                 ],
@@ -611,7 +646,7 @@ function Objects(main) {
                 }
             };
 
-            $('#object-tab-new-object-name').keyup(function (){
+            $('#object-tab-new-object-name').keyup(function () {
                 $(this).trigger('change');
             }).change(function () {
                 var parent = $('#object-tab-new-object-parent').val();
@@ -637,7 +672,7 @@ function Objects(main) {
                             that.main.showMessage(_('No states selected!'), '', 'info');
                         }
                     }
-                }
+                };
             } else {
                 settings.customButtonFilter = null;
             }
@@ -855,6 +890,374 @@ function Objects(main) {
         }
     };
 
+    // ----------------------------- Sync-Client ------------------------------------------------
+    this.checkSyncClient = function () {
+        var found = false;
+        for (var u = 0; u < this.main.instances.length; u++) {
+            if (this.main.objects[this.main.instances[u]].common &&
+                this.main.objects[this.main.instances[u]].common.type === 'sync' &&
+                this.main.objects[this.main.instances[u]].common.enabled) {
+                if (this.syncClientEnabled !== null && this.syncClientEnabled !== true) {
+                    this.syncClientEnabled = true;
+                    // update sync-client buttons
+                    this.init(true);
+                } else {
+                    this.syncClientEnabled = true;
+                }
+                found = true;
+                return;
+            }
+        }
+        if (this.syncClientEnabled !== null && this.syncClientEnabled !== false) {
+            this.syncClientEnabled = false;
+            // update sync-client buttons
+            this.init(true);
+        } else {
+            this.syncClientEnabled = false;
+        }
+    };
+
+    this.prepareSyncClient = function () {
+        $(document).on('click', '.sync-client', function () {
+            that.openSyncClientDlg($(this).attr('data-id'));
+        });
+
+        this.$dialogSyncClient.dialog({
+            autoOpen:      false,
+            modal:         true,
+            width:         830,
+            height:        575,
+            closeOnEscape: false,
+            buttons: [
+                {
+                    id: 'sync-client-button-save',
+                    text: _('Save'),
+                    click: function () {
+                        var $tabs = $('#sync-client-tabs');
+                        var ids = $tabs.data('ids');
+
+                        var wordDifferent = _('__different__');
+                        // collect default values
+                        var $inputs = $tabs.find('input, select');
+
+                        $inputs.each(function () {
+                            var instance = $(this).data('instance');
+                            var field    = $(this).data('field');
+                            if (!field) return;
+
+                            var val;
+                            if ($(this).attr('type') == 'checkbox') {
+                                if (this.indeterminate) return;
+                                val = $(this).prop('checked');
+                            } else {
+                                val = $(this).val();
+                            }
+                            // if not changed
+                            if (val == wordDifferent) return;
+
+                            if (val === 'false') val = false;
+                            if (val === 'true')  val = true;
+                            if (val == parseFloat(val).toString()) val = parseFloat(val);
+
+                            for (var i = 0; i < ids.length; i++) {
+                                that.main.objects[ids[i]].common.sync = that.main.objects[ids[i]].common.sync || {};
+                                if (that.main.objects[ids[i]].common.sync[instance] === undefined) {
+                                    var adapter = instance.split('.')[0];
+                                    var _default;
+                                    // Try to get default values
+                                    if (defaults[adapter]) {
+                                        _default = defaults[adapter](that.main.objects[ids[i]], that.main.objects['system.adapter.' + instance]);
+                                    } else {
+                                        _default = that.defaults[adapter];
+                                    }
+                                    that.main.objects[ids[i]].common.sync[instance] = _default || {};
+                                }
+                                that.main.objects[ids[i]].common.sync[instance][field] = val;
+                            }
+                        });
+
+                        for (var i = 0; i < ids.length; i++) {
+                            var found = false;
+                            for (var inst in main.objects[ids[i]].common.sync) {
+                                if (!main.objects[ids[i]].common.sync[inst].enabled) {
+                                    delete main.objects[ids[i]].common.sync[inst];
+                                } else {
+                                    found = true;
+                                }
+                            }
+                            if (!found) {
+                                main.objects[ids[i]].common.sync = null;
+                            }
+                        }
+
+                        that.setSyncClient(ids, function () {
+                            that.$dialogSyncClient.dialog('close');
+                        });
+                    }
+                },
+                {
+                    text: _('Cancel'),
+                    click: function () {
+                        if (!$('#sync-client-button-save').is(":disabled")) {
+                            that.main.confirmMessage(_('Are you sure? Changes are not saved.'), _('Question'), 'alert', function (result) {
+                                if (result) {
+                                    that.$dialogSyncClient.dialog('close');
+                                }
+                            });
+                        } else {
+                            that.$dialogSyncClient.dialog('close');
+                        }
+                    }
+                }
+            ]
+        });
+    };
+
+    // Set modified sync-client states
+    this.setSyncClient = function (ids, callback) {
+        var id = ids.pop();
+        if (id) {
+            this.$dialogSyncClient.dialog('option', 'title', _('Sync settings of %s states', ids.length));
+
+            that.main.socket.emit('setObject', id, this.main.objects[id], function (err) {
+                if (err) {
+                    that.main.showMessage(_(err));
+                } else {
+                    setTimeout(function () {
+                        that.setSyncClient(ids, callback);
+                    }, 50);
+                }
+            });
+        } else {
+            if (callback) callback();
+        }
+    };
+
+    this.initSyncClientTabs = function (ids, instances) {
+        var $syncClientTabs = $('#sync-client-tabs');
+        $syncClientTabs.html('');
+        this.defaults = {};
+        var wordDifferent = _('__different__');
+        // add all tabs to div
+        for (var j = 0; j < instances.length; j++) {
+            // try to find settings
+            var parts    = instances[j].split('.');
+            var adapter  = parts[2];
+            var instance = parts[3];
+            var tab = '<div class="sync-client-row-title ui-widget-header">' + _('Settings for %s', adapter + '.' + instance) + '</div><div class="sync-client-settings">' +
+                $("script[data-template-name='" + adapter + "']").html() +
+                '</div>';
+
+            var $tab = $(tab);
+            this.defaults[adapter] = {};
+
+            // set values
+            $tab.find('input, select').each(function () {
+                var $this = $(this);
+                $this.attr('data-instance', adapter + '.' + instance);
+                var field = $this.attr('data-field');
+                var def   = $this.attr('data-default');
+                if (def === 'true')  def = true;
+                if (def === 'false') def = false;
+                if (def == parseFloat(def).toString()) def = parseFloat(def);
+
+                that.defaults[adapter][field] = def;
+            });
+            $syncClientTabs.append($tab);
+        }
+
+        var commons = {};
+        // calculate common settings
+        for (var i = 0; i < instances.length; i++) {
+            var inst = instances[i].replace('system.adapter.', '');
+            commons[inst] = {};
+            for (var id = 0; id < ids.length; id++) {
+                var sett = main.objects[ids[id]].common.sync ? main.objects[ids[id]].common.sync[inst] : null;
+                if (sett) {
+                    for (var _attr in sett) {
+                        if (commons[inst][_attr] === undefined) {
+                            commons[inst][_attr] = sett[_attr];
+                        } else if (commons[inst][_attr] != sett[_attr]) {
+                            commons[inst][_attr] = '__different__';
+                        }
+                    }
+                } else {
+                    var a = inst.split('.')[0];
+                    var _default = null;
+                    // Try to get default values
+                    if (defaults[a]) {
+                        _default = defaults[a](that.main.objects[ids[id]], that.main.objects['system.adapter.' + inst]);
+                    } else {
+                        _default = this.defaults[a];
+                    }
+
+                    for (var attr in _default) {
+                        if (commons[inst][attr] === undefined) {
+                            commons[inst][attr] = _default[attr];
+                        } else if (commons[inst][attr] != _default[attr]) {
+                            commons[inst][attr] = '__different__';
+                        }
+                    }
+                }
+            }
+        }
+
+        // set values
+        $syncClientTabs.find('input, select').each(function () {
+            var $this    = $(this);
+            var instance = $this.attr('data-instance');
+            var adapter  = instance.split('.')[0];
+            var attr     = $this.attr('data-field');
+
+            if (commons[instance][attr] !== undefined) {
+                if ($this.attr('type') == 'checkbox') {
+                    if (commons[instance][attr] === '__different__') {
+                        $this[0].indeterminate = true;
+                    } else {
+                        $this.prop('checked', commons[instance][attr]);
+                    }
+                } else {
+                    if (commons[instance][attr] === '__different__') {
+                        if ($this.attr('type') == 'number') {
+                            $this.attr('type', 'text');
+                        }
+                        if ($this.prop('tagName').toUpperCase() == 'SELECT') {
+                            $this.prepend('<option value="' + wordDifferent + '">' + wordDifferent + '</option>');
+                            $this.val(wordDifferent);
+                        } else {
+                            $this.val('').attr('placeholder', wordDifferent);
+                        }
+                    } else {
+                        $this.val(commons[instance][attr]);
+                    }
+                }
+            } else {
+                var def;
+                if (that.defaults[adapter] && that.defaults[adapter][attr] !== undefined) {
+                    def = that.defaults[adapter][attr];
+                }
+                if (def !== undefined) {
+                    if ($this.attr('type') == 'checkbox') {
+                        $this.prop('checked', def);
+                    } else {
+                        $this.val(def);
+                    }
+                }
+            }
+
+            if ($this.attr('type') == 'checkbox') {
+                $this.change(function () {
+                    $('#sync-client-button-save').button('enable');
+                });
+            } else {
+                $this.change(function () {
+                    $('#sync-client-button-save').button('enable');
+                }).keyup(function () {
+                    $(this).trigger('change');
+                });
+            }
+        });
+
+        $('.sync-client-row-title').click(function () {
+            var $form = $(this).next();
+            if ($form.is(':visible')) {
+                $form.hide();
+            } else {
+                $form.show();
+            }
+        });
+        this.showSyncClientData(ids.length > 1 ? null : ids[0]);
+        $('#sync-client-button-save').button('disable');
+        translateAll();
+    };
+
+    this.openSyncClientDlg = function (ids) {
+        if (typeof ids != 'object') ids = [ids];
+        var instances = [];
+
+        // clear global defaults object
+        defaults = {};
+
+        // collect all sync-client instances
+        var count = 0;
+        var data = '';
+        var urls = [];
+        for (var u = 0; u < this.main.instances.length; u++) {
+            if (this.main.objects[this.main.instances[u]].common &&
+                this.main.objects[this.main.instances[u]].common.type === 'sync') {
+                instances.push(this.main.instances[u]);
+                var url = this.main.instances[u].split('.');
+                if (urls.indexOf(url[2]) == -1) {
+                    urls.push(url[2]);
+                    count++;
+                    $.ajax({
+                        headers: {
+                            Accept: 'text/html'
+                        },
+                        cache: true,
+                        url:   '/adapter/' + url[2] + '/sync.html',
+                        success: function (_data) {
+                            data += _data;
+                            if (!--count) {
+                                $('#sync-client-templates').html(data);
+                                that.initSyncClientTabs(ids, instances);
+                            }
+                            //$("script[data-template-name='"+type+"']").html());
+                        },
+                        error: function (jqXHR) {
+                            console.error(jqXHR.responseText);
+                            if (!--count) {
+                                $('#sync-client-templates').html(data);
+                                that.initSyncClientTabs(ids, instances);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        var _instances = [];
+        for (var i = ids.length - 1; i >= 0; i--) {
+            if (!this.main.objects[ids[i]]) {
+                console.warn('Null object: ' + ids[i]);
+                ids.splice(i, 1);
+            } else {
+                if (this.main.objects[ids[i]].common.sync) {
+                    var found = false;
+                    // delete disabled entries
+                    for (var h in this.main.objects[ids[i]].common.sync) {
+                        if (this.main.objects[ids[i]].common.sync[h].enabled === false) {
+                            delete this.main.objects[ids[i]].common.sync[h];
+                        } else {
+                            if (ids.length == 1) _instances.push(h);
+                            found = true;
+                        }
+                    }
+                    if (!found) {
+                        delete this.main.objects[ids[i]].common.sync;
+                    }
+                }
+            }
+        }
+        var title;
+        if (ids.length == 1) {
+            title = _('Sync settings of %s', ids[0]);
+        } else {
+            title = _('Sync settings of %s states', ids.length);
+        }
+        $('#sync-client-tabs').data('ids', ids);
+        this.$dialogSyncClient.dialog('option', 'title', title);
+    };
+
+    this.showSyncClientData = function (id) {
+        if (id) {
+            this.$dialogSyncClient.dialog('option', 'height', 600);
+            this.$dialogSyncClient.dialog('open');
+        } else {
+            this.$dialogSyncClient.dialog('option', 'height', 600);
+            this.$dialogHistory.dialog('open');
+        }
+    };
+
     // ----------------------------- HISTORY ------------------------------------------------
     this.checkHistory = function () {
         var found = false;
@@ -862,7 +1265,7 @@ function Objects(main) {
             if (this.main.objects[this.main.instances[u]].common &&
                 this.main.objects[this.main.instances[u]].common.type === 'storage' &&
                 this.main.objects[this.main.instances[u]].common.enabled) {
-                if (this.historyEnabled !== null && this.historyEnabled != true) {
+                if (this.historyEnabled !== null && this.historyEnabled !== true) {
                     this.historyEnabled = true;
                     // update history buttons
                     this.init(true);
@@ -873,7 +1276,7 @@ function Objects(main) {
                 return;
             }
         }
-        if (this.historyEnabled !== null && this.historyEnabled != false) {
+        if (this.historyEnabled !== null && this.historyEnabled !== false) {
             this.historyEnabled = false;
             // update history buttons
             this.init(true);
@@ -913,7 +1316,7 @@ function Objects(main) {
             this.defaults[adapter] = {};
 
             // set values
-            $tab.find('input, select').each(function() {
+            $tab.find('input, select').each(function () {
                 var $this = $(this);
                 $this.attr('data-instance', adapter + '.' + instance);
                 var field = $this.attr('data-field');
@@ -968,7 +1371,7 @@ function Objects(main) {
         }
 
         // set values
-        $storageTabs.find('input, select').each(function() {
+        $storageTabs.find('input, select').each(function () {
             var $this    = $(this);
             var instance = $this.attr('data-instance');
             var adapter  = instance.split('.')[0];
@@ -992,7 +1395,7 @@ function Objects(main) {
                         if ($this.attr('type') == 'number') {
                             $this.attr('type', 'text');
                         }
-                        if ($this.prop('tagName').toUpperCase() == 'SELECT'){
+                        if ($this.prop('tagName').toUpperCase() == 'SELECT') {
                             $this.prepend('<option value="' + wordDifferent + '">' + wordDifferent + '</option>');
                             $this.val(wordDifferent);
                         } else {
@@ -1070,10 +1473,10 @@ function Objects(main) {
                                 '<td>' + (res[i].from || '').replace('system.adapter.', '').replace('system.', '') + '</td>' +
                                 '<td>' + main.formatDate(res[i].ts) + '</td>' +
                                 '<td>' + main.formatDate(res[i].lc) + '</td>' +
-                                '</tr>\n'
+                                '</tr>\n';
                         }
                     } else {
-                        text = '<tr><td colspan="5" style="text-align: center">' + _('No data') + '</td></tr>'
+                        text = '<tr><td colspan="5" style="text-align: center">' + _('No data') + '</td></tr>';
                     }
                     $('#grid-history-body').html(text)
                         .data('odd', true);
@@ -1127,7 +1530,6 @@ function Objects(main) {
                             case '#tab-history-table':
                                 that.loadHistoryChart();
                                 break;
-
                             case '#tab-history-chart':
                                 that.loadHistoryChart($tabs.data('id'));
                                 break;
@@ -1186,7 +1588,7 @@ function Objects(main) {
                         },
                         cache: true,
                         url:   '/adapter/' + url[2] + '/storage.html',
-                        success: function(_data) {
+                        success: function (_data) {
                             data += _data;
                             if (!--count) {
                                 $('#storage-templates').html(data);
@@ -1194,7 +1596,7 @@ function Objects(main) {
                             }
                             //$("script[data-template-name='"+type+"']").html());
                         },
-                        error: function(jqXHR) {
+                        error: function (jqXHR) {
                             console.error(jqXHR.responseText);
                             if (!--count) {
                                 $('#storage-templates').html(data);
@@ -1264,10 +1666,10 @@ function Objects(main) {
                         that.loadHistoryChart($(this).data('id'));
                     });
                 if (this.main.config['object-history-table'] !== undefined) {
-                    $('#history-table-instance').val(this.main.config['object-history-table'])
+                    $('#history-table-instance').val(this.main.config['object-history-table']);
                 }
                 if (this.main.config['object-history-chart'] !== undefined) {
-                    $('#history-chart-instance').val(this.main.config['object-history-chart'])
+                    $('#history-chart-instance').val(this.main.config['object-history-chart']);
                 }
 
             } else {
@@ -1439,7 +1841,7 @@ function Objects(main) {
         var f = evt.target.files[0];
         if (f) {
             var r = new FileReader();
-            r.onload = function(e) {
+            r.onload = function (e) {
                 var contents = e.target.result;
                 var json = JSON.parse(contents);
                 var len = Object.keys(json).length;

@@ -91,12 +91,12 @@ table#events {
     margin: 4px 2px 1px 2px;
 }
 
-.storage-row-title {
+.storage-row-title, .sync-client-row-title {
     width: 100%;
 /*    font-weight: bold;*/
     cursor: pointer;
 }
-.storage-settings {
+.storage-settings, .sync-client-settings {
     width: 100%;
     border: 1px solid gray;
     padding-bottom: 15px;
@@ -178,10 +178,10 @@ table#events {
     font-weight: bold;
     color: #06960E !important;
 }
-.history-enabled {
+.history-enabled, .sync-client-enabled {
     background: rgb(151, 191, 255) !important;
 }
-.history-disabled {
+.history-disabled, .sync-client-disabled {
 
 }
 

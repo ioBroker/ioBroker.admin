@@ -141,7 +141,7 @@ $(document).ready(function () {
                             $(this).dialog('close');
                             if (cb) cb(id);
                         }
-                    }
+                    };
                 }
                 $dialogConfirm.dialog('option', 'buttons', buttons);
             }
@@ -780,7 +780,7 @@ $(document).ready(function () {
                     $(this).appendTo($('body'));
                     var $t = $(this);
                     setTimeout(function () {
-                        $t.hide()
+                        $t.hide();
                     }, 100);
                 }
                 showTabs += '<option value="' + $(this).attr('id') + '">' + _($(this).data('name')) + '</option>';
@@ -886,7 +886,7 @@ $(document).ready(function () {
             var countLink = 0;
 
             // If some objects cannot be read => go by timeout
-            var loadTimeout = setTimeout(function() {
+            var loadTimeout = setTimeout(function () {
                 loadTimeout = null;
                 initHtmlTabs(showTabs);
             }, 1000);
@@ -1389,7 +1389,7 @@ $(document).ready(function () {
             var text;
             try {
                 text = atob(evt.target.result.split(',')[1]); // string has form data:;base64,TEXT==
-            } catch(err) {
+            } catch (err) {
                 $('#drop-text').html(_('Cannot read file!'));
                 $dz.addClass('dropZone-error').animate({opacity: 0}, 1000, function () {
                     $dz.hide().removeClass('dropZone-error').css({opacity: 1});
@@ -1453,16 +1453,16 @@ $(document).ready(function () {
             $dropZone.data('installed', true);
             var $dz = $('#drop-zone');
             $('#drop-text').html(_('Drop the files here'));
-            $dropZone[0].ondragover = function() {
+            $dropZone[0].ondragover = function () {
                 $dz.unbind('click');
                 $dz.show();
                 return false;
             };
             $dz.click(function () {
                 $dz.hide();
-            })
+            });
 
-            $dz[0].ondragleave = function() {
+            $dz[0].ondragleave = function () {
                 $dz.hide();
                 return false;
             };
@@ -1560,7 +1560,8 @@ $(document).ready(function () {
                             tabs.hosts.list.push({name: obj.common.hostname, address: addr, id: obj._id});
                         } else {
                             tabs.hosts.list.push({name: obj.common.hostname, address: '127.0.0.1', id: obj._id});
-                        }                    }
+                        }
+                    }
                     //treeInsert(id);
                 }
                 main.objectsLoaded = true;
@@ -1689,7 +1690,7 @@ $(document).ready(function () {
         tabs.users.objectChange(id, obj);
     }
 
-    function monitor () {
+    function monitor() {
         if (main._timer) return;
         var ts = (new Date()).getTime();
         if (ts - main._lastTimer > 30000) {
@@ -1897,6 +1898,7 @@ $(document).ready(function () {
                                 tabs.groups.prepare();
                                 tabs.enums.prepare();
                                 tabs.objects.prepareHistory();
+                                tabs.objects.prepareSyncClient();
                                 tabs.events.prepare();
                                 prepareRepos();
                                 prepareCerts();
@@ -1926,7 +1928,7 @@ $(document).ready(function () {
         setTimeout(function () {
             tabs.adapters.init(true);
         }, 0);
-    })
+    });
 
     main.socket.on('reauthenticate', function () {
         location.reload();
