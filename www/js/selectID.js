@@ -829,7 +829,7 @@
             } else if (name == 'value') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
             } else if (name == 'button') {
-                text += '<col width="' + (data.widths ? data.widths[c] : '100px') + '"/>';
+                text += '<col width="' + (data.widths ? data.widths[c] : '110px') + '"/>';
             } else if (name == 'enum') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
             } else {
@@ -940,7 +940,7 @@
             } else if (name == 'value') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
             } else if (name == 'button') {
-                text += '<col width="' + (data.widths ? data.widths[c] : '100px') + '"/>';
+                text += '<col width="' + (data.widths ? data.widths[c] : '110px') + '"/>';
             } else if (name == 'enum') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
             } else {
