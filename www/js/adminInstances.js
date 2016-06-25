@@ -306,7 +306,7 @@ function Instances(main) {
             text += '<td style="text-align: left; padding-left: 1em;">' +
                 (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-stop-run"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-settings" data-instance-href="/adapter/' + adapter + '/?' + instance + '" ></button>' +
-                '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' +
+                (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-del"></button>'+
                 (url ? '<button style="display: inline-block" data-link="' + url +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '') +
                 '</td>';

@@ -20,6 +20,11 @@ User interface for configuration and administration.
 %native_someField% - get someField from "native" of this adapter instance
 
 ## Changelog
+### 1.2.4 (2016-06-25)
+* (bluefox) change color of log entries
+* (bluefox) add icon to logout button
+* (bluefox) hide reload by WWW only adapters
+
 ### 1.2.3 (2016-06-05)
 * (bluefox) fix memory displaying
 

@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.2.3",
+        "version": "1.2.4",
         "news": {
+            "1.2.4": {
+                "en": "change color of log entries\nadd icon to logout button\nhide reload by WWW only adapters",
+                "de": "change color of log entries\nadd icon to logout button\nhide reload by WWW only adapters",
+                "ru": "change color of log entries\nadd icon to logout button\nhide reload by WWW only adapters"
+            },
             "1.2.3": {
                 "en": "fix memory displaying",
                 "de": "fix memory displaying",

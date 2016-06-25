@@ -662,7 +662,9 @@ $(document).ready(function () {
                 }
 
 
-                $('#button-logout').button().click(function () {
+                $('#button-logout').button({
+                    text: false
+                }).click(function () {
                     window.location.href = '/logout/';
                 });
 
