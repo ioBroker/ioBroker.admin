@@ -63,7 +63,9 @@
         if ($('#auth').prop('checked')) {
             $('#defaultUser').val('admin');
             $('.defaultUser').hide();
+            $('#_ttl').show();
         } else {
+            $('#_ttl').hide();
             $('.defaultUser').show();
         }
     }
@@ -159,6 +161,7 @@
             <td><select id="certPrivate" class="value"></select></td>
         </tr>
         <tr><td class="translate">Authentication:</td><td><input  class="value" id="auth"   type="checkbox" /></td></tr>
+        <tr id="_ttl"><td class="translate">Re-authenticate after (sec):</td><td><input  class="value" id="ttl" /></td></tr>
         <tr><td class="translate">Cache:</td><td>         <input  class="value" id="cache"  type="checkbox" /></td></tr>
         <tr class="defaultUser"><td class="translate">Run as:</td><td><select class="value" id="defaultUser" /></td></tr>
         <tr><td class="translate">Auto update:</td><td>

@@ -78,12 +78,12 @@ adapter.on('stateChange', function (id, state) {
 });
 
 adapter.on('ready', function () {
-    adapter.getForeignObject("system.adapter.admin", function (err, obj) {
+    adapter.getForeignObject('system.adapter.admin', function (err, obj) {
         if (!err && obj) {
             if (!obj.native.secret) {
                 require('crypto').randomBytes(24, function (ex, buf) {
                     secret = buf.toString('hex');
-                    adapter.extendForeignObject("system.adapter.admin", {native: {secret: secret}});
+                    adapter.extendForeignObject('system.adapter.admin', {native: {secret: secret}});
                     main();
                 });
             } else {
@@ -91,7 +91,7 @@ adapter.on('ready', function () {
                 main();
             }
         } else {
-            adapter.logger.error("Cannot find object system.adapter.admin");
+            adapter.logger.error('Cannot find object system.adapter.admin');
         }
     });
 });
@@ -116,7 +116,7 @@ adapter.on('unload', function (callback) {
     if (adapter.requireLog) adapter.requireLog(false);
 
     try {
-        adapter.log.info("terminating http" + (webServer.settings.secure ? "s" : "") + " server on port " + webServer.settings.port);
+        adapter.log.info('terminating http' + (webServer.settings.secure ? 's' : '') + ' server on port ' + webServer.settings.port);
         webServer.server.close();
 
         callback();
@@ -285,9 +285,9 @@ function main() {
 }
 
 function addUser(user, pw, options, callback) {
-    adapter.getForeignObject("system.user." + user, options, function (err, obj) {
+    adapter.getForeignObject('system.user.' + user, options, function (err, obj) {
         if (obj) {
-            if (typeof callback == 'function') callback("User yet exists");
+            if (typeof callback == 'function') callback('User yet exists');
         } else {
             adapter.setForeignObject('system.user.' + user, {
                 type: 'user',
@@ -304,14 +304,14 @@ function addUser(user, pw, options, callback) {
 }
 
 function delUser(user, options, callback) {
-    adapter.getForeignObject("system.user." + user, options, function (err, obj) {
+    adapter.getForeignObject('system.user.' + user, options, function (err, obj) {
         if (err || !obj) {
-            if (callback) callback("User does not exist");
+            if (callback) callback('User does not exist');
         } else {
             if (obj.common.dontDelete) {
-                if (callback) callback("Cannot delete user, while is system user");
+                if (callback) callback('Cannot delete user, while is system user');
             } else {
-                adapter.delForeignObject("system.user." + user, options, function (err) {
+                adapter.delForeignObject('system.user.' + user, options, function (err) {
                     // Remove this user from all groups in web client
                     if (callback) callback(err);
                 });
@@ -339,9 +339,9 @@ function addGroup(group, desc, acl, options, callback) {
     }
     group = group.substring(0, 1).toLowerCase() + group.substring(1);
 
-    adapter.getForeignObject("system.group." + group, options, function (err, obj) {
+    adapter.getForeignObject('system.group.' + group, options, function (err, obj) {
         if (obj) {
-            if (callback) callback("Group yet exists");
+            if (callback) callback('Group yet exists');
         } else {
             adapter.setForeignObject('system.group.' + group, {
                 type: 'group',
@@ -359,14 +359,14 @@ function addGroup(group, desc, acl, options, callback) {
 }
 
 function delGroup(group, options, callback) {
-    adapter.getForeignObject("system.group." + group, options, function (err, obj) {
+    adapter.getForeignObject('system.group.' + group, options, function (err, obj) {
         if (err || !obj) {
-            if (callback) callback("Group does not exist");
+            if (callback) callback('Group does not exist');
         } else {
             if (obj.common.dontDelete) {
-                if (callback) callback("Cannot delete group, while is system group");
+                if (callback) callback('Cannot delete group, while is system group');
             } else {
-                adapter.delForeignObject("system.group." + group, options, function (err) {
+                adapter.delForeignObject('system.group.' + group, options, function (err) {
                     // Remove this group from all users in web client
                     if (callback) callback(err);
                 });
@@ -571,10 +571,10 @@ function initWebServer(settings) {
             }
 
             /*server.io.set('logger', {
-             debug: function(obj) {adapter.log.debug("socket.io: " + obj)},
-             info:  function(obj) {adapter.log.debug("socket.io: " + obj)} ,
-             error: function(obj) {adapter.log.error("socket.io: " + obj)},
-             warn:  function(obj) {adapter.log.warn("socket.io: " + obj)}
+             debug: function(obj) {adapter.log.debug('socket.io: ' + obj)},
+             info:  function(obj) {adapter.log.debug('socket.io: ' + obj)} ,
+             error: function(obj) {adapter.log.error('socket.io: ' + obj)},
+             warn:  function(obj) {adapter.log.warn('socket.io: ' + obj)}
              });*/
             server.io.on('connection', initSocket);
         });
@@ -622,7 +622,7 @@ function getUserFromSocket(socket, callback) {
     } catch (e) {
 
     }
-    if (!wait && callback) callback("Cannot detect user");
+    if (!wait && callback) callback('Cannot detect user');
 }
 
 function initSocket(socket) {
@@ -674,7 +674,7 @@ function updateSession(socket) {
 }
 
 function checkPermissions(socket, command, callback, arg) {
-    if (socket._acl.user != 'system.user.admin') {
+    if (socket._acl.user !== 'system.user.admin') {
         // type: file, object, state, other
         // operation: create, read, write, list, delete, sendto, execute, sendto
         if (commandsPermissions[command]) {
@@ -715,7 +715,7 @@ function checkObject(id, options, flag) {
         return true;
     }
 
-    if (options.user != 'system.user.admin' &&
+    if (options.user !== 'system.user.admin' &&
         options.groups.indexOf('system.group.administrator') == -1) {
         if (objects[id].acl.owner != options.user) {
             // Check if the user is in the group
