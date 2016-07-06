@@ -27,6 +27,7 @@
         "Cache:":                 {"en": "Cache:",                  "de": "Puffer:",                 "ru": "Кэш:"},
         "Public certificate:":    {"en": "Public certificate:",     "de": "Publikzertifikat:",       "ru": "'Public' сертификат:"},
         "Private certificate:":   {"en": "Private certificate:",    "de": "Privatzertifikat:",       "ru": "'Private' сертификат:"},
+        "Chained certificate:":   {"en": "Chained certificate:",    "de": "Kettenzertifikat:",       "ru": "'Chained' сертификат:"},
         "help_tip":               {
             "en": "On save the adapter restarts with new configuration immediately",
             "de": "Beim Speichern von Einstellungen der Adapter wird sofort neu gestartet.",
@@ -56,9 +57,11 @@
         if ($('#secure').prop('checked')) {
             $('#_certPublic').show();
             $('#_certPrivate').show();
+            $('#_certChained').show();
         } else {
             $('#_certPublic').hide();
             $('#_certPrivate').hide();
+            $('#_certChained').hide();
         }
         if ($('#auth').prop('checked')) {
             $('#defaultUser').val('admin');
@@ -114,6 +117,7 @@
 
         fillSelectCertificates('#certPublic',  'public',  settings.certPublic);
         fillSelectCertificates('#certPrivate', 'private', settings.certPrivate);
+        fillSelectCertificates('#certChained', 'chained', settings.certChained);
         fillUsers('#defaultUser', settings.defaultUser);
 
         showHideSettings();
@@ -159,6 +163,10 @@
         <tr id="_certPrivate">
             <td class="translate">Private certificate:</td>
             <td><select id="certPrivate" class="value"></select></td>
+        </tr>
+        <tr id="_certChained">
+            <td class="translate">Chained certificate:</td>
+            <td><select id="certChained" class="value"></select></td>
         </tr>
         <tr><td class="translate">Authentication:</td><td><input  class="value" id="auth"   type="checkbox" /></td></tr>
         <tr id="_ttl"><td class="translate">Re-authenticate after (sec):</td><td><input  class="value" id="ttl" /></td></tr>

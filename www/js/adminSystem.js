@@ -4,9 +4,12 @@ function System(main) {
     var $dialogSystem = $('#dialog-system');
     var $gridRepo     = $('#grid-repos');
     var $gridCerts    = $('#grid-certs');
+    var editingCerts  = [];
+    var editingRepos  = [];
 
     this.systemRepos  = null;
-    this.systemCerts   = null;
+    this.systemCerts  = null;
+
 
     function string2cert(name, str) {
         // expected format: -----BEGIN CERTIFICATE-----certif...icate==-----END CERTIFICATE-----
@@ -22,7 +25,7 @@ function System(main) {
             }
             str = str.substring('-----BEGIN RSA PRIVATE KEY-----'.length);
             str = str.substring(0, str.length - '-----END RSA PRIVATE KEY-----'.length);
-            str = str.replace(/ /g, '');
+            str = str.replace(/\s/g, '');
             while (str.length) {
                 lines.push(str.substring(0, 64));
                 str = str.substring(64);
@@ -35,7 +38,7 @@ function System(main) {
             }
             str = str.substring('-----BEGIN PRIVATE KEY-----'.length);
             str = str.substring(0, str.length - '-----END PRIVATE KEY-----'.length);
-            str = str.replace(/ /g, '');
+            str = str.replace(/\s/g, '');
             while (str.length) {
                 lines.push(str.substring(0, 64));
                 str = str.substring(64);
@@ -50,19 +53,30 @@ function System(main) {
                 main.showMessage(_('Certificate "%s" must end with "-----END CERTIFICATE-----".', name), '', 'notice');
                 return '';
             }
-            str = str.substring('-----BEGIN CERTIFICATE-----'.length);
-            str = str.substring(0, str.length - '-----END CERTIFICATE-----'.length);
-            str = str.replace(/ /g, '');
-            while (str.length) {
-                lines.push(str.substring(0, 64));
-                str = str.substring(64);
+            // process chained certificates
+            var parts = str.split('-----END CERTIFICATE-----');
+            for (var p = parts.length - 1; p >= 0; p--) {
+                if (!parts[p].replace(/[\r\n|\r|\n]+/, '').trim()) {
+                    parts.splice(p, 1);
+                    continue;
+                }
+                str = parts[p];
+                str = str.substring('-----BEGIN CERTIFICATE-----'.length);
+                str = str.replace(/\s/g, '');
+                lines = [];
+                while (str.length) {
+                    lines.push(str.substring(0, 64));
+                    str = str.substring(64);
+                }
+                parts[p] = '-----BEGIN CERTIFICATE-----\r\n' + lines.join('\r\n') + '\r\n-----END CERTIFICATE-----\r\n';
             }
-            return '-----BEGIN CERTIFICATE-----\r\n' + lines.join('\r\n') + '\r\n-----END CERTIFICATE-----\r\n';
+
+            return parts.join('');
         }
     }
 
     function cert2string(cert) {
-        var res = cert.replace(/(?:\\[rn]|[\r\n]+)+/g, "");
+        var res = cert.replace(/(?:\\[rn]|[\r\n]+)+/g, '');
         return res;
     }
 
@@ -87,7 +101,8 @@ function System(main) {
                 $('.repo-delete-submit').hide();
                 $('.repo-ok-submit[data-repo-id="' + id + '"]').show();
                 $('.repo-cancel-submit[data-repo-id="' + id + '"]').show();
-                $gridRepo.jqGrid('editRow', rowid, {"url":"clientArray"});
+                $gridRepo.jqGrid('editRow', rowid, {url: 'clientArray'});
+                if (editingRepos.indexOf(rowid) === -1) editingRepos.push(rowid);
             },
             loadComplete: function () {
                 initRepoButtons();
@@ -178,10 +193,10 @@ function System(main) {
             name:        newText + idx,
             certificate: text || '',
             commands:
-            '<button data-cert-id="' + id + '" class="cert-edit-submit">'   + _('edit')   + '</button>' +
-            '<button data-cert-id="' + id + '" class="cert-delete-submit">' + _('delete') + '</button>' +
-            '<button data-cert-id="' + id + '" class="cert-ok-submit" style="display:none">' + _('ok') + '</button>' +
-            '<button data-cert-id="' + id + '" class="cert-cancel-submit" style="display:none">' + _('cancel') + '</button>'
+                '<button data-cert-id="' + id + '" class="cert-edit-submit">'   + _('edit')   + '</button>' +
+                '<button data-cert-id="' + id + '" class="cert-delete-submit">' + _('delete') + '</button>' +
+                '<button data-cert-id="' + id + '" class="cert-ok-submit"     style="display: none">' + _('ok')     + '</button>' +
+                '<button data-cert-id="' + id + '" class="cert-cancel-submit" style="display: none">' + _('cancel') + '</button>'
         });
 
         initCertButtons();
@@ -208,7 +223,8 @@ function System(main) {
                 $('.cert-delete-submit').hide();
                 $('.cert-ok-submit[data-cert-id="' + id + '"]').show();
                 $('.cert-cancel-submit[data-cert-id="' + id + '"]').show();
-                $gridCerts.jqGrid('editRow', rowid, {"url": "clientArray"});
+                $gridCerts.jqGrid('editRow', rowid, {url: 'clientArray'});
+                if (editingCerts.indexOf(rowid) === -1) editingCerts.push(rowid);
             },
             loadComplete: function () {
                 initCertButtons();
@@ -249,6 +265,20 @@ function System(main) {
     }
 
     // ----------------------------- Repositories show and Edit ------------------------------------------------
+    function finishEditingRepo() {
+        if (editingRepos.length) {
+            $('.repo-edit-submit').show();
+            $('.repo-delete-submit').show();
+            $('.repo-ok-submit').hide();
+            $('.repo-cancel-submit').hide();
+
+            for (var i = 0; i < editingRepos.length; i++) {
+                $gridRepo.jqGrid('saveRow', editingRepos[i], {url: 'clientArray'});
+                updateRepoListSelect();
+            }
+            editingRepos = [];
+        }
+    }
     function initRepoGrid(update) {
         $gridRepo.jqGrid('clearGridData');
 
@@ -264,11 +294,11 @@ function System(main) {
                     name:    repo,
                     link:    (typeof that.systemRepos.native.repositories[repo] == 'object') ? that.systemRepos.native.repositories[repo].link : that.systemRepos.native.repositories[repo],
                     commands:
-                    '<button data-repo-id="' + id + '" class="repo-edit-submit">'   + _('edit')   + '</button>' +
-                    '<button data-repo-id="' + id + '" class="repo-delete-submit">' + _('delete') + '</button>' +
-                    '<button data-repo-id="' + id + '" class="repo-ok-submit"     style="display: none">' + _('ok') + '</button>' +
-                    '<button data-repo-id="' + id + '" class="repo-cancel-submit" style="display: none">' + _('cancel') + '</button>'
-                });
+                        '<button data-repo-id="' + id + '" class="repo-edit-submit">'   + _('edit')   + '</button>' +
+                        '<button data-repo-id="' + id + '" class="repo-delete-submit">' + _('delete') + '</button>' +
+                        '<button data-repo-id="' + id + '" class="repo-ok-submit"     style="display: none">' + _('ok')     + '</button>' +
+                        '<button data-repo-id="' + id + '" class="repo-cancel-submit" style="display: none">' + _('cancel') + '</button>'
+                    });
                 id++;
             }
 
@@ -289,7 +319,8 @@ function System(main) {
             $('.repo-delete-submit').hide();
             $('.repo-ok-submit[data-repo-id="' + id + '"]').show();
             $('.repo-cancel-submit[data-repo-id="' + id + '"]').show();
-            $gridRepo.jqGrid('editRow', 'repo_' + id, {"url":"clientArray"});
+            $gridRepo.jqGrid('editRow', 'repo_' + id, {url: 'clientArray'});
+            if (editingRepos.indexOf('repo_' + id) === -1) editingRepos.push(rowid);
         });
 
         $('.repo-delete-submit').unbind('click').button({
@@ -299,6 +330,8 @@ function System(main) {
             var id = $(this).attr('data-repo-id');
             $gridRepo.jqGrid('delRowData', 'repo_' + id);
             updateRepoListSelect();
+            var pos = editingRepos.indexOf('repo_' + id);
+            if (pos !== -1) editingRepos.splice(pos, 1);
         });
 
         $('.repo-ok-submit').unbind('click').button({
@@ -312,6 +345,8 @@ function System(main) {
             $('.repo-cancel-submit').hide();
             $gridRepo.jqGrid('saveRow', 'repo_' + id, {"url":"clientArray"});
             updateRepoListSelect();
+            var pos = editingRepos.indexOf('repo_' + id);
+            if (pos !== -1) editingRepos.splice(pos, 1);
         });
         $('.repo-cancel-submit').unbind('click').button({
             icons: {primary: 'ui-icon-close'},
@@ -323,6 +358,8 @@ function System(main) {
             $('.repo-ok-submit').hide();
             $('.repo-cancel-submit').hide();
             $gridRepo.jqGrid('restoreRow', 'repo_' + id, false);
+            var pos = editingRepos.indexOf('repo_' + id);
+            if (pos !== -1) editingRepos.splice(pos, 1);
         });
     }
     function updateRepoListSelect() {
@@ -387,6 +424,20 @@ function System(main) {
     }
 
     // ----------------------------- Certificates show and Edit ------------------------------------------------
+    function finishEditingCerts() {
+        if (editingCerts.length) {
+            $('.cert-edit-submit').show();
+            $('.cert-delete-submit').show();
+            $('.cert-ok-submit').hide();
+            $('.cert-cancel-submit').hide();
+
+            for (var i = 0; i < editingCerts.length; i++) {
+                $gridCerts.jqGrid('saveRow', editingCerts[i], {url: 'clientArray'});
+                updateCertListSelect();
+            }
+            editingCerts = [];
+        }
+    }
     function initCertsGrid(update) {
         $gridCerts.jqGrid('clearGridData');
         if (that.systemCerts && that.systemCerts.native.certificates) {
@@ -453,6 +504,7 @@ function System(main) {
             $('.cert-ok-submit[data-cert-id="' + id + '"]').show();
             $('.cert-cancel-submit[data-cert-id="' + id + '"]').show();
             $gridCerts.jqGrid('editRow', 'cert_' + id, {url: 'clientArray'});
+            if (editingCerts.indexOf('cert_' + id) === -1) editingCerts.push('cert_' + id);
         });
 
         $('.cert-delete-submit').unbind('click').button({
@@ -462,6 +514,8 @@ function System(main) {
             var id = $(this).attr('data-cert-id');
             $gridCerts.jqGrid('delRowData', 'cert_' + id);
             updateCertListSelect();
+            var pos = editingCerts.indexOf('cert_' + id);
+            if (pos !== -1) editingCerts.splice(pos, 1);
         });
 
         $('.cert-ok-submit').unbind('click').button({
@@ -475,6 +529,8 @@ function System(main) {
             $('.cert-cancel-submit').hide();
             $gridCerts.jqGrid('saveRow', 'cert_' + id, {url: 'clientArray'});
             updateCertListSelect();
+            var pos = editingCerts.indexOf('cert_' + id);
+            if (pos !== -1) editingCerts.splice(pos, 1);
         });
         $('.cert-cancel-submit').unbind('click').button({
             icons: {primary: 'ui-icon-close'},
@@ -486,6 +542,8 @@ function System(main) {
             $('.cert-ok-submit').hide();
             $('.cert-cancel-submit').hide();
             $gridCerts.jqGrid('restoreRow', 'cert_' + id, false);
+            var pos = editingCerts.indexOf('cert_' + id);
+            if (pos !== -1) editingCerts.splice(pos, 1);
         });
     }
 
@@ -573,6 +631,9 @@ function System(main) {
                         var common = main.systemConfig.common;
                         var languageChanged   = false;
                         var activeRepoChanged = false;
+
+                        finishEditingCerts();
+                        finishEditingRepo();
 
                         $('.system-settings.value').each(function () {
                             var $this = $(this);

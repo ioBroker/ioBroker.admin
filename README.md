@@ -20,6 +20,9 @@ User interface for configuration and administration.
 %native_someField% - get someField from "native" of this adapter instance
 
 ## Changelog
+### 1.2.6 (2016-07-06)
+* (bluefox) support of chained certificates
+
 ### 1.2.5 (2016-07-05)
 * (bluefox) install from github
 

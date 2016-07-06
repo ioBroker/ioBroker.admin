@@ -8,7 +8,7 @@ var adapter =  '';
 var onChangeSupported = false;
 
 $(document).ready(function () {
-    "use strict";
+    'use strict';
 
     var tmp = window.location.pathname.split('/');
     adapter = tmp[2];
@@ -16,6 +16,7 @@ $(document).ready(function () {
 
     // Extend dictionary with standard words for adapter
     if (typeof systemDictionary === 'undefined') systemDictionary = {};
+
     systemDictionary.save =           {"en": "Save",        "de": "Speichern",   "ru": "Сохранить"};
     systemDictionary.saveclose =      {"en": "Save and close", "de": "Speichern und schließen", "ru": "Сохранить и выйти"};
     systemDictionary.none =           {"en": "none",        "de": "keins",       "ru": ""};
@@ -52,10 +53,10 @@ $(document).ready(function () {
     });
     $('button#saveclose').button({icons: {
         primary: 'ui-icon-disk',
-        secondary: "ui-icon-close"
+        secondary: 'ui-icon-close'
     }}).click(function () {
         if (typeof save == 'undefined') {
-            alert("Please implement save function in your admin/index.html");
+            alert('Please implement save function in your admin/index.html');
             return;
         }
         save(function (obj, common) {
@@ -88,8 +89,8 @@ $(document).ready(function () {
             }
 
             if (common) {
-                for (var a in common) {
-                    oldObj.common[a] = common[a];
+                for (var b in common) {
+                    oldObj.common[b] = common[b];
                 }
             }
             socket.emit('setObject', id, oldObj, function (err) {
@@ -120,10 +121,20 @@ $(document).ready(function () {
                         certs = [];
                         for (var c in res.native.certificates) {
                             if (!res.native.certificates[c]) continue;
-                            certs.push({
+                            var _cert = {
                                 name: c,
                                 type: (res.native.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) == '-----BEGIN RSA PRIVATE KEY' || res.native.certificates[c].substring(0, '-----BEGIN PRIVATE KEY'.length) == '-----BEGIN PRIVATE KEY') ? 'private' : 'public'
-                            });
+                            };
+                            if (_cert.type === 'public') {
+                                var m = res.native.certificates[c].split('-----END CERTIFICATE-----');
+                                var count = 0;
+                                for (var _m = 0; _m < m.length; _m++) {
+                                    if (m[_m].replace(/[\r\n|\r|\n]+/, '').trim()) count++;
+                                }
+                                if (count > 1) _cert.type = 'chained';
+                            }
+
+                            certs.push(_cert);
                         }
                     }
                 }

@@ -249,22 +249,8 @@ function main() {
 
     if (adapter.config.secure) {
         // Load certificates
-        adapter.getForeignObject('system.certificates', function (err, obj) {
-            if (err || !obj ||
-                !obj.native.certificates ||
-                !adapter.config.certPublic ||
-                !adapter.config.certPrivate ||
-                !obj.native.certificates[adapter.config.certPublic] ||
-                !obj.native.certificates[adapter.config.certPrivate]
-                ) {
-                adapter.log.error('Cannot enable secure web server, because no certificates found: ' + adapter.config.certPublic + ', ' + adapter.config.certPrivate);
-            } else {
-                adapter.config.certificates = {
-                    key:  obj.native.certificates[adapter.config.certPrivate],
-                    cert: obj.native.certificates[adapter.config.certPublic]
-                };
-
-            }
+        adapter.getCertificates(function (err, certificates) {
+            adapter.config.certificates = certificates;
             webServer = initWebServer(adapter.config);
             getData();
         });

@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.2.5",
+        "version": "1.2.6",
         "news": {
+            "1.2.6": {
+                "en": "support of chained certificates",
+                "de": "support of chained certificates",
+                "ru": "support of chained certificates"
+            },
             "1.2.5": {
                 "en": "install from github",
                 "de": "install from github",
@@ -58,7 +63,7 @@
             "bluefox <bluefox@ccu.io>",
             "hobbyquaker <hq@ccu.io>"
         ],
-        "dependencies":             [{"js-controller": ">=0.8.0"}],
+        "dependencies":             [{"js-controller": ">=0.10.1"}],
         "type":                     "common adapters",
         "license":                  "MIT",
         "logTransporter":           true,
@@ -74,6 +79,7 @@
         "cache":                    false,
         "certPublic":               "",
         "certPrivate":              "",
+        "certChained":              "",
         "ttl":                      3600,
         "defaultUser":              "admin"
     },
