@@ -20,6 +20,9 @@ User interface for configuration and administration.
 %native_someField% - get someField from "native" of this adapter instance
 
 ## Changelog
+### 1.2.5 (2016-07-05)
+* (bluefox) install from github
+
 ### 1.2.4 (2016-06-25)
 * (bluefox) change color of log entries
 * (bluefox) add icon to logout button

@@ -1,5 +1,5 @@
 function Adapters(main) {
-    "use strict";
+    'use strict';
 
     var that = this;
 
@@ -11,6 +11,7 @@ function Adapters(main) {
     this.main = main;
     this.tree = [];
     this.data = {};
+    this.urls = {};
     this.groupImages = {
         'common adapters_group':  '/img/common.png',
         'hardware_group':         '/img/hardware.png',
@@ -181,37 +182,85 @@ function Adapters(main) {
             }, 200);
         });
 
-        $('#btn_filter_custom_url').button({icons: {primary: 'ui-icon-tag'}, text: false}).css({width: 18, height: 18}).unbind('click').click(function () {
-            $('#dialog-install-url').dialog({
-                autoOpen:   true,
-                modal:      true,
-                width:      600,
-                height:     170,
-                buttons:    [
-                    {
-                        id: 'dialog-install-url-button',
-                        text: _('Install'),
-                        click: function () {
-                            $('#dialog-install-url').dialog('close');
-                            var url   = $('#install-url-link').val();
-                            var debug = $('#install-url-debug').prop('checked') ? ' --debug' : '';
-                            if (!url) {
-                                that.main.showError(_('Invalid link'));
-                                return;
-                            }
-                            that.main.cmdExec(null, 'url "' + url + '"' + debug, function (exitCode) {
-                                if (!exitCode) that.init(true, true);
-                            });
-                        }
-                    },
-                    {
-                        text: _('Cancel'),
-                        click: function () {
-                            $('#dialog-install-url').dialog('close');
-                        }
+        $('#btn_filter_custom_url')
+            .addClass('icon-github')
+            .button({text: false})
+            .html('')
+            .css({width: 18, height: 18}).unbind('click')
+            .click(function () {
+                // prepare adapters
+                var text = '<option value="">' + _('none') + '</option>';
+                for (var url in that.urls) {
+                    var user = that.urls[url].match(/\.com\/([-_$§A-Za-z0-9]+)\/([-._$§A-Za-z0-9]+)\//);
+                    if (user && user.length >= 2) {
+                        text += '<option value="https://github.com/' + user[1] + '/ioBroker.' + url + '/tarball/master">' + url + '</option>';
                     }
-                ]
-            });
+                }
+                $('#install-github-link').html(text).val(that.main.config.adaptersGithub || '');
+
+                $('#install-tabs').tabs('option', 'active', that.main.config.adaptersInstallTab || 0);
+
+                $('#dialog-install-url').dialog({
+                    autoOpen:   true,
+                    modal:      true,
+                    width:      650,
+                    height:     240,
+                    open:       function (event) {
+                        $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                    },
+                    buttons:    [
+                        {
+                            id: 'dialog-install-url-button',
+                            text: _('Install'),
+                            click: function () {
+                                var isCustom = !!$('#install-tabs').tabs('option', 'active');
+
+                                $('#dialog-install-url').dialog('close');
+                                var url;
+                                var debug;
+                                if (isCustom) {
+                                    url = $('#install-url-link').val();
+                                    debug = $('#install-url-debug').prop('checked') ? ' --debug' : '';
+                                } else {
+                                    url = $('#install-github-link').val();
+                                    debug = $('#install-github-debug').prop('checked') ? ' --debug' : '';
+                                }
+
+                                if (!url) {
+                                    that.main.showError(_('Invalid link'));
+                                    return;
+                                }
+
+                                that.main.cmdExec(null, 'url "' + url + '"' + debug, function (exitCode) {
+                                    if (!exitCode) that.init(true, true);
+                                });
+                            }
+                        },
+                        {
+                            text: _('Cancel'),
+                            click: function () {
+                                $('#dialog-install-url').dialog('close');
+                            }
+                        }
+                    ]
+                });
+        });
+
+        $('#install-tabs').tabs({
+            activate: function (event, ui) {
+                switch (ui.newPanel.selector) {
+                    case '#install-github':
+                        that.main.saveConfig('adaptersInstallTab', 0);
+                        break;
+                    case '#install-custom':
+                        that.main.saveConfig('adaptersInstallTab', 1);
+                        break;
+                }
+            }
+        });
+        // save last selected adapter
+        $('#install-github-link').change(function () {
+            that.main.saveConfig('adaptersGithub', $(this).val());
         });
         $('#install-url-link').keyup(function (event) {
             if (event.which == 13) {
@@ -394,8 +443,10 @@ function Adapters(main) {
                     listInstalled.sort();
                 }
 
+                that.urls = {};
                 // List of adapters for repository
                 for (adapter in repository) {
+                    that.urls[adapter] = repository[adapter].meta;
                     obj = repository[adapter];
                     if (!obj || obj.controller) continue;
                     version = '';
@@ -410,7 +461,14 @@ function Adapters(main) {
                 // list of the installed adapters
                 for (var i = 0; i < listInstalled.length; i++) {
                     adapter = listInstalled[i];
+
                     obj = installedList ? installedList[adapter] : null;
+
+                    if (obj) {
+                        that.urls[adapter] = installedList[adapter].readme || installedList[adapter].extIcon || installedList[adapter].licenseUrl;
+                        if (!that.urls[adapter]) delete that.urls[adapter];
+                    }
+
                     if (!obj || obj.controller || adapter == 'hosts') continue;
                     var installed = '';
                     var icon = obj.icon;
@@ -685,6 +743,9 @@ function Adapters(main) {
                         modal: true,
                         width: 600,
                         height: 400,
+                        open: function (event) {
+                            $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                        },
                         buttons: [
                             {
                                 text: _('agree'),

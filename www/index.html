@@ -47,6 +47,7 @@
     <script type="text/javascript" src="js/adminStates.js"></script>
     <script type="text/javascript" src="js/adminUsers.js"></script>
     <script type="text/javascript" src="js/adminGroups.js"></script>
+    <script type="text/javascript" src="js/adminSystem.js"></script>
     <script type="text/javascript" src="js/admin.js"></script>
 </head>
 <body>
@@ -649,15 +650,31 @@
         </div>
     </div>
     <div id="dialog-install-url" class="translateT" title="Install from custom URL" style="display: none">
-        <table style="width: 100%">
-            <tr>
-                <td><label for="install-url-link" class="translate">URL or file path:</label></td>
-                <td><input id="install-url-link" type="text" style="width: 100%"/></td>
-            </tr>
-            <tr>
-                <td><label for="install-url-debug" class="translate">Debug outputs:</label></td>
-                <td><input id="install-url-debug" type="checkbox" /></td>
-            </tr>        </table>
+        <div id="install-tabs">
+            <ul>
+                <li><a href="#install-github" class="translate">From github</a></li>
+                <li><a href="#install-custom" class="translate">Custom</a></li>
+            </ul>
+            <div id="install-github" style="display: inline-block">
+                <div class="translate" style="display: inline-block">Select adapter:</div>
+                <select id="install-github-link" style="display: inline-block"></select>
+                <br>
+                <label for="install-github-debug" class="translate">Debug outputs:</label>
+                <input id="install-github-debug" type="checkbox" />
+            </div>
+            <div id="install-custom">
+                <table style="width: 100%">
+                    <tr>
+                        <td><label for="install-url-link" class="translate">URL or file path:</label></td>
+                        <td><input id="install-url-link" type="text" style="width: 100%"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="install-url-debug" class="translate">Debug outputs:</label></td>
+                        <td><input id="install-url-debug" type="checkbox" /></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
     <div id="log-copy-text"  title="Copy log" style="display:none; width:100%; height: 100%; background: white; top:0; left:0; position: absolute; z-index:2000">
     </div>

@@ -83,6 +83,9 @@ systemDictionary = {
     "ioBroker Enums":       {"en": "ioBroker Enums",        "de": "ioBroker Aufzählungen",  "ru": "ioBroker категории"},
     "ioBroker States":      {"en": "ioBroker States",       "de": "ioBroker Zustände",      "ru": "ioBroker состояния"},
     "ioBroker adapters":    {"en": "ioBroker adapters",     "de": "ioBroker Adapter",       "ru": "ioBroker драйвера"},
+    "From github":          {"en": "From github",           "de": "Von github",             "ru": "С github"},
+    "Custom":               {"en": "Custom",                "de": "Beliebig",               "ru": "Произвольный"},
+    "Select adapter:":      {"en": "Select adapter:",       "de": "Adapter auswählen:",     "ru": "Выбрать драйвер:"},
     "ioBroker adapter instances": {
         "en": "ioBroker adapter instances",
         "de": "ioBroker Adapter Instanzen",

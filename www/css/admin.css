@@ -337,6 +337,12 @@ table#events {
     cursor: text;
 }
 
+.icon-github {
+    background-image: url(../img/github.svg) !important;
+    background-repeat: no-repeat !important;
+    background-position: 2px 2px !important;
+}
+
 /* -------------------------- LEDS ------------------------------------ */
 .instance-odd {
     background-color: #c1c1c1;

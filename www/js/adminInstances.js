@@ -1,5 +1,5 @@
 function Instances(main) {
-    "use strict";
+    'use strict';
 
     var that = this;
 
@@ -506,6 +506,7 @@ function Instances(main) {
             height:     536, //$(window).height() - 100, // 480
             closeOnEscape: false,
             open: function (event, ui) {
+                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                 that.$dialogConfig.css('padding', '2px 0px');
             },
             beforeClose: function () {

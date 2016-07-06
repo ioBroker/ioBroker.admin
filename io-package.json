@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.2.4",
+        "version": "1.2.5",
         "news": {
+            "1.2.5": {
+                "en": "install from github",
+                "de": "install from github",
+                "ru": "install from github"
+            },
             "1.2.4": {
                 "en": "change color of log entries\nadd icon to logout button\nhide reload by WWW only adapters",
                 "de": "change color of log entries\nadd icon to logout button\nhide reload by WWW only adapters",
