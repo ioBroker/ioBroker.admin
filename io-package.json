@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.2.6",
+        "version": "1.2.7",
         "news": {
+            "1.2.7": {
+                "en": "support of chained certificates as drag&drop",
+                "de": "support of chained certificates as drag&drop",
+                "ru": "support of chained certificates as drag&drop"
+            },
             "1.2.6": {
                 "en": "support of chained certificates",
                 "de": "support of chained certificates",

@@ -408,9 +408,23 @@ function System(main) {
             if (text.indexOf('BEGIN RSA PRIVATE KEY') != -1) {
                 $dz.hide();
                 addCert('private', text);
+            } else if (text.indexOf('BEGIN PRIVATE KEY') != -1) {
+                $dz.hide();
+                addCert('private', text);
             } else if (text.indexOf('BEGIN CERTIFICATE') != -1) {
                 $dz.hide();
-                addCert('public', text);
+                var m = text.split('-----END CERTIFICATE-----');
+                var count = 0;
+                for (var _m = 0; _m < m.length; _m++) {
+                    if (m[_m].replace(/[\r\n|\r|\n]+/, '').trim()) count++;
+                }
+                if (count > 1) {
+                    addCert('chained', text);
+                }  else {
+                    addCert('public', text);
+                }
+
+
             } else {
                 $('#drop-text').html(_('Unknown file format!'));
                 $dz.addClass('dropZone-error').animate({opacity: 0}, 1000, function () {
@@ -550,7 +564,7 @@ function System(main) {
     function updateCertListSelect() {
         // todo
     }
-    
+
     this.init = function () {
         if (!main.systemConfig.error) {
             $('#button-system').button({
@@ -617,7 +631,7 @@ function System(main) {
             $('#button-system').hide();
         }
     };
-    
+
     this.prepare = function () {
         $dialogSystem.dialog({
             autoOpen:   false,
