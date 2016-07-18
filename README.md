@@ -20,6 +20,10 @@ User interface for configuration and administration.
 %native_someField% - get someField from "native" of this adapter instance
 
 ## Changelog
+### 1.3.0 (2016-07-18)
+* (bluefox) fix error with early logout
+* (bluefox) update passport.socketio
+
 ### 1.2.7 (2016-07-11)
 * (bluefox) support of chained certificates as drag&drop
 

@@ -78,12 +78,13 @@ adapter.on('stateChange', function (id, state) {
 });
 
 adapter.on('ready', function () {
-    adapter.getForeignObject('system.adapter.admin', function (err, obj) {
+    adapter.getForeignObject('system.config', function (err, obj) {
         if (!err && obj) {
             if (!obj.native.secret) {
+                obj.native = obj.native || {};
                 require('crypto').randomBytes(24, function (ex, buf) {
                     secret = buf.toString('hex');
-                    adapter.extendForeignObject('system.adapter.admin', {native: {secret: secret}});
+                    adapter.extendForeignObject('system.config', {native: {secret: secret}});
                     main();
                 });
             } else {
@@ -91,7 +92,7 @@ adapter.on('ready', function () {
                 main();
             }
         } else {
-            adapter.logger.error('Cannot find object system.adapter.admin');
+            adapter.logger.error('Cannot find object system.config');
         }
     });
 });
@@ -242,8 +243,6 @@ function main() {
     adapter.subscribeForeignStates('*');
     adapter.subscribeForeignObjects('*');
 
-    var options = null;
-
     adapter.config.defaultUser = adapter.config.defaultUser || 'admin';
     if (!adapter.config.defaultUser.match(/^system\.user\./)) adapter.config.defaultUser = 'system.user.' + adapter.config.defaultUser;
 
@@ -383,8 +382,8 @@ function initWebServer(settings) {
             session =           require('express-session');
             cookieParser =      require('cookie-parser');
             bodyParser =        require('body-parser');
-            AdapterStore =      require(utils.controllerDir + '/lib/session.js')(session);
-            passportSocketIo =  require(__dirname + '/lib/passport.socketio.js');
+            AdapterStore =      require(utils.controllerDir + '/lib/session.js')(session, adapter.config.ttl);
+            passportSocketIo =  require('passport.socketio');
             password =          require(utils.controllerDir + '/lib/password.js');
             passport =          require('passport');
             LocalStrategy =     require('passport-local').Strategy;
@@ -613,7 +612,7 @@ function getUserFromSocket(socket, callback) {
 
 function initSocket(socket) {
     if (adapter.config.auth) {
-		adapter.config.ttl = adapter.config.ttl || 3600;
+		adapter.config.ttl = parseInt(adapter.config.ttl, 10) || 3600;
         getUserFromSocket(socket, function (err, user) {
             if (err || !user) {
                 adapter.log.error('socket.io ' + err);

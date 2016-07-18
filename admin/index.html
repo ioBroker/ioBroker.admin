@@ -1,17 +1,14 @@
 <html>
 
-<!-- these 4 files always have to be included -->
 <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
 <script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 <script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
 
-<!-- these two file always have to be included -->
 <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
 <script type="text/javascript" src="../../js/translate.js"></script>
 <script type="text/javascript" src="../../js/adapter-settings.js"></script>
 
-<!-- you have to define 2 functions in the global scope: -->
 <script type="text/javascript">
     systemDictionary = {
         "Admin adapter settings": {
@@ -50,10 +47,6 @@
     };
 
     function showHideSettings() {
-        if ($('#auth').prop('checked')) {
-            $('#secure').prop('checked', true);
-        }
-
         if ($('#secure').prop('checked')) {
             $('#_certPublic').show();
             $('#_certPrivate').show();
@@ -62,14 +55,16 @@
             $('#_certPublic').hide();
             $('#_certPrivate').hide();
             $('#_certChained').hide();
+            $('#auth').prop('checked', false);
         }
         if ($('#auth').prop('checked')) {
+            $('#secure').prop('checked', true);
             $('#defaultUser').val('admin');
             $('.defaultUser').hide();
             $('#_ttl').show();
         } else {
-            $('#_ttl').hide();
             $('.defaultUser').show();
+            $('#_ttl').hide();
         }
     }
 
@@ -91,8 +86,8 @@
             // example: select elements with id=key and class=value and insert value
             if ($('#' + key + '.value').attr('type') == 'checkbox') {
                 $('#' + key + '.value').prop('checked', settings[key]).change(function() {
-                    onChange();
                     showHideSettings();
+                    onChange();
                 });
             } else {
                 $('#' + key + '.value').val(settings[key]).change(onChange).keyup(function() {
@@ -114,6 +109,7 @@
                 });
             }
         });
+        onChange(false);
 
         fillSelectCertificates('#certPublic',  'public',  settings.certPublic);
         fillSelectCertificates('#certPrivate', 'private', settings.certPrivate);
@@ -121,7 +117,13 @@
         fillUsers('#defaultUser', settings.defaultUser);
 
         showHideSettings();
-        onChange(false);
+        
+        $('#auth').change(function () {
+            if ($(this).prop('checked')) {
+                $('#secure').prop('checked', true);
+                showHideSettings();
+            }
+        });
     }
 
     // ... and the function save has to exist.
@@ -169,7 +171,7 @@
             <td><select id="certChained" class="value"></select></td>
         </tr>
         <tr><td class="translate">Authentication:</td><td><input  class="value" id="auth"   type="checkbox" /></td></tr>
-        <tr id="_ttl"><td class="translate">Re-authenticate after (sec):</td><td><input  class="value" id="ttl" /></td></tr>
+        <tr id="_ttl"><td class="translate">Login timeout(sec):</td><td><input  class="value" id="ttl" /></td></tr>
         <tr><td class="translate">Cache:</td><td>         <input  class="value" id="cache"  type="checkbox" /></td></tr>
         <tr class="defaultUser"><td class="translate">Run as:</td><td><select class="value" id="defaultUser" /></td></tr>
         <tr><td class="translate">Auto update:</td><td>
