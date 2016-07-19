@@ -86,6 +86,12 @@ systemDictionary = {
     "From github":          {"en": "From github",           "de": "Von github",             "ru": "С github"},
     "Custom":               {"en": "Custom",                "de": "Beliebig",               "ru": "Произвольный"},
     "Select adapter:":      {"en": "Select adapter:",       "de": "Adapter auswählen:",     "ru": "Выбрать драйвер:"},
+    "No version of %s":     {"en": "No version of %s",      "de": "Keine Versioninfo für %s", "ru": "Нет информации о версии для %s"},
+    "Invalid version of %s. Required %s": {
+        "en": "Invalid version of %s. Required %s",
+        "de": "Nicht kompatible Version von %s. Es wird erwartet %s",
+        "ru": "Требуется другая версия драйвера %s. Требуется %s"
+    },
     "ioBroker adapter instances": {
         "en": "ioBroker adapter instances",
         "de": "ioBroker Adapter Instanzen",

@@ -409,6 +409,31 @@ function Adapters(main) {
         return text;
     }
 
+    function checkDependencies(dependencies) {
+        if (!dependencies) return '';
+        // like [{"js-controller": ">=0.10.1"}]
+        var adapters;
+        if (dependencies instanceof Array) {
+            adapters = {};
+            for (var a = 0; a < dependencies.length; a++) {
+                if (typeof dependencies[a] === 'string') continue;
+                for (var b in dependencies[a]) adapters[b] = dependencies[a][b];
+            }
+        } else {
+            adapters = dependencies;
+        }
+
+        for (var adapter in adapters) {
+            if (adapter === 'js-controller') {
+                if (!semver.satisfies(that.main.objects['system.host.' + that.main.currentHost].common.installedVersion, adapters[adapter])) return _('Invalid version of %s. Required %s', adapter, adapters[adapter]);
+            } else {
+                if (!that.main.objects['system.adapter.' + adapter] || !that.main.objects['system.adapter.' + adapter].common || !that.main.objects['system.adapter.' + adapter].common.installedVersion) return _('No version of %s', adapter);
+                if (!semver.satisfies(that.main.objects['system.adapter.' + adapter].common.installedVersion, adapters[adapter])) return _('Invalid version of %s', adapter);
+            }
+        }
+        return '';
+    }
+
     // ----------------------------- Adapters show and Edit ------------------------------------------------
     this.init = function (update, updateRepo) {
         if (!this.main.objectsLoaded) {
@@ -481,9 +506,12 @@ function Adapters(main) {
                     if (obj.version) {
                         var news = '';
                         var updatable = false;
+                        var updatableError = '';
                         if (!that.main.upToDate(version, obj.version)) {
                             news = getNews(obj.version, repository[adapter]);
+                            // check if version is compatible with current adapters and js-controller
                             updatable = true;
+                            updatableError = checkDependencies(repository[adapter].dependencies);
                         }
                         installed = '<table style="border: 0; border-collapse: collapse;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget"><tr><td style="border: 0; padding: 0; width: 50px" title="' + news + '">' + obj.version + '</td>';
 
@@ -507,7 +535,7 @@ function Adapters(main) {
 
                         tmp = installed.split('.');
                         if (updatable) {
-                            installed += '<td style="border: 0; padding: 0; width: 30px"><button class="adapter-update-submit" data-adapter-name="' + adapter + '" title="' + _('update') + '"></button></td>';
+                            installed += '<td style="border: 0; padding: 0; width: 30px"><button class="adapter-update-submit" data-adapter-name="' + adapter + '" ' + (updatableError ? ' disabled title="' + updatableError + '"' : 'title="' + _('update') + '"')+ '></button></td>';
                             version = version.replace('class="', 'class="updateReady ');
                             $('a[href="#tab-adapters"]').addClass('updateReady');
                         } else if (that.onlyUpdatable) {
@@ -843,10 +871,10 @@ function Adapters(main) {
         // Update Adapter Table
         if (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+$/)) {
             if (obj) {
-                if (this.list.indexOf(id) == -1) this.list.push(id);
+                if (this.list.indexOf(id) === -1) this.list.push(id);
             } else {
                 var j = this.list.indexOf(id);
-                if (j != -1) {
+                if (j !== -1) {
                     this.list.splice(j, 1);
                 }
             }
