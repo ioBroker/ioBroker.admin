@@ -7,6 +7,7 @@ function Instances(main) {
     this.$gridhead     = $('#grid-instances-head');
     this.$configFrame  = $('#config-iframe');
     this.$dialogConfig = $('#dialog-config');
+    this.$dialogCron   = $('#dialog-cron');
 
     this.main          = main;
     this.list          = [];
@@ -207,8 +208,11 @@ function Instances(main) {
         if (that.main.tabs.hosts.list.length > 1) {
             text += '<th style="width: 10em">' + _('host') + '</th>';
         }
+
         text += '<th style="width: 8em">' + _('schedule_group') + '</th>';
+
         if (that.main.config.expertMode) {
+            text += '<th style="width: 8em">' + _('restart')  + '</th>';
             text += '<th style="width: 8em">' + _('loglevel') + '</th>';
             text += '<th style="width: 8em">' + _('memlimit') + '</th>';
         }
@@ -239,6 +243,7 @@ function Instances(main) {
             $('#running_processes').html('<span class="highlight">' + text + '</span>')
         }
     }
+
     function calculateFreeMem() {
         var host = that.main.states['system.host.' + that.main.currentHost + '.freemem'];
         if (host) {
@@ -328,7 +333,12 @@ function Instances(main) {
             }
 
             // schedule
-            text += '<td data-name="schedule" data-value="' + (common.mode === 'schedule' ? (common.schedule || '') : '') + '" style="text-align: center" class="' + (common.mode === 'schedule' ? 'instance-editable' : '') + '" data-instance-id="' + instanceId + '">' + (common.mode === 'schedule' ? (common.schedule || '') : '') + '</td>';
+            text += '<td data-name="schedule" data-value="' + (common.mode === 'schedule' ? (common.schedule || '') : '') + '" style="text-align: center" class="' + (common.mode === 'schedule' ? 'instance-schedule' : '') + '" data-instance-id="' + instanceId + '">' + (common.mode === 'schedule' ? (common.schedule || '') : '') + '</td>';
+
+            // scheduled restart (only experts)
+            if (that.main.config.expertMode) {
+                text += '<td data-name="restartSchedule" data-value="' + (common.restartSchedule || '') + '"  style="text-align: center" class="instance-schedule" data-instance-id="' + instanceId + '">' + (common.restartSchedule || '') + '</td>';
+            }
 
             // debug level (only experts)
             if (that.main.config.expertMode) {
@@ -356,6 +366,26 @@ function Instances(main) {
         $('.instance-editable[data-instance-id="' + instanceId + '"]')
             .click(onQuickEditField)
             .addClass('select-id-quick-edit');
+
+        // init links
+        $('.instance-schedule[data-instance-id="' + instanceId + '"]').each(function () {
+            if (!$(this).find('button').length) {
+                $(this).append('<button class="instance-schedule-button" data-instance-id="' + instanceId + '" data-name="' + $(this).data('name') + '">...</button>');
+                $(this).find('button').button().css('width', 16).click(function () {
+                    var attr = $(this).data('name');
+                    var _instanceId = $(this).data('instance-id');
+                    showCronDialog(that.main.objects[_instanceId].common[attr] || '', function (newValue) {
+                        if (newValue !== null) {
+                            var obj = {common: {}};
+                            obj.common[attr] = newValue;
+                            that.main.socket.emit('extendObject', _instanceId, obj, function (err) {
+                                if (err) that.main.showError(err);
+                            });
+                        }
+                    })
+                });
+            }    
+        });
 
         $('.instance-name[data-instance-id="' + instanceId + '"]').click(function () {
             $('.instance-settings[data-instance-id="' + $(this).data('instance-id') + '"]').trigger('click');
@@ -469,7 +499,6 @@ function Instances(main) {
                         if (err) that.main.showError(err);
                     });
 
-
                     oldVal = '<span style="color: pink">' + oldVal + '</span>';
                 }
                 $this.html(oldVal)
@@ -496,6 +525,26 @@ function Instances(main) {
         setTimeout(function () {
             $input.focus().select();
         }, 100);
+    }
+
+    function showCronDialog(value, cb) {
+        value = (value || '').replace(/\"/g, '').replace(/\'/g, '');
+        try {
+            $('#div-cron').cron('value', value);
+        } catch (e) {
+            alert(_('Cannot parse value as cron'));
+        }
+
+        $('#dialog_cron_callback').show();
+        $('#dialog_cron_insert').hide();
+
+        $('#dialog_cron_callback').unbind('click').click(function () {
+            var val = $('#div-cron').cron('value');
+            that.$dialogCron.dialog('close');
+            if (cb) cb(val);
+        });
+
+        that.$dialogCron.dialog('open');
     }
 
     this.prepare = function () {
@@ -530,6 +579,49 @@ function Instances(main) {
                 that.main.saveConfig('adapter-config-height-' + name, $(this).parent().height() + 10);
             }
         });
+
+        this.$dialogCron.dialog({
+            autoOpen:   false,
+            modal:      true,
+            width:      700,
+            height:     550,
+            resizable:  false,
+            title:      _('Cron expression'),
+            buttons: [
+                {
+                    id:     'dialog_cron_insert',
+                    text:   _('Insert'),
+                    click:  function () {
+                        var val = $('#div-cron').cron('value');
+                        that.$dialogCron.dialog('close');
+                        that.editor.insert('"' + val + '"');
+                        that.editor.focus();
+                    }
+                },
+                {
+                    id:     'dialog_cron_clear',
+                    text: _('Clear'),
+                    click: function () {
+                        $('#div-cron').cron('value', '');
+                    }
+                },
+                {
+                    id:     'dialog_cron_callback',
+                    text:   _('Set CRON'),
+                    click:  function () {
+                    }
+                },
+                {
+                    text: _('Cancel'),
+                    click: function () {
+                        that.$dialogCron.dialog('close');
+                    }
+                }
+            ]
+        });
+
+        $('#div-cron').cron({value: ''});
+
         $('#instances-filter').change(function () {
             that.main.saveConfig('instancesFilter', $(this).val());
             applyFilter($(this).val());

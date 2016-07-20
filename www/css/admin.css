@@ -371,6 +371,17 @@ table#events {
     z-index: 100;
     background-color: rgba(145, 220, 255, 0.95);
 }
+
+.instance-schedule-button {
+    font-size: 10px !important;
+    width: 16px;
+    height: 16px;
+    float: right;
+    padding: 0;
+}
+.instance-schedule-button span {
+    padding: 0 !important;
+}
 /* -------------------------- LEDS ------------------------------------ */
 .led-red {
     background-color: #FF9999;

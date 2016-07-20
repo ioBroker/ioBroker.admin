@@ -92,6 +92,9 @@ systemDictionary = {
         "de": "Nicht kompatible Version von %s. Es wird erwartet %s",
         "ru": "Требуется другая версия драйвера %s. Требуется %s"
     },
+    "Cron expression":      {"en": "Cron expression",       "de": "Cron-Ausdruck",          "ru": "Cron-Выражение"},
+    "Clear":                {"en": "Clear",                 "de": "Löschen",                "ru": "Сбросить"},
+    "Set CRON":             {"en": "Set",                   "de": "Übernehmen",             "ru": "Перенять"},
     "ioBroker adapter instances": {
         "en": "ioBroker adapter instances",
         "de": "ioBroker Adapter Instanzen",
@@ -169,7 +172,7 @@ systemDictionary = {
     "history data":         {"en": "history data",          "de": "Historische Daten",      "ru": "История данных"},
     "alpha":                {"en": "alpha",                 "de": "alpha",                  "ru": "alpha"},
     "update":               {"en": "update",                "de": "Aktualisieren",          "ru": "Обновить"},
-    "restart":              {"en": "restart",               "de": "Neu starten",            "ru": "Перезапустить"},
+    "restart":              {"en": "auto restart",          "de": "Neu starten",            "ru": "Перезапускать"},
     "beta":                 {"en": "beta",                  "de": "beta",                   "ru": "beta"},
     "planned":              {"en": "planned",               "de": "geplant",                "ru": "в планах"},
     "clear":                {"en": "clear",                 "de": "löschen",                "ru": "Очистить"},

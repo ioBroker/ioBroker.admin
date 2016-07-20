@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="lib/css/jqGrid/ui.jqgrid-4.5.4.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/jquery.multiselect-1.13.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/fancytree/ui.fancytree.min.css"/>
-    <!--link rel="stylesheet" type="text/css" href="lib/css/sumoselect.css"/-->
+    <link rel="stylesheet" type="text/css" href="lib/css/cron/jquery.cron.css"/>
 
     <link class="favicon" href="favicon.ico" type="image/x-icon" rel="icon" />
     <link class="favicon" href="favicon.ico" type="image/x-icon" rel="shortcut icon" />
@@ -35,6 +35,8 @@
     <script src="lib/js/jquery.fancytree.filter.js" type="text/javascript"></script>
     <script src="lib/js/jquery.fancytree.edit.js" type="text/javascript"></script-->
     <script type="text/javascript" src="js/selectID.js"></script>
+    <script type="text/javascript" src="lib/js/cron/jquery.cron.js"></script>
+    <script type="text/javascript" src="lib/js/cron/cron2text.js"></script>
 
     <script type="text/javascript" src="js/adminAdapters.js"></script>
     <script type="text/javascript" src="js/adminInstances.js"></script>
@@ -689,6 +691,9 @@
             <span id="dialog-confirm-icon" class="ui-icon ui-icon-circle-check" style="float: left; margin:0 7px 50px 0;"></span>
             <span id="dialog-confirm-text"></span>
         </p>
+    </div>
+    <div id="dialog-cron" style="display: none">
+        <div id="div-cron"></div>
     </div>
 </body>
 </html>

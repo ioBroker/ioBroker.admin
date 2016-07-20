@@ -19,6 +19,13 @@ User interface for configuration and administration.
 %web.0_bind% - get native.bind from "system.adapter.web.0"
 %native_someField% - get someField from "native" of this adapter instance
 
+## Scheduled restart
+Some adapters re not stable or connection disappear after one or two days.
+To fix this there is a scheduled restart setting.
+To activate scheduled restart just define CRON condition when to restart adapter.
+
+It is suggested to restart in the night, when no one use the adapter, e.g. "0 3 * * *" - at 3:00 every day.
+
 ## Changelog
 ### 1.3.0 (2016-07-18)
 * (bluefox) fix error with early logout

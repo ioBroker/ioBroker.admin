@@ -80,8 +80,8 @@ adapter.on('stateChange', function (id, state) {
 adapter.on('ready', function () {
     adapter.getForeignObject('system.config', function (err, obj) {
         if (!err && obj) {
+            obj.native = obj.native || {};
             if (!obj.native.secret) {
-                obj.native = obj.native || {};
                 require('crypto').randomBytes(24, function (ex, buf) {
                     secret = buf.toString('hex');
                     adapter.extendForeignObject('system.config', {native: {secret: secret}});
