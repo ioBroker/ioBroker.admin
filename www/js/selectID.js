@@ -602,11 +602,15 @@
             } else {
                 states = options;
             }
-            text = '<select style="width: calc(100% - 50px); z-index: 2">';
-            for (var t in states) {
-                text += '<option value="' + t + '">' + states[t] + '</option>';
+            if (states) {
+                text = '<select style="width: calc(100% - 50px); z-index: 2">';
+                for (var t in states) {
+                    text += '<option value="' + t + '">' + states[t] + '</option>';
+                }
+                text += '</select>';
+            } else if (states === false) {
+                return;
             }
-            text += '</select>';
         }
         text = text || '<input style="' + (type !== 'checkbox' ? 'width: 100%;' : '') + ' z-index: 2" type="' + type + '"/>';
 
@@ -1061,7 +1065,7 @@
                 for (var c = 0; c < data.columns.length; c++) {
                     var name = data.columns[c];
                     if (typeof name === 'object') name = name.name;
-                    if (name == 'image') {
+                    if (name === 'image') {
                         var icon = '';
                         var alt = '';
                         var _id_ = 'system.adapter.' + node.key;
@@ -1108,7 +1112,7 @@
                         }
                         base++;
                     } else
-                    if (name == 'name') {
+                    if (name === 'name') {
                         $elem = $tdList.eq(base);
                         $elem.text(isCommon ? data.objects[node.key].common.name : '').css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '');
                         if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('name') !== -1) {
@@ -1117,10 +1121,10 @@
                         }
                         base++;
                     } else
-                    if (name == 'type') {
+                    if (name === 'type') {
                         $tdList.eq(base++).text(data.objects[node.key] ? data.objects[node.key].type: '');
                     } else
-                    if (name == 'role') {
+                    if (name === 'role') {
                         $elem = $tdList.eq(base);
                         val = isCommon ? data.objects[node.key].common.role : '';
                         $elem.text(val);
@@ -1131,7 +1135,7 @@
                         }
                         base++;
                     } else
-                    if (name == 'room') {
+                    if (name === 'room') {
                         $elem = $tdList.eq(base);
                         // Try to find room
                         if (data.roomsColored) {
@@ -1157,7 +1161,7 @@
                         }
                         base++;
                     } else
-                    if (name == 'function') {
+                    if (name === 'function') {
                         $elem = $tdList.eq(base);
                         // Try to find function
                         if (data.funcsColored) {
@@ -1183,7 +1187,7 @@
                         }
                         base++;
                     } else
-                    if (name == 'value') {
+                    if (name === 'value') {
                         $elem = $tdList.eq(base);
                         var common = data.objects[node.key] ? data.objects[node.key].common || {} : {};
                         if (data.states && (data.states[node.key] || data.states[node.key + '.val'] !== undefined)) {
@@ -1274,7 +1278,7 @@
 
                         base++;
                     } else
-                    if (name == 'button') {
+                    if (name === 'button') {
                         // Show buttons
                         var text;
                         if (data.buttons) {
@@ -1345,7 +1349,7 @@
 
                         base++;
                     } else
-                    if (name == 'enum') {
+                    if (name === 'enum') {
                         if (isCommon && data.objects[node.key].common.members && data.objects[node.key].common.members.length > 0) {
                             if (data.objects[node.key].common.members.length < 4) {
                                 $tdList.eq(base).text('(' + data.objects[node.key].common.members.length + ')' + data.objects[node.key].common.members.join(', '));
@@ -1358,7 +1362,8 @@
                             $tdList.eq(base).attr('title', '');
                         }
                         base++;
-                    } else if (typeof data.columns[c].data === 'function') {
+                    } else
+                    if (typeof data.columns[c].data === 'function') {
                         $elem = $tdList.eq(base);
                         var val = data.columns[c].data(node.key, data.columns[c].name);
                         var title = '';
