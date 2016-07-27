@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.2.7",
+        "version": "1.4.0",
         "news": {
+            "1.4.0": {
+                "en": "implement settings for autorestart\ndo not allow edit group instances for javascript",
+                "de": "implement settings for autorestart\ndo not allow edit group instances for javascript",
+                "ru": "implement settings for autorestart\ndo not allow edit group instances for javascript"
+            },
             "1.3.0": {
                 "en": "fix error with early logout\nupdate passport.socketio",
                 "de": "fix error with early logout\nupdate passport.socketio",
