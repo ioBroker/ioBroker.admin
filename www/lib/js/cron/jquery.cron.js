@@ -803,7 +803,7 @@ $.fn.cron = function(options, setValue) {
             ];
 
             for (var i = 0; i < days.length; i++) {
-                text += '<input type="checkbox" id="cron-week-check' + days[i].id + '" data-index="' + i + '" data-arg="5"><label for="cron-week-check' + days[i].id + '">' + _(days[i].name) + '</label>';
+                text += '<input type="checkbox" id="cron-week-check' + days[i].id + '" data-index="' + days[i].id + '" data-arg="5"><label for="cron-week-check' + days[i].id + '">' + _(days[i].name) + '</label>';
             }
             return text;
         });

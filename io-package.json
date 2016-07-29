@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.4.0",
+        "version": "1.4.1",
         "news": {
+            "1.4.1": {
+                "en": "support of multiple WEB instances\nfix weekdays for cron",
+                "de": "support of multiple WEB instances\nfix weekdays for cron",
+                "ru": "support of multiple WEB instances\nfix weekdays for cron"
+            },
             "1.4.0": {
                 "en": "implement settings for autorestart\ndo not allow edit group instances for javascript",
                 "de": "implement settings for autorestart\ndo not allow edit group instances for javascript",

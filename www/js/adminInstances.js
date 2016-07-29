@@ -97,10 +97,18 @@ function Instances(main) {
             }
             var result;
             if (instances) {
-                result = links;
-                /*for (var d in links) {
+                result = [];
+                var count = 0;
+                var firtsLink = '';
+                for (var d in links) {
                     result[links[d]] = links[d];
-                }*/
+                    if (!firtsLink) firtsLink = links[d]
+                    count++;
+                }
+                if (count < 2) {
+                    link = firtsLink;
+                    result = null;
+                }
             }
         }
         return result || link;

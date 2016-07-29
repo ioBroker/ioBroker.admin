@@ -27,6 +27,10 @@ To activate scheduled restart just define CRON condition when to restart adapter
 It is suggested to restart in the night, when no one use the adapter, e.g. "0 3 * * *" - at 3:00 every day.
 
 ## Changelog
+### 1.4.1 (2016-07-30)
+* (bluefox) support of multiple WEB instances
+* (bluefox) fix weekdays for cron
+
 ### 1.4.0 (2016-07-27)
 * (bluefox) implement settings for autorestart
 * (bluefox) do not allow edit group instances for javascript
