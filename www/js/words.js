@@ -168,6 +168,7 @@ systemDictionary = {
         "de": "Zeige Werte aus",
         "ru": "Показать значения из"
     },
+    "Close":                {"en": "close",                 "de": "schließen",              "ru": "закрыть"},
     "__different__":        {"en": "different",             "de": "unterschiedlich",        "ru": "разное"},
     "history data":         {"en": "history data",          "de": "Historische Daten",      "ru": "История данных"},
     "alpha":                {"en": "alpha",                 "de": "alpha",                  "ru": "alpha"},

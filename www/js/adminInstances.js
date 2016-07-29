@@ -13,69 +13,112 @@ function Instances(main) {
     this.list          = [];
     this.hostsText     = null;
 
-    function replaceInLink(link, adapter, instance) {
-        var vars = link.match(/\%(\w+)\%/g);
-        if (vars) {
-            for (var v = 0; v < vars.length; v++) {
-                var _var = vars[v].replace(/\%/g, '');
-                if (_var.match(/^native_/))  _var = _var.substring(7);
+    function getLinkVar(_var, obj, attr, link) {
+        if (attr === 'protocol') attr = 'secure';
 
-                // like web.0_port
-                var parts;
-                if (_var.indexOf('_') == -1) {
-                    parts = [adapter + '.' + instance, _var];
+        if (_var === 'ip') {
+            link = link.replace('%' + _var + '%', location.hostname);
+        } else
+        if (_var === 'instance') {
+            link = link.replace('%' + _var + '%', instance);
+        } else {
+            if (obj) {
+                var val = obj.native[attr];
+                if (_var === 'bind' && (!val || val === '0.0.0.0')) val = location.hostname;
+
+                if (attr === 'secure') {
+                    link = link.replace('%' + _var + '%', val ? 'https' : 'http');
                 } else {
-                    parts = _var.split('_');
-                    // add .0 if not defined
-                    if (!parts[0].match(/\.[0-9]+$/)) {
-                        var inst = 0;
-                        while (inst < 10 && !that.main.objects['system.adapter.' + parts[0] + '.' + inst]) {
-                            inst++;
-                        }
-
-                        if (that.main.objects['system.adapter.' + parts[0] + '.' + inst]) parts[0] += '.' + inst;
+                    if (link.indexOf('%' + _var + '%') === -1) {
+                        link = link.replace('%native_' + _var + '%', val);
+                    } else {
+                        link = link.replace('%' + _var + '%', val);
                     }
                 }
-                if (parts[1] == 'protocol') parts[1] = 'secure';
-
-                if (_var == 'ip') {
-                    link = link.replace('%' + _var + '%', location.hostname);
-                } else
-                if (_var == 'instance') {
-                    link = link.replace('%' + _var + '%', instance);
+            } else {
+                if (attr === 'secure') {
+                    link = link.replace('%' + _var + '%', 'http');
                 } else {
-                    var obj = that.main.objects['system.adapter.' + parts[0]];
-
-                    if (obj) {
-                        var val = obj.native[parts[1]];
-                        if (_var == 'bind' && (!val || val == '0.0.0.0')) val = location.hostname;
-
-                        if (parts[1] == 'secure') {
-                            link = link.replace('%' + _var + '%', val ? 'https' : 'http');
-                        } else {
-                            if (link.indexOf('%' + _var + '%') == -1) {
-                                link = link.replace('%native_' + _var + '%', val);
-                            } else {
-                                link = link.replace('%' + _var + '%', val);
-                            }
-                        }
+                    if (link.indexOf('%' + _var + '%') === -1) {
+                        link = link.replace('%native_' + _var + '%', '');
                     } else {
-                        if (parts[1] == 'secure') {
-                            link = link.replace('%' + _var + '%', 'http');
-                        } else {
-                            if (link.indexOf('%' + _var + '%') === -1) {
-                                link = link.replace('%native_' + _var + '%', '');
-                            } else {
-                                link = link.replace('%' + _var + '%', '');
-                            }
-                        }
+                        link = link.replace('%' + _var + '%', '');
                     }
-
                 }
             }
         }
-
         return link;
+    }
+
+    function resolveLink(link, adapter, instance) {
+        var vars = link.match(/\%(\w+)\%/g);
+        var _var;
+        var v;
+        var parts;
+        if (vars) {
+            // first replace simple patterns
+            for (v = vars.length - 1; v >= 0; v--) {
+                _var = vars[v];
+                _var = _var.replace(/\%/g, '');
+                if (_var.match(/^native_/)) _var = _var.substring(7);
+
+                parts = _var.split('_');
+                // like "port"
+                if (parts.length === 1) {
+                    link = getLinkVar(_var, that.main.objects['system.adapter.' + adapter + '.' + instance], parts[0], link);
+                    vars.splice(v, 1);
+                } else
+                // like "web.0_port"
+                if (parts[0].match(/\.[0-9]+$/)) {
+                    link = getLinkVar(_var, that.main.objects['system.adapter.' + parts[0]], parts[1], link);
+                    vars.splice(v, 1);
+                }
+            }
+            var links = {};
+            var instances;
+            var adptr = parts[0];
+            // process web_port
+            for (v = 0; v < vars.length; v++) {
+                _var = vars[v];
+                _var = _var.replace(/\%/g, '');
+                if (_var.match(/^native_/)) _var = _var.substring(7);
+
+                parts = _var.split('_');
+                if (!instances) {
+                    instances = [];
+                    for (var inst = 0; inst < 10; inst++) {
+                        if (that.main.objects['system.adapter.' + adptr + '.' + inst]) instances.push(inst);
+                    }
+                }
+
+                for (var i = 0; i < instances.length; i++) {
+                    links[adptr + '.' + i] = getLinkVar(_var, that.main.objects['system.adapter.' + adptr + '.' + i], parts[1], links[adptr + '.' + i] || link);
+                }
+            }
+            var result;
+            if (instances) {
+                result = links;
+                /*for (var d in links) {
+                    result[links[d]] = links[d];
+                }*/
+            }
+        }
+        return result || link;
+    }
+    
+    function replaceInLink(link, adapter, instance) {
+        if (typeof link === 'object') {
+            var links = JSON.parse(JSON.stringify(link));
+            var first;
+            for (var v in links) {
+                links[v] = resolveLink(links[v], adapter, instance);
+                if (!first) first = links[v];
+            }
+            links.__first = first;
+            return links;
+        } else {
+            return resolveLink(link, adapter, instance);
+        }
     }
 
     function updateLed(instanceId) {
@@ -291,9 +334,15 @@ function Instances(main) {
             // table
             text = justContent ? '' : '<tr class="instance-adapter" data-instance-id="' + instanceId + '">';
 
-            var link = common.localLink || '';
+            var link = common.localLinks || common.localLink || '';
             var url  = link ? replaceInLink(link, adapter, instance) : '';
-            if (link) link = '<a href="' + url + '" target="_blank">';
+            if (link) {
+                if (typeof url === 'object') {
+                    link = '<a href="' + url.__first + '" target="_blank">';
+                } else {
+                    link = '<a href="' + url + '" target="_blank">';
+                }
+            }
 
             // State -
             //             red - adapter is not connected or not alive,
@@ -313,7 +362,7 @@ function Instances(main) {
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-settings" data-instance-href="/adapter/' + adapter + '/?' + instance + '" ></button>' +
                 (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-del"></button>'+
-                (url ? '<button style="display: inline-block" data-link="' + url +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '') +
+                (url ? '<button style="display: inline-block" data-link="' + (typeof url !== 'object' ? url : '') +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '') +
                 '</td>';
 
             // title
@@ -360,7 +409,7 @@ function Instances(main) {
             $('.instance-adapter[data-instance-id="' + instanceId + '"]').html(text);
         }
         // init buttons
-        that.initButtons(instanceId);
+        that.initButtons(instanceId, url);
         updateLed(instanceId);
         // init links
         $('.instance-editable[data-instance-id="' + instanceId + '"]')
@@ -823,6 +872,7 @@ function Instances(main) {
                 if (this.main.objects[this.list[l]] &&
                     this.main.objects[this.list[l]].common &&
                     !this.main.objects[this.list[l]].common.localLink &&
+                    !this.main.objects[this.list[l]].common.localLinks &&
                     this.main.objects[this.list[l]].common.noConfig
                 ) {
                     onlyWWW.push(this.list[l]);
@@ -932,7 +982,7 @@ function Instances(main) {
         }
     };
 
-    this.initButtons = function (id) {
+    this.initButtons = function (id, url) {
         id = id ? '[data-instance-id="' + id + '"]' : '';
 
         var $e = $('.instance-edit' + id).unbind('click').click(function () {
@@ -1063,8 +1113,41 @@ function Instances(main) {
 
         $e = $('.instance-web' + id).unbind('click')
             .click(function () {
-                window.open($(this).attr('data-link'), $(this).attr('data-instance-id'));
+                var _link = $(this).data('link');
+                if (typeof _link === 'object') {
+                    var menu = '';
+                    for (var m in _link) {
+                        if (m === '__first') continue;
+                        menu += '<li data-link="' + _link[m] + '" data-instance-id="' + $(this).data('instance-id') + '" class="instances-menu-link"><b>' + m + '</b></li>';
+                    }
+                    menu += '<li class="instances-menu-link">' + _('Close') + '</li>';
+                    if ($('#instances-menu').data('inited')) $('#instances-menu').menu('destroy');
+
+                    var pos = $(this).position();
+                    $('#instances-menu').html(menu);
+                    if (!$('#instances-menu').data('inited')) {
+                        $('#instances-menu').data('inited', true);
+                        $('#instances-menu').mouseleave(function () {
+                            $(this).hide();
+                        });
+                    }
+
+                    $('#instances-menu').menu().css({
+                        left:   pos.left,
+                        top:    pos.top
+                    }).show();
+
+                    $('.instances-menu-link').unbind('click').click(function () {
+                        if ($(this).data('link')) window.open($(this).data('link'), $(this).data('instance-id'));
+                        $('#instances-menu').hide();
+                    });
+
+                } else {
+                    window.open($(this).data('link'), $(this).data('instance-id'));
+                }
             });
+        if (typeof url === 'object') $e.data('link', url);
+
         if (!$e.find('.ui-button-icon-primary').length) {
             $e.button({icons: {primary: 'ui-icon-image'}, text: false}).css({width: '2em', height: '2em'}).attr('title', _('open web page'));
         } else {
