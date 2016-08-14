@@ -23,6 +23,8 @@ function Instances(main) {
             link = link.replace('%' + _var + '%', instance);
         } else {
             if (obj) {
+                if (attr.match(/^native_/)) attr = attr.substring(7);
+
                 var val = obj.native[attr];
                 if (_var === 'bind' && (!val || val === '0.0.0.0')) val = location.hostname;
 
@@ -60,10 +62,13 @@ function Instances(main) {
             for (v = vars.length - 1; v >= 0; v--) {
                 _var = vars[v];
                 _var = _var.replace(/\%/g, '');
-                if (_var.match(/^native_/)) _var = _var.substring(7);
 
                 parts = _var.split('_');
                 // like "port"
+                if (_var.match(/^native_/)) {
+                    link = getLinkVar(_var, that.main.objects['system.adapter.' + adapter + '.' + instance], _var, link);
+                    vars.splice(v, 1);
+                } else
                 if (parts.length === 1) {
                     link = getLinkVar(_var, that.main.objects['system.adapter.' + adapter + '.' + instance], parts[0], link);
                     vars.splice(v, 1);
@@ -102,7 +107,7 @@ function Instances(main) {
                 var firtsLink = '';
                 for (var d in links) {
                     result[links[d]] = links[d];
-                    if (!firtsLink) firtsLink = links[d]
+                    if (!firtsLink) firtsLink = links[d];
                     count++;
                 }
                 if (count < 2) {
