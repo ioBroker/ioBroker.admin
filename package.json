@@ -32,7 +32,7 @@
     "request": "^2.73.0",
     "connect-flash": "^0.1.1",
     "xtend": "^4.0.1",
-    "socket.io": "^1.4.6"
+    "socket.io": "^1.4.8"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
