@@ -97,7 +97,10 @@ function Instances(main) {
                 }
 
                 for (var i = 0; i < instances.length; i++) {
-                    links[adptr + '.' + i] = getLinkVar(_var, that.main.objects['system.adapter.' + adptr + '.' + i], parts[1], links[adptr + '.' + i] || link);
+                    links[adptr + '.' + i] = {
+                        instance: adptr + '.' + i,
+                        link: getLinkVar(_var, that.main.objects['system.adapter.' + adptr + '.' + i], parts[1], links[adptr + '.' + i] ? links[adptr + '.' + i].link : link)
+                    };
                 }
             }
             var result;
@@ -106,8 +109,8 @@ function Instances(main) {
                 var count = 0;
                 var firtsLink = '';
                 for (var d in links) {
-                    result[links[d]] = links[d];
-                    if (!firtsLink) firtsLink = links[d];
+                    result[links[d].instance] = links[d].link;
+                    if (!firtsLink) firtsLink = links[d].link;
                     count++;
                 }
                 if (count < 2) {
@@ -381,7 +384,6 @@ function Instances(main) {
             // title
             text += '<td title="' + (link ? _('Click on icon') : '') + '" style="padding-left: 0.5em" data-name="title" data-value="' + (common.title || '') + '" class="instance-editable" data-instance-id="' + instanceId + '">' + (common.title || '') + '</td>';
 
-
             // host - hide it if only one host
             if (that.main.tabs.hosts.list.length > 1) {
                 if (!that.hostsText) {
@@ -429,7 +431,7 @@ function Instances(main) {
             .click(onQuickEditField)
             .addClass('select-id-quick-edit');
 
-        // init links
+        // init schedule editor
         $('.instance-schedule[data-instance-id="' + instanceId + '"]').each(function () {
             if (!$(this).find('button').length) {
                 $(this).append('<button class="instance-schedule-button" data-instance-id="' + instanceId + '" data-name="' + $(this).data('name') + '">...</button>');
@@ -1130,8 +1132,12 @@ function Instances(main) {
                 if (typeof _link === 'object') {
                     var menu = '';
                     for (var m in _link) {
+                        if (!_link.hasOwnProperty(m)) continue;
                         if (m === '__first') continue;
-                        menu += '<li data-link="' + _link[m] + '" data-instance-id="' + $(this).data('instance-id') + '" class="instances-menu-link"><b>' + m + '</b></li>';
+                        var port  = _link[m].match(/^https?:\/\/[-.\w]+:(\d+)\/?/);
+                        var https = _link[m].match(/^https:\/\//);
+
+                        menu += '<li data-link="' + _link[m] + '" data-instance-id="' + $(this).data('instance-id') + '" class="instances-menu-link"><b>' + m + (port ? ' :' + port[1] : '') + (https ? ' - SSL' : '') + '</b></li>';
                     }
                     menu += '<li class="instances-menu-link">' + _('Close') + '</li>';
                     if ($('#instances-menu').data('inited')) $('#instances-menu').menu('destroy');
