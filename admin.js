@@ -692,13 +692,13 @@ function checkPermissions(socket, command, callback, arg) {
 
 function checkObject(id, options, flag) {
     // read rights of object
-    if (!objects[id] || !objects[id].common || !objects[id].acl || flag == 'list') {
+    if (!objects[id] || !objects[id].common || !objects[id].acl || flag === 'list') {
         return true;
     }
 
     if (options.user !== 'system.user.admin' &&
-        options.groups.indexOf('system.group.administrator') == -1) {
-        if (objects[id].acl.owner != options.user) {
+        options.groups.indexOf('system.group.administrator') === -1) {
+        if (objects[id].acl.owner !== options.user) {
             // Check if the user is in the group
             if (options.groups.indexOf(objects[id].acl.ownerGroup) != -1) {
                 // Check group rights
@@ -791,10 +791,10 @@ function socketEvents(socket) {
         if (updateSession(socket) && checkPermissions(socket, 'getObjects', callback)) {
             if (socket._acl &&
                 socket._acl.user !== 'system.user.admin' &&
-                socket._acl.groups.indexOf('system.group.administrator') == -1) {
+                socket._acl.groups.indexOf('system.group.administrator') === -1) {
                 var result = {};
                 for (var ob in objects) {
-                    if (checkObject(ob, socket._acl, 'read')) {
+                    if (checkObject(ob, socket._acl, 4 /* 'read' */)) {
                         result[ob] = objects[ob];
                     }
                 }
