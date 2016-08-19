@@ -26,7 +26,43 @@ To activate scheduled restart just define CRON condition when to restart adapter
 
 It is suggested to restart in the night, when no one use the adapter, e.g. "0 3 * * *" - at 3:00 every day.
 
+## Let's Encrypt Certificates
+Let’s Encrypt is a free, automated, and open certificate authority brought to you by the non-profit Internet Security Research Group (ISRG).
+
+You can read about Let’s Encrypt [here](https://letsencrypt.org/).
+
+Some installations use Dynamic DNS and Co to get the domain name and to reach under this domain name own web sites.
+ioBroker supports automatic request and renew of certificates from Let’s Encrypt Organisation.
+
+There is an option to activate free certificates from Let’s Encrypt almost in every adapter, that can start some web server and supports HTTPS.
+
+If you just enable the using of certificates and will not activate an automatic update the instance will try to use stored certificates.
+
+If the automatic update is activated the instance will try to request certificates from Let’s Encrypt and will automatically update it.
+
+The issuing of certificates is rather complex procedure, but if you will follow the explanation you will easy get free certificates.
+
+Description:
+1. The new account will be created with given email address (you must set it up in system settings)
+2. Some random key will be created as password for the account.
+3. After the account is created the system starts on port 80 the small web site to confirm the domain.
+4. Let's encrypt use **always** port **80** to check the domain.
+5. If port 80 is occupied by other service see point 4.
+6. After the small web server is up the request to get certificates for given domains (system settings) will be sent to the Let's encrypt server.
+7. Let's encrypt server sends back some challenge phrase as answer on the request and after a while tries to read this challenge phrase on "http://yourdomain:80/.well-known/acme-challenge/<CHALLENGE>"
+8. If challenge phrase from our side comes back the Let's encrypt server send us the certificates. They will be stored in the given directory (system settings).
+
+Sounds complex, but everything what you must do is to activate checkboxes and specify your email and domain in system settings.
+
+The received certificates are valid ca. 90 days.
+After the certificates are received the special task will be started to automatically renew the certificates.
+
+The topic is rather complex and 1000 things can go wrong. If you cannot get certificates please use cloud service to reach your installation from internet.
+
 ## Changelog
+### 1.5.0 (2016-08-19)
+* (bluefox) add support of Let's Encrypt
+
 ### 1.4.1 (2016-07-30)
 * (bluefox) support of multiple WEB instances
 * (bluefox) fix weekdays for cron

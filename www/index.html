@@ -561,6 +561,7 @@
                 <li><a href="#tab-system-main"  class="translate">Main settings</a></li>
                 <li><a href="#tab-system-repo"  class="translate">Repositories</a></li>
                 <li><a href="#tab-system-certs" class="translate">Certificates</a></li>
+                <li><a href="#tab-system-letsencrypt" class="translate">Let's encrypt SSL</a></li>
                 <li><a href="#tab-system-diag"  class="translate">Statistics</a></li>
             </ul>
             <div id="tab-system-main">
@@ -629,6 +630,27 @@
                 <table id="grid-certs"></table>
                 <div id="pager-certs"></div>
             </div>
+            <div id="tab-system-letsencrypt">
+                <p class="translate">letsnecrypt_help</p>
+                <table>
+                    <tr>
+                        <td><label class="translate" for="system_le_email">Email for account:</label></td>
+                        <td><input id="system_le_email" class="system-le-settings value" data-name="email"/></td>
+                        <td class="translate">letsnecrypt_help_email</td>
+                    </tr>
+                    <tr>
+                        <td><label class="translate" for="system_le_domains">Domains:</label></td>
+                        <td><input id="system_le_domains" class="system-le-settings value" data-name="domains"/></td>
+                        <td class="translate">letsnecrypt_help_domains</td>
+                    </tr>
+                    <tr>
+                        <td><label class="translate" for="system_le_path">Path to storage:</label></td>
+                        <td><input id="system_le_path" class="system-le-settings value" data-name="path"/></td>
+                        <td class="translate">letsnecrypt_help_path</td>
+                    </tr>
+                </table>
+            </div>
+
             <div id="tab-system-diag">
                 <table id="table-diag">
                     <tr>

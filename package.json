@@ -21,6 +21,9 @@
     "ioBroker",
     "setup"
   ],
+  "optionalDependencies": {
+    "letsencrypt-express": "^2.0.2"
+  },
   "dependencies": {
     "express": "^4.14.0",
     "cookie-parser": "^1.4.3",

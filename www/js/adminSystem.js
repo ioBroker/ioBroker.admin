@@ -599,22 +599,35 @@ function System(main) {
                     var $this = $(this);
                     var id = $this.attr('id').substring('system_'.length);
 
-                    $('.system-settings.value').each(function () {
-                        var $this = $(this);
-                        var id = $this.attr('id').substring('system_'.length);
-
-                        if ($this.attr('type') == 'checkbox') {
-                            $this.prop('checked', main.systemConfig.common[id]);
+                    if ($this.attr('type') === 'checkbox') {
+                        $this.prop('checked', main.systemConfig.common[id]);
+                    } else {
+                        if (id == 'isFloatComma') {
+                            $this.val(main.systemConfig.common[id] ? 'true' : 'false');
                         } else {
-                            if (id == 'isFloatComma') {
-                                $this.val(main.systemConfig.common[id] ? 'true' : 'false');
-                            } else {
-                                $this.val(main.systemConfig.common[id]);
-                            }
+                            $this.val(main.systemConfig.common[id]);
                         }
-
-                    });
+                    }
                 });
+
+                if (!that.systemCerts.native.letsEncrypt) {
+                    that.systemCerts.native.letsEncrypt = {
+                        path: 'letsencrypt'
+                    };
+                }
+                
+                $('.system-le-settings.value').each(function () {
+                    var $this = $(this);
+                    var id = $this.data('name');
+                    if (that.systemCerts && that.systemCerts.native.letsEncrypt) {
+                        if ($this.attr('type') == 'checkbox') {
+                            $this.prop('checked', that.systemCerts.native.letsEncrypt[id]);
+                        } else {
+                            $this.val(that.systemCerts.native.letsEncrypt[id]);
+                        }
+                    }
+                });
+
                 $('#tabs-system').tabs({
                     activate: function (event, ui)  {
                         if (ui.newPanel.selector == '#tab-system-certs') {
@@ -651,9 +664,9 @@ function System(main) {
 
                         $('.system-settings.value').each(function () {
                             var $this = $(this);
-                            var id = $this.attr('id').substring('system_'.length);
+                            var id = $this.data('name');
 
-                            if ($this.attr('type') == 'checkbox') {
+                            if ($this.attr('type') === 'checkbox') {
                                 common[id] = $this.prop('checked');
                             } else {
                                 if (id == 'language'   && common.language   != $this.val()) languageChanged   = true;
@@ -702,6 +715,17 @@ function System(main) {
                             for (var j = 0; j < data.length; j++) {
                                 that.systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
                             }
+
+                            $('.system-le-settings.value').each(function () {
+                                var $this = $(this);
+                                var id = $this.data('name');
+
+                                if ($this.attr('type') === 'checkbox') {
+                                    that.systemCerts.native.letsEncrypt[id] = $this.prop('checked');
+                                } else {
+                                    that.systemCerts.native.letsEncrypt[id] = $this.val();
+                                }
+                            });
                         }
 
                         main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {

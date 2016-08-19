@@ -1,14 +1,20 @@
 <html>
 
 <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+
 <script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 <script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
 
-<link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
 <script type="text/javascript" src="../../js/translate.js"></script>
 <script type="text/javascript" src="../../js/adapter-settings.js"></script>
 
+<style>
+    .number {
+        width: 70px
+    }
+</style>
 <script type="text/javascript">
     systemDictionary = {
         "Admin adapter settings": {
@@ -51,11 +57,25 @@
             $('#_certPublic').show();
             $('#_certPrivate').show();
             $('#_certChained').show();
+            $('.le-settings').show();
+
+            if ($('#leEnabled').prop('checked')) {
+                $('.le-sub-settings').show();
+                if ($('#leUpdate').prop('checked')) {
+                    $('.le-sub-settings-update').show();
+                } else {
+                    $('.le-sub-settings-update').hide();
+                }
+            } else {
+                $('.le-sub-settings').hide();
+            }
+
         } else {
             $('#_certPublic').hide();
             $('#_certPrivate').hide();
             $('#_certChained').hide();
             $('#auth').prop('checked', false);
+            $('.le-settings').hide();
         }
         if ($('#auth').prop('checked')) {
             $('#secure').prop('checked', true);
@@ -79,12 +99,13 @@
             $('#bind.value').val(settings.bind);
         });
 
-        if (settings.autoUpdate === undefined) settings.autoUpdate = 24;
+        if (settings.autoUpdate  === undefined) settings.autoUpdate = 24;
+        if (!settings.leCheckPort)              settings.leCheckPort = 80;
 
         $('.value').each(function () {
             var key = $(this).attr('id');
             // example: select elements with id=key and class=value and insert value
-            if ($('#' + key + '.value').attr('type') == 'checkbox') {
+            if ($('#' + key + '.value').attr('type') === 'checkbox') {
                 $('#' + key + '.value').prop('checked', settings[key]).change(function() {
                     showHideSettings();
                     onChange();
@@ -109,6 +130,7 @@
                 });
             }
         });
+
         onChange(false);
 
         fillSelectCertificates('#certPublic',  'public',  settings.certPublic);
@@ -126,10 +148,7 @@
         });
     }
 
-    // ... and the function save has to exist.
-    // you have to make sure the callback is called with the settings object as first param!
     function save(callback) {
-        // example: select elements with class=value and build settings object
         var obj = {};
         $('.value').each(function () {
             var $this = $(this);
@@ -156,7 +175,7 @@
 
     <table>
         <tr><td class="translate">IP:</td><td>            <select class="value" id="bind"></select></td></tr>
-        <tr><td class="translate">Port:</td><td>          <input  class="value number" id="port" size="5" maxlength="5"/></td></tr>
+        <tr><td class="translate">Port:</td><td>          <input  class="value number" id="port" size="5" maxlength="5" type="number"/></td></tr>
         <tr><td class="translate">Secure(HTTPS):</td><td> <input  class="value" id="secure" type="checkbox" /></td></tr>
         <tr id="_certPublic">
             <td class="translate">Public certificate:</td>
@@ -186,6 +205,11 @@
                 <option value="720" class="translate">monthly</option>
             </select>
         </td></tr>
+        <tr><td colspan="2">&nbsp;</td></tr>
+        <tr class="le-settings"><td colspan="2"><h3 class="translate">Let's Encrypt settings</h3></tr>
+        <tr class="le-settings"><td><label for="leEnabled" class="translate">Use Lets Encrypt certificates:</label></td><td><input  class="value" id="leEnabled"   type="checkbox" /></td></tr>
+        <tr class="le-settings le-sub-settings"><td><label for="leUpdate" class="translate">Use this instance for automatic update:</label></td><td><input  class="value" id="leUpdate" type="checkbox" /></td></tr>
+        <tr class="le-settings le-sub-settings le-sub-settings-update"><td><label for="leCheckPort" class="translate">Port to check the domain:</label></td><td><input class="value number" id="leCheckPort" type="number" size="5" maxlength="5" /></td></tr>
     </table>
 
     <p class="translate">help_tip</p>

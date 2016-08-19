@@ -231,6 +231,52 @@ systemDictionary = {
         "de": "Drücke Strg+A und danach Strg+C, um den Inhalt in die Zwischenablage zu kopieren. Klicke irgendwo, um das Fenster zu schliessen.",
         "ru": "Нажмите Ctrl+A и Ctrl+C, что бы скопировать в буфер обмена и после этого нажмите мышкой в любом месте."
     },
+    "letsnecrypt_help": {
+        "en": 'This are settings for Let\'s Encrypt account. To get the free certificates for your domain. You can read more <a href="https://letsencrypt.org/" target="_blank">here</a>.',
+        "de": 'Einstellungen für Let\'s Encrypt Akkaunt. To get the free certificates for your domain. You can read more <a href="https://letsencrypt.org/" target="_blank">here</a>.',
+        "ru": 'Настройки для Let\'s Encrypt аккаунта. Это позволит получить бесплатные сертификаты для вашего домена. О Let\'s Encrypt можно почитать <a href="https://letsencrypt.org/" target="_blank">здесь</a>.'
+    },
+    "letsnecrypt_help_email": {
+        "en": "Please use your email address. It will be used for your account.",
+        "de": "Bitte immer nur eine Email Adresse benutzen.",
+        "ru": "Почтовый адрес используется для создания аккаунта."
+    },
+    "letsnecrypt_help_domains": {
+        "en": "E.g: 'example.com, www.example.com'",
+        "de": "z.B: 'example.com, www.example.com'",
+        "ru": "Например: 'example.com, www.example.com'"
+    },
+    "letsnecrypt_help_path": {
+        "en": "Directory name where the certificates will be stored. Always relative to configuration directory",
+        "de": "Verzeichnis, wo die Zertifikate gespeichert werden. Pfad ist relative zu Konfigurationsverzeichnis",
+        "ru": "Путь к папке, где будут хранится сертификаты. Относительно папки с настройками"
+    },
+    "Let's encrypt SSL":    {"en": "Let's encrypt SSL",     "de": "Let's encrypt SSL",      "ru": "Let's encrypt SSL"},
+    "Login timeout(sec):":  {"en": "Login timeout(sec):", "de": "Login timeout(sec):", "ru": "Login timeout(sec):"},
+    "Let's Encrypt settings": {
+        "en": "Let's Encrypt settings",
+        "de": "Let's Encrypt Einstellungen",
+        "ru": "Настройки Let's Encrypt"
+    },
+    "Use Lets Encrypt certificates:": {
+        "en": "Use Let's Encrypt certificates:",
+        "de": "Benutze Let's Encrypt Zertificate:",
+        "ru": "Использовать сертификаты Let's Encrypt:"
+    },
+    "Use this instance for automatic update:": {
+        "en": "Use this instance for automatic update:",
+        "de": "Diese Instant benutzen um die Zertifikate upzudaten:",
+        "ru": "Использовать эту инстанцию, для обновления сертификатов:"
+    },
+    "Port to check the domain:": {
+        "en": "Port to check the domain:",
+        "de": "Port um die Erreichbarkei von Domän zu prüfen:",
+        "ru": "Порт для проверки доступности домена:"
+    },
+
+    "Email for account:":   {"en": "Email for account:",    "de": "Email for account:",     "ru": "Email для аккаунта:"},
+    "Domains:":             {"en": "Domains:",              "de": "Domäne:",                "ru": "Домены:"},
+    "Path to storage:":     {"en": "Path to storage:",      "de": "Pfad zum speichern:",    "ru": "Путь к папке для сохранения:"},
     "debug":                {"en": "debug",                 "de": "Debug",                  "ru": "отладка"},
     "Parent":               {"en": "Parent",                "de": "Parent",                 "ru": "Родитель"},
     "Drop the files here":  {"en": "Drop the files here",   "de": "Die Datei hier platzieren", "ru": "Перетащить файлы сюда"},

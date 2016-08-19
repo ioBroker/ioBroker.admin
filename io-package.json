@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.4.1",
+        "version": "1.5.0",
         "news": {
+            "1.5.0": {
+                "en": "add support of Lets Encrypt",
+                "de": "add support of Lets Encrypt",
+                "ru": "add support of Lets Encrypt"
+            },
             "1.4.1": {
                 "en": "support of multiple WEB instances\nfix weekdays for cron",
                 "de": "support of multiple WEB instances\nfix weekdays for cron",
@@ -28,41 +33,6 @@
                 "en": "support of chained certificates",
                 "de": "support of chained certificates",
                 "ru": "support of chained certificates"
-            },
-            "1.2.5": {
-                "en": "install from github",
-                "de": "install from github",
-                "ru": "install from github"
-            },
-            "1.2.4": {
-                "en": "change color of log entries\nadd icon to logout button\nhide reload by WWW only adapters",
-                "de": "change color of log entries\nadd icon to logout button\nhide reload by WWW only adapters",
-                "ru": "change color of log entries\nadd icon to logout button\nhide reload by WWW only adapters"
-            },
-            "1.2.3": {
-                "en": "fix memory displaying",
-                "de": "fix memory displaying",
-                "ru": "fix memory displaying"
-            },
-            "1.2.2": {
-                "en": "fix memory displaying if adapter does not run",
-                "de": "fix memory displaying if adapter does not run",
-                "ru": "fix memory displaying if adapter does not run"
-            },
-            "1.2.1": {
-                "en": "highlight changes of states\nshow number of processes and free memory in %",
-                "de": "highlight changes of states\nshow number of processes and free memory in %",
-                "ru": "highlight changes of states\nshow number of processes and free memory in %"
-            },
-            "1.2.0": {
-                "en": "show RAM utilization\nshow change log in admin tab",
-                "de": "show RAM utilization\nshow change log in admin tab",
-                "ru": "show RAM utilization\nshow change log in admin tab"
-            },
-            "1.1.1": {
-                "en": "fix set of states in States-Tab\nshow history data from adapter and not from updates\nchange default chart to flot\nfix error if host has no IP address\nshow on the bottom only adapters without config and without links\nfix filter in adapters if upper case\nchange file open from selectID Dialog",
-                "de": "fix set of states in States-Tab\nshow history data from adapter and not from updates\nchange default chart to flot\nfix error if host has no IP address\nshow on the bottom only adapters without config and without links\nfix filter in adapters if upper case\nchange file open from selectID Dialog",
-                "ru": "fix set of states in States-Tab\nshow history data from adapter and not from updates\nchange default chart to flot\nfix error if host has no IP address\nshow on the bottom only adapters without config and without links\nfix filter in adapters if upper case\nchange file open from selectID Dialog"
             }
         },
         "desc": {
@@ -101,7 +71,11 @@
         "certPrivate":              "",
         "certChained":              "",
         "ttl":                      3600,
-        "defaultUser":              "admin"
+        "defaultUser":              "admin",
+
+        "leEnabled":                false,
+        "leUpdate":                 false,
+        "leCheckPort":              80
     },
     "objects": [
 
