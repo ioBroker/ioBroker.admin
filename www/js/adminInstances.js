@@ -13,7 +13,7 @@ function Instances(main) {
     this.list          = [];
     this.hostsText     = null;
 
-    function getLinkVar(_var, obj, attr, link) {
+    function getLinkVar(_var, obj, attr, link, instance) {
         if (attr === 'protocol') attr = 'secure';
 
         if (_var === 'ip') {
@@ -53,7 +53,7 @@ function Instances(main) {
     }
 
     function resolveLink(link, adapter, instance) {
-        var vars = link.match(/\%(\w+)\%/g);
+        var vars = link.match(/%(\w+)%/g);
         var _var;
         var v;
         var parts;
@@ -61,21 +61,21 @@ function Instances(main) {
             // first replace simple patterns
             for (v = vars.length - 1; v >= 0; v--) {
                 _var = vars[v];
-                _var = _var.replace(/\%/g, '');
+                _var = _var.replace(/%/g, '');
 
                 parts = _var.split('_');
                 // like "port"
                 if (_var.match(/^native_/)) {
-                    link = getLinkVar(_var, that.main.objects['system.adapter.' + adapter + '.' + instance], _var, link);
+                    link = getLinkVar(_var, that.main.objects['system.adapter.' + adapter + '.' + instance], _var, link, instance);
                     vars.splice(v, 1);
                 } else
                 if (parts.length === 1) {
-                    link = getLinkVar(_var, that.main.objects['system.adapter.' + adapter + '.' + instance], parts[0], link);
+                    link = getLinkVar(_var, that.main.objects['system.adapter.' + adapter + '.' + instance], parts[0], link, instance);
                     vars.splice(v, 1);
                 } else
                 // like "web.0_port"
                 if (parts[0].match(/\.[0-9]+$/)) {
-                    link = getLinkVar(_var, that.main.objects['system.adapter.' + parts[0]], parts[1], link);
+                    link = getLinkVar(_var, that.main.objects['system.adapter.' + parts[0]], parts[1], link, instance);
                     vars.splice(v, 1);
                 }
             }
@@ -85,7 +85,7 @@ function Instances(main) {
             // process web_port
             for (v = 0; v < vars.length; v++) {
                 _var = vars[v];
-                _var = _var.replace(/\%/g, '');
+                _var = _var.replace(/%/g, '');
                 if (_var.match(/^native_/)) _var = _var.substring(7);
 
                 parts = _var.split('_');
@@ -99,7 +99,7 @@ function Instances(main) {
                 for (var i = 0; i < instances.length; i++) {
                     links[adptr + '.' + i] = {
                         instance: adptr + '.' + i,
-                        link: getLinkVar(_var, that.main.objects['system.adapter.' + adptr + '.' + i], parts[1], links[adptr + '.' + i] ? links[adptr + '.' + i].link : link)
+                        link: getLinkVar(_var, that.main.objects['system.adapter.' + adptr + '.' + i], parts[1], links[adptr + '.' + i] ? links[adptr + '.' + i].link : link, i)
                     };
                 }
             }
@@ -294,12 +294,14 @@ function Instances(main) {
             }
         }
         mem = Math.round(mem);
-        if (mem.toString() !== $('#totalRam').text()) {
-            $('#totalRam').html('<span class="highlight">' + mem + '</span>');
+        var $totalRam = $('#totalRam');
+        if (mem.toString() !== $totalRam.text()) {
+            $totalRam.html('<span class="highlight">' + mem + '</span>');
         }
         var text = _('%s processes', processes);
-        if (text !== $('#running_processes').text()) {
-            $('#running_processes').html('<span class="highlight">' + text + '</span>')
+        var $running_processes = $('#running_processes');
+        if (text !== $running_processes.text()) {
+            $running_processes.html('<span class="highlight">' + text + '</span>')
         }
     }
 
@@ -476,10 +478,10 @@ function Instances(main) {
                     isShow = 'show';
                 } else
                 if (filter === 'true') {
-                    isShow = this.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]').find('instance-led').hasClass('led-green') ? 'show' : 'hide';
+                    isShow = that.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]').find('instance-led').hasClass('led-green') ? 'show' : 'hide';
                 } else
                 if (filter === 'false') {
-                    isShow = this.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]').find('instance-led').hasClass('led-green') ? 'hide' : 'show';
+                    isShow = that.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]').find('instance-led').hasClass('led-green') ? 'hide' : 'show';
                 }
                 if (isShow === 'hide') invisible.push(that.list[i]);
                 that.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]')[isShow]();
@@ -558,7 +560,7 @@ function Instances(main) {
 
                 if (JSON.stringify(val) != JSON.stringify(oldVal)) {
                     var obj = {common: {}};
-                    obj.common[attr] = $(this).val()
+                    obj.common[attr] = $(this).val();
                     that.main.socket.emit('extendObject', id, obj, function (err) {
                         if (err) that.main.showError(err);
                     });
@@ -592,21 +594,23 @@ function Instances(main) {
     }
 
     function showCronDialog(value, cb) {
-        value = (value || '').replace(/\"/g, '').replace(/\'/g, '');
+        value = (value || '').replace(/"/g, '').replace(/'/g, '');
         try {
             $('#div-cron').cron('value', value);
         } catch (e) {
             alert(_('Cannot parse value as cron'));
         }
 
-        $('#dialog_cron_callback').show();
         $('#dialog_cron_insert').hide();
 
-        $('#dialog_cron_callback').unbind('click').click(function () {
-            var val = $('#div-cron').cron('value');
-            that.$dialogCron.dialog('close');
-            if (cb) cb(val);
-        });
+        $('#dialog_cron_callback')
+            .show()
+            .unbind('click')
+            .click(function () {
+                var val = $('#div-cron').cron('value');
+                that.$dialogCron.dialog('close');
+                if (cb) cb(val);
+            });
 
         that.$dialogCron.dialog('open');
     }
@@ -736,7 +740,7 @@ function Instances(main) {
     };
 
     this.replaceLink = function (_var, adapter, instance, elem) {
-        _var = _var.replace(/\%/g, '');
+        _var = _var.replace(/%/g, '');
         if (_var.match(/^native_/))  _var = _var.substring(7);
         // like web.0_port
         var parts;
@@ -811,7 +815,7 @@ function Instances(main) {
 
     this._replaceLink = function (link, _var, adapter, instance, callback) {
         // remove %%
-        _var = _var.replace(/\%/g, '');
+        _var = _var.replace(/%/g, '');
 
         if (_var.match(/^native_/)) _var = _var.substring(7);
         // like web.0_port
@@ -851,7 +855,7 @@ function Instances(main) {
         if (!link) {
             return callback(link, adapter, instance, arg);
         }
-        var vars = link.match(/\%(\w+)\%/g);
+        var vars = link.match(/%(\w+)%/g);
         if (!vars) {
             return callback(link, adapter, instance, arg);
         }
@@ -933,7 +937,7 @@ function Instances(main) {
                 var $mem = $('.memUsage[data-instance-id="' + id + '"]');
                 var mem = calculateRam(id);
                 if ($mem.length && $mem.text() !== mem) {
-                    $('.memUsage[data-instance-id="' + id + '"]').html('<span class="highlight">' + mem + '</span>');
+                    $mem.html('<span class="highlight">' + mem + '</span>');
                 }
             }
 
@@ -1140,18 +1144,20 @@ function Instances(main) {
                         menu += '<li data-link="' + _link[m] + '" data-instance-id="' + $(this).data('instance-id') + '" class="instances-menu-link"><b>' + m + (port ? ' :' + port[1] : '') + (https ? ' - SSL' : '') + '</b></li>';
                     }
                     menu += '<li class="instances-menu-link">' + _('Close') + '</li>';
-                    if ($('#instances-menu').data('inited')) $('#instances-menu').menu('destroy');
+                    
+                    var $instancesMenu = $('#instances-menu');
+                    if ($instancesMenu.data('inited')) $instancesMenu.menu('destroy');
 
                     var pos = $(this).position();
-                    $('#instances-menu').html(menu);
-                    if (!$('#instances-menu').data('inited')) {
-                        $('#instances-menu').data('inited', true);
-                        $('#instances-menu').mouseleave(function () {
+                    $instancesMenu.html(menu);
+                    if (!$instancesMenu.data('inited')) {
+                        $instancesMenu.data('inited', true);
+                        $instancesMenu.mouseleave(function () {
                             $(this).hide();
                         });
                     }
 
-                    $('#instances-menu').menu().css({
+                    $instancesMenu.menu().css({
                         left:   pos.left,
                         top:    pos.top
                     }).show();

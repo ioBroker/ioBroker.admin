@@ -664,7 +664,7 @@ function System(main) {
 
                         $('.system-settings.value').each(function () {
                             var $this = $(this);
-                            var id = $this.data('name');
+                            var id = $this.attr('id').substring('system_'.length);
 
                             if ($this.attr('type') === 'checkbox') {
                                 common[id] = $this.prop('checked');

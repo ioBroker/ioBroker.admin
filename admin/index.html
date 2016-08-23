@@ -100,7 +100,7 @@
         });
 
         if (settings.autoUpdate  === undefined) settings.autoUpdate = 24;
-        if (!settings.leCheckPort)              settings.leCheckPort = 80;
+        if (!settings.lePort)                   settings.lePort     = 80;
 
         $('.value').each(function () {
             var key = $(this).attr('id');
@@ -209,7 +209,7 @@
         <tr class="le-settings"><td colspan="2"><h3 class="translate">Let's Encrypt settings</h3></tr>
         <tr class="le-settings"><td><label for="leEnabled" class="translate">Use Lets Encrypt certificates:</label></td><td><input  class="value" id="leEnabled"   type="checkbox" /></td></tr>
         <tr class="le-settings le-sub-settings"><td><label for="leUpdate" class="translate">Use this instance for automatic update:</label></td><td><input  class="value" id="leUpdate" type="checkbox" /></td></tr>
-        <tr class="le-settings le-sub-settings le-sub-settings-update"><td><label for="leCheckPort" class="translate">Port to check the domain:</label></td><td><input class="value number" id="leCheckPort" type="number" size="5" maxlength="5" /></td></tr>
+        <tr class="le-settings le-sub-settings le-sub-settings-update"><td><label for="lePort" class="translate">Port to check the domain:</label></td><td><input class="value number" id="lePort" type="number" size="5" maxlength="5" /></td></tr>
     </table>
 
     <p class="translate">help_tip</p>

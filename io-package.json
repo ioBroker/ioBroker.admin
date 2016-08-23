@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.5.0",
+        "version": "1.5.1",
         "news": {
+            "1.5.1": {
+                "en": "fix error in instances table",
+                "de": "fix error in instances table",
+                "ru": "fix error in instances table"
+            },
             "1.5.0": {
                 "en": "add support of Lets Encrypt",
                 "de": "add support of Lets Encrypt",

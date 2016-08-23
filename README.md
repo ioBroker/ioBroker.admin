@@ -60,6 +60,9 @@ After the certificates are received the special task will be started to automati
 The topic is rather complex and 1000 things can go wrong. If you cannot get certificates please use cloud service to reach your installation from internet.
 
 ## Changelog
+### 1.5.1 (2016-08-22)
+* (bluefox) fix error in instances table
+
 ### 1.5.0 (2016-08-19)
 * (bluefox) add support of Let's Encrypt
 
