@@ -1,7 +1,7 @@
 {
   "name": "iobroker.admin",
   "description": "The adapter opens a webserver for the ioBroker admin UI.",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "contributors": [
     "bluefox <dogafox@gmail.com>",
     "hobbyquaker <hq@ccu.io>"
@@ -22,7 +22,10 @@
     "setup"
   ],
   "optionalDependencies": {
-    "letsencrypt-express": "^2.0.2"
+    "letsencrypt": "^2.1.5",
+    "le-challenge-fs": "^2.0.4",
+    "le-sni-auto": "^2.0.1",
+    "le-store-certbot": "^2.0.3"
   },
   "dependencies": {
     "express": "^4.14.0",

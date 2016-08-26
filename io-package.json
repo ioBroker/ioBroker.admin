@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.5.1",
+        "version": "1.5.2",
         "news": {
+            "1.5.2": {
+                "en": "use pure letsencrypt module",
+                "de": "Benutze nut letsencrypt module",
+                "ru": "Используется только letsencrypt модуль"
+            },
             "1.5.1": {
                 "en": "fix error in instances table",
                 "de": "fix error in instances table",
