@@ -43,6 +43,7 @@ If the automatic update is activated the instance will try to request certificat
 The issuing of certificates is rather complex procedure, but if you will follow the explanation you will easy get free certificates.
 
 Description:
+
 1. The new account will be created with given email address (you must set it up in system settings)
 2. Some random key will be created as password for the account.
 3. After the account is created the system starts on port 80 the small web site to confirm the domain.
