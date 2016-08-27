@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.5.2",
+        "version": "1.5.3",
         "news": {
+            "1.5.3": {
+                "en": "Debug outputs for letsencrypt",
+                "de": "Debug-Ausgaben für letsencrypt",
+                "ru": "Debug выводы для letsencrypt"
+            },
             "1.5.2": {
                 "en": "use pure letsencrypt module",
                 "de": "Benutze nut letsencrypt module",
