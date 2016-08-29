@@ -863,9 +863,7 @@ $(document).ready(function () {
 
                     obj = main.objects[id];
 
-                    if (obj.type === 'instance') {
-                        main.instances.push(id);
-                    }
+                    if (obj.type === 'instance') main.instances.push(id);
                     if (obj.type === 'enum')     tabs.enums.list.push(id);
                     if (obj.type === 'user')     tabs.users.list.push(id);
                     if (obj.type === 'group')    tabs.groups.list.push(id);
@@ -888,15 +886,22 @@ $(document).ready(function () {
                             tabs.hosts.list.push({name: obj.common.hostname, address: addr, id: obj._id});
                         } else {
                             tabs.hosts.list.push({name: obj.common.hostname, address: '127.0.0.1', id: obj._id});
-                        }                    }
+                        }                    
+                    }
+                    
+                    // convert obj.history into obj.custom
+                    if (obj.common.history) {
+                        obj.common.custom = JSON.parse(JSON.stringify(obj.common.history));
+                        delete obj.common.history;
+                    }
                     //treeInsert(id);
                 }
                 main.objectsLoaded = true;
 
                 initTabs();
 
-                // If history enabled
-                tabs.objects.checkHistory();
+                // If customs enabled
+                tabs.objects.checkCustoms();
 
                 // Detect if some script engine instance installed
 //                var engines = tabs.scripts.fillEngines();
@@ -991,22 +996,24 @@ $(document).ready(function () {
         //tabs.adapters.objectChange(id, obj);
         tabs.instances.objectChange(id, obj);
 
-        if (id.match(/^system\.adapter\.[\w-]+\.[0-9]+$/)) {
-            if (obj && obj.common && obj.common.adminTab && !obj.common.adminTab.ignoreConfigUpdate) {
+        if (obj && id.match(/^system\.adapter\.[\w-]+\.[0-9]+$/)) {
+            if (obj.common && 
+                obj.common.adminTab && 
+                !obj.common.adminTab.ignoreConfigUpdate
+            ) {
                 initTabs();
             }
+            
+            if (obj && obj.type === 'instance') {
+                if (obj.common.supportCustoms ||
+                    id.match(/^system\.adapter\.history\.[0-9]+$/) ||
+                    id.match(/^system\.adapter\.influxdb\.[0-9]+$/) ||
+                    id.match(/^system\.adapter\.sql\.[0-9]+$/)) {
+                    // Update all states if customs enabled or disabled
+                    tabs.objects.reinit();
+                }
+            }
         }
-
-        if (id.match(/^system\.adapter\.history\.[0-9]+$/)) {
-            // Update all states if history enabled or disabled
-            tabs.objects.reinit();
-        }
-
-        /*if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
-            // Disable scripts tab if no one script engine instance found
-            var engines = tabs.scripts.fillEngines();
-            $('#tabs').tabs('option', 'disabled', (engines && engines.length) ? [] : [4]);
-        }*/
 
         tabs.hosts.objectChange(id, obj);
 
@@ -1225,7 +1232,7 @@ $(document).ready(function () {
                                 tabs.users.prepare();
                                 tabs.groups.prepare();
                                 tabs.enums.prepare();
-                                tabs.objects.prepareHistory();
+                                tabs.objects.prepareCustoms();
                                 tabs.events.prepare();
                                 main.systemDialog.prepare();
                                 resizeGrids();

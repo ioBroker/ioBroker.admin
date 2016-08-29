@@ -3,13 +3,13 @@ function Objects(main) {
 
     var that = this;
     this.$dialog        = $('#dialog-object');
-    this.$dialogHistory = $('#dialog-history');
+    this.$dialogCustoms = $('#dialog-customs');
 
     this.$grid          = $('#grid-objects');
 
     this.main = main;
-    this.historyEnabled = null;
-    this.currentHistory = null; // Id of the currently shown history dialog
+    this.customEnabled  = null;
+    this.currentCustoms = null; // Id of the currently shown customs dialog
 
     this.prepare = function () {
         this.$dialog.dialog({
@@ -50,13 +50,13 @@ function Objects(main) {
 
         $('#object-tabs').tabs({
             activate: function (event, ui) {
-                if (ui.newPanel.selector == '#object-tab-raw') {
+                if (ui.newPanel.selector === '#object-tab-raw') {
                     var obj = that.saveFromTabs();
 
                     if (!obj) return false;
 
                     that.editor.setValue(JSON.stringify(obj, null, 2));
-                } else if (ui.oldPanel.selector == '#object-tab-raw') {
+                } else if (ui.oldPanel.selector === '#object-tab-raw') {
                     var _obj;
                     try {
                         _obj = JSON.parse(that.editor.getValue());
@@ -144,7 +144,7 @@ function Objects(main) {
 
                         var obj;
                         // = name.split('.').pop();
-                        if (type == 'state') {
+                        if (type === 'state') {
                             obj = {
                                 _id:   id,
                                 type: 'state',
@@ -158,27 +158,27 @@ function Objects(main) {
                                 },
                                 native: {}
                             };
-                            if (stype == 'boolean') {
+                            if (stype === 'boolean') {
                                 obj.common.def = false;
-                            } else if (stype == 'switch') {
+                            } else if (stype === 'switch') {
                                 obj.common.type   = 'boolean';
                                 obj.common.def    = false;
                                 obj.common.states = 'false:no;true:yes';
-                            } else if (stype == 'string') {
+                            } else if (stype === 'string') {
                                 obj.common.def = '';
-                            } else if (stype == 'number') {
+                            } else if (stype === 'number') {
                                 obj.common.min  = 0;
                                 obj.common.max  = 100;
                                 obj.common.def  = 0;
                                 obj.common.unit = '%';
-                            } else if (stype == 'enum') {
+                            } else if (stype === 'enum') {
                                 obj.common.type   = 'number';
                                 obj.common.min    = 0;
                                 obj.common.max    = 5;
                                 obj.common.def    = 0;
                                 obj.common.states = '0:zero;1:one;2:two;3:three;4:four;5:five';
                             }
-                        } else if (type == 'channel') {
+                        } else if (type === 'channel') {
                             obj = {
                                 _id:   id,
                                 type: 'channel',
@@ -211,7 +211,7 @@ function Objects(main) {
                             }
                             setTimeout(function () {
                                 that.edit(id, function (_obj) {
-                                    if (_obj.type == 'state') {
+                                    if (_obj.type === 'state') {
                                         // create state
                                         that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
                                     }
@@ -265,20 +265,20 @@ function Objects(main) {
         var text = '';
         for (var attr in object) {
             text += '<tr><td>' + attr + '</td><td>';
-            if (objectType == 'state' && part == 'common' && attr == 'type') {
+            if (objectType === 'state' && part === 'common' && attr === 'type') {
                 text += '<select class="object-tab-edit-string" data-attr="' + attr + '">' +
-                    '<option value="boolean" ' + (object[attr] == 'boolean' ? 'selected' : '') + '>' + _('boolean') + '</option>' +
-                    '<option value="string"  ' + (object[attr] == 'string'  ? 'selected' : '') + '>' + _('string')  + '</option>' +
-                    '<option value="number"  ' + (object[attr] == 'number'  ? 'selected' : '') + '>' + _('number')  + '</option>' +
-                    '<option value="array"   ' + (object[attr] == 'array'   ? 'selected' : '') + '>' + _('array')   + '</option>' +
-                    '<option value="object"  ' + (object[attr] == 'object'  ? 'selected' : '') + '>' + _('object')  + '</option>' +
-                    '<option value="mixed"   ' + (object[attr] == 'mixed'   ? 'selected' : '') + '>' + _('mixed')   + '</option>' +
+                    '<option value="boolean" ' + (object[attr] === 'boolean' ? 'selected' : '') + '>' + _('boolean') + '</option>' +
+                    '<option value="string"  ' + (object[attr] === 'string'  ? 'selected' : '') + '>' + _('string')  + '</option>' +
+                    '<option value="number"  ' + (object[attr] === 'number'  ? 'selected' : '') + '>' + _('number')  + '</option>' +
+                    '<option value="array"   ' + (object[attr] === 'array'   ? 'selected' : '') + '>' + _('array')   + '</option>' +
+                    '<option value="object"  ' + (object[attr] === 'object'  ? 'selected' : '') + '>' + _('object')  + '</option>' +
+                    '<option value="mixed"   ' + (object[attr] === 'mixed'   ? 'selected' : '') + '>' + _('mixed')   + '</option>' +
                     '</select>';
-            } else if (typeof object[attr] == 'string') {
+            } else if (typeof object[attr] === 'string') {
                 text += '<input type="text" class="object-tab-edit-string" style="width: 100%" data-attr="' + attr + '" value="' + object[attr] + '" />';
-            } else if (typeof object[attr] == 'number') {
+            } else if (typeof object[attr] === 'number') {
                 text += '<input type="text" class="object-tab-edit-number" style="width: 100%" data-attr="' + attr + '" value="' + object[attr] + '" />';
-            } else if (typeof object[attr] == 'boolean') {
+            } else if (typeof object[attr] === 'boolean') {
                 text += '<input type="checkbox" class="object-tab-edit-boolean" data-attr="' + attr + '" ' + (object[attr] ? 'checked' : '') + ' />';
             } else {
                 text += '<textarea class="object-tab-edit-object"  style="width: 100%" rows="3" data-attr="' + attr + '">' + JSON.stringify(object[attr], null, 2) + '</textarea>';
@@ -321,7 +321,7 @@ function Objects(main) {
     };
 
     this.reinit = function () {
-        this.checkHistory();
+        this.checkCustoms();
         if (this.$grid) this.$grid.selectId('reinit');
     };
 
@@ -383,7 +383,7 @@ function Objects(main) {
         var enums = that.main.tabs.enums.list;
         var toCheck = [];
         for (var e = 0; e < enums.length; e++) {
-            if (enums[e].substring(0, 'enum.'.length + enumName.length + 1) == 'enum.' + enumName + '.') {
+            if (enums[e].substring(0, 'enum.'.length + enumName.length + 1) === 'enum.' + enumName + '.') {
                 toCheck.push(enums[e]);
             }
         }
@@ -405,7 +405,7 @@ function Objects(main) {
 
         if (typeof this.$grid !== 'undefined' && (!this.$grid[0]._isInited || update)) {
             this.$grid[0]._isInited = true;
-            if (this.historyEnabled === null) this.checkHistory();
+            if (this.customEnabled === null) this.checkCustoms();
 
             var x = $(window).width();
             var y = $(window).height();
@@ -484,29 +484,35 @@ function Objects(main) {
                             primary:'ui-icon-clock'
                         },
                         click: function (id) {
-                            that.openHistoryDlg(id);
+                            that.openCustomsDlg(id);
                         },
                         width:  26,
                         height: 20,
                         match: function (id) {
-                            // Show history button only if history adapter enabled
-                            if (main.objects[id] && that.historyEnabled && !id.match(/\.messagebox$/) && main.objects[id].type == 'state') {
-                                // Check if history enabled
+                            // Show special button only if one of supported adapters is enabled
+                            if (main.objects[id] && that.customEnabled && !id.match(/\.messagebox$/) && main.objects[id].type === 'state') {
+                                // Check if some custom settings enabled
                                 var enabled = false;
-                                if (main.objects[id] && main.objects[id].common && main.objects[id].common.history) {
-                                    if (main.objects[id].common.history.enabled !== undefined) {
-                                        main.objects[id].common.history = main.objects[id].common.history.enabled ? {'history.0': main.objects[id].common.history} : {};
+                                if (main.objects[id] && main.objects[id].common && main.objects[id].common.custom) {
+                                    var custom = main.objects[id].common.custom;
+                                    // convert old structure
+                                    // TODO: remove sometime (08.2016)
+                                    if (custom.enabled !== undefined) {
+                                        custom = main.objects[id].common.custom = custom.enabled ? {'history.0': custom} : {};
                                     }
-                                    for (var h in main.objects[id].common.history) {
-                                        enabled = true;
-                                        break;
+
+                                    for (var h in custom) {
+                                        if (custom.hasOwnProperty(h)) {
+                                            enabled = true;
+                                            break;
+                                        }
                                     }
                                 }
                                 if (enabled) {
-                                    this.addClass('history-enabled').removeClass('history-disabled');
+                                    this.addClass('custom-enabled').removeClass('custom-disabled');
                                 } else {
-                                    delete main.objects[id].common.history;
-                                    this.addClass('history-disabled').removeClass('history-enabled');
+                                    delete main.objects[id].common.custom;
+                                    this.addClass('custom-disabled').removeClass('custom-enabled');
                                 }
                             } else {
                                 this.hide();
@@ -527,9 +533,9 @@ function Objects(main) {
                             $('#object-tab-new-object-parent').val(id);
                             $('#object-tab-new-object-name').val(_('newObject'));
 
-                            if (that.main.objects[id] && that.main.objects[id].type == 'device') {
+                            if (that.main.objects[id] && that.main.objects[id].type === 'device') {
                                 $('#object-tab-new-object-type').val('channel');
-                            } else if (that.main.objects[id] && that.main.objects[id].type == 'channel') {
+                            } else if (that.main.objects[id] && that.main.objects[id].type === 'channel') {
                                 $('#object-tab-new-object-type').val('state');
                             } else {
                                 $('#object-tab-new-object-type').val('state');
@@ -621,7 +627,7 @@ function Objects(main) {
                 $('#dialog-new-object').dialog('option', 'title', _('Add new object: %s', id));
             });
 
-            if (this.historyEnabled) {
+            if (this.customEnabled) {
                 settings.customButtonFilter = {
                     icons:    {primary: 'ui-icon-clock'},
                     text:     false,
@@ -629,10 +635,10 @@ function Objects(main) {
                         var _ids = that.$grid.selectId('getFilteredIds');
                         var ids = [];
                         for (var i = 0; i < _ids.length; i++) {
-                            if (that.main.objects[_ids[i]] && that.main.objects[_ids[i]].type == 'state') ids.push(_ids[i]);
+                            if (that.main.objects[_ids[i]] && that.main.objects[_ids[i]].type === 'state') ids.push(_ids[i]);
                         }
                         if (ids && ids.length) {
-                            that.openHistoryDlg(ids);
+                            that.openCustomsDlg(ids);
                         } else {
                             that.main.showMessage(_('No states selected!'), '', 'info');
                         }
@@ -789,7 +795,7 @@ function Objects(main) {
         obj.acl.owner = $('#object-tab-acl-owner').val();
         obj.acl.ownerGroup = $('#object-tab-acl-group').val();
 
-        if (obj.type == 'state') {
+        if (obj.type === 'state') {
             obj.acl.state = 0;
             obj.acl.state |= $('#object-tab-acl-state-owner-read').prop('checked') ? 0x400 : 0;
             obj.acl.state |= $('#object-tab-acl-state-owner-write').prop('checked') ? 0x200 : 0;
@@ -855,35 +861,35 @@ function Objects(main) {
         }
     };
 
-    // ----------------------------- HISTORY ------------------------------------------------
-    this.checkHistory = function () {
+    // ----------------------------- CUSTOMS ------------------------------------------------
+    this.checkCustoms = function () {
         var found = false;
         for (var u = 0; u < this.main.instances.length; u++) {
             if (this.main.objects[this.main.instances[u]].common &&
-                this.main.objects[this.main.instances[u]].common.type === 'storage' &&
+                (this.main.objects[this.main.instances[u]].common.type === 'storage' || this.main.objects[this.main.instances[u]].common.supportCustoms) &&
                 this.main.objects[this.main.instances[u]].common.enabled) {
-                if (this.historyEnabled !== null && this.historyEnabled != true) {
-                    this.historyEnabled = true;
-                    // update history buttons
+                if (this.customEnabled !== null && this.customEnabled != true) {
+                    this.customEnabled = true;
+                    // update customs buttons
                     this.init(true);
                 } else {
-                    this.historyEnabled = true;
+                    this.customEnabled = true;
                 }
                 found = true;
                 return;
             }
         }
-        if (this.historyEnabled !== null && this.historyEnabled != false) {
-            this.historyEnabled = false;
-            // update history buttons
+        if (this.customEnabled !== null && this.customEnabled != false) {
+            this.customEnabled = false;
+            // update custom button
             this.init(true);
         } else {
-            this.historyEnabled = false;
+            this.customEnabled = false;
         }
     };
 
     this.stateChangeHistory = function (id, state) {
-        if (this.currentHistory === id) {
+        if (this.currentCustoms === id) {
             // Load data again from adapter
             if (this.historyTimeout) return;
 
@@ -894,24 +900,36 @@ function Objects(main) {
         }
     };
 
-    this.initStorageTabs = function (ids, instances) {
-        var $storageTabs = $('#storage-tabs');
-        $storageTabs.html('');
-        this.defaults = {};
+    this.initCustomsTabs = function (ids, instances) {
+        var $customTabs = $('#customs-tabs');
+        $customTabs.html('');
         var wordDifferent = _('__different__');
+        this.defaults = {};
+
+        var collapsed = this.main.config['object-customs-collapsed'];
+        collapsed = collapsed ? collapsed.split(',') : [];
+
         // add all tabs to div
         for (var j = 0; j < instances.length; j++) {
             // try to find settings
             var parts    = instances[j].split('.');
             var adapter  = parts[2];
             var instance = parts[3];
-            var tab = '<div class="storage-row-title ui-widget-header">' + _('Settings for %s', adapter + '.' + instance) + '</div><div class="storage-settings">' +
-                $("script[data-template-name='" + adapter + "']").html() +
+            var data = adapter + '.' + instance;
+            var hidden = (collapsed.indexOf(data) !== -1);
+            var img = this.main.objects['system.adapter.' + adapter].common.icon;
+            img = '/adapter/' + adapter + '/' +img;
+            var tab = '<div class="customs-row-title ui-widget-header ' +
+                (hidden ? 'customs-row-title-collapsed' : 'customs-row-title-expanded') +
+                '" data-adapter="' + data + '"><img class="customs-row-title-icon" width="20" src="' + img + '" /><span class="customs-row-title-settings">' + _('Settings for %s', '') + '</span>' + data +
+               // '<input type="checkbox" data-field="enabled" data-default="false">' +
+                '</div>' +
+                '<div class="customs-settings" style="' + (hidden ? 'display: none' : '') + '">' +
+                $('script[data-template-name="' + adapter + '"]').html() +
                 '</div>';
 
             var $tab = $(tab);
             this.defaults[adapter] = {};
-
             // set values
             $tab.find('input, select').each(function() {
                 var $this = $(this);
@@ -923,8 +941,18 @@ function Objects(main) {
                 if (def == parseFloat(def).toString()) def = parseFloat(def);
 
                 that.defaults[adapter][field] = def;
+                if (field === 'enabled') {
+                    $this.click(function (event) {
+                        event.stopPropagation();
+                        if ($(this).prop('checked')) {
+
+                        } else {
+
+                        }
+                    });
+                }
             });
-            $storageTabs.append($tab);
+            $customTabs.append($tab);
         }
 
         var commons = {};
@@ -933,11 +961,14 @@ function Objects(main) {
             var inst = instances[i].replace('system.adapter.', '');
             commons[inst] = {};
             for (var id = 0; id < ids.length; id++) {
-                // convert old format of storage
-                if (main.objects[ids[id]].common.history && main.objects[ids[id]].common.history.enabled !== undefined) {
-                    main.objects[ids[id]].common.history[inst] = main.objects[ids[id]].common.history.enabled ? {'history.0': main.objects[ids[id]].common.history} : {};
+                var custom = main.objects[ids[id]].common.custom;
+                // convert old structure
+                // TODO: remove sometime (08.2016)
+                if (custom && custom.enabled !== undefined) {
+                    custom = main.objects[ids[id]].common.custom = custom.enabled ? {'history.0': custom} : {};
                 }
-                var sett = main.objects[ids[id]].common.history ? main.objects[ids[id]].common.history[inst] : null;
+                var sett = custom ? custom[inst] : null;
+
                 if (sett) {
                     for (var _attr in sett) {
                         if (commons[inst][_attr] === undefined) {
@@ -968,14 +999,14 @@ function Objects(main) {
         }
 
         // set values
-        $storageTabs.find('input, select').each(function() {
+        $customTabs.find('input, select').each(function() {
             var $this    = $(this);
             var instance = $this.attr('data-instance');
             var adapter  = instance.split('.')[0];
             var attr     = $this.attr('data-field');
 
             if (commons[instance][attr] !== undefined) {
-                if ($this.attr('type') == 'checkbox') {
+                if ($this.attr('type') === 'checkbox') {
                     if (commons[instance][attr] === '__different__') {
                         /*$('<select data-field="' + attr + '" data-instance="' + instance + '">\n' +
                          '   <option value="' + wordDifferent + '" selected>' + wordDifferent + '</option>\n' +
@@ -989,10 +1020,10 @@ function Objects(main) {
                     }
                 } else {
                     if (commons[instance][attr] === '__different__') {
-                        if ($this.attr('type') == 'number') {
+                        if ($this.attr('type') === 'number') {
                             $this.attr('type', 'text');
                         }
-                        if ($this.prop('tagName').toUpperCase() == 'SELECT'){
+                        if ($this.prop('tagName').toUpperCase() === 'SELECT'){
                             $this.prepend('<option value="' + wordDifferent + '">' + wordDifferent + '</option>');
                             $this.val(wordDifferent);
                         } else {
@@ -1008,7 +1039,7 @@ function Objects(main) {
                     def = that.defaults[adapter][attr];
                 }
                 if (def !== undefined) {
-                    if ($this.attr('type') == 'checkbox') {
+                    if ($this.attr('type') === 'checkbox') {
                         $this.prop('checked', def);
                     } else {
                         $this.val(def);
@@ -1016,30 +1047,40 @@ function Objects(main) {
                 }
             }
 
-            if ($this.attr('type') == 'checkbox') {
+            if ($this.attr('type') === 'checkbox') {
                 $this.change(function () {
-                    $('#history-button-save').button('enable');
+                    $('#customs-button-save').button('enable');
                 });
             } else {
                 $this.change(function () {
-                    $('#history-button-save').button('enable');
+                    $('#customs-button-save').button('enable');
                 }).keyup(function () {
                     $(this).trigger('change');
                 });
             }
         });
 
-        $('.storage-row-title').click(function () {
+        $('.customs-row-title').click(function () {
             var $form = $(this).next();
+            var _collapsed = that.main.config['object-customs-collapsed'];
+            _collapsed = _collapsed ? _collapsed.split(',') : [];
+
+            var id = $(this).data('adapter');
+            var pos = _collapsed.indexOf(id);
             if ($form.is(':visible')) {
+                if (pos === -1) _collapsed.push(id);
                 $form.hide();
+                $(this).removeClass('customs-row-title-expanded').addClass('customs-row-title-collapsed');
             } else {
+                if (pos !== -1) _collapsed.splice(pos, 1);
                 $form.show();
+                $(this).removeClass('customs-row-title-collapsed').addClass('customs-row-title-expanded');
             }
+            that.main.saveConfig('object-customs-collapsed', _collapsed.join(','));
             that.resizeHistory();
         });
-        this.showHistoryData(ids.length > 1 ? null : ids[0]);
-        $('#history-button-save').button('disable');
+        this.showCustomsData(ids.length > 1 ? null : ids[0]);
+        $('#customs-button-save').button('disable');
         translateAll();
         this.resizeHistory();
     };
@@ -1090,13 +1131,13 @@ function Objects(main) {
             var port = 0;
             var chart = false;
             for (var i = 0; i < this.main.instances.length; i++) {
-                if (this.main.objects[main.instances[i]].common.name == 'flot' && this.main.objects[this.main.instances[i]].common.enabled) {
+                if (this.main.objects[main.instances[i]].common.name === 'flot' && this.main.objects[this.main.instances[i]].common.enabled) {
                     chart = 'flot';
                 } else
-                if (!chart && this.main.objects[main.instances[i]].common.name == 'rickshaw' && this.main.objects[this.main.instances[i]].common.enabled) {
+                if (!chart && this.main.objects[main.instances[i]].common.name === 'rickshaw' && this.main.objects[this.main.instances[i]].common.enabled) {
                     chart = 'rickshaw';
                 } else
-                if (this.main.objects[this.main.instances[i]].common.name == 'web' && this.main.objects[this.main.instances[i]].common.enabled) {
+                if (this.main.objects[this.main.instances[i]].common.name === 'web' && this.main.objects[this.main.instances[i]].common.enabled) {
                     port = this.main.objects[this.main.instances[i]].native.port;
                 }
                 if (chart === 'flot' && port) break;
@@ -1109,14 +1150,14 @@ function Objects(main) {
         }
     };
 
-    this.showHistoryData = function (id) {
-        var $tabs = $('#tabs-history');
+    this.showCustomsData = function (id) {
+        var $tabs = $('#tabs-customs');
 
         var port  = 0;
         var chart = false;
         if (id) {
-            this.$dialogHistory.dialog('option', 'height', 600);
-            this.$dialogHistory.dialog('open');
+            this.$dialogCustoms.dialog('option', 'height', 600);
+            this.$dialogCustoms.dialog('open');
             $tabs.data('id', id);
 
             if (!$tabs.data('inited')) {
@@ -1124,11 +1165,11 @@ function Objects(main) {
                 $tabs.tabs({
                     activate: function (event, ui) {
                         switch (ui.newPanel.selector) {
-                            case '#tab-history-table':
+                            case '#tab-customs-table':
                                 that.loadHistoryChart();
                                 break;
 
-                            case '#tab-history-chart':
+                            case '#tab-customs-chart':
                                 that.loadHistoryChart($tabs.data('id'));
                                 break;
                         }
@@ -1141,65 +1182,81 @@ function Objects(main) {
 
             // Check if chart enabled and set
             for (var i = 0; i < main.instances.length; i++) {
-                if (main.objects[main.instances[i]].common.name == 'flot' && main.objects[main.instances[i]].common.enabled) {
+                if (main.objects[main.instances[i]].common.name === 'flot' && main.objects[main.instances[i]].common.enabled) {
                     chart = 'flot';
                 } else
-                if (!chart && main.objects[main.instances[i]].common.name == 'rickshaw' && main.objects[main.instances[i]].common.enabled) {
+                if (!chart && main.objects[main.instances[i]].common.name === 'rickshaw' && main.objects[main.instances[i]].common.enabled) {
                     chart = 'rickshaw';
                 } else
-                if (main.objects[main.instances[i]].common.name == 'web'      && main.objects[main.instances[i]].common.enabled) {
+                if (main.objects[main.instances[i]].common.name === 'web'      && main.objects[main.instances[i]].common.enabled) {
                     port = main.objects[main.instances[i]].native.port;
                 }
                 if (chart === 'flot' && port) break;
             }
             that.loadHistoryTable(id);
-            $tabs.tabs('option', 'disabled', (port && chart && that.currentHistory) ? [] : [2]);
+            $tabs.tabs('option', 'disabled', (port && chart && that.currentCustoms) ? [] : [2]);
         } else {
             $tabs.tabs({active: 0});
             $tabs.tabs('option', 'disabled', [1, 2]);
-            this.$dialogHistory.dialog('open');
+            this.$dialogCustoms.dialog('open');
         }
     };
 
-    this.openHistoryDlg = function (ids) {
+    function getCustomTemplate(adapter, callback) {
+        $.ajax({
+            headers: {
+                Accept: 'text/html'
+            },
+            cache: true,
+            url:   '/adapter/' + adapter + '/custom.html',
+            success: function(_data) {
+                callback(null, _data);
+            },
+            error: function(jqXHR) {
+                // todo: remove it sometime (2016.08)
+                $.ajax({
+                    headers: {
+                        Accept: 'text/html'
+                    },
+                    cache: true,
+                    url:   '/adapter/' + adapter + '/storage.html',
+                    success: function(_data) {
+                        callback(null, _data);
+                    },
+                    error: function(jqXHR) {
+                        callback(jqXHR.responseText);
+                    }
+                });
+            }
+        });
+    }
+
+    this.openCustomsDlg = function (ids) {
         if (typeof ids != 'object') ids = [ids];
         var instances = [];
 
         // clear global defaults object
         defaults = {};
 
-        // collect all storage instances
+        // collect all custom instances
         var count = 0;
         var data = '';
         var urls = [];
         for (var u = 0; u < this.main.instances.length; u++) {
             if (this.main.objects[this.main.instances[u]].common &&
-                this.main.objects[this.main.instances[u]].common.type === 'storage') {
+                (this.main.objects[this.main.instances[u]].common.type === 'storage' || this.main.objects[this.main.instances[u]].common.supportCustoms)
+            ) {
                 instances.push(this.main.instances[u]);
                 var url = this.main.instances[u].split('.');
-                if (urls.indexOf(url[2]) == -1) {
+                if (urls.indexOf(url[2]) === -1) {
                     urls.push(url[2]);
                     count++;
-                    $.ajax({
-                        headers: {
-                            Accept: 'text/html'
-                        },
-                        cache: true,
-                        url:   '/adapter/' + url[2] + '/storage.html',
-                        success: function(_data) {
-                            data += _data;
-                            if (!--count) {
-                                $('#storage-templates').html(data);
-                                that.initStorageTabs(ids, instances);
-                            }
-                            //$("script[data-template-name='"+type+"']").html());
-                        },
-                        error: function(jqXHR) {
-                            console.error(jqXHR.responseText);
-                            if (!--count) {
-                                $('#storage-templates').html(data);
-                                that.initStorageTabs(ids, instances);
-                            }
+                    getCustomTemplate(url[2], function (err, result) {
+                        if (err) console.error(err);
+                        if (result) data += result;
+                        if (!--count) {
+                            $('#customs-templates').html(data);
+                            that.initCustomsTabs(ids, instances);
                         }
                     });
                 }
@@ -1211,33 +1268,35 @@ function Objects(main) {
                 console.warn('Null object: ' + ids[i]);
                 ids.splice(i, 1);
             } else {
-                if (this.main.objects[ids[i]].common.history) {
+                var custom = this.main.objects[ids[i]].common.custom;
+                if (custom) {
                     // convert old structure
-                    if (this.main.objects[ids[i]].common.history.enabled !== undefined) {
-                        this.main.objects[ids[i]].common.history = this.main.objects[ids[i]].common.history.enabled ? {'history.0': this.main.objects[ids[i]].common.history} : {};
+                    // TODO: remove somewhen (08.2016)
+                    if (custom.enabled !== undefined) {
+                        custom = this.main.objects[ids[i]].common.custom = custom.enabled ? {'history.0': custom} : {};
                     }
                     var found = false;
-
                     // delete disabled entries
-                    for (var h in this.main.objects[ids[i]].common.history) {
-                        if (this.main.objects[ids[i]].common.history[h].enabled === false) {
-                            delete this.main.objects[ids[i]].common.history[h];
+                    for (var h in custom) {
+                        if (!custom.hasOwnProperty(h)) continue;
+                        if (custom[h].enabled === false) {
+                            delete custom[h];
                         } else {
-                            if (ids.length == 1) _instances.push(h);
+                            if (ids.length === 1) _instances.push(h);
                             found = true;
                         }
                     }
                     if (!found) {
-                        delete this.main.objects[ids[i]].common.history;
+                        delete this.main.objects[ids[i]].common.custom;
                     }
                 }
             }
         }
 
         var title;
-        if (ids.length == 1) {
+        if (ids.length === 1) {
             title = _('Storage of %s', ids[0]);
-            this.currentHistory = _instances.length ? ids[0]: null;
+            this.currentCustoms = _instances.length ? ids[0]: null;
             var text = '';
             for (var k = 0; k < _instances.length; k++) {
                 if (this.main.objects['system.adapter.' + _instances[k]].common.enabled ||
@@ -1254,6 +1313,7 @@ function Objects(main) {
                         that.main.saveConfig('object-history-table',  $('#history-table-instance').val());
                         that.loadHistoryTable($(this).data('id'));
                     });
+                
                 $('#history-chart-instance')
                     .data('id', ids[0])
                     .html(text)
@@ -1263,6 +1323,7 @@ function Objects(main) {
                         that.main.saveConfig('object-history-chart',  $('#history-chart-instance').val());
                         that.loadHistoryChart($(this).data('id'));
                     });
+                
                 if (this.main.config['object-history-table'] !== undefined) {
                     $('#history-table-instance').val(this.main.config['object-history-table'])
                 }
@@ -1278,24 +1339,24 @@ function Objects(main) {
             $('#history-table-instance').hide();
             $('#history-chart-instance').hide();
             title = _('Storage of %s states', ids.length);
-            this.currentHistory = null;
+            this.currentCustoms = null;
         }
-        $('#storage-tabs').data('ids', ids);
-        this.$dialogHistory.dialog('option', 'title', title);
+        $('#customs-tabs').data('ids', ids);
+        this.$dialogCustoms.dialog('option', 'title', title);
     };
 
-    // Set modified history states
-    this.setHistory = function (ids, callback) {
+    // Set modified custom states
+    this.setCustoms = function (ids, callback) {
         var id = ids.pop();
         if (id) {
-            this.$dialogHistory.dialog('option', 'title', _('History of %s states', ids.length));
+            this.$dialogCustoms.dialog('option', 'title', _('Adapter settings for %s states', ids.length));
 
             that.main.socket.emit('setObject', id, this.main.objects[id], function (err) {
                 if (err) {
                     that.main.showMessage(_(err));
                 } else {
                     setTimeout(function () {
-                        that.setHistory(ids, callback);
+                        that.setCustoms(ids, callback);
                     }, 50);
                 }
             });
@@ -1306,21 +1367,21 @@ function Objects(main) {
 
     this.resizeHistory = function () {
         var $iFrame = $('#iframe-history-chart');
-        $iFrame.css({height: this.$dialogHistory.height() - 70, width: this.$dialogHistory.width() - 10});
+        $iFrame.css({height: this.$dialogCustoms.height() - 70, width: this.$dialogCustoms.width() - 10});
         var timeout = $iFrame.data('timeout');
         if (timeout) clearTimeout(timeout);
 
         $iFrame.data('timeout', setTimeout(function () {
-            that.loadHistoryChart($('#tabs-history').data('id'));
+            that.loadHistoryChart($('#tabs-customs').data('id'));
         }, 1000));
     };
 
-    this.prepareHistory = function () {
-        $(document).on('click', '.history', function () {
-            that.openHistoryDlg($(this).attr('data-id'));
-        });
+    this.prepareCustoms = function () {
+        /*$(document).on('click', '.customs', function () {
+            that.openCustomsDlg($(this).attr('data-id'));
+        });*/
 
-        this.$dialogHistory.dialog({
+        this.$dialogCustoms.dialog({
             autoOpen:      false,
             modal:         true,
             width:         830,
@@ -1328,14 +1389,14 @@ function Objects(main) {
             closeOnEscape: false,
             buttons: [
                 {
-                    id: 'history-button-save',
+                    id: 'customs-button-save',
                     text: _('Save'),
                     click: function () {
-                        var $tabs = $('#storage-tabs');
+                        var $tabs = $('#customs-tabs');
                         var ids = $tabs.data('ids');
 
                         // do not update charts
-                        that.currentHistory = null;
+                        that.currentCustoms = null;
                         var wordDifferent = _('__different__');
 
                         // collect default values
@@ -1348,7 +1409,7 @@ function Objects(main) {
                             if (!field) return;
 
                             var val;
-                            if ($(this).attr('type') == 'checkbox') {
+                            if ($(this).attr('type') === 'checkbox') {
                                 if (this.indeterminate) return;
                                 val = $(this).prop('checked');
                             } else {
@@ -1362,8 +1423,10 @@ function Objects(main) {
                             if (val == parseFloat(val).toString()) val = parseFloat(val);
 
                             for (var i = 0; i < ids.length; i++) {
-                                that.main.objects[ids[i]].common.history = that.main.objects[ids[i]].common.history || {};
-                                if (that.main.objects[ids[i]].common.history[instance] === undefined) {
+                                var custom = that.main.objects[ids[i]].common.custom;
+                                custom = that.main.objects[ids[i]].common.custom = custom || {};
+                                
+                                if (custom[instance] === undefined) {
                                     var adapter = instance.split('.')[0];
                                     var _default;
                                     // Try to get default values
@@ -1372,48 +1435,46 @@ function Objects(main) {
                                     } else {
                                         _default = that.defaults[adapter];
                                     }
-                                    that.main.objects[ids[i]].common.history[instance] = _default || {};
+                                    custom[instance] = _default || {};
                                 }
-                                that.main.objects[ids[i]].common.history[instance][field] = val;
+                                custom[instance][field] = val;
                             }
                         });
 
                         for (var i = 0; i < ids.length; i++) {
                             var found = false;
-                            for (var inst in main.objects[ids[i]].common.history) {
-                                if (!main.objects[ids[i]].common.history[inst].enabled) {
-                                    delete main.objects[ids[i]].common.history[inst];
+                            for (var inst in main.objects[ids[i]].common.custom) {
+                                if (!main.objects[ids[i]].common.custom[inst].enabled) {
+                                    delete main.objects[ids[i]].common.custom[inst];
                                 } else {
                                     found = true;
                                 }
                             }
-                            if (!found) {
-                                main.objects[ids[i]].common.history = null;
-                            }
+                            if (!found) main.objects[ids[i]].common.custom = null;
                         }
 
-                        that.setHistory(ids, function () {
+                        that.setCustoms(ids, function () {
                             // disable iframe
                             that.loadHistoryChart();
-                            that.$dialogHistory.dialog('close');
+                            that.$dialogCustoms.dialog('close');
                         });
                     }
                 },
                 {
                     text: _('Cancel'),
                     click: function () {
-                        if (!$('#history-button-save').is(":disabled")) {
+                        if (!$('#customs-button-save').is(':disabled')) {
                             that.main.confirmMessage(_('Are you sure? Changes are not saved.'), _('Question'), 'alert', function (result) {
                                 if (result) {
                                     // disable iframe
                                     that.loadHistoryChart();
-                                    that.$dialogHistory.dialog('close');
+                                    that.$dialogCustoms.dialog('close');
                                 }
                             });
                         } else {
                             // disable iframe
                             that.loadHistoryChart();
-                            that.$dialogHistory.dialog('close');
+                            that.$dialogCustoms.dialog('close');
                         }
                     }
                 }
@@ -1426,7 +1487,7 @@ function Objects(main) {
                     clearTimeout(that.historyTimeout);
                     that.historyTimeout = null;
                 }
-                that.currentHistory = null;
+                that.currentCustoms = null;
                 $('#iframe-history-chart').attr('src', '');
             },
             resize: function () {
@@ -1454,7 +1515,7 @@ function Objects(main) {
                             }
                             var _obj = json[obj];
                             console.log(id + ' = ' + _obj.type);
-                            if (json[obj].type == 'state') {
+                            if (json[obj].type === 'state') {
                                 that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
                             }
                         });
@@ -1467,7 +1528,7 @@ function Objects(main) {
                         }
                         var _obj = json[obj];
                         console.log(id + ' = ' + _obj.type);
-                        if (json[obj].type == 'state') {
+                        if (json[obj].type === 'state') {
                             that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
                         }
                     });

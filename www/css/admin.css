@@ -95,13 +95,30 @@ table#events {
     background-repeat: no-repeat;
     background-size: 20px;
     background-position: 5px 2px;
-}​
-.storage-row-title {
+}
+
+.customs-row-title {
     width: 100%;
 /*    font-weight: bold;*/
     cursor: pointer;
+    margin-top: 8px;
 }
-.storage-settings {
+.customs-row-title-expanded:before {
+    content: '▲';
+    padding: 3px;
+}
+.customs-row-title-collapsed:before {
+    content: '▼';
+    padding: 3px;
+}
+.customs-row-title-settings {
+    font-weight: normal;
+    padding-left: 5px;
+}
+.customs-row-title-icon {
+    padding-top: 3px;
+}
+.customs-settings {
     width: 100%;
     border: 1px solid gray;
     padding-bottom: 15px;
@@ -183,10 +200,10 @@ table#events {
     font-weight: bold;
     color: #06960E !important;
 }
-.history-enabled {
+.custom-enabled {
     background: rgb(151, 191, 255) !important;
 }
-.history-disabled {
+.custom-disabled {
 
 }
 

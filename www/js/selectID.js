@@ -183,9 +183,9 @@
         if (data.filter) {
             if (data.filter.type && data.filter.type != data.objects[id].type) return false;
 
-            if (data.filter.common && data.filter.common.history) {
+            if (data.filter.common && data.filter.common.custom) {
                 if (!data.objects[id].common ||
-                    !data.objects[id].common.history) return false;
+                    !data.objects[id].common.custom) return false;
             }
         }
         return true;
@@ -1615,11 +1615,11 @@
                 } else
                 if (f === 'button') {
                     if (data.filterVals[f] === 'true') {
-                        if (!isCommon || !data.objects[node.key].common.history || data.objects[node.key].common.history.enabled === false) return false;
+                        if (!isCommon || !data.objects[node.key].common.custom || data.objects[node.key].common.custom.enabled === false) return false;
                     } else if (data.filterVals[f] === 'false') {
-                        if (!isCommon || data.objects[node.key].type != 'state' || data.objects[node.key].common.history) return false;
+                        if (!isCommon || data.objects[node.key].type != 'state' || data.objects[node.key].common.custom) return false;
                     } else if (data.filterVals[f]) {
-                        if (!isCommon || !data.objects[node.key].common.history || !data.objects[node.key].common.history[data.filterVals[f]]) return false;
+                        if (!isCommon || !data.objects[node.key].common.custom || !data.objects[node.key].common.custom[data.filterVals[f]]) return false;
                     }
                 } else
                 if (f === 'room') {

@@ -226,6 +226,11 @@ systemDictionary = {
     "ts":                   {"en": "Timestamp",             "de": "Zeit",                   "ru": "Время"},
     "Statistics:":          {"en": "Statistics:",           "de": "Statistik:",             "ru": "Статистика:"},
     "Sent data:":           {"en": "Sent data:",            "de": "Gesendete Daten:",       "ru": "Отсылаемые данные:"},
+    "Configuration not saved.": {
+        "en": "Configuration not saved.", 
+        "de": "Konfiguration ist nicht gespeichert.", 
+        "ru": "Настройки не сохранены."
+    },
     "copy note": {
         "en": "Press Ctrl+A and Ctrl+C to copy log to clipboard and click with mouse anywhere to close.",
         "de": "Drücke Strg+A und danach Strg+C, um den Inhalt in die Zwischenablage zu kopieren. Klicke irgendwo, um das Fenster zu schliessen.",
