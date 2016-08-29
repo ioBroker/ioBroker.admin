@@ -1,5 +1,5 @@
 /*
- Copyright 2014-2015 bluefox <bluefox@ccu.io>
+ Copyright 2014-2016 bluefox <dogafox@gmail.com>
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -120,11 +120,11 @@
 
     function formatDate(dateObj) {
         //return dateObj.getFullYear() + '-' +
-        //    ("0" + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
-        //    ("0" + (dateObj.getDate()).toString(10)).slice(-2) + ' ' +
-        //    ("0" + (dateObj.getHours()).toString(10)).slice(-2) + ':' +
-        //    ("0" + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
-        //    ("0" + (dateObj.getSeconds()).toString(10)).slice(-2);
+        //    ('0' + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
+        //    ('0' + (dateObj.getDate()).toString(10)).slice(-2) + ' ' +
+        //    ('0' + (dateObj.getHours()).toString(10)).slice(-2) + ':' +
+        //    ('0' + (dateObj.getMinutes()).toString(10)).slice(-2) + ':' +
+        //    ('0' + (dateObj.getSeconds()).toString(10)).slice(-2);
         // Following implementation is 5 times faster
         if (!dateObj) return '';
 
@@ -181,7 +181,7 @@
         }
 
         if (data.filter) {
-            if (data.filter.type && data.filter.type != data.objects[id].type) return false;
+            if (data.filter.type && data.filter.type !== data.objects[id].type) return false;
 
             if (data.filter.common && data.filter.common.custom) {
                 if (!data.objects[id].common ||
@@ -193,21 +193,21 @@
 
     function getAllStates(data) {
         var objects = data.objects;
-        var isType  = data.columns.indexOf('type') != -1;
-        var isRoom  = data.columns.indexOf('room') != -1;
-        var isFunc  = data.columns.indexOf('function') != -1;
-        var isRole  = data.columns.indexOf('role') != -1;
-        var isHist  = data.columns.indexOf('button') != -1;
+        var isType  = data.columns.indexOf('type') !== -1;
+        var isRoom  = data.columns.indexOf('room') !== -1;
+        var isFunc  = data.columns.indexOf('function') !== -1;
+        var isRole  = data.columns.indexOf('role') !== -1;
+        var isHist  = data.columns.indexOf('button') !== -1;
         data.tree = {title: '', children: [], count: 0, root: true};
         data.roomEnums = [];
         data.funcEnums = [];
 
         for (var id in objects) {
 
-            if (isRoom && objects[id].type == 'enum' && data.regexEnumRooms.test(id)) data.roomEnums.push(id);
-            if (isFunc && objects[id].type == 'enum' && data.regexEnumFuncs.test(id)) data.funcEnums.push(id);
+            if (isRoom && objects[id].type === 'enum' && data.regexEnumRooms.test(id)) data.roomEnums.push(id);
+            if (isFunc && objects[id].type === 'enum' && data.regexEnumFuncs.test(id)) data.funcEnums.push(id);
 
-            if (isType && objects[id].type && data.types.indexOf(objects[id].type) == -1) data.types.push(objects[id].type);
+            if (isType && objects[id].type && data.types.indexOf(objects[id].type) === -1) data.types.push(objects[id].type);
 
             if (isRole && objects[id].common && objects[id].common.role) {
                 try {
@@ -215,15 +215,15 @@
                     var role = '';
                     for (var u = 0; u < parts.length; u++) {
                         role += (role ? '.' : '') + parts[u];
-                        if (data.roles.indexOf(role) == -1) data.roles.push(role);
+                        if (data.roles.indexOf(role) === -1) data.roles.push(role);
                     }
                 } catch (e) {
                     console.error('Cannot parse role "' + objects[id].common.role + '" by ' + id);
                 }
             }
-            if (isHist && objects[id].type === 'instance' && objects[id].common.type === 'storage') {
+            if (isHist && objects[id].type === 'instance' && (objects[id].common.type === 'storage' || objects[id].common.supportCustoms)) {
                 var h = id.substring('system.adapter.'.length);
-                if (data.histories.indexOf(h) == -1) data.histories.push(h);
+                if (data.histories.indexOf(h) === -1) data.histories.push(h);
             }
 
             // ignore system objects in expert mode
@@ -231,14 +231,14 @@
 
             if (!filterId(data, id)) continue;
 
-            treeInsert(data, id, data.currentId == id);
+            treeInsert(data, id, data.currentId === id);
 
             if (objects[id].enums) {
                 for (var e in objects[id].enums) {
                     if (objects[e] &&
                         objects[e].common &&
                         objects[e].common.members &&
-                        objects[e].common.members.indexOf(id) == -1) {
+                        objects[e].common.members.indexOf(id) === -1) {
                         objects[e].common.members.push(id);
                     }
                 }
@@ -290,7 +290,7 @@
                 _deleteTree(node.parent);
             } else {
                 for (var z = 0; z < p.children.length; z++) {
-                    if (node.key == p.children[z].key) {
+                    if (node.key === p.children[z].key) {
                         p.children.splice(z, 1);
                         break;
                     }
@@ -316,16 +316,16 @@
     function _findTree(tree, parts, index) {
         var num = -1;
         for (var j = 0; j < tree.children.length; j++) {
-            if (tree.children[j].title == parts[index]) {
+            if (tree.children[j].title === parts[index]) {
                 num = j;
                 break;
             }
             if (tree.children[j].title > parts[index]) break;
         }
 
-        if (num == -1) return null;
+        if (num === -1) return null;
 
-        if (parts.length - 1 == index) {
+        if (parts.length - 1 === index) {
             return tree.children[num];
         } else {
             return _findTree(tree.children[num], parts, index + 1);
@@ -341,14 +341,14 @@
         var num = -1;
         var j;
         for (j = 0; j < tree.children.length; j++) {
-            if (tree.children[j].title == parts[index]) {
+            if (tree.children[j].title === parts[index]) {
                 num = j;
                 break;
             }
             if (tree.children[j].title > parts[index]) break;
         }
 
-        if (num == -1) {
+        if (num === -1) {
             tree.folder   = true;
             tree.expanded = isExpanded;
 
@@ -364,7 +364,7 @@
                 expanded: false,
                 parent:   tree
             };
-            if (j == tree.children.length) {
+            if (j === tree.children.length) {
                 num = tree.children.length;
                 tree.children.push(obj);
             } else {
@@ -375,7 +375,7 @@
                 addedNodes.push(tree.children[num]);
             }
         }
-        if (parts.length - 1 == index) {
+        if (parts.length - 1 === index) {
             tree.children[num].id = id;
         } else {
             tree.children[num].expanded = tree.children[num].expanded || isExpanded;
@@ -388,7 +388,7 @@
         // Select current element
         if (data.selectedID) {
             data.$tree.fancytree('getTree').visit(function (node) {
-                if (node.key == data.selectedID) {
+                if (node.key === data.selectedID) {
                     try {
                         node.setActive();
                         node.makeVisible({scrollIntoView: scrollIntoView || false});
@@ -415,8 +415,8 @@
     function findRoomsForObject(data, id, withParentInfo, rooms) {
         rooms = rooms || [];
         for (var i = 0; i < data.roomEnums.length; i++) {
-            if (data.objects[data.roomEnums[i]].common.members.indexOf(id) != -1 &&
-                rooms.indexOf(data.objects[data.roomEnums[i]].common.name) == -1) {
+            if (data.objects[data.roomEnums[i]].common.members.indexOf(id) !== -1 &&
+                rooms.indexOf(data.objects[data.roomEnums[i]].common.name) === -1) {
                 if (!withParentInfo) {
                     rooms.push(data.objects[data.roomEnums[i]].common.name);
                 } else {
@@ -435,8 +435,8 @@
     function findRoomsForObjectAsIds(data, id, rooms) {
         rooms = rooms || [];
         for (var i = 0; i < data.roomEnums.length; i++) {
-            if (data.objects[data.roomEnums[i]].common.members.indexOf(id) != -1 &&
-                rooms.indexOf(data.roomEnums[i]) == -1) {
+            if (data.objects[data.roomEnums[i]].common.members.indexOf(id) !== -1 &&
+                rooms.indexOf(data.roomEnums[i]) === -1) {
                 rooms.push(data.roomEnums[i]);
             }
         }
@@ -446,8 +446,8 @@
     function findFunctionsForObject(data, id, withParentInfo, funcs) {
         funcs = funcs || [];
         for (var i = 0; i < data.funcEnums.length; i++) {
-            if (data.objects[data.funcEnums[i]].common.members.indexOf(id) != -1 &&
-                funcs.indexOf(data.objects[data.funcEnums[i]].common.name) == -1) {
+            if (data.objects[data.funcEnums[i]].common.members.indexOf(id) !== -1 &&
+                funcs.indexOf(data.objects[data.funcEnums[i]].common.name) === -1) {
                 if (!withParentInfo) {
                     funcs.push(data.objects[data.funcEnums[i]].common.name);
                 } else {
@@ -466,8 +466,8 @@
     function findFunctionsForObjectAsIds(data, id, funcs) {
         funcs = funcs || [];
         for (var i = 0; i < data.funcEnums.length; i++) {
-            if (data.objects[data.funcEnums[i]].common.members.indexOf(id) != -1 &&
-                funcs.indexOf(data.funcEnums[i]) == -1) {
+            if (data.objects[data.funcEnums[i]].common.members.indexOf(id) !== -1 &&
+                funcs.indexOf(data.funcEnums[i]) === -1) {
                 funcs.push(data.funcEnums[i]);
             }
         }
@@ -528,7 +528,7 @@
             states = data.objects[id].common.states;
         }
         if (states) {
-            if (typeof states == 'string' && states[0] == '{') {
+            if (typeof states === 'string' && states[0] === '{') {
                 try {
                     states = JSON.parse(states);
                 } catch (ex) {
@@ -537,7 +537,7 @@
                 }
             } else
             // if odl format val1:text1;val2:text2
-            if (typeof states == 'string') {
+            if (typeof states === 'string') {
                 var parts = states.split(';');
                 states = {};
                 for (var p = 0; p < parts.length; p++) {
@@ -572,7 +572,7 @@
         }
         var text;
 
-        if (attr == 'value') {
+        if (attr === 'value') {
             states = getStates(data, id);
             if (states) {
                 text = '<select style="width: calc(100% - 50px); z-index: 2">';
@@ -582,14 +582,14 @@
                 }
                 text += '</select>';
             }
-        } else if (attr == 'room') {
+        } else if (attr === 'room') {
             states = findRoomsForObjectAsIds(data, id) || [];
             text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
             for (var e = 0; e < data.roomEnums.length; e++) {
                 text += '<option value="' + data.roomEnums[e] + '" ' + (states.indexOf(data.roomEnums[e]) !== -1 ? 'selected' : '') + '>' + data.objects[data.roomEnums[e]].common.name + '</option>';
             }
             text += '</select>';
-        } else if (attr == 'function') {
+        } else if (attr === 'function') {
             states = findFunctionsForObjectAsIds(data, id) || [];
             text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
             for (var e = 0; e < data.funcEnums.length; e++) {
@@ -620,7 +620,7 @@
             '<div class="ui-icon ui-icon-check        select-id-quick-edit-ok"     style="' + css + ';right: 22px"></div>' +
             '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '" style="' + css + ';right: 2px"></div>');
 
-        var $input = (attr == 'function' || attr == 'room' || states) ? $this.find('select') : $this.find('input');
+        var $input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
 
         if (attr === 'room' || attr === 'function') {
             $input.multiselect({
@@ -629,7 +629,7 @@
                     $input.trigger('blur');
                 }
             });
-        } else if (attr == 'role')  {
+        } else if (attr === 'role')  {
             $input.autocomplete({
                 minLength: 0,
                 source: data.roles
@@ -650,10 +650,10 @@
         });
 
         $this.find('.select-id-quick-edit-ok').click(function ()  {
-            var _$input = (attr == 'function' || attr == 'room' || states) ? $this.find('select') : $this.find('input');
+            var _$input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
             _$input.trigger('blur');
         });
-        if (type == 'checkbox') {
+        if (type === 'checkbox') {
             $input.prop('checked', oldVal);
         } else {
             if (attr !== 'room' && attr !== 'function') $input.val(oldVal);
@@ -664,9 +664,9 @@
             timeout = setTimeout(function () {
                 var _oldText = $this.data('old-value');
                 var val = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();
-                if ((attr == 'room' || attr == 'function') && !val) val = [];
+                if ((attr === 'room' || attr === 'function') && !val) val = [];
 
-                if (attr === 'value' || JSON.stringify(val) != JSON.stringify(_oldText)) {
+                if (attr === 'value' || JSON.stringify(val) !== JSON.stringify(_oldText)) {
                     data.quickEditCallback(id, attr, val, _oldText);
 
                     _oldText = '<span style="color: pink">' + _oldText + '</span>';
@@ -769,7 +769,7 @@
         }
 
         var textRooms;
-        if (data.columns.indexOf('room') != -1) {
+        if (data.columns.indexOf('room') !== -1) {
             textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
             for (var i = 0; i < data.roomEnums.length; i++) {
                 textRooms += '<option value="' + data.objects[data.roomEnums[i]].common.name + '">' + data.objects[data.roomEnums[i]].common.name + '</option>';
@@ -781,7 +781,7 @@
         }
 
         var textFuncs;
-        if (data.columns.indexOf('function') != -1) {
+        if (data.columns.indexOf('function') !== -1) {
             textFuncs = '<select id="filter_function_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
             for (var i = 0; i < data.funcEnums.length; i++) {
                 textFuncs += '<option value="' + data.objects[data.funcEnums[i]].common.name + '">' + data.objects[data.funcEnums[i]].common.name + '</option>';
@@ -793,7 +793,7 @@
         }
 
         var textRoles;
-        if (data.columns.indexOf('role') != -1) {
+        if (data.columns.indexOf('role') !== -1) {
             textRoles = '<select id="filter_role_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
             for (var j = 0; j < data.roles.length; j++) {
                 textRoles += '<option value="' + data.roles[j] + '">' + data.roles[j] + '</option>';
@@ -802,7 +802,7 @@
         }
 
         var textTypes;
-        if (data.columns.indexOf('type') != -1) {
+        if (data.columns.indexOf('type') !== -1) {
             textTypes = '<select id="filter_type_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
             for (var k = 0; k < data.types.length; k++) {
                 textTypes += '<option value="' + data.types[k] + '">' + data.types[k] + '</option>';
@@ -818,23 +818,23 @@
         for (c = 0; c < data.columns.length; c++) {
             var name = data.columns[c];
             if (typeof name === 'object') name = name.name;
-            if (name == 'image') {
+            if (name === 'image') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '20px') + '"/>';
-            } else if (name == 'name') {
+            } else if (name === 'name') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
-            } else if (name == 'type') {
+            } else if (name === 'type') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name == 'role') {
+            } else if (name === 'role') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name == 'room') {
+            } else if (name === 'room') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name == 'function') {
+            } else if (name === 'function') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name == 'value') {
+            } else if (name === 'value') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name == 'button') {
+            } else if (name === 'button') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '100px') + '"/>';
-            } else if (name == 'enum') {
+            } else if (name === 'enum') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
             } else {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
@@ -849,7 +849,7 @@
         text += '<td><button id="btn_list_'     + data.instance + '"></button></td>';
         text += '<td><button id="btn_collapse_' + data.instance + '"></button></td>';
         text += '<td><button id="btn_expand_'   + data.instance + '"></button></td><td class="select-id-custom-buttons"></td>';
-        if (data.filter && data.filter.type == 'state' && multiselect) {
+        if (data.filter && data.filter.type === 'state' && multiselect) {
             text += '<td style="padding-left: 10px"><button id="btn_select_all_' + data.instance + '"></button></td>';
             text += '<td><button id="btn_unselect_all_' + data.instance + '"></button></td>';
             text += '<td><button id="btn_invert_selection_' + data.instance + '"></button></td>';
@@ -882,19 +882,19 @@
         for (c = 0; c < data.columns.length; c++) {
             var name = data.columns[c];
             if (typeof name === 'object') name = name.name;
-            if (name == 'image') {
+            if (name === 'image') {
                 text += '<td></td>';
-            } else if (name == 'name' || name == 'value' || name == 'enum') {
+            } else if (name === 'name' || name === 'value' || name === 'enum') {
                 text += '<td><table style="width: 100%"><tr><td style="width: 100%"><input style="width: 100%; padding: 0" type="text" id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
-            } else if (name == 'type') {
+            } else if (name === 'type') {
                 text += '<td>' + textTypes + '</td>';
             } else if (name== 'role') {
                 text += '<td>' + textRoles + '</td>';
-            } else if (name == 'room') {
+            } else if (name === 'room') {
                 text += '<td>' + textRooms + '</td>';
-            } else if (name == 'function') {
+            } else if (name === 'function') {
                 text += '<td>' + textFuncs + '</td>';
-            } else if (name == 'button') {
+            } else if (name === 'button') {
                 text += '<td style="text-align: center">';
                 if (data.customButtonFilter) {
                     var t = '<select id="filter_' + name + '_'  + data.instance + '" class="filter_' + data.instance + '">';
@@ -929,23 +929,23 @@
         for (c = 0; c < data.columns.length; c++) {
             var name = data.columns[c];
             if (typeof name === 'object') name = name.name;
-            if (name == 'image') {
+            if (name === 'image') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '20px') + '"/>';
-            } else if (name == 'name') {
+            } else if (name === 'name') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
-            } else if (name == 'type') {
+            } else if (name === 'type') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name == 'role') {
+            } else if (name === 'role') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name == 'room') {
+            } else if (name === 'room') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name == 'function') {
+            } else if (name === 'function') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name == 'value') {
+            } else if (name === 'value') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name == 'button') {
+            } else if (name === 'button') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '100px') + '"/>';
-            } else if (name == 'enum') {
+            } else if (name === 'enum') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
             } else {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
@@ -1006,7 +1006,7 @@
                             $dlg.dialog('option', 'title', _data.texts.selectid + ' - ' + (newId || ' '));
                         }
                         // Enable/ disable "Select" button
-                        if (_data.objects[newId]) { // && _data.objects[newId].type == 'state') {
+                        if (_data.objects[newId]) { // && _data.objects[newId].type === 'state') {
                             $('#' + _data.instance + '-button-ok').removeClass('ui-state-disabled');
                         } else {
                             $('#' + _data.instance + '-button-ok').addClass('ui-state-disabled');
@@ -1043,7 +1043,7 @@
                 var base = 2;
 
                 // hide checkbox if only states should be selected
-                if (data.filter && data.filter.type == 'state' && (!data.objects[node.key] || data.objects[node.key].type != 'state')) {
+                if (data.filter && data.filter.type === 'state' && (!data.objects[node.key] || data.objects[node.key].type !== 'state')) {
                     $tdList.eq(1).find('.fancytree-checkbox').hide();
                 }
 
@@ -1075,11 +1075,11 @@
                         if (isCommon) {
                             if (data.objects[node.key].common.icon) {
                                 var instance;
-                                if (data.objects[node.key].type == 'instance') {
+                                if (data.objects[node.key].type === 'instance') {
                                     icon = '/adapter/' + data.objects[node.key].common.name + '/' + data.objects[node.key].common.icon;
                                 } else if (node.key.match(/^system\.adapter\./)) {
                                     instance = node.key.split('.', 3);
-                                    if (data.objects[node.key].common.icon[0] == '/') {
+                                    if (data.objects[node.key].common.icon[0] === '/') {
                                         instance[2] += data.objects[node.key].common.icon;
                                     } else {
                                         instance[2] += '/' + data.objects[node.key].common.icon;
@@ -1087,20 +1087,20 @@
                                     icon = '/adapter/' + instance[2];
                                 } else {
                                     instance = node.key.split('.', 2);
-                                    if (data.objects[node.key].common.icon[0] == '/') {
+                                    if (data.objects[node.key].common.icon[0] === '/') {
                                         instance[0] += data.objects[node.key].common.icon;
                                     } else {
                                         instance[0] += '/' + data.objects[node.key].common.icon;
                                     }
                                     icon = '/adapter/' + instance[0];
                                 }
-                            } else if (data.objects[node.key].type == 'device') {
+                            } else if (data.objects[node.key].type === 'device') {
                                 icon = data.imgPath + 'device.png';
                                 alt  = 'device';
-                            } else if (data.objects[node.key].type == 'channel') {
+                            } else if (data.objects[node.key].type === 'channel') {
                                 icon = data.imgPath + 'channel.png';
                                 alt  = 'channel';
-                            } else if (data.objects[node.key].type == 'state') {
+                            } else if (data.objects[node.key].type === 'state') {
                                 icon = data.imgPath + 'state.png';
                                 alt  = 'state';
                             }
@@ -1141,7 +1141,7 @@
                         if (data.roomsColored) {
                             if (!data.roomsColored[node.key]) data.roomsColored[node.key] = findRoomsForObject(data, node.key, true);
                             val = data.roomsColored[node.key].map(function (e) {return e.name;}).join(', ');
-                            if (data.roomsColored[node.key].length && data.roomsColored[node.key][0].origin != node.key) {
+                            if (data.roomsColored[node.key].length && data.roomsColored[node.key][0].origin !== node.key) {
                                 $elem.css({color: 'gray'}).attr('title', data.roomsColored[node.key][0].origin);
                             } else {
                                 $elem.css({color: 'inherit'}).attr('title', null);
@@ -1167,7 +1167,7 @@
                         if (data.funcsColored) {
                             if (!data.funcsColored[node.key]) data.funcsColored[node.key] = findFunctionsForObject(data, node.key, true);
                             val = data.funcsColored[node.key].map(function (e) {return e.name;}).join(', ');
-                            if (data.funcsColored[node.key].length && data.funcsColored[node.key][0].origin != node.key) {
+                            if (data.funcsColored[node.key].length && data.funcsColored[node.key][0].origin !== node.key) {
                                 $elem.css({color: 'gray'}).attr('title', data.funcsColored[node.key][0].origin);
                             } else {
                                 $elem.css({color: 'inherit'}).attr('title', null);
@@ -1421,7 +1421,7 @@
                     $('.select-button-custom[data-id="' + _data.node.key + '"]').hide();
 
                     var node = _data.node;
-                    var $tdList = $(node.tr).find(">td");
+                    var $tdList = $(node.tr).find('>td');
                     // Editor was opened (available as data.input)
                     var inputs = {id: _data.input};
 
@@ -1429,7 +1429,7 @@
                         var name = data.columns[c];
                         if (typeof name === 'object') name = name.name;
 
-                        if (name == 'name') {
+                        if (name === 'name') {
                             $tdList.eq(2 + c).html('<input type="text" id="select_edit_' + name + '" value="' + data.objects[_data.node.key].common[name] + '" style="width: 100%"/>');
                             inputs[name] = $('#select_edit_' + name);
                         }
@@ -1464,7 +1464,7 @@
                     for (var c = 0; c < data.columns.length; c++) {
                         var name = data.columns[c];
                         if (typeof name === 'object') name = name.name;
-                        if (name == 'name') {
+                        if (name === 'name') {
                             editValues[name] = $('#select_edit_' + name).val();
                         }
                     }
@@ -1570,9 +1570,9 @@
                 for (var c = 0; c < data.columns.length; c++) {
                     var name = data.columns[c];
                     if (typeof name === 'object') name = name.name;
-                    if (name == 'image') {
+                    if (name === 'image') {
                         continue;
-                    } else if (name == 'role' || name == 'type' || name == 'room' || name == 'function') {
+                    } else if (name === 'role' || name === 'type' || name === 'room' || name === 'function') {
                         value = $('#filter_' + name + '_' + data.instance).val();
                         if (value) {
                             data.filterVals[name] = value;
@@ -1594,7 +1594,7 @@
             var isCommon = null;
 
             for (var f in data.filterVals) {
-                if (f == 'length') continue;
+                if (f === 'length') continue;
 
                 if (isCommon === null) isCommon = data.objects[node.key] && data.objects[node.key].common;
 
@@ -1602,22 +1602,22 @@
                     if (node.key.toLowerCase().indexOf(data.filterVals[f]) === -1) return false;
                 } else
                 if (f === 'name' || f === 'enum') {
-                    if (!isCommon || data.objects[node.key].common[f] === undefined || data.objects[node.key].common[f].toLowerCase().indexOf(data.filterVals[f]) == -1) return false;
+                    if (!isCommon || data.objects[node.key].common[f] === undefined || data.objects[node.key].common[f].toLowerCase().indexOf(data.filterVals[f]) === -1) return false;
                 } else
                 if (f === 'role') {
-                    if (!isCommon || data.objects[node.key].common[f] === undefined || data.objects[node.key].common[f].indexOf(data.filterVals[f]) == -1) return false;
+                    if (!isCommon || data.objects[node.key].common[f] === undefined || data.objects[node.key].common[f].indexOf(data.filterVals[f]) === -1) return false;
                 } else
                 if (f === 'type') {
-                    if (!data.objects[node.key] || data.objects[node.key][f] === undefined || data.objects[node.key][f] != data.filterVals[f]) return false;
+                    if (!data.objects[node.key] || data.objects[node.key][f] === undefined || data.objects[node.key][f] !== data.filterVals[f]) return false;
                 } else
                 if (f === 'value') {
-                    if (!data.states[node.key] || data.states[node.key].val === undefined || data.states[node.key].val === null || data.states[node.key].val.toString().toLowerCase().indexOf(data.filterVals[f]) == -1) return false;
+                    if (!data.states[node.key] || data.states[node.key].val === undefined || data.states[node.key].val === null || data.states[node.key].val.toString().toLowerCase().indexOf(data.filterVals[f]) === -1) return false;
                 } else
                 if (f === 'button') {
                     if (data.filterVals[f] === 'true') {
                         if (!isCommon || !data.objects[node.key].common.custom || data.objects[node.key].common.custom.enabled === false) return false;
                     } else if (data.filterVals[f] === 'false') {
-                        if (!isCommon || data.objects[node.key].type != 'state' || data.objects[node.key].common.custom) return false;
+                        if (!isCommon || data.objects[node.key].type !== 'state' || data.objects[node.key].common.custom) return false;
                     } else if (data.filterVals[f]) {
                         if (!isCommon || !data.objects[node.key].common.custom || !data.objects[node.key].common.custom[data.filterVals[f]]) return false;
                     }
@@ -1725,7 +1725,7 @@
                 data.$tree.fancytree('getRootNode').visit(function (node) {
                     if (!data.filterVals.length || node.match || node.subMatch) {
                         // hide checkbox if only states should be selected
-                        if (data.objects[node.key] && data.objects[node.key].type == 'state') {
+                        if (data.objects[node.key] && data.objects[node.key].type === 'state') {
                             node.setSelected(true);
                         }
                     }
@@ -1771,7 +1771,7 @@
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
                     if (!data.filterVals.length || node.match || node.subMatch){
-                        if (data.objects[node.key] && data.objects[node.key].type == 'state') {
+                        if (data.objects[node.key] && data.objects[node.key].type === 'state') {
                             node.toggleSelected();
                         }
                     }
@@ -1806,7 +1806,7 @@
         // set preset filters
         for (var field in data.filterPresets) {
             if (!data.filterPresets[field]) continue;
-            if (typeof data.filterPresets[field] == 'object') {
+            if (typeof data.filterPresets[field] === 'object') {
                 $('#filter_' + field + '_' + data.instance).val(data.filterPresets[field][0]).trigger('change');
             } else {
                 $('#filter_' + field + '_' + data.instance).val(data.filterPresets[field]).trigger('change');
@@ -1838,7 +1838,7 @@
                 try{
                     f = JSON.parse(f);
                     for (var field in f) {
-                        if (field == 'length') continue;
+                        if (field === 'length') continue;
                         if (data.filterPresets[field]) continue;
                         $('#filter_' + field + '_' + data.instance).val(f[field]).trigger('change');
                     }
@@ -1935,14 +1935,14 @@
                     // Re-init tree if filter or selectedID changed
                     if ((data.filter && !settings.filter && settings.filter !== undefined) ||
                         (!data.filter && settings.filter) ||
-                        (data.filter && settings.filter && JSON.stringify(data.filter) != JSON.stringify(settings.filter))) {
+                        (data.filter && settings.filter && JSON.stringify(data.filter) !== JSON.stringify(settings.filter))) {
                         data.inited = false;
                     }
-                    if (data.inited && settings.currentId !== undefined && (data.currentId != settings.currentId)) {
+                    if (data.inited && settings.currentId !== undefined && (data.currentId !== settings.currentId)) {
                         // Deactivate current line
                         var tree = data.$tree.fancytree('getTree');
                         tree.visit(function (node) {
-                            if (node.key == data.currentId) {
+                            if (node.key === data.currentId) {
                                 node.setActive(false);
                                 return false;
                             }
@@ -1963,16 +1963,19 @@
                     // Read objects and states
                     data.socketURL = '';
                     data.socketSESSION = '';
-                    if (typeof data.connCfg.socketUrl != 'undefined') {
+                    if (typeof data.connCfg.socketUrl !== 'undefined') {
                         data.socketURL = data.connCfg.socketUrl;
-                        if (data.socketURL && data.socketURL[0] == ':') {
+                        if (data.socketURL && data.socketURL[0] === ':') {
                             data.socketURL = location.protocol + '//' + location.hostname + data.socketURL;
                         }
-                        data.socketSESSION = data.connCfg.socketSession;
+                        data.socketSESSION          = data.connCfg.socketSession;
+                        data.socketUPGRADE          = data.connCfg.upgrade;
+                        data.socketRememberUpgrade  = data.connCfg.rememberUpgrade;
+                        data.socketTransports       = data.connCfg.transports;
                     }
 
                     var connectTimeout = setTimeout(function () {
-                        if ($('#select-id-dialog').length == 0) {
+                        if (!$('#select-id-dialog').length) {
                             $('body').append('<div id="select-id-dialog"><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span><span>' + (data.texts.noconnection || 'No connection to server') + '</span></div>');
                         }
                         $('#select-id-dialog').dialog({
@@ -1981,9 +1984,12 @@
                     }, 5000);
 
                    data.socket = io.connect(data.socketURL, {
-                        'query': 'key=' + data.socketSESSION,
-                        'reconnection limit': 10000,
-                        'max reconnection attempts': Infinity
+                        query:                          'key=' + data.socketSESSION,
+                        'reconnection limit':           10000,
+                        'max reconnection attempts':    Infinity,
+                        upgrade:                        data.socketUPGRADE,
+                        rememberUpgrade:                data.socketRememberUpgrade,
+                        transports:                     data.socketTransports
                     });
 
                     data.socket.on('connect', function () {
@@ -2010,11 +2016,11 @@
             return this;
         },
         show: function (currentId, filter, onSuccess) {
-            if (typeof filter == 'function') {
+            if (typeof filter === 'function') {
                 onSuccess = filter;
                 filter = undefined;
             }
-            if (typeof currentId == 'function') {
+            if (typeof currentId === 'function') {
                 onSuccess = currentId;
                 currentId = undefined;
             }
@@ -2028,15 +2034,15 @@
                     // Re-init tree if filter or selectedID changed
                     if ((data.filter && !filter && filter !== undefined) ||
                         (!data.filter && filter) ||
-                        (data.filter &&  filter && JSON.stringify(data.filter) != JSON.stringify(filter))) {
+                        (data.filter &&  filter && JSON.stringify(data.filter) !== JSON.stringify(filter))) {
                         data.inited = false;
                     }
 
-                    if (data.inited && currentId !== undefined && (data.currentId != currentId)) {
+                    if (data.inited && currentId !== undefined && (data.currentId !== currentId)) {
                         // Deactivate current line
                         var tree = data.$tree.fancytree('getTree');
                         tree.visit(function (node) {
-                            if (node.key == data.currentId) {
+                            if (node.key === data.currentId) {
                                 node.setActive(false);
                                 return false;
                             }
@@ -2059,7 +2065,7 @@
                     if (data.selectedID) {
                         var tree = data.$tree.fancytree('getTree');
                         tree.visit(function (node) {
-                            if (node.key == data.selectedID) {
+                            if (node.key === data.selectedID) {
                                 node.setActive();
                                 node.makeVisible({scrollIntoView: false});
                                 return false;
@@ -2142,7 +2148,7 @@
                 var tree = data.$tree.fancytree('getTree');
                 var node = null;
                 tree.visit(function (n) {
-                    if (n.key == id) {
+                    if (n.key === id) {
                         node = n;
                         return false;
                     }
@@ -2206,7 +2212,7 @@
                 var tree = data.$tree.fancytree('getTree');
                 var node = null;
                 tree.visit(function (n) {
-                    if (n.key == id) {
+                    if (n.key === id) {
                         node = n;
                         return false;
                     }
@@ -2235,7 +2241,7 @@
                 var tree = data.$tree.fancytree('getTree');
                 var node = null;
                 tree.visit(function (n) {
-                    if (n.key == id) {
+                    if (n.key === id) {
                         node = n;
                         return false;
                     }
@@ -2255,7 +2261,7 @@
                     for (var i = 0; i < addedNodes.length; i++) {
                         if (!addedNodes[i].parent.root) {
                             tree.visit(function (n) {
-                                if (n.key == addedNodes[i].parent.key) {
+                                if (n.key === addedNodes[i].parent.key) {
                                     node = n;
                                     return false;
                                 }
@@ -2278,7 +2284,7 @@
                                 if (node.children[c].key > addedNodes[i].key) break;
                             }
                             // if some found greater than new one
-                            if (c != node.children.length) {
+                            if (c !== node.children.length) {
                                 node.addChildren(addedNodes[i], node.children[c]);
                                 node.children[c].match = true;
                                 node.render(true);
@@ -2296,13 +2302,13 @@
                     deleteTree(data, id);
                     if (node) {
                         if (node.children && node.children.length) {
-                            if (node.children.length == 1) {
+                            if (node.children.length === 1) {
                                 node.folder = false;
                                 node.expanded = false;
                             }
                             node.render(true);
                         } else {
-                            if (node.parent && node.parent.children.length == 1) {
+                            if (node.parent && node.parent.children.length === 1) {
                                 node.parent.folder = false;
                                 node.parent.expanded = false;
                                 node.parent.render(true);
