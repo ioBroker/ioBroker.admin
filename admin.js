@@ -9,7 +9,7 @@ var fs =       require('fs');
 var Stream =   require('stream');
 var utils =    require(__dirname + '/lib/utils'); // Get common adapter utils
 var tools =    require(utils.controllerDir + '/lib/tools.js');
-var LE =       require(__dirname + '/lib/letsencrypt.js');
+var LE =       require(utils.controllerDir + '/lib/letsencrypt.js');
 
 var session;
 var cookieParser;

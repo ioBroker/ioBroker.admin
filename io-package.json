@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.5.3",
+        "version": "1.6.0",
         "news": {
+            "1.6.0": {
+                "en": "new Lets Encrypt concept",
+                "de": "Neues Konzept für Lets Encrypt",
+                "ru": "Новый концепт для Lets Encrypt"
+            },
             "1.5.3": {
                 "en": "Debug outputs for letsencrypt",
                 "de": "Debug-Ausgaben für letsencrypt",
@@ -23,31 +28,6 @@
                 "en": "add support of Lets Encrypt",
                 "de": "add support of Lets Encrypt",
                 "ru": "add support of Lets Encrypt"
-            },
-            "1.4.1": {
-                "en": "support of multiple WEB instances\nfix weekdays for cron",
-                "de": "support of multiple WEB instances\nfix weekdays for cron",
-                "ru": "support of multiple WEB instances\nfix weekdays for cron"
-            },
-            "1.4.0": {
-                "en": "implement settings for autorestart\ndo not allow edit group instances for javascript",
-                "de": "implement settings for autorestart\ndo not allow edit group instances for javascript",
-                "ru": "implement settings for autorestart\ndo not allow edit group instances for javascript"
-            },
-            "1.3.0": {
-                "en": "fix error with early logout\nupdate passport.socketio",
-                "de": "fix error with early logout\nupdate passport.socketio",
-                "ru": "fix error with early logout\nupdate passport.socketio"
-            },
-            "1.2.7": {
-                "en": "support of chained certificates as drag&drop",
-                "de": "support of chained certificates as drag&drop",
-                "ru": "support of chained certificates as drag&drop"
-            },
-            "1.2.6": {
-                "en": "support of chained certificates",
-                "de": "support of chained certificates",
-                "ru": "support of chained certificates"
             }
         },
         "desc": {
@@ -68,7 +48,7 @@
             "bluefox <bluefox@ccu.io>",
             "hobbyquaker <hq@ccu.io>"
         ],
-        "dependencies":             [{"js-controller": ">=0.10.1"}],
+        "dependencies":             [{"js-controller": ">=0.12.0"}],
         "type":                     "common adapters",
         "license":                  "MIT",
         "logTransporter":           true,
