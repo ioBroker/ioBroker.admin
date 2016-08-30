@@ -451,7 +451,7 @@ function Objects(main) {
                     {
                         text: false,
                         icons: {
-                            primary:'ui-icon-gear'
+                            primary: 'ui-icon-pencil'
                         },
                         click: function (id) {
                             that.edit(id);
@@ -481,7 +481,7 @@ function Objects(main) {
                     {
                         text: false,
                         icons: {
-                            primary:'ui-icon-clock'
+                            primary: 'ui-icon-gear'
                         },
                         click: function (id) {
                             that.openCustomsDlg(id);
@@ -496,7 +496,7 @@ function Objects(main) {
                                 if (main.objects[id] && main.objects[id].common && main.objects[id].common.custom) {
                                     var custom = main.objects[id].common.custom;
                                     // convert old structure
-                                    // TODO: remove sometime (08.2016)
+                                    // TODO: remove some day (08.2016)
                                     if (custom.enabled !== undefined) {
                                         custom = main.objects[id].common.custom = custom.enabled ? {'history.0': custom} : {};
                                     }
@@ -629,7 +629,7 @@ function Objects(main) {
 
             if (this.customEnabled) {
                 settings.customButtonFilter = {
-                    icons:    {primary: 'ui-icon-clock'},
+                    icons:    {primary: 'ui-icon-gear'},
                     text:     false,
                     callback: function () {
                         var _ids = that.$grid.selectId('getFilteredIds');
@@ -963,7 +963,7 @@ function Objects(main) {
             for (var id = 0; id < ids.length; id++) {
                 var custom = main.objects[ids[id]].common.custom;
                 // convert old structure
-                // TODO: remove sometime (08.2016)
+                // TODO: remove some day (08.2016)
                 if (custom && custom.enabled !== undefined) {
                     custom = main.objects[ids[id]].common.custom = custom.enabled ? {'history.0': custom} : {};
                 }
@@ -1213,7 +1213,7 @@ function Objects(main) {
                 callback(null, _data);
             },
             error: function(jqXHR) {
-                // todo: remove it sometime (2016.08)
+                // todo: TODO: remove some day (08.2016)
                 $.ajax({
                     headers: {
                         Accept: 'text/html'
@@ -1271,7 +1271,7 @@ function Objects(main) {
                 var custom = this.main.objects[ids[i]].common.custom;
                 if (custom) {
                     // convert old structure
-                    // TODO: remove somewhen (08.2016)
+                    // TODO: TODO: remove some day (08.2016)
                     if (custom.enabled !== undefined) {
                         custom = this.main.objects[ids[i]].common.custom = custom.enabled ? {'history.0': custom} : {};
                     }
