@@ -191,8 +191,33 @@
         <div id="grid-enums"><span class="translate">Loading...</span></div>
     </div>
     <div id="tab-hosts"     class="admin-tab" style="display:none" data-name="Hosts">
-        <table id="grid-hosts"></table>
-        <div id="pager-hosts"></div>
+        <table style="width: 100%; height: 30px">
+            <tr>
+                <td><button id="btn-hosts-reload"></button></td>
+                <td style="padding-left: 100px"><label class="translate" style="display: inline-block" for="hosts-filter">Filter:</label></td>
+                <td><input style="display: inline-block; width: 100px; margin-right: 3px" id="hosts-filter"></td>
+                <td><button style="display: inline-block" id="hosts-filter-clear"></button></td>
+                <td style="width: 100%"></td>
+            </tr>
+        </table>
+
+        <table class="hosts-table" style="width: 100%;">
+            <thead id="grid-hosts-head">
+                <tr>
+                    <th class="translate ui-widget-header" style="width: 40px"></th>
+                    <th class="translate ui-widget-header">name</th>
+                    <th class="translate ui-widget-header">type</th>
+                    <th class="translate ui-widget-header">title</th>
+                    <th class="translate ui-widget-header">platform</th>
+                    <th class="translate ui-widget-header">os</th>
+                    <th class="translate ui-widget-header">available</th>
+                    <th class="translate ui-widget-header">installed</th>
+                </tr>
+            </thead>
+            <tbody id="grid-hosts">
+            </tbody>
+        </table>
+        <!--div id="pager-hosts"></div -->
     </div>
     <div id="tab-log"       class="admin-tab" style="display:none" data-name="Log">
         <div id="grid-log" class="ui-jqgrid" style="display: block;">

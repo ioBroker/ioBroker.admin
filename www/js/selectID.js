@@ -112,7 +112,7 @@
  +  reinit() - draw tree anew
  */
 (function ($) {
-    "use strict";
+    'use strict';
 
     if ($.fn.selectId) return;
 

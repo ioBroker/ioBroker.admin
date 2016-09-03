@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.6.0",
+        "version": "1.6.1",
         "news": {
+            "1.6.1": {
+                "en": "change hosts tab",
+                "de": "Ändere Hosts-Tab",
+                "ru": "Страница Хосты изменена"
+            },
             "1.6.0": {
                 "en": "new Lets Encrypt concept",
                 "de": "Neues Konzept für Lets Encrypt",

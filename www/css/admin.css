@@ -361,23 +361,26 @@ table#events {
 }
 
 /* -------------------------- LEDS ------------------------------------ */
-.instance-odd {
+.instance-odd, .hosts-odd {
     background-color: #c1c1c1;
     height: 2em;
 }
-.instance-even {
+.instance-even, .hosts-even {
     background-color: #e9e9e9;
     height: 2em;
 }
-.instance-table {
+.instance-table, .hosts-table {
     table-layout: fixed;
     border: 1px solid #c8c8c8;
     border-collapse: collapse;
     border-spacing: 0;
     margin: 0;
 }
-.instance-table tr, .instance-table td{
+.instance-table tr, .instance-table td, .hosts-table tr, .hosts-table td{
     border: 1px solid #c8c8c8;
+}
+.hosts-table td{
+    padding-left: 5px;
 }
 .instance-state-hover {
     border: 1px solid #66b6d6;
