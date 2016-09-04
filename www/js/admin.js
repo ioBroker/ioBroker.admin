@@ -938,6 +938,7 @@ $(document).ready(function () {
         } else {
             tabs.states.stateChange(id, state);
             tabs.objects.stateChange(id, state);
+            tabs.hosts.stateChange(id, state);
 
             if (main.selectId) main.selectId.selectId('state', id, state);
         }

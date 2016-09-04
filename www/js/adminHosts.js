@@ -288,9 +288,9 @@ function Hosts(main) {
         if (id.match(/^system\.host\..+\.alive$/)) {
             id = id.substring(0, id.length - 6);
             if (state && state.val) {
-                $('.hosts-led[data-host-id="' + id + '"]').removeClass('led-red').addClass('red-green');
+                $('.hosts-led[data-host-id="' + id + '"]').removeClass('led-red').addClass('led-green');
             } else {
-                $('.hosts-led[data-host-id="' + id + '"]').removeClass('led-green').addClass('red-red');
+                $('.hosts-led[data-host-id="' + id + '"]').removeClass('led-green').addClass('led-red');
                 $('.host-update-submit[data-host-id="' + id + '"]').hide();
                 $('.host-restart-submit[data-host-id="' + id + '"]').hide();
             }
