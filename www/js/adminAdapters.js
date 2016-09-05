@@ -57,7 +57,7 @@ function Adapters(main) {
 
                     // Calculate total count of adapter and count of installed adapter
                     for (var c = 0; c < that.tree.length; c++) {
-                        if (that.tree[c].key == node.key) {
+                        if (that.tree[c].key === node.key) {
                             $tdList.eq(1).html(that.tree[c].desc).css({'overflow': 'hidden', "white-space": "nowrap", position: 'relative'});
                             var installed = 0;
                             for (var k = 0; k < that.tree[c].children.length; k++) {
@@ -317,10 +317,10 @@ function Adapters(main) {
         if (that.currentFilter) {
              if (!that.data[node.key]) return false;
 
-             if ((that.data[node.key].name && that.data[node.key].name.toLowerCase().indexOf(that.currentFilter) != -1) ||
-                 (that.data[node.key].title && that.data[node.key].title.toLowerCase().indexOf(that.currentFilter) != -1) ||
-                 (that.data[node.key].keywords && that.data[node.key].keywords.toLowerCase().indexOf(that.currentFilter) != -1) ||
-                 (that.data[node.key].desc && that.data[node.key].desc.toLowerCase().indexOf(that.currentFilter) != -1)){
+             if ((that.data[node.key].name     && that.data[node.key].name.toLowerCase().indexOf(that.currentFilter)     !== -1) ||
+                 (that.data[node.key].title    && that.data[node.key].title.toLowerCase().indexOf(that.currentFilter)    !== -1) ||
+                 (that.data[node.key].keywords && that.data[node.key].keywords.toLowerCase().indexOf(that.currentFilter) !== -1) ||
+                 (that.data[node.key].desc     && that.data[node.key].desc.toLowerCase().indexOf(that.currentFilter)     !== -1)){
                 return true;
              } else {
                  return false;
@@ -331,17 +331,21 @@ function Adapters(main) {
     }
 
     this.getAdaptersInfo = function (host, update, updateRepo, callback) {
-        if (!host) {
-            return;
-        }
+        if (!host) return;
+
         if (!callback) throw 'Callback cannot be null or undefined';
         if (update) {
-            // Do not update too offten
+            // Do not update too often
             if (!this.curRepoLastUpdate || ((new Date()).getTime() - this.curRepoLastUpdate > 1000)) {
                 this.curRepository = null;
                 this.curInstalled  = null;
             }
+        } else if (this.curRunning) {
+            this.curRunning.push(callback);
+            return;
         }
+        this.curRunning = [callback];
+
         if (!this.curRepository) {
             this.main.socket.emit('sendToHost', host, 'getRepository', {repo: this.main.systemConfig.common.activeRepo, update: updateRepo}, function (_repository) {
                 if (_repository === 'permissionError') {
@@ -353,7 +357,10 @@ function Adapters(main) {
                 if (that.curRepository && that.curInstalled) {
                     that.curRepoLastUpdate = (new Date()).getTime();
                     setTimeout(function () {
-                        callback(that.curRepository, that.curInstalled);
+                        for (var c = 0; c < that.curRunning.length; c++) {
+                            that.curRunning[c](that.curRepository, that.curInstalled);
+                        }
+                        that.curRunning = null;
                     }, 0);
                 }
             });
@@ -369,7 +376,10 @@ function Adapters(main) {
                 if (that.curRepository && that.curInstalled) {
                     that.curRepoLastUpdate = (new Date()).getTime();
                     setTimeout(function () {
-                        callback(that.curRepository, that.curInstalled);
+                        for (var c = 0; c < that.curRunning.length; c++) {
+                            that.curRunning[c](that.curRepository, that.curInstalled);
+                        }
+                        that.curRunning = null;
                     }, 0);
                 }
             });
@@ -461,8 +471,9 @@ function Adapters(main) {
 
                 if (installedList) {
                     for (adapter in installedList) {
+                        if (!installedList.hasOwnProperty(adapter)) continue;
                         obj = installedList[adapter];
-                        if (!obj || obj.controller || adapter == 'hosts') continue;
+                        if (!obj || obj.controller || adapter === 'hosts') continue;
                         listInstalled.push(adapter);
                     }
                     listInstalled.sort();
@@ -471,6 +482,7 @@ function Adapters(main) {
                 that.urls = {};
                 // List of adapters for repository
                 for (adapter in repository) {
+                    if (!repository.hasOwnProperty(adapter)) continue;
                     that.urls[adapter] = repository[adapter].meta;
                     obj = repository[adapter];
                     if (!obj || obj.controller) continue;
@@ -494,7 +506,7 @@ function Adapters(main) {
                         if (!that.urls[adapter]) delete that.urls[adapter];
                     }
 
-                    if (!obj || obj.controller || adapter == 'hosts') continue;
+                    if (!obj || obj.controller || adapter === 'hosts') continue;
                     var installed = '';
                     var icon = obj.icon;
                     version = '';
@@ -520,7 +532,7 @@ function Adapters(main) {
 
                         // Show information about installed and enabled instances
                         for (var z = 0; z < that.main.instances.length; z++) {
-                            if (main.objects[that.main.instances[z]].common.name == adapter) {
+                            if (main.objects[that.main.instances[z]].common.name === adapter) {
                                 _instances++;
                                 if (main.objects[that.main.instances[z]].common.enabled) _enabled++;
                             }
@@ -587,7 +599,7 @@ function Adapters(main) {
                     if (!that.isList) {
                         var igroup = -1;
                         for (var j = 0; j < that.tree.length; j++) {
-                            if (that.tree[j].key == that.data[adapter].group) {
+                            if (that.tree[j].key === that.data[adapter].group) {
                                 igroup = j;
                                 break;
                             }
@@ -671,7 +683,7 @@ function Adapters(main) {
                         if (!that.isList) {
                             var igroup = -1;
                             for (var j = 0; j < that.tree.length; j++){
-                                if (that.tree[j].key == that.data[adapter].group) {
+                                if (that.tree[j].key === that.data[adapter].group) {
                                     igroup = j;
                                     break;
                                 }
@@ -754,7 +766,7 @@ function Adapters(main) {
         // Workaround
         // https://github.com/ioBroker/ioBroker.vis/blob/master/LICENSE =>
         // https://raw.githubusercontent.com/ioBroker/ioBroker.vis/master/LICENSE
-        if (that.data[adapter].licenseUrl.indexOf('github.com') != -1) {
+        if (that.data[adapter].licenseUrl.indexOf('github.com') !== -1) {
             that.data[adapter].licenseUrl = that.data[adapter].licenseUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
         }
 
@@ -859,7 +871,7 @@ function Adapters(main) {
             text:  false
         }).css({width: 22, height: 18}).unbind('click').on('click', function () {
             var aName = $(this).attr('data-adapter-name');
-            if (aName == 'admin') that.main.waitForRestart = true;
+            if (aName === 'admin') that.main.waitForRestart = true;
 
             that.main.cmdExec(null, 'upgrade ' + aName, function (exitCode) {
                 if (!exitCode) that.init(true);
@@ -879,7 +891,7 @@ function Adapters(main) {
                 }
             }
 
-            if (typeof this.$grid != 'undefined' && this.$grid[0]._isInited) {
+            if (typeof this.$grid !== 'undefined' && this.$grid[0]._isInited) {
                 this.init(true);
             }
         }
