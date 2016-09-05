@@ -380,6 +380,7 @@ function System(main) {
         event.preventDefault();
         var file = event.dataTransfer ? event.dataTransfer.files[0] : event.target.files[0];
 
+        var $dz = $('#drop-zone');
         if (file.size > 10000) {
             $('#drop-text').html(_('File is too big!'));
             $dz.addClass('dropZone-error').animate({opacity: 0}, 1000, function () {
@@ -389,7 +390,7 @@ function System(main) {
             });
             return false;
         }
-        var $dz = $('#drop-zone').show();
+        $dz.show();
         var reader = new FileReader();
         reader.onload = function (evt) {
             var text;
@@ -494,7 +495,7 @@ function System(main) {
             };
             $dz.click(function () {
                 $dz.hide();
-            })
+            });
 
             $dz[0].ondragleave = function() {
                 $dz.hide();
