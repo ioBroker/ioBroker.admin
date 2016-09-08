@@ -198,6 +198,7 @@ systemDictionary = {
     "ok":                   {"en": "Ok",                    "de": "Ok",                     "ru": "Ok"},
     "cancel":               {"en": "Cancel",                "de": "Abbrechen",              "ru": "отменить"},
     "Settings for %s":      {"en": "Settings for %s",       "de": "Einstellungen for %s",   "ru": "Настройки для %s"},
+    "Upgrade all adapters": {"en": "Upgrade all adapters",  "de": "Upgrade alle Adapter",   "ru": "Обновить все драйвера"},
     "Are you sure? Changes are not saved.": {
         "en": "Are you sure? Changes are not saved.",
         "de": "Änderungen sind nicht gespeichert. Sicher?",

@@ -30,26 +30,27 @@ function Adapters(main) {
     this.filterVals    = {length: 0};
     this.onlyInstalled = false;
     this.onlyUpdatable = false;
+    this.countUpdatable = 0;
     this.currentFilter = '';
     this.isCollapsed   = {};
 
     this.types = {
-        "hmm":          "hardware",
-        "occ":          "schedule",
-        "artnet":       "hardware"
+        hmm:          'hardware',
+        occ:          'schedule',
+        artnet:       'hardware'
     };
     
     this.prepare = function () {
         that.$grid.fancytree({
-            extensions: ["table", "gridnav", "filter", "themeroller"],
-            checkbox: false,
+            extensions: ['table', 'gridnav', 'filter', 'themeroller'],
+            checkbox:   false,
             table: {
                 indentation: 20      // indent 20px per node level
             },
-            source: that.tree,
+            source:     that.tree,
             renderColumns: function(event, data) {
                 var node = data.node;
-                var $tdList = $(node.tr).find(">td");
+                var $tdList = $(node.tr).find('>td');
 
                 if (!that.data[node.key]) {
                     $tdList.eq(0).css({'font-weight': 'bold'});
@@ -58,7 +59,7 @@ function Adapters(main) {
                     // Calculate total count of adapter and count of installed adapter
                     for (var c = 0; c < that.tree.length; c++) {
                         if (that.tree[c].key === node.key) {
-                            $tdList.eq(1).html(that.tree[c].desc).css({'overflow': 'hidden', "white-space": "nowrap", position: 'relative'});
+                            $tdList.eq(1).html(that.tree[c].desc).css({'overflow': 'hidden', 'white-space': 'nowrap', position: 'relative'});
                             var installed = 0;
                             for (var k = 0; k < that.tree[c].children.length; k++) {
                                 if (that.data[that.tree[c].children[k].key].installed) installed++;
@@ -75,7 +76,7 @@ function Adapters(main) {
                     }
                     return;
                 }
-                $tdList.eq(0).css({'overflow': 'hidden', "white-space": "nowrap"});
+                $tdList.eq(0).css({'overflow': 'hidden', 'white-space': 'nowrap'});
                 $tdList.eq(1).html(that.data[node.key].desc).css({'overflow': 'hidden', "white-space": "nowrap", position: 'relative', 'font-weight': that.data[node.key].bold ? 'bold' : null});
                 $tdList.eq(2).html(that.data[node.key].keywords).css({'overflow': 'hidden', "white-space": "nowrap"}).attr('title', that.data[node.key].keywords);
 
@@ -96,7 +97,7 @@ function Adapters(main) {
                 handleCursorKeys: true
             },
             filter: {
-                mode: "hide",
+                mode: 'hide',
                 autoApply: true
             },
             collapse: function(event, data) {
@@ -171,8 +172,10 @@ function Adapters(main) {
             that.onlyUpdatable = !that.onlyUpdatable;
             if (that.onlyUpdatable) {
                 $('#btn_filter_updates').addClass('ui-state-error');
+                $('#btn_upgrade_all').show();
             } else {
                 $('#btn_filter_updates').removeClass('ui-state-error');
+                $('#btn_upgrade_all').hide();
             }
             that.main.saveConfig('adaptersOnlyUpdatable', that.onlyUpdatable);
 
@@ -246,6 +249,16 @@ function Adapters(main) {
                 });
         });
 
+        $('#btn_upgrade_all').button({icons: {primary: 'ui-icon-flag'}, text: false}).css({width: 18, height: 18}).unbind('click').click(function () {
+            that.main.confirmMessage(_('Do you want to upgrade all adapters?'), _('Question'), 'help', function (result) {
+                if (result) {
+                    that.main.cmdExec(null, 'upgrade', function (exitCode) {
+                        if (!exitCode) that.init(true);
+                    });
+                }
+            });
+        });
+
         $('#install-tabs').tabs({
             activate: function (event, ui) {
                 switch (ui.newPanel.selector) {
@@ -277,19 +290,22 @@ function Adapters(main) {
         $('#adapters-filter').val(that.currentFilter);
 
         if (that.isList) {
-            $('#btn_list_adapters').addClass('ui-state-error');
+            $('#btn_list_adapters').addClass('ui-state-error').attr('title', _('tree'));
             $('#btn_expand_adapters').hide();
             $('#btn_collapse_adapters').hide();
-            $('#btn_list_adapters').attr('title', _('tree'));
         }
 
         if (that.onlyInstalled) $('#btn_filter_adapters').addClass('ui-state-error');
-        if (that.onlyUpdatable) $('#btn_filter_updates').addClass('ui-state-error');
+        if (that.onlyUpdatable) {
+            $('#btn_filter_updates').addClass('ui-state-error');
+            $('#btn_upgrade_all').show();
+        } else {
+            $('#btn_upgrade_all').hide();
+        }
 
         $('#btn_refresh_adapters').button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 18, height: 18}).click(function () {
             that.init(true, true);
         });
-
 
         // add filter processing
         $('#adapters-filter').keyup(function () {
