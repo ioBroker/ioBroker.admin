@@ -890,7 +890,7 @@ $(document).ready(function () {
                     }
                     
                     // convert obj.history into obj.custom
-                    if (obj.common.history) {
+                    if (obj.common && obj.common.history) {
                         obj.common.custom = JSON.parse(JSON.stringify(obj.common.history));
                         delete obj.common.history;
                     }

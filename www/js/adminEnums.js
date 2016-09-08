@@ -1,5 +1,5 @@
 function Enums(main) {
-    "use strict";
+    'use strict';
     
     var that               = this;
     this.main              = main;
@@ -14,11 +14,10 @@ function Enums(main) {
     var enumCurrentParent  = '';
     var tasks              = [];
 
-    
     function enumRename(oldId, newId, newName, callback) {
         if (tasks.length) {
             var task = tasks.shift();
-            if (task.name == 'delObject') {
+            if (task.name === 'delObject') {
                 main.socket.emit(task.name, task.id, function () {
                     setTimeout(function () {
                         enumRename(undefined, undefined, undefined, callback);
@@ -43,12 +42,12 @@ function Enums(main) {
     }
     function _enumRename(oldId, newId, newName, callback) {
         //Check if this name exists
-        if (oldId != newId && main.objects[newId]) {
+        if (oldId !== newId && main.objects[newId]) {
             main.showMessage(_('Name yet exists!'), '', 'info');
             that.init(true);
             if (callback) callback();
         } else {
-            if (oldId == newId) {
+            if (oldId === newId) {
                 if (newName !== undefined) {
                     tasks.push({name: 'extendObject', id:  oldId, obj: {common: {name: newName}}});
                     if (callback) callback();
@@ -113,7 +112,7 @@ function Enums(main) {
                 name: name,
                 members: []
             },
-            type: "enum"
+            type: 'enum'
         });
         return true;
     }
@@ -137,7 +136,7 @@ function Enums(main) {
             } else if (members[i]) {
                 that.$gridMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {
                     _id:  members[i],
-                    name: '<span style="color:red; font-weight:bold; font-style:italic;">object missing</span>',
+                    name: '<span style="color: red; font-weight: bold; font-style: italic;">object missing</span>',
                     type: ''
                 });
             }
@@ -148,22 +147,22 @@ function Enums(main) {
 
     function prepareEnumMembers() {
         that.$gridMembers.jqGrid({
-            datatype: 'local',
-            colNames: ['id', _('name'), _('type')],
-            colModel: [
+            datatype:   'local',
+            colNames:   ['id', _('name'), _('type')],
+            colModel:   [
                 {name: '_id',  index:'_id',  width: 240},
                 {name: 'name', index:'name', width: 400},
                 {name: 'type', index:'type', width: 100, fixed: true}
             ],
-            pager: $('#pager-enum-members'),
-            width: 768,
-            height: 370,
-            rowNum: 100,
-            rowList: [20, 50, 100],
-            sortname: "id",
-            sortorder: "desc",
+            pager:      $('#pager-enum-members'),
+            width:      768,
+            height:     370,
+            rowNum:     100,
+            rowList:    [20, 50, 100],
+            sortname:   'id',
+            sortorder:  'desc',
             viewrecords: true,
-            caption: _('members'),
+            caption:    _('members'),
             onSelectRow: function (rowid, e) {
                 $('#del-member').removeClass('ui-state-disabled');
             }
@@ -299,7 +298,7 @@ function Enums(main) {
     };
     
     this.init = function (update, expandId) {
-        if (!this.main.objectsLoaded) {
+        if (!this.main || !this.main.objectsLoaded) {
             setTimeout(that.init, 250);
             return;
         }
@@ -400,7 +399,7 @@ function Enums(main) {
                 ],
                 editEnd: function (id, newValues) {
                     var pos = id.lastIndexOf('.');
-                    if (pos != -1) {
+                    if (pos !== -1) {
                         var original = id.substring(0, pos);
                         // rename all children
                         enumRename(id, original + '.' + newValues.id.replace(/ /g, '_').toLowerCase(), newValues.name);
@@ -408,7 +407,7 @@ function Enums(main) {
                 },
                 editStart: function (id, inputs) {
                     var pos = id.lastIndexOf('.');
-                    if (pos != -1) inputs.id.val(id.substring(pos + 1));
+                    if (pos !== -1) inputs.id.val(id.substring(pos + 1));
                 },
                 panelButtons: [
                     {
@@ -446,10 +445,10 @@ function Enums(main) {
         //Update enums
         if (id.match(/^enum\./)) {
             if (obj) {
-                if (this.list.indexOf(id) == -1) this.list.push(id);
+                if (this.list.indexOf(id) === -1) this.list.push(id);
             } else {
                 var j = this.list.indexOf(id);
-                if (j != -1) this.list.splice(j, 1);
+                if (j !== -1) this.list.splice(j, 1);
             }
 
             if (this.updateTimers) clearTimeout(this.updateTimers);
