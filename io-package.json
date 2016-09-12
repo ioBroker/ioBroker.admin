@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.6.1",
+        "version": "1.6.2",
         "news": {
+            "1.6.2": {
+                "en": "fix hosts leds\nfix error in system settings\nadd upgrade all button",
+                "de": "Korrigiere LEDs für Hosts\nKorrigiere Fehler in der Systemeinstellungen\nUpgrade alle Knopf hinzugefügt",
+                "ru": "Исправлен баг на странице хосты с LED\nИсправлена ошибка в системных настройках\nДобавлена кнопка Обновить все драйвера"
+            },
             "1.6.1": {
                 "en": "change hosts tab",
                 "de": "Ändere Hosts-Tab",
