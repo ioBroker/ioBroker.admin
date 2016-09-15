@@ -40,6 +40,8 @@ If you just enable the using of certificates and will not activate an automatic 
 
 If the automatic update is activated the instance will try to request certificates from Let’s Encrypt and will automatically update it.
 
+The certificates will be first requested when the given domain address will be accessed. E.g you have "sub.domain.com" as address, when you try to access https://sub.domain.com the certificates will be first requested and it can last a little before first answer will come.
+
 The issuing of certificates is rather complex procedure, but if you will follow the explanation you will easy get free certificates.
 
 Description:
