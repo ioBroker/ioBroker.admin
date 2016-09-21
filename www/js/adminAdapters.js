@@ -196,7 +196,7 @@ function Adapters(main) {
                 for (var url in that.urls) {
                     var user = that.urls[url].match(/\.com\/([-_$§A-Za-z0-9]+)\/([-._$§A-Za-z0-9]+)\//);
                     if (user && user.length >= 2) {
-                        text += '<option value="https://github.com/' + user[1] + '/ioBroker.' + url + '/tarball/master">' + url + '</option>';
+                        text += '<option value="https://github.com/' + user[1] + '/ioBroker.' + url + '/tarball/master ' + url + '">' + url + '</option>';
                     }
                 }
                 $('#install-github-link').html(text).val(that.main.config.adaptersGithub || '');
@@ -221,12 +221,16 @@ function Adapters(main) {
                                 $('#dialog-install-url').dialog('close');
                                 var url;
                                 var debug;
+                                var adapter;
                                 if (isCustom) {
                                     url = $('#install-url-link').val();
                                     debug = $('#install-url-debug').prop('checked') ? ' --debug' : '';
+                                    adapter = '';
                                 } else {
-                                    url = $('#install-github-link').val();
+                                    var parts = $('#install-github-link').val().split(' ');
+                                    url = parts[0];
                                     debug = $('#install-github-debug').prop('checked') ? ' --debug' : '';
+                                    adapter = ' ' + parts[1];
                                 }
 
                                 if (!url) {
@@ -234,7 +238,7 @@ function Adapters(main) {
                                     return;
                                 }
 
-                                that.main.cmdExec(null, 'url "' + url + '"' + debug, function (exitCode) {
+                                that.main.cmdExec(null, 'url "' + url + '"' + adapter + debug, function (exitCode) {
                                     if (!exitCode) that.init(true, true);
                                 });
                             }

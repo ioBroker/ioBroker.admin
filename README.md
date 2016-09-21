@@ -65,6 +65,9 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
+### 1.6.3 (2016-09-21)
+* (bluefox) fix upload of custom installations
+
 ### 1.6.2 (2016-09-12)
 * (bluefox) fix hosts leds
 * (bluefox) fix error in system settings
