@@ -1,5 +1,5 @@
 function Objects(main) {
-    "use strict";
+    'use strict';
 
     var that = this;
     this.$dialog        = $('#dialog-object');
@@ -92,7 +92,7 @@ function Objects(main) {
                         var field = $tab.val().trim();
                         var obj   = that.saveFromTabs();
 
-                        if (!field || field.indexOf(' ') != -1) {
+                        if (!field || field.indexOf(' ') !== -1) {
                             that.main.showError(_('Invalid field name: %s', field));
                             return;
                         }
@@ -233,7 +233,7 @@ function Objects(main) {
         });
 
         $('#object-tab-new-object-type').change(function () {
-            if ($(this).val() == state) {
+            if ($(this).val() === 'state') {
                 $('#object-tabe-new-object-tr').show();
             } else {
                 $('#object-tabe-new-object-tr').hide();
@@ -241,12 +241,15 @@ function Objects(main) {
         });
 
         $('#object-tab-new-name').keydown(function (e) {
-            if (e.keyCode == 13) {
-                $('#dialog-object-tab-new').trigger('click');
+            if (e.keyCode === 13) {
+                setTimeout(function () {
+                    $('#dialog-object-tab-new').trigger('click');
+                }, 100);
             }
         });
 
         $('#object-tab-new-common').button({
+            label: _('New'),
             icons: {primary: 'ui-icon-plus'}
         }).click(function () {
             $('#object-tab-new-name').data('type', 'common');
@@ -309,6 +312,39 @@ function Objects(main) {
                 return false;
             }
         });
+
+        if (object.write !== undefined) {
+            if (object.write === 'false' || object.write === '0' || object.write === 0) object.write = false;
+            if (object.write === 'true'  || object.write === '1' || object.write === 1) object.write = true;
+        }
+
+        if (object.read !== undefined) {
+            if (object.read === 'false' || object.read === '0' || object.read === 0) object.read = false;
+            if (object.read === 'true'  || object.read === '1' || object.read === 1) object.read = true;
+        }
+
+        if (object.min !== undefined) {
+            var f = parseFloat(object.min);
+            if (f.toString() === object.min.toString()) object.min = f;
+
+            if (object.min === 'false') object.min = false;
+            if (object.min === 'true')  object.min = true;
+        }
+        if (object.max !== undefined) {
+            var m = parseFloat(object.max);
+            if (m.toString() === object.max.toString()) object.max = m;
+
+            if (object.max === 'false') object.max = false;
+            if (object.max === 'true')  object.max = true;
+        }
+        if (object.def !== undefined) {
+            var d = parseFloat(object.def);
+            if (d.toString() === object.def.toString()) object.def = d;
+
+            if (object.def === 'false') object.def = false;
+            if (object.def === 'true')  object.def = true;
+        }
+
         return err;
     }
 
@@ -578,7 +614,7 @@ function Objects(main) {
                             $.map(that.main.objects, function (val, key) {
                                 if (key.search(id) == 0) result[key] = val;
                             });
-                            if (result != undefined) {
+                            if (result !== undefined) {
                                 window.open('data:application/iobroker; content-disposition=attachment; filename=' + id + '.json,' + JSON.stringify(result));
                             } else {
                                 alert(_('Save of objects-tree is not possible'));
@@ -729,7 +765,7 @@ function Objects(main) {
         $('#object-tab-acl-obj-every-read'). prop('checked', obj.acl.object & 0x4);
         $('#object-tab-acl-obj-every-write').prop('checked', obj.acl.object & 0x2);
 
-        if (obj.type != 'state') {
+        if (obj.type !== 'state') {
             $('#object-tab-acl-state').hide();
         } else {
             $('#object-tab-acl-state').show();
@@ -785,12 +821,12 @@ function Objects(main) {
             return false;
         }
         obj.acl.object = 0;
-        obj.acl.object |= $('#object-tab-acl-obj-owner-read').prop('checked') ? 0x400 : 0;
+        obj.acl.object |= $('#object-tab-acl-obj-owner-read').prop('checked')  ? 0x400 : 0;
         obj.acl.object |= $('#object-tab-acl-obj-owner-write').prop('checked') ? 0x200 : 0;
-        obj.acl.object |= $('#object-tab-acl-obj-group-read').prop('checked') ? 0x40 : 0;
-        obj.acl.object |= $('#object-tab-acl-obj-group-write').prop('checked') ? 0x20 : 0;
-        obj.acl.object |= $('#object-tab-acl-obj-every-read').prop('checked') ? 0x4 : 0;
-        obj.acl.object |= $('#object-tab-acl-obj-every-write').prop('checked') ? 0x2 : 0;
+        obj.acl.object |= $('#object-tab-acl-obj-group-read').prop('checked')  ? 0x40  : 0;
+        obj.acl.object |= $('#object-tab-acl-obj-group-write').prop('checked') ? 0x20  : 0;
+        obj.acl.object |= $('#object-tab-acl-obj-every-read').prop('checked')  ? 0x4   : 0;
+        obj.acl.object |= $('#object-tab-acl-obj-every-write').prop('checked') ? 0x2   : 0;
 
         obj.acl.owner = $('#object-tab-acl-owner').val();
         obj.acl.ownerGroup = $('#object-tab-acl-group').val();
@@ -822,7 +858,7 @@ function Objects(main) {
     };
 
     this.save = function () {
-        if ($("#object-tabs").tabs('option', 'active') == 4) {
+        if ($('#object-tabs').tabs('option', 'active') === 4) {
             var _obj = that.saveFromRaw();
             if (!_obj) return;
 
@@ -1232,7 +1268,7 @@ function Objects(main) {
     }
 
     this.openCustomsDlg = function (ids) {
-        if (typeof ids != 'object') ids = [ids];
+        if (typeof ids !== 'object') ids = [ids];
         var instances = [];
 
         // clear global defaults object
@@ -1505,7 +1541,7 @@ function Objects(main) {
                 var json = JSON.parse(contents);
                 var len = Object.keys(json).length;
                 var id = json._id;
-                if (id == undefined && len > 1) {
+                if (id === undefined && len > 1) {
                     for (var obj in (json)) {
                         id = json[obj]._id;
                         that.main.socket.emit('setObject', id, json[obj], function (err) {
