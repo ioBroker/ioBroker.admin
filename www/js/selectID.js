@@ -1,6 +1,8 @@
 /*
  Copyright 2014-2016 bluefox <dogafox@gmail.com>
 
+ version: 1.0.1 (2016.10.14)
+
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
  <link rel="stylesheet" type="text/css" href="lib/css/fancytree/ui.fancytree.min.css"/>
@@ -184,8 +186,16 @@
             if (data.filter.type && data.filter.type !== data.objects[id].type) return false;
 
             if (data.filter.common && data.filter.common.custom) {
-                if (!data.objects[id].common ||
-                    !data.objects[id].common.custom) return false;
+                if (!data.objects[id].common) return false;
+                // todo: remove history sometime 09.2016
+                var custom = data.objects[id].common.custom || data.objects[id].common.history;
+
+                if (!custom) return false;
+                if (data.filter.common.custom === true) {
+                    return true;
+                } else {
+                    if (!custom[data.filter.common.custom]) return false;
+                }
             }
         }
         return true;
