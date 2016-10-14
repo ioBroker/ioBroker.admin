@@ -868,9 +868,9 @@
         text += '<td class="ui-widget" style="width: 100%; text-align: center; font-weight: bold; font-size: medium">' + data.texts.id + '</td></tr></table></th>';
 
         for (c = 0; c < data.columns.length; c++) {
-            var name = data.columns[c];
-            if (typeof name === 'object') name = name.name;
-            text += '<th class="ui-widget" style="font-size: medium">' + (data.texts[name] || '') + '</th>';
+            var _name = data.columns[c];
+            if (typeof _name === 'object') _name = name.name;
+            text += '<th class="ui-widget" style="font-size: medium">' + (data.texts[_name] || '') + '</th>';
         }
 
         text += '<th></th></tr>';
@@ -907,7 +907,7 @@
 
                     t += '</select>';
 
-                    text += '<table cellpadding="0" cellspacing="0" style="border-spacing: 0px 0px"><tr><td>' + t + '</td>' + '<td><button id="filter_' + data.columns[c] + '_'  + data.instance + '_btn"></button></td></tr></table>'
+                    text += '<table cellpadding="0" cellspacing="0" style="border-spacing: 0 0"><tr><td>' + t + '</td>' + '<td><button id="filter_' + data.columns[c] + '_'  + data.instance + '_btn"></button></td></tr></table>'
                 }
                 text += '</td>';
             } else {
@@ -1039,16 +1039,31 @@
                 var $tdList = $(node.tr).find('>td');
 
                 var isCommon = data.objects[node.key] && data.objects[node.key].common;
-                $tdList.eq(1).css({'overflow': 'hidden'});
+                var $firstTD = $tdList.eq(1);
+                $firstTD.css({'overflow': 'hidden'});
                 var base = 2;
 
                 // hide checkbox if only states should be selected
                 if (data.filter && data.filter.type === 'state' && (!data.objects[node.key] || data.objects[node.key].type !== 'state')) {
-                    $tdList.eq(1).find('.fancytree-checkbox').hide();
+                    $firstTD.find('.fancytree-checkbox').hide();
+                }
+
+                // special case for javascript sctipts
+                if (data.objects[node.key] && node.key.match(/^script\.js\./)) {
+                    if (data.objects[node.key].type !== 'script') {
+                        // force folder icon and change color
+                        if (node.key !== 'script.js.global') {
+                            $firstTD.find('.fancytree-title').css({'font-weight': 'bold', color: '#000080'});
+                        } else {
+                            $firstTD.find('.fancytree-title').css({'font-weight': 'bold', color: '#078a0c'});
+                        }
+                        $firstTD.addClass('fancytree-force-folder');
+                        //node.hasChildren = function () { return true; };
+                    }
                 }
 
                 if (!data.noCopyToClipboard) {
-                    $tdList.eq(1)
+                    $firstTD
                         .addClass('clippy')
                         .data('clippy', node.key)
                         .css({position: 'relative'})
@@ -1058,7 +1073,7 @@
                 }
 
                 if (data.useNameAsId && data.objects[node.key] && data.objects[node.key].common && data.objects[node.key].common.name) {
-                    $tdList.eq(1).find('.fancytree-title').html(data.objects[node.key].common.name);
+                    $firstTD.find('.fancytree-title').html(data.objects[node.key].common.name);
                 }
                 var $elem;
                 var val;
@@ -1571,7 +1586,7 @@
                     var name = data.columns[c];
                     if (typeof name === 'object') name = name.name;
                     if (name === 'image') {
-                        continue;
+                        //continue;
                     } else if (name === 'role' || name === 'type' || name === 'room' || name === 'function') {
                         value = $('#filter_' + name + '_' + data.instance).val();
                         if (value) {
@@ -2360,12 +2375,13 @@
             return null;
         },
         getActual: function () {
-            for (var k = 0; k < this.length; k++) {
-                var dlg = this[k];
-                var $dlg = $(dlg);
-                var data = $dlg.data('selectId');
-                return data ? data.selectedID : null;
-            }
+            //for (var k = 0; k < this.length; k++) {
+            //
+            //}
+            var dlg = this[0];
+            var $dlg = $(dlg);
+            var data = $dlg.data('selectId');
+            return data ? data.selectedID : null;
         }
     };
 

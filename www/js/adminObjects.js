@@ -77,7 +77,7 @@ function Objects(main) {
             that.editor.$blockScrolling = true;
         }
 
-        $('#dialog-new-field').dialog( {
+        $('#dialog-new-field').dialog({
             autoOpen:   false,
             modal:      true,
             width:      400,

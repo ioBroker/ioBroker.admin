@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.6.3",
+        "version": "1.6.4",
         "news": {
+            "1.6.4": {
+                "en": "Changes for JS adapter",
+                "de": "Änderungen für JS-Adapter",
+                "ru": "Изменения для Драйвера JS"
+            },
 		    "1.6.3": {
                 "en": "fix upload of custom installations",
                 "de": "Korrigiere upload von GitHub Installationen ",
