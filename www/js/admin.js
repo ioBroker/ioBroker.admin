@@ -55,7 +55,7 @@ $(document).ready(function () {
         saveConfig:     function (attr, value) {
             if (attr) main.config[attr] = value;
 
-            if (typeof storage != 'undefined') {
+            if (typeof storage !=='undefined') {
                 storage.set('adminConfig', JSON.stringify(main.config));
             }
         },
@@ -183,7 +183,7 @@ $(document).ready(function () {
             // Following implementation is 5 times faster
             if (!dateObj) return '';
             var text = typeof dateObj;
-            if (text == 'string') {
+            if (text === 'string') {
                 if (justTime) {
                     return dateObj.substring(8);
                 } else {
@@ -191,7 +191,7 @@ $(document).ready(function () {
                 }
             }
             // if less 2000.01.01 00:00:00
-            if (text != 'object') dateObj = dateObj < 946681200000 ? new Date(dateObj * 1000) : new Date(dateObj);
+            if (text !=='object') dateObj = dateObj < 946681200000 ? new Date(dateObj * 1000) : new Date(dateObj);
 
             var v;
             if (!justTime) {
@@ -252,7 +252,7 @@ $(document).ready(function () {
 
         _delObject: function (idOrList, callback) {
             var id;
-            if (typeof idOrList == 'object') {
+            if (typeof idOrList === 'object') {
                 if (!idOrList || !idOrList.length) {
                     if (callback) callback(null);
                     return;
@@ -264,7 +264,7 @@ $(document).ready(function () {
 
             if (main.objects[id] && main.objects[id].common && main.objects[id].common['object-non-deletable']) {
                 main.showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
-                if (typeof idOrList == 'object') {
+                if (typeof idOrList === 'object') {
                     setTimeout(function () {
                         this._delObject(idOrList, callback);
                     }.bind(this), 0);
@@ -278,17 +278,17 @@ $(document).ready(function () {
             } else {
                 var obj = main.objects[id];
                 main.socket.emit('delObject', id, function (err) {
-                    if (err && err != 'Not exists') {
+                    if (err && err !=='Not exists') {
                         main.showError(err);
                         return;
                     }
                     if (obj && obj.type === 'state') {
                         main.socket.emit('delState', id, function (err) {
-                            if (err && err != 'Not exists') {
+                            if (err && err !=='Not exists') {
                                 main.showError(err);
                                 return;
                             }
-                            if (typeof idOrList == 'object') {
+                            if (typeof idOrList === 'object') {
                                 setTimeout(function () {
                                     this._delObject(idOrList, callback);
                                 }.bind(this), 0);
@@ -301,7 +301,7 @@ $(document).ready(function () {
                             }
                         }.bind(this));
                     } else {
-                        if (typeof idOrList == 'object') {
+                        if (typeof idOrList === 'object') {
                             setTimeout(function () {
                                 this._delObject(idOrList, callback);
                             }.bind(this), 0);
@@ -322,7 +322,7 @@ $(document).ready(function () {
             } else {
                 var list = [];
                 for (var id in main.objects) {
-                    if (id.substring(0, rootId.length + 1) == rootId + '.') {
+                    if (id.substring(0, rootId.length + 1) === rootId + '.') {
                         list.push(id);
                     }
                 }
@@ -351,12 +351,12 @@ $(document).ready(function () {
                     if (callback) callback(null, id);
                 } else {
                     main.socket.emit('delObject', id, function (err) {
-                        if (err && err != 'Not exists') {
+                        if (err && err !=='Not exists') {
                             main.showError(err);
                             return;
                         }
                         main.socket.emit('delState', id, function (err) {
-                            if (err && err != 'Not exists') {
+                            if (err && err !=='Not exists') {
                                 main.showError(err);
                                 return;
                             }
@@ -632,7 +632,7 @@ $(document).ready(function () {
                 var inst1 = main.instances[i].replace(/\.(\d+)$/, '.');
                 for (var j = 0; j < addTabs.length; j++) {
                     var inst2 = addTabs[j].replace(/\.(\d+)$/, '.');
-                    if (inst1 == inst2) {
+                    if (inst1 === inst2) {
                         isFound = true;
                         break;
                     }
@@ -646,7 +646,7 @@ $(document).ready(function () {
         // Build the standard tabs together
         $('.admin-tab').each(function () {
             list.push($(this).attr('id'));
-            if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf($(this).attr('id')) != -1) {
+            if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf($(this).attr('id')) !==-1) {
                 text += '<li><a href="#' + $(this).attr('id') + '">' + _($(this).data('name')) + '</a><button class="tab-close" data-tab="' + $(this).attr('id') + '"></button></li>\n';
                 $(this).show().appendTo($('#tabs'));
             } else {
@@ -669,7 +669,7 @@ $(document).ready(function () {
             var buttonName;
 
             if (main.objects[addTabs[a]].common.adminTab.name) {
-                if (typeof main.objects[addTabs[a]].common.adminTab.name == 'object') {
+                if (typeof main.objects[addTabs[a]].common.adminTab.name === 'object') {
                     if (main.objects[addTabs[a]].common.adminTab.name[systemLang]) {
                         buttonName = main.objects[addTabs[a]].common.adminTab.name[systemLang];
                     } else if (main.objects[addTabs[a]].common.adminTab.name.en) {
@@ -685,7 +685,7 @@ $(document).ready(function () {
             }
 
             if (!main.objects[addTabs[a]].common.adminTab.singleton) {
-                if (link.indexOf('?') != -1) {
+                if (link.indexOf('?') !==-1) {
                     link += '&instance=' + parts[3];
                 } else {
                     link += '?instance=' + parts[3];
@@ -698,7 +698,7 @@ $(document).ready(function () {
 
             list.push(name);
 
-            if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(name) != -1) {
+            if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(name) !==-1) {
                 var isReplace = false;
                 if (!link) {
                     link = '/adapter/' + parts[2] + '/tab.html';
@@ -707,7 +707,7 @@ $(document).ready(function () {
                     /*main.tabs.instances._replaceLinks(link, parts[2], parts[3], name, function (link, adapter, instance, arg) {
                         $('#' + arg).data('src', link);
                     });*/
-                    isReplace = (link.indexOf('%') != -1);
+                    isReplace = (link.indexOf('%') !==-1);
                 }
 
                 text += '<li><a href="#' + name + '">' + buttonName + '</a><button class="tab-close" data-tab="' + name + '"></button></li>\n';
@@ -725,7 +725,7 @@ $(document).ready(function () {
             }
         }
         $('.tab-custom').each(function () {
-            if (list.indexOf($(this).attr('id')) == -1) {
+            if (list.indexOf($(this).attr('id')) === -1) {
                 $('#' + $(this).attr('id')).remove();
             }
         });
@@ -739,7 +739,7 @@ $(document).ready(function () {
             text: false
         }).unbind('click').click(function () {
             var pos = main.systemConfig.common.tabs.indexOf($(this).data('tab'));
-            if (pos != -1) {
+            if (pos !==-1) {
                 main.systemConfig.common.tabs.splice(pos, 1);
                 // save
                 main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
@@ -964,7 +964,7 @@ $(document).ready(function () {
                 isNew = true;
                 //treeInsert(id);
             }
-            if (isNew || JSON.stringify(main.objects[id]) != JSON.stringify(obj)) {
+            if (isNew || JSON.stringify(main.objects[id]) !== JSON.stringify(obj)) {
                 main.objects[id] = obj;
                 changed = true;
             }
@@ -984,9 +984,9 @@ $(document).ready(function () {
         tabs.enums.objectChange(id, obj);
 
         // If system config updated
-        if (id == 'system.config') {
+        if (id === 'system.config') {
             // Check language
-            if (main.systemConfig.common.language != obj.common.language) {
+            if (main.systemConfig.common.language !== obj.common.language) {
                 window.location.reload();
             }
 
@@ -1061,21 +1061,21 @@ $(document).ready(function () {
         setTimeout(objectChange, 0, id, obj);
     });
     main.socket.on('cmdStdout', function (_id, text) {
-        if (activeCmdId == _id) {
+        if (activeCmdId === _id) {
             stdout += '\n' + text;
             $stdout.val(stdout);
             $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
         }
     });
     main.socket.on('cmdStderr', function (_id, text) {
-        if (activeCmdId == _id) {
+        if (activeCmdId === _id) {
             stdout += '\nERROR: ' + text;
             $stdout.val(stdout);
             $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
         }
     });
     main.socket.on('cmdExit', function (_id, exitCode) {
-        if (activeCmdId == _id) {
+        if (activeCmdId === _id) {
             exitCode = parseInt(exitCode, 10);
             stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
             $stdout.val(stdout);
@@ -1114,7 +1114,7 @@ $(document).ready(function () {
                         main.socket.emit('getObject', 'system.certificates', function (errCerts, certs) {
                             setTimeout(function () {
                                 main.systemDialog.systemCerts = certs;
-                                if (errConfig == 'permissionError') {
+                                if (errConfig === 'permissionError') {
                                     main.systemConfig = {common: {language: systemLang}, error: 'permissionError'};
                                 } else {
                                     if (!errConfig && main.systemConfig && main.systemConfig.common) {
@@ -1122,7 +1122,7 @@ $(document).ready(function () {
                                         if (!main.systemConfig.common.licenseConfirmed) {
                                             // Show license agreement
                                             var language = main.systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
-                                            if (language != 'en' && language != 'de' && language != 'ru') language = 'en';
+                                            if (language !=='en' && language !=='de' && language !=='ru') language = 'en';
 
                                             $('#license_text').html(license[language] || license.en);
                                             $('#license_language_label').html(translateWord('Select language', language));
@@ -1293,7 +1293,7 @@ $(document).ready(function () {
             var tab = 'tab-' + window.location.hash.slice(1);
             var index = $('#tabs a[href="#' + tab + '"]').parent().index() - 1;
             $('#tabs').tabs('option', 'active', index);
-            if (tab == 'tab-hosts') tabs.hosts.init();
+            if (tab === 'tab-hosts') tabs.hosts.init();
         } else {
             tabs.hosts.init();
         }

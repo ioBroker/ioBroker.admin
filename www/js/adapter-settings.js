@@ -219,6 +219,73 @@ function showMessage(message, title, icon) {
     $dialogMessage.dialog('open');
 }
 
+function confirmMessage(message, title, icon, buttons, callback) {
+    var $dialogConfirm =        $('#dialog-confirm-settings');
+    if (!$dialogConfirm.length) {
+        $('body').append('<div id="dialog-confirm-settings" title="Message" style="display: none">\n' +
+            '<p>' +
+            '<span id="dialog-message-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
+            '<span id="dialog-message-text-settings"></span>\n' +
+            '</p>\n' +
+            '</div>');
+        $dialogConfirm = $('#dialog-confirm-settings');
+        $dialogConfirm.dialog({
+            autoOpen: false,
+            modal:    true
+        });
+    }
+    if (typeof buttons === 'function') {
+        callback = buttons;
+        $dialogConfirm.dialog('option', 'buttons', [
+            {
+                text: _('Ok'),
+                click: function () {
+                    var cb = $(this).data('callback');
+                    $(this).data('callback', null);
+                    $(this).dialog('close');
+                    if (cb) cb(true);
+                }
+            },
+            {
+                text: _('Cancel'),
+                click: function () {
+                    var cb = $(this).data('callback');
+                    $(this).data('callback', null);
+                    $(this).dialog('close');
+                    if (cb) cb(false);
+                }
+            }
+
+        ]);
+    } else if (typeof buttons === 'object') {
+        for (var b = 0; b < buttons.length; b++) {
+            buttons[b] = {
+                text: buttons[b],
+                id: 'dialog-confirm-button-' + b,
+                click: function (e) {
+                    var id = parseInt(e.currentTarget.id.substring('dialog-confirm-button-'.length), 10);
+                    var cb = $(this).data('callback');
+                    $(this).dialog('close');
+                    if (cb) cb(id);
+                }
+            }
+        }
+        $dialogConfirm.dialog('option', 'buttons', buttons);
+    }
+
+    $dialogConfirm.dialog('option', 'title', title || _('Message'));
+    $('#dialog-confirm-text').html(message);
+    if (icon) {
+        $('#dialog-confirm-icon').show();
+        $('#dialog-confirm-icon').attr('class', '');
+        $('#dialog-confirm-icon').addClass('ui-icon ui-icon-' + icon);
+    } else {
+        $('#dialog-confirm-icon').hide();
+    }
+    $dialogConfirm.data('callback', callback);
+    $dialogConfirm.dialog('open');
+}
+
 function getObject(id, callback) {
     socket.emit('getObject', id, function (err, res) {
         if (!err && res) {

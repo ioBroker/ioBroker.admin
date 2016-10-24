@@ -21,24 +21,20 @@
     "ioBroker",
     "setup"
   ],
-  "optionalDependencies": {
-    "letsencrypt": "^2.1.5",
-    "le-challenge-fs": "^2.0.4",
-    "le-sni-auto": "^2.0.1",
-    "le-store-certbot": "^2.0.3"
+  "peerDependencies": {
+    "socket.io": "^1.5.0",
+    "request": "^2.75.0",
+    "express": "^4.14.0"
   },
   "dependencies": {
-    "express": "^4.14.0",
     "cookie-parser": "^1.4.3",
     "body-parser": "^1.15.2",
     "express-session": "^1.14.0",
     "passport-local": "^1.0.0",
     "passport.socketio": "^3.6.2",
     "passport": "^0.3.2",
-    "request": "^2.73.0",
     "connect-flash": "^0.1.1",
-    "xtend": "^4.0.1",
-    "socket.io": "^1.4.8"
+    "xtend": "^4.0.1"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

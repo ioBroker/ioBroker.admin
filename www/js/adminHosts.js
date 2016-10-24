@@ -212,6 +212,12 @@ function Hosts(main) {
             showHosts();
             applyFilter($('#hosts-filter').val());
 
+            var timer = setTimeout(function () {
+                console.warn('Timeout for repository');
+                timer = null;
+                that.initButtons();
+            }, 2000);
+
             that.main.tabs.adapters.getAdaptersInfo(that.main.currentHost, update, updateRepo, function (repository, installedList) {
                 if (!installedList || !installedList.hosts) return;
 
@@ -246,7 +252,10 @@ function Hosts(main) {
                     }
                 });
 
-
+                if (timer) {
+                    clearTimeout(timer);
+                    timer = null;
+                }
                 that.initButtons();
                 if (callback) callback();
             });

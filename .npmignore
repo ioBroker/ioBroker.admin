@@ -1,5 +1,5 @@
 Gruntfile.js
 tasks
-node-modules
+node_modules
 .git
 .idea
