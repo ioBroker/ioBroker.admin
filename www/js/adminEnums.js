@@ -294,7 +294,7 @@ function Enums(main) {
             t.html(t[0]._original + '.' + $(this).val().replace(/ /, '_').toLowerCase());
         });
         
-        $("#load_grid-enums").show();
+        $('#load_grid-enums').show();
     };
     
     this.init = function (update, expandId) {
@@ -306,13 +306,13 @@ function Enums(main) {
         if (typeof this.$grid !== 'undefined' && (!this.$grid.data('inited') || update)) {
             this.$grid.data('inited', true);
 
-            var x = $(window).width();
+            /*var x = $(window).width();
             var y = $(window).height();
             if (x < 720) x = 720;
             if (y < 480) y = 480;
 
             this.$grid.height(y - 100).width(x - 20);
-
+*/
             this.$grid.selectId('init', {
                 objects: main.objects,
                 states: main.states,

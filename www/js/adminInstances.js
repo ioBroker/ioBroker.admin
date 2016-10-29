@@ -390,7 +390,7 @@ function Instances(main) {
             if (that.main.tabs.hosts.list.length > 1) {
                 if (!that.hostsText) {
                     that.hostsText = '';
-                    for(var h = 0; h < that.main.tabs.hosts.list.length;h++) {
+                    for (var h = 0; h < that.main.tabs.hosts.list.length; h++) {
                         var host = that.main.tabs.hosts.list[h] || '';
                         that.hostsText += (that.hostsText ? ';' : '') + host.name;
                     }
@@ -492,24 +492,23 @@ function Instances(main) {
 
         // set odd and even
         var count = 0;
-        for (var i = 0; i < that.list.length; i++) {
-            var obj = that.main.objects[that.list[i]];
-            if (!obj) continue;
-            if (invisible.indexOf(that.list[i]) !== -1) continue;
-            that.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]').removeClass('instance-odd instance-even').addClass((count % 2) ? 'instance-odd' : 'instance-even');
+        for (var k = 0; k < that.list.length; k++) {
+            var _obj = that.main.objects[that.list[k]];
+            if (!_obj) continue;
+            if (invisible.indexOf(that.list[k]) !== -1) continue;
+            that.$grid.find('.instance-adapter[data-instance-id="' + that.list[k] + '"]').removeClass('instance-odd instance-even').addClass((count % 2) ? 'instance-odd' : 'instance-even');
             count++;
         }
     }
 
     function onQuickEditField(e) {
-        var $this   = $(this);
-        var id      = $this.data('instance-id');
-        var attr    = $this.data('name');
-        var options = $this.data('options');
-        var oldVal  = $this.data('value');
+        var $this     = $(this);
+        var id        = $this.data('instance-id');
+        var attr      = $this.data('name');
+        var options   = $this.data('options');
+        var oldVal    = $this.data('value');
         var textAlign = $this.css('text-align');
         $this.css('text-align', 'left');
-        var states  = null;
 
         $this.unbind('click').removeClass('select-id-quick-edit').css('position', 'relative');
 

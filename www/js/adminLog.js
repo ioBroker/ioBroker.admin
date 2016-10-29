@@ -1,41 +1,55 @@
 function Logs(main) {
-    "use strict";
+    'use strict';
 
-    var that =                 this;
-    this.main =                main;
-    this.logLimit =            2000; //const
+    var that                  = this;
+    this.main                 = main;
+    this.logLimit             = 2000; //const
 
-    this.logLinesCount =       0;
-    this.logLinesStart =       0;
-    this.logHosts =            [];
-    this.logFilterTimeout =    null;
+    this.logLinesCount        = 0;
+    this.logLinesStart        = 0;
+    this.logHosts             = [];
+    this.logFilterTimeout     = null;
+    this.logFilterHost        = '';
+    this.logFilterSeverity    = '';
+    this.logFilterMessage     = '';
+    this.$logFilterHost       = null;
+    this.$logFilterSeverity   = null;
+    this.$logFilterMessage    = null;
     
-    this.logPauseList =        [];
-    this.logPauseMode =        false;
-    this.logPauseOverflow =    false;
-    this.logPauseCounterSpan = null;
-    this.logPauseCounter =     [];
-
-
+    this.logPauseList         = [];
+    this.logPauseMode         = false;
+    this.logPauseOverflow     = false;
+    this.logPauseCounterSpan  = null;
+    this.logPauseCounter      = [];
+    
     this.prepare = function () {
-        $('#log-filter-severity').change(this.filter);
-        $('#log-filter-host').change(this.filter);
-        $('#log-filter-message').change(function () {
+        that.$logFilterSeverity = $('#log-filter-severity');
+        that.$logFilterHost     = $('#log-filter-host');
+        that.$logFilterMessage  = $('#log-filter-message');
+        
+        that.$logFilterHost.change(this.filter);
+        that.$logFilterSeverity.change(this.filter);
+
+        that.$logFilterMessage.change(function () {
             if (that.logFilterTimeout) clearTimeout(that.logFilterTimeout);
-            that.logFilterTimeout = setTimeout(that.filter, 1000);
+            that.logFilterTimeout = setTimeout(that.filter, 600);
         }).keyup(function (e) {
-            if (e.which == 13) {
+            if (e.which === 13) {
                 that.filter();
             } else {
                 $(this).trigger('change');
             }
         });
-        $('#log-filter-message-clear').button({icons:{primary: 'ui-icon-close'}, text: false}).css({height: 18, width: 18}).click(function () {
-            var $log_filter = $('#log-filter-message');
-            if ($log_filter.val() !== '') {
-                $log_filter.val('').trigger('change');
-            }
-        });
+
+        $('#log-filter-message-clear')
+            .button({icons: {primary: 'ui-icon-close'}, text: false})
+            .css({height: 18, width: 18})
+            .click(function () {
+                var $log_filter = $('#log-filter-message');
+                if ($log_filter.val() !== '') {
+                    $log_filter.val('').trigger('change');
+                }
+            });
 
         $('#log-clear-on-disk').button({icons:{primary: 'ui-icon-trash'}, text: false}).click(function () {
             that.main.confirmMessage(_('Log file will be deleted. Are you sure?'), null, null, function (result) {
@@ -131,19 +145,19 @@ function Logs(main) {
                 for (var i = 0; i < lines.length; i++) {
                     if (!lines[i]) continue;
                     // 2014-12-05 14:47:10.739 - info: iobroker  ERR! network In most cases you are behind a proxy or have bad network settings.npm ERR! network
-                    if (lines[i][4] == '-' && lines[i][7] == '-') {
+                    if (lines[i][4] === '-' && lines[i][7] === '-') {
                         lines[i]         = lines[i].replace(/(\[[0-9]+m)/g, '');
                         message.ts       = lines[i].substring(0, 23);
                         lines[i]         = lines[i].substring(27);
 
                         var pos          = lines[i].indexOf(':');
                         message.severity = lines[i].substring(0, pos);
-                        if (message.severity.charCodeAt(message.severity.length - 1) == 27) message.severity = message.severity.substring(0, message.severity.length - 1);
-                        if (message.severity.charCodeAt(0) == 27) message.severity = message.severity.substring(1);
+                        if (message.severity.charCodeAt(message.severity.length - 1) === 27) message.severity = message.severity.substring(0, message.severity.length - 1);
+                        if (message.severity.charCodeAt(0) === 27) message.severity = message.severity.substring(1);
 
                         lines[i]         = lines[i].substring(pos + 2);
                         pos              = lines[i].indexOf(' ');
-                        message.from     = lines[i].substring(0, pos).replace(/\./g, '-');
+                        message.from     = lines[i].substring(0, pos);
                         message.message  = lines[i].substring(pos);
                     } else {
                         message.message = lines[i];
@@ -152,6 +166,10 @@ function Logs(main) {
                 }
 
                 installColResize();
+
+                that.logFilterHost     = that.$logFilterHost.val();
+                that.logFilterMessage  = that.$logFilterMessage.val();
+                that.logFilterSeverity = that.$logFilterSeverity.val();
             }, 0);
         });
     };
@@ -182,35 +200,36 @@ function Logs(main) {
             this.logLinesCount++;
         }
 
-        var $log_filter_host = $('#log-filter-host');
-        var hostFilter = $log_filter_host.val();
-
-        if (message.from && this.logHosts.indexOf(message.from) == -1) {
-            this.logHosts.push(message.from);
+        if (message.from && this.logHosts.indexOf(message.from) === -1) {
+            this.logHosts.push(message.from); 
             this.logHosts.sort();
-            $log_filter_host.html('<option value="">' + _('all') + '</option>');
+            this.$logFilterHost.html('<option value="">' + _('all') + '</option>');
             for (var i = 0; i < this.logHosts.length; i++) {
-                $log_filter_host.append('<option value="' + this.logHosts[i].replace(/\./g, '-') + '" ' + ((this.logHosts[i] == hostFilter) ? 'selected' : '') + '>' + this.logHosts[i] + '</option>');
+                this.$logFilterHost.append('<option value="' + this.logHosts[i].replace(/\./g, '-') + '" ' + ((this.logHosts[i] === this.logFilterHost) ? 'selected' : '') + '>' + this.logHosts[i] + '</option>');
             }
         }
         var visible = '';
+        var from    = message.from ? message.from.replace(/\./g, '-') : '';
 
-        if (hostFilter && hostFilter != message.from) visible = 'display: none';
+        if (this.logFilterHost && this.logFilterHost !== from) visible = 'display: none';
 
-        var sevFilter = $('#log-filter-severity').val();
-        if (!visible && sevFilter) {
-            if (sevFilter == 'info' && message.severity == 'debug') {
+        if (!visible && this.logFilterSeverity) {
+            if (this.logFilterSeverity === 'info' && message.severity === 'debug') {
                 visible = 'display: none';
-            } else if (sevFilter == 'warn' && message.severity != 'warn' && message.severity != 'error') {
+            } else if (this.logFilterSeverity === 'warn' && message.severity !== 'warn' && message.severity !== 'error') {
                 visible = 'display: none';
-            } else if (sevFilter == 'error' && message.severity != 'error') {
+            } else if (this.logFilterSeverity === 'error' && message.severity !== 'error') {
                 visible = 'display: none';
             }
         }
 
-        if (message.severity == 'error') $('a[href="#tab-log"]').addClass('errorLog');
+        if (!visible && this.logFilterMessage && message.message.indexOf(that.logFilterMessage) === -1) {
+            visible = 'display: none';
+        }
 
-        var text = '<tr id="log-line-' + (this.logLinesStart + this.logLinesCount) + '" class="log-line log-severity-' + message.severity + ' ' + (message.from ? 'log-from-' + message.from : '') + '" style="' + visible + '">';
+        if (message.severity === 'error') $('a[href="#tab-log"]').addClass('errorLog');
+
+        var text = '<tr id="log-line-' + (this.logLinesStart + this.logLinesCount) + '" class="log-line log-severity-' + message.severity + ' ' + (from ? 'log-from-' + from : '') + '" style="' + visible + '">';
         text += '<td class="log-column-1">' + (message.from || '') + '</td>';
         text += '<td class="log-column-2">' + this.main.formatDate(message.ts) + '</td>';
         text += '<td class="log-column-3">' + message.severity + '</td>';
@@ -220,27 +239,29 @@ function Logs(main) {
     };
 
     this.filter = function () {
-        if (this.logFilterTimeout) {
-            clearTimeout(this.logFilterTimeout);
-            this.logFilterTimeout = null;
+        if (that.logFilterTimeout) {
+            clearTimeout(that.logFilterTimeout);
+            that.logFilterTimeout = null;
         }
-        var filterSev  = $('#log-filter-severity').val();
-        var filterHost = $('#log-filter-host').val();
-        var filterMsg  = $('#log-filter-message').val();
         var $logOuter  = $('#log-outer');
-        if (filterSev == 'error') {
+
+        that.logFilterHost     = that.$logFilterHost.val();
+        that.logFilterMessage  = that.$logFilterMessage.val();
+        that.logFilterSeverity = that.$logFilterSeverity.val();
+
+        if (that.logFilterSeverity === 'error') {
             $logOuter.find('.log-severity-debug').hide();
             $logOuter.find('.log-severity-info').hide();
             $logOuter.find('.log-severity-warn').hide();
             $logOuter.find('.log-severity-error').show();
         } else
-        if (filterSev == 'warn') {
+        if (that.logFilterSeverity === 'warn') {
             $logOuter.find('.log-severity-debug').hide();
             $logOuter.find('.log-severity-info').hide();
             $logOuter.find('.log-severity-warn').show();
             $logOuter.find('.log-severity-error').show();
         }else
-        if (filterSev == 'info') {
+        if (that.logFilterSeverity === 'info') {
             $logOuter.find('.log-severity-debug').hide();
             $logOuter.find('.log-severity-info').show();
             $logOuter.find('.log-severity-warn').show();
@@ -251,12 +272,12 @@ function Logs(main) {
             $logOuter.find('.log-severity-warn').show();
             $logOuter.find('.log-severity-error').show();
         }
-        if (filterHost || filterMsg) {
+        if (that.logFilterHost || that.logFilterMessage) {
             $logOuter.find('.log-line').each(function () {
-                if (filterHost && !$(this).hasClass('log-from-' + filterHost)) {
+                if (that.logFilterHost && !$(this).hasClass('log-from-' + that.logFilterHost)) {
                     $(this).hide();
                 } else
-                if (filterMsg && $(this).html().indexOf(filterMsg) == -1) {
+                if (that.logFilterMessage && $(this).html().indexOf(that.logFilterMessage) === -1) {
                     $(this).hide();
                 }
             });
@@ -279,12 +300,13 @@ function Logs(main) {
 
     this.pause = function () {
         if (!this.logPauseMode) {
-            $('#log-pause')
+            var $logPause = $('#log-pause');
+            $logPause
                 .addClass('ui-state-focus')
                 .button('option', 'text', true)
                 .button('option', 'icons', {primary: null});
 
-            this.logPauseCounterSpan = $('#log-pause .ui-button-text');
+            this.logPauseCounterSpan = $logPause.find('.ui-button-text');
             this.logPauseCounterSpan.html('0').css({'padding-top': '1px', 'padding-bottom': '0px'});
             this.logPauseCounter  = 0;
             this.logPauseMode     = true;
@@ -297,7 +319,7 @@ function Logs(main) {
             this.logPauseList     = [];
             this.logPauseCounter  = 0;
 
-            $('#log-pause')
+            $logPause
                 .removeClass('ui-state-error ui-state-focus')
                 .attr('title', _('Pause output'))
                 .button('option', 'text', false).button('option', 'icons', {primary: 'ui-icon-pause'});

@@ -346,7 +346,12 @@
         return _treeInsert(data.tree, data.list ? [id] : treeSplit(data, id, false), id, 0, isExpanded, addedNodes, data);
     }
     function _treeInsert(tree, parts, id, index, isExpanded, addedNodes, data) {
-        if (!index) index = 0;
+        index = index || 0;
+
+        if (!parts) {
+            console.error('Empty object ID!');
+            return;
+        }
 
         var num = -1;
         var j;
@@ -685,8 +690,8 @@
                 $this.html(_oldText).click(onQuickEditField).addClass('select-id-quick-edit');
             }.bind(this), 100);
         }).keyup(function (e) {
-            if (e.which == 13) $(this).trigger('blur');
-            if (e.which == 27) {
+            if (e.which === 13) $(this).trigger('blur');
+            if (e.which === 27) {
                 if (clippy) $this.addClass('clippy');
                 var old = $this.data('old-value');
                 if (old === undefined) old = '';
@@ -1462,12 +1467,12 @@
                     for (var i in inputs) {
                         inputs[i].keyup(function (e) {
                             var node;
-                            if (e.which == 13) {
+                            if (e.which === 13) {
                                 // end edit
                                 node = $(this).data('node');
                                 node.editFinished = true;
                                 node.editEnd(true);
-                            } else if (e.which == 27) {
+                            } else if (e.which === 27) {
                                 // end edit
                                 node = $(this).data('node');
                                 node.editFinished = true;

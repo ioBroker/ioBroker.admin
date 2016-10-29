@@ -114,12 +114,14 @@
         </table>
         <!--table id="grid-instances"></table>
         <div id="pager-instances"></div-->
-        <table class="instance-table" style="width: 100%;">
-            <thead id="grid-instances-head">
-            </thead>
-            <tbody id="grid-instances">
-            </tbody>
-        </table>
+        <div style="width: 100%; height: calc(100% - 30px); overflow: auto">
+            <table class="instance-table" style="width: 100%;">
+                <thead id="grid-instances-head">
+                </thead>
+                <tbody id="grid-instances">
+                </tbody>
+            </table>
+        </div>
     </div>
     <div id="tab-objects"   class="admin-tab" style="display:none" data-name="Objects">
         <div id="grid-objects"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>
@@ -188,8 +190,8 @@
         <table id="grid-users"></table>
         <div id="pager-users"></div>
     </div>
-    <div id="tab-enums"     class="admin-tab" style="display:none" data-name="Enums">
-        <div id="grid-enums"><span class="translate">Loading...</span></div>
+    <div id="tab-enums"     class="admin-tab" style="display: none" data-name="Enums">
+        <div id="grid-enums" style="width: 100%; height: 100%"><span class="translate">Loading...</span></div>
     </div>
     <div id="tab-hosts"     class="admin-tab" style="display:none" data-name="Hosts">
         <table style="width: 100%; height: 30px">
@@ -220,8 +222,8 @@
         </table>
         <!--div id="pager-hosts"></div -->
     </div>
-    <div id="tab-log"       class="admin-tab" style="display:none" data-name="Log">
-        <div id="grid-log" class="ui-jqgrid" style="display: block;">
+    <div id="tab-log"       class="admin-tab" style="display: none" data-name="Log">
+        <div id="grid-log" class="ui-jqgrid" style="display: block; height: 100%">
             <div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">
                 <table style="padding: 0; margin: 0; border-spacing: 0" class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix"><tr>
                     <td width="100%"><span class="ui-jqgrid-title translate">Log</span></td>
@@ -248,7 +250,7 @@
                     </tr>
                 </thead>
             </table>
-            <div id="grid-log-inner" style="width: 100%; overflow-y: scroll;">
+            <div id="grid-log-inner" style="width: 100%; overflow-y: scroll; height: calc(100% - 60px);">
                 <table id="log-outer" style="width: 100%; border-collapse: collapse; margin-top: -1px" class="ui-widget ui-state-default ui-corner-bottom">
                     <tbody id="log-table">
 
