@@ -65,6 +65,11 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
+### 1.6.5 (2016-10-31)
+* (bluefox) update selectID.js
+* (bluefox) better log messages in GUI
+* (bluefox) remove js-controller from github install
+
 ### 1.6.4 (2016-10-14)
 * (bluefox) Changes for JS adapter
 

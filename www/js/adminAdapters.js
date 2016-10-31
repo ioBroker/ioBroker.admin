@@ -193,10 +193,17 @@ function Adapters(main) {
             .click(function () {
                 // prepare adapters
                 var text = '<option value="">' + _('none') + '</option>';
-                for (var url in that.urls) {
-                    var user = that.urls[url].match(/\.com\/([-_$§A-Za-z0-9]+)\/([-._$§A-Za-z0-9]+)\//);
-                    if (user && user.length >= 2) {
-                        text += '<option value="https://github.com/' + user[1] + '/ioBroker.' + url + '/tarball/master ' + url + '">' + url + '</option>';
+                var order = [];
+                var url;
+                for (url in that.urls) {
+                    order.push(url);
+                }
+                order.sort();
+
+                for (var o = 0; o < order.length; o++) {
+                    var user = that.urls[order[o]].match(/\.com\/([-_$§A-Za-z0-9]+)\/([-._$§A-Za-z0-9]+)\//);
+                    if (user && user.length >= 2 && order[o].indexOf('js-controller') === -1) {
+                        text += '<option value="https://github.com/' + user[1] + '/ioBroker.' + order[o] + '/tarball/master ' + order[o] + '">' + order[o] + '</option>';
                     }
                 }
                 $('#install-github-link').html(text).val(that.main.config.adaptersGithub || '');

@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.6.4",
+        "version": "1.6.5",
         "news": {
+            "1.6.5": {
+                "en": "update selectID.js\nremove js-controller from github install\nbetter log messages in GUI",
+                "de": "Update selectID Dialog\nNehme js-controller aus Guthub Menü raus\nBessere GUI für logs",
+                "ru": "Ибновлён диалог выбора ID\nУбран js-controller из меню установки с github\nУлучшен GUI для логов"
+            },
             "1.6.4": {
                 "en": "Changes for JS adapter",
                 "de": "Änderungen für JS-Adapter",
