@@ -209,6 +209,11 @@ systemDictionary = {
         "de": "Änderungen sind nicht gespeichert. Sicher?",
         "ru": "Изменения не сохранены. Всё равно закрыть?"
     },
+    "update-part1":         {
+        "en": "Because of very different platforms, where ioBroker can run. It is only manual update possible now. To execute manual update please go to your controller via console and execute following:",
+        "de": "Wegen Vielseitigkeit von HW Plattformen, wo ioBroker laufen kann, kann man js-controller nur manuell updaten. Um das sürchzuführen gehen Sie über Kommando-Konsole auf den Host und führen folgendes aus:",
+        "ru": "Из-за очень разного оборудования на котором может бежать ioBroker возможно только ручное обновлени. Для ручного обновления нужно открыть командную консоль и ввести следующее:"
+    },
     "Certificates":         {"en": "Certificates",          "de": "Zertifikate",            "ru": "Сертификаты"},
     "Statistics":           {"en": "Statistics",            "de": "Statistik",              "ru": "Статистика"},
     "none":                 {"en": "none",                  "de": "nichts",                 "ru": "ничего"},

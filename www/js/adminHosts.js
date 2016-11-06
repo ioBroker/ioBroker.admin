@@ -105,19 +105,76 @@ function Hosts(main) {
         that.init();
     };
     
-    this.initButtons = function () {
+    this.initButtons = function (id) {
+        var selector = id ? '[data-host-id="' + id + '"]' : '';
 
-        $('.host-update-submit').button({icons: {primary: 'ui-icon-refresh'}}).unbind('click').on('click', function () {
+        $('.host-update-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}}).css({width: 22, height: 18}).unbind('click').on('click', function () {
             that.main.cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
                 if (!exitCode) that.init(true);
             });
         });
 
-        $('.host-restart-submit').button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click').on('click', function () {
+        $('.host-restart-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click').on('click', function () {
             main.waitForRestart = true;
             main.cmdExec($(this).attr('data-host-name'), '_restart');
         });
+
+        $('.host-update-hint-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click').on('click', function () {
+
+            var infoTimeout = setTimeout(function () {
+                showUpdateInfo();
+                infoTimeout = null;
+            }, 1000);
+
+            main.socket.emit('sendToHost', $(this).attr('data-host-name'), 'getLocationOnDisk', null, function (data) {
+                if (infoTimeout) clearTimeout(infoTimeout);
+                infoTimeout = null;
+                showUpdateInfo(data);
+            });
+        });
+
     };
+    function showUpdateInfo (data) {
+        if (data) {
+            var path = data.path;
+            path = path.replace(/\\/g, '/');
+            var parts = path.split('/');
+            parts.pop(); // js-controller
+            parts.pop(); // node_modules
+
+            if (data.platform === 'linux' || data.platform === 'darwin' || data.platform === 'freebsd' || data.platform === 'lin') {
+                // linux
+                $('#dialog-host-update-instructions').val('cd ' + parts.join('/') + '\nsudo iobroker stop\nsudo iobroker update\nsudo iobroker upgrade self\nsudo iobroker start')
+            } else {
+                // windows
+                $('#dialog-host-update-instructions').val('cd ' + parts.join('\\') + '\niobroker stop\niobroker update\niobroker upgrade self\niobroker start')
+            }
+        } else {
+            $('#dialog-host-update-instructions').val('cd /opt/iobroker\nsudo iobroker stop\nsudo iobroker update\nsudo iobroker upgrade self\nsudo iobroker start')
+        }
+        var $dialog = $('#dialog-host-update');
+        if (!$dialog.data('inited')) {
+            $dialog.data('inited', true);
+            $dialog.dialog({
+                autoOpen:   false,
+                modal:      true,
+                width:      600,
+                height:     300,
+                open: function (event, ui) {
+                    $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                },
+                buttons: [
+                    {
+                        text: _('Ok'),
+                        click: function () {
+                            $dialog.dialog('close');
+                        }
+                    }
+                ]
+            });
+        }
+        $dialog.dialog('open');
+    }
 
     function applyFilter(filter) {
         filter = filter.toLowerCase().trim();
@@ -178,7 +235,8 @@ function Hosts(main) {
         text += '<td>' + obj.native.os.platform + '</td>';
         // Available
         text += '<td><span data-host-id="' + obj._id + '" data-type="' + obj.common.type + '" class="hosts-version-available"></span>' +
-            ' <button class="host-update-submit" data-host-name="' + obj.common.hostname + '" style="display: none; opacity: 0; float: right" title="' + _('update') + '"></button>' +
+            '<button class="host-update-submit" data-host-name="' + obj.common.hostname + '" style="display: none; opacity: 0; float: right" title="' + _('update') + '"></button>' +
+            '<button class="host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none; float: right" title="' + _('update') + '"></button>' +
             '</td>';
 
         // installed
@@ -218,7 +276,18 @@ function Hosts(main) {
                 that.initButtons();
             }, 2000);
 
-            that.main.tabs.adapters.getAdaptersInfo(that.main.currentHost, update, updateRepo, function (repository, installedList) {
+            var host = that.main.currentHost;
+            if (!host) {
+                // find alive host
+                for (var i = 0; i < that.list.length; i++) {
+                    if (that.main.states[that.list[i].id + '.alive'] && that.main.states[that.list[i].id + '.alive'].val) {
+                        host = that.list[i].id;
+                        break;
+                    }
+                }
+            }
+
+            that.main.tabs.adapters.getAdaptersInfo(host, update, updateRepo, function (repository, installedList) {
                 if (!installedList || !installedList.hosts) return;
 
                 for (var id in installedList.hosts) {
@@ -242,6 +311,7 @@ function Hosts(main) {
                             // show button
                             if (that.main.states[id + '.alive'] && that.main.states[id + '.alive'].val && that.main.states[id + '.alive'].val !== 'null') {
                                 $(this).find('.host-update-submit').show();
+                                $(this).find('.host-update-hint-submit').show();
                                 $(this).find('.hosts-version-installed').addClass('updateReady');
                                 $('a[href="#tab-hosts"]').addClass('updateReady');
                             }
@@ -301,6 +371,7 @@ function Hosts(main) {
             } else {
                 $('.hosts-led[data-host-id="' + id + '"]').removeClass('led-green').addClass('led-red');
                 $('.host-update-submit[data-host-id="' + id + '"]').hide();
+                $('.host-update-hint-submit[data-host-id="' + id + '"]').hide();
                 $('.host-restart-submit[data-host-id="' + id + '"]').hide();
             }
         }

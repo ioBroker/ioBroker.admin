@@ -2,7 +2,7 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.6.5",
+        "version": "1.6.6",
         "news": {
             "1.6.5": {
                 "en": "update selectID.js\nremove js-controller from github install\nbetter log messages in GUI",

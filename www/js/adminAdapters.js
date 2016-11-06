@@ -367,7 +367,9 @@ function Adapters(main) {
                 this.curRepository = null;
                 this.curInstalled  = null;
             }
-        } else if (this.curRunning) {
+        }
+
+        if (this.curRunning) {
             this.curRunning.push(callback);
             return;
         }
@@ -381,7 +383,7 @@ function Adapters(main) {
                 }
 
                 that.curRepository = _repository || {};
-                if (that.curRepository && that.curInstalled) {
+                if (that.curRepository && that.curInstalled && that.curRunning) {
                     that.curRepoLastUpdate = (new Date()).getTime();
                     setTimeout(function () {
                         for (var c = 0; c < that.curRunning.length; c++) {
@@ -413,7 +415,10 @@ function Adapters(main) {
         }
         if (this.curInstalled && this.curRepository) {
             setTimeout(function () {
-                callback(that.curRepository, that.curInstalled);
+                for (var c = 0; c < that.curRunning.length; c++) {
+                    that.curRunning[c](that.curRepository, that.curInstalled);
+                }
+                that.curRunning = null;
             }, 0);
         }
     };

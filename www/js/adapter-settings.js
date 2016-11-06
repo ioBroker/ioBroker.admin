@@ -224,8 +224,8 @@ function confirmMessage(message, title, icon, buttons, callback) {
     if (!$dialogConfirm.length) {
         $('body').append('<div id="dialog-confirm-settings" title="Message" style="display: none">\n' +
             '<p>' +
-            '<span id="dialog-message-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
-            '<span id="dialog-message-text-settings"></span>\n' +
+            '<span id="dialog-confirm-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
+            '<span id="dialog-confirm-text-settings"></span>\n' +
             '</p>\n' +
             '</div>');
         $dialogConfirm = $('#dialog-confirm-settings');
