@@ -2,12 +2,17 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.6.6",
+        "version": "1.6.7",
         "news": {
+            "1.6.7": {
+                "en": "expert mode in adapters: allow install of js-controller from git, allow install specific adapter version",
+                "de": "Expertenmodus in Adapter: erlaube Installation von js-controller vom git, erluabe installation von belibieger Adapterversion",
+                "ru": "Режим эксперта в Драйверах: можно устанавливть js-controller c git, можно установить любую версию драйвера"
+            },
             "1.6.5": {
                 "en": "update selectID.js\nremove js-controller from github install\nbetter log messages in GUI",
                 "de": "Update selectID Dialog\nNehme js-controller aus Guthub Menü raus\nBessere GUI für logs",
-                "ru": "Ибновлён диалог выбора ID\nУбран js-controller из меню установки с github\nУлучшен GUI для логов"
+                "ru": "Обновлён диалог выбора ID\nУбран js-controller из меню установки с github\nУлучшен GUI для логов"
             },
             "1.6.4": {
                 "en": "Changes for JS adapter",

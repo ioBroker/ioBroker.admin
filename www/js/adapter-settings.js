@@ -274,13 +274,14 @@ function confirmMessage(message, title, icon, buttons, callback) {
     }
 
     $dialogConfirm.dialog('option', 'title', title || _('Message'));
-    $('#dialog-confirm-text').html(message);
+    $('#dialog-confirm-text-settings').html(message);
     if (icon) {
-        $('#dialog-confirm-icon').show();
-        $('#dialog-confirm-icon').attr('class', '');
-        $('#dialog-confirm-icon').addClass('ui-icon ui-icon-' + icon);
+        $('#dialog-confirm-icon-settings')
+            .show()
+            .attr('class', '')
+            .addClass('ui-icon ui-icon-' + icon);
     } else {
-        $('#dialog-confirm-icon').hide();
+        $('#dialog-confirm-icon-settings').hide();
     }
     $dialogConfirm.data('callback', callback);
     $dialogConfirm.dialog('open');
