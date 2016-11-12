@@ -158,8 +158,9 @@ function Hosts(main) {
             $dialog.dialog({
                 autoOpen:   false,
                 modal:      true,
+                resizable:  false,
                 width:      600,
-                height:     300,
+                height:     350,
                 open: function (event, ui) {
                     $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                 },

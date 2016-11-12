@@ -87,10 +87,20 @@ systemDictionary = {
     "Custom":               {"en": "Custom",                "de": "Beliebig",               "ru": "Произвольный"},
     "Select adapter:":      {"en": "Select adapter:",       "de": "Adapter auswählen:",     "ru": "Выбрать драйвер:"},
     "No version of %s":     {"en": "No version of %s",      "de": "Keine Versioninfo für %s", "ru": "Нет информации о версии для %s"},
+    "install specific version": {
+        "en": "Install specific version",
+        "de": "Installiere bestimmte Version",
+        "ru": "Установить определённую версию"
+    },
     "Invalid version of %s. Required %s": {
         "en": "Invalid version of %s. Required %s",
         "de": "Nicht kompatible Version von %s. Es wird erwartet %s",
         "ru": "Требуется другая версия драйвера %s. Требуется %s"
+    },
+    "You can check changelog here": {
+        "en": 'You can check changelog <a href="https://github.com/ioBroker/ioBroker.js-controller/blob/master/CHANGELOG.md" target="_blank">here</a>',
+        "de": 'Änderungen können <a href="https://github.com/ioBroker/ioBroker.js-controller/blob/master/CHANGELOG.md" target="_blank">hier</a> angeschaut werden',
+        "ru": 'Список изменений можно посмотреть <a href="https://github.com/ioBroker/ioBroker.js-controller/blob/master/CHANGELOG.md" target="_blank">здесь</a>'
     },
     "Cron expression":      {"en": "Cron expression",       "de": "Cron-Ausdruck",          "ru": "Cron-Выражение"},
     "Clear":                {"en": "Clear",                 "de": "Löschen",                "ru": "Сбросить"},
@@ -107,12 +117,12 @@ systemDictionary = {
         "de": "ioBroker Adapter Skripte",
         "ru": "ioBroker adapter скрипты"
     },
-    "RAM usage":            {"en": "RAM usage",             "de": "RAM Benutzung",          "ru": "Использование RAM"},
-    "RAM total usage:":     {"en": "RAM total usage:",      "de": "RAM verbraucht:",        "ru": "Использование RAM:"},
+    "RAM usage":            {"en": "RAM usage",             "de": "RAM Benutzung",          "ru": "Исп. RAM"},
+    "RAM total usage:":     {"en": "RAM total usage:",      "de": "Insgesamt RAM verbraucht:", "ru": "Всего RAM - Используется:"},
     "MB":                   {"en": "Mb",                    "de": "MB",                     "ru": "Мб"},
     "Host":                 {"en": "Host",                  "de": "Host",                   "ru": "Сервер"},
-    "Free RAM:":            {"en": "Free RAM:",             "de": "Freies RAM:",            "ru": "Свободно RAM:"},
-    "%s processes":         {"en": "%s processes",          "de": "%s Prozesse",           "ru": "%s процессов"},
+    "Free RAM:":            {"en": "Free:",                 "de": "Frei:",                  "ru": "Свободно:"},
+    "%s processes":         {"en": "%s processes",          "de": "%s Prozesse",            "ru": "%s процессов"},
     "Hosts":                {"en": "Hosts",                 "de": "Hosts",                  "ru": "Сервера"},
     "Settings":             {"en": "Settings",              "de": "Einstellungen",          "ru": "Настройки"},
     "Delete member":        {"en": "Delete member",         "de": "Mitglied löschen",       "ru": "Удалить участника"},

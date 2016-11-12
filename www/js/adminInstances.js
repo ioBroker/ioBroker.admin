@@ -218,7 +218,7 @@ function Instances(main) {
             title += '</table>';
         }
 
-        state = (state == 'blue') ? '' : state;
+        state = (state === 'blue') ? '' : state;
 
         $led.removeClass('led-red led-green led-orange led-blue').addClass('led-' + state).data('title', title);
 
@@ -557,7 +557,7 @@ function Instances(main) {
             timeout = setTimeout(function () {
                 var val = $(this).val();
 
-                if (JSON.stringify(val) != JSON.stringify(oldVal)) {
+                if (JSON.stringify(val) !== JSON.stringify(oldVal)) {
                     var obj = {common: {}};
                     obj.common[attr] = $(this).val();
                     that.main.socket.emit('extendObject', id, obj, function (err) {
@@ -572,8 +572,8 @@ function Instances(main) {
                     .css('text-align', textAlign);
             }.bind(this), 100);
         }).keyup(function (e) {
-            if (e.which == 13) $(this).trigger('blur');
-            if (e.which == 27) {
+            if (e.which === 13) $(this).trigger('blur');
+            if (e.which === 27) {
                 if (oldVal === undefined) oldVal = '';
                 $this.html(oldVal)
                     .click(onQuickEditField)
@@ -698,7 +698,7 @@ function Instances(main) {
                 $('#instances-filter').trigger('change');
             }, 300);
         });
-        if (that.main.config.instancesFilter && that.main.config.instancesFilter[0] != '{') {
+        if (that.main.config.instancesFilter && that.main.config.instancesFilter[0] !== '{') {
             $('#instances-filter').val(that.main.config.instancesFilter);
         }
 
@@ -709,12 +709,8 @@ function Instances(main) {
         }).css({width: '1.5em', height: '1.5em'}).attr('title', _('_Toggle expert mode')).click(function () {
             that.main.config.expertMode = !that.main.config.expertMode;
             that.main.saveConfig('expertMode', that.main.config.expertMode);
-            that.init(true);
-            if (that.main.config.expertMode) {
-                $('#btn-instances-expert-mode').addClass('ui-state-error');
-            } else {
-                $('#btn-instances-expert-mode').removeClass('ui-state-error');
-            }
+            that.updateExpertMode();
+            that.main.tabs.adapter.updateExpertMode();
         });
         if (that.main.config.expertMode) $('#btn-instances-expert-mode').addClass('ui-state-error');
 
@@ -738,12 +734,21 @@ function Instances(main) {
         });
     };
 
+    this.updateExpertMode = function () {
+        that.init(true);
+        if (that.main.config.expertMode) {
+            $('#btn-instances-expert-mode').addClass('ui-state-error');
+        } else {
+            $('#btn-instances-expert-mode').removeClass('ui-state-error');
+        }
+    };
+
     this.replaceLink = function (_var, adapter, instance, elem) {
         _var = _var.replace(/%/g, '');
         if (_var.match(/^native_/))  _var = _var.substring(7);
         // like web.0_port
         var parts;
-        if (_var.indexOf('_') == -1) {
+        if (_var.indexOf('_') === -1) {
             parts = [
                 adapter + '.' + instance,
                 _var
@@ -754,9 +759,9 @@ function Instances(main) {
             if (!parts[0].match(/\.[0-9]+$/)) parts[0] += '.0';
         }
 
-        if (parts[1] == 'protocol') parts[1] = 'secure';
+        if (parts[1] === 'protocol') parts[1] = 'secure';
 
-        if (_var == 'instance') {
+        if (_var === 'instance') {
             setTimeout(function () {
                 var link;
                 if (elem) {
@@ -785,10 +790,10 @@ function Instances(main) {
                         link = $('#a_' + adapter + '_' + instance).attr('href');
                     }
                     if (link) {
-                        if (parts[1] == 'secure') {
+                        if (parts[1] === 'secure') {
                             link = link.replace('%' + _var + '%', obj.native[parts[1]] ? 'https' : 'http');
                         } else {
-                            if (link.indexOf('%' + _var + '%') == -1) {
+                            if (link.indexOf('%' + _var + '%') === -1) {
                                 link = link.replace('%native_' + _var + '%', obj.native[parts[1]]);
                             } else {
                                 link = link.replace('%' + _var + '%', obj.native[parts[1]]);
@@ -806,7 +811,7 @@ function Instances(main) {
     };
 
     this.replaceLinks = function (vars, adapter, instance, elem) {
-        if (typeof vars != 'object') vars = [vars];
+        if (typeof vars !== 'object') vars = [vars];
         for (var t = 0; t < vars.length; t++) {
             this.replaceLink(vars[t], adapter, instance, elem);
         }
@@ -819,7 +824,7 @@ function Instances(main) {
         if (_var.match(/^native_/)) _var = _var.substring(7);
         // like web.0_port
         var parts;
-        if (_var.indexOf('_') == -1) {
+        if (_var.indexOf('_') === -1) {
             parts = [adapter + '.' + instance, _var];
         } else {
             parts = _var.split('_');
@@ -827,14 +832,14 @@ function Instances(main) {
             if (!parts[0].match(/\.[0-9]+$/)) parts[0] += '.0';
         }
 
-        if (parts[1] == 'protocol') parts[1] = 'secure';
+        if (parts[1] === 'protocol') parts[1] = 'secure';
 
         this.main.socket.emit('getObject', 'system.adapter.' + parts[0], function (err, obj) {
             if (obj && link) {
-                if (parts[1] == 'secure') {
+                if (parts[1] === 'secure') {
                     link = link.replace('%' + _var + '%', obj.native[parts[1]] ? 'https' : 'http');
                 } else {
-                    if (link.indexOf('%' + _var + '%') == -1) {
+                    if (link.indexOf('%' + _var + '%') === -1) {
                         link = link.replace('%native_' + _var + '%', obj.native[parts[1]]);
                     } else {
                         link = link.replace('%' + _var + '%', obj.native[parts[1]]);
@@ -858,12 +863,12 @@ function Instances(main) {
         if (!vars) {
             return callback(link, adapter, instance, arg);
         }
-        if (vars[0] == '%ip%') {
+        if (vars[0] === '%ip%') {
             link = link.replace('%ip%', location.hostname);
             this._replaceLinks(link, adapter, instance, arg, callback);
             return;
         }
-        if (vars[0] == '%instance%') {
+        if (vars[0] === '%instance%') {
             link = link.replace('%instance%', instance);
             this._replaceLinks(link, adapter, instance, arg, callback);
             return;
@@ -983,7 +988,7 @@ function Instances(main) {
                 }
             } else {
                 var i = this.list.indexOf(id);
-                if (i != -1) {
+                if (i !== -1) {
                     this.list.splice(i, 1);
                     this.$grid.find('.instance-adapter[data-instance-id="' + id + '"]').remove();
                 }

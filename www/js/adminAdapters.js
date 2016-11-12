@@ -30,14 +30,11 @@ function Adapters(main) {
     this.filterVals    = {length: 0};
     this.onlyInstalled = false;
     this.onlyUpdatable = false;
-    this.countUpdatable = 0;
     this.currentFilter = '';
     this.isCollapsed   = {};
 
     this.types = {
-        hmm:          'hardware',
-        occ:          'schedule',
-        artnet:       'hardware'
+        occ:          'schedule'
     };
     
     this.prepare = function () {
@@ -202,7 +199,7 @@ function Adapters(main) {
 
                 for (var o = 0; o < order.length; o++) {
                     var user = that.urls[order[o]].match(/\.com\/([-_$§A-Za-z0-9]+)\/([-._$§A-Za-z0-9]+)\//);
-                    if (user && user.length >= 2 && order[o].indexOf('js-controller') === -1) {
+                    if (user && user.length >= 2 && (that.main.config.expertMode || order[o].indexOf('js-controller') === -1)) {
                         text += '<option value="https://github.com/' + user[1] + '/ioBroker.' + order[o] + '/tarball/master ' + order[o] + '">' + order[o] + '</option>';
                     }
                 }
@@ -270,6 +267,17 @@ function Adapters(main) {
             });
         });
 
+        $('#btn-adapters-expert-mode').button({
+            icons: {primary: 'ui-icon-person'},
+            text:  false
+        }).css({width: 18, height: 18}).attr('title', _('_Toggle expert mode')).click(function () {
+            that.main.config.expertMode = !that.main.config.expertMode;
+            that.main.saveConfig('expertMode', that.main.config.expertMode);
+            that.updateExpertMode();
+            that.main.tabs.instances.updateExpertMode();
+        });
+        if (that.main.config.expertMode) $('#btn-adapters-expert-mode').addClass('ui-state-error');
+
         $('#install-tabs').tabs({
             activate: function (event, ui) {
                 switch (ui.newPanel.selector) {
@@ -287,7 +295,7 @@ function Adapters(main) {
             that.main.saveConfig('adaptersGithub', $(this).val());
         });
         $('#install-url-link').keyup(function (event) {
-            if (event.which == 13) {
+            if (event.which === 13) {
                 $('#dialog-install-url-button').trigger('click');
             }
         });
@@ -297,7 +305,7 @@ function Adapters(main) {
         that.onlyInstalled = that.main.config.adaptersOnlyInstalled || false;
         that.onlyUpdatable = that.main.config.adaptersOnlyUpdatable || false;
         that.currentFilter = that.main.config.adaptersCurrentFilter || '';
-        that.isCollapsed = that.main.config.adaptersIsCollapsed ? JSON.parse(that.main.config.adaptersIsCollapsed) : {};
+        that.isCollapsed   = that.main.config.adaptersIsCollapsed ? JSON.parse(that.main.config.adaptersIsCollapsed) : {};
         $('#adapters-filter').val(that.currentFilter);
 
         if (that.isList) {
@@ -307,7 +315,7 @@ function Adapters(main) {
         }
 
         if (that.onlyInstalled) $('#btn_filter_adapters').addClass('ui-state-error');
-        if (that.onlyUpdatable) {
+        if (that.onlyUpdatable || that.main.config.expertMode) {
             $('#btn_filter_updates').addClass('ui-state-error');
             $('#btn_upgrade_all').show();
         } else {
@@ -336,6 +344,22 @@ function Adapters(main) {
         $('#adapters-filter-clear').button({icons: {primary: 'ui-icon-close'}, text: false}).css({width: 16, height: 16}).click(function () {
             $('#adapters-filter').val('').trigger('change');
         });
+    };
+
+    this.updateExpertMode = function () {
+        this.init(true);
+        if (that.main.config.expertMode) {
+            $('#btn-adapters-expert-mode').addClass('ui-state-error');
+            $('#btn_upgrade_all').show();
+        } else {
+            $('#btn-adapters-expert-mode').removeClass('ui-state-error');
+
+            if (that.onlyUpdatable) {
+                $('#btn_upgrade_all').show();
+            } else {
+                $('#btn_upgrade_all').hide();
+            }
+        }
     };
 
     function customFilter(node) {
@@ -617,8 +641,9 @@ function Adapters(main) {
                         installed:  installed,
                         bold:       obj.highlight || false,
                         install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit" title="' + _('add instance') + '"></button>' +
-                            '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit" title="' + _('readme') + '"></button>' +
-                            '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit" title="' + _('delete adapter') + '"></button>',
+                                 '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit" title="' + _('readme') + '"></button>' +
+                                 '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit" title="' + _('delete adapter') + '"></button>' +
+                                 ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-update-custom-submit" title="' + _('install specific version') + '"></button>' : ''),
                         platform:   obj.platform,
                         group:      group,
                         license:    obj.license || '',
@@ -702,7 +727,8 @@ function Adapters(main) {
                             installed:  '',
                             install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
                                      '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
-                                     '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>',
+                                     '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>' +
+                                    ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-update-custom-submit" title="' + _('install specific version') + '"></button>' : ''),
                             platform:   obj.platform,
                             license:    obj.license || '',
                             licenseUrl: obj.licenseUrl || '',
@@ -909,6 +935,62 @@ function Adapters(main) {
                 if (!exitCode) that.init(true);
             });
         });
+
+        var $button = $('.adapter-update-custom-submit[data-adapter-name="' + adapter + '"]');
+        $button.button({
+            text: false,
+            icons: {
+                primary: ' ui-icon-triangle-1-s'
+            }
+        }).css({width: 22, height: 18}).unbind('click').on('click', function () {
+            var versions = [];
+            if (that.main.objects['system.adapter.' + adapter].common.news) {
+                for (var id in that.main.objects['system.adapter.' + adapter].common.news) {
+                    versions.push(id);
+                }
+            } else {
+                versions.push(that.main.objects['system.adapter.' + adapter].common.version);
+            }
+            var menu = '';
+            for (var v = 0; v < versions.length; v++) {
+                menu += '<li data-version="' + versions[v] + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="adapters-versions-link"><b>' + versions[v] + '</b></li>';
+            }
+            menu += '<li class="adapters-versions-link">' + _('Close') + '</li>';
+
+            var $adaptersMenu = $('#adapters-menu');
+            if ($adaptersMenu.data('inited')) $adaptersMenu.menu('destroy');
+
+            var pos = $(this).position();
+            $adaptersMenu.html(menu);
+            if (!$adaptersMenu.data('inited')) {
+                $adaptersMenu.data('inited', true);
+                $adaptersMenu.mouseleave(function () {
+                    $(this).hide();
+                });
+            }
+
+            $adaptersMenu.menu().css({
+                left:   pos.left - $adaptersMenu.width(),
+                top:    pos.top
+            }).show();
+
+            $('.adapters-versions-link').unbind('click').click(function () {
+                //if ($(this).data('link')) window.open($(this).data('link'), $(this).data('instance-id'));
+                var adapter = $(this).data('adapter-name');
+                var version = $(this).data('version');
+                if (version && adapter) {
+                    that.main.cmdExec(null, 'upgrade ' + adapter + '@' + version, function (exitCode) {
+                        if (!exitCode) that.init(true);
+                    });
+                }
+
+                $('#adapters-menu').hide();
+            });
+        });
+
+        if (!that.main.objects['system.adapter.' + adapter]) {
+            $button.button('disable');
+        }
     };
 
     this.objectChange = function (id, obj) {
