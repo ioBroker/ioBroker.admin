@@ -397,7 +397,6 @@ function Adapters(main) {
             this.curRunning.push(callback);
             return;
         }
-        this.curRunning = [callback];
 
         if (!this.curRepository) {
             this.main.socket.emit('sendToHost', host, 'getRepository', {repo: this.main.systemConfig.common.activeRepo, update: updateRepo}, function (_repository) {
@@ -437,13 +436,19 @@ function Adapters(main) {
                 }
             });
         }
+
         if (this.curInstalled && this.curRepository) {
             setTimeout(function () {
-                for (var c = 0; c < that.curRunning.length; c++) {
-                    that.curRunning[c](that.curRepository, that.curInstalled);
+                if (that.curRunning) {
+                    for (var c = 0; c < that.curRunning.length; c++) {
+                        that.curRunning[c](that.curRepository, that.curInstalled);
+                    }
+                    that.curRunning = null;
                 }
-                that.curRunning = null;
+                if (callback) callback(that.curRepository, that.curInstalled);
             }, 0);
+        } else {
+            this.curRunning = [callback];
         }
     };
 

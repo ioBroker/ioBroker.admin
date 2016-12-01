@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.6.7",
+        "version": "1.6.8",
         "news": {
+            "1.6.8": {
+                "en": "Fix problem with install of instances",
+                "de": "Korrigiere das Probelm mit Instanzinstallation",
+                "ru": "Исправлена установка экземпляров драйверов"
+            },
             "1.6.7": {
                 "en": "expert mode in adapters: allow install of js-controller from git, allow install specific adapter version",
                 "de": "Expertenmodus in Adapter: erlaube Installation von js-controller vom git, erluabe installation von belibieger Adapterversion",

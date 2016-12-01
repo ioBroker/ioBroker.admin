@@ -65,6 +65,9 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
+### 1.6.8 (2016-11-26)
+* (bluefox) Fix problem with install of instances
+
 ### 1.6.7 (2016-11-12)
 * (bluefox) expert mode in adapters: allow install of js-controller from git, allow install specific adapter version
 * (bluefox) fix confirm dialog
