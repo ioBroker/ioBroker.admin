@@ -1,17 +1,16 @@
 os:
   - linux
-#  - osx
+  - osx
 language: node_js
 node_js:
-#  - "0.10"
-#  - "0.12"
+  - "0.10"
+  - "0.12"
   - "4"
-#  - "6"
+  - "6"
 before_script:
   - rm -rf ./node_modules/iobroker.js-controller/node_modules/iobroker.admin
   - npm install winston@2.3.0
   - npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production
-  - find . -name states.json
 env:
   - CXX=g++-4.8
 addons:

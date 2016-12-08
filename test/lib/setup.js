@@ -6,7 +6,7 @@ var path          = require('path');
 var child_process = require('child_process');
 var rootDir       = path.normalize(__dirname + '/../../');
 var pkg           = require(rootDir + 'package.json');
-var debug         = true;//typeof v8debug === 'object';
+var debug         = typeof v8debug === 'object';
 
 var adapterName = path.normalize(rootDir).replace(/\\/g, '/').split('/');
 adapterName = adapterName[adapterName.length - 2];
@@ -95,7 +95,7 @@ function storeOriginalFiles() {
         fs.writeFileSync(dataDir + 'states.json.original', f);
     }
     catch (err) {
-        console.log('no states.json found');
+        console.log('no states.json found - ignore');
     }
 }
 
@@ -110,7 +110,7 @@ function restoreOriginalFiles() {
         fs.writeFileSync(dataDir + 'states.json', f);
     }
     catch (err) {
-        console.log('no states.json.original found');
+        console.log('no states.json.original found - ignore');
     }
 
 }
