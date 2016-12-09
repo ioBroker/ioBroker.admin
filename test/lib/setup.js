@@ -90,8 +90,13 @@ function storeOriginalFiles() {
     }
 
     fs.writeFileSync(dataDir + 'objects.json.original', JSON.stringify(objects));
-    f = fs.readFileSync(dataDir + 'states.json');
-    fs.writeFileSync(dataDir + 'states.json.original', f);
+    try {
+        f = fs.readFileSync(dataDir + 'states.json');
+        fs.writeFileSync(dataDir + 'states.json.original', f);
+    }
+    catch (err) {
+        console.log('no states.json found - ignore');
+    }
 }
 
 function restoreOriginalFiles() {
@@ -100,8 +105,14 @@ function restoreOriginalFiles() {
 
     var f = fs.readFileSync(dataDir + 'objects.json.original');
     fs.writeFileSync(dataDir + 'objects.json', f);
-    f = fs.readFileSync(dataDir + 'states.json.original');
-    fs.writeFileSync(dataDir + 'states.json', f);
+    try {
+        f = fs.readFileSync(dataDir + 'states.json.original');
+        fs.writeFileSync(dataDir + 'states.json', f);
+    }
+    catch (err) {
+        console.log('no states.json.original found - ignore');
+    }
+
 }
 
 function checkIsAdapterInstalled(cb, counter) {
