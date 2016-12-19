@@ -1051,7 +1051,8 @@
             },
             renderColumns: function (event, _data) {
                 var node = _data.node;
-                var $tdList = $(node.tr).find('>td');
+                var $tr     = $(node.tr);
+                var $tdList = $tr.find('>td');
 
                 var isCommon = data.objects[node.key] && data.objects[node.key].common;
                 var $firstTD = $tdList.eq(1);
@@ -1063,8 +1064,8 @@
                     $firstTD.find('.fancytree-checkbox').hide();
                 }
 
-                // special case for javascript sctipts
-                if (data.objects[node.key] && node.key.match(/^script\.js\./)) {
+                // special case for javascript scripts
+                if (data.objects[node.key] && (node.key.match(/^script\.js\./) || node.key.match(/^enum\.[\w\d_-]+$/))) {
                     if (data.objects[node.key].type !== 'script') {
                         // force folder icon and change color
                         if (node.key !== 'script.js.global') {
@@ -1073,7 +1074,6 @@
                             $firstTD.find('.fancytree-title').css({'font-weight': 'bold', color: '#078a0c'});
                         }
                         $firstTD.addClass('fancytree-force-folder');
-                        //node.hasChildren = function () { return true; };
                     }
                 }
 
@@ -1284,7 +1284,12 @@
                             e.preventDefault();
                         });
 
-                        if (data.quickEdit && data.objects[node.key] && data.objects[node.key].type === 'state' && data.quickEdit.indexOf('value') !== -1) {
+                        if (data.quickEdit &&
+                            data.objects[node.key] &&
+                            data.objects[node.key].type === 'state' &&
+                            data.quickEdit.indexOf('value') !== -1  &&
+                            (data.expertMode || data.objects[node.key].common.write !== false)
+                        ) {
                             if (!data.objects[node.key].common || data.objects[node.key].common.type !== 'file') {
                                 var val = data.states[node.key];
                                 val = val ? val.val : '';
@@ -1327,7 +1332,7 @@
                                 $tdList.eq(base).html(text);
 
                                 for (var p = 0; p < data.buttons.length; p++) {
-                                    var btn = $('.select-button-' + p + '[data-id="' + node.key + '"]').button(data.buttons[p]).click(function () {
+                                    var btn = $tr.find('.select-button-' + p + '[data-id="' + node.key + '"]').button(data.buttons[p]).click(function () {
                                         var cb = $(this).data('callback');
                                         if (cb) cb.call($(this), $(this).attr('data-id'));
                                     }).data('callback', data.buttons[p].click).attr('title', data.buttons[p].title || '');
@@ -1345,7 +1350,7 @@
                         }
 
                         if (data.editEnd) {
-                            $('.select-button-edit[data-id="' + node.key + '"]').button({
+                            $tr.find('.select-button-edit[data-id="' + node.key + '"]').button({
                                 text: false,
                                 icons: {
                                     primary:'ui-icon-pencil'
@@ -1354,7 +1359,7 @@
                                 $(this).data('node').editStart();
                             }).attr('title', data.texts.edit).data('node', node).css({width: 26, height: 20});
 
-                            $('.select-button-ok[data-id="' + node.key + '"]').button({
+                            $tr.find('.select-button-ok[data-id="' + node.key + '"]').button({
                                 text: false,
                                 icons: {
                                     primary:'ui-icon-check'
@@ -1365,7 +1370,7 @@
                                 node.editEnd(true);
                             }).attr('title', data.texts.ok).data('node', node).hide().css({width: 26, height: 20});
 
-                             $('.select-button-cancel[data-id="' + node.key + '"]').button({
+                            $tr.find('.select-button-cancel[data-id="' + node.key + '"]').button({
                                 text: false,
                                 icons: {
                                     primary:'ui-icon-close'
@@ -1445,10 +1450,10 @@
                     if (!data.objects[_data.node.key]) return false;
                 },
                 edit: function (event, _data) {
-                    $('.select-button-edit[data-id="' + _data.node.key + '"]').hide();
-                    $('.select-button-cancel[data-id="' + _data.node.key + '"]').show();
-                    $('.select-button-ok[data-id="' + _data.node.key + '"]').show();
-                    $('.select-button-custom[data-id="' + _data.node.key + '"]').hide();
+                    $dlg.find('.select-button-edit[data-id="'   + _data.node.key + '"]').hide();
+                    $dlg.find('.select-button-cancel[data-id="' + _data.node.key + '"]').show();
+                    $dlg.find('.select-button-ok[data-id="'     + _data.node.key + '"]').show();
+                    $dlg.find('.select-button-custom[data-id="' + _data.node.key + '"]').hide();
 
                     var node = _data.node;
                     var $tdList = $(node.tr).find('>td');
@@ -1461,7 +1466,7 @@
 
                         if (name === 'name') {
                             $tdList.eq(2 + c).html('<input type="text" id="select_edit_' + name + '" value="' + data.objects[_data.node.key].common[name] + '" style="width: 100%"/>');
-                            inputs[name] = $('#select_edit_' + name);
+                            inputs[name] = $dlg.find('#select_edit_' + name);
                         }
                     }
                     for (var i in inputs) {
@@ -1495,7 +1500,7 @@
                         var name = data.columns[c];
                         if (typeof name === 'object') name = name.name;
                         if (name === 'name') {
-                            editValues[name] = $('#select_edit_' + name).val();
+                            editValues[name] = $dlg.find('#select_edit_' + name).val();
                         }
                     }
 
@@ -1508,10 +1513,10 @@
                     return true;
                 },
                 close: function (event, _data) {
-                    $('.select-button-edit[data-id="' + _data.node.key + '"]').show();
-                    $('.select-button-cancel[data-id="' + _data.node.key + '"]').hide();
-                    $('.select-button-ok[data-id="' + _data.node.key + '"]').hide();
-                    $('.select-button-custom[data-id="' + _data.node.key + '"]').show();
+                    $dlg.find('.select-button-edit[data-id="' + _data.node.key + '"]').show();
+                    $dlg.find('.select-button-cancel[data-id="' + _data.node.key + '"]').hide();
+                    $dlg.find('.select-button-ok[data-id="' + _data.node.key + '"]').hide();
+                    $dlg.find('.select-button-custom[data-id="' + _data.node.key + '"]').show();
                     if (_data.node.editFinished !== undefined) delete _data.node.editFinished;
                     // Editor was removed
                     if (data.save) {

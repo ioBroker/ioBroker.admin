@@ -259,7 +259,7 @@ function Enums(main) {
         $dialogEnum.dialog({
             autoOpen:   false,
             modal:      true,
-            width:      500,
+            width:      600,
             height:     300,
             buttons: [
                 {
@@ -314,10 +314,10 @@ function Enums(main) {
             this.$grid.height(y - 100).width(x - 20);
 */
             this.$grid.selectId('init', {
-                objects: main.objects,
-                states: main.states,
+                objects:  main.objects,
+                states:   main.states,
                 noDialog: true,
-                texts: {
+                texts:    {
                     select:   _('Select'),
                     cancel:   _('Cancel'),
                     all:      _('All'),
@@ -337,10 +337,10 @@ function Enums(main) {
                     ok:       _('Ok'),
                     enum:     _('Members')
                 },
-                filter: {type: 'enum'},
-                columns: ['name', 'enum', 'button'],
-                widths:  ['150', '*', '120'],
-                buttons: [
+                filter:   {type: 'enum'},
+                columns:  ['name', 'enum', 'button'],
+                widths:   ['150', '*', '120'],
+                buttons:  [
                     {
                         text: false,
                         icons: {

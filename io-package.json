@@ -2,11 +2,16 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.6.8",
+        "version": "1.6.9",
         "news": {
+            "1.6.9": {
+                "en": "Fix problem with the enums editing",
+                "de": "Korrigiere das Problem mit Aufzählungen-Editierung",
+                "ru": "Исправлено редактирование категорий"
+            },
             "1.6.8": {
                 "en": "Fix problem with install of instances",
-                "de": "Korrigiere das Probelm mit Instanzinstallation",
+                "de": "Korrigiere das Problem mit Instanzinstallation",
                 "ru": "Исправлена установка экземпляров драйверов"
             },
             "1.6.7": {
