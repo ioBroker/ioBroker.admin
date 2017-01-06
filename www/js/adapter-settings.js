@@ -25,14 +25,14 @@ $(document).ready(function () {
     systemDictionary.saveclose =      {"en": "Save and close", "de": "Speichern und schließen", "ru": "Сохранить и выйти"};
     systemDictionary.none =           {"en": "none",        "de": "keins",       "ru": ""};
     systemDictionary.all =            {"en": "all",         "de": "alle",        "ru": "все"};
-    systemDictionary['Device list'] = {"en": "Device list", "de": "Geräteliste",  "ru": "Список устройств"};
+    systemDictionary['Device list'] = {"en": "Device list", "de": "Geräteliste", "ru": "Список устройств"};
     systemDictionary['new device'] =  {"en": "new device",  "de": "Neues Gerät", "ru": "Новое устройство"};
     systemDictionary.edit =           {"en": "edit",        "de": "Ändern",      "ru": "Изменить"};
     systemDictionary.delete =         {"en": "delete",      "de": "Löschen",     "ru": "Удалить"};
     systemDictionary.ok =             {"en": "Ok",          "de": "Ok",          "ru": "Ok"};
     systemDictionary.cancel =         {"en": "Cancel",      "de": "Abbrechen",   "ru": "Отмена"};
     systemDictionary.Message =        {"en": "Message",     "de": "Mitteilung",  "ru": "Сообщение"};
-    systemDictionary.close =          {"en": "Close",       "de": "Schließen",    "ru": "Закрыть"};
+    systemDictionary.close =          {"en": "Close",       "de": "Schließen",   "ru": "Закрыть"};
 
     //socket.on('connection', function () {
         loadSystemConfig(function () {
