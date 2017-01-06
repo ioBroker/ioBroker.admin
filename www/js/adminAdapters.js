@@ -13,17 +13,17 @@ function Adapters(main) {
     this.data = {};
     this.urls = {};
     this.groupImages = {
-        'common adapters_group':  '/img/common.png',
-        'hardware_group':         '/img/hardware.png',
-        'script_group':           '/img/script.png',
-        'media_group':            '/img/media.png',
-        'communication_group':    '/img/communication.png',
-        'visualisation_group':    '/img/visualisation.png',
-        'storage_group':          '/img/storage.png',
-        'weather_group':          '/img/weather.png',
-        'schedule_group':         '/img/schedule.png',
-        'vis_group':              '/img/vis.png',
-        'service_group':          '/img/service.png'
+        'common adapters_group':  'img/common.png',
+        'hardware_group':         'img/hardware.png',
+        'script_group':           'img/script.png',
+        'media_group':            'img/media.png',
+        'communication_group':    'img/communication.png',
+        'visualisation_group':    'img/visualisation.png',
+        'storage_group':          'img/storage.png',
+        'weather_group':          'img/weather.png',
+        'schedule_group':         'img/schedule.png',
+        'vis_group':              'img/vis.png',
+        'service_group':          'img/service.png'
     };
 
     this.isList        = false;
@@ -315,8 +315,9 @@ function Adapters(main) {
         }
 
         if (that.onlyInstalled) $('#btn_filter_adapters').addClass('ui-state-error');
+
         if (that.onlyUpdatable || that.main.config.expertMode) {
-            $('#btn_filter_updates').addClass('ui-state-error');
+            if (that.onlyUpdatable) $('#btn_filter_updates').addClass('ui-state-error');
             $('#btn_upgrade_all').show();
         } else {
             $('#btn_upgrade_all').hide();

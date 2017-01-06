@@ -1,17 +1,21 @@
-var socket =   io.connect();
+var path = location.pathname;
+var parts = path.split('/');
+parts.splice(-3);
+
+var socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
 var instance = window.location.search.slice(1);
-var common =   null; // common information of adapter
-var host =     null; // host object on which the adapter runs
-var changed =  false;
-var certs =    [];
-var adapter =  '';
+var common   = null; // common information of adapter
+var host     = null; // host object on which the adapter runs
+var changed  = false;
+var certs    = [];
+var adapter  = '';
 var onChangeSupported = false;
 
 $(document).ready(function () {
     'use strict';
 
     var tmp = window.location.pathname.split('/');
-    adapter = tmp[2];
+    adapter = tmp[tmp.length - 2];
     var id = 'system.adapter.' + adapter + '.' + instance;
 
     // Extend dictionary with standard words for adapter
@@ -30,11 +34,13 @@ $(document).ready(function () {
     systemDictionary.Message =        {"en": "Message",     "de": "Mitteilung",  "ru": "Сообщение"};
     systemDictionary.close =          {"en": "Close",       "de": "Schließen",    "ru": "Закрыть"};
 
+    //socket.on('connection', function () {
+        loadSystemConfig(function () {
+            if (typeof translateAll === 'function') translateAll();
+            loadSettings();
+        });
+    //});
 
-    loadSystemConfig(function () {
-        if (typeof translateAll === 'function') translateAll();
-        loadSettings();
-    });
     $('body').wrapInner('<div style="height: calc(100% - 44px); width: 100%; overflow:auto"></div>');
     $('body').prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" style="padding: 2px" >' +
         '<button id="save" class="translateB">save</button>&nbsp;' +
@@ -43,8 +49,8 @@ $(document).ready(function () {
         '</div>');
 
     $('button#save').button({icons: {primary: 'ui-icon-disk'}}).click(function () {
-        if (typeof save == 'undefined') {
-            alert("Please implement save function in your admin/index.html");
+        if (typeof save === 'undefined') {
+            alert('Please implement save function in your admin/index.html');
             return;
         }
         save(function (obj, common) {
@@ -55,7 +61,7 @@ $(document).ready(function () {
         primary: 'ui-icon-disk',
         secondary: 'ui-icon-close'
     }}).click(function () {
-        if (typeof save == 'undefined') {
+        if (typeof save === 'undefined') {
             alert('Please implement save function in your admin/index.html');
             return;
         }
@@ -76,7 +82,7 @@ $(document).ready(function () {
     });
 
     function saveSettings(native, common, callback) {
-        if (typeof common == 'function') {
+        if (typeof common === 'function') {
             callback = common;
             common = null;
         }
@@ -123,7 +129,7 @@ $(document).ready(function () {
                             if (!res.native.certificates[c]) continue;
                             var _cert = {
                                 name: c,
-                                type: (res.native.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) == '-----BEGIN RSA PRIVATE KEY' || res.native.certificates[c].substring(0, '-----BEGIN PRIVATE KEY'.length) == '-----BEGIN PRIVATE KEY') ? 'private' : 'public'
+                                type: (res.native.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) === '-----BEGIN RSA PRIVATE KEY' || res.native.certificates[c].substring(0, '-----BEGIN PRIVATE KEY'.length) === '-----BEGIN PRIVATE KEY') ? 'private' : 'public'
                             };
                             if (_cert.type === 'public') {
                                 var m = res.native.certificates[c].split('-----END CERTIFICATE-----');
@@ -146,7 +152,7 @@ $(document).ready(function () {
     // callback if something changed
     function onChange(isChanged) {
         onChangeSupported = true;
-        if (typeof isChanged == 'boolean' && isChanged === false) {
+        if (typeof isChanged === 'boolean' && isChanged === false) {
             changed = false;
             $('#save').button('disable');
             $('#saveclose').button('disable');
@@ -166,7 +172,7 @@ $(document).ready(function () {
                 $('.adapter-config').html('system.adapter.' + adapter + '.' + instance);
                 common = res.common;
                 if (res.common && res.common.name) $('.adapter-name').html(res.common.name);
-                if (typeof load == 'undefined') {
+                if (typeof load === 'undefined') {
                     alert("Please implement save function in your admin/index.html");
                 } else {
                     load(res.native, onChange);
@@ -312,7 +318,7 @@ function getEnums(_enum, callback) {
         if (!err && res) {
             var _res   = {};
             for (var i = 0; i < res.rows.length; i++) {
-                if (res.rows[i].id == 'enum.' + _enum) continue;
+                if (res.rows[i].id === 'enum.' + _enum) continue;
                 _res[res.rows[i].id] = res.rows[i].value;
             }
             if (callback) callback(null, _res);
@@ -354,14 +360,14 @@ function fillUsers(elemId, current, callback) {
     getUsers(function (err, users) {
         var text = '';
         for (var u in users) {
-            text += '<option value="' + u + '" ' + ((current == u) ? 'selected' : '') + ' >' + users[u].common.name[0].toUpperCase() + users[u].common.name.substring(1)  + '</option>\n';
+            text += '<option value="' + u + '" ' + ((current === u) ? 'selected' : '') + ' >' + users[u].common.name[0].toUpperCase() + users[u].common.name.substring(1)  + '</option>\n';
         }
         $(elemId).html(text);
     });
 }
 
 function getIPs(host, callback) {
-    if (typeof host == 'function') {
+    if (typeof host === 'function') {
         callback = host;
         host = null;
     }
@@ -394,9 +400,9 @@ function fillSelectIPs(id, actualAddr, noIPv4, noIPv6) {
     getIPs(function (ips) {
         var str = '';
         for (var i = 0; i < ips.length; i++) {
-            if (noIPv4 && ips[i].family == 'ipv4') continue;
-            if (noIPv6 && ips[i].family == 'ipv6') continue;
-            str += '<option value="' + ips[i].address + '" ' + ((ips[i].address == actualAddr) ? 'selected' : '') + '>' + ips[i].name + '</option>';
+            if (noIPv4 && ips[i].family === 'ipv4') continue;
+            if (noIPv6 && ips[i].family === 'ipv6') continue;
+            str += '<option value="' + ips[i].address + '" ' + ((ips[i].address === actualAddr) ? 'selected' : '') + '>' + ips[i].name + '</option>';
         }
 
         $(id).html(str);
@@ -416,14 +422,14 @@ function fillSelectCertificates(id, type, actualValued) {
     var str = '<option value="">' + _('none') + '</option>';
     for (var i = 0; i < certs.length; i++) {
         if (certs[i].type != type) continue;
-        str += '<option value="' + certs[i].name + '" ' + ((certs[i].name == actualValued) ? 'selected' : '') + '>' + certs[i].name + '</option>';
+        str += '<option value="' + certs[i].name + '" ' + ((certs[i].name === actualValued) ? 'selected' : '') + '>' + certs[i].name + '</option>';
     }
 
     $(id).html(str);
 }
 
 function getAdapterInstances(_adapter, callback) {
-    if (typeof _adapter == 'function') {
+    if (typeof _adapter === 'function') {
         callback = _adapter;
         _adapter = null;
     }
@@ -446,8 +452,33 @@ function getAdapterInstances(_adapter, callback) {
     });
 }
 
+function getExtendableInstances(_adapter, callback) {
+    if (typeof _adapter === 'function') {
+        callback = _adapter;
+        _adapter = null;
+    }
+
+    socket.emit('getObjectView', 'system', 'instance', null, function (err, doc) {
+        if (err) {
+            if (callback) callback ([]);
+        } else {
+            if (doc.rows.length === 0) {
+                if (callback) callback ([]);
+            } else {
+                var res = [];
+                for (var i = 0; i < doc.rows.length; i++) {
+                    if (doc.rows[i].value.common.webExtendable) {
+                        res.push(doc.rows[i].value);
+                    }
+                }
+                if (callback) callback (res);
+            }
+        }
+    });
+}
+
 function getIsAdapterAlive(_adapter, callback) {
-    if (typeof _adapter == 'function') {
+    if (typeof _adapter === 'function') {
         callback = _adapter;
         _adapter = null;
     }
@@ -471,7 +502,7 @@ function addToTable(tabId, value, $grid, _isInitial) {
     var cols = $grid[0]._cols;
 
     for (var i = 0; i < cols.length; i++) {
-        if (cols[i] == 'room') {
+        if (cols[i] === 'room') {
             obj[cols[i]] = ($grid[0]._rooms[value[cols[i]]]) ? $grid[0]._rooms[value[cols[i]]].common.name : value[cols[i]];
         } else {
             obj[cols[i]] = value[cols[i]];
@@ -505,7 +536,7 @@ function _editInitButtons($grid, tabId, objId) {
         $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
 
         $grid.jqGrid('editRow', tabId + '_' + id, {"url": "clientArray"});
-        if ($grid[0]._edited.indexOf(id) == -1) {
+        if ($grid[0]._edited.indexOf(id) === -1) {
             $grid[0]._edited.push(id);
         }
         changed = true;
@@ -527,7 +558,7 @@ function _editInitButtons($grid, tabId, objId) {
         if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
 
         var pos = $grid[0]._edited.indexOf(id);
-        if (pos != -1) {
+        if (pos !== -1) {
             $grid[0]._edited.splice(pos, 1);
         }
         if ($grid[0]._onChange) $grid[0]._onChange('del', id);
@@ -552,7 +583,7 @@ function _editInitButtons($grid, tabId, objId) {
         if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
 
         var pos = $grid[0]._edited.indexOf(id);
-        if (pos != -1) {
+        if (pos !== -1) {
             $grid[0]._edited.splice(pos, 1);
         }
         if ($grid[0]._onChange) $grid[0]._onChange('changed', $grid.jqGrid('getRowData', tabId + '_' + id));
@@ -571,7 +602,7 @@ function _editInitButtons($grid, tabId, objId) {
 
         $grid.jqGrid('restoreRow', tabId + '_' + id, false);
         var pos = $grid[0]._edited.indexOf(id);
-        if (pos != -1) {
+        if (pos !== -1) {
             $grid[0]._edited.splice(pos, 1);
         }
     }).css({'height': '18px', width: '22px'});
@@ -579,7 +610,7 @@ function _editInitButtons($grid, tabId, objId) {
 
 function _editTable(tabId, cols, values, rooms, top, onChange) {
     var title = 'Device list';
-    if (typeof tabId == 'object') {
+    if (typeof tabId === 'object') {
         cols     = tabId.cols;
         values   = tabId.values;
         rooms    = tabId.rooms;
@@ -605,7 +636,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         var width = null;
         var checkbox = null;
 
-        if (typeof cols[i] == 'object') {
+        if (typeof cols[i] === 'object') {
             width  = cols[i].width;
             if (cols[i].checkbox) checkbox = true;
             cols[i] = cols[i].name;
@@ -623,7 +654,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             _obj.editoptions = {value: "true:false"};
         }
 
-        if (cols[i] == 'room') {
+        if (cols[i] === 'room') {
             var list = {'': _('none')};
             for (room in rooms) {
                 list[room] = _(rooms[room].common.name);
@@ -667,7 +698,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + id + '"]').show();
             $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
             $grid.jqGrid('editRow', rowid, {"url": "clientArray"});
-            if ($grid[0]._edited.indexOf(id) == -1) $grid[0]._edited.push(id);
+            if ($grid[0]._edited.indexOf(id) === -1) $grid[0]._edited.push(id);
 
             changed = true;
             $('#save').button("enable");
@@ -724,7 +755,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
                     found = true;
                     for (var _id = 0; _id < ids.length; _id++) {
                         obj = $grid.jqGrid('getRowData', ids[_id]);
-                        if (obj && obj[$grid[0]._cols[0]] == newText + idx)  {
+                        if (obj && obj[$grid[0]._cols[0]] === newText + idx)  {
                             idx++;
                             found = false;
                             break;
@@ -772,8 +803,8 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
 // As input gets the list from getEnum
 function enumName2Id(enums, name) {
     for (var enumId in enums) {
-        if (enums[enumId].common.name == name) return enumId;
-        if (enums[enumId].name && enums[enumId].name == name) return enumId;
+        if (enums[enumId].common.name === name) return enumId;
+        if (enums[enumId].name && enums[enumId].name === name) return enumId;
     }
     return '';
 }
@@ -789,11 +820,11 @@ function enumName2Id(enums, name) {
 // returns the jquery object of $('#tabId')
 // To extract data from table
 function editTable(tabId, cols, values, top, onChange) {
-    if (typeof tabId == 'object') {
+    if (typeof tabId === 'object') {
         cols     = tabId.cols;
     }
 
-    if (cols.indexOf('room') != -1) {
+    if (cols.indexOf('room') !== -1) {
         getEnums("rooms", function (err, list) {
             return _editTable(tabId, cols, values, list, top, onChange);
         });
@@ -823,7 +854,7 @@ function getTableResult(tabId, cols) {
     for (var i = 0; i < data.length; i++) {
         var obj = {};
         for (var z = 0; z < cols.length; z++) {
-            if (cols[z] == 'room') {
+            if (cols[z] === 'room') {
                 obj[cols[z]] = enumName2Id($grid[0]._rooms, data[i][cols[z]]);
             } else {
                 obj[cols[z]] = data[i][cols[z]];

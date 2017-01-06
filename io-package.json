@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.6.9",
+        "version": "1.6.10",
         "news": {
+            "1.6.10": {
+                "en": "Support of web extensions\nFix error in expert mode on adapter tab",
+                "de": "Unterstützung von WEB-Erweiterungen\nKorrigiere Anzeige von Expert mode auf Adapter-Tab",
+                "ru": "Поддержка WEB расширений\nИсправлено отображение режима эксперта на странице драйверов"
+            },
             "1.6.9": {
                 "en": "Fix problem with the enums editing",
                 "de": "Korrigiere das Problem mit Aufzählungen-Editierung",

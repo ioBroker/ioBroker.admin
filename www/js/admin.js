@@ -41,7 +41,7 @@ $(document).ready(function () {
         objects:        {},
         states:         {},
         currentHost:    '',
-        socket:         io.connect(),
+        socket:         null,
         systemConfig:   null,
         instances:      null,
         objectsLoaded:  false,
@@ -431,7 +431,9 @@ $(document).ready(function () {
             return main.selectId;
         }
     };
-    
+
+    main.socket = io.connect('/', {path: location.pathname + 'socket.io'});
+
     var tabs = {
         adapters:   new Adapters(main),
         instances:  new Instances(main),

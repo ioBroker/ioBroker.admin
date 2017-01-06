@@ -147,9 +147,10 @@ function Instances(main) {
         var common   = that.main.objects[instanceId] ? that.main.objects[instanceId].common || {} : {};
         var state = (common.mode === 'daemon') ? 'green' : 'blue';
         var title = '';
-        if (common.enabled) {
+        if (common.enabled && (!common.webExtension || !that.main.objects[instanceId].native.webInstance)) {
             title = '<table style="border: 0">';
             title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to host: ') + '</td><td style="border: 0">';
+
             if (!that.main.states[instanceId + '.connected'] || !that.main.states[instanceId + '.connected'].val) {
                 title += ((common.mode === 'daemon') ? '<span style="color: red">' + _('false') + '</span>' : _('false'));
                 state = (common.mode === 'daemon') ? 'red' : 'blue';
@@ -157,6 +158,7 @@ function Instances(main) {
                 title += '<span style="color: green">' + _('true') + '</span>';
             }
             title += '</td></tr><tr style="border: 0"><td style="border: 0">' + _('Heartbeat: ') + '</td><td style="border: 0">';
+
             if (!that.main.states[instanceId + '.alive'] || !that.main.states[instanceId + '.alive'].val) {
                 title += ((common.mode === 'daemon') ? '<span style="color: red">' + _('false') + '</span>' : _('false'));
                 state = (common.mode === 'daemon') ? 'red' : 'blue';
@@ -369,7 +371,7 @@ function Instances(main) {
             text += '<td class="instance-state" style="text-align: center"><div class="instance-led" style="margin-left: 0.5em; width: 1em; height: 1em;" data-instance-id="' + instanceId + '"></div></td>';
 
             // icon
-            text += '<td>' + (common.icon ? link + '<img src="/adapter/' + adapter + '/' + common.icon + '" style="width: 2em; height: 2em" class="instance-image" data-instance-id="' + instanceId + '"/>' : '') + (link ? '</a>': '') + '</td>';
+            text += '<td>' + (common.icon ? link + '<img src="adapter/' + adapter + '/' + common.icon + '" style="width: 2em; height: 2em" class="instance-image" data-instance-id="' + instanceId + '"/>' : '') + (link ? '</a>': '') + '</td>';
 
             // name and instance
             text += '<td style="padding-left: 0.5em" data-instance-id="' + instanceId + '" class="instance-name"><b>' + adapter + '.' + instance + '</b></td>';
@@ -377,7 +379,7 @@ function Instances(main) {
             // buttons
             text += '<td style="text-align: left; padding-left: 1em;">' +
                 (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-stop-run"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
-                '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-settings" data-instance-href="/adapter/' + adapter + '/?' + instance + '" ></button>' +
+                '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-settings" data-instance-href="adapter/' + adapter + '/?' + instance + '" ></button>' +
                 (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-del"></button>'+
                 (url ? '<button style="display: inline-block" data-link="' + (typeof url !== 'object' ? url : '') +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '') +

@@ -65,6 +65,10 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
+### 1.6.10 (2017-01-06)
+* (bluefox) Support of web extensions
+* (bluefox) Fix error in expert mode on adapter tab
+
 ### 1.6.9 (2016-12-19)
 * (bluefox) Fix problem with the enums editing
 
