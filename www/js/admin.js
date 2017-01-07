@@ -1093,6 +1093,13 @@ $(document).ready(function () {
             }
         }
     });
+    main.socket.on('eventsThreshold', function (isActive) {
+        if (isActive) {
+            $('#events_threshold').show();
+        } else {
+            $('#events_threshold').hide();
+        }
+    });
     main.socket.on('connect', function () {
         $('#connecting').hide();
         if (firstConnect) {

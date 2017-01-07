@@ -405,9 +405,26 @@ table#events {
     height: 16px;
     float: right;
     padding: 0;
+
 }
 .instance-schedule-button span {
     padding: 0 !important;
+}
+
+#events_threshold {
+    position: fixed;
+    top: 8px;
+    left: calc(100% - 300px);
+    height: 18px;
+    background: #ff9999;
+    color: white;
+    border: 1px solid;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 14px;
+    font-family: Arial;
+    width: 150px;
+    padding-top: 4px;
 }
 /* -------------------------- LEDS ------------------------------------ */
 .led-red {

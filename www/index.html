@@ -584,6 +584,7 @@
         <div id="license_text" style="width: 100%"></div>
     </div>
     <div id="connecting" style="left:50%; top:50%;position: fixed;"><img class="wait-rotate" src="img/gear.png"/></div>
+    <div id="events_threshold" class="translate">Too many events</div>
     <div id="dialog-system" title="System settings" class="translateT" style="display:none">
         <div id="tabs-system">
             <ul>
@@ -729,15 +730,14 @@
             </div>
         </div>
     </div>
-    <div id="log-copy-text"  title="Copy log" style="display:none; width:100%; height: 100%; background: white; top:0; left:0; position: absolute; z-index:2000">
-    </div>
-    <div id="dialog-message" title="Message" style="display: none">
+    <div id="log-copy-text"      title="Copy log"     style="display:none; width:100%; height: 100%; background: white; top:0; left:0; position: absolute; z-index:2000"></div>
+    <div id="dialog-message"     title="Message"      style="display: none">
         <p>
             <span id="dialog-message-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
             <span id="dialog-message-text"></span>
         </p>
     </div>
-    <div id="dialog-confirm" title="Question" style="display: none">
+    <div id="dialog-confirm"     title="Question"     style="display: none">
         <p>
             <span id="dialog-confirm-icon" class="ui-icon ui-icon-circle-check" style="float: left; margin:0 7px 50px 0;"></span>
             <span id="dialog-confirm-text"></span>
@@ -748,12 +748,10 @@
         <p class="translate">You can check changelog here</p>
         <textarea readonly id="dialog-host-update-instructions" style="width: 100%; height: 100px; resize: none;"></textarea>
     </div>
-    <div id="dialog-cron" style="display: none">
+    <div id="dialog-cron"   style="display: none">
         <div id="div-cron"></div>
     </div>
-    <ul id="instances-menu" style="position: absolute; display: none; width: 150px" data-visible="false">
-    </ul>
-    <ul id="adapters-menu" style="position: absolute; display: none; width: 80px" data-visible="false">
-    </ul>
+    <ul id="instances-menu" style="position: absolute; display: none; width: 150px" data-visible="false"></ul>
+    <ul id="adapters-menu"  style="position: absolute; display: none; width: 80px" data-visible="false"></ul>
 </body>
 </html>
