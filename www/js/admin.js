@@ -41,7 +41,7 @@ $(document).ready(function () {
         objects:        {},
         states:         {},
         currentHost:    '',
-        socket:         null,
+        socket:         io.connect('/', {path: location.pathname + 'socket.io'}),
         systemConfig:   null,
         instances:      null,
         objectsLoaded:  false,
@@ -432,8 +432,6 @@ $(document).ready(function () {
         }
     };
 
-    main.socket = io.connect('/', {path: location.pathname + 'socket.io'});
-
     var tabs = {
         adapters:   new Adapters(main),
         instances:  new Instances(main),
@@ -616,6 +614,10 @@ $(document).ready(function () {
             $('#current-user').html(user ? user[0].toUpperCase() + user.substring(1).toLowerCase() : '');
         });
         resizeGrids();
+
+        $('#events_threshold').click(function () {
+            main.socket.emit('eventsThreshold', false);
+        });
     }
 
     function initTabs() {

@@ -37,7 +37,7 @@ var eventsThreshold = {
     active:        false,
     accidents:     0,
     repeatSeconds: 3,   // how many seconds continuously must be number of events > value
-    value:         100, // how many events allowed in one check interval
+    value:         60,  // how many events allowed in one check interval
     checkInterval: 1000 // duration of one check interval
 };
 
@@ -81,16 +81,7 @@ setInterval(function () {
             eventsThreshold.accidents++;
 
             if (eventsThreshold.accidents >= eventsThreshold.repeatSeconds) {
-                eventsThreshold.active = true;
-
-                setTimeout(function () {
-                    adapter.log.info('Unsubscribe from all states, except system\'s, because over ' + eventsThreshold.repeatSeconds + ' seconds the number of events is over ' + eventsThreshold.value + ' (in last second ' + eventsThreshold.count + ')');
-                    eventsThreshold.timeActivated = new Date().getTime();
-
-                    webServer.io.sockets.emit('eventsThreshold', true);
-                    adapter.unsubscribeForeignStates('*');
-                    adapter.subscribeForeignStates('system.adapter.*');
-                }, 100);
+                enableEventThreshold ();
             }
         } else {
             eventsThreshold.accidents = 0;
@@ -693,7 +684,7 @@ function getUserFromSocket(socket, callback) {
     if (!wait && callback) callback('Cannot detect user');
 }
 
-function disableEventThreshold() {
+function disableEventThreshold(readAll) {
     if (eventsThreshold.active) {
         eventsThreshold.accidents     = 0;
         eventsThreshold.count         = 0;
@@ -702,11 +693,39 @@ function disableEventThreshold() {
         adapter.log.info('Subscribe on all states again');
 
         setTimeout(function () {
+            if (readAll) {
+                adapter.getForeignStates('*', function (err, res) {
+                    adapter.log.info('received all states');
+                    for (var id in res) {
+                        if (res.hasOwnProperty(id) && (!states[id] || JSON.stringify(states[id].val) !== JSON.stringify(res[id].val))) {
+                            webServer.io.sockets.emit('stateChange', id, res[id]);
+                            states[id] = res[id];
+                        }
+                    }
+                });
+            }
+
             webServer.io.sockets.emit('eventsThreshold', false);
             adapter.unsubscribeForeignStates('system.adapter.*');
             adapter.subscribeForeignStates('*');
+
         }, 50);
 
+    }
+}
+
+function enableEventThreshold() {
+    if (!eventsThreshold.active) {
+        eventsThreshold.active = true;
+
+        setTimeout(function () {
+            adapter.log.info('Unsubscribe from all states, except system\'s, because over ' + eventsThreshold.repeatSeconds + ' seconds the number of events is over ' + eventsThreshold.value + ' (in last second ' + eventsThreshold.count + ')');
+            eventsThreshold.timeActivated = new Date().getTime();
+
+            webServer.io.sockets.emit('eventsThreshold', true);
+            adapter.unsubscribeForeignStates('*');
+            adapter.subscribeForeignStates('system.adapter.*');
+        }, 100);
     }
 }
 
@@ -1126,6 +1145,14 @@ function socketEvents(socket) {
     socket.on('getUserPermissions', function (callback) {
         if (updateSession(socket) && checkPermissions(socket, 'getUserPermissions', callback)) {
             if (callback) callback(null, socket._acl);
+        }
+    });
+
+    socket.on('eventsThreshold', function (isActive) {
+        if (!isActive) {
+            disableEventThreshold(true);
+        } else {
+            enableEventThreshold();
         }
     });
 }

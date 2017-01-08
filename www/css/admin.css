@@ -425,6 +425,7 @@ table#events {
     font-family: Arial;
     width: 150px;
     padding-top: 4px;
+    cursor: pointer;
 }
 /* -------------------------- LEDS ------------------------------------ */
 .led-red {

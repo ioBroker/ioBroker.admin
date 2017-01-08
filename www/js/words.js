@@ -530,7 +530,8 @@ systemDictionary = {
     "permissionError":      {"en": "Permission error",      "de": "Zugriffsfehler",         "ru": "Ошибка доступа"},
     "Error":                {"en": "Error",                 "de": "Fehler",                 "ru": "Ошибка"},
     "Running: ":            {"en": "Running: ",             "de": "Ausgeführt: ",           "ru": "Рабочая: "},
-    "Listen on all IPs":    {"en": "Listen on all IPs",     "de": "Auf allen IP Adressen hören",           "ru": "Слушать на всех адресах"},
+    "Listen on all IPs":    {"en": "Listen on all IPs",     "de": "Auf allen IP Adressen hören",  "ru": "Слушать на всех адресах"},
+    "Too many events":      {"en": "Too many events",       "de": "Zu viele Ereignisse",    "ru": "Слишком много событий"},
     "Are you sure to delete script %s?": {
         "en": "Are you sure to delete script '%s'?",
         "de": "Wollen Sie wirklich Skript '%s' löschen?",
