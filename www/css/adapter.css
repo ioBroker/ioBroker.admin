@@ -50,3 +50,11 @@ h4 {
     padding-bottom: 2px;
     background-color: lightblue;
 }
+.table-values th {
+    background: #686868;
+    color: #FFF;
+    font-weight: bold;
+}
+.table-values tr:nth-child(even) {
+    background: #d0d0d0;
+}

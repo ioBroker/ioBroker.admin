@@ -825,7 +825,7 @@ function editTable(tabId, cols, values, top, onChange) {
     }
 
     if (cols.indexOf('room') !== -1) {
-        getEnums("rooms", function (err, list) {
+        getEnums('rooms', function (err, list) {
             return _editTable(tabId, cols, values, list, top, onChange);
         });
     } else {
@@ -864,3 +864,360 @@ function getTableResult(tabId, cols) {
     }
     return res;
 }
+
+/*
+ <div id="values">
+ <button class="table-button-add" style="margin-left: 10px"></button>
+ <table class="table-values" style="width: 100%; calc(100% - 200px)">
+ <thead>
+ <tr>
+ <th data-name="regex"     style="width: 30%" class="translate">Context</th>
+ <th data-name="room"      class="translate" data-type="select">Room</th>
+ <th data-name="aaa"       class="translate" data-options="1/A;2/B;3/C;4" data-type="select">Room</th>
+ <th data-name="enabled"   class="translate" data-type="checkbox">Enabled</th>
+ <th data-buttons="delete up down" style="width: 32px"></th>
+ </tr>
+ </thead>
+ </table>
+ </td>
+ */
+
+/**
+ * Create edit table from javascript array.
+ *
+ * This function creates a html edit table.
+ *
+ * <pre><code>
+ *   <div id="values" style="width: 100%; height: calc(100% - 205px)">
+ *      <button class="table-button-add" style="margin-left: 10px"></button>
+ *      <div style="width: 100%; height: calc(100% - 30px); overflow: auto;">
+ *          <table class="table-values" style="width: 100%;">
+ *              <thead>
+ *                  <tr>
+ *                      <th data-name="_index" style="30px" data-style="width: 100%; text-align: right">Context</th>
+ *                      <th data-name="regex"     class="translate" style="width: 30%" data-style="text-align: right">Context</th>
+ *                      <th data-name="room"      class="translate" data-type="select">Room</th>
+ *                      <th data-name="aaa"       class="translate" data-options="1/A;2/B;3/C;4" data-type="select">Room</th>
+ *                      <th data-name="enabled"   class="translate" data-type="checkbox">Enabled</th>
+ *                      <th data-buttons="delete up down" style="width: 32px"></th>
+ *                  </tr>
+ *              </thead>
+ *          </table>
+ *      </div>
+ *   </div>
+ * <pre><code>
+ *
+ * @param {string} id name of the html element (or empty).
+ * @param {string} values data array
+ * @param {function} onChange this function will be called if something changed
+ * @param {function} onReady called, when the table is ready (may be to modify some elements of it)
+ * @return {object} array with values
+ */
+function values2table(divId, values, onChange, onReady) {
+    if (typeof values === 'function') {
+        onChange = values;
+        values   = divId;
+        divId    = '';
+    }
+
+    values = values || [];
+    var names = [];
+    var $div;
+    if (!divId) {
+        $div = $('body');
+    } else {
+        $div = $('#' + divId);
+    }
+    var $add = $div.find('.table-button-add');
+
+    if (!$add.data('inited')) {
+        $add.data('inited', true);
+
+        $add.button({
+            icons: {primary: 'ui-icon-plus'},
+            text: false
+        })
+            //.css({width: '1em', height: '1em'})
+            .click(function () {
+                var $table = $div.find('.table-values');
+                var values = $table.data('values');
+                var names = $table.data('names');
+                var obj = {};
+                for (var i = 0; i < names.length; i++) {
+                    if (!names[i]) continue;
+                    obj[names[i].name] = names[i].def;
+                }
+                values.push(obj);
+                onChange && onChange();
+                setTimeout(function () {
+                    values2table(divId, values, onChange, onReady);
+                }, 100);
+            });
+    }
+
+    if (values) {
+        var buttons = [];
+        var $table = $div.find('.table-values');
+        $table.data('values', values);
+
+        // load rooms
+        if (!$table.data('rooms') && $table.find('th[data-name="room"]').length) {
+            getEnums('rooms', function (err, list) {
+                var result = {};
+                result[_('none')] = '';
+                var nnames = [];
+                for (var n in list) {
+                    nnames.push(n);
+                }
+                nnames.sort(function (a, b) {
+                    a = a.toLowerCase();
+                    b = b.toLowerCase();
+                    if (a > b) return 1;
+                    if (a < b) return -1;
+                    return 0;
+                });
+
+                for (var l = 0; l < nnames.length; l++) {
+                    result[nnames[l]] = list[nnames[l]].common.name || l;
+                }
+                $table.data('rooms', result);
+                values2table(divId, values, onChange, onReady);
+            });
+            return;
+        }
+        // load functions
+        if (!$table.data('functions') && $table.find('th[data-name="func"]').length) {
+            getEnums('functions', function (err, list) {
+                var result = {};
+                result[_('none')] = '';
+                var nnames = [];
+                for (var n in list) {
+                    nnames.push(n);
+                }
+                nnames.sort(function (a, b) {
+                    a = a.toLowerCase();
+                    b = b.toLowerCase();
+                    if (a > b) return 1;
+                    if (a < b) return -1;
+                    return 0;
+                });
+
+                for (var l = 0; l < nnames.length; l++) {
+                    result[nnames[l]] = list[nnames[l]].common.name || l;
+                }
+                $table.data('functions', result);
+                values2table(divId, values, onChange, onReady);
+            });
+            return;
+        }
+        $table.find('th').each(function () {
+            var name = $(this).data('name');
+            if (name) {
+                var obj = {
+                    name:    name,
+                    type:    $(this).data('type') || 'text',
+                    def:     $(this).data('default'),
+                    style:   $(this).data('style')
+                };
+                if (obj.type === 'checkbox') {
+                    if (obj.def === 'false') obj.def = false;
+                    if (obj.def === 'true')  obj.def = true;
+                    obj.def = !!obj.def;
+                } else if (obj.type === 'select') {
+                    var vals = ($(this).data('options') || '').split(';');
+                    obj.options = {};
+                    for (var v = 0; v < vals.length; v++) {
+                        var parts = vals[v].split('/');
+                        obj.options[parts[0]] = parts[1] || parts[0];
+                        if (v === 0) obj.def = (obj.def === undefined) ? parts[0] : obj.def;
+                    }
+                } else {
+                    obj.def = obj.def || '';
+                }
+                names.push(obj);
+            } else {
+                names.push(null);
+            }
+
+            name = $(this).data('buttons');
+
+            if (name) {
+                var bs = name.split(' ');
+                buttons.push(bs);
+            } else {
+                buttons.push(null);
+            }
+        });
+
+        $table.data('names', names);
+
+        var text = '';
+        for (var v = 0; v < values.length; v++) {
+            text += '<tr>';
+
+            for (var i = 0; i < names.length; i++) {
+                text += '<td';
+                var line = '';
+                var style = '';
+                if (names[i]) {
+                    if (names[i].name === '_index') {
+                        style = (names[i].style ? names[i].style : 'text-align: right;');
+                        line += (v + 1);
+                    } else
+                    if (names[i].type === 'checkbox') {
+                        line += '<input ' + (names[i].style || '') + '" class="values-input" type="checkbox" data-index="' + v + '" data-name="' + names[i].name + '" ' + (values[v][names[i].name] ? 'checked' : '') + '" data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';
+                    } else if (names[i].type === 'select') {
+                        line += '<select style="' + (names[i].style ? names[i].style : 'width: 100%') + '" class="values-input" data-index="' + v + '" data-name="' + names[i].name + '" data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '">';
+                        var options;
+                        if (names[i].name === 'room') {
+                            options = $table.data('rooms');
+                        } else {
+                            options = names[i].options;
+                        }
+                        var val = (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]);
+                        for (var p in options) {
+                            line += '<option value="' + p + '" ' + (p === val ? ' selected' : '') + '>' + options[p] + '</option>';
+                        }
+                        line += '</select>';
+                    } else {
+                        line += '<input class="values-input" style="' + (names[i].style ? names[i].style : 'width: 100%') + '" type="' + names[i].type + '" data-index="' + v + '" data-name="' + names[i].name + '" value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"  data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';
+                    }
+                }
+
+                if (buttons[i]) {
+                    style = 'text-align: center;';
+                    for (var b = 0; b < buttons[i].length; b++) {
+                        if ((!v && buttons[i][b] === 'up') || v === values.length - 1 && buttons[i][b] === 'down') {
+                            line += '<button data-command="' + buttons[i][b] + '" class="values-buttons" disabled>&nbsp;</button>';
+                            continue;
+                        }
+                        line += '<button data-index="' + v + '" data-command="' + buttons[i][b] + '" class="values-buttons"></button>';
+                    }
+                }
+                text += ' style="' + style + '">' + line + '</td>';
+            }
+
+            text += '</tr>';
+        }
+        var $lines = $('.table-lines');
+        if (!$lines.length) {
+            $table.append('<tbody class="table-lines"></tbody>');
+            $lines = $('.table-lines');
+        }
+
+        $lines.html(text);
+
+        $lines.find('.values-buttons').each(function () {
+            var command = $(this).data('command');
+            if (command === 'delete') {
+                $(this).button({
+                    icons: {primary: 'ui-icon-trash'},
+                    text: false
+                })
+                    .css({width: '1em', height: '1em'})
+                    .click(function () {
+                        var id = $(this).data('index');
+                        values.splice(id, 1);
+                        onChange && onChange();
+                        setTimeout(function () {
+                            values2table(divId, values, onChange, onReady);
+                        }, 100);
+                    });
+            } else if (command === 'up') {
+                $(this).button({
+                    icons: {primary: 'ui-icon-triangle-1-n'},
+                    text: false
+                })
+                    .css({width: '1em', height: '1em'})
+                    .click(function () {
+                        var id = $(this).data('index');
+                        var elem = values[id];
+                        values.splice(id, 1);
+                        values.splice(id - 1, 0, elem);
+                        onChange && onChange();
+                        setTimeout(function () {
+                            values2table(id, values, onChange, onReady);
+                        }, 100);
+                    });
+            } else if (command === 'down') {
+                $(this).button({
+                    icons: {primary: 'ui-icon-triangle-1-s'},
+                    text: false
+                })
+                    .css({width: '1em', height: '1em'})
+                    .click(function () {
+                        var id = $(this).data('index');
+                        var elem = values[id];
+                        values.splice(id, 1);
+                        values.splice(id + 1, 0, elem);
+                        onChange && onChange();
+                        setTimeout(function () {
+                            values2table(id, values, onChange, onReady);
+                        }, 100);
+                    });
+            }
+        });
+
+        $lines.find('.values-input').change(function () {
+            if ($(this).attr('type') === 'checkbox') {
+                if ($(this).prop('checked').toString() !== $(this).data('old-value')) onChange();
+                values[$(this).data('index')][$(this).data('name')] = $(this).prop('checked');
+            } else {
+                if ($(this).val() !== $(this).data('old-value')) onChange();
+                values[$(this).data('index')][$(this).data('name')] = $(this).val();
+
+            }
+        }).keyup(function () {
+            $(this).trigger('change');
+        });
+    }
+    if (typeof onReady === 'function') onReady();
+}
+
+/**
+ * Extract the values from table.
+ *
+ * This function extracts the values from edit table, that was generated with values2table function.
+ *
+ * @param {string} id name of the html element (or nothing).
+ * @return {object} array with values
+ */
+function table2values(divId) {
+    var $div;
+    if (!divId) {
+        $div = $('body');
+    } else {
+        $div = $('#' + divId);
+    }
+    var names = [];
+    $div.find('.table-values th').each(function () {
+        var name = $(this).data('name');
+        if (name) {
+            names.push(name);
+        } else {
+            names.push('___ignore___');
+        }
+    });
+
+    var values = [];
+    var j = 0;
+    $div.find('.table-lines tr').each(function () {
+        values[j] = {};
+
+        $(this).find('td').each(function () {
+            var $input = $(this).find('input');
+            if ($input.length) {
+                var name = $input.data('name');
+                if ($input.attr('type') === 'checkbox') {
+                    values[j][name] = $input.prop('checked');
+                } else {
+                    values[j][name] = $input.val();
+                }
+            }
+        });
+        j++;
+    });
+
+    return values;
+}
+
