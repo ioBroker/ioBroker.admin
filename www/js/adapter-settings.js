@@ -7,6 +7,7 @@ var instance = window.location.search.slice(1);
 var common   = null; // common information of adapter
 var host     = null; // host object on which the adapter runs
 var changed  = false;
+var systemConfig;
 var certs    = [];
 var adapter  = '';
 var onChangeSupported = false;
@@ -120,6 +121,7 @@ $(document).ready(function () {
         socket.emit('getObject', 'system.config', function (err, res) {
             if (!err && res && res.common) {
                 systemLang = res.common.language || systemLang;
+                systemConfig = res;
             }
             socket.emit('getObject', 'system.certificates', function (err, res) {
                 if (!err && res) {
@@ -1028,7 +1030,7 @@ function values2table(divId, values, onChange, onReady) {
                     obj.options = {};
                     for (var v = 0; v < vals.length; v++) {
                         var parts = vals[v].split('/');
-                        obj.options[parts[0]] = parts[1] || parts[0];
+                        obj.options[parts[0]] = _(parts[1] || parts[0]);
                         if (v === 0) obj.def = (obj.def === undefined) ? parts[0] : obj.def;
                     }
                 } else {

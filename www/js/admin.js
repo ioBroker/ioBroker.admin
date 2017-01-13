@@ -1137,23 +1137,30 @@ $(document).ready(function () {
 
                                             $('#license_text').html(license[language] || license.en);
                                             $('#license_language_label').html(translateWord('Select language', language));
-                                            $('#license_language').val(language).show();
-                                            $('#license_checkbox').show();
-                                            $('#license_checkbox').html(translateWord('license_checkbox', language));
+
+                                            $('#license_checkbox')
+                                                .show()
+                                                .html(translateWord('license_checkbox', language));
+
                                             $('#license_agree .ui-button-text').html(translateWord('agree', language));
                                             $('#license_non_agree .ui-button-text').html(translateWord('not agree', language));
                                             $('#license_terms').html(translateWord('License terms', language));
 
-                                            $('#license_language').change(function () {
-                                                language = $(this).val();
-                                                $('#license_language_label').html(translateWord('Select language', language));
-                                                $('#license_text').html(license[language] || license.en);
-                                                $('#license_checkbox').html(translateWord('license_checkbox', language));
-                                                $('#license_agree .ui-button-text').html(translateWord('agree', language));
-                                                $('#license_non_agree .ui-button-text').html(translateWord('not agree', language));
-                                                $('#license_terms').html(translateWord('License terms', language));
-                                                $dialogLicense.dialog('option', 'title', translateWord('license agreement', language));
-                                            });
+                                            $('#license_language')
+                                                .data('licenseConfirmed', false)
+                                                .val(language)
+                                                .show()
+                                                .change(function () {
+                                                    language = $(this).val();
+                                                    $('#license_language_label').html(translateWord('Select language', language));
+                                                    $('#license_text').html(license[language] || license.en);
+                                                    $('#license_checkbox').html(translateWord('license_checkbox', language));
+                                                    $('#license_agree .ui-button-text').html(translateWord('agree', language));
+                                                    $('#license_non_agree .ui-button-text').html(translateWord('not agree', language));
+                                                    $('#license_terms').html(translateWord('License terms', language));
+                                                    $dialogLicense.dialog('option', 'title', translateWord('license agreement', language));
+                                                });
+
                                             $('#license_diag').change(function () {
                                                 if ($(this).prop('checked')) {
                                                     $('#license_agree').button('enable');
@@ -1172,6 +1179,8 @@ $(document).ready(function () {
                                                     {
                                                         text: translateWord('agree', language),
                                                         click: function () {
+                                                            $('#license_language').data('licenseConfirmed', true);
+
                                                             main.socket.emit('extendObject', 'system.config', {
                                                                 common: {
                                                                     licenseConfirmed: true,
@@ -1192,8 +1201,8 @@ $(document).ready(function () {
                                                         id: 'license_non_agree'
                                                     }
                                                 ],
-                                                close: function () {
-
+                                                beforeClose: function (event, ui) {
+                                                    return $('#license_language').data('licenseConfirmed');
                                                 },
                                                 open: function (event) {
                                                     $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');

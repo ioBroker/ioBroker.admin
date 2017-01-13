@@ -581,12 +581,14 @@ function System(main) {
                     $('#tab-system-repo').html(_('permissionError'));
                 }
 
-                $('#diagMode').val(main.systemConfig.common.diag).change(function () {
+                $('#diagMode')
+                    .val(main.systemConfig.common.diag)
+                    .change(function () {
                     main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
                         $('#diagSample').html(JSON.stringify(obj, null, 2));
                     });
-                });
-                $('#diagMode').trigger('change');
+                })
+                    .trigger('change');
 
                 // collect all history instances
                 $('#system_defaultHistory').html('<option value=""></option>');
