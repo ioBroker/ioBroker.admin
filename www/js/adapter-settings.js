@@ -1070,7 +1070,7 @@ function values2table(divId, values, onChange, onReady) {
                     if (names[i].type === 'checkbox') {
                         line += '<input ' + (names[i].style || '') + '" class="values-input" type="checkbox" data-index="' + v + '" data-name="' + names[i].name + '" ' + (values[v][names[i].name] ? 'checked' : '') + '" data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';
                     } else if (names[i].type === 'select') {
-                        line += '<select style="' + (names[i].style ? names[i].style : 'width: 100%') + '" class="values-input" data-index="' + v + '" data-name="' + names[i].name + '" data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '">';
+                        line += '<select style="' + (names[i].style ? names[i].style : 'width: 100%') + '" class="values-input" data-index="' + v + '" data-name="' + names[i].name + '">';
                         var options;
                         if (names[i].name === 'room') {
                             options = $table.data('rooms');
@@ -1083,7 +1083,7 @@ function values2table(divId, values, onChange, onReady) {
                         }
                         line += '</select>';
                     } else {
-                        line += '<input class="values-input" style="' + (names[i].style ? names[i].style : 'width: 100%') + '" type="' + names[i].type + '" data-index="' + v + '" data-name="' + names[i].name + '" value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"  data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';
+                        line += '<input class="values-input" style="' + (names[i].style ? names[i].style : 'width: 100%') + '" type="' + names[i].type + '" data-index="' + v + '" data-name="' + names[i].name + '"/>';
                     }
                 }
 
@@ -1110,6 +1110,18 @@ function values2table(divId, values, onChange, onReady) {
 
         $lines.html(text);
 
+        $lines.find('.values-input').each(function () {
+            var $this = $(this);
+            var type = $this.attr('type');
+            var name = $this.data('name');
+            var id = $this.data('index');
+            $this.data('old-value', values[id][name]);
+            if (type === 'checkbox') {
+                $this.prop('checked', values[id][name]);
+            } else {
+                $this.val(values[id][name]);
+            }
+        });
         $lines.find('.values-buttons').each(function () {
             var command = $(this).data('command');
             if (command === 'delete') {
@@ -1216,6 +1228,11 @@ function table2values(divId) {
                 } else {
                     values[j][name] = $input.val();
                 }
+            }
+            var $select = $(this).find('select');
+            if ($select.length) {
+                var name = $select.data('name');
+                values[j][name] = $select.val() || '';
             }
         });
         j++;
