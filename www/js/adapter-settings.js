@@ -175,7 +175,7 @@ $(document).ready(function () {
                 common = res.common;
                 if (res.common && res.common.name) $('.adapter-name').html(res.common.name);
                 if (typeof load === 'undefined') {
-                    alert("Please implement save function in your admin/index.html");
+                    alert('Please implement save function in your admin/index.html');
                 } else {
                     load(res.native, onChange);
                 }
@@ -204,7 +204,7 @@ function showMessage(message, title, icon) {
                 {
                     text: _('Ok'),
                     click: function () {
-                        $(this).dialog("close");
+                        $(this).dialog('close');
                     }
                 }
             ]
@@ -398,7 +398,7 @@ function getIPs(host, callback) {
     });
 }
 
-function fillSelectIPs(id, actualAddr, noIPv4, noIPv6) {
+function fillSelectIPs(id, actualAddr, noIPv4, noIPv6, callback) {
     getIPs(function (ips) {
         var str = '';
         for (var i = 0; i < ips.length; i++) {
@@ -408,6 +408,7 @@ function fillSelectIPs(id, actualAddr, noIPv4, noIPv6) {
         }
 
         $(id).html(str);
+        if (typeof callback === 'function') callback();
     });
 }
 
@@ -537,13 +538,13 @@ function _editInitButtons($grid, tabId, objId) {
         $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + id + '"]').show();
         $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
 
-        $grid.jqGrid('editRow', tabId + '_' + id, {"url": "clientArray"});
+        $grid.jqGrid('editRow', tabId + '_' + id, {url: 'clientArray'});
         if ($grid[0]._edited.indexOf(id) === -1) {
             $grid[0]._edited.push(id);
         }
         changed = true;
-        $('#save').button("enable");
-        $('#saveclose').button("enable");
+        $('#save').button('enable');
+        $('#saveclose').button('enable');
         if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
     }).css({'height': '18px', width: '22px'});
 
@@ -555,8 +556,8 @@ function _editInitButtons($grid, tabId, objId) {
         $grid.jqGrid('delRowData', tabId + '_' + id);
 
         changed = true;
-        $('#save').button("enable");
-        $('#saveclose').button("enable");
+        $('#save').button('enable');
+        $('#saveclose').button('enable');
         if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
 
         var pos = $grid[0]._edited.indexOf(id);
@@ -577,11 +578,11 @@ function _editInitButtons($grid, tabId, objId) {
         $('.' + tabId + '-ok-submit').hide();
         $('.' + tabId + '-cancel-submit').hide();
 
-        $grid.jqGrid('saveRow', tabId + '_' + id, {"url": "clientArray"});
+        $grid.jqGrid('saveRow', tabId + '_' + id, {url: 'clientArray'});
 
         changed = true;
-        $('#save').button("enable");
-        $('#saveclose').button("enable");
+        $('#save').button('enable');
+        $('#saveclose').button('enable');
         if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
 
         var pos = $grid[0]._edited.indexOf(id);
@@ -653,7 +654,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         if (width) _obj.width = width;
         if (checkbox) {
             _obj.edittype    = 'checkbox';
-            _obj.editoptions = {value: "true:false"};
+            _obj.editoptions = {value: 'true:false'};
         }
 
         if (cols[i] === 'room') {
@@ -699,16 +700,16 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             $('.' + tabId + '-delete-submit').hide();
             $('.' + tabId + '-ok-submit[data-' + tabId + '-id="' + id + '"]').show();
             $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
-            $grid.jqGrid('editRow', rowid, {"url": "clientArray"});
+            $grid.jqGrid('editRow', rowid, {url: 'clientArray'});
             if ($grid[0]._edited.indexOf(id) === -1) $grid[0]._edited.push(id);
 
             changed = true;
-            $('#save').button("enable");
-            $('#saveclose').button("enable");
+            $('#save').button('enable');
+            $('#saveclose').button('enable');
             if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
         },
-        sortname:  "id",
-        sortorder: "desc",
+        sortname:  'id',
+        sortorder: 'desc',
         viewrecords: false,
         pgbuttons: false,
         pginput: false,
@@ -720,8 +721,8 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         },
         onSortCol: function () {
             changed = true;
-            $('#save').button("enable");
-            $('#saveclose').button("enable");
+            $('#save').button('enable');
+            $('#saveclose').button('enable');
             if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
         }
     }).jqGrid('filterToolbar', {
@@ -749,7 +750,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             onClickButton: function () {
                 // Find new unique name
                 var found;
-                var newText = _("New");
+                var newText = _('New');
                 var ids = $grid.jqGrid('getDataIDs');
                 var idx = 1;
                 var obj;
@@ -772,8 +773,8 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
                 obj[$grid[0]._cols[0]] = newText + idx;
 
                 changed = true;
-                $('#save').button("enable");
-                $('#saveclose').button("enable");
+                $('#save').button('enable');
+                $('#saveclose').button('enable');
                 if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
 
                 addToTable(tabId, obj, $grid);
@@ -843,7 +844,7 @@ function editTable(tabId, cols, values, top, onChange) {
 function getTableResult(tabId, cols) {
     var $grid = $('#' + tabId);
     for (var j = 0; j < $grid[0]._edited.length; j++) {
-        $grid.jqGrid('saveRow', tabId + '_' + $grid[0]._edited[j], {"url": "clientArray"});
+        $grid.jqGrid('saveRow', tabId + '_' + $grid[0]._edited[j], {url: 'clientArray'});
     }
 
     $('.' + tabId + '-edit-submit').show();

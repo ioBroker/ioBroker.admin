@@ -24,7 +24,7 @@ function Events(main) {
             if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
             eventFilterTimeout = setTimeout(filterEvents, 1000);
         }).keyup(function (e) {
-            if (e.which == 13) {
+            if (e.which === 13) {
                 filterEvents();
             } else {
                 $(this).trigger('change');
@@ -34,7 +34,7 @@ function Events(main) {
             if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
             eventFilterTimeout = setTimeout(filterEvents, 1000);
         }).keyup(function (e) {
-            if (e.which == 13) {
+            if (e.which === 13) {
                 filterEvents();
             } else {
                 $(this).trigger('change');
@@ -99,13 +99,13 @@ function Events(main) {
             lc = '';
         }
 
-        if (eventTypes.indexOf(type) == -1) {
+        if (eventTypes.indexOf(type) === -1) {
             eventTypes.push(type);
             eventTypes.sort();
             if (eventTypes.length > 1) {
                 $('#event-filter-type').html('<option value="">' + _('all') + '</option>');
                 for (var i = 0; i < eventTypes.length; i++) {
-                    $('#event-filter-type').append('<option value="' + eventTypes[i] + '" ' + ((eventTypes[i] == typeFilter) ? 'selected' : '') + '>' + eventTypes[i] + '</option>');
+                    $('#event-filter-type').append('<option value="' + eventTypes[i] + '" ' + ((eventTypes[i] === typeFilter) ? 'selected' : '') + '>' + eventTypes[i] + '</option>');
                 }
             }
         }
@@ -125,13 +125,13 @@ function Events(main) {
             state.from = state.from.replace('system.adapter.', '');
             state.from = state.from.replace('system.', '');
 
-            if (eventFroms.indexOf(state.from) == -1) {
+            if (eventFroms.indexOf(state.from) === -1) {
                 eventFroms.push(state.from);
                 eventFroms.sort();
                 $('#event-filter-from').html('<option value="">' + _('all') + '</option>');
                 for (var i = 0; i < eventFroms.length; i++) {
                     var e = eventFroms[i].replace('.', '-');
-                    $('#event-filter-from').append('<option value="' + e + '" ' + ((e == fromFilter) ? 'selected' : '') + '>' + eventFroms[i] + '</option>');
+                    $('#event-filter-from').append('<option value="' + e + '" ' + ((e === fromFilter) ? 'selected' : '') + '>' + eventFroms[i] + '</option>');
                 }
             }
             from = state.from;
@@ -159,15 +159,15 @@ function Events(main) {
         if (filterAck === 'true')  filterAck = true;
         if (filterAck === 'false') filterAck = false;
 
-        if (filterType && filterType != type) {
+        if (filterType && filterType !== type) {
             visible = false;
-        } else if (filterId && id.toLocaleLowerCase().indexOf(filterId) == -1) {
+        } else if (filterId && id.toLocaleLowerCase().indexOf(filterId) === -1) {
             visible = false;
-        } else if (filterVal !== '' && value.indexOf(filterVal) == -1) {
+        } else if (filterVal !== '' && value !== null && value !== undefined && value.indexOf(filterVal) === -1) {
             visible = false;
-        } else if (filterAck !== '' && filterAck != ack) {
+        } else if (filterAck !== '' && filterAck !== ack) {
             visible = false;
-        } else if (filterFrom && filterFrom != from) {
+        } else if (filterFrom && filterFrom !== from) {
             visible = false;
         }
 
@@ -224,10 +224,10 @@ function Events(main) {
             if (filterAck !== '' && !$this.hasClass('event-ack-' + filterAck)) {
                 isShow = false;
             } else
-            if (filterId && $(this).find('td.event-column-id').text().toLocaleLowerCase().indexOf(filterId) == -1) {
+            if (filterId && $(this).find('td.event-column-id').text().toLocaleLowerCase().indexOf(filterId) === -1) {
                 isShow = false;
             } else
-            if (filterVal !== '' && $(this).find('td.event-column-value').text().indexOf(filterVal) == -1) {
+            if (filterVal !== '' && $(this).find('td.event-column-value').text().indexOf(filterVal) === -1) {
                 isShow = false;
             }
 
