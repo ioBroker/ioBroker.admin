@@ -237,7 +237,7 @@ systemDictionary = {
         "en": "We worked hard to create this project. As equivalent we expect from you some statistics about the usage.<br>\n" +
         "No private information will be sent to ioBroker.org. Every time you press update adapter list the anonymized statistics will be sent.<br>\n" +
         "Thank you!",
-        "de": "Wir haben hart gearbeitet um dieses Projekt auf die Beine zu stelln. Als Gegenleistung bitten wir Sie uns die Statistik über die Benutzung an uns zu schicken.<br>\n" +
+        "de": "Wir haben hart gearbeitet um dieses Projekt auf die Beine zu stellen. Als Gegenleistung bitten wir Sie uns die Statistik über die Benutzung an uns zu schicken.<br>\n" +
         "Keine private Information wird zu ioBroker.org gesendet. Jedes Mal wenn Adapterliste upgedated wird, wird die anonymisierte Statistik gesendet.<br>\n" +
         "Vielen Dank!",
         "ru": "Мы долго работали над этим проектом. Мы просим вас переслать нам статистику использования, как компенсацию.<br>\n" +
