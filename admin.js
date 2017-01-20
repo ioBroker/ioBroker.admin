@@ -37,7 +37,7 @@ var eventsThreshold = {
     active:        false,
     accidents:     0,
     repeatSeconds: 3,   // how many seconds continuously must be number of events > value
-    value:         60,  // how many events allowed in one check interval
+    value:         200, // how many events allowed in one check interval
     checkInterval: 1000 // duration of one check interval
 };
 
@@ -697,7 +697,7 @@ function disableEventThreshold(readAll) {
                 adapter.getForeignStates('*', function (err, res) {
                     adapter.log.info('received all states');
                     for (var id in res) {
-                        if (res.hasOwnProperty(id) && (!states[id] || JSON.stringify(states[id].val) !== JSON.stringify(res[id].val))) {
+                        if (res.hasOwnProperty(id) && JSON.stringify(states[id]) !== JSON.stringify(res[id])) {
                             webServer.io.sockets.emit('stateChange', id, res[id]);
                             states[id] = res[id];
                         }
