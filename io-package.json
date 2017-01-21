@@ -2,9 +2,9 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.6.10",
+        "version": "1.6.11",
         "news": {
-            "1.6.10": {
+            "1.6.11": {
                 "en": "Support of web extensions\nFix error in expert mode on adapter tab",
                 "de": "Unterstützung von WEB-Erweiterungen\nKorrigiere Anzeige von Expert mode auf Adapter-Tab",
                 "ru": "Поддержка WEB расширений\nИсправлено отображение режима эксперта на странице драйверов"

@@ -11,13 +11,14 @@
 User interface for configuration and administration.
 
 ## Using common.localLink
-%ip% - ioBroker ip address (address of the admin)
-%secure% or %protocol% - read from native.secure the value and use http or https
-%web_protocol% - looking for the first instance of web (e.g. web.0) and get "native.secure" from "system.adapter.web.0"
-%instance% - instance of the adapter
-%someField% - get someField from "native" of this adapter instance
-%web.0_bind% - get native.bind from "system.adapter.web.0"
-%native_someField% - get someField from "native" of this adapter instance
+
+- %ip% - ioBroker ip address (address of the admin)
+- %secure% or %protocol% - read from native.secure the value and use http or https
+- %web_protocol% - looking for the first instance of web (e.g. web.0) and get "native.secure" from "system.adapter.web.0"
+- %instance% - instance of the adapter
+- %someField% - get someField from "native" of this adapter instance
+- %web.0_bind% - get native.bind from "system.adapter.web.0"
+- %native_someField% - get someField from "native" of this adapter instance
 
 ## Scheduled restart
 Some adapters re not stable or connection disappear after one or two days.
@@ -65,7 +66,7 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
-### 1.6.10 (2017-01-06)
+### 1.6.11 (2017-01-21)
 * (bluefox) Support of web extensions
 * (bluefox) Fix error in expert mode on adapter tab
 
