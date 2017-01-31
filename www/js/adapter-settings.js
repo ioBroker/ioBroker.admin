@@ -1170,6 +1170,26 @@ function values2table(divId, values, onChange, onReady) {
                             values2table(id, values, onChange, onReady);
                         }, 100);
                     });
+            }else if (command === 'edit') {
+                $(this).button({
+                    icons: {primary: 'ui-icon-pencil'},
+                    text: false
+                })
+                    .css({width: '1em', height: '1em'})
+                    .click(function () {
+                        var id = $(this).data('index');
+                        var elem = values[id];
+                        if (typeof editLine === 'function') {
+                            setTimeout(function () {
+                                editLine(id, values[id], function (err, id, newValues) {
+                                    if (!err) {
+                                        values[id] = newValues;
+                                        _values2table(id, values, onChange, onReady);
+                                    }
+                                });
+                            }, 100);
+                        }
+                    });
             }
         });
 

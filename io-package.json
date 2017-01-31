@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.6.11",
+        "version": "1.6.12",
         "news": {
+            "1.6.12": {
+                "en": "Show messages rates for adapters",
+                "de": "Zeige Meldungsraten für Adapter",
+                "ru": "Показывать количество сообщений для инстанций"
+            },
             "1.6.11": {
                 "en": "Support of web extensions\nFix error in expert mode on adapter tab",
                 "de": "Unterstützung von WEB-Erweiterungen\nKorrigiere Anzeige von Expert mode auf Adapter-Tab",

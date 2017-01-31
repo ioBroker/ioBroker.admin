@@ -276,6 +276,7 @@ function Instances(main) {
             text += '<th style="width: 8em">' + _('restart')  + '</th>';
             text += '<th style="width: 8em">' + _('loglevel') + '</th>';
             text += '<th style="width: 8em">' + _('memlimit') + '</th>';
+            text += '<th style="width: 8em">' + _('events') + '</th>';
         }
         text += '<th style="width: 8em">' + _('RAM usage') + '</th>';
         that.$gridhead.html(text);
@@ -376,13 +377,14 @@ function Instances(main) {
             // name and instance
             text += '<td style="padding-left: 0.5em" data-instance-id="' + instanceId + '" class="instance-name"><b>' + adapter + '.' + instance + '</b></td>';
 
+            var isRun = common.onlyWWW || common.enabled;
             // buttons
             text += '<td style="text-align: left; padding-left: 1em;">' +
                 (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-stop-run"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-settings" data-instance-href="adapter/' + adapter + '/?' + instance + '" ></button>' +
-                (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
+                (!common.onlyWWW ? '<button ' + (isRun ? '' : 'disabled ') + 'style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-del"></button>'+
-                (url ? '<button style="display: inline-block" data-link="' + (typeof url !== 'object' ? url : '') +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '') +
+                (url ? '<button ' + (isRun ? '' : 'disabled ') + 'style="display: inline-block" data-link="' + (typeof url !== 'object' ? url : '') +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '') +
                 '</td>';
 
             // title
@@ -406,16 +408,16 @@ function Instances(main) {
             // scheduled restart (only experts)
             if (that.main.config.expertMode) {
                 text += '<td data-name="restartSchedule" data-value="' + (common.restartSchedule || '') + '"  style="text-align: center" class="instance-schedule" data-instance-id="' + instanceId + '">' + (common.restartSchedule || '') + '</td>';
-            }
-
-            // debug level (only experts)
-            if (that.main.config.expertMode) {
+                // debug level (only experts)
                 text += '<td data-name="loglevel" data-value="' + (common.loglevel || '') + '"  style="text-align: center" class="instance-editable" data-instance-id="' + instanceId + '" data-options="debug:debug;info:info;warn:warn;error:error">' + (common.loglevel || '') + '</td>';
-            }
-
-            // Max RAM  (only experts)
-            if (that.main.config.expertMode) {
+                // Max RAM  (only experts)
                 text += '<td data-name="memoryLimitMB" data-value="' + (common.memoryLimitMB || '') + '" style="text-align: center" class="instance-editable" data-instance-id="' + instanceId + '">' + (common.memoryLimitMB || '') + '</td>';
+                // Max RAM  (only experts)
+                if (isRun && that.main.states[instanceId + '.inputCount']) {
+                    text += '<td style="text-align: center"><span title="in" data-instance-id="' + instanceId + '" class="instance-in">&#x21E5;' + that.main.states[instanceId + '.inputCount'].val + '</span> / <span title="out" data-instance-id="' + instanceId + '" class="instance-out">&#x21A6;' + that.main.states[instanceId + '.outputCount'].val + '</span></td>';
+                } else {
+                    text += '<td style="text-align: center"><span title="in" data-instance-id="' + instanceId + '" class="instance-in"></span> / <span title="out" data-instance-id="' + instanceId + '" class="instance-out"></span></td>';
+                }
             }
 
             text += '<td class="memUsage" style="text-align: center" data-instance-id="' + instanceId + '">' + calculateRam(instanceId) + '</td>';
@@ -945,6 +947,11 @@ function Instances(main) {
                 if ($mem.length && $mem.text() !== mem) {
                     $mem.html('<span class="highlight">' + mem + '</span>');
                 }
+            } else if (last === 'outputCount') {
+                // update total ram
+                $('.instance-out[data-instance-id="' + id + '"]').html('<span class="highlight">&#x21A6;' + state.val + '</span>');
+            } else if (last === 'inputCount') {
+                $('.instance-in[data-instance-id="' + id + '"]').html('<span class="highlight">&#x21E5;' + state.val + '</span>');
             }
 
             if (this.list.indexOf(id) !== -1) {
@@ -957,7 +964,6 @@ function Instances(main) {
             if (this.list.indexOf(id) !== -1 && last === 'connection') {
                 updateLed(id);
             }
-
         }
     };
 

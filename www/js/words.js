@@ -49,6 +49,7 @@ systemDictionary = {
     "config":               {"en": "Settings",              "de": "Konfiguration",          "ru": "Настроить"},
     "loglevel":             {"en": "loglevel",              "de": "Log Stufe",              "ru": "Уровень"},
     "memlimit":             {"en": "RAM limit",             "de": "RAM Limit",              "ru": "Макс. RAM"},
+    "events":               {"en": "events",                "de": "Ereignisse",             "ru": "Сообщения"},
     "alive":                {"en": "alive",                 "de": "Läuft",                  "ru": "Активен"},
     "connected":            {"en": "connected",             "de": "Verbunden",              "ru": "Соединение"},
     "groups":               {"en": "groups",                "de": "Gruppen",                "ru": "Группы"},
@@ -233,6 +234,7 @@ systemDictionary = {
     "ioBroker certificates": {"en": "ioBroker certificates", "de": "ioBroker Zertifikate",  "ru": "ioBroker сертификат"},
     "new certificate":      {"en": "new certificate",       "de": "neues Zertifikat",       "ru": "новый сертификат"},
     "Note:":                {"en": "Note:",                 "de": "Notiz:",                 "ru": "Замечание:"},
+    "Invalid version of %s": {"en": "Invalid version of %s", "de": "Falsche Version von %s", "ru": "Неподходящая версия %s"},
     "diag-note":            {
         "en": "We worked hard to create this project. As equivalent we expect from you some statistics about the usage.<br>\n" +
         "No private information will be sent to ioBroker.org. Every time you press update adapter list the anonymized statistics will be sent.<br>\n" +

@@ -243,6 +243,13 @@ function Hosts(main) {
         // installed
         text += '<td class="hosts-version-installed" data-host-id="' + obj._id + '">' + obj.common.installedVersion + '</td>';
 
+        // event rates
+        if (that.main.states[obj._id + '.inputCount']) {
+            text += '<td style="text-align: center"><span title="in" data-host-id="' + obj._id + '" class="host-in">&#x21E5;' + that.main.states[obj._id + '.inputCount'].val + '</span> / <span title="out" data-host-id="' + obj._id + '"  class="host-out">&#x21A6;' + that.main.states[obj._id + '.outputCount'].val + '</span></td>';
+        } else {
+            text += '<td style="text-align: center"><span title="in" data-host-id="' + obj._id + '" class="host-in"></span> / <span title="out" data-host-id="' + obj._id + '" class="host-out"></span></td>';
+        }
+
         text += '</tr>';
 
         return text;
@@ -375,6 +382,14 @@ function Hosts(main) {
                 $('.host-update-hint-submit[data-host-id="' + id + '"]').hide();
                 $('.host-restart-submit[data-host-id="' + id + '"]').hide();
             }
+        } else if (id.match(/^system\.host\..+\.outputCount$/)) {
+            id = id.substring(0, id.length - 12);
+
+            $('.host-out[data-host-id="' + id + '"]').html('<span class="highlight">&#x21A6;' + state.val + '</span>');
+        } else if (id.match(/^system\.host\..+\.inputCount$/)) {
+            id = id.substring(0, id.length - 11);
+
+            $('.host-in[data-host-id="' + id + '"]').html('<span class="highlight">&#x21A6;' + state.val + '</span>');
         }
     };
 }
