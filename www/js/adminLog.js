@@ -175,6 +175,11 @@ function Logs(main) {
     };
 
     this.add = function (message) {
+        // remove instance name from text
+        if (message.message.substring(0, message.from.length) === message.from) {
+            message.message = message.message.substring(message.from.length + 1);
+        }
+
         if (this.logPauseMode) {
             this.logPauseList.push(message);
             this.logPauseCounter++;
