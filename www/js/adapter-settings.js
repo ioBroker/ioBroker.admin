@@ -1170,7 +1170,7 @@ function values2table(divId, values, onChange, onReady) {
                             values2table(id, values, onChange, onReady);
                         }, 100);
                     });
-            }else if (command === 'edit') {
+            } else if (command === 'edit') {
                 $(this).button({
                     icons: {primary: 'ui-icon-pencil'},
                     text: false
@@ -1181,10 +1181,13 @@ function values2table(divId, values, onChange, onReady) {
                         var elem = values[id];
                         if (typeof editLine === 'function') {
                             setTimeout(function () {
-                                editLine(id, values[id], function (err, id, newValues) {
+                                editLine(id, JSON.parse(JSON.stringify(values[id])), function (err, id, newValues) {
                                     if (!err) {
-                                        values[id] = newValues;
-                                        _values2table(id, values, onChange, onReady);
+                                        if (JSON.stringify(values[id]) !== JSON.stringify(newValues)) {
+                                            onChange && onChange();
+                                            values[id] = newValues;
+                                            _values2table(id, values, onChange, onReady);
+                                        }
                                     }
                                 });
                             }, 100);

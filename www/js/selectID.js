@@ -84,6 +84,7 @@
                  refresh:  'Rebuild tree',
                  edit:     'Edit',
                  ok:       'Ok',
+                 push:     'Trigger event'
                  wait:     'Processing...',
                  list:     'Show list view',
                  tree:     'Show tree view',
@@ -1290,6 +1291,9 @@
                             data.quickEdit.indexOf('value') !== -1  &&
                             (data.expertMode || data.objects[node.key].common.write !== false)
                         ) {
+                            if (data.objects[node.key].common.role === 'button' && !data.expertMode) {
+                                $tdList.eq(base).html('<button data-id="' + node.key + '" class="select-button-push"></button>');
+                            } else
                             if (!data.objects[node.key].common || data.objects[node.key].common.type !== 'file') {
                                 var val = data.states[node.key];
                                 val = val ? val.val : '';
@@ -1301,6 +1305,16 @@
                                     .data('selectId', data)
                                     .addClass('select-id-quick-edit');
                             }
+
+                            $tr.find('.select-button-push[data-id="' + node.key + '"]').button({
+                                text: false,
+                                icons: {
+                                    primary: 'ui-icon-arrowthickstop-1-s'
+                                }
+                            }).click(function () {
+                                var id = $(this).data('id');
+                                data.quickEditCallback(id, 'value', true);
+                            }).attr('title', data.texts.push).css({width: 26, height: 20});
                         }
 
                         if (common.type === 'file') {
@@ -1362,7 +1376,7 @@
                             $tr.find('.select-button-ok[data-id="' + node.key + '"]').button({
                                 text: false,
                                 icons: {
-                                    primary:'ui-icon-check'
+                                    primary: 'ui-icon-check'
                                 }
                             }).click(function () {
                                 var node = $(this).data('node');
@@ -1373,7 +1387,7 @@
                             $tr.find('.select-button-cancel[data-id="' + node.key + '"]').button({
                                 text: false,
                                 icons: {
-                                    primary:'ui-icon-close'
+                                    primary: 'ui-icon-close'
                                 }
                             }).click(function () {
                                 var node = $(this).data('node');
@@ -1929,6 +1943,7 @@
                 refresh:  'Rebuild tree',
                 edit:     'Edit',
                 ok:       'Ok',
+                push:     'Trigger event',
                 wait:     'Processing...',
                 list:     'Show list view',
                 tree:     'Show tree view',
