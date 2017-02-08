@@ -381,7 +381,7 @@ function Instances(main) {
             // buttons
             text += '<td style="text-align: left; padding-left: 1em;">' +
                 (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-stop-run"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
-                '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-settings" data-instance-href="adapter/' + adapter + '/?' + instance + '" ></button>' +
+                '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-settings"></button>' +
                 (!common.onlyWWW ? '<button ' + (isRun ? '' : 'disabled ') + 'style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-del"></button>'+
                 (url ? '<button ' + (isRun ? '' : 'disabled ') + 'style="display: inline-block" data-link="' + (typeof url !== 'object' ? url : '') +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '') +
@@ -413,7 +413,7 @@ function Instances(main) {
                 // Max RAM  (only experts)
                 text += '<td data-name="memoryLimitMB" data-value="' + (common.memoryLimitMB || '') + '" style="text-align: center" class="instance-editable" data-instance-id="' + instanceId + '">' + (common.memoryLimitMB || '') + '</td>';
                 // Max RAM  (only experts)
-                if (isRun && that.main.states[instanceId + '.inputCount']) {
+                if (isRun && that.main.states[instanceId + '.inputCount'] && that.main.states[instanceId + '.outputCount']) {
                     text += '<td style="text-align: center"><span title="in" data-instance-id="' + instanceId + '" class="instance-in">&#x21E5;' + that.main.states[instanceId + '.inputCount'].val + '</span> / <span title="out" data-instance-id="' + instanceId + '" class="instance-out">&#x21A6;' + that.main.states[instanceId + '.outputCount'].val + '</span></td>';
                 } else {
                     text += '<td style="text-align: center"><span title="in" data-instance-id="' + instanceId + '" class="instance-in"></span> / <span title="out" data-instance-id="' + instanceId + '" class="instance-out"></span></td>';
@@ -935,34 +935,36 @@ function Instances(main) {
             var last = parts.pop();
             id = parts.join('.');
 
-            if (last === 'freemem') {
-                // update total ram
-                calculateFreeMem();
-            } else if (last === 'memRss') {
-                // update total ram
-                calculateTotalRam();
-                // update instance ram
-                var $mem = $('.memUsage[data-instance-id="' + id + '"]');
-                var mem = calculateRam(id);
-                if ($mem.length && $mem.text() !== mem) {
-                    $mem.html('<span class="highlight">' + mem + '</span>');
+            if (state) {
+                if (last === 'freemem') {
+                    // update total ram
+                    calculateFreeMem();
+                } else if (last === 'memRss') {
+                    // update total ram
+                    calculateTotalRam();
+                    // update instance ram
+                    var $mem = $('.memUsage[data-instance-id="' + id + '"]');
+                    var mem = calculateRam(id);
+                    if ($mem.length && $mem.text() !== mem) {
+                        $mem.html('<span class="highlight">' + mem + '</span>');
+                    }
+                } else if (last === 'outputCount') {
+                    // update total ram
+                    $('.instance-out[data-instance-id="' + id + '"]').html('<span class="highlight">&#x21A6;' + state.val + '</span>');
+                } else if (last === 'inputCount') {
+                    $('.instance-in[data-instance-id="' + id + '"]').html('<span class="highlight">&#x21E5;' + state.val + '</span>');
                 }
-            } else if (last === 'outputCount') {
-                // update total ram
-                $('.instance-out[data-instance-id="' + id + '"]').html('<span class="highlight">&#x21A6;' + state.val + '</span>');
-            } else if (last === 'inputCount') {
-                $('.instance-in[data-instance-id="' + id + '"]').html('<span class="highlight">&#x21E5;' + state.val + '</span>');
-            }
 
-            if (this.list.indexOf(id) !== -1) {
-                if (last === 'alive' || last === 'connected') {
+                if (this.list.indexOf(id) !== -1) {
+                    if (last === 'alive' || last === 'connected') {
+                        updateLed(id);
+                    }
+                    return;
+                }
+                id = 'system.adapter.' + parts[0] + '.' + parts[1];
+                if (this.list.indexOf(id) !== -1 && last === 'connection') {
                     updateLed(id);
                 }
-                return;
-            }
-            id = 'system.adapter.' + parts[0] + '.' + parts[1];
-            if (this.list.indexOf(id) !== -1 && last === 'connection') {
-                updateLed(id);
             }
         }
     };
@@ -981,6 +983,14 @@ function Instances(main) {
                         that.updateTimer = null;
                         that.init(true);
                     }, 200);
+
+                    setTimeout(function () {
+                        // if tab2 is not active => activate it
+                        $('#tabs').tabs('option', 'active', 1);
+
+                        // open configuration dialog
+                        that.showConfigDialog(id);
+                    }, 2000);
                 } else {
                     if (id.indexOf('.web.') !== -1) {
                         if (this.updateTimer) clearTimeout(this.updateTimer);
@@ -1013,6 +1023,43 @@ function Instances(main) {
         }
     };
 
+    this.showConfigDialog = function (id) {
+        // id = 'system.adapter.NAME.X'
+        $iframeDialog = that.$dialogConfig;
+        var parts = id.split('.');
+        that.$configFrame.attr('src', 'adapter/' + parts[2] + '/?' + parts[3]);
+
+        var name      = id.replace(/^system\.adapter\./, '');
+        var config    = that.main.objects[id];
+        var width     = 830;
+        var height    = 536;
+        var minHeight = 0;
+        var minWidth  = 0;
+        if (config.common.config) {
+            if (config.common.config.width)     width     = config.common.config.width;
+            if (config.common.config.height)    height    = config.common.config.height;
+            if (config.common.config.minWidth)  minWidth  = config.common.config.minWidth;
+            if (config.common.config.minHeight) minHeight = config.common.config.minHeight;
+        }
+        if (that.main.config['adapter-config-width-'  + name])  width = that.main.config['adapter-config-width-'  + name];
+        if (that.main.config['adapter-config-height-' + name]) height = that.main.config['adapter-config-height-' + name];
+
+        that.$dialogConfig.data('name', name);
+
+        // Set minimal height and width
+        that.$dialogConfig.dialog('option', 'minWidth',  minWidth).dialog('option', 'minHeight', minHeight);
+
+        that.$dialogConfig
+            .dialog('option', 'title', _('Adapter configuration') + ': ' + name)
+            .dialog('option', 'width',  width)
+            .dialog('option', 'height', height)
+            .dialog('open');
+        that.$dialogConfig.parent().find('.ui-widget-header button .ui-button-text').html('');
+
+        if (that.main.config['adapter-config-top-'  + name])   that.$dialogConfig.parent().css({top:  that.main.config['adapter-config-top-' + name]});
+        if (that.main.config['adapter-config-left-' + name])   that.$dialogConfig.parent().css({left: that.main.config['adapter-config-left-' + name]});
+    };
+
     this.initButtons = function (id, url) {
         id = id ? '[data-instance-id="' + id + '"]' : '';
 
@@ -1029,36 +1076,8 @@ function Instances(main) {
 
         $e = $('.instance-settings' + id).unbind('click')
             .click(function () {
-                $iframeDialog = that.$dialogConfig;
-                that.$configFrame.attr('src', $(this).attr('data-instance-href'));
-                var name = $(this).attr('data-instance-id').replace(/^system\.adapter\./, '');
-                var config = that.main.objects[$(this).attr('data-instance-id')];
-                var width = 830;
-                var height = 536;
-                var minHeight = 0;
-                var minWidth = 0;
-                if (config.common.config) {
-                    if (config.common.config.width)     width     = config.common.config.width;
-                    if (config.common.config.height)    height    = config.common.config.height;
-                    if (config.common.config.minWidth)  minWidth  = config.common.config.minWidth;
-                    if (config.common.config.minHeight) minHeight = config.common.config.minHeight;
-                }
-                if (that.main.config['adapter-config-width-'  + name])  width = that.main.config['adapter-config-width-'  + name];
-                if (that.main.config['adapter-config-height-' + name]) height = that.main.config['adapter-config-height-' + name];
-                that.$dialogConfig.data('name', name);
-
-                // Set minimal height and width
-                that.$dialogConfig.dialog('option', 'minWidth',  minWidth).dialog('option', 'minHeight', minHeight);
-
-                that.$dialogConfig
-                    .dialog('option', 'title', _('Adapter configuration') + ': ' + name)
-                    .dialog('option', 'width',  width)
-                    .dialog('option', 'height', height)
-                    .dialog('open');
-                that.$dialogConfig.parent().find('.ui-widget-header button .ui-button-text').html('');
-
-                if (that.main.config['adapter-config-top-'  + name])   that.$dialogConfig.parent().css({top:  that.main.config['adapter-config-top-' + name]});
-                if (that.main.config['adapter-config-left-' + name])   that.$dialogConfig.parent().css({left: that.main.config['adapter-config-left-' + name]});
+                var id = $(this).data('instance-id');
+                that.showConfigDialog(id);
             });
         if (!$e.find('.ui-button-icon-primary').length) {
             $e.button({icons: {primary: 'ui-icon-note'}, text: false}).css({width: '2em', height: '2em'}).attr('title', _('config'));

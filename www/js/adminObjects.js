@@ -475,6 +475,7 @@ function Objects(main) {
                     wait:     _('Processing...'),
                     ack:      _('Acknowledged'),
                     edit:     _('Edit'),
+                    push:     _('Trigger event'),
                     ok:       _('Ok'),
                     with:     _('With'),
                     without:  _('Without'),

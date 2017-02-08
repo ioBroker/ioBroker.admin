@@ -439,7 +439,6 @@ $(document).ready(function () {
         states:     new States(main),
         objects:    new Objects(main),
         events:     new Events(main),
-//        scripts:    new Scripts(main),
         hosts:      new Hosts(main),
         users:      new Users(main),
         groups:     new Groups(main),
@@ -451,8 +450,7 @@ $(document).ready(function () {
     main.systemDialog = new System(main);
 
     var children =              {};
-    //var updateTimers =          {};
-    
+
     var cmdCallback =           null;
     var stdout;
     var activeCmdId =           null;
@@ -486,138 +484,164 @@ $(document).ready(function () {
 
     function initHtmlTabs(showTabs) {
         // jQuery UI initializations
-        $('#tabs').show().tabs({
-            activate: function (event, ui) {
-                window.location.hash = '#' + ui.newPanel.selector.slice(5);
+        var $tabs = $('#tabs');
+        if (!$tabs.data('inited')) {
+            $tabs.data('inited', true);
+            $tabs.show().tabs({
+                activate: function (event, ui) {
+                    window.location.hash = '#' + ui.newPanel.selector.slice(5);
 
-                // Init source for iframe
-                if ($(ui.newPanel.selector).length && $(ui.newPanel.selector).data('src')) {
-                    var $iframe = $(ui.newPanel.selector).find('iframe');
-                    if ($iframe.length && !$iframe.attr('src')) {
-                        $iframe.attr('src', $(ui.newPanel.selector).data('src'));
-                    }
-                }
-
-                switch (ui.newPanel.selector) {
-                    case '#tab-objects':
-                        tabs.objects.init();
-                        break;
-
-                    case '#tab-hosts':
-                        tabs.hosts.init();
-                        break;
-
-                    case '#tab-states':
-                        tabs.states.init();
-                        break;
-
-                    case '#tab-scripts':
-                        break;
-
-                    case '#tab-adapters':
-                        tabs.hosts.initList();
-                        tabs.adapters.enableColResize();
-                        break;
-
-                    case '#tab-instances':
-                        tabs.instances.init();
-                        break;
-
-                    case '#tab-users':
-                        tabs.users.init();
-                        break;
-
-                    case '#tab-groups':
-                        tabs.groups.init();
-                        break;
-
-                    case '#tab-enums':
-                        tabs.enums.init();
-                        break;
-
-                    case '#tab-log':
-                        tabs.logs.init();
-                        break;
-                }
-            },
-            create: function () {
-                $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
-
-                $('#tabs ul.ui-tabs-nav')
-                    .append('<button class="menu-button" id="button-logout" title="' + _('Logout') + '"></button>' +
-                        '<button class="menu-button" id="button-system" title="' + _('System') + '"></button>' +
-                        '<div id="current-user" class="menu-button" style="padding-right: 10px; padding-top: 5px; height: 16px"></div>' +
-                        '<button class="menu-button" id="button-edit-tabs"></button>' +
-                        '<select id="tabs-show"></select>');
-
-                if (showTabs) {
-                    $('#tabs-show').html('<option value="">' + _('Show...') + '</option>' + showTabs).show();
-
-                    $('#tabs-show').selectmenu({
-                        width: 150,
-                        change: function () {
-                            if ($(this).val()) {
-                                main.systemConfig.common.tabs.push($(this).val());
-                                // save
-                                main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
-                                    if (err) {
-                                        main.showError(err);
-                                        return;
-                                    }
-                                });
-                                initTabs();
+                    var $panel = $(ui.newPanel.selector);
+                    // Init source for iframe
+                    if ($panel.length) {
+                        var link = $panel.data('src');
+                        if (link && link.indexOf('%') === -1) {
+                            var $iframe = $panel.find('iframe');
+                            if ($iframe.length && !$iframe.attr('src')) {
+                                $iframe.attr('src', link);
                             }
+                        } else {
+                            $tabs.data('problem-link', ui.newPanel.selector);
+                        }
+                    }
+
+                    switch (ui.newPanel.selector) {
+                        case '#tab-objects':
+                            tabs.objects.init();
+                            break;
+
+                        case '#tab-hosts':
+                            tabs.hosts.init();
+                            break;
+
+                        case '#tab-states':
+                            tabs.states.init();
+                            break;
+
+                        case '#tab-scripts':
+                            break;
+
+                        case '#tab-adapters':
+                            tabs.hosts.initList();
+                            tabs.adapters.enableColResize();
+                            break;
+
+                        case '#tab-instances':
+                            tabs.instances.init();
+                            break;
+
+                        case '#tab-users':
+                            tabs.users.init();
+                            break;
+
+                        case '#tab-groups':
+                            tabs.groups.init();
+                            break;
+
+                        case '#tab-enums':
+                            tabs.enums.init();
+                            break;
+
+                        case '#tab-log':
+                            tabs.logs.init();
+                            break;
+                    }
+                },
+                create: function () {
+                    $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
+
+                    $('#tabs ul.ui-tabs-nav')
+                        .append('<button class="menu-button" id="button-logout" title="' + _('Logout') + '"></button>' +
+                            '<button class="menu-button" id="button-system" title="' + _('System') + '"></button>' +
+                            '<div id="current-user" class="menu-button" style="padding-right: 10px; padding-top: 5px; height: 16px"></div>' +
+                            '<button class="menu-button" id="button-edit-tabs"></button>' +
+                            '<select id="tabs-show"></select>');
+
+                    if (showTabs) {
+                        $('#tabs-show').html('<option value="">' + _('Show...') + '</option>' + showTabs).show();
+
+                        $('#tabs-show').selectmenu({
+                            width: 150,
+                            change: function () {
+                                if ($(this).val()) {
+                                    main.systemConfig.common.tabs.push($(this).val());
+                                    // save
+                                    main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
+                                        if (err) {
+                                            main.showError(err);
+                                            return;
+                                        }
+                                    });
+                                    initTabs();
+                                }
+                            }
+                        });
+                    } else {
+                        $('#tabs-show').html('').hide();
+                    }
+
+                    $('#button-edit-tabs').button({
+                        icons: {primary: 'ui-icon-pencil'},
+                        text: false
+                    }).click(function () {
+                        if (main.editTabs) {
+                            $('.tab-close').hide();
+                            $('#tabs-show-button').hide();
+                            main.editTabs = false;
+                            $(this).removeClass('ui-state-error');
+                        } else {
+                            $('.tab-close').show();
+                            $('#tabs-show-button').show();
+                            $(this).addClass('ui-state-error');
+                            main.editTabs = true;
                         }
                     });
-                } else {
-                    $('#tabs-show').html('').hide();
-                }
-
-                $('#button-edit-tabs').button({
-                    icons: {primary: 'ui-icon-pencil'},
-                    text: false
-                }).click(function () {
-                    if (main.editTabs) {
+                    if (!main.editTabs) {
                         $('.tab-close').hide();
                         $('#tabs-show-button').hide();
-                        main.editTabs = false;
-                        $(this).removeClass('ui-state-error');
                     } else {
-                        $('.tab-close').show();
-                        $('#tabs-show-button').show();
-                        $(this).addClass('ui-state-error');
-                        main.editTabs = true;
+                        $('#button-edit-tabs').addClass('ui-state-error');
                     }
-                });
-                if (!main.editTabs) {
-                    $('.tab-close').hide();
-                    $('#tabs-show-button').hide();
-                } else {
-                    $('#button-edit-tabs').addClass('ui-state-error');
+
+
+                    $('#button-logout').button({
+                        text: false
+                    }).click(function () {
+                        window.location.href = '/logout/';
+                    });
+
+                    main.systemDialog.init();
+
+                    window.onhashchange = navigation;
+                    navigation();
                 }
+            });
+            main.socket.emit('authEnabled', function (auth, user) {
+                if (!auth) $('#button-logout').remove();
+                $('#current-user').html(user ? user[0].toUpperCase() + user.substring(1).toLowerCase() : '');
+            });
+            resizeGrids();
 
-
-                $('#button-logout').button({
-                    text: false
-                }).click(function () {
-                    window.location.href = '/logout/';
-                });
-
-                main.systemDialog.init();
-
-                window.onhashchange = navigation;
-                navigation();
+            $('#events_threshold').click(function () {
+                main.socket.emit('eventsThreshold', false);
+            });
+        } else {
+            var panelSelector = $tabs.data('problem-link');
+            if (panelSelector) {
+                var $panel = $(panelSelector);
+                // Init source for iframe
+                if ($panel.length) {
+                    var link = $panel.data('src');
+                    if (link && link.indexOf('%') === -1) {
+                        var $iframe = $panel.find('iframe');
+                        if ($iframe.length && !$iframe.attr('src')) {
+                            $iframe.attr('src', link);
+                            $tabs.data('problem-link', null);
+                        }
+                    }
+                }
             }
-        });
-        main.socket.emit('authEnabled', function (auth, user) {
-            if (!auth) $('#button-logout').remove();
-            $('#current-user').html(user ? user[0].toUpperCase() + user.substring(1).toLowerCase() : '');
-        });
-        resizeGrids();
-
-        $('#events_threshold').click(function () {
-            main.socket.emit('eventsThreshold', false);
-        });
+        }
     }
 
     function initTabs() {
@@ -711,14 +735,14 @@ $(document).ready(function () {
                     /*main.tabs.instances._replaceLinks(link, parts[2], parts[3], name, function (link, adapter, instance, arg) {
                         $('#' + arg).data('src', link);
                     });*/
-                    isReplace = (link.indexOf('%') !==-1);
+                    isReplace = link.indexOf('%') !== -1;
                 }
 
                 text += '<li><a href="#' + name + '">' + buttonName + '</a><button class="tab-close" data-tab="' + name + '"></button></li>\n';
 
                 if (!$('#' + name).length) {
                     var div = '<div id="' + name + '" class="tab-custom ' + (isReplace ? 'link-replace': '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
-                        '<iframe class="iframe-in-tab" style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%;"></iframe></div>';
+                        '<iframe class="iframe-in-tab" style="border: 0; solid #FFF; display:block; left: 0; top: 0; width: 100%;"></iframe></div>';
                     $(div).appendTo($('#tabs'));
                 } else {
                     $('#' + name).show().appendTo($('#tabs'));
@@ -756,9 +780,10 @@ $(document).ready(function () {
             initTabs();
         }).css({width: 16, height: 16});
 
-        $('#tabs').hide();
-        if ($('#tabs').tabs('instance')) {
-            $('#tabs').tabs('destroy');
+        var $tabs = $('#tabs');
+        $tabs.hide();
+        if ($tabs.tabs('instance')) {
+            $tabs.tabs('destroy');
         }
         if ($('.link-replace').length) {
             var countLink = 0;
@@ -774,7 +799,7 @@ $(document).ready(function () {
                 countLink++;
                 main.tabs.instances._replaceLinks($(this).data('src'), $(this).data('adapter'), $(this).data('instance'), $(this).attr('id'), function (link, adapter, instance, arg) {
                     $('#' + arg).data('src', link).removeClass('link-replace');
-                    if (!(--countLink)) {
+                    if (!--countLink) {
                         if (loadTimeout) {
                             clearTimeout(loadTimeout);
                             loadTimeout = null;
@@ -848,13 +873,6 @@ $(document).ready(function () {
     }
 
     tabs.logs.prepare();
-
-    // detect type of state
-    /*function getType(val) {
-        if (val === true || val === 'true' || val === false || val === 'false') return 'bool';
-        if (parseFloat(val).toString() == val) return 'number';
-        return typeof val;
-    }*/
 
     // ----------------------------- Objects show and Edit ------------------------------------------------
     function getObjects(callback) {
@@ -1282,7 +1300,7 @@ $(document).ready(function () {
         setTimeout(function () {
             tabs.adapters.init(true);
         }, 0);
-    })
+    });
 
     main.socket.on('reauthenticate', function () {
         location.reload();
@@ -1311,8 +1329,9 @@ $(document).ready(function () {
     function navigation() {
         if (window.location.hash) {
             var tab = 'tab-' + window.location.hash.slice(1);
-            var index = $('#tabs a[href="#' + tab + '"]').parent().index() - 1;
-            $('#tabs').tabs('option', 'active', index);
+            var $tabs = $('#tabs');
+            var index = $tabs.find('a[href="#' + tab + '"]').parent().index() - 1;
+            $tabs.tabs('option', 'active', index);
             if (tab === 'tab-hosts') tabs.hosts.init();
         } else {
             tabs.hosts.init();

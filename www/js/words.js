@@ -205,6 +205,7 @@ systemDictionary = {
     "ioBroker repositories": {"en": "ioBroker repositories", "de": "ioBroker Verwahrungsorte", "ru": "Репозитории ioBroker"},
     "add repository":       {"en": "add repository",        "de": "Verwahrungsort hinzufügen", "ru": "Добавить репозиторий"},
     "edit":                 {"en": "edit",                  "de": "ändern",                 "ru": "Редактировать"},
+    "Trigger event":        {"en": "Trigger event",         "de": "Simuliere Knopfdruck",   "ru": "Симулировать нажатие"},
     "delete":               {"en": "delete",                "de": "löschen",                "ru": "Удалить"},
     "ok":                   {"en": "Ok",                    "de": "Ok",                     "ru": "Ok"},
     "cancel":               {"en": "Cancel",                "de": "Abbrechen",              "ru": "отменить"},
