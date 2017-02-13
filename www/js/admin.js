@@ -784,6 +784,7 @@ $(document).ready(function () {
         $tabs.hide();
         if ($tabs.tabs('instance')) {
             $tabs.tabs('destroy');
+            $tabs.data('inited', false);
         }
         if ($('.link-replace').length) {
             var countLink = 0;
