@@ -31,11 +31,6 @@
         "Public certificate:":    {"en": "Public certificate:",     "de": "Publikzertifikat:",       "ru": "'Public' сертификат:"},
         "Private certificate:":   {"en": "Private certificate:",    "de": "Privatzertifikat:",       "ru": "'Private' сертификат:"},
         "Chained certificate:":   {"en": "Chained certificate:",    "de": "Kettenzertifikat:",       "ru": "'Chained' сертификат:"},
-        "help_tip":               {
-            "en": "On save the adapter restarts with new configuration immediately",
-            "de": "Beim Speichern von Einstellungen der Adapter wird sofort neu gestartet.",
-            "ru": "Сразу после сохранения настроек драйвер перезапуститься с новыми значениями"
-        },
         "Set certificates or load it first in the system settings (right top).":    {
             "en": "Set certificates or load it first in the system settings (right top).",
             "de": "Setze Zertificate oder lade die erst unter System/Einstellungen (oben rechts).",
@@ -70,6 +65,77 @@
             "en": "Port to check the domain:",
             "de": "Port um die Domain zu prüfen:",
             "ru": "Порт для проверки доменного имени:"
+        },
+
+        "tooltip_bind": {
+            "en": "IP address, where the admin will run",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
+        },
+        "tooltip_port": {
+            "en": "Port for admin interface. It must be available. If running on linux with no root you cannot use ports below 1000.",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
+        },
+        "tooltip_secure": {
+            "en": "Enable SSL protocol. Admin will be available via https:// and not http://",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
+        },
+        "tooltip_certPublic": {
+            "en": "Public certificate. Please manage it in the system configs.",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
+        },
+        "tooltip_certPrivate": {
+            "en": "Private certificate. Please manage it in the system configs.",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
+        },
+        "tooltip_certChained": {
+            "en": "Chained certificate. Root certificate + Public certificate. Please manage it in the system configs.",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
+        },
+        "tooltip_auth": {
+            "en": "Check login and password be access to the admin page. You can manage it on the users tab.",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
+        },
+        "tooltip_ttl": {
+            "en": "Login timeout. After this time the user will be automatically logger off.",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
+        },
+        "tooltip_cache": {
+            "en": "IP address, where the admin will run",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
+        },
+        "tooltip_defaultUser": {
+            "en": "IP address, where the admin will run",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
+        },
+        "tooltip_autoUpdate": {
+            "en": "IP address, where the admin will run",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
+        },
+        "tooltip_leEnabled": {
+            "en": "IP address, where the admin will run",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
+        },
+        "tooltip_leUpdate": {
+            "en": "IP address, where the admin will run",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
+        },
+        "tooltip_lePort": {
+            "en": "IP address, where the admin will run",
+            "de": "IP Addresse, wo Admin gestartet wird",
+            "ru": "IP Адрес интерфейса на котором будет запущен админ"
         }
     };
 
@@ -195,26 +261,29 @@
     <table><tr><td><img src="admin.png"></td><td><h3 class="translate">Admin adapter settings</h3></td></tr></table>
 
     <table>
-        <tr><td class="translate">IP:</td><td>            <select class="value" id="bind"></select></td></tr>
-        <tr><td class="translate">Port:</td><td>          <input  class="value number" id="port" size="5" maxlength="5" type="number"/></td></tr>
-        <tr><td class="translate">Secure(HTTPS):</td><td> <input  class="value" id="secure" type="checkbox" /></td></tr>
+        <tr><td><label class="translate" for="bind">IP:</label></td><td><select class="value" id="bind"></select></td><td class="admin-tooltip" data-id="bind"></td></tr>
+        <tr><td><label class="translate" for="port">Port:</label></td><td><input class="value number" id="port" size="5" maxlength="5" type="number"/></td><td class="admin-tooltip"></td></tr>
+        <tr><td><label class="translate" for="secure">Secure(HTTPS):</label></td><td><input class="value" id="secure" type="checkbox" /></td><td class="admin-tooltip"></td></tr>
         <tr id="_certPublic">
-            <td class="translate">Public certificate:</td>
+            <td><label class="translate" for="certPublic">Public certificate:</label></td>
             <td><select id="certPublic" class="value"></select></td>
+            <td class="admin-tooltip"></td>
         </tr>
         <tr id="_certPrivate">
-            <td class="translate">Private certificate:</td>
+            <td><label class="translate" for="certPrivate">Private certificate:</label></td>
             <td><select id="certPrivate" class="value"></select></td>
+            <td class="admin-tooltip"></td>
         </tr>
         <tr id="_certChained">
-            <td class="translate">Chained certificate:</td>
+            <td><label class="translate" for="certChained">Chained certificate:</label></td>
             <td><select id="certChained" class="value"></select></td>
+            <td class="admin-tooltip"></td>
         </tr>
-        <tr><td class="translate">Authentication:</td><td><input  class="value" id="auth"   type="checkbox" /></td></tr>
-        <tr id="_ttl"><td class="translate">Login timeout(sec):</td><td><input  class="value" id="ttl" /></td></tr>
-        <tr><td class="translate">Cache:</td><td>         <input  class="value" id="cache"  type="checkbox" /></td></tr>
-        <tr class="defaultUser"><td class="translate">Run as:</td><td><select class="value" id="defaultUser" /></td></tr>
-        <tr><td class="translate">Auto update:</td><td>
+        <tr><td><label class="translate" for="auth">Authentication:</label></td><td><input class="value" id="auth" type="checkbox" /></td><td class="admin-tooltip"></td></tr>
+        <tr id="_ttl"><td><label class="translate" for="ttl">Login timeout(sec):</label></td><td><input class="value" id="ttl" /></td><td class="admin-tooltip"></td></tr>
+        <tr><td><label class="translate" for="cache">Cache:</label></td><td><input  class="value" id="cache" type="checkbox" /></td><td class="admin-tooltip"></td></tr>
+        <tr class="defaultUser"><td><label class="translate" for="defaultUser">Run as:</label></td><td><select class="value" id="defaultUser"></select></td><td class="admin-tooltip"></td></tr>
+        <tr><td><label class="translate" for="autoUpdate">Auto update:</label></td><td>
             <select  class="value" id="autoUpdate">
                 <option value="0" class="translate">manually</option>
                 <option value="12" class="translate">every 12 hours</option>
@@ -225,15 +294,12 @@
                 <option value="336" class="translate">every 2 weeks</option>
                 <option value="720" class="translate">monthly</option>
             </select>
-        </td></tr>
+        </td><td class="admin-tooltip"></td></tr>
         <tr><td colspan="2">&nbsp;</td></tr>
         <tr class="le-settings"><td colspan="2"><h3 class="translate">Let's Encrypt settings</h3></tr>
-        <tr class="le-settings"><td><label for="leEnabled" class="translate">Use Lets Encrypt certificates:</label></td><td><input  class="value" id="leEnabled"   type="checkbox" /></td></tr>
-        <tr class="le-settings le-sub-settings"><td><label for="leUpdate" class="translate">Use this instance for automatic update:</label></td><td><input  class="value" id="leUpdate" type="checkbox" /></td></tr>
-        <tr class="le-settings le-sub-settings le-sub-settings-update"><td><label for="lePort" class="translate">Port to check the domain:</label></td><td><input class="value number" id="lePort" type="number" size="5" maxlength="5" /></td></tr>
+        <tr class="le-settings"><td><label for="leEnabled" class="translate">Use Lets Encrypt certificates:</label></td><td><input class="value" id="leEnabled" type="checkbox" /></td><td class="admin-tooltip" data-link="lets-encrypt-certificates"></td></tr>
+        <tr class="le-settings le-sub-settings"><td><label for="leUpdate" class="translate">Use this instance for automatic update:</label></td><td><input class="value" id="leUpdate" type="checkbox" /></td><td class="admin-tooltip" data-link="lets-encrypt-certificates"></td></tr>
+        <tr class="le-settings le-sub-settings le-sub-settings-update"><td><label for="lePort" class="translate">Port to check the domain:</label></td><td><input class="value number" id="lePort" type="number" size="5" maxlength="5" /></td><td class="admin-tooltip" data-link="lets-encrypt-certificates"></td></tr>
     </table>
-
-    <p class="translate">help_tip</p>
-
 </div>
 </html>

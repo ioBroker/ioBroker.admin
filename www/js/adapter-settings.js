@@ -22,28 +22,29 @@ $(document).ready(function () {
     // Extend dictionary with standard words for adapter
     if (typeof systemDictionary === 'undefined') systemDictionary = {};
 
-    systemDictionary.save =           {"en": "Save",        "de": "Speichern",   "ru": "Сохранить"};
+    systemDictionary.save =           {"en": "Save",           "de": "Speichern",               "ru": "Сохранить"};
     systemDictionary.saveclose =      {"en": "Save and close", "de": "Speichern und schließen", "ru": "Сохранить и выйти"};
-    systemDictionary.none =           {"en": "none",        "de": "keins",       "ru": ""};
-    systemDictionary.all =            {"en": "all",         "de": "alle",        "ru": "все"};
-    systemDictionary['Device list'] = {"en": "Device list", "de": "Geräteliste", "ru": "Список устройств"};
-    systemDictionary['new device'] =  {"en": "new device",  "de": "Neues Gerät", "ru": "Новое устройство"};
-    systemDictionary.edit =           {"en": "edit",        "de": "Ändern",      "ru": "Изменить"};
-    systemDictionary.delete =         {"en": "delete",      "de": "Löschen",     "ru": "Удалить"};
-    systemDictionary.ok =             {"en": "Ok",          "de": "Ok",          "ru": "Ok"};
-    systemDictionary.cancel =         {"en": "Cancel",      "de": "Abbrechen",   "ru": "Отмена"};
-    systemDictionary.Message =        {"en": "Message",     "de": "Mitteilung",  "ru": "Сообщение"};
-    systemDictionary.close =          {"en": "Close",       "de": "Schließen",   "ru": "Закрыть"};
+    systemDictionary.none =           {"en": "none",           "de": "keins",                    "ru": ""};
+    systemDictionary.all =            {"en": "all",            "de": "alle",                     "ru": "все"};
+    systemDictionary['Device list'] = {"en": "Device list",    "de": "Geräteliste",              "ru": "Список устройств"};
+    systemDictionary['new device'] =  {"en": "new device",     "de": "Neues Gerät",              "ru": "Новое устройство"};
+    systemDictionary.edit =           {"en": "edit",           "de": "Ändern",                   "ru": "Изменить"};
+    systemDictionary.delete =         {"en": "delete",         "de": "Löschen",                  "ru": "Удалить"};
+    systemDictionary.ok =             {"en": "Ok",             "de": "Ok",                       "ru": "Ok"};
+    systemDictionary.cancel =         {"en": "Cancel",         "de": "Abbrechen",                "ru": "Отмена"};
+    systemDictionary.Message =        {"en": "Message",        "de": "Mitteilung",               "ru": "Сообщение"};
+    systemDictionary.close =          {"en": "Close",          "de": "Schließen",                "ru": "Закрыть"};
+    systemDictionary.htooltip =       {"en": "Click for help", "de": "Anclicken",                "ru": "Перейти по ссылке"};
 
     //socket.on('connection', function () {
         loadSystemConfig(function () {
             if (typeof translateAll === 'function') translateAll();
-            loadSettings();
+            loadSettings(prepareTooltips);
         });
     //});
-
-    $('body').wrapInner('<div style="height: calc(100% - 44px); width: 100%; overflow:auto"></div>');
-    $('body').prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" style="padding: 2px" >' +
+    var $body = $('body');
+    $body.wrapInner('<div style="height: calc(100% - 44px); width: 100%; overflow:auto"></div>');
+    $body.prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" style="padding: 2px" >' +
         '<button id="save" class="translateB">save</button>&nbsp;' +
         '<button id="saveclose" class="translateB">saveclose</button>&nbsp;' +
         '<button id="close" class="translateB" style="float: right;">cancel</button>&nbsp;' +
@@ -167,7 +168,7 @@ $(document).ready(function () {
         }
     }
 
-    function loadSettings() {
+    function loadSettings(callback) {
         socket.emit('getObject', id, function (err, res) {
             if (!err && res && res.native) {
                 $('.adapter-instance').html(adapter + '.' + instance);
@@ -179,13 +180,70 @@ $(document).ready(function () {
                 } else {
                     load(res.native, onChange);
                 }
+                if (typeof callback === 'function') {
+                    callback();
+                }
             } else {
+                if (typeof callback === 'function') {
+                    callback();
+                }
                 alert('error loading settings for ' + id + '\n\n' + err);
             }
         });
     }
 });
 
+function prepareTooltips() {
+    $('.admin-tooltip').each(function () {
+        var id = $(this).data('id');
+        if (!id) {
+            var $prev = $(this).prev();
+            var $input = $prev.find('input');
+            if (!$input.length) {
+                $input = $prev.find('select');
+            }
+            if ($input.length) {
+                id = $input.attr('id');
+            }
+        }
+
+        if (!id) return;
+
+        var tooltip = '';
+        if (systemDictionary['tooltip_' + id]) {
+            tooltip = systemDictionary['tooltip_' + id][systemLang] || systemDictionary['tooltip_' + id].en;
+        }
+
+        var text = '';
+        var link = $(this).data('link');
+        if (link) {
+            if (link === true) {
+                if (common.readme) {
+                    link = common.readme + '#' + id;
+                } else {
+                    link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + id;
+                }
+            }
+            if (!link.match('^https?:\/\/')) {
+                if (common.readme) {
+                    link = common.readme + '#' + link;
+                } else {
+                    link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + link;
+                }
+            }
+            text += '<a class="admin-tooltip-link" target="config_help" href="" title="' + (tooltip || systemDictionary.htooltip[systemLang]) + '"><img class="admin-tooltip-icon" src="../../img/info.png" /></a>';
+        } else if (tooltip) {
+            text += '<img class="admin-tooltip-icon" title="' + tooltip + '" src="../../img/info.png"/>';
+        }
+        // check if translation for this exist
+        if (systemDictionary['info_' + id]) {
+            text += '<span class="admin-tooltip-text">' + (systemDictionary['info_' + id][systemLang] || systemDictionary['info_' + id].en) + '</span>';
+        }
+        if (text) {
+            $(this).html(text);
+        }
+    });
+}
 
 function showMessage(message, title, icon) {
     var $dialogMessage = $('#dialog-message-settings');

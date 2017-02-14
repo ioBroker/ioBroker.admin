@@ -58,3 +58,12 @@ h4 {
 .table-values tr:nth-child(even) {
     background: #d0d0d0;
 }
+
+/* tooltips */
+.admin-tooltip-icon {
+    width: 15px;
+}
+.admin-tooltip-text {
+    font-size: smaller;
+    font-style: italic;
+}
