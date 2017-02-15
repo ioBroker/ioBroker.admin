@@ -61,9 +61,12 @@ h4 {
 
 /* tooltips */
 .admin-tooltip-icon {
-    width: 15px;
+    width: 11px;
 }
 .admin-tooltip-text {
     font-size: smaller;
     font-style: italic;
+}
+.admin-icon {
+    width: 11px;
 }

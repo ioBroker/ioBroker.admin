@@ -34,6 +34,15 @@ Array.prototype.remove = function () {
 
 var $iframeDialog = null; // used in adapter settings window
 var defaults = {};
+var adapterRedirect = function (redirect, timeout) {
+    if (redirect) {
+        setTimeout(function () {
+            redirect += document.location.pathname;
+            redirect += document.location.hash;
+            document.location.href = redirect;
+        }, timeout || 5000);
+    }
+};
 
 (function ($) {
 $(document).ready(function () {

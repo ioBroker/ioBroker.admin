@@ -9,6 +9,7 @@
 
 <script type="text/javascript" src="../../js/translate.js"></script>
 <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+<script type="text/javascript" src="words.js"></script>
 
 <style>
     .number {
@@ -16,128 +17,10 @@
     }
 </style>
 <script type="text/javascript">
-    systemDictionary = {
-        "Admin adapter settings": {
-            "de": "Admin adapter Einstellungen",
-            "ru": "Настройки драйвера Admin"
-        },
-        "Run as:":          {"de": "Laufen unter Anwender:", "ru": "Запустить от пользователя:"},
-        "IP:":                    {"en": "IP:",                     "de": "IP:",                     "ru": "IP:"},
-        "Port:":                  {"en": "Port:",                   "de": "Port:",                   "ru": "Порт:"},
-        "Secure(HTTPS):":         {"en": "Secure(HTTPS):",          "de": "Verschlüsselung(HTTPS):", "ru": "Шифрование(HTTPS):"},
-        "Listen on all IPs":      {"en": "Listen on all IPs",       "de": "Auf allen IP Adressen hören", "ru": "Слушать на всех адресах"},
-        "Authentication:":        {"en": "Authentication:",         "de": "Authentifikation:",       "ru": "Аутентификация:"},
-        "Cache:":                 {"en": "Cache:",                  "de": "Puffer:",                 "ru": "Кэш:"},
-        "Public certificate:":    {"en": "Public certificate:",     "de": "Publikzertifikat:",       "ru": "'Public' сертификат:"},
-        "Private certificate:":   {"en": "Private certificate:",    "de": "Privatzertifikat:",       "ru": "'Private' сертификат:"},
-        "Chained certificate:":   {"en": "Chained certificate:",    "de": "Kettenzertifikat:",       "ru": "'Chained' сертификат:"},
-        "Set certificates or load it first in the system settings (right top).":    {
-            "en": "Set certificates or load it first in the system settings (right top).",
-            "de": "Setze Zertificate oder lade die erst unter System/Einstellungen (oben rechts).",
-            "ru": "Нужно выбрать сертификаты или сначала загрузить их в системных настройках (вверху справа)."
-        },
-        "Auto update:":         {"en": "Updates check:",            "de": "Updates prüfen:",        "ru": "Проверка обновлений:"},
-        "manually":             {"en": "manually",                  "de": "manuell",                "ru": "вручную"},
-        "every 12 hours":       {"en": "every 12 hours",            "de": "alle 12 Stunden",        "ru": "каждые 12 часов"},
-        "every day":            {"en": "every day",                 "de": "jeden Tag",              "ru": "каждый день"},
-        "every 2 days":         {"en": "every 2 days",              "de": "alle 2 Tage",            "ru": "каждые 2 дня"},
-        "every 3 days":         {"en": "every 3 days",              "de": "alle 3 Tage",            "ru": "каждые 3 дня"},
-        "every week":           {"en": "every week",                "de": "jede Woche",             "ru": "каждую неделю"},
-        "every 2 weeks":        {"en": "every 2 weeks",             "de": "alle 2 Wochen",          "ru": "каждые 2 недели"},
-        "monthly":              {"en": "monthly",                   "de": "monatlich",              "ru": "раз в месяц"},
-        "Login timeout(sec):":  {"en": "Login timeout(sec):",       "de": "Login timeout(Sek):",    "ru": "Logout через(сек):"},
-        "Let's Encrypt settings": {
-            "en": "Let's Encrypt settings",
-            "de": "Einstellungen Let's Encrypt",
-            "ru": "Настройкт Let's Encrypt"
-        },
-        "Use Lets Encrypt certificates:": {
-            "en": "Use Let's Encrypt certificates:",
-            "de": "Benutzen Let's Encrypt Zertifikate:",
-            "ru": "Использовать сертификаты Let's Encrypt:"
-        },
-        "Use this instance for automatic update:": {
-            "en": "Use this instance for automatic update:",
-            "de": "Benutze diese Instanz für automatische Updates:",
-            "ru": "Обновлять сертификаты в этом драйвере:"
-        },
-        "Port to check the domain:": {
-            "en": "Port to check the domain:",
-            "de": "Port um die Domain zu prüfen:",
-            "ru": "Порт для проверки доменного имени:"
-        },
 
-        "tooltip_bind": {
-            "en": "IP address, where the admin will run",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        },
-        "tooltip_port": {
-            "en": "Port for admin interface. It must be available. If running on linux with no root you cannot use ports below 1000.",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        },
-        "tooltip_secure": {
-            "en": "Enable SSL protocol. Admin will be available via https:// and not http://",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        },
-        "tooltip_certPublic": {
-            "en": "Public certificate. Please manage it in the system configs.",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        },
-        "tooltip_certPrivate": {
-            "en": "Private certificate. Please manage it in the system configs.",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        },
-        "tooltip_certChained": {
-            "en": "Chained certificate. Root certificate + Public certificate. Please manage it in the system configs.",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        },
-        "tooltip_auth": {
-            "en": "Check login and password be access to the admin page. You can manage it on the users tab.",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        },
-        "tooltip_ttl": {
-            "en": "Login timeout. After this time the user will be automatically logger off.",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        },
-        "tooltip_cache": {
-            "en": "IP address, where the admin will run",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        },
-        "tooltip_defaultUser": {
-            "en": "IP address, where the admin will run",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        },
-        "tooltip_autoUpdate": {
-            "en": "IP address, where the admin will run",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        },
-        "tooltip_leEnabled": {
-            "en": "IP address, where the admin will run",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        },
-        "tooltip_leUpdate": {
-            "en": "IP address, where the admin will run",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        },
-        "tooltip_lePort": {
-            "en": "IP address, where the admin will run",
-            "de": "IP Addresse, wo Admin gestartet wird",
-            "ru": "IP Адрес интерфейса на котором будет запущен админ"
-        }
-    };
+    var oldBind;
+    var oldSecure;
+    var oldPort;
 
     function showHideSettings() {
         if ($('#secure').prop('checked')) {
@@ -185,6 +68,10 @@
             }
             $('#bind.value').val(settings.bind);
         });
+
+        oldBind   = settings.bind;
+        oldSecure = settings.secure;
+        oldPort   = settings.port;
 
         if (settings.autoUpdate  === undefined) settings.autoUpdate = 24;
         if (!settings.lePort)                   settings.lePort     = 80;
@@ -250,8 +137,26 @@
             showMessage(_('Set certificates or load it first in the system settings (right top).'));
             return;
         }
+        var isRedirect = false;
+        var isHttp = false;
+        if (oldBind !== obj.bind) {
+            isRedirect = true;
+        }
+        if (oldSecure !== obj.secure) {
+            isHttp = true;
+        }
+        if (oldPort !== obj.port) {
+            isRedirect = true;
+        }
+        var href = '';
+        if (isRedirect || isHttp) {
+            href = obj.secure ? 'https://' : 'http://';
 
-        callback(obj);
+            href += (obj.bind !== '0.0.0.0') ? obj.bind : document.location.hostname;
+            href += ':' + obj.port;
+        }
+
+        callback(obj, null, href);
     }
 </script>
 
@@ -261,29 +166,32 @@
     <table><tr><td><img src="admin.png"></td><td><h3 class="translate">Admin adapter settings</h3></td></tr></table>
 
     <table>
-        <tr><td><label class="translate" for="bind">IP:</label></td><td><select class="value" id="bind"></select></td><td class="admin-tooltip" data-id="bind"></td></tr>
-        <tr><td><label class="translate" for="port">Port:</label></td><td><input class="value number" id="port" size="5" maxlength="5" type="number"/></td><td class="admin-tooltip"></td></tr>
-        <tr><td><label class="translate" for="secure">Secure(HTTPS):</label></td><td><input class="value" id="secure" type="checkbox" /></td><td class="admin-tooltip"></td></tr>
+        <tr><td><label class="translate" for="bind">IP:</label></td><td class="admin-icon"></td><td><select class="value" id="bind"></select></td><td class="admin-tooltip" data-id="bind"></td></tr>
+        <tr><td><label class="translate" for="port">Port:</label></td><td class="admin-icon"></td><td><input class="value number" id="port" size="5" maxlength="5" type="number"/></td><td class="admin-tooltip"></td></tr>
+        <tr><td><label class="translate" for="secure">Secure(HTTPS):</label></td><td class="admin-icon"></td><td><input class="value" id="secure" type="checkbox" /></td><td class="admin-tooltip"></td></tr>
         <tr id="_certPublic">
             <td><label class="translate" for="certPublic">Public certificate:</label></td>
+            <td class="admin-icon"></td>
             <td><select id="certPublic" class="value"></select></td>
             <td class="admin-tooltip"></td>
         </tr>
         <tr id="_certPrivate">
             <td><label class="translate" for="certPrivate">Private certificate:</label></td>
+            <td class="admin-icon"></td>
             <td><select id="certPrivate" class="value"></select></td>
             <td class="admin-tooltip"></td>
         </tr>
         <tr id="_certChained">
             <td><label class="translate" for="certChained">Chained certificate:</label></td>
+            <td class="admin-icon"></td>
             <td><select id="certChained" class="value"></select></td>
             <td class="admin-tooltip"></td>
         </tr>
-        <tr><td><label class="translate" for="auth">Authentication:</label></td><td><input class="value" id="auth" type="checkbox" /></td><td class="admin-tooltip"></td></tr>
-        <tr id="_ttl"><td><label class="translate" for="ttl">Login timeout(sec):</label></td><td><input class="value" id="ttl" /></td><td class="admin-tooltip"></td></tr>
-        <tr><td><label class="translate" for="cache">Cache:</label></td><td><input  class="value" id="cache" type="checkbox" /></td><td class="admin-tooltip"></td></tr>
-        <tr class="defaultUser"><td><label class="translate" for="defaultUser">Run as:</label></td><td><select class="value" id="defaultUser"></select></td><td class="admin-tooltip"></td></tr>
-        <tr><td><label class="translate" for="autoUpdate">Auto update:</label></td><td>
+        <tr><td><label class="translate" for="auth">Authentication:</label></td><td class="admin-icon"></td><td><input class="value" id="auth" type="checkbox" /></td><td class="admin-text"></td></tr>
+        <tr id="_ttl"><td><label class="translate" for="ttl">Login timeout(sec):</label></td><td class="admin-icon"></td><td><input class="value" id="ttl" /></td><td class="admin-tooltip"></td></tr>
+        <tr><td><label class="translate" for="cache">Cache:</label></td><td class="admin-icon"></td><td><input  class="value" id="cache" type="checkbox" /></td><td class="admin-tooltip"></td></tr>
+        <tr class="defaultUser"><td><label class="translate" for="defaultUser">Run as:</label></td><td class="admin-icon"></td><td><select class="value" id="defaultUser"></select></td><td class="admin-tooltip"></td></tr>
+        <tr><td><label class="translate" for="autoUpdate">Auto update:</label></td><td class="admin-icon"></td><td>
             <select  class="value" id="autoUpdate">
                 <option value="0" class="translate">manually</option>
                 <option value="12" class="translate">every 12 hours</option>
@@ -297,9 +205,9 @@
         </td><td class="admin-tooltip"></td></tr>
         <tr><td colspan="2">&nbsp;</td></tr>
         <tr class="le-settings"><td colspan="2"><h3 class="translate">Let's Encrypt settings</h3></tr>
-        <tr class="le-settings"><td><label for="leEnabled" class="translate">Use Lets Encrypt certificates:</label></td><td><input class="value" id="leEnabled" type="checkbox" /></td><td class="admin-tooltip" data-link="lets-encrypt-certificates"></td></tr>
-        <tr class="le-settings le-sub-settings"><td><label for="leUpdate" class="translate">Use this instance for automatic update:</label></td><td><input class="value" id="leUpdate" type="checkbox" /></td><td class="admin-tooltip" data-link="lets-encrypt-certificates"></td></tr>
-        <tr class="le-settings le-sub-settings le-sub-settings-update"><td><label for="lePort" class="translate">Port to check the domain:</label></td><td><input class="value number" id="lePort" type="number" size="5" maxlength="5" /></td><td class="admin-tooltip" data-link="lets-encrypt-certificates"></td></tr>
+        <tr class="le-settings"><td><label for="leEnabled" class="translate">Use Lets Encrypt certificates:</label></td><td class="admin-icon"></td><td><input class="value" id="leEnabled" type="checkbox" /></td><td class="admin-tooltip" data-link="lets-encrypt-certificates"></td></tr>
+        <tr class="le-settings le-sub-settings"><td><label for="leUpdate" class="translate">Use this instance for automatic update:</label></td><td class="admin-icon"></td><td><input class="value" id="leUpdate" type="checkbox" /></td><td class="admin-tooltip" data-link="lets-encrypt-certificates"></td></tr>
+        <tr class="le-settings le-sub-settings le-sub-settings-update"><td><label for="lePort" class="translate">Port to check the domain:</label></td><td class="admin-icon"></td><td><input class="value number" id="lePort" type="number" size="5" maxlength="5" /></td><td class="admin-tooltip" data-link="lets-encrypt-certificates"></td></tr>
     </table>
 </div>
 </html>

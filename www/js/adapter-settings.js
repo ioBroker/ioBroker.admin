@@ -55,7 +55,10 @@ $(document).ready(function () {
             alert('Please implement save function in your admin/index.html');
             return;
         }
-        save(function (obj, common) {
+        if (redirect && parent && parent.adapterRedirect) {
+            parent.adapterRedirect(redirect);
+        }
+        save(function (obj, common, redirect) {
             saveSettings(obj, common);
         });
     });
@@ -67,7 +70,10 @@ $(document).ready(function () {
             alert('Please implement save function in your admin/index.html');
             return;
         }
-        save(function (obj, common) {
+        save(function (obj, common, redirect) {
+            if (redirect && parent && parent.adapterRedirect) {
+                parent.adapterRedirect(redirect);
+            }
             saveSettings(obj, common, function () {
                 window.close();
                 if (parent && parent.$iframeDialog) {
@@ -194,13 +200,20 @@ $(document).ready(function () {
 });
 
 function prepareTooltips() {
-    $('.admin-tooltip').each(function () {
+    $('.admin-icon').each(function () {
         var id = $(this).data('id');
         if (!id) {
             var $prev = $(this).prev();
             var $input = $prev.find('input');
             if (!$input.length) {
                 $input = $prev.find('select');
+            }
+            if (!$input.length) {
+                $prev = $prev.parent();
+                $input = $prev.find('input');
+                if (!$input.length) {
+                    $input = $prev.find('select');
+                }
             }
             if ($input.length) {
                 id = $input.attr('id');
@@ -214,7 +227,7 @@ function prepareTooltips() {
             tooltip = systemDictionary['tooltip_' + id][systemLang] || systemDictionary['tooltip_' + id].en;
         }
 
-        var text = '';
+        var icon = '';
         var link = $(this).data('link');
         if (link) {
             if (link === true) {
@@ -231,21 +244,38 @@ function prepareTooltips() {
                     link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + link;
                 }
             }
-            text += '<a class="admin-tooltip-link" target="config_help" href="" title="' + (tooltip || systemDictionary.htooltip[systemLang]) + '"><img class="admin-tooltip-icon" src="../../img/info.png" /></a>';
+            icon += '<a class="admin-tooltip-link" target="config_help" href="" title="' + (tooltip || systemDictionary.htooltip[systemLang]) + '"><img class="admin-tooltip-icon" src="../../img/info.png" /></a>';
         } else if (tooltip) {
-            text += '<img class="admin-tooltip-icon" title="' + tooltip + '" src="../../img/info.png"/>';
+            icon += '<img class="admin-tooltip-icon" title="' + tooltip + '" src="../../img/info.png"/>';
         }
+
+        if (icon) {
+            $(this).html(icon);
+        }
+    });
+    $('.admin-text').each(function () {
+        var id = $(this).data('id');
+        if (!id) {
+            var $prev = $(this).prev();
+            var $input = $prev.find('input');
+            if (!$input.length) {
+                $input = $prev.find('select');
+            }
+            if ($input.length) {
+                id = $input.attr('id');
+            }
+        }
+
+        if (!id) return;
+
         // check if translation for this exist
         if (systemDictionary['info_' + id]) {
-            text += '<span class="admin-tooltip-text">' + (systemDictionary['info_' + id][systemLang] || systemDictionary['info_' + id].en) + '</span>';
-        }
-        if (text) {
-            $(this).html(text);
+            $(this).html('<span class="admin-tooltip-text">' + (systemDictionary['info_' + id][systemLang] || systemDictionary['info_' + id].en) + '</span>');
         }
     });
 }
 
-function showMessage(message, title, icon) {
+function showMessage(message, title, icon, width) {
     var $dialogMessage = $('#dialog-message-settings');
     if (!$dialogMessage.length) {
         $('body').append('<div id="dialog-message-settings" title="Message" style="display: none">\n' +
@@ -268,6 +298,7 @@ function showMessage(message, title, icon) {
             ]
         });
     }
+    $dialogMessage.dialog('option', 'width', width + 500);
 
     if (typeof _ != 'undefined') {
         $dialogMessage.dialog('option', 'title', title || _('Message'));
