@@ -84,7 +84,7 @@ $(document).ready(function () {
     });
     $('button#close').button({icons: {primary: 'ui-icon-close'}}).click(function () {
         window.close();
-        if (parent && parent.$iframeDialog) {
+        if (typeof parent !== 'undefined' && parent && parent.$iframeDialog) {
             parent.$iframeDialog.dialog('close');
         }
     });
