@@ -985,11 +985,13 @@ function Instances(main) {
                     }, 200);
 
                     setTimeout(function () {
-                        // if tab2 is not active => activate it
-                        $('#tabs').tabs('option', 'active', 1);
+                        if (!that.$configFrame.attr('src')) {
+                            // if tab2 is not active => activate it
+                            $('#tabs').tabs('option', 'active', 1);
 
-                        // open configuration dialog
-                        that.showConfigDialog(id);
+                            // open configuration dialog
+                            that.showConfigDialog(id);
+                        }
                     }, 2000);
                 } else {
                     if (id.indexOf('.web.') !== -1) {

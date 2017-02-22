@@ -199,6 +199,7 @@ systemDictionary = {
         "de": "Default Historyinstanz",
         "ru": "Инстанция истории по умолчанию:"
     },
+    "Device discovery":     {"en": "Device discovery",      "de": "Gerätesuche",            "ru": "Поиск устройств"},
     "Generated&nbsp;ID:":   {"en": "Generated&nbsp;ID:",    "de": "Generated&nbsp;ID:",     "ru": "Сгенерированный&nbsp;ID:"},
     "license agreement":    {"en": "license agreement",     "de": "Lizenzvertrag",          "ru": "Лицензионное соглашение"},
     "link":                 {"en": "link",                  "de": "Link",                   "ru": "Ссылка"},

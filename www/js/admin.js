@@ -438,6 +438,25 @@ $(document).ready(function () {
                 columns: ['image', 'name', 'role', 'room', 'value']
             });
             return main.selectId;
+        },
+        updateWizard: function () {
+            var $wizard = $('#button-wizard');
+            if (main.objects['system.adapter.discovery.0']) {
+                if (!$wizard.data('inited')) {
+                    $wizard.data('inited', true);
+                    $wizard.button({
+                        icons: {primary: ' ui-icon-search'},
+                        text: false
+                    }).click(function () {
+                        $('#tabs').tabs('option', 'active', 1);
+                        // open configuration dialog
+                        main.tabs.instances.showConfigDialog('system.adapter.discovery.0');
+                    }).attr('title', _('Device discovery'));
+                }
+                $wizard.show();
+            } else {
+                $wizard.hide();
+            }
         }
     };
 
@@ -559,12 +578,14 @@ $(document).ready(function () {
                 create: function () {
                     $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
 
-                    $('#tabs ul.ui-tabs-nav')
-                        .append('<button class="menu-button" id="button-logout" title="' + _('Logout') + '"></button>' +
-                            '<button class="menu-button" id="button-system" title="' + _('System') + '"></button>' +
-                            '<div id="current-user" class="menu-button" style="padding-right: 10px; padding-top: 5px; height: 16px"></div>' +
-                            '<button class="menu-button" id="button-edit-tabs"></button>' +
-                            '<select id="tabs-show"></select>');
+                    var buttons = '<button class="menu-button" id="button-logout" title="' + _('Logout') + '"></button>';
+                    buttons += '<button class="menu-button" id="button-system" title="' + _('System') + '"></button>';
+                    buttons += '<div id="current-user" class="menu-button" style="padding-right: 10px; padding-top: 5px; height: 16px"></div>';
+                    buttons += '<button class="menu-button" id="button-edit-tabs"></button>';
+                    buttons += '<button class="menu-button" id="button-wizard"></button>';
+                    buttons += '<select id="tabs-show"></select>';
+
+                    $('#tabs ul.ui-tabs-nav').append(buttons);
 
                     if (showTabs) {
                         $('#tabs-show').html('<option value="">' + _('Show...') + '</option>' + showTabs).show();
@@ -605,13 +626,15 @@ $(document).ready(function () {
                             main.editTabs = true;
                         }
                     });
+
+                    main.updateWizard();
+
                     if (!main.editTabs) {
                         $('.tab-close').hide();
                         $('#tabs-show-button').hide();
                     } else {
                         $('#button-edit-tabs').addClass('ui-state-error');
                     }
-
 
                     $('#button-logout').button({
                         text: false
@@ -982,12 +1005,9 @@ $(document).ready(function () {
     }
 
     function objectChange(id, obj) {
-        var changed = false;
-        var i;
-        var j;
-        var oldObj = null;
+        //var changed = false;
+        //var oldObj = null;
         var isNew = false;
-        var isUpdate = false;
 
         // update main.objects cache
         if (obj) {
@@ -998,11 +1018,11 @@ $(document).ready(function () {
             }
             if (isNew || JSON.stringify(main.objects[id]) !== JSON.stringify(obj)) {
                 main.objects[id] = obj;
-                changed = true;
+                //changed = true;
             }
         } else if (main.objects[id]) {
-            changed = true;
-            oldObj = {_id: id, type: main.objects[id].type};
+            //changed = true;
+            //oldObj = {_id: id, type: main.objects[id].type};
             delete main.objects[id];
         }
 
@@ -1025,6 +1045,8 @@ $(document).ready(function () {
             main.systemConfig = obj;
             initTabs();
         }
+
+        if (id === 'system.adapter.discovery.0') main.updateWizard();
 
         //tabs.adapters.objectChange(id, obj);
         tabs.instances.objectChange(id, obj);
