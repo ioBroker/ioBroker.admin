@@ -862,11 +862,11 @@ var commandsPermissions = {
     getStateHistory:    {type: 'state',     operation: 'read'},
     createState:        {type: 'state',     operation: 'create'},
 
-    addUser:            {type: 'user',      operation: 'create'},
-    delUser:            {type: 'user',      operation: 'delete'},
-    addGroup:           {type: 'user',      operation: 'create'},
-    delGroup:           {type: 'user',      operation: 'delete'},
-    changePassword:     {type: 'user',      operation: 'write'},
+    addUser:            {type: 'users',     operation: 'create'},
+    delUser:            {type: 'users',     operation: 'delete'},
+    addGroup:           {type: 'users',     operation: 'create'},
+    delGroup:           {type: 'users',     operation: 'delete'},
+    changePassword:     {type: 'users',     operation: 'write'},
 
     httpGet:            {type: 'other',     operation: 'http'},
     cmdExec:            {type: 'other',     operation: 'execute'},

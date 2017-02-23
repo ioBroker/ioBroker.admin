@@ -985,7 +985,7 @@ function Instances(main) {
                     }, 200);
 
                     setTimeout(function () {
-                        if (!that.$configFrame.attr('src')) {
+                        if (!that.$configFrame.attr('src') && !$('#dialog-license').is(':visible')) {
                             // if tab2 is not active => activate it
                             $('#tabs').tabs('option', 'active', 1);
 
