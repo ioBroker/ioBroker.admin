@@ -1163,6 +1163,8 @@ function values2table(divId, values, onChange, onReady) {
                         var options;
                         if (names[i].name === 'room') {
                             options = $table.data('rooms');
+                        } else if (names[i].name === 'func') {
+                            options = $table.data('functions');
                         } else {
                             options = names[i].options;
                         }
@@ -1352,4 +1354,3 @@ function table2values(divId) {
 
     return values;
 }
-
