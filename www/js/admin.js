@@ -1256,6 +1256,8 @@ $(document).ready(function () {
                                                 },
                                                 open: function (event) {
                                                     $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                                                    $(event.target).parent().find('.ui-dialog-titlebar-close').hide();
+                                                    $('#license_checkbox').prop('checked', false);
                                                     $('#license_agree').button('disable');
                                                 }
                                             });
