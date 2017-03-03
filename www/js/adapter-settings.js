@@ -244,7 +244,7 @@ function prepareTooltips() {
                     link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + link;
                 }
             }
-            icon += '<a class="admin-tooltip-link" target="config_help" href="" title="' + (tooltip || systemDictionary.htooltip[systemLang]) + '"><img class="admin-tooltip-icon" src="../../img/info.png" /></a>';
+            icon += '<a class="admin-tooltip-link" target="config_help" href="' + link + '" title="' + (tooltip || systemDictionary.htooltip[systemLang]) + '"><img class="admin-tooltip-icon" src="../../img/info.png" /></a>';
         } else if (tooltip) {
             icon += '<img class="admin-tooltip-icon" title="' + tooltip + '" src="../../img/info.png"/>';
         }
