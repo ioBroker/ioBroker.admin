@@ -66,6 +66,19 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
+### 1.7.0 (2017-03-08)
+* (bluefox) fix log
+* (bluefox) show jQuery button for role button
+* (apollon77) update testing setup.js
+* (bluefox) fix wetty loading
+* (bluefox) fix add/delete tabs
+* (bluefox) implement hints for configuration dialog
+* (bluefox) redirect if IP address changes
+* (bluefox) add tooltip instruction
+* (bluefox) wizard support
+* (bluefox) fix acl error
+* (bluefox) fix license agree button
+
 ### 1.6.12 (2017-01-31)
 * (bluefox) Show message rates for adapters
 

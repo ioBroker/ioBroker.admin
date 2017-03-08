@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.6.12",
+        "version": "1.7.0",
         "news": {
+		    "1.7.0": {
+                "en": "See changelog in readme.md",
+                "de": "Sehe ChangeLog in README.md",
+                "ru": "Смотри ChangeLog в README.md"
+            },
             "1.6.12": {
                 "en": "Show messages rates for adapters",
                 "de": "Zeige Meldungsraten für Adapter",
