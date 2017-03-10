@@ -55,10 +55,10 @@ $(document).ready(function () {
             alert('Please implement save function in your admin/index.html');
             return;
         }
-        if (redirect && parent && parent.adapterRedirect) {
-            parent.adapterRedirect(redirect);
-        }
         save(function (obj, common, redirect) {
+            if (redirect && parent && parent.adapterRedirect) {
+                parent.adapterRedirect(redirect);
+            }
             saveSettings(obj, common);
         });
     });
