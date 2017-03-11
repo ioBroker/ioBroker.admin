@@ -304,7 +304,7 @@ systemDictionary = {
         "ru": "Порт для проверки доступности домена:"
     },
 
-    "Email for account:":   {"en": "Email for account:",    "de": "Emailadresse des Konto:"s,     "ru": "Email для аккаунта:"},
+    "Email for account:":   {"en": "Email for account:",    "de": "Emailadresse des Kontos:", "ru": "Email для аккаунта:"},
     "Domains:":             {"en": "Domains:",              "de": "Domäne:",                "ru": "Домены:"},
     "Path to storage:":     {"en": "Path to storage:",      "de": "Pfad zum speichern:",    "ru": "Путь к папке для сохранения:"},
     "debug":                {"en": "debug",                 "de": "Debug",                  "ru": "отладка"},
