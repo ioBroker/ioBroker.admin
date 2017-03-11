@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.7.0",
+        "version": "1.7.1",
         "news": {
+            "1.7.1": {
+                "en": "fix save button functionality\nUpdate german translations\npatch repositories to support stable",
+                "de": "Fix save Knopf Funktionalität\nDeutsch Übersetzungen anpassen\nPatch-Repositories, um stable zu unterstützen",
+                "ru": "Исправлена функциональность кнопки сохранения\nобновлён немецкий перевод\nИсправления для поддержки stable repo"
+            },
 		    "1.7.0": {
                 "en": "See changelog in readme.md",
                 "de": "Sehe ChangeLog in README.md",

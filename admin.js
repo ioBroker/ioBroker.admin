@@ -278,6 +278,45 @@ function writeUpdateInfo(sources) {
     adapter.setState('info.updatesList', list.join(', '), true);
 }
 
+// to do => remove it later, when all repositories patched.
+function patchRepos(callback) {
+    adapter.getForeignObject('system.repositories', function (err, obj) {
+        var changed = false;
+        if (obj && obj.native && obj.native.repositories) {
+            // default link should point to stable
+            if (!obj.native.repositories.default || obj.native.repositories.default.link !== 'http://download.iobroker.net/sources-dist.json') {
+                changed = true;
+                obj.native.repositories.default = {
+                    link: 'http://download.iobroker.net/sources-dist.json'
+                };
+            }
+            // latest link should point to latest
+            if (!obj.native.repositories.latest) {
+                obj.native.repositories.latest = {
+                    link: 'http://download.iobroker.net/sources-dist-latest.json'
+                };
+                changed = true;
+            }
+
+            // change URL of raw sources from ioBroker.js-controller to ioBroker.repositories
+            for (var r in obj.native.repositories) {
+                if (obj.native.repositories.hasOwnProperty(r) &&
+                    obj.native.repositories[r].link === 'https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/conf/sources-dist.json') {
+                    obj.native.repositories[r].link = 'https://raw.githubusercontent.com/ioBroker/ioBroker.repositories/master/sources-dist.json';
+                    changed = true;
+                }
+            }
+        }
+        if (changed) {
+            adapter.setForeignObject(obj._id, obj, function () {
+                callback && callback();
+            });
+        } else {
+            callback && callback();
+        }
+    });
+}
+
 function main() {
     adapter.subscribeForeignStates('*');
     adapter.subscribeForeignObjects('*');
@@ -298,15 +337,18 @@ function main() {
         getData();
     }
 
-    // By default update repository every 24 hours
-    if (adapter.config.autoUpdate === undefined) adapter.config.autoUpdate = 24;
-    adapter.config.autoUpdate = parseInt(adapter.config.autoUpdate, 10) || 0;
-    if (adapter.config.autoUpdate) {
-        setInterval(function () {
+    patchRepos(function () {
+        // By default update repository every 24 hours
+        if (adapter.config.autoUpdate === undefined) adapter.config.autoUpdate = 24;
+        adapter.config.autoUpdate = parseInt(adapter.config.autoUpdate, 10) || 0;
+        if (adapter.config.autoUpdate) {
+            setInterval(function () {
+                updateRegister();
+            }, adapter.config.autoUpdate * 3600000);
             updateRegister();
-        }, adapter.config.autoUpdate * 3600000);
-        updateRegister();
-    }
+        }
+    });
+
 }
 
 function addUser(user, pw, options, callback) {

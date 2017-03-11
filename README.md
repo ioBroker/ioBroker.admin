@@ -66,6 +66,11 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
+### 1.7.1 (2017-03-11)
+* (apollon77) fix save button functionality
+* (ykuendig) Update german translations
+* (bluefox) patch repositories to support stable
+
 ### 1.7.0 (2017-03-08)
 * (bluefox) fix log
 * (bluefox) show jQuery button for role button
