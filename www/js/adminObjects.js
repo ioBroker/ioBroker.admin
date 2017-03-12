@@ -4,7 +4,6 @@ function Objects(main) {
     var that = this;
     this.$dialog        = $('#dialog-object');
     this.$dialogCustoms = $('#dialog-customs');
-
     this.$grid          = $('#grid-objects');
 
     this.main = main;
