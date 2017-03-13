@@ -841,7 +841,9 @@ function Adapters(main) {
 
                 if (!error && body) {
                     $dialogLicense.css({'z-index': 200});
-                    $('#license_text').html('<pre>' + body + '</pre>');
+                    body = body.toString().replace(/\r\n/g, '<br>');
+                    body = body.replace(/\n/g, '<br>');
+                    $('#license_text').html(body);
                     $dialogLicense.dialog({
                         autoOpen: true,
                         modal: true,

@@ -1180,6 +1180,11 @@ $(document).ready(function () {
                                 } else {
                                     if (!errConfig && main.systemConfig && main.systemConfig.common) {
                                         systemLang = main.systemConfig.common.language || systemLang;
+                                        main.systemConfig.common.city      = main.systemConfig.common.city      || '';
+                                        main.systemConfig.common.country   = main.systemConfig.common.country   || '';
+                                        main.systemConfig.common.longitude = main.systemConfig.common.longitude || '';
+                                        main.systemConfig.common.latitude  = main.systemConfig.common.latitude  || '';
+
                                         if (!main.systemConfig.common.licenseConfirmed) {
                                             // Show license agreement
                                             var language = main.systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
@@ -1267,9 +1272,13 @@ $(document).ready(function () {
                                             type: 'config',
                                             common: {
                                                 name:             'system.config',
+                                                city:             '',           // City for weather
+                                                country:          '',           // Country for weather
+                                                longitude:        '',           // longitude for javascript
+                                                latitude:         '',           // longitude for javascript
                                                 language:         '',           // Default language for adapters. Adapters can use different values.
                                                 tempUnit:         '°C',         // Default temperature units.
-                                                currency:         '€',          // Default currency sign.
+                                                currency:         '',           // Default currency sign.
                                                 dateFormat:       'DD.MM.YYYY', // Default date format.
                                                 isFloatComma:     true,         // Default float divider ('.' - false, ',' - true)
                                                 licenseConfirmed: false,        // If license agreement confirmed,
