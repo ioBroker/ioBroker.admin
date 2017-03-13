@@ -827,6 +827,12 @@ function Adapters(main) {
             callback(true);
         }, 10000);
 
+        if (!that.data[adapter].licenseUrl) {
+            that.data[adapter].licenseUrl = 'https://raw.githubusercontent.com/ioBroker/ioBroker.' + template.common.name + '/master/LICENSE';
+        }
+        if (typeof that.data[adapter].licenseUrl === 'object') {
+            that.data[adapter].licenseUrl = that.data[adapter].licenseUrl[systemLang] || that.data[adapter].licenseUrl.en;
+        }
         // Workaround
         // https://github.com/ioBroker/ioBroker.vis/blob/master/LICENSE =>
         // https://raw.githubusercontent.com/ioBroker/ioBroker.vis/master/LICENSE
