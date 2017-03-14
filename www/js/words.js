@@ -427,7 +427,6 @@ systemDictionary = {
     "service_group":        {"en": "Maintenance",           "de": "Wartung",                "ru": "Сервисные приложения"},
     "agree":                {"en": "agree",                 "de": "Einverstanden",          "ru": "Согласен(на)"},
     "not agree":            {"en": "not agree",             "de": "Nicht einverstanden",    "ru": "Не согласен(на)"},
-    "not agree":            {"en": "not agree",             "de": "Nicht einverstanden",    "ru": "Не согласен(на)"},
     "license not agree":    {"en": "Not agree with license!", "de": "Nicht einverstanden mit Lizenz",  "ru": "Не согласен(на) с лицензией"},
     "Filter:":              {"en": "Filter:",               "de": "Filter:",                "ru": "Искать:"},
     "adapter with updates": {"en": "adapters with updates", "de": "Adapter mit Aktualisierung",   "ru": "Драйвера с обновлениями"},
