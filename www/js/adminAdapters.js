@@ -862,24 +862,28 @@ function Adapters(main) {
                             {
                                 text: _('agree'),
                                 click: function () {
+                                    callback && callback(true);
+                                    callback = null;
                                     $dialogLicense.dialog('close');
-                                    callback(true);
                                 }
                             },
                             {
                                 text: _('not agree'),
                                 click: function () {
+                                    callback && callback(false);
+                                    callback = null;
                                     $dialogLicense.dialog('close');
-                                    callback(false);
                                 }
                             }
                         ],
                         close: function () {
-                            callback(false);
+                            callback && callback(false);
+                            callback = null;
                         }
                     });
                 } else {
-                    callback(true);
+                    callback && callback(true);
+                    callback = null;
                 }
             }
         });
