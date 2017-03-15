@@ -236,6 +236,7 @@ systemDictionary = {
     "Statistics":           {"en": "Statistics",            "de": "Statistik",              "ru": "Статистика"},
     "none":                 {"en": "none",                  "de": "nichts",                 "ru": "ничего"},
     "normal":               {"en": "normal",                "de": "normal",                 "ru": "обычный"},
+    "no-city":              {"en": "no city",               "de": "ohne Stadt",             "ru": "без города"},
     "extended":             {"en": "extended",              "de": "erweitert",              "ru": "расширенный"},
     "certificate":          {"en": "certificate",           "de": "Zertifikate",            "ru": "сертификат"},
     "ioBroker certificates": {"en": "ioBroker certificates", "de": "ioBroker Zertifikate",  "ru": "ioBroker сертификат"},

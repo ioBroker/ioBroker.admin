@@ -454,6 +454,11 @@ $(document).ready(function () {
                     }).attr('title', _('Device discovery'));
                 }
                 $wizard.show();
+
+                // Show wizard dialog
+                if (!main.systemConfig.common.wizard && main.systemConfig.common.licenseConfirmed) {
+                    $wizard.trigger('click');
+                }
             } else {
                 $wizard.hide();
             }
