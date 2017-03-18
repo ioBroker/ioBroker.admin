@@ -205,25 +205,16 @@ function prepareTooltips() {
         if (!id) {
             var $prev = $(this).prev();
             var $input = $prev.find('input');
-            if (!$input.length) {
-                $input = $prev.find('select');
-            }
-            if (!$input.length) {
-                $input = $prev.find('textarea');
-            }
+            if (!$input.length) $input = $prev.find('select');
+            if (!$input.length) $input = $prev.find('textarea');
+
             if (!$input.length) {
                 $prev = $prev.parent();
                 $input = $prev.find('input');
-                if (!$input.length) {
-                    $input = $prev.find('select');
-                }
-                if (!$input.length) {
-                    $input = $prev.find('textarea');
-                }
+                if (!$input.length) $input = $prev.find('select');
+                if (!$input.length) $input = $prev.find('textarea');
             }
-            if ($input.length) {
-                id = $input.attr('id');
-            }
+            if ($input.length) id = $input.attr('id');
         }
 
         if (!id) return;
@@ -264,22 +255,15 @@ function prepareTooltips() {
         if (!id) {
             var $prev = $(this).prev();
             var $input = $prev.find('input');
-            if (!$input.length) {
-                $input = $prev.find('select');
-            }
-            if (!$input.length) {
-                $input = $prev.find('textarea');
-            }
+            if (!$input.length) $input = $prev.find('select');
+            if (!$input.length) $input = $prev.find('textarea');
             if (!$input.length) {
                 $prev = $prev.parent();
                 $input = $prev.find('input');
-                if (!$input.length) {
-                    $input = $prev.find('select');
-                }
-                if (!$input.length) {
-                    $input = $prev.find('textarea');
-                }
+                if (!$input.length) $input = $prev.find('select');
+                if (!$input.length) $input = $prev.find('textarea');
             }
+            if ($input.length) id = $input.attr('id');
         }
 
         if (!id) return;
