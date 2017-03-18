@@ -209,10 +209,16 @@ function prepareTooltips() {
                 $input = $prev.find('select');
             }
             if (!$input.length) {
+                $input = $prev.find('textarea');
+            }
+            if (!$input.length) {
                 $prev = $prev.parent();
                 $input = $prev.find('input');
                 if (!$input.length) {
                     $input = $prev.find('select');
+                }
+                if (!$input.length) {
+                    $input = $prev.find('textarea');
                 }
             }
             if ($input.length) {
@@ -261,8 +267,18 @@ function prepareTooltips() {
             if (!$input.length) {
                 $input = $prev.find('select');
             }
-            if ($input.length) {
-                id = $input.attr('id');
+            if (!$input.length) {
+                $input = $prev.find('textarea');
+            }
+            if (!$input.length) {
+                $prev = $prev.parent();
+                $input = $prev.find('input');
+                if (!$input.length) {
+                    $input = $prev.find('select');
+                }
+                if (!$input.length) {
+                    $input = $prev.find('textarea');
+                }
             }
         }
 
