@@ -6,19 +6,15 @@ body {
     font-family: Lucida Grande,Lucida Sans,Arial,sans-serif;
 }
 
-
-
 .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited, .ui-state-hover a, .ui-state-hover a:link, .ui-state-hover a:visited  {
     outline: none;
 }
-
 
 #tabs {
     padding: 0;
     margin: 0;
     border: none;
     border-radius: 0;
-
 }
 
 .header {
@@ -66,6 +62,7 @@ h4 {
 .admin-tooltip-text {
     font-size: smaller;
     font-style: italic;
+    color: gray;
 }
 .admin-icon {
     width: 11px;
