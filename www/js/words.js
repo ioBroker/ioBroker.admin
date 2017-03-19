@@ -15,19 +15,19 @@ systemDictionary = {
     "Users":                {"en": "Users",                 "de": "Benutzer",               "ru": "Пользователи"},
     "Groups":               {"en": "Groups",                "de": "Gruppen",                "ru": "Группы"},
     "System language:":     {"en": "System language:",      "de": "System Sprache:",        "ru": "Системный язык:"},
-    "Temperature units:":   {"en": "Temperature units:",    "de": "Einheit Temperatur:",    "ru": "Единицы измерения температуры:"},
+    "Temperature units:":   {"en": "Temperature units:",    "de": "Temperatureinheit:",    "ru": "Единицы измерения температуры:"},
     "unit":                 {"en": "unit",                  "de": "Einheit",                "ru": "Единицы измерения"},
     "Currency:":            {"en": "Currency:",             "de": "Währung:",               "ru": "Знак валюты:"},
     "Date format:":         {"en": "Date format:",          "de": "Datumsformat:",          "ru": "Формат даты:"},
     "DD.MM.YYYY":           {"en": "DD.MM.YYYY",            "de": "DD.MM.YYYY",             "ru": "ДД.ММ.ГГГГ"},
     "DD.MM.YY":             {"en": "DD.MM.YY",              "de": "DD.MM.YY",               "ru": "ДД.ММ.ГГ"},
     "DD/MM/YYYY":           {"en": "DD/MM/YYYY",            "de": "DD/MM/YYYY",             "ru": "ДД/ММ/ГГГГ"},
-    "Float divider:":       {"en": "Float divider:",        "de": "Trennzeichen:",          "ru": "Разделитель в числе с плавающей запятой:"},
+    "Float divider:":       {"en": "Float divider:",        "de": "Dezimaltrennzeichen:",          "ru": "Разделитель в числе с плавающей запятой:"},
     "comma":                {"en": "comma",                 "de": "Komma",                  "ru": "запятая"},
     "point":                {"en": "point",                 "de": "Punkt",                  "ru": "точка"},
-    "Country:":             {"en": "Country:",              "de": "Staat",                  "ru": "Страна:"},
+    "Country:":             {"en": "Country:",              "de": "Land",                  "ru": "Страна:"},
     "City:":                {"en": "City:",                 "de": "Stadt:",                 "ru": "Город:"},
-    "Address:":             {"en": "Address:",              "de": "Adressw:",               "ru": "Адрес:"},
+    "Address:":             {"en": "Address:",              "de": "Adresse:",               "ru": "Адрес:"},
     "Latitude:":            {"en": "Latitude:",             "de": "Breitengrad:",           "ru": "Широта:"},
     "Longitude:":           {"en": "Longitude:",            "de": "Längengrad:",            "ru": "Долгота:"},
     "save":                 {"en": "save",                  "de": "Speichern",              "ru": "Сохранить"},
@@ -201,11 +201,11 @@ systemDictionary = {
     "Active repository:":   {"en": "Active repository:",    "de": "Aktiver Verwahrungsort:", "ru": "Активный репозиторий:"},
     "Default history instance:":   {
         "en": "Default history instance:",
-        "de": "Default Historyinstanz",
+        "de": "Standard Historyinstanz",
         "ru": "Инстанция истории по умолчанию:"
     },
     "Device discovery":     {"en": "Device discovery",      "de": "Gerätesuche",            "ru": "Поиск устройств"},
-    "Generated&nbsp;ID:":   {"en": "Generated&nbsp;ID:",    "de": "Generated&nbsp;ID:",     "ru": "Сгенерированный&nbsp;ID:"},
+    "Generated&nbsp;ID:":   {"en": "Generated&nbsp;ID:",    "de": "Generierte&nbsp;ID:",     "ru": "Сгенерированный&nbsp;ID:"},
     "license agreement":    {"en": "license agreement",     "de": "Lizenzvertrag",          "ru": "Лицензионное соглашение"},
     "link":                 {"en": "link",                  "de": "Link",                   "ru": "Ссылка"},
     "ioBroker repositories": {"en": "ioBroker repositories", "de": "ioBroker Verwahrungsorte", "ru": "Репозитории ioBroker"},
@@ -215,8 +215,8 @@ systemDictionary = {
     "delete":               {"en": "delete",                "de": "löschen",                "ru": "Удалить"},
     "ok":                   {"en": "Ok",                    "de": "Ok",                     "ru": "Ok"},
     "cancel":               {"en": "Cancel",                "de": "Abbrechen",              "ru": "отменить"},
-    "Settings for %s":      {"en": "Settings for %s",       "de": "Einstellungen for %s",   "ru": "Настройки для %s"},
-    "Upgrade all adapters": {"en": "Upgrade all adapters",  "de": "Upgrade alle Adapter",   "ru": "Обновить все драйвера"},
+    "Settings for %s":      {"en": "Settings for %s",       "de": "Einstellungen für %s",   "ru": "Настройки для %s"},
+    "Upgrade all adapters": {"en": "Upgrade all adapters",  "de": "Alle Adapter upgraden",   "ru": "Обновить все драйвера"},
     "Do you want to upgrade all adapters?": {
         "en": "Do you want to upgrade all adapters?",
         "de": "Alle Adapter upgraden?",
@@ -229,7 +229,7 @@ systemDictionary = {
     },
     "update-part1":         {
         "en": "Because of very different platforms, where ioBroker can run. It is only manual update possible now. To execute manual update please go to your controller via console and execute following:",
-        "de": "Wegen der Vielseitigkeit der HW-Plattformen, auf denen ioBroker laufen kann, muss man denn js-controller manuell updaten. Um das durchzuführen geben Sie an der Konsole des Hosts folgende Kommandos aus:",
+        "de": "Wegen der Vielzahl der HW-Plattformen, auf denen ioBroker laufen kann, muss man denn js-controller manuell updaten. Um das durchzuführen geben Sie an der Konsole des Hosts folgende Kommandos aus:",
         "ru": "Из-за очень разного оборудования на котором может бежать ioBroker возможно только ручное обновлени. Для ручного обновления нужно открыть командную консоль и ввести следующее:"
     },
     "Certificates":         {"en": "Certificates",          "de": "Zertifikate",            "ru": "Сертификаты"},
@@ -248,7 +248,7 @@ systemDictionary = {
         "No private information will be sent to ioBroker.org. Every time you press update adapter list the anonymized statistics will be sent.<br>\n" +
         "Thank you!",
         "de": "Wir haben hart daran gearbeitet, dieses Projekt auf die Beine zu stellen. Als Gegenleistung bitten wir Sie, uns die Nutzungs-Statistik zu senden.<br>\n" +
-        "Es werden keine privaten Informationen zu ioBroker.org gesendet. Jedes Mal wenn die Adapterliste upgedated wird, wird die anonymisierte Statistik verschickt.<br>\n" +
+        "Es werden keine privaten Informationen zu ioBroker.org gesendet. Jedes Mal wenn die Adapterliste aktualisiert wird, wird auch die anonymisierte Statistik verschickt.<br>\n" +
         "Vielen Dank!",
         "ru": "Мы долго работали над этим проектом. Мы просим вас переслать нам статистику использования, как компенсацию.<br>\n" +
         "Никакой приватной информации не отсылается в ioBroker.org. Каждый раз, когда список драйверов обновляется, будет отсылаться анонимная статистика.<br>\n" +
@@ -310,7 +310,7 @@ systemDictionary = {
         "ru": "Порт для проверки доступности домена:"
     },
 
-    "Email for account:":   {"en": "Email for account:",    "de": "Emailadresse des Konto:"s,     "ru": "Email для аккаунта:"},
+    "Email for account:":   {"en": "Email for account:",    "de": "Emailadresse des Kontos:",     "ru": "Email для аккаунта:"},
     "Domains:":             {"en": "Domains:",              "de": "Domäne:",                "ru": "Домены:"},
     "Path to storage:":     {"en": "Path to storage:",      "de": "Pfad zum speichern:",    "ru": "Путь к папке для сохранения:"},
     "debug":                {"en": "debug",                 "de": "Debug",                  "ru": "отладка"},
@@ -338,7 +338,7 @@ systemDictionary = {
     "restart script":       {"en": "restart script",        "de": "Skript neu starten",     "ru": "Перезапустить скрипт"},
     "Select":               {"en": "Select",                "de": "Auswählen",              "ru": "Выбрать"},
     "Select ID":            {"en": "Select ID",             "de": "ID Auswählen",           "ru": "Выбрать ID"},
-    "add children":         {"en": "add children",          "de": "Unter-Aufzählung einfügen", "ru": "Добавить под-категории"},
+    "add children":         {"en": "add children",          "de": "Unter Aufzählung einfügen", "ru": "Добавить под-категории"},
     "edit enum":            {"en": "edit enum",             "de": "Aufzählung ändern",      "ru": "Изменить категорию"},
     "System settings":      {"en": "System settings",       "de": "Systemeinstellungen",    "ru": "Системные настройки"},
     "reload":               {"en": "reload",                "de": "Neu laden",              "ru": "Перезагрузить"},
@@ -412,7 +412,7 @@ systemDictionary = {
     "Host:":                {"en": "Host:",                 "de": "Host:",                  "ru": "Хост:"},
     "installed adapters":   {"en": "Filter installed adapters",    "de": "Filter installierte Adapters",     "ru": "Только установленные драйвера"},
     "list":                 {"en": "list",                  "de": "Liste",                  "ru": "Список"},
-    "collapse all":         {"en": "collapse all",          "de": "Alle zumklappen",          "ru": "Свернуть все группы"},
+    "collapse all":         {"en": "collapse all",          "de": "Alle zuklappen",          "ru": "Свернуть все группы"},
     "expand all":           {"en": "expand all",            "de": "Alle aufklappen",         "ru": "Развернуть все группы"},
 
     "common adapters_group": {"en": "common",               "de": "Allgemein",              "ru": "Общие"},
@@ -439,11 +439,11 @@ systemDictionary = {
     "create operation":     {"en": "create",                "de": "erzeugen",               "ru": "Создавать"},
     "list operation":       {"en": "list elements",         "de": "auflisten",              "ru": "Список"},
     "delete operation":     {"en": "delete",                "de": "löschen",                "ru": "Удалять"},
-    "object permissions":   {"en": "Objects permissions",   "de": "Objekt-Zulassungen",     "ru": "Разрешения для объектов"},
-    "state permissions":    {"en": "States permissions",    "de": "Zustände-Zulassungen",   "ru": "Разрешения для состояний"},
-    "file permissions":     {"en": "Files permissions",     "de": "Datei-Zulassungen",      "ru": "Разрешения для файлов"},
-    "user permissions":     {"en": "User permissions",      "de": "Gruppen-Zulassungen",    "ru": "Разрешения для групп"},
-    "other permissions":    {"en": "Other permissions",     "de": "Andere Zulassungen",     "ru": "Разрешения"},
+    "object permissions":   {"en": "Objects permissions",   "de": "Objekt-Rechte",          "ru": "Разрешения для объектов"},
+    "state permissions":    {"en": "States permissions",    "de": "Zustände-Rechte",        "ru": "Разрешения для состояний"},
+    "file permissions":     {"en": "Files permissions",     "de": "Datei-Rechte",           "ru": "Разрешения для файлов"},
+    "user permissions":     {"en": "User permissions",      "de": "Gruppen-Rechte",         "ru": "Разрешения для групп"},
+    "other permissions":    {"en": "Other permissions",     "de": "Andere Rechte",         "ru": "Разрешения"},
     "http operation":       {"en": "http",                  "de": "http",                   "ru": "http"},
     "execute operation":    {"en": "Execute operation",     "de": "ausführen",              "ru": "выполнить"},
     "sendto operation":     {"en": "Send-to operation",     "de": "Senden an",              "ru": "Послать к"},
@@ -491,7 +491,7 @@ systemDictionary = {
     },
     "Click on icon":        {
         "en": "Click on icon to open a link",
-        "de": "Auf das Bildchen klicken",
+        "de": "Auf das Icon klicken",
         "ru": "Что бы открыть ссылку надо нажать на иконку"
     },
     'Are you sure to delete <span style="color: red">all</span> children of %s?': {
@@ -534,7 +534,7 @@ systemDictionary = {
     "confirm password":     {"en": "Confirm password",      "de": "Bestätigung",            "ru": "Подтверждение"},
     "license_checkbox": {
         "en": "I am agree with collection of anonymous statistics.<br>(can be disabled in settings)",
-        "de": "Ich bin mit der Sammlung von anonymer Statistik einverstanden.<br>(konnte später über Konfiguration deaktiviert werden)",
+        "de": "Ich bin mit der Sammlung von anonymen Statistiken einverstanden.<br>(kann auch später in den Einstellungen deaktiviert werden)",
         "ru": "Я соглашаюсь с анонимным сбором статистики.<br>(Можно деактивировать через настройки)"
     },
     "node-red":             {"en": "node-red",              "de": "node-red",               "ru": "node-red"},
