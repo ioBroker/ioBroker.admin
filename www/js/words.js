@@ -92,7 +92,7 @@ systemDictionary = {
     "From github":          {"en": "From github",           "de": "Von github",             "ru": "С github"},
     "Custom":               {"en": "Custom",                "de": "Beliebig",               "ru": "Произвольный"},
     "Select adapter:":      {"en": "Select adapter:",       "de": "Adapter auswählen:",     "ru": "Выбрать драйвер:"},
-    "No version of %s":     {"en": "No version of %s",      "de": "Keine Versioninfo für %s", "ru": "Нет информации о версии для %s"},
+    "No version of %s":     {"en": "No version of %s",      "de": "Keine Versionsinfo für %s", "ru": "Нет информации о версии для %s"},
     "install specific version": {
         "en": "Install specific version",
         "de": "Installiere bestimmte Version",
@@ -100,7 +100,7 @@ systemDictionary = {
     },
     "Invalid version of %s. Required %s": {
         "en": "Invalid version of %s. Required %s",
-        "de": "Nicht kompatible Version von %s. Es wird erwartet %s",
+        "de": "Nicht kompatible Version von %s. Es wird %s erwartet",
         "ru": "Требуется другая версия драйвера %s. Требуется %s"
     },
     "You can check changelog here": {
@@ -229,7 +229,7 @@ systemDictionary = {
     },
     "update-part1":         {
         "en": "Because of very different platforms, where ioBroker can run. It is only manual update possible now. To execute manual update please go to your controller via console and execute following:",
-        "de": "Wegen Vielseitigkeit von HW Plattformen, wo ioBroker laufen kann, kann man js-controller nur manuell updaten. Um das sürchzuführen gehen Sie über Kommando-Konsole auf den Host und führen folgendes aus:",
+        "de": "Wegen der Vielseitigkeit der HW-Plattformen, auf denen ioBroker laufen kann, muss man denn js-controller manuell updaten. Um das durchzuführen geben Sie an der Konsole des Hosts folgende Kommandos aus:",
         "ru": "Из-за очень разного оборудования на котором может бежать ioBroker возможно только ручное обновлени. Для ручного обновления нужно открыть командную консоль и ввести следующее:"
     },
     "Certificates":         {"en": "Certificates",          "de": "Zertifikate",            "ru": "Сертификаты"},
@@ -247,8 +247,8 @@ systemDictionary = {
         "en": "We worked hard to create this project. As equivalent we expect from you some statistics about the usage.<br>\n" +
         "No private information will be sent to ioBroker.org. Every time you press update adapter list the anonymized statistics will be sent.<br>\n" +
         "Thank you!",
-        "de": "Wir haben hart gearbeitet um dieses Projekt auf die Beine zu stellen. Als Gegenleistung bitten wir Sie uns die Statistik über die Benutzung an uns zu schicken.<br>\n" +
-        "Keine private Information wird zu ioBroker.org gesendet. Jedes Mal wenn Adapterliste upgedated wird, wird die anonymisierte Statistik gesendet.<br>\n" +
+        "de": "Wir haben hart daran gearbeitet, dieses Projekt auf die Beine zu stellen. Als Gegenleistung bitten wir Sie, uns die Nutzungs-Statistik zu senden.<br>\n" +
+        "Es werden keine privaten Informationen zu ioBroker.org gesendet. Jedes Mal wenn die Adapterliste upgedated wird, wird die anonymisierte Statistik verschickt.<br>\n" +
         "Vielen Dank!",
         "ru": "Мы долго работали над этим проектом. Мы просим вас переслать нам статистику использования, как компенсацию.<br>\n" +
         "Никакой приватной информации не отсылается в ioBroker.org. Каждый раз, когда список драйверов обновляется, будет отсылаться анонимная статистика.<br>\n" +
@@ -269,12 +269,12 @@ systemDictionary = {
     },
     "letsnecrypt_help": {
         "en": 'This are settings for Let\'s Encrypt account. To get the free certificates for your domain. You can read more <a href="https://letsencrypt.org/" target="_blank">here</a>.',
-        "de": 'Einstellungen für Let\'s Encrypt Akkaunt. To get the free certificates for your domain. You can read more <a href="https://letsencrypt.org/" target="_blank">here</a>.',
+        "de": 'Einstellungen für das Let\'s Encrypt Konto. Um ein gratis Zertifikat für Ihre Domain zu erhalten, folgen sie den Anweisungen <a href="https://letsencrypt.org/" target="_blank">hier</a>.',
         "ru": 'Настройки для Let\'s Encrypt аккаунта. Это позволит получить бесплатные сертификаты для вашего домена. О Let\'s Encrypt можно почитать <a href="https://letsencrypt.org/" target="_blank">здесь</a>.'
     },
     "letsnecrypt_help_email": {
         "en": "Please use your email address. It will be used for your account.",
-        "de": "Bitte immer nur eine Email Adresse benutzen.",
+        "de": "Bitte immer nur eine Email-Adresse benutzen.",
         "ru": "Почтовый адрес используется для создания аккаунта."
     },
     "letsnecrypt_help_domains": {
@@ -284,11 +284,11 @@ systemDictionary = {
     },
     "letsnecrypt_help_path": {
         "en": "Directory name where the certificates will be stored. Always relative to configuration directory",
-        "de": "Verzeichnis, wo die Zertifikate gespeichert werden. Pfad ist relative zu Konfigurationsverzeichnis",
+        "de": "Verzeichnis, wo die Zertifikate gespeichert werden. Pfad ist relativ zum Konfigurationsverzeichnis",
         "ru": "Путь к папке, где будут хранится сертификаты. Относительно папки с настройками"
     },
     "Let's encrypt SSL":    {"en": "Let's encrypt SSL",     "de": "Let's encrypt SSL",      "ru": "Let's encrypt SSL"},
-    "Login timeout(sec):":  {"en": "Login timeout(sec):", "de": "Login timeout(sec):", "ru": "Login timeout(sec):"},
+    "Login timeout(sec):":  {"en": "Login timeout(sec):", "de": "Login Timeout(Sek):", "ru": "Логин таймаут(сек):"},
     "Let's Encrypt settings": {
         "en": "Let's Encrypt settings",
         "de": "Let's Encrypt Einstellungen",
@@ -296,7 +296,7 @@ systemDictionary = {
     },
     "Use Lets Encrypt certificates:": {
         "en": "Use Let's Encrypt certificates:",
-        "de": "Benutze Let's Encrypt Zertificate:",
+        "de": "Let's Encrypt Zertifikate benutzen:",
         "ru": "Использовать сертификаты Let's Encrypt:"
     },
     "Use this instance for automatic update:": {
@@ -306,17 +306,17 @@ systemDictionary = {
     },
     "Port to check the domain:": {
         "en": "Port to check the domain:",
-        "de": "Port um die Erreichbarkei von Domän zu prüfen:",
+        "de": "Port um die Erreichbarkeit der Domäne zu prüfen:",
         "ru": "Порт для проверки доступности домена:"
     },
 
-    "Email for account:":   {"en": "Email for account:",    "de": "Email for account:",     "ru": "Email для аккаунта:"},
+    "Email for account:":   {"en": "Email for account:",    "de": "Emailadresse des Konto:"s,     "ru": "Email для аккаунта:"},
     "Domains:":             {"en": "Domains:",              "de": "Domäne:",                "ru": "Домены:"},
     "Path to storage:":     {"en": "Path to storage:",      "de": "Pfad zum speichern:",    "ru": "Путь к папке для сохранения:"},
     "debug":                {"en": "debug",                 "de": "Debug",                  "ru": "отладка"},
     "Parent":               {"en": "Parent",                "de": "Parent",                 "ru": "Родитель"},
     "Drop the files here":  {"en": "Drop the files here",   "de": "Die Datei hier platzieren", "ru": "Перетащить файлы сюда"},
-    "Unknown file format!": {"en": "Unknown file format!",  "de": "Unbekannter Dateiformat!", "ru": "Неизвестный формат файла"},
+    "Unknown file format!": {"en": "Unknown file format!",  "de": "Unbekanntes Dateiformat!", "ru": "Неизвестный формат файла"},
     "Cannot read file!":    {"en": "Cannot read file!",     "de": "Kann die Datei nicht lesen!", "ru": "Невозможно прочитать файл!"},
     "File is too big!":     {"en": "File is too big!",      "de": "Datei ist zu groß!",     "ru": "Слишком большой файл!"},
     "info":                 {"en": "info",                  "de": "Info",                   "ru": "инфо"},
@@ -325,7 +325,7 @@ systemDictionary = {
     "engine type":          {"en": "engine type",           "de": "Enginetyp",              "ru": "Тип движка"},
     "Insert":               {"en": "Insert",                "de": "Einfügen",               "ru": "Вставить"},
     "Table":                {"en": "Table",                 "de": "Tabelle",                "ru": "Таблица"},
-    "Chart":                {"en": "Chart",                 "de": "Graphik ",               "ru": "График"},
+    "Chart":                {"en": "Chart",                 "de": "Grafik",                 "ru": "График"},
     "Copy log":             {"en": "Copy log",              "de": "Log kopieren",           "ru": "Скопировать протокол"},
     "Ok":                   {"en": "Ok",                    "de": "Ok",                     "ru": "Ok"},
     "role":                 {"en": "role",                  "de": "Rolle",                  "ru": "Функция"},
@@ -333,7 +333,7 @@ systemDictionary = {
     "All":                  {"en": "All",                   "de": "Alle",                   "ru": "все"},
     "With":                 {"en": "With",                  "de": "mit",                    "ru": "с"},
     "Without":              {"en": "Without",               "de": "ohne",                   "ru": "без"},
-    "Update states":        {"en": "Update states",         "de": "Zustэnde aktualisieren", "ru": "Обновить состояния"},
+    "Update states":        {"en": "Update states",         "de": "Zustände aktualisieren", "ru": "Обновить состояния"},
     "edit file":            {"en": "edit file",             "de": "Datei editieren",        "ru": "Редактировать"},
     "restart script":       {"en": "restart script",        "de": "Skript neu starten",     "ru": "Перезапустить скрипт"},
     "Select":               {"en": "Select",                "de": "Auswählen",              "ru": "Выбрать"},
@@ -343,12 +343,12 @@ systemDictionary = {
     "System settings":      {"en": "System settings",       "de": "Systemeinstellungen",    "ru": "Системные настройки"},
     "reload":               {"en": "reload",                "de": "Neu laden",              "ru": "Перезагрузить"},
     "Update":               {"en": "Update",                "de": "Aktualisieren",          "ru": "Обновить"},
-    "Delete object":        {"en": "Delete object",         "de": "Object löschen",         "ru": "Удалить объект"},
+    "Delete object":        {"en": "Delete object",         "de": "Objekt löschen",         "ru": "Удалить объект"},
     "Refresh log":          {"en": "Refresh log",           "de": "Log aktualisieren",      "ru": "Обновить протокол"},
     "Clear log":            {"en": "Clear log",             "de": "Log löschen",            "ru": "Очистить протокол на экране"},
     "Storage of %s":        {"en": "Storage of %s",         "de": "Historie von %s",        "ru": "Настройки истории для %s"},
     "Storage of %s states": {"en": "Storage of %s states",  "de": "Historie von %s Zuständen", "ru": "Настройки истории для %s состояний"},
-    "Clear on disk permanent": {"en": "Clear on disk permanent", "de": "Löschen log auf dem host", "ru": "Удалить протокол на сервере"},
+    "Clear on disk permanent": {"en": "Clear on disk permanent", "de": "Lösche Log auf dem Host", "ru": "Удалить протокол на сервере"},
     "daemon":               {"en": "daemon",                "de": "daemon",                 "ru": "Демон"},
     "subscribe":            {"en": "subscribe",             "de": "abonnieren",             "ru": "Подписка"},
     "stable":               {"en": "stable",                "de": "stabil",                 "ru": "стабильно"},
@@ -412,10 +412,10 @@ systemDictionary = {
     "Host:":                {"en": "Host:",                 "de": "Host:",                  "ru": "Хост:"},
     "installed adapters":   {"en": "Filter installed adapters",    "de": "Filter installierte Adapters",     "ru": "Только установленные драйвера"},
     "list":                 {"en": "list",                  "de": "Liste",                  "ru": "Список"},
-    "collapse all":         {"en": "collapse all",          "de": "Zumachen alle",          "ru": "Свернуть все группы"},
-    "expand all":           {"en": "expand all",            "de": "Aufmachen alle",         "ru": "Развернуть все группы"},
+    "collapse all":         {"en": "collapse all",          "de": "Alle zumklappen",          "ru": "Свернуть все группы"},
+    "expand all":           {"en": "expand all",            "de": "Alle aufklappen",         "ru": "Развернуть все группы"},
 
-    "common adapters_group": {"en": "common",                "de": "Allgemein",              "ru": "Общие"},
+    "common adapters_group": {"en": "common",               "de": "Allgemein",              "ru": "Общие"},
     "hardware_group":       {"en": "hardware",              "de": "Hardware",               "ru": "Оборудование"},
     "script_group":         {"en": "scripts and logic",     "de": "Skripte und Logik",      "ru": "Скрипты и логика"},
     "media_group":          {"en": "media",                 "de": "Medien",                 "ru": "Медиа"},
@@ -428,9 +428,9 @@ systemDictionary = {
     "service_group":        {"en": "Maintenance",           "de": "Wartung",                "ru": "Сервисные приложения"},
     "agree":                {"en": "agree",                 "de": "Einverstanden",          "ru": "Согласен(на)"},
     "not agree":            {"en": "not agree",             "de": "Nicht einverstanden",    "ru": "Не согласен(на)"},
-    "license not agree":    {"en": "Not agree with license!", "de": "Nicht einverstanden mit Lizenz",  "ru": "Не согласен(на) с лицензией"},
+    "license not agree":    {"en": "Not agree with license!", "de": "Mit der Lizenz nicht einverstanden!",  "ru": "Не согласен(на) с лицензией"},
     "Filter:":              {"en": "Filter:",               "de": "Filter:",                "ru": "Искать:"},
-    "adapter with updates": {"en": "adapters with updates", "de": "Adapter mit Aktualisierung",   "ru": "Драйвера с обновлениями"},
+    "adapter with updates": {"en": "adapters with updates", "de": "Adapter mit Aktualisierungen",   "ru": "Драйвера с обновлениями"},
     "Total count in group": {"en": "Total count in group",  "de": "Insgesamt in der Gruppe", "ru": "Всего в группе"},
     "Installed from group": {"en": "Installed from group",  "de": "Installiert aus der Gruppe", "ru": "Установлено из группы"},
     "description":          {"en": "Description",           "de": "Beschreibung",           "ru": "Описание"},
@@ -507,7 +507,7 @@ systemDictionary = {
     "Not exists":           {"en": "Not exists",             "de": "Existiert nicht",       "ru": "Не существует"},
     "Message buffer overflow. Losing oldest":     {
         "en": "Message buffer overflow. Losing oldest.",
-        "de": "Zu viele Meldungen. Äleste werden gelöscht.",
+        "de": "Zu viele Meldungen. Älteste werden gelöscht.",
         "ru": "Слишком много сообщений. Старые выбрасываются."
     },
     "Add certificate from file": {
@@ -522,7 +522,7 @@ systemDictionary = {
     },
     "Password and confirmation are not equal!": {
         "en": "Password and confirmation are not equal!",
-        "de": "Kennwort und Bestэtigung sind unterschiedlich!",
+        "de": "Kennwort und Bestätigung sind unterschiedlich!",
         "ru": "Пароль и подтверждение пароля не совпадают!"
     },
     'Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?': {
@@ -545,17 +545,17 @@ systemDictionary = {
     "Too many events":      {"en": "Too many events",       "de": "Zu viele Ereignisse",    "ru": "Слишком много событий"},
     "Are you sure to delete script %s?": {
         "en": "Are you sure to delete script '%s'?",
-        "de": "Wollen Sie wirklich Skript '%s' löschen?",
+        "de": "Wollen Sie wirklich das Skript '%s' löschen?",
         "ru": "Вы действительно хотите удалить скрипт '%s'?"
     },
     "Cannot delete user: ": {
         "en": "Cannot delete user: ",
-        "de": "Kann Anwender nicht löschen: ",
+        "de": "Kann Benutzer nicht löschen: ",
         "ru": "Не могу удалить пользователя: "
     },
     "Cannot create user: ": {
         "en": "Cannot create user: ",
-        "de": "Kann Anwender nicht erzeugen: ",
+        "de": "Kann Benutzer nicht erzeugen: ",
         "ru": "Не могу создать пользователя: "
     },
     "User yet exists": {
