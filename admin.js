@@ -2,14 +2,15 @@
 /*jslint node: true */
 'use strict';
 
-var express =  require('express');
-var socketio = require('socket.io');
-var request =  require('request');
-var fs =       require('fs');
-var Stream =   require('stream');
-var utils =    require(__dirname + '/lib/utils'); // Get common adapter utils
-var tools =    require(utils.controllerDir + '/lib/tools.js');
-var LE =       require(utils.controllerDir + '/lib/letsencrypt.js');
+var adapterName = require(__dirname + '/package.json').name.split('.').pop();
+var express 	= require('express');
+var socketio 	= require('socket.io');
+var request 	= require('request');
+var fs 			= require('fs');
+var Stream 		= require('stream');
+var utils 		= require(__dirname + '/lib/utils'); // Get common adapter utils
+var tools 		= require(utils.controllerDir + '/lib/tools.js');
+var LE 			= require(utils.controllerDir + '/lib/letsencrypt.js');
 
 var session;
 var cookieParser;
@@ -42,7 +43,7 @@ var eventsThreshold = {
 };
 
 var adapter = new utils.Adapter({
-    name:          'admin',    // adapter name
+    name:          adapterName,    // adapter name
     dirname:        __dirname, // say own position
     logTransporter: true,      // receive the logs
     install: function (callback) {

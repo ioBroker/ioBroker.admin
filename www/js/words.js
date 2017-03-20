@@ -410,7 +410,7 @@ systemDictionary = {
     "Installed instances":  {"en": "Installed instances",   "de": "Installierte Instanzen", "ru": "Добавлено драйверов"},
     "Active instances":     {"en": "Active instances",      "de": "Aktivierte Instanzen",    "ru": "Драйверов активно"},
     "Host:":                {"en": "Host:",                 "de": "Host:",                  "ru": "Хост:"},
-    "installed adapters":   {"en": "Filter installed adapters",    "de": "Filter Adapter mit installierten Instanzen",     "ru": "Только установленные драйвера"},
+    "installed adapters":   {"en": "Filter adapter with existing instances",    "de": "Filter Adapter mit Instanzen",     "ru": "Только драйвера, у которых есть инстация"},
     "list":                 {"en": "list",                  "de": "Liste",                  "ru": "Список"},
     "collapse all":         {"en": "collapse all",          "de": "Alle zuklappen",          "ru": "Свернуть все группы"},
     "expand all":           {"en": "expand all",            "de": "Alle aufklappen",         "ru": "Развернуть все группы"},
