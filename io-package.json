@@ -100,6 +100,24 @@
             "de":                   "Stellt Webserver für 'ioBroker Admin UI' zur Verfügung",
             "ru":                   "Запускает веб сервер с 'ioBroker admin UI' для удобной настройки через веб интерфейс"
         },
+        "docs": {
+            "en": "docs/en/admin.md",
+            "ru": "docs/ru/admin.md",
+            "de": [
+                "docs/de/admin.md",
+                "docs/de/admin/tab-adapters.md",
+                "docs/de/admin/tab-instances.md",
+                "docs/de/admin/tab-objects.md",
+                "docs/de/admin/tab-states.md",
+                "docs/de/admin/tab-groups.md",
+                "docs/de/admin/tab-users.md",
+                "docs/de/admin/tab-events.md",
+                "docs/de/admin/tab-hosts.md",
+                "docs/de/admin/tab-enums.md",
+                "docs/de/admin/tab-log.md",
+                "docs/de/admin/tab-system.md"
+            ]
+        },
         "mode":                     "daemon",
         "platform":                 "Javascript/Node.js",
         "loglevel":                 "info",
