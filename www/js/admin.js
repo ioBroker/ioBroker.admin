@@ -64,7 +64,7 @@ $(document).ready(function () {
         saveConfig:     function (attr, value) {
             if (attr) main.config[attr] = value;
 
-            if (typeof storage !=='undefined') {
+            if (typeof storage !== 'undefined') {
                 storage.set('adminConfig', JSON.stringify(main.config));
             }
         },
