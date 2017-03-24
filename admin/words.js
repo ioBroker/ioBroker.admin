@@ -1,6 +1,6 @@
 systemDictionary = {
     "Admin adapter settings": {
-        "en": "Admin adapter settings":,
+        "en": "Admin adapter settings",
         "de": "Admin adapter Einstellungen",
         "ru": "Настройки драйвера Admin"
     },
