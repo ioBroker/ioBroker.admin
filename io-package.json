@@ -2,12 +2,12 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.7.2",
+        "version": "1.7.3",
         "news": {
             "1.7.2": {
-                "en": "add statistics selector for no-city\nsupport of discovery by first start",
-                "de": "Fügt Statistikauswahl für No-City hinzu.\nUnterstützung Discovery beim ersten Start",
-                "ru": "Добавить выбор статистики для no-city.\nПоддержка открытия Discovery при первом запуске"
+                "en": "fix license dialog\nupdate german translation",
+                "de": "Korrigiere Lizenzdialog.\nKorrigiere Übersetzung",
+                "ru": "Исправлен диалог для соглашения с лицензией"
             },
             "1.7.1": {
                 "en": "fix save button functionality\nUpdate german translations\npatch repositories to support stable",
