@@ -8,6 +8,8 @@ function translateWord(text, lang, dictionary) {
     lang       = lang       || systemLang;
     dictionary = dictionary || systemDictionary;
 
+    text = text.toString();
+
     if (dictionary[text]) {
         var newText = dictionary[text][lang];
         if (newText) {
