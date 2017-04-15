@@ -1169,6 +1169,7 @@ function values2table(divId, values, onChange, onReady) {
                             options = names[i].options;
                         }
                         var val = (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]);
+                        if (typeof val !== 'object') val = [val];
                         for (var p in options) {                                                        
                             line += '<option value="' + p + '" ' + (val.indexOf(p) !== -1 ? ' selected' : '') + '>' + options[p] + '</option>';
                         }
