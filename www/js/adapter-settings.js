@@ -1170,7 +1170,7 @@ function values2table(divId, values, onChange, onReady) {
                         }
                         var val = (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]);
                         for (var p in options) {                                                        
-                            line += '<option value="' + p + '" ' + (val.indexOf(p) != -1 ? ' selected' : '') + '>' + options[p] + '</option>';
+                            line += '<option value="' + p + '" ' + (val.indexOf(p) !== -1 ? ' selected' : '') + '>' + options[p] + '</option>';
                         }
                         line += '</select>';
                     } else {
