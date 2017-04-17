@@ -984,15 +984,20 @@ function Instances(main) {
                         that.init(true);
                     }, 200);
 
-                    setTimeout(function () {
-                        if (!that.$configFrame.attr('src') && !$('#dialog-license').is(':visible')) {
-                            // if tab2 is not active => activate it
-                            $('#tabs').tabs('option', 'active', 1);
 
-                            // open configuration dialog
-                            that.showConfigDialog(id);
-                        }
-                    }, 2000);
+                    // open automatically config dialog
+                    if (!obj.common.noConfig) {
+                        setTimeout(function () {
+                            if (!that.$configFrame.attr('src') && !$('#dialog-license').is(':visible')) {
+                                // if tab2 is not active => activate it
+                                $('#tabs').tabs('option', 'active', 1);
+
+                                // open configuration dialog
+                                that.showConfigDialog(id);
+                            }
+                        }, 2000);
+                    }
+
                 } else {
                     if (id.indexOf('.web.') !== -1) {
                         if (this.updateTimer) clearTimeout(this.updateTimer);
