@@ -1115,7 +1115,7 @@ function values2table(divId, values, onChange, onReady) {
                     if (obj.def === 'false') obj.def = false;
                     if (obj.def === 'true')  obj.def = true;
                     obj.def = !!obj.def;
-                } else if (obj.type === 'select') {
+                } else if (obj.type === 'select' || obj.type === 'select multiple') {
                     var vals = ($(this).data('options') || '').split(';');
                     obj.options = {};
                     for (var v = 0; v < vals.length; v++) {
@@ -1168,6 +1168,7 @@ function values2table(divId, values, onChange, onReady) {
                         } else {
                             options = names[i].options;
                         }
+						if (names[i].type === 'select multiple') delete options[_('none')];
                         var val = (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]);
                         if (typeof val !== 'object') val = [val];
                         for (var p in options) {                                                        
