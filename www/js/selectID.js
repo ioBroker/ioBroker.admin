@@ -798,6 +798,9 @@
                 autoOpen: false,
                 modal:    true,
                 width:    '90%',
+                open:     function(event, ui) {
+                    $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                },
                 close:    function () {
                     storeSettings(data);
                 },
