@@ -1,7 +1,7 @@
 /*
  Copyright 2014-2017 bluefox <dogafox@gmail.com>
 
- version: 1.0.2 (2017.04.13)
+ version: 1.0.3 (2017.04.21)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -25,87 +25,88 @@
 
  Interface:
  +  init(options) - init select ID dialog. Following options are supported
- {
- currentId:  '',       // Current ID or empty if nothing preselected
- objects:    null,     // All objects that should be shown. It can be empty if connCfg used.
- states:     null,     // All states of objects. It can be empty if connCfg used. If objects are set and no states, states will no be shown.
- filter:     null,     // filter
- imgPath:    'lib/css/fancytree/', // Path to images device.png, channel.png and state.png
- connCfg:    null,     // configuration for dialog, ti read objects itself: {socketUrl: socketUrl, socketSession: socketSession}
- onSuccess:  null,     // callback function to be called if user press "Select". Can be overwritten in "show" - function (newId, oldId, newObj)
- onChange:   null,     // called every time the new object selected - function (newId, oldId, newObj)
- noDialog:   false,    // do not make dialog
- noMultiselect: false, // do not make multiselect
- buttons:    null,     // array with buttons, that should be shown in last column
- // if array is not empty it can has following fields
- // [{
- //   text: false, // same as jquery button
- //   icons: {     // same as jquery button
- //       primary: 'ui-icon-gear'
- //   },
- //   click: function (id) {
- //                // do on click
- //   },
- //   match: function (id) {
- //                // you have here object "this" pointing to $('button')
- //   },
- //   width: 26,   // same as jquery button
- //   height: 20   // same as jquery button
- // }],
- panelButtons: null,   // array with buttons, that should be shown at the top of dialog (near expand all)
- list:       false,    // tree view or list view
- name:       null,     // name of the dialog to store filter settings
- noCopyToClipboard: false, // do not show button for copy to clipboard
- root:       null,     // root node, e.g. "script.js"
- useNameAsId: false,   // use name of object as ID
- noColumnResize: false, // do not allow column resize
- firstMinWidth: null,  // width if ID column, default 400
- showButtonsForNotExistingObjects: false,
- webServer:    null,   // link to webserver, by default ":8082"
- texts: {
- select:   'Select',
- cancel:   'Cancel',
- all:      'All',
- id:       'ID',
- name:     'Name',
- role:     'Role',
- type:     'Type',
- room:     'Room',
- 'function': 'Function',
- enum:     'Members',
- value:    'Value',
- selectid: 'Select ID',
- from:     'From',
- lc:       'Last changed',
- ts:       'Time stamp',
- ack:      'Acknowledged',
- expand:   'Expand all nodes',
- collapse: 'Collapse all nodes',
- refresh:  'Rebuild tree',
- edit:     'Edit',
- ok:       'Ok',
- push:     'Trigger event'
- wait:     'Processing...',
- list:     'Show list view',
- tree:     'Show tree view',
- selectAll: 'Select all',
- unselectAll: 'Unselect all',
- invertSelection: 'Invert selection',
- copyToClipboard: 'Copy to clipboard',
- expertMode: 'Toggle expert mode'
- },
- columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button'],
- // some elements of columns could be an object {name: field, data: function (id, name){}, title: function (id, name) {}}
- widths:    null,   // array with width for every column
- editEnd:   null,   // function (id, newValues) for edit lines (only id and name can be edited)
- editStart: null,   // function (id, $inputs) called after edit start to correct input fields (inputs are jquery objects),
- zindex:    null,   // z-index of dialog or table
- customButtonFilter: null, // if in the filter over the buttons some specific button must be shown. It has type like {icons:{primary: 'ui-icon-close'}, text: false, callback: function ()}
- expertModeRegEx: null // list of regex with objects, that will be shown only in expert mode, like  /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin/
- quickEdit:  null,   // list of fields with edit on click. Elements can be just names from standard list or objects like:
- // {name: 'field', options: {a1: 'a111_Text', a2: 'a22_Text'}}, options can be a function (id, name), that give back such an object
- quickEditCallback: null // function (id, attr, newValue, oldValue)
- }
+         {
+             currentId:  '',       // Current ID or empty if nothing preselected
+             objects:    null,     // All objects that should be shown. It can be empty if connCfg used.
+             states:     null,     // All states of objects. It can be empty if connCfg used. If objects are set and no states, states will no be shown.
+             filter:     null,     // filter
+             imgPath:    'lib/css/fancytree/', // Path to images device.png, channel.png and state.png
+             connCfg:    null,     // configuration for dialog, ti read objects itself: {socketUrl: socketUrl, socketSession: socketSession}
+             onSuccess:  null,     // callback function to be called if user press "Select". Can be overwritten in "show" - function (newId, oldId, newObj)
+             onChange:   null,     // called every time the new object selected - function (newId, oldId, newObj)
+             noDialog:   false,    // do not make dialog
+             noMultiselect: false, // do not make multiselect
+             buttons:    null,     // array with buttons, that should be shown in last column
+                                   // if array is not empty it can has following fields
+                                   // [{
+                                   //   text: false, // same as jquery button
+                                   //   icons: {     // same as jquery button
+                                   //       primary: 'ui-icon-gear'
+                                   //   },
+                                   //   click: function (id) {
+                                   //                // do on click
+                                   //   },
+                                   //   match: function (id) {
+                                   //                // you have here object "this" pointing to $('button')
+                                   //   },
+                                   //   width: 26,   // same as jquery button
+                                   //   height: 20   // same as jquery button
+                                   // }],
+             panelButtons: null,   // array with buttons, that should be shown at the top of dialog (near expand all)
+             list:       false,    // tree view or list view
+             name:       null,     // name of the dialog to store filter settings
+             noCopyToClipboard: false, // do not show button for copy to clipboard
+             root:       null,     // root node, e.g. "script.js"
+             useNameAsId: false,   // use name of object as ID
+             noColumnResize: false, // do not allow column resize
+             firstMinWidth: null,  // width if ID column, default 400
+             showButtonsForNotExistingObjects: false,
+             webServer:    null,   // link to webserver, by default ":8082"
+             texts: {
+                 select:   'Select',
+                 cancel:   'Cancel',
+                 all:      'All',
+                 id:       'ID',
+                 name:     'Name',
+                 role:     'Role',
+                 type:     'Type',
+                 room:     'Room',
+                 'function': 'Function',
+                 enum:     'Members',
+                 value:    'Value',
+                 selectid: 'Select ID',
+                 from:     'From',
+                 lc:       'Last changed',
+                 ts:       'Time stamp',
+                 ack:      'Acknowledged',
+                 expand:   'Expand all nodes',
+                 collapse: 'Collapse all nodes',
+                 refresh:  'Rebuild tree',
+                 edit:     'Edit',
+                 ok:       'Ok',
+                 push:     'Trigger event'
+                 wait:     'Processing...',
+                 list:     'Show list view',
+                 tree:     'Show tree view',
+                 selectAll: 'Select all',
+                 unselectAll: 'Unselect all',
+                 invertSelection: 'Invert selection',
+                 copyToClipboard: 'Copy to clipboard',
+                 expertMode: 'Toggle expert mode'
+             },
+             columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button'],
+                                // some elements of columns could be an object {name: field, data: function (id, name){}, title: function (id, name) {}}
+             widths:    null,   // array with width for every column
+             editEnd:   null,   // function (id, newValues) for edit lines (only id and name can be edited)
+             editStart: null,   // function (id, $inputs) called after edit start to correct input fields (inputs are jquery objects),
+             zindex:    null,   // z-index of dialog or table
+             customButtonFilter: null, // if in the filter over the buttons some specific button must be shown. It has type like {icons:{primary: 'ui-icon-close'}, text: false, callback: function ()}
+             expertModeRegEx: null // list of regex with objects, that will be shown only in expert mode, like  /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin/
+             quickEdit:  null,   // list of fields with edit on click. Elements can be just names from standard list or objects like:
+                                 // {name: 'field', options: {a1: 'a111_Text', a2: 'a22_Text'}}, options can be a function (id, name), that give back such an object
+             quickEditCallback: null, // function (id, attr, newValue, oldValue),
+             readyCallback: null // called when objects and states are read from server (only if connCfg is not null). function (err, objects, states)
+     }
  +  show(currentId, filter, callback) - all arguments are optional if set by "init"
  +  clear() - clear object tree to read and build anew (used only if objects set by "init")
  +  getInfo(id) - get information about ID
@@ -798,9 +799,6 @@
                 autoOpen: false,
                 modal:    true,
                 width:    '90%',
-                open:     function(event, ui) {
-                    $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
-                },
                 close:    function () {
                     storeSettings(data);
                 },
@@ -2085,6 +2083,9 @@
                             data.objects = res;
                             data.socket.emit('getStates', function (err, res) {
                                 data.states = res;
+                                if (data.readyCallback) {
+                                    data.readyCallback(err, data.objects, data.states);
+                                }
                             });
                         });
                     });
