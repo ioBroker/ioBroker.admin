@@ -14,16 +14,37 @@ function Adapters(main) {
     this.urls = {};
     this.groupImages = {
         'common adapters_group':  'img/common.png',
+        'general_group':          'img/common.png',
         'hardware_group':         'img/hardware.png',
+        'lighting_group':         'img/hardware.png',
+        'energy_group':           'img/hardware.png',
+        'household_group':        'img/hardware.png',
+        'iot-systems_group':      'img/hardware.png',
+        'climate-control_group':  'img/hardware.png',
+        'infrastructure_group':   'img/hardware.png',
+        'garden_group':           'img/hardware.png',
+        'alarm_group':            'img/hardware.png',
         'script_group':           'img/script.png',
+        'logic_group':            'img/script.png',
         'media_group':            'img/media.png',
+        'multimedia_group':       'img/media.png',
         'communication_group':    'img/communication.png',
+        'protocols_group':        'img/communication.png',
+        'network_group':          'img/communication.png',
+        'messaging_group':        'img/communication.png',
         'visualisation_group':    'img/visualisation.png',
+        'visualization-icons_group': 'img/visualisation.png',
+        'visualization-widgets_group': 'img/visualisation.png',
         'storage_group':          'img/storage.png',
         'weather_group':          'img/weather.png',
         'schedule_group':         'img/schedule.png',
         'vis_group':              'img/vis.png',
-        'service_group':          'img/service.png'
+        'date-and-time_group':    'img/service.png',
+        'geoposition_group':      'img/service.png',
+        'utility_group':          'img/service.png',
+        'misc-data_group':        'img/service.png',
+        'service_group':          'img/service.png',
+        'third-party_group':      'img/service.png'
     };
 
     this.isList        = false;
