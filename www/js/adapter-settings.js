@@ -25,6 +25,8 @@ $(document).ready(function () {
     systemDictionary.save =           {"en": "Save",           "de": "Speichern",               "ru": "Сохранить"};
     systemDictionary.saveclose =      {"en": "Save and close", "de": "Speichern und schließen", "ru": "Сохранить и выйти"};
     systemDictionary.none =           {"en": "none",           "de": "keins",                    "ru": ""};
+	systemDictionary.nonerooms = {"en": "", "de": "", "ru": ""}; //Änderung 18.04.2017
+    systemDictionary.nonefunctions = {"en": "", "de": "", "ru": ""}; //Änderung 18.04.2017																				   
     systemDictionary.all =            {"en": "all",            "de": "alle",                     "ru": "все"};
     systemDictionary['Device list'] = {"en": "Device list",    "de": "Geräteliste",              "ru": "Список устройств"};
     systemDictionary['new device'] =  {"en": "new device",     "de": "Neues Gerät",              "ru": "Новое устройство"};
@@ -1056,7 +1058,10 @@ function values2table(divId, values, onChange, onReady) {
         if (!$table.data('rooms') && $table.find('th[data-name="room"]').length) {
             getEnums('rooms', function (err, list) {
                 var result = {};
-                result[_('none')] = '';
+				if (_('nonerooms') !== 'nonerooms')
+                    result[_('none')] = _('nonerooms');
+                else																		  
+		            result[_('none')] = '';
                 var nnames = [];
                 for (var n in list) {
                     nnames.push(n);
@@ -1081,7 +1086,10 @@ function values2table(divId, values, onChange, onReady) {
         if (!$table.data('functions') && $table.find('th[data-name="func"]').length) {
             getEnums('functions', function (err, list) {
                 var result = {};
-                result[_('none')] = '';
+				if (_('nonefunctions') !== 'nonefunctions')
+                    result[_('none')] = _('nonefunctions');
+                else																  
+					result[_('none')] = '';
                 var nnames = [];
                 for (var n in list) {
                     nnames.push(n);
@@ -1109,7 +1117,8 @@ function values2table(divId, values, onChange, onReady) {
                     name:    name,
                     type:    $(this).data('type') || 'text',
                     def:     $(this).data('default'),
-                    style:   $(this).data('style')
+                    style:   $(this).data('style'),
+					tdstyle: $(this).data('tdstyle')					 
                 };
                 if (obj.type === 'checkbox') {
                     if (obj.def === 'false') obj.def = false;
@@ -1151,12 +1160,15 @@ function values2table(divId, values, onChange, onReady) {
                 text += '<td';
                 var line = '';
                 var style = '';
+				var tdstyle = '';	  
                 if (names[i]) {
-                    if (names[i].name === '_index') {
+					if (names[i].name !== '_index') {
+                        tdstyle = (names[i].tdstyle ? names[i].tdstyle : '');
+                    }																  
+					if (names[i].name === '_index') {
                         style = (names[i].style ? names[i].style : 'text-align: right;');
                         line += (v + 1);
-                    } else
-                    if (names[i].type === 'checkbox') {
+                    } else if (names[i].type === 'checkbox') {
                         line += '<input ' + (names[i].style || '') + '" class="values-input" type="checkbox" data-index="' + v + '" data-name="' + names[i].name + '" ' + (values[v][names[i].name] ? 'checked' : '') + '" data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';                    
                     } else if (names[i].type.substring(0, 6) === 'select') {                        
                         line += (names[i].type.substring(7, 16) === 'multiple' ? '<select multiple style="' : '<select style="') + (names[i].style ? names[i].style : 'width: 100%') + '" class="values-input" data-index="' + v + '" data-name="' + names[i].name + '">';                        
@@ -1165,10 +1177,11 @@ function values2table(divId, values, onChange, onReady) {
                             options = $table.data('rooms');
                         } else if (names[i].name === 'func') {
                             options = $table.data('functions');
+							if (names[i].type === 'select multiple') delete options[_('none')];									   
                         } else {
                             options = names[i].options;
                         }
-						if (names[i].type === 'select multiple') delete options[_('none')];
+						
                         var val = (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]);
                         if (typeof val !== 'object') val = [val];
                         for (var p in options) {                                                        
@@ -1190,7 +1203,11 @@ function values2table(divId, values, onChange, onReady) {
                         line += '<button data-index="' + v + '" data-command="' + buttons[i][b] + '" class="values-buttons"></button>';
                     }
                 }
-                text += ' style="' + style + '">' + line + '</td>';
+                if (style.length || tdstyle.length) {
+                    text += ' style="' + style + tdstyle + '">' + line + '</td>';
+                } else {
+                    text += '>' + line + '</td>';
+                }						
             }
 
             text += '</tr>';
