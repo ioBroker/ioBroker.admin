@@ -1169,7 +1169,7 @@ function values2table(divId, values, onChange, onReady) {
                         style = (names[i].style ? names[i].style : 'text-align: right;');
                         line += (v + 1);
                     } else if (names[i].type === 'checkbox') {
-                        line += '<input ' + (names[i].style || '') + '" class="values-input" type="checkbox" data-index="' + v + '" data-name="' + names[i].name + '" ' + (values[v][names[i].name] ? 'checked' : '') + '" data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';                    
+                        line += '<input style="' + (names[i].style || '') + '" class="values-input" type="checkbox" data-index="' + v + '" data-name="' + names[i].name + '" ' + (values[v][names[i].name] ? 'checked' : '') + '" data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';                    
                     } else if (names[i].type.substring(0, 6) === 'select') {                        
                         line += (names[i].type.substring(7, 16) === 'multiple' ? '<select multiple style="' : '<select style="') + (names[i].style ? names[i].style : 'width: 100%') + '" class="values-input" data-index="' + v + '" data-name="' + names[i].name + '">';                        
                         var options;
