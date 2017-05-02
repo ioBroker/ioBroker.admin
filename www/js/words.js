@@ -110,7 +110,7 @@ systemDictionary = {
     },
     "Cron expression":      {"en": "Cron expression",       "de": "Cron-Ausdruck",          "ru": "Cron-Выражение"},
     "Clear":                {"en": "Clear",                 "de": "Löschen",                "ru": "Сбросить"},
-    "Set CRON":             {"en": "Set",                   "de": "Übernehmen",             "ru": "Перенять"},
+    "Set CRON":             {"en": "Set",                   "de": "Übernehmen",             "ru": "Применить"},
     "ioBroker adapter instances": {
         "en": "ioBroker adapter instances",
         "de": "ioBroker Adapter Instanzen",
