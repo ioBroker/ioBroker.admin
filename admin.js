@@ -47,7 +47,9 @@ var adapter = new utils.Adapter({
     dirname:        __dirname, // say own position
     logTransporter: true,      // receive the logs
     install: function (callback) {
-        if (typeof callback === 'function') callback();
+        if (typeof callback === 'function') {
+            callback();
+        }
     }
 });
 
@@ -61,7 +63,9 @@ adapter.on('objectChange', function (id, obj) {
         }
     } else {
         //console.log('objectDeleted: ' + id);
-        if (objects[id]) delete objects[id];
+        if (objects[id]) {
+            delete objects[id];
+        }
     }
     // TODO Build in some threshold of messages
 
@@ -82,20 +86,22 @@ setInterval(function () {
             eventsThreshold.accidents++;
 
             if (eventsThreshold.accidents >= eventsThreshold.repeatSeconds) {
-                enableEventThreshold ();
+                enableEventThreshold();
             }
         } else {
             eventsThreshold.accidents = 0;
         }
         eventsThreshold.count = 0;
-    } else if (new Date().getTime() - eventsThreshold.timeActivated  > 60000) {
+    } else if (new Date().getTime() - eventsThreshold.timeActivated > 60000) {
         disableEventThreshold();
     }
 }, eventsThreshold.checkInterval);
 
 adapter.on('stateChange', function (id, state) {
     if (!state) {
-        if (states[id]) delete states[id];
+        if (states[id]) {
+            delete states[id];
+        }
     } else {
         states[id] = state;
     }
@@ -106,7 +112,9 @@ adapter.on('stateChange', function (id, state) {
             eventsThreshold.count++;
         }
         for (var i in clients) {
-            if (clients.hasOwnProperty(i)) updateSession(clients[i]);
+            if (clients.hasOwnProperty(i)) {
+                updateSession(clients[i]);
+            }
         }
         webServer.io.sockets.emit('stateChange', id, state);
     }
@@ -137,7 +145,9 @@ adapter.on('message', function (obj) {
         return false;
 
     if (cmdSessions[obj.message.id]) {
-        if (webServer) webServer.io.sockets.emit(obj.command, obj.message.id, obj.message.data);
+        if (webServer) {
+            webServer.io.sockets.emit(obj.command, obj.message.id, obj.message.data);
+        }
         // we cannot save the socket, because if it takes a bit time, the socket will be invalid
         //cmdSessions[obj.message.id].socket.emit(obj.command, obj.message.id, obj.message.data);
         if (obj.command == 'cmdExit') {
@@ -149,7 +159,9 @@ adapter.on('message', function (obj) {
 });
 
 adapter.on('unload', function (callback) {
-    if (adapter.requireLog) adapter.requireLog(false);
+    if (adapter.requireLog) {
+        adapter.requireLog(false);
+    }
 
     try {
         adapter.log.info('terminating http' + (webServer.settings.secure ? 's' : '') + ' server on port ' + webServer.settings.port);
@@ -239,7 +251,7 @@ function upToDate(a, b) {
 
 function writeUpdateInfo(sources) {
     if (!sources) {
-        var obj        = objects['system.repositories'];
+        var obj = objects['system.repositories'];
         if (!objects['system.config'].common) {
             adapter.log.warn('Repository cannot be read. Invalid "system.config" object.');
             return;
@@ -323,7 +335,9 @@ function main() {
     adapter.subscribeForeignObjects('*');
 
     adapter.config.defaultUser = adapter.config.defaultUser || 'admin';
-    if (!adapter.config.defaultUser.match(/^system\.user\./)) adapter.config.defaultUser = 'system.user.' + adapter.config.defaultUser;
+    if (!adapter.config.defaultUser.match(/^system\.user\./)) {
+        adapter.config.defaultUser = 'system.user.' + adapter.config.defaultUser;
+    }
 
     if (adapter.config.secure) {
         // Load certificates
@@ -340,7 +354,9 @@ function main() {
 
     patchRepos(function () {
         // By default update repository every 24 hours
-        if (adapter.config.autoUpdate === undefined) adapter.config.autoUpdate = 24;
+        if (adapter.config.autoUpdate === undefined) {
+            adapter.config.autoUpdate = 24;
+        }
         adapter.config.autoUpdate = parseInt(adapter.config.autoUpdate, 10) || 0;
         if (adapter.config.autoUpdate) {
             setInterval(function () {
@@ -355,7 +371,9 @@ function main() {
 function addUser(user, pw, options, callback) {
     adapter.getForeignObject('system.user.' + user, options, function (err, obj) {
         if (obj) {
-            if (typeof callback == 'function') callback('User yet exists');
+            if (typeof callback == 'function') {
+                callback('User yet exists');
+            }
         } else {
             adapter.setForeignObject('system.user.' + user, {
                 type: 'user',
@@ -374,14 +392,20 @@ function addUser(user, pw, options, callback) {
 function delUser(user, options, callback) {
     adapter.getForeignObject('system.user.' + user, options, function (err, obj) {
         if (err || !obj) {
-            if (callback) callback('User does not exist');
+            if (callback) {
+                callback('User does not exist');
+            }
         } else {
             if (obj.common.dontDelete) {
-                if (callback) callback('Cannot delete user, while is system user');
+                if (callback) {
+                    callback('Cannot delete user, while is system user');
+                }
             } else {
                 adapter.delForeignObject('system.user.' + user, options, function (err) {
                     // Remove this user from all groups in web client
-                    if (callback) callback(err);
+                    if (callback) {
+                        callback(err);
+                    }
                 });
             }
         }
@@ -409,7 +433,9 @@ function addGroup(group, desc, acl, options, callback) {
 
     adapter.getForeignObject('system.group.' + group, options, function (err, obj) {
         if (obj) {
-            if (callback) callback('Group yet exists');
+            if (callback) {
+                callback('Group yet exists');
+            }
         } else {
             adapter.setForeignObject('system.group.' + group, {
                 type: 'group',
@@ -420,7 +446,9 @@ function addGroup(group, desc, acl, options, callback) {
                     acl:     acl
                 }
             }, options, function (err, obj) {
-                if (callback) callback(err, obj);
+                if (callback) {
+                    callback(err, obj);
+                }
             });
         }
     });
@@ -429,14 +457,20 @@ function addGroup(group, desc, acl, options, callback) {
 function delGroup(group, options, callback) {
     adapter.getForeignObject('system.group.' + group, options, function (err, obj) {
         if (err || !obj) {
-            if (callback) callback('Group does not exist');
+            if (callback) {
+                callback('Group does not exist');
+            }
         } else {
             if (obj.common.dontDelete) {
-                if (callback) callback('Cannot delete group, while is system group');
+                if (callback) {
+                    callback('Cannot delete group, while is system group');
+                }
             } else {
                 adapter.delForeignObject('system.group.' + group, options, function (err) {
                     // Remove this group from all users in web client
-                    if (callback) callback(err);
+                    if (callback) {
+                        callback(err);
+                    }
                 });
             }
         }
@@ -554,7 +588,9 @@ function initWebServer(settings) {
                 var redirect = '/';
                 if (req.body.origin) {
                     var parts = req.body.origin.split('=');
-                    if (parts[1]) redirect = decodeURIComponent(parts[1]);
+                    if (parts[1]) {
+                        redirect = decodeURIComponent(parts[1]);
+                    }
                 }
                 var authenticate = passport.authenticate('local', {
                     successRedirect: redirect,
@@ -573,7 +609,9 @@ function initWebServer(settings) {
                 if (req.isAuthenticated() ||
                     /^\/login\//.test(req.originalUrl) ||
                     /\.ico$/.test(req.originalUrl)
-                ) return next();
+                ) {
+                    return next();
+                }
                 res.redirect('/login/index.html?href=' + encodeURIComponent(req.originalUrl));
             });
         } else {
@@ -586,7 +624,9 @@ function initWebServer(settings) {
         }
 
         var appOptions = {};
-        if (settings.cache) appOptions.maxAge = 30758400000;
+        if (settings.cache) {
+            appOptions.maxAge = 30758400000;
+        }
 
         server.app.use('/', express.static(__dirname + '/www', appOptions));
 
@@ -600,12 +640,21 @@ function initWebServer(settings) {
             url = url.replace(/\/($|\?|#)/, '/index.html$1');
 
             // Read config files for admin from /adapters/admin/admin/...
-            if (url.substring(0, '/admin/'.length) == '/admin/') {
-                url = url.replace(/\/admin\//, __dirname + '/admin/');
+            if (url.substring(0, '/' + adapter.name + '/'.length) === '/' + adapter.name + '/') {
+                url = url.replace('/' + adapter.name + '/', __dirname + '/admin/');
                 url = url.replace(/\?[0-9]*/, '');
 
                 try {
-                    fs.createReadStream(url).pipe(res);
+                    if (fs.existsSync(url)) {
+                        fs.createReadStream(url).pipe(res);
+                    } else {
+                        var ss = new Stream();
+                        ss.pipe = function (dest) {
+                            dest.write('File not found');
+                        };
+
+                        ss.pipe(res);
+                    }
                 } catch (e) {
                     var s = new Stream();
                     s.pipe = function (dest) {
@@ -716,7 +765,9 @@ function getUserFromSocket(socket, callback) {
             wait = true;
             store.get(socket.conn.request.sessionID, function (err, obj) {
                 if (obj && obj.passport && obj.passport.user) {
-                    if (callback) callback(null, obj.passport.user ? 'system.user.' + obj.passport.user : '');
+                    if (callback) {
+                        callback(null, obj.passport.user ? 'system.user.' + obj.passport.user : '');
+                    }
                     return;
                 }
             });
@@ -724,7 +775,9 @@ function getUserFromSocket(socket, callback) {
     } catch (e) {
 
     }
-    if (!wait && callback) callback('Cannot detect user');
+    if (!wait && callback) {
+        callback('Cannot detect user');
+    }
 }
 
 function disableEventThreshold(readAll) {
@@ -776,7 +829,7 @@ function initSocket(socket) {
     disableEventThreshold();
 
     if (adapter.config.auth) {
-		adapter.config.ttl = parseInt(adapter.config.ttl, 10) || 3600;
+        adapter.config.ttl = parseInt(adapter.config.ttl, 10) || 3600;
         getUserFromSocket(socket, function (err, user) {
             if (err || !user) {
                 adapter.log.error('socket.io ' + err);
@@ -943,7 +996,9 @@ function socketEvents(socket) {
     }
 
     // Enable logging, while some browser is connected
-    if (adapter.requireLog) adapter.requireLog(true);
+    if (adapter.requireLog) {
+        adapter.requireLog(true);
+    }
 
     /*
      *      objects
@@ -1002,7 +1057,9 @@ function socketEvents(socket) {
                 if (data.rows.length) {
                     for (var i = 0; i < data.rows.length; i++) {
                         if (data.rows[i].value.common.hostname == ip) {
-                            if (callback) callback(ip, data.rows[i].value);
+                            if (callback) {
+                                callback(ip, data.rows[i].value);
+                            }
                             return;
                         }
                         if (data.rows[i].value.native.hardware && data.rows[i].value.native.hardware.networkInterfaces) {
@@ -1010,7 +1067,9 @@ function socketEvents(socket) {
                             for (var eth in net) {
                                 for (var j = 0; j < net[eth].length; j++) {
                                     if (net[eth][j].address == ip) {
-                                        if (callback) callback(ip, data.rows[i].value);
+                                        if (callback) {
+                                            callback(ip, data.rows[i].value);
+                                        }
                                         return;
                                     }
                                 }
@@ -1019,7 +1078,9 @@ function socketEvents(socket) {
                     }
                 }
 
-                if (callback) callback(ip, null);
+                if (callback) {
+                    callback(ip, null);
+                }
             });
         }
     });
@@ -1035,16 +1096,22 @@ function socketEvents(socket) {
 
     socket.on('getState', function (id, callback) {
         if (updateSession(socket) && checkPermissions(socket, 'getState', callback, id)) {
-            if (callback) callback(null, states[id]);
+            if (callback) {
+                callback(null, states[id]);
+            }
         }
     });
 
     socket.on('setState', function (id, state, callback) {
         if (updateSession(socket) && checkPermissions(socket, 'setState', callback, id)) {
-            if (typeof state !== 'object') state = {val: state};
+            if (typeof state !== 'object') {
+                state = {val: state};
+            }
 
             adapter.setForeignState(id, state, {user: this._acl.user}, function (err, res) {
-                if (typeof callback === 'function') callback(err, res);
+                if (typeof callback === 'function') {
+                    callback(err, res);
+                }
             });
         }
     });
@@ -1171,23 +1238,31 @@ function socketEvents(socket) {
     });
 
     socket.on('authEnabled', function (callback) {
-        if (callback) callback(adapter.config.auth, socket._acl.user.replace(/^system\.user\./, ''));
+        if (callback) {
+            callback(adapter.config.auth, socket._acl.user.replace(/^system\.user\./, ''));
+        }
     });
 
     socket.on('disconnect', function () {
         // Disable logging if no one browser is connected
-        if (adapter.requireLog) adapter.requireLog(!!webServer.io.sockets.sockets.length);
+        if (adapter.requireLog) {
+            adapter.requireLog(!!webServer.io.sockets.sockets.length);
+        }
     });
 
     socket.on('listPermissions', function (callback) {
         if (updateSession(socket)) {
-            if (callback) callback(commandsPermissions);
+            if (callback) {
+                callback(commandsPermissions);
+            }
         }
     });
 
     socket.on('getUserPermissions', function (callback) {
         if (updateSession(socket) && checkPermissions(socket, 'getUserPermissions', callback)) {
-            if (callback) callback(null, socket._acl);
+            if (callback) {
+                callback(null, socket._acl);
+            }
         }
     });
 
@@ -1208,7 +1283,9 @@ function onAuthorizeSuccess(data, accept) {
 }
 
 function onAuthorizeFail(data, message, error, accept) {
-    if (error) adapter.log.error('failed connection to socket.io from ' + data.connection.remoteAddress + ':', message);
+    if (error) {
+        adapter.log.error('failed connection to socket.io from ' + data.connection.remoteAddress + ':', message);
+    }
 
     if (error) {
         accept(new Error(message));

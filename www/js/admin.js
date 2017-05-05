@@ -33,6 +33,7 @@ Array.prototype.remove = function () {
 };
 
 var $iframeDialog = null; // used in adapter settings window
+var showConfig = null; // used in adapter settings window
 var defaults = {};
 var adapterRedirect = function (redirect, timeout) {
     if (redirect) {
