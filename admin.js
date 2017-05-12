@@ -252,7 +252,7 @@ function upToDate(a, b) {
 function writeUpdateInfo(sources) {
     if (!sources) {
         var obj = objects['system.repositories'];
-        if (!objects['system.config'].common) {
+        if (!objects['system.config'] || !objects['system.config'].common) {
             adapter.log.warn('Repository cannot be read. Invalid "system.config" object.');
             return;
         }
