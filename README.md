@@ -66,6 +66,12 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
+### 1.7.4 (2017-04-19)
+* (bluefox) catch error if translated object is not text
+* (bluefox) update selectID.js
+* (bluefox) do not open configuration dialog for instances with no config
+* (Steiger04) select multiple auch bei data-name="[eigner-name]"
+
 ### 1.7.3 (2017-03-25)
 * (bluefox) fix license dialog
 * (bluefox) change color of tooltip text
