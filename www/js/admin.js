@@ -1052,7 +1052,9 @@ $(document).ready(function () {
             initTabs();
         }
 
-        if (id === 'system.adapter.discovery.0') main.updateWizard();
+        if (id === 'system.adapter.discovery.0') {
+            main.updateWizard();
+        }
 
         //tabs.adapters.objectChange(id, obj);
         tabs.instances.objectChange(id, obj);
