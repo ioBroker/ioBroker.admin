@@ -2,9 +2,9 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.7.4",
+        "version": "1.7.5",
         "news": {
-            "1.7.4": {
+            "1.7.5": {
                 "en": "do not open configuration dialog for instances with no config",
                 "de": "Öffne den Konfigurationsdialog nicht für die Instanzen ohne config",
                 "ru": "Не открывать диалоговое окно конфигурации для драйверов без конфигурации"

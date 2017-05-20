@@ -699,6 +699,7 @@ function initWebServer(settings) {
     }
 
     if (server.server) {
+        settings.port = parseInt(settings.port, 10);
         adapter.getPort(settings.port, function (port) {
             if (port !== settings.port && !adapter.config.findNextPort) {
                 adapter.log.error('port ' + settings.port + ' already in use');
@@ -1310,7 +1311,9 @@ function updateRegister() {
                     adapter.log.error('May not read "getRepository"');
                 } else {
                     adapter.log.info('Repository received successfully.');
-                    webServer.io.sockets.emit('repoUpdated');
+                    if (webServer.io && webServer.io.sockets) {
+                        webServer.io.sockets.emit('repoUpdated');
+                    }
                 }
             });
         }
