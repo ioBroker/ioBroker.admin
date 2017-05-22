@@ -1,7 +1,7 @@
 /*
- Copyright 2014-2016 bluefox <dogafox@gmail.com>
+ Copyright 2014-2017 bluefox <dogafox@gmail.com>
 
- version: 1.0.1 (2016.10.14)
+ version: 1.0.3 (2017.04.21)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -104,7 +104,8 @@
              expertModeRegEx: null // list of regex with objects, that will be shown only in expert mode, like  /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin/
              quickEdit:  null,   // list of fields with edit on click. Elements can be just names from standard list or objects like:
                                  // {name: 'field', options: {a1: 'a111_Text', a2: 'a22_Text'}}, options can be a function (id, name), that give back such an object
-             quickEditCallback: null // function (id, attr, newValue, oldValue)
+             quickEditCallback: null, // function (id, attr, newValue, oldValue),
+             readyCallback: null // called when objects and states are read from server (only if connCfg is not null). function (err, objects, states)
      }
  +  show(currentId, filter, callback) - all arguments are optional if set by "init"
  +  clear() - clear object tree to read and build anew (used only if objects set by "init")
@@ -174,7 +175,7 @@
         } else {
             text += '.' + v;
         }
-        
+
         return text;
     }
 
@@ -209,7 +210,8 @@
         var isFunc  = data.columns.indexOf('function') !== -1;
         var isRole  = data.columns.indexOf('role') !== -1;
         var isHist  = data.columns.indexOf('button') !== -1;
-        data.tree = {title: '', children: [], count: 0, root: true};
+
+        data.tree      = {title: '', children: [], count: 0, root: true};
         data.roomEnums = [];
         data.funcEnums = [];
 
@@ -217,6 +219,38 @@
 
             if (isRoom && objects[id].type === 'enum' && data.regexEnumRooms.test(id)) data.roomEnums.push(id);
             if (isFunc && objects[id].type === 'enum' && data.regexEnumFuncs.test(id)) data.funcEnums.push(id);
+            if ((isRoom || isFunc) && objects[id].enums) {
+                for (var e in objects[id].enums) {
+                    if (isRoom && data.regexEnumRooms.test(e)) {
+                        if (data.roomEnums.indexOf(e) === -1) data.roomEnums.push(e);
+
+                        if (!objects[e]) {
+                            objects[e] = {
+                                _id: e,
+                                common: {
+                                    name: objects[id].enums[e],
+                                    members: [id]
+                                }
+                            };
+                        } else if (objects[e].common.members.indexOf(id) === -1) {
+                            objects[e].common.members.push(id);
+                        }
+                    } else if (isFunc && data.regexEnumFuncs.test(e)) {
+                        if (data.funcEnums.indexOf(e) === -1) data.funcEnums.push(e);
+                        if (!objects[e]) {
+                            objects[e] = {
+                                _id: e,
+                                common: {
+                                    name: objects[id].enums[e],
+                                    members: [id]
+                                }
+                            };
+                        } else if (objects[e].common.members.indexOf(id) === -1) {
+                            objects[e].common.members.push(id);
+                        }
+                    }
+                }
+            }
 
             if (isType && objects[id].type && data.types.indexOf(objects[id].type) === -1) data.types.push(objects[id].type);
 
@@ -1359,8 +1393,8 @@
                             }
                         } else if (data.editEnd) {
                             text = '<button data-id="' + node.key + '" class="select-button-edit"></button>' +
-                            '<button data-id="' + node.key + '" class="select-button-ok"></button>' +
-                            '<button data-id="' + node.key + '" class="select-button-cancel"></button>';
+                                '<button data-id="' + node.key + '" class="select-button-ok"></button>' +
+                                '<button data-id="' + node.key + '" class="select-button-cancel"></button>';
                         }
 
                         if (data.editEnd) {
@@ -1568,16 +1602,16 @@
                     node.setActive();
                     break;
                 /*case 'copy':
-                    CLIPBOARD = {
-                        mode: data.cmd,
-                        data: node.toDict(function (n) {
-                            delete n.key;
-                        })
-                    };
-                    break;
-                case 'clear':
-                    CLIPBOARD = null;
-                    break;*/
+                 CLIPBOARD = {
+                 mode: data.cmd,
+                 data: node.toDict(function (n) {
+                 delete n.key;
+                 })
+                 };
+                 break;
+                 case 'clear':
+                 CLIPBOARD = null;
+                 break;*/
                 default:
                     alert('Unhandled command: ' + data.cmd);
                     return;
@@ -1698,7 +1732,7 @@
         }).keyup(function () {
             var tree = data.$tree[0];
             if (tree._timer) tree._timer = clearTimeout(tree._timer);
-            
+
             var that = this;
             tree._timer = setTimeout(function () {
                 $(that).trigger('change');
@@ -2004,7 +2038,7 @@
 
                 data.rootExp = data.root ? new RegExp('^' + data.root.replace('.', '\\.')) : null;
 
-                    data.selectedID = data.currentId;
+                data.selectedID = data.currentId;
 
                 // make a copy of filter
                 data.filter = JSON.parse(JSON.stringify(data.filter));
@@ -2033,7 +2067,7 @@
                         });
                     }, 5000);
 
-                   data.socket = io.connect(data.socketURL, {
+                    data.socket = io.connect(data.socketURL, {
                         query:                          'key=' + data.socketSESSION,
                         'reconnection limit':           10000,
                         'max reconnection attempts':    Infinity,
@@ -2049,6 +2083,9 @@
                             data.objects = res;
                             data.socket.emit('getStates', function (err, res) {
                                 data.states = res;
+                                if (data.readyCallback) {
+                                    data.readyCallback(err, data.objects, data.states);
+                                }
                             });
                         });
                     });
@@ -2256,7 +2293,7 @@
                     data.states[id].q    === state.q    &&
                     data.states[id].from === state.from &&
                     data.states[id].ts   === state.ts
-                    ) return;
+                ) return;
 
                 data.states[id] = state;
                 var tree = data.$tree.fancytree('getTree');
