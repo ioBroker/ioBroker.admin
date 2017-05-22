@@ -33,6 +33,7 @@ Array.prototype.remove = function () {
 };
 
 var $iframeDialog = null; // used in adapter settings window
+var showConfig = null; // used in adapter settings window
 var defaults = {};
 var adapterRedirect = function (redirect, timeout) {
     if (redirect) {
@@ -1051,7 +1052,9 @@ $(document).ready(function () {
             initTabs();
         }
 
-        if (id === 'system.adapter.discovery.0') main.updateWizard();
+        if (id === 'system.adapter.discovery.0') {
+            main.updateWizard();
+        }
 
         //tabs.adapters.objectChange(id, obj);
         tabs.instances.objectChange(id, obj);

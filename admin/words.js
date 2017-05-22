@@ -29,6 +29,7 @@ systemDictionary = {
     "every 2 weeks":        {"en": "every 2 weeks",             "de": "alle 2 Wochen",          "ru": "каждые 2 недели"},
     "monthly":              {"en": "monthly",                   "de": "monatlich",              "ru": "раз в месяц"},
     "Login timeout(sec):":  {"en": "Login timeout(sec):",       "de": "Login Timeout(Sek):",    "ru": "Logout через(сек):"},
+    "users permissions":    {"en": "users permissions",         "de": "Anwenderrechte",         "ru": "Права доступа"},
     "Let's Encrypt settings": {
         "en": "Let's Encrypt settings",
         "de": "Let's Encrypt Einstellungen",

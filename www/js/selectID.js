@@ -1,7 +1,7 @@
 /*
  Copyright 2014-2017 bluefox <dogafox@gmail.com>
 
- version: 1.0.3 (2017.04.21)
+ version: 1.0.4 (2017.04.25)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -62,6 +62,8 @@
              firstMinWidth: null,  // width if ID column, default 400
              showButtonsForNotExistingObjects: false,
              webServer:    null,   // link to webserver, by default ":8082"
+             filterPresets: null,  // Object with predefined filters, eg {role: 'level.dimmer'} or {type: 'state'}
+             roleExactly:   false, // If the role must be equal or just content the filter value
              texts: {
                  select:   'Select',
                  cancel:   'Cancel',
@@ -107,13 +109,21 @@
              quickEditCallback: null, // function (id, attr, newValue, oldValue),
              readyCallback: null // called when objects and states are read from server (only if connCfg is not null). function (err, objects, states)
      }
- +  show(currentId, filter, callback) - all arguments are optional if set by "init"
+ +  show(currentId, filter, callback) - all arguments are optional if set by "init". Callback is like function (newId, oldId) {}. If multiselect, so the arguments are arrays.
  +  clear() - clear object tree to read and build anew (used only if objects set by "init")
  +  getInfo(id) - get information about ID
  +  getTreeInfo(id) - get {id, parent, children, object}
  +  state(id, val) - update states in tree
  +  object(id, obj) - update object info in tree
  +  reinit() - draw tree anew
+
+
+ filter is like:
+     common: {
+         history: true
+     }
+  or
+     type: "state"
  */
 (function ($) {
     'use strict';
@@ -217,36 +227,46 @@
 
         for (var id in objects) {
 
-            if (isRoom && objects[id].type === 'enum' && data.regexEnumRooms.test(id)) data.roomEnums.push(id);
-            if (isFunc && objects[id].type === 'enum' && data.regexEnumFuncs.test(id)) data.funcEnums.push(id);
-            if ((isRoom || isFunc) && objects[id].enums) {
-                for (var e in objects[id].enums) {
-                    if (isRoom && data.regexEnumRooms.test(e)) {
-                        if (data.roomEnums.indexOf(e) === -1) data.roomEnums.push(e);
-
-                        if (!objects[e]) {
-                            objects[e] = {
-                                _id: e,
-                                common: {
-                                    name: objects[id].enums[e],
-                                    members: [id]
-                                }
-                            };
-                        } else if (objects[e].common.members.indexOf(id) === -1) {
-                            objects[e].common.members.push(id);
+            if (isRoom) {
+                if (objects[id].type === 'enum' && data.regexEnumRooms.test(id) && data.roomEnums.indexOf(id) === -1) data.roomEnums.push(id);
+                if (objects[id].enums) {
+                    for (var e in objects[id].enums) {
+                        if (data.regexEnumRooms.test(e) && data.roomEnums.indexOf(e) === -1) {
+                            data.roomEnums.push(e);
                         }
-                    } else if (isFunc && data.regexEnumFuncs.test(e)) {
-                        if (data.funcEnums.indexOf(e) === -1) data.funcEnums.push(e);
-                        if (!objects[e]) {
-                            objects[e] = {
-                                _id: e,
-                                common: {
-                                    name: objects[id].enums[e],
-                                    members: [id]
-                                }
-                            };
-                        } else if (objects[e].common.members.indexOf(id) === -1) {
-                            objects[e].common.members.push(id);
+                        data.objects[e] = data.objects[e] || {
+                            _id: e,
+                            common: {
+                                name: objects[id].enums[e],
+                                members: [id]
+                            }
+                        };
+                        data.objects[e].common.members = data.objects[e].common.members || [];
+                        if (data.objects[e].common.members.indexOf(id) === -1) {
+                            data.objects[e].common.members.push(id);
+                        }
+                    }
+                }
+            }
+            if (isFunc) {
+                if (objects[id].type === 'enum' && data.regexEnumFuncs.test(id)  && data.funcEnums.indexOf(id) === -1) {
+                    data.funcEnums.push(id);
+                }
+                if (objects[id].enums) {
+                    for (var e in objects[id].enums) {
+                        if (data.regexEnumFuncs.test(e) && data.funcEnums.indexOf(e) === -1) {
+                            data.funcEnums.push(e);
+                        }
+                        data.objects[e] = data.objects[e] || {
+                            _id: e,
+                            common: {
+                                name: objects[id].enums[e],
+                                members: [id]
+                            }
+                        };
+                        data.objects[e].common.members = data.objects[e].common.members || [];
+                        if (data.objects[e].common.members.indexOf(id) === -1) {
+                            data.objects[e].common.members.push(id);
                         }
                     }
                 }
@@ -938,7 +958,7 @@
                 text += '<td><table style="width: 100%"><tr><td style="width: 100%"><input style="width: 100%; padding: 0" type="text" id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_' + data.instance + '"/></td><td style="vertical-align: top;"><button data-id="filter_' + data.columns[c] + '_'  + data.instance + '" class="filter_btn_' + data.instance + '"></button></td></tr></table></td>';
             } else if (name === 'type') {
                 text += '<td>' + textTypes + '</td>';
-            } else if (name== 'role') {
+            } else if (name === 'role') {
                 text += '<td>' + textRoles + '</td>';
             } else if (name === 'room') {
                 text += '<td>' + textRooms + '</td>';
@@ -1688,7 +1708,11 @@
                     if (!isCommon || data.objects[node.key].common[f] === undefined || data.objects[node.key].common[f].toLowerCase().indexOf(data.filterVals[f]) === -1) return false;
                 } else
                 if (f === 'role') {
-                    if (!isCommon || data.objects[node.key].common[f] === undefined || data.objects[node.key].common[f].indexOf(data.filterVals[f]) === -1) return false;
+                    if (data.roleExactly) {
+                        if (!isCommon || data.objects[node.key].common[f] === undefined || data.objects[node.key].common[f] !== data.filterVals[f]) return false;
+                    } else {
+                        if (!isCommon || data.objects[node.key].common[f] === undefined || data.objects[node.key].common[f].indexOf(data.filterVals[f]) === -1) return false;
+                    }
                 } else
                 if (f === 'type') {
                     if (!data.objects[node.key] || data.objects[node.key][f] === undefined || data.objects[node.key][f] !== data.filterVals[f]) return false;

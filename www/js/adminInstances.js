@@ -643,6 +643,14 @@ function Instances(main) {
             close: function () {
                 // Clear iframe
                 that.$configFrame.attr('src', '');
+                
+                // If after wizard some configuratins must be shown
+                if (typeof showConfig !== 'undefined' && showConfig && showConfig.length) {
+                    var configId = showConfig.shift();
+                    setTimeout(function (_id) {
+                        that.showConfigDialog(_id)
+                    }, 1000, configId);
+                }
             },
             resize: function () {
                 var name = $(this).data('name');

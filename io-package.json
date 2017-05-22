@@ -2,9 +2,14 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.7.3",
+        "version": "1.7.5",
         "news": {
-            "1.7.2": {
+            "1.7.5": {
+                "en": "do not open configuration dialog for instances with no config",
+                "de": "Öffne den Konfigurationsdialog nicht für die Instanzen ohne config",
+                "ru": "Не открывать диалоговое окно конфигурации для драйверов без конфигурации"
+            },
+            "1.7.3": {
                 "en": "fix license dialog\nupdate german translation",
                 "de": "Korrigiere Lizenzdialog.\nKorrigiere Übersetzung",
                 "ru": "Исправлен диалог для соглашения с лицензией"
