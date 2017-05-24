@@ -37,6 +37,12 @@ $(document).ready(function () {
     systemDictionary.Message =        {"en": "Message",        "de": "Mitteilung",               "ru": "Сообщение"};
     systemDictionary.close =          {"en": "Close",          "de": "Schließen",                "ru": "Закрыть"};
     systemDictionary.htooltip =       {"en": "Click for help", "de": "Anclicken",                "ru": "Перейти по ссылке"};
+	systemDictionary.maxTableRaw =    {
+		"en": "Maximum number of allowed raws", 
+		"de": "Maximale Anzahl von erlaubten Tabellenzeilen", 
+		"ru": "Достигнуто максимальное число строк"
+	};
+    systemDictionary.maxTableRawInfo = {"en": "Warning",       "de": "Warnung",                  "ru": "Внимание"};
 
     //socket.on('connection', function () {
         loadSystemConfig(function () {
@@ -1007,11 +1013,19 @@ function getTableResult(tabId, cols) {
  * @param {function} onReady called, when the table is ready (may be to modify some elements of it)
  * @return {object} array with values
  */
-function values2table(divId, values, onChange, onReady) {
+function values2table(divId, values, onChange, onReady, maxRaw) {
     if (typeof values === 'function') {
+		typeof onChange === 'number' ? maxRaw = onChange : maxRaw = null;
         onChange = values;
         values   = divId;
         divId    = '';
+    }
+	
+	if (typeof onReady === 'number') {
+        maxRaw = onReady;
+        onReady = null;
+    } else if (typeof maxRaw === 'undefined') {
+        maxRaw = null;
     }
 
     values = values || [];
@@ -1023,9 +1037,11 @@ function values2table(divId, values, onChange, onReady) {
         $div = $('#' + divId);
     }
     var $add = $div.find('.table-button-add');
+	$add.data('raw', values.length);
 
     if (!$add.data('inited')) {
         $add.data('inited', true);
+		$add.data('maxraw', maxRaw);
 
         $add.button({
             icons: {primary: 'ui-icon-plus'},
@@ -1033,19 +1049,24 @@ function values2table(divId, values, onChange, onReady) {
         })
             //.css({width: '1em', height: '1em'})
             .click(function () {
-                var $table = $div.find('.table-values');
-                var values = $table.data('values');
-                var names = $table.data('names');
-                var obj = {};
-                for (var i = 0; i < names.length; i++) {
-                    if (!names[i]) continue;
-                    obj[names[i].name] = names[i].def;
-                }
-                values.push(obj);
-                onChange && onChange();
-                setTimeout(function () {
-                    values2table(divId, values, onChange, onReady);
-                }, 100);
+				if ($add.data('maxraw') === null || $add.data('raw') < $add.data('maxraw')) {
+					var $table = $div.find('.table-values');
+					var values = $table.data('values');
+					var names = $table.data('names');
+					var obj = {};
+					for (var i = 0; i < names.length; i++) {
+						if (!names[i]) continue;
+						obj[names[i].name] = names[i].def;
+					}
+					values.push(obj);
+					onChange && onChange();
+					setTimeout(function () {
+						values2table(divId, values, onChange, onReady);
+					}, 100);
+					$add.data('raw', $add.data('raw') + 1);
+				} else {
+                    confirmMessage(_('maxTableRaw') + ': ' + $add.data('maxraw'), _('maxTableRawInfo'), 'alert', ['Ok']);
+				}
             });
     }
 
@@ -1257,6 +1278,8 @@ function values2table(divId, values, onChange, onReady) {
                         setTimeout(function () {
                             values2table(divId, values, onChange, onReady);
                         }, 100);
+						if ($add.data('maxraw') !== null)
+                            $add.data('raw', $add.data('raw') - 1);
                     });
             } else if (command === 'up') {
                 $(this).button({
@@ -1288,7 +1311,7 @@ function values2table(divId, values, onChange, onReady) {
                         onChange && onChange();
                         setTimeout(function () {
                             values2table(id, values, onChange, onReady);
-                        }, 100);
+                        }, 100);						
                     });
             } else if (command === 'edit') {
                 $(this).button({
