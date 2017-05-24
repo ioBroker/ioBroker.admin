@@ -37,8 +37,12 @@ $(document).ready(function () {
     systemDictionary.Message =        {"en": "Message",        "de": "Mitteilung",               "ru": "Сообщение"};
     systemDictionary.close =          {"en": "Close",          "de": "Schließen",                "ru": "Закрыть"};
     systemDictionary.htooltip =       {"en": "Click for help", "de": "Anclicken",                "ru": "Перейти по ссылке"};
-	systemDictionary.maxTableRaw = {"en": "Maximum number of allowed raws", "de": "Maximale Anzahl von erlaubten Tabellenzeilen", "ru": "???"};
-    systemDictionary.maxTableRawInfo = {"en": "Warning", "de": "Warnung", "ru": "???"};
+	systemDictionary.maxTableRaw =    {
+		"en": "Maximum number of allowed raws", 
+		"de": "Maximale Anzahl von erlaubten Tabellenzeilen", 
+		"ru": "Достигнуто максимальное число строк"
+	};
+    systemDictionary.maxTableRawInfo = {"en": "Warning",       "de": "Warnung",                  "ru": "Внимание"};
 
     //socket.on('connection', function () {
         loadSystemConfig(function () {
