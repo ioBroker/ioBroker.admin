@@ -340,6 +340,22 @@ function Enums(main) {
                 filter:   {type: 'enum'},
                 columns:  ['name', 'enum', 'button'],
                 widths:   ['150', '*', '120'],
+                quickEdit: ['name'],
+                quickEditCallback: function (id, attr, newValue, oldValue) {
+                    if (newValue !== oldValue) {
+                        main.socket.emit('getObject', id, function (err, _obj) {
+                            if (err) return that.main.showError(err);
+
+                            if (_obj) {
+                                _obj.common[attr] = newValue;
+
+                                main.socket.emit('setObject', _obj._id, _obj, function (err) {
+                                    if (err) that.main.showError(err);
+                                });
+                            }
+                        });
+                    }
+                },
                 buttons:  [
                     {
                         text: false,
@@ -397,7 +413,7 @@ function Enums(main) {
                         height: 20
                     }
                 ],
-                editEnd: function (id, newValues) {
+                /*editEnd: function (id, newValues) {
                     var pos = id.lastIndexOf('.');
                     if (pos !== -1) {
                         var original = id.substring(0, pos);
@@ -408,7 +424,7 @@ function Enums(main) {
                 editStart: function (id, inputs) {
                     var pos = id.lastIndexOf('.');
                     if (pos !== -1) inputs.id.val(id.substring(pos + 1));
-                },
+                },*/
                 panelButtons: [
                     {
                         text: false,

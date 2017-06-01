@@ -66,6 +66,9 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
+### 1.7.6 (2017-06-01)
+* (bluefox) Fix edit of the enum name
+
 ### 1.7.5 (2017-05-20)
 * (bluefox) catch error if translated object is not text
 * (bluefox) update selectID.js
