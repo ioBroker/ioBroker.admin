@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.7.6",
+        "version": "1.8.0",
         "news": {
+            "1.8.0": {
+                "en": "split into modules",
+                "de": "Modularize",
+                "ru": "Модульная архитектура"
+            },
             "1.7.6": {
                 "en": "Fix edit of the enum name",
                 "de": "Korrigiere die Änderung vom Aufzählungennamen",
