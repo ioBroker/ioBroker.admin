@@ -1039,6 +1039,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
     var $add = $div.find('.table-button-add');
 	$add.data('raw', values.length);
 	
+	if (maxRaw !== null) $add.data('maxraw', maxRaw);
 
     if (!$add.data('inited')) {
         $add.data('inited', true);
