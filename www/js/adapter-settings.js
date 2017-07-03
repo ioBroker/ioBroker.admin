@@ -370,6 +370,7 @@ function confirmMessage(message, title, icon, buttons, callback) {
                 click: function (e) {
                     var id = parseInt(e.currentTarget.id.substring('dialog-confirm-button-'.length), 10);
                     var cb = $(this).data('callback');
+					$(this).data('callback', null);
                     $(this).dialog('close');
                     if (cb) cb(id);
                 }
