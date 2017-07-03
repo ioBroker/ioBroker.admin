@@ -370,6 +370,7 @@ function confirmMessage(message, title, icon, buttons, callback) {
                 click: function (e) {
                     var id = parseInt(e.currentTarget.id.substring('dialog-confirm-button-'.length), 10);
                     var cb = $(this).data('callback');
+                    $(this).data('callback', null);
                     $(this).dialog('close');
                     if (cb) cb(id);
                 }
@@ -1041,7 +1042,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
     if (!$add.data('inited')) {
         $add.data('inited', true);
-		$add.data('maxraw', maxRaw);
+		$add.data('maxraw', maxRaw || 0);
 
         $add.button({
             icons: {primary: 'ui-icon-plus'},
@@ -1049,7 +1050,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
         })
             //.css({width: '1em', height: '1em'})
             .click(function () {
-				if ($add.data('maxraw') === null || $add.data('raw') < $add.data('maxraw')) {
+				if (!$add.data('maxraw') || ($add.data('raw') < $add.data('maxraw'))) {
 					var $table = $div.find('.table-values');
 					var values = $table.data('values');
 					var names = $table.data('names');
@@ -1278,8 +1279,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         setTimeout(function () {
                             values2table(divId, values, onChange, onReady);
                         }, 100);
-						if ($add.data('maxraw') !== null)
+
+						if ($add.data('maxraw')) {
                             $add.data('raw', $add.data('raw') - 1);
+                        }
                     });
             } else if (command === 'up') {
                 $(this).button({
