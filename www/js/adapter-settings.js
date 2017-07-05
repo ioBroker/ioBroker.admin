@@ -32,6 +32,8 @@ $(document).ready(function () {
     systemDictionary['new device'] =  {"en": "new device",     "de": "Neues Gerät",              "ru": "Новое устройство"};
     systemDictionary.edit =           {"en": "edit",           "de": "Ändern",                   "ru": "Изменить"};
     systemDictionary.delete =         {"en": "delete",         "de": "Löschen",                  "ru": "Удалить"};
+    systemDictionary.pair =           {"en": "pair",           "de": "Verbinden",                "ru": "Связать"};
+    systemDictionary.unpair =         {"en": "unpair",         "de": "Trennen",                  "ru": "Разорвать связь"};
     systemDictionary.ok =             {"en": "Ok",             "de": "Ok",                       "ru": "Ok"};
     systemDictionary.cancel =         {"en": "Cancel",         "de": "Abbrechen",                "ru": "Отмена"};
     systemDictionary.Message =        {"en": "Message",        "de": "Mitteilung",               "ru": "Сообщение"};
@@ -370,7 +372,7 @@ function confirmMessage(message, title, icon, buttons, callback) {
                 click: function (e) {
                     var id = parseInt(e.currentTarget.id.substring('dialog-confirm-button-'.length), 10);
                     var cb = $(this).data('callback');
-                    $(this).data('callback', null);
+					$(this).data('callback', null);
                     $(this).dialog('close');
                     if (cb) cb(id);
                 }
@@ -1039,14 +1041,20 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
     }
     var $add = $div.find('.table-button-add');
 	$add.data('raw', values.length);
+	
+	if (maxRaw) {
+	    $add.data('maxraw', maxRaw);
+    }
 
     if (!$add.data('inited')) {
         $add.data('inited', true);
-		$add.data('maxraw', maxRaw || 0);
+
+        var addText = $add.text();
 
         $add.button({
             icons: {primary: 'ui-icon-plus'},
-            text: false
+            text: !!addText,
+            label: addText ? _(addText) : undefined
         })
             //.css({width: '1em', height: '1em'})
             .click(function () {
@@ -1274,12 +1282,18 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     .css({width: '1em', height: '1em'})
                     .click(function () {
                         var id = $(this).data('index');
+                        var elem = values[id];
                         values.splice(id, 1);
                         onChange && onChange();
+
                         setTimeout(function () {
+                            if (typeof tableEvents === 'function') {
+                                tableEvents(id, elem, 'delete');
+                            }
+
                             values2table(divId, values, onChange, onReady);
                         }, 100);
-
+                        
 						if ($add.data('maxraw')) {
                             $add.data('raw', $add.data('raw') - 1);
                         }
@@ -1316,6 +1330,32 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                             values2table(id, values, onChange, onReady);
                         }, 100);						
                     });
+            } else if (command === 'pair') {
+                $(this).button({
+                    icons: {primary: 'ui-icon-transferthick-e-w'},
+                    text: false
+                })
+                    .css({width: '1em', height: '1em'})
+                    .click(function () {
+                        if (typeof tableEvents === 'function') {
+                            var id = $(this).data('index');
+                            var elem = values[id];
+                            tableEvents(id, elem, 'pair');
+                        }
+                    }).attr('title', _('pair'));
+            } else if (command === 'unpair') {
+                $(this).button({
+                    icons: {primary: 'ui-icon-scissors'},
+                    text: false
+                })
+                    .css({width: '1em', height: '1em'})
+                    .click(function () {
+                        if (typeof tableEvents === 'function') {
+                            var id = $(this).data('index');
+                            var elem = values[id];
+                            tableEvents(id, elem, 'unpair');
+                        }
+                    }).attr('title', _('unpair'));
             } else if (command === 'edit') {
                 $(this).button({
                     icons: {primary: 'ui-icon-pencil'},
