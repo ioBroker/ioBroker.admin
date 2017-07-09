@@ -1342,7 +1342,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             }
         });
 
-        $lines.find('.values-input').change(function () {
+        $lines.find('.values-input').on('change.adaptersettings', function () {
             if ($(this).attr('type') === 'checkbox') {
                 if ($(this).prop('checked').toString() !== $(this).data('old-value')) onChange();
                 values[$(this).data('index')][$(this).data('name')] = $(this).prop('checked');
@@ -1352,7 +1352,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
             }
         }).keyup(function () {
-            $(this).trigger('change');
+            $(this).trigger('change.adaptersettings');
         });
     }
     if (typeof onReady === 'function') onReady();
