@@ -33,7 +33,6 @@ $(document).ready(function () {
     systemDictionary.edit =           {"en": "edit",           "de": "Ändern",                   "ru": "Изменить"};
     systemDictionary.delete =         {"en": "delete",         "de": "Löschen",                  "ru": "Удалить"};
     systemDictionary.pair =           {"en": "pair",           "de": "Verbinden",                "ru": "Связать"};
-    systemDictionary.unpair =         {"en": "unpair",         "de": "Trennen",                  "ru": "Разорвать связь"};
     systemDictionary.ok =             {"en": "Ok",             "de": "Ok",                       "ru": "Ok"};
     systemDictionary.cancel =         {"en": "Cancel",         "de": "Abbrechen",                "ru": "Отмена"};
     systemDictionary.Message =        {"en": "Message",        "de": "Mitteilung",               "ru": "Сообщение"};
@@ -1058,7 +1057,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
         })
             //.css({width: '1em', height: '1em'})
             .click(function () {
-				if (!$add.data('maxraw') || ($add.data('raw') < $add.data('maxraw'))) {
+				if (!$add.data('maxraw') || $add.data('raw') < $add.data('maxraw')) {
 					var $table = $div.find('.table-values');
 					var values = $table.data('values');
 					var names = $table.data('names');
