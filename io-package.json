@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.8.0",
+        "version": "1.8.1",
         "news": {
+            "1.8.1": {
+                "en": "allow access on tmp directory",
+                "de": "Erlaube Zugrif auf Tmp-Verzeichnis",
+                "ru": "Разрешает доступ на Tmp директорию"
+            },
             "1.8.0": {
                 "en": "split into modules",
                 "de": "Modularize",
@@ -165,6 +170,8 @@
         "certChained":              "",
         "ttl":                      3600,
         "defaultUser":              "admin",
+        "tmpPath":                  "/tmp",
+        "tmpPathAllow":             false,
 
         "leEnabled":                false,
         "leUpdate":                 false,

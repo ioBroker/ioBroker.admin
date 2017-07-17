@@ -66,6 +66,9 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
+### 1.8.1 (2017-07-17)
+* (bluefox) allow access on tmp directory
+
 ### 1.8.0 (2017-06-02)
 * (bluefox) split into modules
 

@@ -277,6 +277,7 @@ function main() {
         adapter.config.defaultUser = 'system.user.' + adapter.config.defaultUser;
     }
 
+
     if (adapter.config.secure) {
         // Load certificates
         adapter.getCertificates(function (err, certificates, leConfig) {
@@ -324,9 +325,23 @@ function getData(callback) {
         adapter.log.info('received all objects');
         res = res.rows;
         objects = {};
+        var tmpPath = '';
         for (var i = 0; i < res.length; i++) {
             objects[res[i].doc._id] = res[i].doc;
+            if (res[i].doc.type === 'instance' && res[i].doc.common && res[i].doc.common.tmpPath) {
+                if (tmpPath) {
+                    adapter.log.warn('tmpPath has multiple definitions!!');
+                }
+                tmpPath = res[i].doc.common.tmpPath;
+            }
         }
+
+        // Some adapters want access on specified tmp directory
+        if (tmpPath) {
+            adapter.config.tmpPath = tmpPath;
+            adapter.config.tmpPathAllow = true;
+        }
+
         createUpdateInfo();
         writeUpdateInfo();
         if (!--tasks && callback) callback();
