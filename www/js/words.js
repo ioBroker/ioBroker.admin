@@ -258,8 +258,8 @@ systemDictionary = {
     "Statistics:":          {"en": "Statistics:",           "de": "Statistik:",             "ru": "Статистика:"},
     "Sent data:":           {"en": "Sent data:",            "de": "Gesendete Daten:",       "ru": "Отсылаемые данные:"},
     "Configuration not saved.": {
-        "en": "Configuration not saved.", 
-        "de": "Konfiguration ist nicht gespeichert.", 
+        "en": "Configuration not saved.",
+        "de": "Konfiguration ist nicht gespeichert.",
         "ru": "Настройки не сохранены."
     },
     "copy note": {
@@ -419,6 +419,7 @@ systemDictionary = {
     "hardware_group":       {"en": "Hardware",              "de": "Hardware",               "ru": "Оборудование"},
     "script_group":         {"en": "Scripts and Logic",     "de": "Skripte und Logik",      "ru": "Скрипты и логика"},
     "media_group":          {"en": "Media",                 "de": "Medien",                 "ru": "Медиа"},
+    "visualization_group":  {"en": "Visualisation",         "de": "Visualisierung",         "ru": "Визуализация"},
     "visualisation_group":  {"en": "Visualisation",         "de": "Visualisierung",         "ru": "Визуализация"},
     "communication_group":  {"en": "Communication",         "de": "Kommunikation",          "ru": "Сетевые"},
     "weather_group":        {"en": "Weather",               "de": "Wetter",                 "ru": "Погода"},
@@ -447,9 +448,9 @@ systemDictionary = {
     "utility_group":        {"en": "Utility",               "de": "Dienstprogramm",         "ru": "Утилита"},
     "misc-data_group":      {"en": "Misc. data",            "de": "Sonstige",               "ru": "Разное"},
     "third-party_group":    {"en": "Third party",           "de": "Andere",                 "ru": "Другие"},
-	
-	
-	
+
+
+
     "agree":                {"en": "agree",                 "de": "Einverstanden",          "ru": "Согласен(на)"},
     "not agree":            {"en": "not agree",             "de": "Nicht einverstanden",    "ru": "Не согласен(на)"},
     "license not agree":    {"en": "Not agree with license!", "de": "Mit der Lizenz nicht einverstanden!",  "ru": "Не согласен(на) с лицензией"},

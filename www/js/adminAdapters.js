@@ -33,6 +33,7 @@ function Adapters(main) {
         'network_group':          'img/communication.png',
         'messaging_group':        'img/communication.png',
         'visualisation_group':    'img/visualisation.png',
+        'visualization_group':    'img/visualisation.png',
         'visualization-icons_group': 'img/visualisation.png',
         'visualization-widgets_group': 'img/visualisation.png',
         'storage_group':          'img/storage.png',
@@ -57,7 +58,7 @@ function Adapters(main) {
     this.types = {
         occ:          'schedule'
     };
-    
+
     this.prepare = function () {
         that.$grid.fancytree({
             extensions: ['table', 'gridnav', 'filter', 'themeroller'],
