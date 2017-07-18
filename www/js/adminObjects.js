@@ -1516,6 +1516,7 @@ function Objects(main) {
                 }
             ],
             open: function (event, ui) {
+                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                 $('#iframe-history-chart').css({height: $(this).height() - 120, width: $(this).width() - 30});
             },
             close: function () {

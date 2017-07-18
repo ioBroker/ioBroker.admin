@@ -32,6 +32,7 @@ $(document).ready(function () {
     systemDictionary['new device'] =  {"en": "new device",     "de": "Neues Gerät",              "ru": "Новое устройство"};
     systemDictionary.edit =           {"en": "edit",           "de": "Ändern",                   "ru": "Изменить"};
     systemDictionary.delete =         {"en": "delete",         "de": "Löschen",                  "ru": "Удалить"};
+    systemDictionary.pair =           {"en": "pair",           "de": "Verbinden",                "ru": "Связать"};
     systemDictionary.ok =             {"en": "Ok",             "de": "Ok",                       "ru": "Ok"};
     systemDictionary.cancel =         {"en": "Cancel",         "de": "Abbrechen",                "ru": "Отмена"};
     systemDictionary.Message =        {"en": "Message",        "de": "Mitteilung",               "ru": "Сообщение"};
@@ -1040,19 +1041,23 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
     var $add = $div.find('.table-button-add');
 	$add.data('raw', values.length);
 	
-	if (maxRaw !== null) $add.data('maxraw', maxRaw);
+	if (maxRaw) {
+	    $add.data('maxraw', maxRaw);
+    }
 
     if (!$add.data('inited')) {
         $add.data('inited', true);
-		$add.data('maxraw', maxRaw);
+
+        var addText = $add.text();
 
         $add.button({
             icons: {primary: 'ui-icon-plus'},
-            text: false
+            text: !!addText,
+            label: addText ? _(addText) : undefined
         })
             //.css({width: '1em', height: '1em'})
             .click(function () {
-				if ($add.data('maxraw') === null || $add.data('raw') < $add.data('maxraw')) {
+				if (!$add.data('maxraw') || $add.data('raw') < $add.data('maxraw')) {
 					var $table = $div.find('.table-values');
 					var values = $table.data('values');
 					var names = $table.data('names');
@@ -1276,13 +1281,21 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     .css({width: '1em', height: '1em'})
                     .click(function () {
                         var id = $(this).data('index');
+                        var elem = values[id];
                         values.splice(id, 1);
                         onChange && onChange();
+
                         setTimeout(function () {
+                            if (typeof tableEvents === 'function') {
+                                tableEvents(id, elem, 'delete');
+                            }
+
                             values2table(divId, values, onChange, onReady);
                         }, 100);
-						if ($add.data('maxraw') !== null)
+                        
+						if ($add.data('maxraw')) {
                             $add.data('raw', $add.data('raw') - 1);
+                        }
                     });
             } else if (command === 'up') {
                 $(this).button({
@@ -1316,6 +1329,32 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                             values2table(id, values, onChange, onReady);
                         }, 100);						
                     });
+            } else if (command === 'pair') {
+                $(this).button({
+                    icons: {primary: 'ui-icon-transferthick-e-w'},
+                    text: false
+                })
+                    .css({width: '1em', height: '1em'})
+                    .click(function () {
+                        if (typeof tableEvents === 'function') {
+                            var id = $(this).data('index');
+                            var elem = values[id];
+                            tableEvents(id, elem, 'pair');
+                        }
+                    }).attr('title', _('pair'));
+            } else if (command === 'unpair') {
+                $(this).button({
+                    icons: {primary: 'ui-icon-scissors'},
+                    text: false
+                })
+                    .css({width: '1em', height: '1em'})
+                    .click(function () {
+                        if (typeof tableEvents === 'function') {
+                            var id = $(this).data('index');
+                            var elem = values[id];
+                            tableEvents(id, elem, 'unpair');
+                        }
+                    }).attr('title', _('unpair'));
             } else if (command === 'edit') {
                 $(this).button({
                     icons: {primary: 'ui-icon-pencil'},

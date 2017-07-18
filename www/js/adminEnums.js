@@ -245,7 +245,8 @@ function Enums(main) {
             resize:     function () {
                 that.$gridMembers.setGridHeight($(this).height() - 100).setGridWidth($(this).width() - 5);
             },
-            open: function () {
+            open: function (event) {
+                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                 that.$gridMembers.setGridHeight($(this).height() - 100).setGridWidth($(this).width() - 5);
             }
         });
