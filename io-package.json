@@ -2,9 +2,9 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "1.8.2",
+        "version": "1.8.3",
         "news": {
-            "1.8.2": {
+            "1.8.3": {
                 "en": "allow access on tmp directory",
                 "de": "Erlaube Zugrif auf Tmp-Verzeichnis",
                 "ru": "Разрешает доступ на Tmp директорию"

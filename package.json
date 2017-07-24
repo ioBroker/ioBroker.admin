@@ -1,7 +1,7 @@
 {
   "name": "iobroker.admin",
   "description": "The adapter opens a webserver for the ioBroker admin UI.",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "contributors": [
     "bluefox <dogafox@gmail.com>",
     "apollon77",
@@ -23,6 +23,7 @@
     "setup"
   ],
   "dependencies": {
+    "express-fileupload": "^0.1.4",
     "socket.io": "^1.5.1",
     "request": "^2.76.0",
     "express": "^4.14.0",
