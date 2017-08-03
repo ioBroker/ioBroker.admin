@@ -7,10 +7,10 @@ node_js:
   - '0.12'
   - '4'
   - '6'
-  - '7'
+  - '8'
 before_script:
   - rm -rf ./node_modules/iobroker.js-controller/node_modules/iobroker.admin
-  - npm install winston@2.3.0
+  - npm install winston@2.3.1
   - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
 env:
   - CXX=g++-4.8
