@@ -1,3 +1,5 @@
+console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as file path');
+
 /*
  Copyright 2014-2017 bluefox <dogafox@gmail.com>
 
