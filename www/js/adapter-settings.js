@@ -2,6 +2,10 @@ var path = location.pathname;
 var parts = path.split('/');
 parts.splice(-3);
 
+if (location.pathname.match(/^\/admin\//)) {
+    parts = [];
+}
+
 var socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
 var instance = window.location.search.slice(1);
 var common   = null; // common information of adapter

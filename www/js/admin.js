@@ -47,11 +47,16 @@ var adapterRedirect = function (redirect, timeout) {
 
 (function ($) {
 $(document).ready(function () {
+    var path = location.pathname + 'socket.io';
+    if (location.pathname.match(/^\/admin\//)) {
+        path = '/socket.io';
+    }
+
     var main = {
         objects:        {},
         states:         {},
         currentHost:    '',
-        socket:         io.connect('/', {path: location.pathname + 'socket.io'}),
+        socket:         io.connect('/', {path: path}),
         systemConfig:   null,
         instances:      null,
         objectsLoaded:  false,
@@ -915,7 +920,7 @@ $(document).ready(function () {
 
     // ----------------------------- Objects show and Edit ------------------------------------------------
     function getObjects(callback) {
-        main.socket.emit('getObjects', function (err, res) {
+        main.socket.emit('getAllObjects', function (err, res) {
             setTimeout(function () {
                 var obj;
                 main.objects = res;
