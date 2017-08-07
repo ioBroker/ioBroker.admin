@@ -35,7 +35,7 @@ Array.prototype.remove = function () {
 var $iframeDialog = null; // used in adapter settings window
 var showConfig = null; // used in adapter settings window
 var defaults = {};
-var adapterRedirect = function (redirect, timeout) {
+var adapterRedirect = function (redirect, timeout) { // used in adapter settings window
     if (redirect) {
         setTimeout(function () {
             redirect += document.location.pathname;
@@ -90,11 +90,7 @@ $(document).ready(function () {
                 } else if (_new[1] === old[1]) {
                     _new[2] = parseInt(_new[2], 10);
                     old[2] = parseInt(old[2], 10);
-                    if (_new[2] > old[2]) {
-                        return false;
-                    } else {
-                        return true;
-                    }
+                    return (_new[2] <= old[2]);
                 } else {
                     return true;
                 }
@@ -164,24 +160,31 @@ $(document).ready(function () {
             $dialogConfirm.dialog('option', 'title', title || _('Message'));
             $('#dialog-confirm-text').html(message);
             if (icon) {
-                $('#dialog-confirm-icon').show();
-                $('#dialog-confirm-icon').attr('class', '');
-                $('#dialog-confirm-icon').addClass('ui-icon ui-icon-' + icon);
+                $('#dialog-confirm-icon')
+                    .show()
+                    .attr('class', '')
+                    .addClass('ui-icon ui-icon-' + icon);
             } else {
                 $('#dialog-confirm-icon').hide();
             }
             $dialogConfirm.data('callback', callback);
             $dialogConfirm.dialog('open');
         },
-        showMessage:    function (message, title, icon) {
+        showMessage:    function (message, title, icon, width) {
             $dialogMessage.dialog('option', 'title', title || _('Message'));
             $('#dialog-message-text').html(message);
             if (icon) {
-                $('#dialog-message-icon').show();
-                $('#dialog-message-icon').attr('class', '');
-                $('#dialog-message-icon').addClass('ui-icon ui-icon-' + icon);
+                $('#dialog-message-icon')
+                    .show()
+                    .attr('class', '')
+                    .addClass('ui-icon ui-icon-' + icon);
             } else {
                 $('#dialog-message-icon').hide();
+            }
+            if (width) {
+                $dialogMessage.dialog('option', 'width', width);
+            } else {
+                $dialogMessage.dialog('option', 'width', 450);
             }
             $dialogMessage.dialog('open');
         },
@@ -337,19 +340,20 @@ $(document).ready(function () {
             } else {
                 var list = [];
                 for (var id in main.objects) {
-                    if (id.substring(0, rootId.length + 1) === rootId + '.') {
+                    if (main.objects.hasOwnProperty(id) && id.substring(0, rootId.length + 1) === rootId + '.') {
                         list.push(id);
                     }
                 }
                 list.push(rootId);
                 list.sort();
-                var len = list.length;
+
                 this._delObject(list, function () {
                     if (callback) callback();
                 });
             }
         },
 
+        /*
         __delObject:    function ($tree, id, callback) {
             var leaf = $tree ? $tree.selectId('getTreeInfo', id) : null;
             //var leaf = treeFindLeaf(id);
@@ -385,6 +389,7 @@ $(document).ready(function () {
                 }
             }
         },
+        */
         delObject:      function ($tree, id, callback) {
             var leaf = $tree ? $tree.selectId('getTreeInfo', id) : null;
             if (main.objects[id]) {
@@ -587,7 +592,8 @@ $(document).ready(function () {
                     }
                 },
                 create: function () {
-                    $('#tabs ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
+                    var $tabs = $('#tabs');
+                    $tabs.find('ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
 
                     var buttons = '<button class="menu-button" id="button-logout" title="' + _('Logout') + '"></button>';
                     buttons += '<button class="menu-button" id="button-system" title="' + _('System') + '"></button>';
@@ -596,27 +602,27 @@ $(document).ready(function () {
                     buttons += '<button class="menu-button" id="button-wizard"></button>';
                     buttons += '<select id="tabs-show"></select>';
 
-                    $('#tabs ul.ui-tabs-nav').append(buttons);
+                    $tabs.find('ul.ui-tabs-nav').append(buttons);
 
                     if (showTabs) {
-                        $('#tabs-show').html('<option value="">' + _('Show...') + '</option>' + showTabs).show();
-
-                        $('#tabs-show').selectmenu({
-                            width: 150,
-                            change: function () {
-                                if ($(this).val()) {
-                                    main.systemConfig.common.tabs.push($(this).val());
-                                    // save
-                                    main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
-                                        if (err) {
-                                            main.showError(err);
-                                            return;
-                                        }
-                                    });
-                                    initTabs();
+                        $('#tabs-show')
+                            .html('<option value="">' + _('Show...') + '</option>' + showTabs)
+                            .show()
+                            .selectmenu({
+                                width: 150,
+                                change: function () {
+                                    if ($(this).val()) {
+                                        main.systemConfig.common.tabs.push($(this).val());
+                                        // save
+                                        main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
+                                            if (err) {
+                                                main.showError(err);
+                                            }
+                                        });
+                                        initTabs();
+                                    }
                                 }
-                            }
-                        });
+                            });
                     } else {
                         $('#tabs-show').html('').hide();
                     }
@@ -816,7 +822,6 @@ $(document).ready(function () {
                 main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
                     if (err) {
                         main.showError(err);
-                        return;
                     }
                 });
             }
@@ -918,6 +923,23 @@ $(document).ready(function () {
 
     tabs.logs.prepare();
 
+    function checkNodeJsVersions(hosts, index) {
+        index = index || 0;
+        if (hosts && index < hosts.length) {
+            main.socket.emit('sendToHost', hosts[index].name, 'getHostInfo', null, function (result) {
+                if (result && result['Node.js']) {
+                    var major = parseInt(result['Node.js'].split('.').shift().replace('v', ''), 10);
+                    if (major < 4 || major === 7) {
+                        main.showMessage(_('This version of node.js "%s" on "%s" is deprecated. Please install node.js 6, 8 or newer', result['Node.js'], hosts[index].name), _('Suggestion'), 'alert', 700);
+                    }
+                }
+                setTimeout(function () {
+                    checkNodeJsVersions(hosts, index + 1);
+                }, 100);
+            });
+        }
+    }
+
     // ----------------------------- Objects show and Edit ------------------------------------------------
     function getObjects(callback) {
         main.socket.emit('getAllObjects', function (err, res) {
@@ -925,7 +947,7 @@ $(document).ready(function () {
                 var obj;
                 main.objects = res;
                 for (var id in main.objects) {
-                    if (id.slice(0, 7) === '_design') continue;
+                    if (!main.objects.hasOwnProperty(id) || id.slice(0, 7) === '_design') continue;
 
                     obj = main.objects[id];
 
@@ -939,6 +961,7 @@ $(document).ready(function () {
                         // Find first non internal IP and use it as identifier
                         if (obj.native.hardware && obj.native.hardware.networkInterfaces) {
                             for (var eth in obj.native.hardware.networkInterfaces) {
+                                if (!obj.native.hardware.networkInterfaces.hasOwnProperty(eth)) continue;
                                 for (var num = 0; num < obj.native.hardware.networkInterfaces[eth].length; num++) {
                                     if (!obj.native.hardware.networkInterfaces[eth][num].internal) {
                                         addr = obj.native.hardware.networkInterfaces[eth][num].address;
@@ -968,6 +991,9 @@ $(document).ready(function () {
 
                 // If customs enabled
                 tabs.objects.checkCustoms();
+
+                // Detect node.js version
+                checkNodeJsVersions(tabs.hosts.list);
 
                 // Detect if some script engine instance installed
 //                var engines = tabs.scripts.fillEngines();
@@ -1210,8 +1236,8 @@ $(document).ready(function () {
                                                 .show()
                                                 .html(translateWord('license_checkbox', language));
 
-                                            $('#license_agree .ui-button-text').html(translateWord('agree', language));
-                                            $('#license_non_agree .ui-button-text').html(translateWord('not agree', language));
+                                            $('#license_agree').find('.ui-button-text').html(translateWord('agree', language));
+                                            $('#license_non_agree').find('.ui-button-text').html(translateWord('not agree', language));
                                             $('#license_terms').html(translateWord('License terms', language));
 
                                             $('#license_language')
@@ -1223,8 +1249,8 @@ $(document).ready(function () {
                                                     $('#license_language_label').html(translateWord('Select language', language));
                                                     $('#license_text').html(license[language] || license.en);
                                                     $('#license_checkbox').html(translateWord('license_checkbox', language));
-                                                    $('#license_agree .ui-button-text').html(translateWord('agree', language));
-                                                    $('#license_non_agree .ui-button-text').html(translateWord('not agree', language));
+                                                    $('#license_agree').find('.ui-button-text').html(translateWord('agree', language));
+                                                    $('#license_non_agree').find('.ui-button-text').html(translateWord('not agree', language));
                                                     $('#license_terms').html(translateWord('License terms', language));
                                                     $dialogLicense.dialog('option', 'title', translateWord('license agreement', language));
                                                 });
@@ -1269,7 +1295,7 @@ $(document).ready(function () {
                                                         id: 'license_non_agree'
                                                     }
                                                 ],
-                                                beforeClose: function (event, ui) {
+                                                beforeClose: function (/* event, ui */) {
                                                     return $('#license_language').data('licenseConfirmed');
                                                 },
                                                 open: function (event) {

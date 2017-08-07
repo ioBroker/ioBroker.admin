@@ -2,9 +2,9 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "2.0.0",
+        "version": "2.0.1",
         "news": {
-			"2.0.0": {
+			"2.0.1": {
                 "en": "Allow access via iobroker.pro",
                 "de": "Erlaube Zugrif über iobroker.pro",
                 "ru": "Разрешает доступ через iobroker.pro"

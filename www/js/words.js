@@ -358,6 +358,9 @@ systemDictionary = {
     "Device":               {"en": "Device",                "de": "Gerät",                  "ru": "Устройство"},
     "URL or file path:":    {"en": "URL or file path:",     "de": "URL oder Dateipfad:",    "ru": "URL или путь к файлу:"},
     "Debug outputs:":       {"en": "Debug outputs:",        "de": "Debug-Ausgänge:",        "ru": "Debug вывод:"},
+    "wetty":                {"en": "wetty",                 "de": "wetty",                  "ru": "wetty"},
+    "Calendar":             {"en": "Calendar",              "de": "Kalender",               "ru": "Календарь"},
+    "Suggestion":           {"en": "Recommendation",        "de": "Empfehlung",             "ru": "Совет"},
     "Install from custom URL": {
         "en": "Install from custom URL",
         "de": "Installieren aus eigenem URL",
@@ -384,6 +387,7 @@ systemDictionary = {
         "en": 'Are you sure to delete <b>"%s"</b>?',
         "de": 'Wollen Sie wirklich <b>"%s"</b> löschen?',
         "ru": 'Удалить <b>"%s"</b>?'},
+    "users permissions":    {"en": "users permissions",     "de": "Zugriffsrechte",         "ru": "права доступа"},
     "Connected to host: ":  {"en": "Connected to host: ",   "de": "Verbunden mit Host: ",   "ru": "Общается с хостом: "},
     "Heartbeat: ":          {"en": "Heartbeat: ",           "de": "Lebenszeichen: ",        "ru": "Heartbeat: "},
     "Show...":              {"en": "Show...",               "de": "Zeige...",               "ru": "Показать..."},
@@ -448,8 +452,7 @@ systemDictionary = {
     "utility_group":        {"en": "Utility",               "de": "Dienstprogramm",         "ru": "Утилита"},
     "misc-data_group":      {"en": "Misc. data",            "de": "Sonstige",               "ru": "Разное"},
     "third-party_group":    {"en": "Third party",           "de": "Andere",                 "ru": "Другие"},
-
-
+    "iot-system_group":     {"en": "IoT systems",           "de": "IoT Systeme",            "ru": "IoT системы"},
 
     "agree":                {"en": "agree",                 "de": "Einverstanden",          "ru": "Согласен(на)"},
     "not agree":            {"en": "not agree",             "de": "Nicht einverstanden",    "ru": "Не согласен(на)"},
@@ -518,6 +521,11 @@ systemDictionary = {
         "en": "Click on icon to open a link",
         "de": "Auf das Icon klicken",
         "ru": "Что бы открыть ссылку надо нажать на иконку"
+    },
+    "This version of node.js \"%s\" on \"%s\" is deprecated. Please install node.js 6, 8 or newer":        {
+        "en": "This version of node.js \"%s\" on \"%s\" is deprecated. Please install node.js 6, 8 or newer",
+        "de": "Diese Version von node.js \"%s\" auf \"%s\" ist veraltet. Bitte installieren Sie node.js 6, 8 oder neuer",
+        "ru": "Эта версия node.js \"%s\" на \"%s\" устарела. Установите node.js 6, 8 или новее."
     },
     'Are you sure to delete <span style="color: red">all</span> children of %s?': {
         "en": 'Are you sure to delete <span style="color: red">all</span> children of <b>%s</b>?',
