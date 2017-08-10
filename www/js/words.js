@@ -387,7 +387,7 @@ systemDictionary = {
         "en": 'Are you sure to delete <b>"%s"</b>?',
         "de": 'Wollen Sie wirklich <b>"%s"</b> löschen?',
         "ru": 'Удалить <b>"%s"</b>?'},
-    "users permissions":    {"en": "users permissions",     "de": "Zugriffsrechte",         "ru": "права доступа"},
+    "users permissions":    {"en": "user permissions",      "de": "Zugriffsrechte",         "ru": "права доступа"},
     "Connected to host: ":  {"en": "Connected to host: ",   "de": "Verbunden mit Host: ",   "ru": "Общается с хостом: "},
     "Heartbeat: ":          {"en": "Heartbeat: ",           "de": "Lebenszeichen: ",        "ru": "Heartbeat: "},
     "Show...":              {"en": "Show...",               "de": "Zeige...",               "ru": "Показать..."},
@@ -523,8 +523,8 @@ systemDictionary = {
         "ru": "Что бы открыть ссылку надо нажать на иконку"
     },
     "This version of node.js \"%s\" on \"%s\" is deprecated. Please install node.js 6, 8 or newer":        {
-        "en": "This version of node.js \"%s\" on \"%s\" is deprecated. Please install node.js 6, 8 or newer",
-        "de": "Diese Version von node.js \"%s\" auf \"%s\" ist veraltet. Bitte installieren Sie node.js 6, 8 oder neuer",
+        "en": "ioBroker supports the LTS versions 4, 6 and 8 of node.js. Please update your version (\"%s\") on host \"%s\" to one of the supported versions. We recommend to use node.js 6.",
+        "de": "ioBroker unterstützt die LTS Versionen 4, 6 und 8 von node.js. Bitte aktualisieren Sie die verwendete node.js Version (\"%s\") auf dem Rechner \"%s\" auf eine unterstützte Version. Wir empfehlen die Verwendung von node.js 6.",
         "ru": "Эта версия node.js \"%s\" на \"%s\" устарела. Установите node.js 6, 8 или новее."
     },
     'Are you sure to delete <span style="color: red">all</span> children of %s?': {

@@ -929,7 +929,7 @@ $(document).ready(function () {
             main.socket.emit('sendToHost', hosts[index].name, 'getHostInfo', null, function (result) {
                 if (result && result['Node.js']) {
                     var major = parseInt(result['Node.js'].split('.').shift().replace('v', ''), 10);
-                    if (major < 4 || major === 7) {
+                    if (major !== 4 && major !== 6 && major !== 8) {
                         main.showMessage(_('This version of node.js "%s" on "%s" is deprecated. Please install node.js 6, 8 or newer', result['Node.js'], hosts[index].name), _('Suggestion'), 'alert', 700);
                     }
                 }
@@ -975,9 +975,9 @@ $(document).ready(function () {
                             tabs.hosts.list.push({name: obj.common.hostname, address: addr, id: obj._id});
                         } else {
                             tabs.hosts.list.push({name: obj.common.hostname, address: '127.0.0.1', id: obj._id});
-                        }                    
+                        }
                     }
-                    
+
                     // convert obj.history into obj.custom
                     if (obj.common && obj.common.history) {
                         obj.common.custom = JSON.parse(JSON.stringify(obj.common.history));
@@ -1091,13 +1091,13 @@ $(document).ready(function () {
         tabs.instances.objectChange(id, obj);
 
         if (obj && id.match(/^system\.adapter\.[\w-]+\.[0-9]+$/)) {
-            if (obj.common && 
-                obj.common.adminTab && 
+            if (obj.common &&
+                obj.common.adminTab &&
                 !obj.common.adminTab.ignoreConfigUpdate
             ) {
                 initTabs();
             }
-            
+
             if (obj && obj.type === 'instance') {
                 if (obj.common.supportCustoms ||
                     id.match(/^system\.adapter\.history\.[0-9]+$/) ||
