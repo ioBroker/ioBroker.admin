@@ -593,6 +593,7 @@
                 <li><a href="#tab-system-repo"  class="translate">Repositories</a></li>
                 <li><a href="#tab-system-certs" class="translate">Certificates</a></li>
                 <li><a href="#tab-system-letsencrypt" class="translate">Let's encrypt SSL</a></li>
+                <li><a href="#tab-system-acl"   class="translate">Default ACL</a></li>
                 <li><a href="#tab-system-diag"  class="translate">Statistics</a></li>
             </ul>
             <div id="tab-system-main">
@@ -958,7 +959,87 @@
                     </tr>
                 </table>
             </div>
-
+            <div id="tab-system-acl" aria-labelledby="ui-id-54" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-hidden="false" style="display: block;">
+                <h3 class="translate" style="margin-bottom: 0px;">Access control list</h3>
+                <table id="tab-system-acl-table" style="width: 100%">
+                    <tbody><tr><td><label class="translate" for="tab-system-acl-owner">Owner user</label></td><td><select id="tab-system-acl-owner"></select></td></tr>
+                    <tr><td><label class="translate" for="tab-system-acl-group" >Owner group</label></td><td><select id="tab-system-acl-group"></select></td></tr>
+                    <tr><td><label class="translate">Object rights</label></td><td>
+                        <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                            <tbody><tr>
+                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
+                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
+                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td></tr>
+                            <tr>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-owner-read">read</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-owner-write">write</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-group-read" >read</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-group-write">write</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-every-read">read</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-every-write">write</label></td>
+                            </tr>
+                            <tr>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-owner-read"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-owner-write"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-group-read"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-group-write"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-every-read"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-every-write"></td>
+                            </tr>
+                            </tbody></table>
+                    </td></tr>
+                    <tr><td class="translate">States rights</td><td>
+                        <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                            <tbody><tr>
+                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
+                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
+                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td>
+                            </tr>
+                            <tr>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-owner-read">read</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-owner-write">write</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-group-read">read</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-group-write">write</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-every-read">read</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-every-write">write</label></td>
+                            </tr>
+                            <tr>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-owner-read"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-owner-write"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-group-read"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-group-write"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-every-read"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-every-write"></td>
+                            </tr>
+                            </tbody></table>
+                    </td></tr>
+                    <tr><td class="translate">File rights</td><td>
+                        <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                            <tbody><tr>
+                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
+                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
+                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td>
+                            </tr>
+                            <tr>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-owner-read">read</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-owner-write">write</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-group-read">read</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-group-write">write</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-every-read">read</label></td>
+                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-every-write">write</label></td>
+                            </tr>
+                            <tr>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-owner-read"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-owner-write"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-group-read"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-group-write"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-every-read"></td>
+                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-every-write"></td>
+                            </tr>
+                            </tbody></table>
+                    </td></tr>
+                    </tbody></table>
+            </div>
             <div id="tab-system-diag">
                 <table id="table-diag">
                     <tr>

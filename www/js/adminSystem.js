@@ -10,7 +10,6 @@ function System(main) {
     this.systemRepos  = null;
     this.systemCerts  = null;
 
-
     function string2cert(name, str) {
         // expected format: -----BEGIN CERTIFICATE-----certif...icate==-----END CERTIFICATE-----
         if (str.length < '-----BEGIN CERTIFICATE-----==-----END CERTIFICATE-----'.length) {
@@ -480,7 +479,6 @@ function System(main) {
             $('#tab-system-certs').html(_('permissionError'));
         }
 
-
         $gridCerts.trigger('reloadGrid');
 
         var $dropZone = $('#tab-system-certs');
@@ -519,7 +517,9 @@ function System(main) {
             $('.cert-ok-submit[data-cert-id="' + id + '"]').show();
             $('.cert-cancel-submit[data-cert-id="' + id + '"]').show();
             $gridCerts.jqGrid('editRow', 'cert_' + id, {url: 'clientArray'});
-            if (editingCerts.indexOf('cert_' + id) === -1) editingCerts.push('cert_' + id);
+            if (editingCerts.indexOf('cert_' + id) === -1) {
+                editingCerts.push('cert_' + id);
+            }
         });
 
         $('.cert-delete-submit').unbind('click').button({
@@ -566,6 +566,83 @@ function System(main) {
         // todo
     }
 
+    function initRights() {
+        main.systemConfig.common.defaultNewAcl = main.systemConfig.common.defaultNewAcl || {};
+        var acl = main.systemConfig.common.defaultNewAcl;
+
+        // fill users
+        var text = '';
+        for (var u = 0; u < main.tabs.users.list.length; u++) {
+            text += '<option value="' + main.tabs.users.list[u] + '">' + (main.objects[main.tabs.users.list[u]].common.name || main.tabs.users.list[u]) + '</option>';
+        }
+        $('#tab-system-acl-owner').html(text).val(acl.owner || 'system.user.admin');
+
+        // fill groups
+        text = '';
+        for (u = 0; u < main.tabs.groups.list.length; u++) {
+            text += '<option value="' + main.tabs.groups.list[u] + '">' + (main.objects[main.tabs.groups.list[u]].common.name || main.tabs.groups.list[u]) + '</option>';
+        }
+        $('#tab-system-acl-group').html(text).val(acl.ownerGroup || 'system.group.administrator');
+
+        if (acl.object === undefined) acl.object = 0x664;
+
+        $('#tab-system-acl-obj-owner-read') .prop('checked', acl.object & 0x400);
+        $('#tab-system-acl-obj-owner-write').prop('checked', acl.object & 0x200);
+        $('#tab-system-acl-obj-group-read'). prop('checked', acl.object & 0x40);
+        $('#tab-system-acl-obj-group-write').prop('checked', acl.object & 0x20);
+        $('#tab-system-acl-obj-every-read'). prop('checked', acl.object & 0x4);
+        $('#tab-system-acl-obj-every-write').prop('checked', acl.object & 0x2);
+
+        if (acl.state === undefined) acl.state = 0x664;
+
+        $('#tab-system-acl-state-owner-read') .prop('checked', acl.state & 0x400);
+        $('#tab-system-acl-state-owner-write').prop('checked', acl.state & 0x200);
+        $('#tab-system-acl-state-group-read'). prop('checked', acl.state & 0x40);
+        $('#tab-system-acl-state-group-write').prop('checked', acl.state & 0x20);
+        $('#tab-system-acl-state-every-read'). prop('checked', acl.state & 0x4);
+        $('#tab-system-acl-state-every-write').prop('checked', acl.state & 0x2);
+
+        if (acl.file === undefined) acl.file = 0x664;
+        $('#tab-system-acl-file-owner-read') .prop('checked', acl.file & 0x400);
+        $('#tab-system-acl-file-owner-write').prop('checked', acl.file & 0x200);
+        $('#tab-system-acl-file-group-read'). prop('checked', acl.file & 0x40);
+        $('#tab-system-acl-file-group-write').prop('checked', acl.file & 0x20);
+        $('#tab-system-acl-file-every-read'). prop('checked', acl.file & 0x4);
+        $('#tab-system-acl-file-every-write').prop('checked', acl.file & 0x2);
+    }
+
+    function finishEditingRights () {
+        main.systemConfig.common.defaultNewAcl = main.systemConfig.common.defaultNewAcl || {};
+        var acl = main.systemConfig.common.defaultNewAcl;
+        acl.object = 0;
+        acl.object |= $('#tab-system-acl-obj-owner-read').prop('checked')  ? 0x400 : 0;
+        acl.object |= $('#tab-system-acl-obj-owner-write').prop('checked') ? 0x200 : 0;
+        acl.object |= $('#tab-system-acl-obj-group-read').prop('checked')  ? 0x40  : 0;
+        acl.object |= $('#tab-system-acl-obj-group-write').prop('checked') ? 0x20  : 0;
+        acl.object |= $('#tab-system-acl-obj-every-read').prop('checked')  ? 0x4   : 0;
+        acl.object |= $('#tab-system-acl-obj-every-write').prop('checked') ? 0x2   : 0;
+
+        acl.owner = $('#tab-system-acl-owner').val();
+        acl.ownerGroup = $('#tab-system-acl-group').val();
+
+        acl.state = 0;
+        acl.state |= $('#tab-system-acl-state-owner-read').prop('checked') ? 0x400 : 0;
+        acl.state |= $('#tab-system-acl-state-owner-write').prop('checked') ? 0x200 : 0;
+        acl.state |= $('#tab-system-acl-state-group-read').prop('checked') ? 0x40 : 0;
+        acl.state |= $('#tab-system-acl-state-group-write').prop('checked') ? 0x20 : 0;
+        acl.state |= $('#tab-system-acl-state-every-read').prop('checked') ? 0x4 : 0;
+        acl.state |= $('#tab-system-acl-state-every-write').prop('checked') ? 0x2 : 0;
+
+        acl.file = 0;
+        acl.file |= $('#tab-system-acl-file-owner-read').prop('checked') ? 0x400 : 0;
+        acl.file |= $('#tab-system-acl-file-owner-write').prop('checked') ? 0x200 : 0;
+        acl.file |= $('#tab-system-acl-file-group-read').prop('checked') ? 0x40 : 0;
+        acl.file |= $('#tab-system-acl-file-group-write').prop('checked') ? 0x20 : 0;
+        acl.file |= $('#tab-system-acl-file-every-read').prop('checked') ? 0x4 : 0;
+        acl.file |= $('#tab-system-acl-file-every-write').prop('checked') ? 0x2 : 0;
+    }
+
+
     this.init = function () {
         if (!main.systemConfig.error) {
             $('#button-system').button({
@@ -605,7 +682,7 @@ function System(main) {
                     if ($this.attr('type') === 'checkbox') {
                         $this.prop('checked', main.systemConfig.common[id]);
                     } else {
-                        if (id == 'isFloatComma') {
+                        if (id === 'isFloatComma') {
                             $this.val(main.systemConfig.common[id] ? 'true' : 'false');
                         } else {
                             $this.val(main.systemConfig.common[id]);
@@ -664,6 +741,7 @@ function System(main) {
 
                         finishEditingCerts();
                         finishEditingRepo();
+                        finishEditingRights();
 
                         $('.system-settings.value').each(function () {
                             var $this = $(this);
@@ -772,6 +850,7 @@ function System(main) {
                 $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                 $gridRepo.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
                 $gridCerts.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
+                initRights();
                 initRepoGrid();
                 initCertsGrid();
             },
