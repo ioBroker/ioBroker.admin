@@ -512,6 +512,7 @@ systemDictionary = {
     "Add new object: %s":   {"en": "Add new object: %s",    "de": "Neues Objekt hinzufügen: %s", "ru": "Добавить новый объект: %s"},
     "Manually created":     {"en": "Manually created",      "de": "Manuell erzeugt",        "ru": "Создан в админ"},
     "npm error":            {"en": "npm error",             "de": "Fehler",                 "ru": "ошибка"},
+    "upload":               {"en": "Upload",                "de": "Upload",                 "ru": "Обновить файлы в базе данных"},
     "Cannot read version from NPM": {
         "en": "Could not read version from NPM",
         "de": "Die Version aus NPM konnt nicht gelesen werden",

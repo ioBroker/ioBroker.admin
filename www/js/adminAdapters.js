@@ -670,6 +670,7 @@ function Adapters(main) {
                         bold:       obj.highlight || false,
                         install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit" title="' + _('add instance') + '"></button>' +
                                  '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit" title="' + _('readme') + '"></button>' +
+                                 ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-upload-submit">' + _('upload') + '</button>' : '') +
                                  '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit" title="' + _('delete adapter') + '"></button>' +
                                  ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-update-custom-submit" title="' + _('install specific version') + '"></button>' : ''),
                         platform:   obj.platform,
@@ -755,6 +756,7 @@ function Adapters(main) {
                             installed:  '',
                             install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
                                      '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
+                                     '<div style="width: 22px; display: inline-block;">&nbsp;</div>' +
                                      '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>' +
                                     ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-update-custom-submit" title="' + _('install specific version') + '"></button>' : ''),
                             platform:   obj.platform,
@@ -802,7 +804,7 @@ function Adapters(main) {
                 }
 
                 that.$grid.fancytree('getTree').reload(that.tree);
-                $('#grid-adapters .fancytree-icon').each(function () {
+                $('#grid-adapters').find('.fancytree-icon').each(function () {
                     if ($(this).attr('src')) $(this).css({width: 22, height: 22});
 
                     $(this).hover(function () {
@@ -972,6 +974,17 @@ function Adapters(main) {
             if (aName === 'admin') that.main.waitForRestart = true;
 
             that.main.cmdExec(null, 'upgrade ' + aName, function (exitCode) {
+                if (!exitCode) that.init(true);
+            });
+        });
+
+        $('.adapter-upload-submit[data-adapter-name="' + adapter + '"]').button({
+            icons: {primary: 'ui-icon-arrowthickstop-1-s'},
+            text:  false
+        }).css({width: 22, height: 18}).unbind('click').on('click', function () {
+            var aName = $(this).attr('data-adapter-name');
+
+            that.main.cmdExec(null, 'upload ' + aName, function (exitCode) {
                 if (!exitCode) that.init(true);
             });
         });
