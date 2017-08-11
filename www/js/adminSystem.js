@@ -17,8 +17,8 @@ function System(main) {
             return '';
         }
         var lines = [];
-        if (str.substring(0, '-----BEGIN RSA PRIVATE KEY-----'.length) == '-----BEGIN RSA PRIVATE KEY-----') {
-            if (str.substring(str.length -  '-----END RSA PRIVATE KEY-----'.length) != '-----END RSA PRIVATE KEY-----') {
+        if (str.substring(0, '-----BEGIN RSA PRIVATE KEY-----'.length) === '-----BEGIN RSA PRIVATE KEY-----') {
+            if (str.substring(str.length -  '-----END RSA PRIVATE KEY-----'.length) !== '-----END RSA PRIVATE KEY-----') {
                 main.showMessage(_('Certificate "%s" must end with "-----END RSA PRIVATE KEY-----".', name), '', 'notice');
                 return '';
             }
@@ -30,8 +30,8 @@ function System(main) {
                 str = str.substring(64);
             }
             return '-----BEGIN RSA PRIVATE KEY-----\r\n' + lines.join('\r\n') + '\r\n-----END RSA PRIVATE KEY-----\r\n';
-        } else if (str.substring(0, '-----BEGIN PRIVATE KEY-----'.length) == '-----BEGIN PRIVATE KEY-----') {
-            if (str.substring(str.length -  '-----END PRIVATE KEY-----'.length) != '-----END PRIVATE KEY-----') {
+        } else if (str.substring(0, '-----BEGIN PRIVATE KEY-----'.length) === '-----BEGIN PRIVATE KEY-----') {
+            if (str.substring(str.length -  '-----END PRIVATE KEY-----'.length) !== '-----END PRIVATE KEY-----') {
                 main.showMessage(_('Certificate "%s" must end with "-----BEGIN PRIVATE KEY-----".', name), '', 'notice');
                 return '';
             }
@@ -44,11 +44,11 @@ function System(main) {
             }
             return '-----BEGIN PRIVATE KEY-----\r\n' + lines.join('\r\n') + '\r\n-----END PRIVATE KEY-----\r\n';
         }else {
-            if (str.substring(0, '-----BEGIN CERTIFICATE-----'.length) != '-----BEGIN CERTIFICATE-----') {
+            if (str.substring(0, '-----BEGIN CERTIFICATE-----'.length) !== '-----BEGIN CERTIFICATE-----') {
                 main.showMessage(_('Certificate "%s" must start with "-----BEGIN CERTIFICATE-----".', name), '', 'notice');
                 return '';
             }
-            if (str.substring(str.length -  '-----END CERTIFICATE-----'.length) != '-----END CERTIFICATE-----') {
+            if (str.substring(str.length -  '-----END CERTIFICATE-----'.length) !== '-----END CERTIFICATE-----') {
                 main.showMessage(_('Certificate "%s" must end with "-----END CERTIFICATE-----".', name), '', 'notice');
                 return '';
             }
@@ -75,8 +75,7 @@ function System(main) {
     }
 
     function cert2string(cert) {
-        var res = cert.replace(/(?:\\[rn]|[\r\n]+)+/g, '');
-        return res;
+        return cert.replace(/(?:\\[rn]|[\r\n]+)+/g, '');
     }
 
     function prepareRepos() {
@@ -125,7 +124,7 @@ function System(main) {
                 // Find last id;
                 var id = 1;
                 var ids = $gridRepo.jqGrid('getDataIDs');
-                while (ids.indexOf('repo_' + id) != -1) {
+                while (ids.indexOf('repo_' + id) !== -1) {
                     id++;
                 }
                 // Find new unique name
@@ -136,7 +135,7 @@ function System(main) {
                     found = true;
                     for (var _id = 0; _id < ids.length; _id++) {
                         var obj = $gridRepo.jqGrid('getRowData', ids[_id]);
-                        if (obj && obj.name == newText + idx)  {
+                        if (obj && obj.name === newText + idx)  {
                             idx++;
                             found = false;
                             break;
@@ -168,7 +167,7 @@ function System(main) {
         // Find last id;
         var id = 1;
         var ids = $gridCerts.jqGrid('getDataIDs');
-        while (ids.indexOf('cert_' + id) != -1) {
+        while (ids.indexOf('cert_' + id) !== -1) {
             id++;
         }
         // Find new unique name
@@ -179,7 +178,7 @@ function System(main) {
             found = true;
             for (var _id = 0; _id < ids.length; _id++) {
                 var obj = $gridCerts.jqGrid('getRowData', ids[_id]);
-                if (obj && obj.name == newText + idx)  {
+                if (obj && obj.name === newText + idx)  {
                     idx++;
                     found = false;
                     break;
@@ -278,20 +277,20 @@ function System(main) {
             editingRepos = [];
         }
     }
-    function initRepoGrid(update) {
+    function initRepoGrid(/* update */) {
         $gridRepo.jqGrid('clearGridData');
 
         if (that.systemRepos && that.systemRepos.native.repositories) {
             var id = 1;
             // list of the repositories
             for (var repo in that.systemRepos.native.repositories) {
-
+                if (!that.systemRepos.native.repositories.hasOwnProperty(repo)) continue;
                 var obj = that.systemRepos.native.repositories[repo];
 
                 $gridRepo.jqGrid('addRowData', 'repo_' + id, {
                     _id:     id,
                     name:    repo,
-                    link:    (typeof that.systemRepos.native.repositories[repo] == 'object') ? that.systemRepos.native.repositories[repo].link : that.systemRepos.native.repositories[repo],
+                    link:    (typeof that.systemRepos.native.repositories[repo] === 'object') ? that.systemRepos.native.repositories[repo].link : that.systemRepos.native.repositories[repo],
                     commands:
                         '<button data-repo-id="' + id + '" class="repo-edit-submit">'   + _('edit')   + '</button>' +
                         '<button data-repo-id="' + id + '" class="repo-delete-submit">' + _('delete') + '</button>' +
@@ -319,7 +318,7 @@ function System(main) {
             $('.repo-ok-submit[data-repo-id="' + id + '"]').show();
             $('.repo-cancel-submit[data-repo-id="' + id + '"]').show();
             $gridRepo.jqGrid('editRow', 'repo_' + id, {url: 'clientArray'});
-            if (editingRepos.indexOf('repo_' + id) === -1) editingRepos.push(rowid);
+            if (editingRepos.indexOf('repo_' + id) === -1) editingRepos.push(id);
         });
 
         $('.repo-delete-submit').unbind('click').button({
@@ -362,17 +361,18 @@ function System(main) {
         });
     }
     function updateRepoListSelect() {
-        var selectedRepo = $('#system_activeRepo').val();
+        var $system_activeRepo = $('#system_activeRepo');
+        var selectedRepo = $system_activeRepo.val();
         var isFound = false;
-        $('#system_activeRepo').html('');
+        $system_activeRepo.html('');
         var data = $gridRepo.jqGrid('getRowData');
         for (var i = 0; i < data.length; i++) {
-            $('#system_activeRepo').append('<option value="' + data[i].name + '">' + data[i].name + '</option>');
-            if (selectedRepo == data[i].name) {
+            $system_activeRepo.append('<option value="' + data[i].name + '">' + data[i].name + '</option>');
+            if (selectedRepo === data[i].name) {
                 isFound = true;
             }
         }
-        if (isFound) $('#system_activeRepo').val(selectedRepo);
+        if (isFound) $system_activeRepo.val(selectedRepo);
     }
 
     function fileHandler(event) {
@@ -405,13 +405,13 @@ function System(main) {
                 return;
             }
             text = text.replace(/(\r\n|\n|\r)/gm, '');
-            if (text.indexOf('BEGIN RSA PRIVATE KEY') != -1) {
+            if (text.indexOf('BEGIN RSA PRIVATE KEY') !== -1) {
                 $dz.hide();
                 addCert('private', text);
-            } else if (text.indexOf('BEGIN PRIVATE KEY') != -1) {
+            } else if (text.indexOf('BEGIN PRIVATE KEY') !== -1) {
                 $dz.hide();
                 addCert('private', text);
-            } else if (text.indexOf('BEGIN CERTIFICATE') != -1) {
+            } else if (text.indexOf('BEGIN CERTIFICATE') !== -1) {
                 $dz.hide();
                 var m = text.split('-----END CERTIFICATE-----');
                 var count = 0;
@@ -452,14 +452,13 @@ function System(main) {
             editingCerts = [];
         }
     }
-    function initCertsGrid(update) {
+    function initCertsGrid( /* update */) {
         $gridCerts.jqGrid('clearGridData');
         if (that.systemCerts && that.systemCerts.native.certificates) {
             var id = 1;
             // list of the repositories
             for (var cert in that.systemCerts.native.certificates) {
-
-                var obj = that.systemCerts.native.certificates[cert];
+                if (!that.systemCerts.native.certificates.hasOwnProperty(cert)) continue;
 
                 $gridCerts.jqGrid('addRowData', 'cert_' + id, {
                     _id:         id,
@@ -614,6 +613,7 @@ function System(main) {
     function finishEditingRights () {
         main.systemConfig.common.defaultNewAcl = main.systemConfig.common.defaultNewAcl || {};
         var acl = main.systemConfig.common.defaultNewAcl;
+        var old = JSON.stringify(acl);
         acl.object = 0;
         acl.object |= $('#tab-system-acl-obj-owner-read').prop('checked')  ? 0x400 : 0;
         acl.object |= $('#tab-system-acl-obj-owner-write').prop('checked') ? 0x200 : 0;
@@ -626,20 +626,21 @@ function System(main) {
         acl.ownerGroup = $('#tab-system-acl-group').val();
 
         acl.state = 0;
-        acl.state |= $('#tab-system-acl-state-owner-read').prop('checked') ? 0x400 : 0;
+        acl.state |= $('#tab-system-acl-state-owner-read').prop('checked')  ? 0x400 : 0;
         acl.state |= $('#tab-system-acl-state-owner-write').prop('checked') ? 0x200 : 0;
-        acl.state |= $('#tab-system-acl-state-group-read').prop('checked') ? 0x40 : 0;
-        acl.state |= $('#tab-system-acl-state-group-write').prop('checked') ? 0x20 : 0;
-        acl.state |= $('#tab-system-acl-state-every-read').prop('checked') ? 0x4 : 0;
-        acl.state |= $('#tab-system-acl-state-every-write').prop('checked') ? 0x2 : 0;
+        acl.state |= $('#tab-system-acl-state-group-read').prop('checked')  ? 0x40  : 0;
+        acl.state |= $('#tab-system-acl-state-group-write').prop('checked') ? 0x20  : 0;
+        acl.state |= $('#tab-system-acl-state-every-read').prop('checked')  ? 0x4   : 0;
+        acl.state |= $('#tab-system-acl-state-every-write').prop('checked') ? 0x2   : 0;
 
         acl.file = 0;
-        acl.file |= $('#tab-system-acl-file-owner-read').prop('checked') ? 0x400 : 0;
+        acl.file |= $('#tab-system-acl-file-owner-read').prop('checked')  ? 0x400 : 0;
         acl.file |= $('#tab-system-acl-file-owner-write').prop('checked') ? 0x200 : 0;
-        acl.file |= $('#tab-system-acl-file-group-read').prop('checked') ? 0x40 : 0;
-        acl.file |= $('#tab-system-acl-file-group-write').prop('checked') ? 0x20 : 0;
-        acl.file |= $('#tab-system-acl-file-every-read').prop('checked') ? 0x4 : 0;
-        acl.file |= $('#tab-system-acl-file-every-write').prop('checked') ? 0x2 : 0;
+        acl.file |= $('#tab-system-acl-file-group-read').prop('checked')  ? 0x40  : 0;
+        acl.file |= $('#tab-system-acl-file-group-write').prop('checked') ? 0x20  : 0;
+        acl.file |= $('#tab-system-acl-file-every-read').prop('checked')  ? 0x4   : 0;
+        acl.file |= $('#tab-system-acl-file-every-write').prop('checked') ? 0x2   : 0;
+        return old !== JSON.stringify(acl);
     }
 
 
@@ -649,10 +650,11 @@ function System(main) {
                 icons: {primary: 'ui-icon-gear'},
                 text: false
             }).click(function () {
-                $('#system_activeRepo').html('');
+                var $system_activeRepo = $('#system_activeRepo');
+                $system_activeRepo.html('');
                 if (that.systemRepos && that.systemRepos.native.repositories) {
                     for (var repo in that.systemRepos.native.repositories) {
-                        $('#system_activeRepo').append('<option value="' + repo + '">' + repo + '</option>');
+                        $system_activeRepo.append('<option value="' + repo + '">' + repo + '</option>');
                     }
                 } else {
                     $('#tab-system-repo').html(_('permissionError'));
@@ -668,10 +670,11 @@ function System(main) {
                     .trigger('change');
 
                 // collect all history instances
-                $('#system_defaultHistory').html('<option value=""></option>');
+                var $system_defaultHistory = $('#system_defaultHistory');
+                $system_defaultHistory.html('<option value=""></option>');
                 for (var id = 0; id < main.instances.length; id++) {
                     if (main.objects[main.instances[id]].common.type === 'storage') {
-                        $('#system_defaultHistory').append('<option value="' + main.instances[id].substring('system.adapter.'.length) + '">' + main.instances[id].substring('system.adapter.'.length) + '</option>');
+                        $system_defaultHistory.append('<option value="' + main.instances[id].substring('system.adapter.'.length) + '">' + main.instances[id].substring('system.adapter.'.length) + '</option>');
                     }
                 }
 
@@ -700,7 +703,7 @@ function System(main) {
                     var $this = $(this);
                     var id = $this.data('name');
                     if (that.systemCerts && that.systemCerts.native.letsEncrypt) {
-                        if ($this.attr('type') == 'checkbox') {
+                        if ($this.attr('type') === 'checkbox') {
                             $this.prop('checked', that.systemCerts.native.letsEncrypt[id]);
                         } else {
                             $this.val(that.systemCerts.native.letsEncrypt[id]);
@@ -710,7 +713,7 @@ function System(main) {
 
                 $('#tabs-system').tabs({
                     activate: function (event, ui)  {
-                        if (ui.newPanel.selector == '#tab-system-certs') {
+                        if (ui.newPanel.selector === '#tab-system-certs') {
                             $('#drop-zone').show().css({opacity: 1}).animate({opacity: 0}, 2000, function () {
                                 $('#drop-zone').hide().css({opacity: 1});
                             });
@@ -750,10 +753,12 @@ function System(main) {
                             if ($this.attr('type') === 'checkbox') {
                                 common[id] = $this.prop('checked');
                             } else {
-                                if (id == 'language'   && common.language   != $this.val()) languageChanged   = true;
-                                if (id == 'activeRepo' && common.activeRepo != $this.val()) activeRepoChanged = true;
+                                if (id === 'language'   && common.language   !== $this.val()) languageChanged   = true;
+                                if (id === 'activeRepo' && common.activeRepo !== $this.val()) activeRepoChanged = true;
                                 common[id] = $this.val();
-                                if (id == 'isFloatComma') common[id] = (common[id] === 'true' || common[id] === true);
+                                if (id === 'isFloatComma') {
+                                    common[id] = (common[id] === 'true' || common[id] === true);
+                                }
                             }
                         });
 
@@ -761,7 +766,7 @@ function System(main) {
                         var links = {};
                         if (that.systemRepos) {
                             for (var r in that.systemRepos.native.repositories) {
-                                if (typeof that.systemRepos.native.repositories[r] == 'object' && that.systemRepos.native.repositories[r].json) {
+                                if (that.systemRepos.native.repositories.hasOwnProperty(r) && typeof that.systemRepos.native.repositories[r] === 'object' && that.systemRepos.native.repositories[r].json) {
                                     links[that.systemRepos.native.repositories[r].link] = that.systemRepos.native.repositories[r].json;
                                 }
                             }
@@ -811,31 +816,23 @@ function System(main) {
 
                         main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
                             if (!err) {
-                                if (languageChanged) {
-                                    window.location.reload();
-                                } else {
-                                    if (activeRepoChanged) {
-                                        setTimeout(function () {
-                                            tabs.adapters.init(true);
-                                        }, 0);
-                                    }
-                                }
+                                main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function (/* err */) {
+                                    main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function (/* err */) {
+                                        if (languageChanged) {
+                                            window.location.reload();
+                                        } else {
+                                            $dialogSystem.dialog('close');
+                                            if (activeRepoChanged) {
+                                                setTimeout(function () {
+                                                    tabs.adapters.init(true);
+                                                }, 0);
+                                            }
+                                        }
+                                    });
+                                });
                             } else {
                                 main.showError(err);
-                                return;
                             }
-
-                            main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function (err) {
-                                if (activeRepoChanged) {
-                                    setTimeout(function () {
-                                        tabs.adapters.init(true);
-                                    }, 0);
-                                }
-
-                                main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function (err) {
-                                    $dialogSystem.dialog('close');
-                                });
-                            });
                         });
                     }
                 },
