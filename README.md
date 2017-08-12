@@ -66,6 +66,9 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
+### 2.0.2 (2017-08-12)
+* (bluefox) Add the editing of the default access rights
+
 ### 2.0.1 (2017-08-07)
 * (bluefox) Allow access via iobroker.pro
 * (bluefox) Add node.js version recommendation

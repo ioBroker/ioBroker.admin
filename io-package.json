@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "2.0.1",
+        "version": "2.0.2",
         "news": {
+			"2.0.2": {
+                "en": "Add the editing of the default access rights",
+                "de": "Zugefügt die Bearbeitung der Standardzugriffsrechte hinzu",
+                "ru": "Добавлена настройка прав доступа по умолчанию"
+            },
 			"2.0.1": {
                 "en": "Allow access via iobroker.pro",
                 "de": "Erlaube Zugrif über iobroker.pro",
