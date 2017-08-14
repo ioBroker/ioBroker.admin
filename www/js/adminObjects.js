@@ -29,6 +29,9 @@ function Objects(main) {
                     }
                 }
             ],
+            open: function (event, ui) {
+                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+            },
             close: function () {
                 that.main.saveConfig('object-edit-active',  $('#object-tabs').tabs('option', 'active'));
             },
@@ -114,7 +117,10 @@ function Objects(main) {
                         $('#object-tab-new-name').val('');
                     }
                 }
-            ]
+            ],
+            open: function (event, ui) {
+                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+            }
         });
 
         $('#dialog-new-object').dialog( {
@@ -228,7 +234,10 @@ function Objects(main) {
                         $('#object-tab-new-object-name').val('');
                     }
                 }
-            ]
+            ],
+            open: function (event, ui) {
+                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+            }
         });
 
         $('#object-tab-new-object-type').change(function () {
@@ -1330,6 +1339,10 @@ function Objects(main) {
         }
 
         var title;
+        var $historyTableInstance    = $('#history-table-instance');
+        var $historyChartInstance    = $('#history-chart-instance');
+        var $historyTableInstanceBtn = $('#history-table-instance-refresh');
+        var $historyChartInstanceBtn = $('#history-chart-instance-refresh');
         if (ids.length === 1) {
             title = _('Storage of %s', ids[0]);
             this.currentCustoms = _instances.length ? ids[0]: null;
@@ -1341,39 +1354,65 @@ function Objects(main) {
                 }
             }
             if (text) {
-                $('#history-table-instance')
+                $historyTableInstance
                     .data('id', ids[0])
                     .html(text)
                     .show()
                     .unbind('change').bind('change', function () {
-                        that.main.saveConfig('object-history-table',  $('#history-table-instance').val());
+                        that.main.saveConfig('object-history-table', $historyTableInstance.val());
                         that.loadHistoryTable($(this).data('id'));
                     });
-                
-                $('#history-chart-instance')
+
+                $historyChartInstance
                     .data('id', ids[0])
                     .html(text)
                     .show()
                     .unbind('change')
                     .bind('change', function () {
-                        that.main.saveConfig('object-history-chart',  $('#history-chart-instance').val());
+                        that.main.saveConfig('object-history-chart', $historyChartInstance.val());
                         that.loadHistoryChart($(this).data('id'));
                     });
                 
                 if (this.main.config['object-history-table'] !== undefined) {
-                    $('#history-table-instance').val(this.main.config['object-history-table'])
+                    $historyTableInstance.val(this.main.config['object-history-table'])
                 }
                 if (this.main.config['object-history-chart'] !== undefined) {
-                    $('#history-chart-instance').val(this.main.config['object-history-chart'])
+                    $historyChartInstance.val(this.main.config['object-history-chart'])
                 }
-
+                $historyTableInstanceBtn
+                    .button({
+                        icons: {primary: 'ui-icon-refresh'},
+                        text: false
+                    })
+                    .css({width: 18, height: 18, 'margin-left': 5})
+                    .data('id', ids[0])
+                    .show()
+                    .unbind('click').bind('click', function () {
+                        $('#grid-history-body').html('');
+                        that.loadHistoryTable($(this).data('id'));
+                    });
+                $historyChartInstanceBtn
+                    .button({
+                        icons: {primary: 'ui-icon-refresh'},
+                        text: false
+                    })
+                    .css({width: 18, height: 18, 'margin-left': 5})
+                    .data('id', ids[0])
+                    .show()
+                    .unbind('click').bind('click', function () {
+                        that.loadHistoryChart($(this).data('id'));
+                    });
             } else {
-                $('#history-table-instance').hide();
-                $('#history-chart-instance').hide();
+                $historyTableInstance.hide();
+                $historyChartInstance.hide();
+                $historyTableInstanceBtn.hide();
+                $historyChartInstanceBtn.hide();
             }
         } else {
-            $('#history-table-instance').hide();
-            $('#history-chart-instance').hide();
+            $historyTableInstance.hide();
+            $historyChartInstance.hide();
+            $historyTableInstanceBtn.hide();
+            $historyChartInstanceBtn.hide();
             title = _('Storage of %s states', ids.length);
             this.currentCustoms = null;
         }
