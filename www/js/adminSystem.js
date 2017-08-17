@@ -11,6 +11,10 @@ function System(main) {
     this.systemCerts  = null;
 
     function string2cert(name, str) {
+        if (str.length < 700 && (str.indexOf('/') !== -1 || str.indexOf('\\') !== -1)) {
+            // it is a path
+            return str;
+        }
         // expected format: -----BEGIN CERTIFICATE-----certif...icate==-----END CERTIFICATE-----
         if (str.length < '-----BEGIN CERTIFICATE-----==-----END CERTIFICATE-----'.length) {
             main.showMessage(_('Invalid certificate "%s". To short.', name));
@@ -43,7 +47,7 @@ function System(main) {
                 str = str.substring(64);
             }
             return '-----BEGIN PRIVATE KEY-----\r\n' + lines.join('\r\n') + '\r\n-----END PRIVATE KEY-----\r\n';
-        }else {
+        } else {
             if (str.substring(0, '-----BEGIN CERTIFICATE-----'.length) !== '-----BEGIN CERTIFICATE-----') {
                 main.showMessage(_('Certificate "%s" must start with "-----BEGIN CERTIFICATE-----".', name), '', 'notice');
                 return '';
@@ -732,7 +736,7 @@ function System(main) {
         $dialogSystem.dialog({
             autoOpen:   false,
             modal:      true,
-            width:      800,
+            width:      850,
             height:     480,
             buttons: [
                 {

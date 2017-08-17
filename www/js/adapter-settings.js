@@ -149,7 +149,27 @@ $(document).ready(function () {
                     if (res.native && res.native.certificates) {
                         certs = [];
                         for (var c in res.native.certificates) {
-                            if (!res.native.certificates[c]) continue;
+                            if (!res.native.certificates.hasOwnProperty(c) || !res.native.certificates[c]) continue;
+
+                            // If it is filename, it could be everything
+                            if (res.native.certificates[c].lentgh < 700 && res.native.certificates[c].indexOf('/') !== -1 || res.native.certificates[c].indexOf('\\') !== -1) {
+                                var __cert = {
+                                    name: c,
+                                    type: ''
+                                };
+                                if (c.toLowerCase().indexOf('private') !== -1) {
+                                    __cert.type = 'private';
+                                } else if (res.native.certificates[c].toLowerCase().indexOf('private') !== -1) {
+                                    __cert.type = 'private';
+                                } else if (c.toLowerCase().indexOf('public') !== -1) {
+                                    __cert.type = 'public';
+                                } else if (res.native.certificates[c].toLowerCase().indexOf('public') !== -1) {
+                                    __cert.type = 'public';
+                                }
+                                certs.push(__cert);
+                                continue;
+                            }
+
                             var _cert = {
                                 name: c,
                                 type: (res.native.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) === '-----BEGIN RSA PRIVATE KEY' || res.native.certificates[c].substring(0, '-----BEGIN PRIVATE KEY'.length) === '-----BEGIN PRIVATE KEY') ? 'private' : 'public'
@@ -528,7 +548,7 @@ function sendToHost(host, command, message, callback) {
 function fillSelectCertificates(id, type, actualValued) {
     var str = '<option value="">' + _('none') + '</option>';
     for (var i = 0; i < certs.length; i++) {
-        if (certs[i].type != type) continue;
+        if (certs[i].type && certs[i].type !== type) continue;
         str += '<option value="' + certs[i].name + '" ' + ((certs[i].name === actualValued) ? 'selected' : '') + '>' + certs[i].name + '</option>';
     }
 
