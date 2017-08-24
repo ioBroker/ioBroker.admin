@@ -1,7 +1,7 @@
 systemDictionary = {
     "Admin adapter settings": {
         "en": "Admin adapter settings",
-        "de": "Admin adapter Einstellungen",
+        "de": "Admin Adapter Einstellungen",
         "ru": "Настройки драйвера Admin"
     },
     "Run as:":                {"en": "Run as:",                 "de": "Laufen als:",                    "ru": "Запустить от пользователя:"},
@@ -83,7 +83,7 @@ systemDictionary = {
     },
     "tooltip_auth": {
         "en": "Check login and password be access to the admin page. You can manage it on the users tab.",
-        "de": "Prüfe Login und Kennwort beim öffnen. Man kann die Anwender im Benutzer-Reiter anlegen",
+        "de": "Prüfe Login und Kennwort beim Öffnen. Man kann die Anwender im Benutzer-Reiter anlegen",
         "ru": "Активировать проверку имени и пароля."
     },
     "tooltip_ttl": {
@@ -118,7 +118,7 @@ systemDictionary = {
     },
     "tooltip_lePort": {
         "en": "Port for challenge server. Let's Encrypt support only port 80, but with router you can use any port",
-        "de": "Port für Challenge-Server. Let's Encrypt kann nur auf dem port 80 arbeiten. Bei bestimmten Einstellungen im Router, man kann den Server auf einem beliebigen Port betreiben.",
+        "de": "Port für Challenge-Server. Let's Encrypt kann nur auf dem Port 80 arbeiten. Bei bestimmten Einstellungen im Router, man kann den Server auf einem beliebigen Port betreiben.",
         "ru": "Порт для challenge сервера Let's Encrypt. Сервер должен быть доступен из интернета на порту 80"
     }
 };
