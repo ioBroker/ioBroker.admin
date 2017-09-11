@@ -74,8 +74,8 @@ function Objects(main) {
         });
 
         if (!that.editor) {
-            that.editor = ace.edit("view-object-raw");
-            that.editor.getSession().setMode("ace/mode/json");
+            that.editor = ace.edit('view-object-raw');
+            that.editor.getSession().setMode('ace/mode/json');
             that.editor.$blockScrolling = true;
         }
 
@@ -642,10 +642,29 @@ function Objects(main) {
                         syncEnum(id, 'functions', newValue);
                     } else
                     if (attr === 'value') {
-                        if (newValue === 'true') newValue = true;
-                        if (newValue === 'false') newValue = false;
-                        if (parseFloat(newValue).toString() == newValue) newValue = parseFloat(newValue);
+                        if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.type) {
+                            switch (that.main.objects[id].common.type) {
+                                case 'number':
+                                    newValue = parseFloat(newValue);
+                                    break;
 
+                                case 'boolean':
+                                    if (newValue === 'true') newValue = true;
+                                    if (newValue === 'false') newValue = false;
+                                    break;
+
+                                case 'string':
+                                    newValue = newValue.toString();
+                                    break;
+
+                                default:
+                                    if (newValue === 'true') newValue = true;
+                                    if (newValue === 'false') newValue = false;
+                                    // "4.0" !== parseFloat("4.0").toString()
+                                    if (parseFloat(newValue).toString() === newValue.toString().replace(/[.,]0*$/, '')) newValue = parseFloat(newValue);
+                                    break;
+                            }
+                        }
                         main.socket.emit('setState', id, newValue, function (err) {
                             if (err) return that.main.showError(err);
                         });
@@ -662,7 +681,7 @@ function Objects(main) {
                 }
             };
 
-            $('#object-tab-new-object-name').keyup(function (){
+            $('#object-tab-new-object-name').keyup(function () {
                 $(this).trigger('change');
             }).change(function () {
                 var parent = $('#object-tab-new-object-parent').val();
