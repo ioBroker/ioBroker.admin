@@ -2,9 +2,14 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "2.0.2",
+        "version": "2.0.3",
         "news": {
-			"2.0.2": {
+			"2.0.3": {
+                "en": "Fix user access rights for sendToHost",
+                "de": "Korrigiere die Anwenderrechte für sendToHost",
+                "ru": "Исправлены права доступа для sendToHost"
+            },
+            "2.0.2": {
                 "en": "Add the editing of the default access rights",
                 "de": "Zugefügt die Bearbeitung der Standardzugriffsrechte hinzu",
                 "ru": "Добавлена настройка прав доступа по умолчанию"
