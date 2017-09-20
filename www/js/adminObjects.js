@@ -621,7 +621,7 @@ function Objects(main) {
                             var id = that.$grid.selectId('getActual') || '';
                             var result = {};
                             $.map(that.main.objects, function (val, key) {
-                                if (key.search(id) == 0) result[key] = val;
+                                if (!key.search(id)) result[key] = val;
                             });
                             if (result !== undefined) {
                                 window.open('data:application/iobroker; content-disposition=attachment; filename=' + id + '.json,' + JSON.stringify(result));
@@ -1194,6 +1194,7 @@ function Objects(main) {
         if (id) {
             var port = 0;
             var chart = false;
+            var isSecure = false;
             for (var i = 0; i < this.main.instances.length; i++) {
                 if (this.main.objects[main.instances[i]].common.name === 'flot' && this.main.objects[this.main.instances[i]].common.enabled) {
                     chart = 'flot';
@@ -1203,12 +1204,14 @@ function Objects(main) {
                 } else
                 if (this.main.objects[this.main.instances[i]].common.name === 'web' && this.main.objects[this.main.instances[i]].common.enabled) {
                     port = this.main.objects[this.main.instances[i]].native.port;
+                    isSecure = this.main.objects[this.main.instances[i]].native.secure;
                 }
                 if (chart === 'flot' && port) break;
             }
             var $chart = $('#iframe-history-chart');
 
-            $chart.attr('src', 'http://' + location.hostname + ':' + port + '/' + chart + '/index.html?range=1440&zoom=true&axeX=lines&axeY=inside&_ids=' + encodeURI(id) + '&width=' + ($chart.width() - 50) + '&hoverDetail=true&height=' + ($chart.height() - 50) + '&aggregate=onchange&chartType=step&live=30&instance=' + $('#history-chart-instance').val());
+            // find out
+            $chart.attr('src', 'http' + (isSecure ? 's' : '') + '://' + location.hostname + ':' + port + '/' + chart + '/index.html?range=1440&zoom=true&axeX=lines&axeY=inside&_ids=' + encodeURI(id) + '&width=' + ($chart.width() - 50) + '&hoverDetail=true&height=' + ($chart.height() - 50) + '&aggregate=onchange&chartType=step&live=30&instance=' + $('#history-chart-instance').val());
         } else {
             $('#iframe-history-chart').attr('src', '');
         }

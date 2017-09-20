@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "2.0.3",
+        "version": "2.0.4",
         "news": {
+            "2.0.4": {
+                "en": "Show the history charts if the web server has the https option on too",
+                "de": "Zeige Charts auch wenn WEB server is https",
+                "ru": "Показывать графики даже если web сервер на https"
+            },
 			"2.0.3": {
                 "en": "Fix user access rights for sendToHost",
                 "de": "Korrigiere die Anwenderrechte für sendToHost",

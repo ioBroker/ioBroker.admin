@@ -66,6 +66,9 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
+### 2.0.4 (2017-09-20)
+* (bluefox) Show the history charts if the web server has the https option on too
+
 ### 2.0.3 (2017-08-13)
 * (bluefox) Fix user access rights for sendToHost
 
