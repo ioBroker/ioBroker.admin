@@ -409,7 +409,7 @@ function Instances(main) {
             if (that.main.config.expertMode) {
                 text += '<td data-name="restartSchedule" data-value="' + (common.restartSchedule || '') + '"  style="text-align: center" class="instance-schedule" data-instance-id="' + instanceId + '">' + (common.restartSchedule || '') + '</td>';
                 // debug level (only experts)
-                text += '<td data-name="loglevel" data-value="' + (common.loglevel || '') + '"  style="text-align: center" class="instance-editable" data-instance-id="' + instanceId + '" data-options="debug:debug;info:info;warn:warn;error:error">' + (common.loglevel || '') + '</td>';
+                text += '<td data-name="loglevel" data-value="' + (common.loglevel || '') + '"  style="text-align: center" class="instance-editable" data-instance-id="' + instanceId + '" data-options="silly:silly;debug:debug;info:info;warn:warn;error:error">' + (common.loglevel || '') + '</td>';
                 // Max RAM  (only experts)
                 text += '<td data-name="memoryLimitMB" data-value="' + (common.memoryLimitMB || '') + '" style="text-align: center" class="instance-editable" data-instance-id="' + instanceId + '">' + (common.memoryLimitMB || '') + '</td>';
                 // Max RAM  (only experts)
