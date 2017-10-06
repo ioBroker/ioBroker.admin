@@ -2,9 +2,9 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "2.0.4",
+        "version": "2.0.5",
         "news": {
-            "2.0.4": {
+            "2.0.5": {
                 "en": "Show the history charts if the web server has the https option on too",
                 "de": "Zeige Charts auch wenn WEB server is https",
                 "ru": "Показывать графики даже если web сервер на https"
@@ -177,7 +177,7 @@
         "logTransporter":           true,
         "stopBeforeUpdate":         true,
         "wwwDontUpload":            true,
-        "welcomeScreenPro":         {"link": "admin/index.html",  "name": "Admin", "img": "admin/img/gear.png", "color": "pink", "order": 5},
+        "welcomeScreenPro":         {"link": "admin/index.html",  "name": "Admin", "img": "admin/img/gear.png", "color": "pink", "order": 5, "localLink": true},
         "localLink":                "%protocol%://%ip%:%port%"
     },
     "native": {

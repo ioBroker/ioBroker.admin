@@ -127,8 +127,10 @@ function Instances(main) {
             var links = JSON.parse(JSON.stringify(link));
             var first;
             for (var v in links) {
-                links[v] = resolveLink(links[v], adapter, instance);
-                if (!first) first = links[v];
+                if (links.hasOwnProperty(v)) {
+                    links[v] = resolveLink(links[v], adapter, instance);
+                    if (!first) first = links[v];
+                }
             }
             links.__first = first;
             return links;
@@ -205,14 +207,14 @@ function Instances(main) {
 
             if (that.main.states[adapter + '.' + instance + '.info.connection'] || that.main.objects[adapter + '.' + instance + '.info.connection']) {
                 title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to %s: ', adapter) + '</td><td>';
-                var val = that.main.states[adapter + '.' + instance + '.info.connection'] ? that.main.states[adapter + '.' + instance + '.info.connection'].val : false;
-                if (!val) {
+                var val_ = that.main.states[adapter + '.' + instance + '.info.connection'] ? that.main.states[adapter + '.' + instance + '.info.connection'].val : false;
+                if (!val_) {
                     title += _('false');
                 } else {
-                    if (val === true) {
+                    if (val_ === true) {
                         title += '<span style="color: green">' + _('true') + '</span>';
                     } else {
-                        title += '<span style="color: green">' + val + '</span>';
+                        title += '<span style="color: green">' + val_ + '</span>';
                     }
                 }
                 title += '</td></tr>';
