@@ -1,5 +1,4 @@
 console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as file path');
-
 /*
  Copyright 2014-2017 bluefox <dogafox@gmail.com>
 
@@ -195,6 +194,10 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
         if (data.rootExp) {
             if (!data.rootExp.test(id)) return false;
         }
+        // ignore system objects in expert mode
+        if (data.expertModeRegEx && !data.expertMode && data.expertModeRegEx.test(id)) {
+            return false;
+        }
 
         if (data.filter) {
             if (data.filter.type && data.filter.type !== data.objects[id].type) return false;
@@ -215,6 +218,100 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
         return true;
     }
 
+    function getExpandeds(data) {
+        if (!data.$tree) return null;
+        var expandeds = {};
+        (function getIt(node) {
+            if (!node.children) return;
+            node.children.forEach(function(_node) {
+                if (_node.expanded) {
+                    expandeds[_node.key] = true;
+                }
+                getIt(_node);
+            })
+        })(data.$tree.fancytree('getRootNode'));
+        return expandeds;
+    }
+
+    function restoreExpandeds(data, expandeds) {
+        if (!expandeds || !data.$tree) return;
+        (function setIt(node) {
+            if (!node.children) return;
+            node.children.forEach(function(_node) {
+                if (expandeds[_node.key]) {
+                    _node.setExpanded();
+                    //_node.setActive();
+                }
+                setIt(_node);
+            })
+        })(data.$tree.fancytree('getRootNode'));
+        expandeds = null;
+    }
+
+    // TODO move this to settings
+    var sortConfig = {
+        statesFirst: true,
+        ignoreSortOrder: false
+    };
+
+    function sortTree(data) {
+        var objects = data.objects;
+        var checkStatesFirst;
+        switch (sortConfig.statesFirst) {
+            case undefined: checkStatesFirst = function() { return 0 }; break;
+            case true:      checkStatesFirst = function(child1, child2) { return ((~~child2.folder) - (~~child1.folder))}; break;
+            case false:     checkStatesFirst = function(child1, child2) { return ((~~child1.folder) - (~~child2.folder))}; break;
+        }
+
+        function sortByName(child1, child2) {
+            var ret = checkStatesFirst(child1, child2);
+            if (ret) return ret;
+
+            var o1 = objects[child1.key], o2 = objects[child2.key];
+            if (o1 && o2) {
+                var c1 = o1.common, c2 = o2.common;
+                if (c1 && c2) {
+                    if (!sortConfig.ignoreSortOrder && c1.sortOrder && c2.sortOrder) {
+                        if (c1.sortOrder > c2.sortOrder) return 1;
+                        if (c1.sortOrder < c2.sortOrder) return -1;
+                        return 0;
+                    }
+                    var name1 = c1.name ? c1.name.toLowerCase() : child1.key;
+                    var name2 = c2.name ? c2.name.toLowerCase() : child2.key;
+                    if (name1 > name2) return 1;
+                    if (name1 < name2) return -1;
+                }
+            }
+            if (child1.key > child2.key) return 1;
+            if (child1.key < child2.key) return -1;
+            return 0;
+        }
+
+        function sortByKey(child1, child2) {
+            var ret = checkStatesFirst(child1, child2);
+            if (ret) return ret;
+            if (!sortConfig.ignoreSortOrder) {
+                var o1 = objects[child1.key], o2 = objects[child2.key];
+                if (o1 && o2) {
+                    var c1 = o1.common, c2 = o2.common;
+                    if (c1 && c2 && c1.sortOrder && c2.sortOrder) {
+                        if (c1.sortOrder > c2.sortOrder) return 1;
+                        if (c1.sortOrder < c2.sortOrder) return -1;
+                        return 0;
+                    }
+                }
+            }
+            if (child1.key > child2.key) return 1;
+            if (child1.key < child2.key) return -1;
+            return 0;
+        }
+
+
+        data.$tree.fancytree('getRootNode').sortChildren(data.sort ? sortByName : sortByKey, true);
+        //var tree = data.$tree.fancytree('getTree');
+        //var node = tree.getActiveNode();
+    }
+
     function getAllStates(data) {
         var objects = data.objects;
         var isType  = data.columns.indexOf('type') !== -1;
@@ -223,7 +320,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
         var isRole  = data.columns.indexOf('role') !== -1;
         var isHist  = data.columns.indexOf('button') !== -1;
 
-        data.tree      = {title: '', children: [], count: 0, root: true};
+        data.tree = {title: '', children: [], count: 0, root: true};
         data.roomEnums = [];
         data.funcEnums = [];
 
@@ -292,9 +389,6 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                 var h = id.substring('system.adapter.'.length);
                 if (data.histories.indexOf(h) === -1) data.histories.push(h);
             }
-
-            // ignore system objects in expert mode
-            if (data.expertModeRegEx && !data.expertMode && data.expertModeRegEx.test(id)) continue;
 
             if (!filterId(data, id)) continue;
 
@@ -371,89 +465,139 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
     function deleteTree(data, id, deletedNodes) {
         var node = findTree(data, id);
         if (!node) {
-            console.log('Id ' + id + ' not found');
+            console.log('deleteTree: Id ' + id + ' not found');
             return;
         }
         _deleteTree(node, deletedNodes);
     }
 
     function findTree(data, id) {
-        return _findTree(data.tree, treeSplit(data, id, false), 0);
-    }
-    function _findTree(tree, parts, index) {
-        var num = -1;
-        for (var j = 0; j < tree.children.length; j++) {
-            if (tree.children[j].title === parts[index]) {
-                num = j;
-                break;
+        return (function find(tree) {
+            if (!tree.children) return;
+            for (var i=tree.children.length-1; i>=0; i--) {
+                var child = tree.children[i];
+                if (id === child.key) return child;
+                if (id.startsWith(child.key + '.')) {
+                    return find(child);
+                }
             }
-            if (tree.children[j].title > parts[index]) break;
-        }
-
-        if (num === -1) return null;
-
-        if (parts.length - 1 === index) {
-            return tree.children[num];
-        } else {
-            return _findTree(tree.children[num], parts, index + 1);
-        }
+            return null;
+        })(data.tree);
     }
+
+    // function findTree(data, id) {
+    //     return _findTree(data.tree, treeSplit(data, id, false), 0);
+    // }
+    // function _findTree(tree, parts, index) {
+    //     var num = -1;
+    //     for (var j = 0; j < tree.children.length; j++) {
+    //         if (tree.children[j].title === parts[index]) {
+    //             num = j;
+    //             break;
+    //         }
+    //         //if (tree.children[j].title > parts[index]) break;
+    //     }
+    //
+    //     if (num === -1) return null;
+    //
+    //     if (parts.length - 1 === index) {
+    //         return tree.children[num];
+    //     } else {
+    //         return _findTree(tree.children[num], parts, index + 1);
+    //     }
+    // }
 
     function treeInsert(data, id, isExpanded, addedNodes) {
-        return _treeInsert(data.tree, data.list ? [id] : treeSplit(data, id, false), id, 0, isExpanded, addedNodes, data);
+        var idArr = data.list ? [id] : treeSplit(data, id);
+        if (!idArr) return console.error('Empty object ID!');
+
+        (function insert(tree, idx) {
+            for ( ; idx < idArr.length; idx += 1) {
+                for (var i = tree.children.length - 1; i >= 0; i--) {
+                    var child = tree.children[i];
+                    if (id === child.key) return child;
+                    if (id.startsWith (child.key + '.')) {
+                        child.expanded = child.expanded || isExpanded;
+                        return insert (child, idx + 1);
+                    }
+                }
+                tree.folder = true;
+                tree.expanded = isExpanded;
+
+                var obj = {
+                    key: (data.root || '') + idArr.slice (0, idx + 1).join ('.'),
+                    children: [],
+                    title: idArr[idx],
+                    folder: false,
+                    expanded: false,
+                    parent: tree
+                };
+                tree.children.push (obj);
+                if (addedNodes) {
+                    addedNodes.push (obj);
+                }
+                tree = obj;
+            }
+            tree.id = id;
+        })(data.tree, 0);
     }
-    function _treeInsert(tree, parts, id, index, isExpanded, addedNodes, data) {
-        index = index || 0;
 
-        if (!parts) {
-            console.error('Empty object ID!');
-            return;
-        }
-
-        var num = -1;
-        var j;
-        for (j = 0; j < tree.children.length; j++) {
-            if (tree.children[j].title === parts[index]) {
-                num = j;
-                break;
-            }
-            if (tree.children[j].title > parts[index]) break;
-        }
-
-        if (num === -1) {
-            tree.folder   = true;
-            tree.expanded = isExpanded;
-
-            var fullName = '';
-            for (var i = 0; i <= index; i++) {
-                fullName += ((fullName) ? '.' : '') + parts[i];
-            }
-            var obj = {
-                key:      (data.root || '') + fullName,
-                children: [],
-                title:    parts[index],
-                folder:   false,
-                expanded: false,
-                parent:   tree
-            };
-            if (j === tree.children.length) {
-                num = tree.children.length;
-                tree.children.push(obj);
-            } else {
-                num = j;
-                tree.children.splice(num, 0, obj);
-            }
-            if (addedNodes) {
-                addedNodes.push(tree.children[num]);
-            }
-        }
-        if (parts.length - 1 === index) {
-            tree.children[num].id = id;
-        } else {
-            tree.children[num].expanded = tree.children[num].expanded || isExpanded;
-            _treeInsert(tree.children[num], parts, id, index + 1, isExpanded, addedNodes, data);
-        }
-    }
+    // function treeInsert(data, id, isExpanded, addedNodes) {
+    //     //return xtreeInsert(data, id, isExpanded, addedNodes);
+    //     return _treeInsert(data.tree, data.list ? [id] : treeSplit(data, id, false), id, 0, isExpanded, addedNodes, data);
+    // }
+    // function _treeInsert(tree, parts, id, index, isExpanded, addedNodes, data) {
+    //     index = index || 0;
+    //
+    //     if (!parts) {
+    //         console.error('Empty object ID!');
+    //         return;
+    //     }
+    //
+    //     var num = -1;
+    //     var j;
+    //     for (j = 0; j < tree.children.length; j++) {
+    //         if (tree.children[j].title === parts[index]) {
+    //             num = j;
+    //             break;
+    //         }
+    //         //if (tree.children[j].title > parts[index]) break;
+    //     }
+    //
+    //     if (num === -1) {
+    //         tree.folder   = true;
+    //         tree.expanded = isExpanded;
+    //
+    //         var fullName = '';
+    //         for (var i = 0; i <= index; i++) {
+    //             fullName += ((fullName) ? '.' : '') + parts[i];
+    //         }
+    //         var obj = {
+    //             key:      (data.root || '') + fullName,
+    //             children: [],
+    //             title:    parts[index],
+    //             folder:   false,
+    //             expanded: false,
+    //             parent:   tree
+    //         };
+    //         if (j === tree.children.length) {
+    //             num = tree.children.length;
+    //             tree.children.push(obj);
+    //         } else {
+    //             num = j;
+    //             tree.children.splice(num, 0, obj);
+    //         }
+    //         if (addedNodes) {
+    //             addedNodes.push(tree.children[num]);
+    //         }
+    //     }
+    //     if (parts.length - 1 === index) {
+    //         tree.children[num].id = id;
+    //     } else {
+    //         tree.children[num].expanded = tree.children[num].expanded || isExpanded;
+    //         _treeInsert(tree.children[num], parts, id, index + 1, isExpanded, addedNodes, data);
+    //     }
+    // }
 
     function showActive($dlg, scrollIntoView)  {
         var data = $dlg.data('selectId');
@@ -790,8 +934,13 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
             data.expertMode = window.localStorage.getItem(data.name + '-expert');
             data.expertMode = (data.expertMode === true || data.expertMode === 'true');
         }
+        if (typeof Storage !== 'undefined' && data.name) { //} && data.sort) {
+            data.sort = window.localStorage.getItem(data.name + '-sort');
+            data.sort = (data.sort === true || data.sort === 'true');
+        }
 
         // Get all states
+        var expandeds = getExpandeds(data);
         getAllStates(data);
 
         if (!data.noDialog && !data.buttonsDlg) {
@@ -891,7 +1040,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
             var name = data.columns[c];
             if (typeof name === 'object') name = name.name;
             if (name === 'image') {
-                text += '<col width="' + (data.widths ? data.widths[c] : '20px') + '"/>';
+                text += '<col width="' + (data.widths ? data.widths[c] : '24px') + '"/>';
             } else if (name === 'name') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
             } else if (name === 'type') {
@@ -929,6 +1078,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
         if (data.expertModeRegEx) {
             text += '<td style="padding-left: 10px"><button id="btn_expert_' + data.instance + '"></button></td>';
         }
+        text += '<td><button id="btn_sort_'     + data.instance + '"></button></td>';
 
         if (data.panelButtons) {
             text += '<td style="width: 20px">&nbsp;&nbsp;</td>';
@@ -1002,7 +1152,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
             var name = data.columns[c];
             if (typeof name === 'object') name = name.name;
             if (name === 'image') {
-                text += '<col width="' + (data.widths ? data.widths[c] : '20px') + '"/>';
+                text += '<col width="' + (data.widths ? data.widths[c] : '24px') + '"/>';
             } else if (name === 'name') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
             } else if (name === 'type') {
@@ -1193,7 +1343,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                             }
                         }
                         if (icon) {
-                            $tdList.eq(base).html('<img width="20px" height="20px" src="' + icon + '" alt="' + alt + '"/>');
+                            $tdList.eq(base).html('<img width="16px" height="16px" src="' + icon + '" alt="' + alt + '"/>');
                         } else {
                             $tdList.eq(base).text('');
                         }
@@ -1415,8 +1565,8 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                             }
                         } else if (data.editEnd) {
                             text = '<button data-id="' + node.key + '" class="select-button-edit"></button>' +
-                                '<button data-id="' + node.key + '" class="select-button-ok"></button>' +
-                                '<button data-id="' + node.key + '" class="select-button-cancel"></button>';
+                            '<button data-id="' + node.key + '" class="select-button-ok"></button>' +
+                            '<button data-id="' + node.key + '" class="select-button-cancel"></button>';
                         }
 
                         if (data.editEnd) {
@@ -1432,7 +1582,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                             $tr.find('.select-button-ok[data-id="' + node.key + '"]').button({
                                 text: false,
                                 icons: {
-                                    primary: 'ui-icon-check'
+                                    primary:'ui-icon-check'
                                 }
                             }).click(function () {
                                 var node = $(this).data('node');
@@ -1443,7 +1593,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                             $tr.find('.select-button-cancel[data-id="' + node.key + '"]').button({
                                 text: false,
                                 icons: {
-                                    primary: 'ui-icon-close'
+                                    primary:'ui-icon-close'
                                 }
                             }).click(function () {
                                 var node = $(this).data('node');
@@ -1624,16 +1774,16 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                     node.setActive();
                     break;
                 /*case 'copy':
-                 CLIPBOARD = {
-                 mode: data.cmd,
-                 data: node.toDict(function (n) {
-                 delete n.key;
-                 })
-                 };
-                 break;
-                 case 'clear':
-                 CLIPBOARD = null;
-                 break;*/
+                    CLIPBOARD = {
+                        mode: data.cmd,
+                        data: node.toDict(function (n) {
+                            delete n.key;
+                        })
+                    };
+                    break;
+                case 'clear':
+                    CLIPBOARD = null;
+                    break;*/
                 default:
                     alert('Unhandled command: ' + data.cmd);
                     return;
@@ -1659,6 +1809,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                 return false;
             }
         });
+
 
         function customFilter(node) {
             if (node.parent && node.parent.match) return true;
@@ -1750,6 +1901,8 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
             return true;
         }
 
+        restoreExpandeds(data, expandeds);
+
         $('.filter_' + data.instance).change(function () {
             data.filterVals = null;
             $('#process_running_' + data.instance).show();
@@ -1827,6 +1980,29 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                 $('#process_running_' + data.instance).hide();
             }, 100);
         }).attr('title', data.texts.refresh);
+
+        $('#btn_sort_' + data.instance).button({icons: {primary: 'ui-icon-bookmark'}, text: false}).css({width: 18, height: 18}).click(function () {
+            $('#process_running_' + data.instance).show();
+
+
+            data.sort = !data.sort;
+            if (data.sort) {
+                $('#btn_sort_' + data.instance).addClass('ui-state-error');
+            } else {
+                $('#btn_sort_' + data.instance).removeClass('ui-state-error');
+            }
+            storeSettings(data, true);
+
+
+            setTimeout(function () {
+                data.inited = false;
+                sortTree(data);
+                //initTreeDialog(data.$dlg);
+                $('#process_running_' + data.instance).hide();
+            }, 100);
+        }).attr('title', data.texts.sort);
+        if (data.sort) $('#btn_sort_' + data.instance).addClass('ui-state-error');
+
 
         $('#btn_select_all_' + data.instance).button({icons: {primary: 'ui-icon-circle-check'}, text: false}).css({width: 18, height: 18}).click(function () {
             $('#process_running_' + data.instance).show();
@@ -1921,6 +2097,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                 $('#filter_' + field + '_' + data.instance).val(data.filterPresets[field]).trigger('change');
             }
         }
+        sortTree(data);
     }
 
     function storeSettings(data, force) {
@@ -1931,11 +2108,13 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
         if (force) {
             window.localStorage.setItem(data.name + '-filter', JSON.stringify(data.filterVals));
             window.localStorage.setItem(data.name + '-expert', JSON.stringify(data.expertMode));
+            window.localStorage.setItem(data.name + '-sort', JSON.stringify(data.sort));
             data.timer = null;
         } else {
             data.timer = setTimeout(function () {
                 window.localStorage.setItem(data.name + '-filter', JSON.stringify(data.filterVals));
                 window.localStorage.setItem(data.name + '-expert', JSON.stringify(data.expertMode));
+                window.localStorage.setItem(data.name + '-sort', JSON.stringify(data.sort));
             }, 500);
         }
     }
@@ -2064,7 +2243,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
 
                 data.rootExp = data.root ? new RegExp('^' + data.root.replace('.', '\\.')) : null;
 
-                data.selectedID = data.currentId;
+                    data.selectedID = data.currentId;
 
                 // make a copy of filter
                 data.filter = JSON.parse(JSON.stringify(data.filter));
@@ -2093,7 +2272,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                         });
                     }, 5000);
 
-                    data.socket = io.connect(data.socketURL, {
+                   data.socket = io.connect(data.socketURL, {
                         query:                          'key=' + data.socketSESSION,
                         'reconnection limit':           10000,
                         'max reconnection attempts':    Infinity,
@@ -2259,13 +2438,14 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                 if (!data || !data.$tree) continue;
 
                 var tree = data.$tree.fancytree('getTree');
-                var node = null;
-                tree.visit(function (n) {
-                    if (n.key === id) {
-                        node = n;
-                        return false;
-                    }
-                });
+                var node = tree.getNodeByKey(id);
+                // var node = null;
+                // tree.visit(function (n) {
+                //     if (n.key === id) {
+                //         node = n;
+                //         return false;
+                //     }
+                // });
                 var result = {
                     id: id,
                     parent: (node && node.parent && node.parent.parent) ? node.parent.key : null,
@@ -2319,24 +2499,25 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                     data.states[id].q    === state.q    &&
                     data.states[id].from === state.from &&
                     data.states[id].ts   === state.ts
-                ) return;
+                    ) return;
 
                 data.states[id] = state;
                 var tree = data.$tree.fancytree('getTree');
-                var node = null;
-                tree.visit(function (n) {
-                    if (n.key === id) {
-                        node = n;
-                        return false;
-                    }
-                });
+                var node = tree.getNodeByKey(id);
+                // var node = null;
+                // tree.visit(function (n) {
+                //     if (n.key === id) {
+                //         node = n;
+                //         return false;
+                //     }
+                // });
                 if (node) node.render(true);
             }
             return this;
         },
         // update objects
         object: function (id, obj) {
-            for (var k = 0; k < this.length; k++) {
+            for (var k = 0, len = this.length; k < len; k++) {
                 var dlg = this[k];
                 var $dlg = $(dlg);
                 var data = $dlg.data('selectId');
@@ -2352,13 +2533,14 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                 }
 
                 var tree = data.$tree.fancytree('getTree');
-                var node = null;
-                tree.visit(function (n) {
-                    if (n.key === id) {
-                        node = n;
-                        return false;
-                    }
-                });
+                var node = tree.getNodeByKey(id);
+                // var node = null;
+                // tree.visit(function (n) {
+                //     if (n.key === id) {
+                //         node = n;
+                //         return false;
+                //     }
+                // });
 
                 // If new node
                 if (!node && obj) {
@@ -2373,12 +2555,13 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
 
                     for (var i = 0; i < addedNodes.length; i++) {
                         if (!addedNodes[i].parent.root) {
-                            tree.visit(function (n) {
-                                if (n.key === addedNodes[i].parent.key) {
-                                    node = n;
-                                    return false;
-                                }
-                            });
+                            node = tree.getNodeByKey(addedNodes[i].parent.key);
+                            // tree.visit(function (n) {
+                            //     if (n.key === addedNodes[i].parent.key) {
+                            //         node = n;
+                            //         return false;
+                            //     }
+                            // });
 
                         } else {
                             node = data.$tree.fancytree('getRootNode');
@@ -2414,20 +2597,22 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                     delete data.objects[id];
                     deleteTree(data, id);
                     if (node) {
-                        if (node.children && node.children.length) {
-                            if (node.children.length === 1) {
-                                node.folder = false;
-                                node.expanded = false;
-                            }
-                            node.render(true);
-                        } else {
-                            if (node.parent && node.parent.children.length === 1) {
-                                node.parent.folder = false;
-                                node.parent.expanded = false;
-                                node.parent.render(true);
-                            }
-                            node.remove();
-                        }
+                        node.removeChildren();
+                        node.remove();
+                        // if (node.children && node.children.length) {
+                        //     if (node.children.length === 1) {
+                        //         node.folder = false;
+                        //         node.expanded = false;
+                        //     }
+                        //     node.render(true);
+                        // } else {
+                        //     if (node.parent && node.parent.children.length === 1) {
+                        //         node.parent.folder = false;
+                        //         node.parent.expanded = false;
+                        //         node.parent.render(true);
+                        //     }
+                        //     node.remove();
+                        // }
                     }
                 } else {
                     // object updated
