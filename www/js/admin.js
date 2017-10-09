@@ -270,6 +270,46 @@ $(document).ready(function () {
 
         _delObject: function (idOrList, callback) {
             var id;
+            if (!Array.isArray(idOrList)) {
+                if (typeof idOrList !== 'string') return callback && callback('invalid idOrList parameter');
+                idOrList = [idOrList];
+            }
+
+            function doIt() {
+                if (idOrList.length === 0) {
+                    return callback && setTimeout(callback, 0, null, id);
+                }
+                id = idOrList.pop();
+                if (main.objects[id] && main.objects[id].common && main.objects[id].common['object-non-deletable']) {
+                    main.showMessage (_ ('Cannot delete "%s" because not allowed', id), '', 'notice');
+                    setTimeout(doIt, 0);
+                } else {
+                    var obj = main.objects[id];
+                    main.socket.emit ('delObject', id, function (err) {
+                        if (err && err !== 'Not exists') {
+                            main.showError (err);
+                            return callback(err);
+                        }
+                        if (obj && obj.type === 'state') {
+                            main.socket.emit ('delState', id, function (err) {
+                                if (err && err !== 'Not exists') {
+                                    main.showError (err);
+                                    return callback(err);
+                                }
+                                setTimeout(doIt, 0);
+                            });
+                        } else {
+                            setTimeout(doIt, 0);
+                        }
+                    });
+                }
+            }
+            doIt();
+        },
+
+
+        _delObject_old: function (idOrList, callback) {
+            var id;
             if (typeof idOrList === 'object') {
                 if (!idOrList || !idOrList.length) {
                     if (callback) callback(null);

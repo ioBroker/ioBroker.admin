@@ -489,7 +489,8 @@ function Objects(main) {
                     without:  _('Without'),
                     copyToClipboard: _('Copy to clipboard'),
                     expertMode: _('Toggle expert mode'),
-                    refresh:	_('Update')
+                    refresh:	_('Update'),
+                    sort:       _('Sort alphabetically')
                 },
                 columns: ['image', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
                 buttons: [
@@ -1394,7 +1395,7 @@ function Objects(main) {
                         that.main.saveConfig('object-history-chart', $historyChartInstance.val());
                         that.loadHistoryChart($(this).data('id'));
                     });
-                
+
                 if (this.main.config['object-history-table'] !== undefined) {
                     $historyTableInstance.val(this.main.config['object-history-table'])
                 }
@@ -1522,7 +1523,7 @@ function Objects(main) {
                             for (var i = 0; i < ids.length; i++) {
                                 var custom = that.main.objects[ids[i]].common.custom;
                                 custom = that.main.objects[ids[i]].common.custom = custom || {};
-                                
+
                                 if (custom[instance] === undefined) {
                                     var adapter = instance.split('.')[0];
                                     var _default;

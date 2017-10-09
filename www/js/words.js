@@ -164,6 +164,10 @@ systemDictionary = {
     "parent name":          {"en": "parent name",           "de": "Eltern Name",            "ru": "Имя родителя"},
     "history":              {"en": "history",               "de": "Historie",               "ru": "История"},
     "license":              {"en": "license",               "de": "Lizenz",                 "ru": "Лицензия"},
+    "Sort alphabetically":  {
+        "en": "Sort alphabetically by name",
+        "de": "Alphabetisch nach Namen sortieren"
+    },
     "Deactivated. Click to start.": {
         "en": "Deactivated. Click to start.",
         "de": "Deaktiviert. Klicken zum Starten.",
