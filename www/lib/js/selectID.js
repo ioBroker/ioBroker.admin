@@ -475,8 +475,8 @@
             if (!tree.children) return;
             for (var i=tree.children.length-1; i>=0; i--) {
                 var child = tree.children[i];
-                if (id.startsWith(child.key)) {
-                    if (id === child.key) return child;
+                if (id === child.key) return child;
+                if (id.startsWith(child.key + '.')) {
                     return find(child);
                 }
             }
@@ -514,8 +514,8 @@
             for ( ; idx < idArr.length; idx += 1) {
                 for (var i = tree.children.length - 1; i >= 0; i--) {
                     var child = tree.children[i];
-                    if (id.startsWith (child.key)) {
-                        if (id === child.key) return child;
+                    if (id === child.key) return child;
+                    if (id.startsWith (child.key + '.')) {
                         child.expanded = child.expanded || isExpanded;
                         return insert (child, idx + 1);
                     }
