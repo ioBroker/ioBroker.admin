@@ -2,11 +2,12 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "2.0.6",
+        "version": "2.0.7",
         "news": {
-            "2.0.6": {
+            "2.0.7": {
                 "en": "Sort option added to object view",
-                "de": "Sortiermöglichkeit zur Objectansicht hinzugefügt"
+                "de": "Sortiermöglichkeit zur Objectansicht hinzugefügt",
+                "ru": "Добавлена возможность сортировки"
             },
             "2.0.5": {
                 "en": "Show the history charts if the web server has the https option on too",

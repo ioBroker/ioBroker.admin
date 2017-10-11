@@ -26,90 +26,94 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
 
  Interface:
  +  init(options) - init select ID dialog. Following options are supported
-         {
-             currentId:  '',       // Current ID or empty if nothing preselected
-             objects:    null,     // All objects that should be shown. It can be empty if connCfg used.
-             states:     null,     // All states of objects. It can be empty if connCfg used. If objects are set and no states, states will no be shown.
-             filter:     null,     // filter
-             imgPath:    'lib/css/fancytree/', // Path to images device.png, channel.png and state.png
-             connCfg:    null,     // configuration for dialog, ti read objects itself: {socketUrl: socketUrl, socketSession: socketSession}
-             onSuccess:  null,     // callback function to be called if user press "Select". Can be overwritten in "show" - function (newId, oldId, newObj)
-             onChange:   null,     // called every time the new object selected - function (newId, oldId, newObj)
-             noDialog:   false,    // do not make dialog
-             noMultiselect: false, // do not make multiselect
-             buttons:    null,     // array with buttons, that should be shown in last column
-                                   // if array is not empty it can has following fields
-                                   // [{
-                                   //   text: false, // same as jquery button
-                                   //   icons: {     // same as jquery button
-                                   //       primary: 'ui-icon-gear'
-                                   //   },
-                                   //   click: function (id) {
-                                   //                // do on click
-                                   //   },
-                                   //   match: function (id) {
-                                   //                // you have here object "this" pointing to $('button')
-                                   //   },
-                                   //   width: 26,   // same as jquery button
-                                   //   height: 20   // same as jquery button
-                                   // }],
-             panelButtons: null,   // array with buttons, that should be shown at the top of dialog (near expand all)
-             list:       false,    // tree view or list view
-             name:       null,     // name of the dialog to store filter settings
-             noCopyToClipboard: false, // do not show button for copy to clipboard
-             root:       null,     // root node, e.g. "script.js"
-             useNameAsId: false,   // use name of object as ID
-             noColumnResize: false, // do not allow column resize
-             firstMinWidth: null,  // width if ID column, default 400
-             showButtonsForNotExistingObjects: false,
-             webServer:    null,   // link to webserver, by default ":8082"
-             filterPresets: null,  // Object with predefined filters, eg {role: 'level.dimmer'} or {type: 'state'}
-             roleExactly:   false, // If the role must be equal or just content the filter value
-             texts: {
-                 select:   'Select',
-                 cancel:   'Cancel',
-                 all:      'All',
-                 id:       'ID',
-                 name:     'Name',
-                 role:     'Role',
-                 type:     'Type',
-                 room:     'Room',
-                 'function': 'Function',
-                 enum:     'Members',
-                 value:    'Value',
-                 selectid: 'Select ID',
-                 from:     'From',
-                 lc:       'Last changed',
-                 ts:       'Time stamp',
-                 ack:      'Acknowledged',
-                 expand:   'Expand all nodes',
-                 collapse: 'Collapse all nodes',
-                 refresh:  'Rebuild tree',
-                 edit:     'Edit',
-                 ok:       'Ok',
-                 push:     'Trigger event'
-                 wait:     'Processing...',
-                 list:     'Show list view',
-                 tree:     'Show tree view',
-                 selectAll: 'Select all',
-                 unselectAll: 'Unselect all',
-                 invertSelection: 'Invert selection',
-                 copyToClipboard: 'Copy to clipboard',
-                 expertMode: 'Toggle expert mode'
-             },
-             columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button'],
-                                // some elements of columns could be an object {name: field, data: function (id, name){}, title: function (id, name) {}}
-             widths:    null,   // array with width for every column
-             editEnd:   null,   // function (id, newValues) for edit lines (only id and name can be edited)
-             editStart: null,   // function (id, $inputs) called after edit start to correct input fields (inputs are jquery objects),
-             zindex:    null,   // z-index of dialog or table
-             customButtonFilter: null, // if in the filter over the buttons some specific button must be shown. It has type like {icons:{primary: 'ui-icon-close'}, text: false, callback: function ()}
-             expertModeRegEx: null // list of regex with objects, that will be shown only in expert mode, like  /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin/
-             quickEdit:  null,   // list of fields with edit on click. Elements can be just names from standard list or objects like:
-                                 // {name: 'field', options: {a1: 'a111_Text', a2: 'a22_Text'}}, options can be a function (id, name), that give back such an object
-             quickEditCallback: null, // function (id, attr, newValue, oldValue),
-             readyCallback: null // called when objects and states are read from server (only if connCfg is not null). function (err, objects, states)
-     }
+ {
+ currentId:  '',       // Current ID or empty if nothing preselected
+ objects:    null,     // All objects that should be shown. It can be empty if connCfg used.
+ states:     null,     // All states of objects. It can be empty if connCfg used. If objects are set and no states, states will no be shown.
+ filter:     null,     // filter
+ imgPath:    'lib/css/fancytree/', // Path to images device.png, channel.png and state.png
+ connCfg:    null,     // configuration for dialog, ti read objects itself: {socketUrl: socketUrl, socketSession: socketSession}
+ onSuccess:  null,     // callback function to be called if user press "Select". Can be overwritten in "show" - function (newId, oldId, newObj)
+ onChange:   null,     // called every time the new object selected - function (newId, oldId, newObj)
+ noDialog:   false,    // do not make dialog
+ noMultiselect: false, // do not make multiselect
+ buttons:    null,     // array with buttons, that should be shown in last column
+ // if array is not empty it can has following fields
+ // [{
+ //   text: false, // same as jquery button
+ //   icons: {     // same as jquery button
+ //       primary: 'ui-icon-gear'
+ //   },
+ //   click: function (id) {
+ //                // do on click
+ //   },
+ //   match: function (id) {
+ //                // you have here object "this" pointing to $('button')
+ //   },
+ //   width: 26,   // same as jquery button
+ //   height: 20   // same as jquery button
+ // }],
+ panelButtons: null,   // array with buttons, that should be shown at the top of dialog (near expand all)
+ list:       false,    // tree view or list view
+ name:       null,     // name of the dialog to store filter settings
+ noCopyToClipboard: false, // do not show button for copy to clipboard
+ root:       null,     // root node, e.g. "script.js"
+ useNameAsId: false,   // use name of object as ID
+ noColumnResize: false, // do not allow column resize
+ firstMinWidth: null,  // width if ID column, default 400
+ showButtonsForNotExistingObjects: false,
+ webServer:    null,   // link to webserver, by default ":8082"
+ filterPresets: null,  // Object with predefined filters, eg {role: 'level.dimmer'} or {type: 'state'}
+ roleExactly:   false, // If the role must be equal or just content the filter value
+ sortConfig: {
+ statesFirst: true,     // Show states before folders
+ ignoreSortOrder: false // Ignore standard sort order of fancytree
+ },
+ texts: {
+ select:   'Select',
+ cancel:   'Cancel',
+ all:      'All',
+ id:       'ID',
+ name:     'Name',
+ role:     'Role',
+ type:     'Type',
+ room:     'Room',
+ 'function': 'Function',
+ enum:     'Members',
+ value:    'Value',
+ selectid: 'Select ID',
+ from:     'From',
+ lc:       'Last changed',
+ ts:       'Time stamp',
+ ack:      'Acknowledged',
+ expand:   'Expand all nodes',
+ collapse: 'Collapse all nodes',
+ refresh:  'Rebuild tree',
+ edit:     'Edit',
+ ok:       'Ok',
+ push:     'Trigger event'
+ wait:     'Processing...',
+ list:     'Show list view',
+ tree:     'Show tree view',
+ selectAll: 'Select all',
+ unselectAll: 'Unselect all',
+ invertSelection: 'Invert selection',
+ copyToClipboard: 'Copy to clipboard',
+ expertMode: 'Toggle expert mode'
+ },
+ columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button'],
+ // some elements of columns could be an object {name: field, data: function (id, name){}, title: function (id, name) {}}
+ widths:    null,   // array with width for every column
+ editEnd:   null,   // function (id, newValues) for edit lines (only id and name can be edited)
+ editStart: null,   // function (id, $inputs) called after edit start to correct input fields (inputs are jquery objects),
+ zindex:    null,   // z-index of dialog or table
+ customButtonFilter: null, // if in the filter over the buttons some specific button must be shown. It has type like {icons:{primary: 'ui-icon-close'}, text: false, callback: function ()}
+ expertModeRegEx: null // list of regex with objects, that will be shown only in expert mode, like  /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin/
+ quickEdit:  null,   // list of fields with edit on click. Elements can be just names from standard list or objects like:
+ // {name: 'field', options: {a1: 'a111_Text', a2: 'a22_Text'}}, options can be a function (id, name), that give back such an object
+ quickEditCallback: null, // function (id, attr, newValue, oldValue),
+ readyCallback: null // called when objects and states are read from server (only if connCfg is not null). function (err, objects, states)
+ }
  +  show(currentId, filter, callback) - all arguments are optional if set by "init". Callback is like function (newId, oldId) {}. If multiselect, so the arguments are arrays.
  +  clear() - clear object tree to read and build anew (used only if objects set by "init")
  +  getInfo(id) - get information about ID
@@ -120,11 +124,11 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
 
 
  filter is like:
-     common: {
-         history: true
-     }
-  or
-     type: "state"
+ common: {
+ history: true
+ }
+ or
+ type: "state"
  */
 (function ($) {
     'use strict';
@@ -222,8 +226,8 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
         if (!data.$tree) return null;
         var expandeds = {};
         (function getIt(node) {
-            if (!node.children) return;
-            node.children.forEach(function(_node) {
+            if (!node.children || !(node.children instanceof Array)) return;
+            node.children.forEach(function (_node) {
                 if (_node.expanded) {
                     expandeds[_node.key] = true;
                 }
@@ -236,10 +240,14 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
     function restoreExpandeds(data, expandeds) {
         if (!expandeds || !data.$tree) return;
         (function setIt(node) {
-            if (!node.children) return;
-            node.children.forEach(function(_node) {
+            if (!node.children || !(node.children instanceof Array)) return;
+            node.children.forEach(function (_node) {
                 if (expandeds[_node.key]) {
-                    _node.setExpanded();
+                    try {
+                        _node.setExpanded();
+                    } catch (e) {
+                        console.error('Cannot expand: ' + e);
+                    }
                     //_node.setActive();
                 }
                 setIt(_node);
@@ -248,16 +256,10 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
         expandeds = null;
     }
 
-    // TODO move this to settings
-    var sortConfig = {
-        statesFirst: true,
-        ignoreSortOrder: false
-    };
-
     function sortTree(data) {
         var objects = data.objects;
         var checkStatesFirst;
-        switch (sortConfig.statesFirst) {
+        switch (data.sortConfig.statesFirst) {
             case undefined: checkStatesFirst = function() { return 0 }; break;
             case true:      checkStatesFirst = function(child1, child2) { return ((~~child2.folder) - (~~child1.folder))}; break;
             case false:     checkStatesFirst = function(child1, child2) { return ((~~child1.folder) - (~~child2.folder))}; break;
@@ -271,7 +273,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
             if (o1 && o2) {
                 var c1 = o1.common, c2 = o2.common;
                 if (c1 && c2) {
-                    if (!sortConfig.ignoreSortOrder && c1.sortOrder && c2.sortOrder) {
+                    if (!data.sortConfig.ignoreSortOrder && c1.sortOrder && c2.sortOrder) {
                         if (c1.sortOrder > c2.sortOrder) return 1;
                         if (c1.sortOrder < c2.sortOrder) return -1;
                         return 0;
@@ -290,7 +292,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
         function sortByKey(child1, child2) {
             var ret = checkStatesFirst(child1, child2);
             if (ret) return ret;
-            if (!sortConfig.ignoreSortOrder) {
+            if (!data.sortConfig.ignoreSortOrder) {
                 var o1 = objects[child1.key], o2 = objects[child2.key];
                 if (o1 && o2) {
                     var c1 = o1.common, c2 = o2.common;
@@ -325,7 +327,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
         data.funcEnums = [];
 
         for (var id in objects) {
-
+            if (!objects.hasOwnProperty(id)) continue;
             if (isRoom) {
                 if (objects[id].type === 'enum' && data.regexEnumRooms.test(id) && data.roomEnums.indexOf(id) === -1) data.roomEnums.push(id);
                 if (objects[id].enums) {
@@ -334,12 +336,12 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                             data.roomEnums.push(e);
                         }
                         data.objects[e] = data.objects[e] || {
-                            _id: e,
-                            common: {
-                                name: objects[id].enums[e],
-                                members: [id]
-                            }
-                        };
+                                _id: e,
+                                common: {
+                                    name: objects[id].enums[e],
+                                    members: [id]
+                                }
+                            };
                         data.objects[e].common.members = data.objects[e].common.members || [];
                         if (data.objects[e].common.members.indexOf(id) === -1) {
                             data.objects[e].common.members.push(id);
@@ -357,12 +359,12 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                             data.funcEnums.push(e);
                         }
                         data.objects[e] = data.objects[e] || {
-                            _id: e,
-                            common: {
-                                name: objects[id].enums[e],
-                                members: [id]
-                            }
-                        };
+                                _id: e,
+                                common: {
+                                    name: objects[id].enums[e],
+                                    members: [id]
+                                }
+                            };
                         data.objects[e].common.members = data.objects[e].common.members || [];
                         if (data.objects[e].common.members.indexOf(id) === -1) {
                             data.objects[e].common.members.push(id);
@@ -1565,8 +1567,8 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                             }
                         } else if (data.editEnd) {
                             text = '<button data-id="' + node.key + '" class="select-button-edit"></button>' +
-                            '<button data-id="' + node.key + '" class="select-button-ok"></button>' +
-                            '<button data-id="' + node.key + '" class="select-button-cancel"></button>';
+                                '<button data-id="' + node.key + '" class="select-button-ok"></button>' +
+                                '<button data-id="' + node.key + '" class="select-button-cancel"></button>';
                         }
 
                         if (data.editEnd) {
@@ -1774,16 +1776,16 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                     node.setActive();
                     break;
                 /*case 'copy':
-                    CLIPBOARD = {
-                        mode: data.cmd,
-                        data: node.toDict(function (n) {
-                            delete n.key;
-                        })
-                    };
-                    break;
-                case 'clear':
-                    CLIPBOARD = null;
-                    break;*/
+                 CLIPBOARD = {
+                 mode: data.cmd,
+                 data: node.toDict(function (n) {
+                 delete n.key;
+                 })
+                 };
+                 break;
+                 case 'clear':
+                 CLIPBOARD = null;
+                 break;*/
                 default:
                     alert('Unhandled command: ' + data.cmd);
                     return;
@@ -1926,7 +1928,9 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
             $('#process_running_' + data.instance).show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
-                    if (!data.filterVals.length || node.match || node.subMatch) node.setExpanded(false);
+                    if (!data.filterVals.length || node.match || node.subMatch) {
+                        node.setExpanded(false);
+                    }
                 });
                 $('#process_running_' + data.instance).hide();
             }, 100);
@@ -1936,8 +1940,9 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
             $('#process_running_' + data.instance).show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
-                    if (!data.filterVals.length || node.match || node.subMatch)
+                    if (!data.filterVals.length || node.match || node.subMatch) {
                         node.setExpanded(true);
+                    }
                 });
                 $('#process_running_' + data.instance).hide();
             }, 100);
@@ -1966,10 +1971,9 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
         }).attr('title', data.texts.tree);
 
         if (data.list) {
-            $('#btn_list_' + data.instance).addClass('ui-state-error');
+            $('#btn_list_' + data.instance).addClass('ui-state-error').attr('title', data.texts.list);;
             $('#btn_expand_' + data.instance).hide();
             $('#btn_collapse_' + data.instance).hide();
-            $('#btn_list_' + data.instance).attr('title', data.texts.list);
         }
 
         $('#btn_refresh_' + data.instance).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 18, height: 18}).click(function () {
@@ -1981,28 +1985,33 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
             }, 100);
         }).attr('title', data.texts.refresh);
 
-        $('#btn_sort_' + data.instance).button({icons: {primary: 'ui-icon-bookmark'}, text: false}).css({width: 18, height: 18}).click(function () {
-            $('#process_running_' + data.instance).show();
+        $('#btn_sort_' + data.instance)
+            .button({icons: {primary: 'ui-icon-bookmark'}, text: false})
+            .css({width: 18, height: 18})
+            .click(function () {
+                $('#process_running_' + data.instance).show();
 
 
-            data.sort = !data.sort;
-            if (data.sort) {
-                $('#btn_sort_' + data.instance).addClass('ui-state-error');
-            } else {
-                $('#btn_sort_' + data.instance).removeClass('ui-state-error');
-            }
-            storeSettings(data, true);
+                data.sort = !data.sort;
+                if (data.sort) {
+                    $('#btn_sort_' + data.instance).addClass('ui-state-error');
+                } else {
+                    $('#btn_sort_' + data.instance).removeClass('ui-state-error');
+                }
+                storeSettings(data, true);
 
 
-            setTimeout(function () {
-                data.inited = false;
-                sortTree(data);
-                //initTreeDialog(data.$dlg);
-                $('#process_running_' + data.instance).hide();
-            }, 100);
-        }).attr('title', data.texts.sort);
-        if (data.sort) $('#btn_sort_' + data.instance).addClass('ui-state-error');
+                setTimeout(function () {
+                    data.inited = false;
+                    sortTree(data);
+                    //initTreeDialog(data.$dlg);
+                    $('#process_running_' + data.instance).hide();
+                }, 100);
+            }).attr('title', data.texts.sort);
 
+        if (data.sort) {
+            $('#btn_sort_' + data.instance).addClass('ui-state-error');
+        }
 
         $('#btn_select_all_' + data.instance).button({icons: {primary: 'ui-icon-circle-check'}, text: false}).css({width: 18, height: 18}).click(function () {
             $('#process_running_' + data.instance).show();
@@ -2090,7 +2099,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
 
         // set preset filters
         for (var field in data.filterPresets) {
-            if (!data.filterPresets[field]) continue;
+            if (!data.filterPresets.hasOwnProperty(field) || !data.filterPresets[field]) continue;
             if (typeof data.filterPresets[field] === 'object') {
                 $('#filter_' + field + '_' + data.instance).val(data.filterPresets[field][0]).trigger('change');
             } else {
@@ -2127,7 +2136,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                     f = JSON.parse(f);
                     for (var field in f) {
                         if (field === 'length') continue;
-                        if (data.filterPresets[field]) continue;
+                        if (!data.filterPresets.hasOwnProperty(field) || data.filterPresets[field]) continue;
                         $('#filter_' + field + '_' + data.instance).val(f[field]).trigger('change');
                     }
                 } catch(e) {
@@ -2155,6 +2164,10 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                 zindex:     null,
                 list:       false,
                 name:       null,
+                sortConfig:       {
+                    statesFirst:     true,
+                    ignoreSortOrder: false
+                },
                 columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button']
             }, options);
 
@@ -2243,7 +2256,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
 
                 data.rootExp = data.root ? new RegExp('^' + data.root.replace('.', '\\.')) : null;
 
-                    data.selectedID = data.currentId;
+                data.selectedID = data.currentId;
 
                 // make a copy of filter
                 data.filter = JSON.parse(JSON.stringify(data.filter));
@@ -2272,7 +2285,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                         });
                     }, 5000);
 
-                   data.socket = io.connect(data.socketURL, {
+                    data.socket = io.connect(data.socketURL, {
                         query:                          'key=' + data.socketSESSION,
                         'reconnection limit':           10000,
                         'max reconnection attempts':    Infinity,
@@ -2499,7 +2512,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                     data.states[id].q    === state.q    &&
                     data.states[id].from === state.from &&
                     data.states[id].ts   === state.ts
-                    ) return;
+                ) return;
 
                 data.states[id] = state;
                 var tree = data.$tree.fancytree('getTree');
