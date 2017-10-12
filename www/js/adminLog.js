@@ -138,7 +138,7 @@ function Logs(main) {
             setTimeout(function () {
                 var message = {message: '', severity: 'debug', from: '', ts: ''};
                 var size = lines ? lines.pop() : -1;
-                if (size != -1) {
+                if (size !== -1) {
                     size = parseInt(size);
                     $('#log-size').html((_('Log size:') + ' ' + ((size / (1024 * 1024)).toFixed(2) + ' MB ')).replace(/ /g, '&nbsp;'));
                 }
@@ -219,7 +219,9 @@ function Logs(main) {
         if (this.logFilterHost && this.logFilterHost !== from) visible = 'display: none';
 
         if (!visible && this.logFilterSeverity) {
-            if (this.logFilterSeverity === 'info' && message.severity === 'debug') {
+            if (this.logFilterSeverity === 'debug' && message.severity === 'silly') {
+                visible = 'display: none';
+            } else if (this.logFilterSeverity === 'info' && (message.severity === 'debug' || message.severity === 'silly')) {
                 visible = 'display: none';
             } else if (this.logFilterSeverity === 'warn' && message.severity !== 'warn' && message.severity !== 'error') {
                 visible = 'display: none';
@@ -255,23 +257,34 @@ function Logs(main) {
         that.logFilterSeverity = that.$logFilterSeverity.val();
 
         if (that.logFilterSeverity === 'error') {
+            $logOuter.find('.log-severity-silly').hide();
             $logOuter.find('.log-severity-debug').hide();
             $logOuter.find('.log-severity-info').hide();
             $logOuter.find('.log-severity-warn').hide();
             $logOuter.find('.log-severity-error').show();
         } else
         if (that.logFilterSeverity === 'warn') {
+            $logOuter.find('.log-severity-silly').hide();
             $logOuter.find('.log-severity-debug').hide();
             $logOuter.find('.log-severity-info').hide();
             $logOuter.find('.log-severity-warn').show();
             $logOuter.find('.log-severity-error').show();
-        }else
+        } else
         if (that.logFilterSeverity === 'info') {
+            $logOuter.find('.log-severity-silly').hide();
             $logOuter.find('.log-severity-debug').hide();
             $logOuter.find('.log-severity-info').show();
             $logOuter.find('.log-severity-warn').show();
             $logOuter.find('.log-severity-error').show();
+        } else
+        if (that.logFilterSeverity === 'silly') {
+            $logOuter.find('.log-severity-silly').show();
+            $logOuter.find('.log-severity-debug').show();
+            $logOuter.find('.log-severity-info').show();
+            $logOuter.find('.log-severity-warn').show();
+            $logOuter.find('.log-severity-error').show();
         } else {
+            $logOuter.find('.log-severity-silly').hide();
             $logOuter.find('.log-severity-debug').show();
             $logOuter.find('.log-severity-info').show();
             $logOuter.find('.log-severity-warn').show();

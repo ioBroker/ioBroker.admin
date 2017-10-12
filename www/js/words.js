@@ -318,6 +318,7 @@ systemDictionary = {
     "Domains:":             {"en": "Domains:",              "de": "Domäne:",                "ru": "Домены:"},
     "Path to storage:":     {"en": "Path to storage:",      "de": "Pfad zum speichern:",    "ru": "Путь к папке для сохранения:"},
     "debug":                {"en": "debug",                 "de": "Debug",                  "ru": "отладка"},
+    "silly":                {"en": "silly",                 "de": "Alles",                  "ru": "всё"},
     "Parent":               {"en": "Parent",                "de": "Parent",                 "ru": "Родитель"},
     "Drop the files here":  {"en": "Drop the files here",   "de": "Die Datei hier platzieren", "ru": "Перетащить файлы сюда"},
     "Unknown file format!": {"en": "Unknown file format!",  "de": "Unbekanntes Dateiformat!", "ru": "Неизвестный формат файла"},

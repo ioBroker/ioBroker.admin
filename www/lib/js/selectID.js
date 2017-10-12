@@ -64,6 +64,10 @@
              webServer:    null,   // link to webserver, by default ":8082"
              filterPresets: null,  // Object with predefined filters, eg {role: 'level.dimmer'} or {type: 'state'}
              roleExactly:   false, // If the role must be equal or just content the filter value
+             sortConfig: {
+                     statesFirst: true,     // Show states before folders
+                     ignoreSortOrder: false // Ignore standard sort order of fancytree
+             },
              texts: {
                  select:   'Select',
                  cancel:   'Cancel',
@@ -221,8 +225,8 @@
         if (!data.$tree) return null;
         var expandeds = {};
         (function getIt(node) {
-            if (!node.children) return;
-            node.children.forEach(function(_node) {
+            if (!node.children || !(node.children instanceof Array)) return;
+            node.children.forEach(function (_node) {
                 if (_node.expanded) {
                     expandeds[_node.key] = true;
                 }
@@ -235,10 +239,14 @@
     function restoreExpandeds(data, expandeds) {
         if (!expandeds || !data.$tree) return;
         (function setIt(node) {
-            if (!node.children) return;
-            node.children.forEach(function(_node) {
+            if (!node.children || !(node.children instanceof Array)) return;
+            node.children.forEach(function (_node) {
                 if (expandeds[_node.key]) {
-                    _node.setExpanded();
+                    try {
+                        _node.setExpanded();
+                    } catch (e) {
+                        console.error('Cannot expand: ' + e);
+                    }
                     //_node.setActive();
                 }
                 setIt(_node);
@@ -247,16 +255,10 @@
         expandeds = null;
     }
 
-    // TODO move this to settings
-    var sortConfig = {
-        statesFirst: true,
-        ignoreSortOrder: false
-    };
-
     function sortTree(data) {
         var objects = data.objects;
         var checkStatesFirst;
-        switch (sortConfig.statesFirst) {
+        switch (data.sortConfig.statesFirst) {
             case undefined: checkStatesFirst = function() { return 0 }; break;
             case true:      checkStatesFirst = function(child1, child2) { return ((~~child2.folder) - (~~child1.folder))}; break;
             case false:     checkStatesFirst = function(child1, child2) { return ((~~child1.folder) - (~~child2.folder))}; break;
@@ -270,7 +272,7 @@
             if (o1 && o2) {
                 var c1 = o1.common, c2 = o2.common;
                 if (c1 && c2) {
-                    if (!sortConfig.ignoreSortOrder && c1.sortOrder && c2.sortOrder) {
+                    if (!data.sortConfig.ignoreSortOrder && c1.sortOrder && c2.sortOrder) {
                         if (c1.sortOrder > c2.sortOrder) return 1;
                         if (c1.sortOrder < c2.sortOrder) return -1;
                         return 0;
@@ -289,7 +291,7 @@
         function sortByKey(child1, child2) {
             var ret = checkStatesFirst(child1, child2);
             if (ret) return ret;
-            if (!sortConfig.ignoreSortOrder) {
+            if (!data.sortConfig.ignoreSortOrder) {
                 var o1 = objects[child1.key], o2 = objects[child2.key];
                 if (o1 && o2) {
                     var c1 = o1.common, c2 = o2.common;
@@ -324,7 +326,7 @@
         data.funcEnums = [];
 
         for (var id in objects) {
-
+            if (!objects.hasOwnProperty(id)) continue;
             if (isRoom) {
                 if (objects[id].type === 'enum' && data.regexEnumRooms.test(id) && data.roomEnums.indexOf(id) === -1) data.roomEnums.push(id);
                 if (objects[id].enums) {
@@ -1925,7 +1927,9 @@
             $('#process_running_' + data.instance).show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
-                    if (!data.filterVals.length || node.match || node.subMatch) node.setExpanded(false);
+                    if (!data.filterVals.length || node.match || node.subMatch) {
+                        node.setExpanded(false);
+                    }
                 });
                 $('#process_running_' + data.instance).hide();
             }, 100);
@@ -1935,8 +1939,9 @@
             $('#process_running_' + data.instance).show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
-                    if (!data.filterVals.length || node.match || node.subMatch)
+                    if (!data.filterVals.length || node.match || node.subMatch) {
                         node.setExpanded(true);
+                    }
                 });
                 $('#process_running_' + data.instance).hide();
             }, 100);
@@ -1965,10 +1970,9 @@
         }).attr('title', data.texts.tree);
 
         if (data.list) {
-            $('#btn_list_' + data.instance).addClass('ui-state-error');
+            $('#btn_list_' + data.instance).addClass('ui-state-error').attr('title', data.texts.list);;
             $('#btn_expand_' + data.instance).hide();
             $('#btn_collapse_' + data.instance).hide();
-            $('#btn_list_' + data.instance).attr('title', data.texts.list);
         }
 
         $('#btn_refresh_' + data.instance).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 18, height: 18}).click(function () {
@@ -1980,28 +1984,33 @@
             }, 100);
         }).attr('title', data.texts.refresh);
 
-        $('#btn_sort_' + data.instance).button({icons: {primary: 'ui-icon-bookmark'}, text: false}).css({width: 18, height: 18}).click(function () {
-            $('#process_running_' + data.instance).show();
+        $('#btn_sort_' + data.instance)
+            .button({icons: {primary: 'ui-icon-bookmark'}, text: false})
+            .css({width: 18, height: 18})
+            .click(function () {
+                $('#process_running_' + data.instance).show();
 
 
-            data.sort = !data.sort;
-            if (data.sort) {
-                $('#btn_sort_' + data.instance).addClass('ui-state-error');
-            } else {
-                $('#btn_sort_' + data.instance).removeClass('ui-state-error');
-            }
-            storeSettings(data, true);
+                data.sort = !data.sort;
+                if (data.sort) {
+                    $('#btn_sort_' + data.instance).addClass('ui-state-error');
+                } else {
+                    $('#btn_sort_' + data.instance).removeClass('ui-state-error');
+                }
+                storeSettings(data, true);
 
 
-            setTimeout(function () {
-                data.inited = false;
-                sortTree(data);
-                //initTreeDialog(data.$dlg);
-                $('#process_running_' + data.instance).hide();
-            }, 100);
-        }).attr('title', data.texts.sort);
-        if (data.sort) $('#btn_sort_' + data.instance).addClass('ui-state-error');
+                setTimeout(function () {
+                    data.inited = false;
+                    sortTree(data);
+                    //initTreeDialog(data.$dlg);
+                    $('#process_running_' + data.instance).hide();
+                }, 100);
+            }).attr('title', data.texts.sort);
 
+        if (data.sort) {
+            $('#btn_sort_' + data.instance).addClass('ui-state-error');
+        }
 
         $('#btn_select_all_' + data.instance).button({icons: {primary: 'ui-icon-circle-check'}, text: false}).css({width: 18, height: 18}).click(function () {
             $('#process_running_' + data.instance).show();
@@ -2089,7 +2098,7 @@
 
         // set preset filters
         for (var field in data.filterPresets) {
-            if (!data.filterPresets[field]) continue;
+            if (!data.filterPresets.hasOwnProperty(field) || !data.filterPresets[field]) continue;
             if (typeof data.filterPresets[field] === 'object') {
                 $('#filter_' + field + '_' + data.instance).val(data.filterPresets[field][0]).trigger('change');
             } else {
@@ -2126,7 +2135,7 @@
                     f = JSON.parse(f);
                     for (var field in f) {
                         if (field === 'length') continue;
-                        if (data.filterPresets[field]) continue;
+                        if (!data.filterPresets.hasOwnProperty(field) || data.filterPresets[field]) continue;
                         $('#filter_' + field + '_' + data.instance).val(f[field]).trigger('change');
                     }
                 } catch(e) {
@@ -2154,6 +2163,10 @@
                 zindex:     null,
                 list:       false,
                 name:       null,
+                sortConfig:       {
+                    statesFirst:     true,
+                    ignoreSortOrder: false
+                },
                 columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button']
             }, options);
 
