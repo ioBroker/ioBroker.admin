@@ -646,7 +646,11 @@ function Objects(main) {
                         if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.type) {
                             switch (that.main.objects[id].common.type) {
                                 case 'number':
-                                    newValue = parseFloat(newValue);
+                                    var v = parseFloat(newValue);
+                                    if (isNaN(v)) {
+                                        v = newValue === 'false' ? 0 : ~~newValue;
+                                    }
+                                    newValue = v;
                                     break;
 
                                 case 'boolean':
