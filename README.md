@@ -66,6 +66,9 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
+### 2.0.8 (2017-10-12)
+* (soef) fix quickEdit: number with boolean value
+
 ### 2.0.7 (2017-10-11)
 * (soef) Sort option added to object view
 

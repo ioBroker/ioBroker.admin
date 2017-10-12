@@ -6,7 +6,8 @@
         "news": {
             "2.0.8": {
                 "en": "fix quickEdit: number with boolean value",
-                "de": "behoben: quickEdit, number mit übergebenem boolean Wert"
+                "de": "behoben: quickEdit, number mit übergebenem boolean Wert",
+				"ru": "Исправлено: возможность ввода булевых значений в состояниях"
             },
             "2.0.7": {
                 "en": "Sort option added to object view",
