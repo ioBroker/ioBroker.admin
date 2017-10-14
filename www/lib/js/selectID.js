@@ -312,7 +312,7 @@
                     var c1 = o1.common, c2 = o2.common;
                     if (c1 && c2 && c1.sortOrder && c2.sortOrder) {
                         var s1 = child1.key.substr(0, child1.key.indexOf('.')+1); // faster than regexp.
-                        var s2 = child2.key.substr(0, cchild2.key.indexOf('.')+1);
+                        var s2 = child2.key.substr(0, child2.key.indexOf('.')+1);
                         if (s1 > s2) return 1;
                         if (s1 < s2) return -1;
 

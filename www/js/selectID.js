@@ -284,7 +284,7 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                 if (c1 && c2) {
 
                     var s1 = child1.key.substr(0, child1.key.indexOf('.')+1); // faster than regexp.
-                    var s2 = child2.key.substr(0, cchild2.key.indexOf('.')+1);
+                    var s2 = child2.key.substr(0, child2.key.indexOf('.')+1);
                     if (s1 > s2) return 1;
                     if (s1 < s2) return -1;
 
