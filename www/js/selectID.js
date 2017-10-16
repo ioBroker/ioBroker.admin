@@ -265,15 +265,6 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
             case false:     checkStatesFirst = function(child1, child2) { return ((~~child1.folder) - (~~child2.folder))}; break;
         }
 
-        function compAdapterAndInstance(c1, c2) {
-            var s1 = c1.key.substr(0, c1.key.indexOf('.')+1);
-            var s2 = c2.key.substr(0, c2.key.indexOf('.')+1);
-
-            if (s1 > s2) return 1;
-            if (s1 < s2) return -1;
-            return 0;
-        }
-
         function sortByName(child1, child2) {
             var ret = checkStatesFirst(child1, child2);
             if (ret) return ret;
@@ -282,12 +273,6 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
             if (o1 && o2) {
                 var c1 = o1.common, c2 = o2.common;
                 if (c1 && c2) {
-
-                    var s1 = child1.key.substr(0, child1.key.indexOf('.')+1); // faster than regexp.
-                    var s2 = child2.key.substr(0, child2.key.indexOf('.')+1);
-                    if (s1 > s2) return 1;
-                    if (s1 < s2) return -1;
-
                     if (!data.sortConfig.ignoreSortOrder && c1.sortOrder && c2.sortOrder) {
                         if (c1.sortOrder > c2.sortOrder) return 1;
                         if (c1.sortOrder < c2.sortOrder) return -1;
@@ -312,11 +297,6 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
                 if (o1 && o2) {
                     var c1 = o1.common, c2 = o2.common;
                     if (c1 && c2 && c1.sortOrder && c2.sortOrder) {
-                        var s1 = child1.key.substr(0, child1.key.indexOf('.')+1); // faster than regexp.
-                        var s2 = child2.key.substr(0, cchild2.key.indexOf('.')+1);
-                        if (s1 > s2) return 1;
-                        if (s1 < s2) return -1;
-
                         if (c1.sortOrder > c2.sortOrder) return 1;
                         if (c1.sortOrder < c2.sortOrder) return -1;
                         return 0;
@@ -328,10 +308,22 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
             return 0;
         }
 
-        data.$tree.fancytree('getRootNode').sortChildren(data.sort ? sortByName : sortByKey, true);
+        var sortFunc = data.sort ? sortByName : sortByKey;
+        var sfunc = sortByKey; // sort the root always by key
+        return (function sort(tree) {
+            if (!tree || !tree.children) return;
+            tree.sortChildren(sfunc);
+            sfunc = sortFunc;
+            for (var i=tree.children.length-1; i>=0; i--) {
+                sort(tree.children[i]);
+            }
+        })(data.$tree.fancytree('getRootNode'));
+
+        //data.$tree.fancytree('getRootNode').sortChildren(data.sort ? sortByName : sortByKey, true);
         //var tree = data.$tree.fancytree('getTree');
         //var node = tree.getActiveNode();
     }
+
 
     function getAllStates(data) {
         var objects = data.objects;
