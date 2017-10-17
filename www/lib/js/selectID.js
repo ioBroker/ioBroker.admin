@@ -1,7 +1,11 @@
+/* global jQuery */
+/* global document */
+/* jshint -W097 */
+/* jshint strict: false */
 /*
  Copyright 2014-2017 bluefox <dogafox@gmail.com>
 
- version: 1.0.4 (2017.04.25)
+ version: 1.0.5 (2017.10.17)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -129,6 +133,63 @@
   or
      type: "state"
  */
+
+/*! https://mths.be/startswith v0.2.0 by @mathias */
+if (!String.prototype.startsWith) {
+    (function() {
+        'use strict'; // needed to support `apply`/`call` with `undefined`/`null`
+        var defineProperty = (function() {
+            // IE 8 only supports `Object.defineProperty` on DOM elements
+            try {
+                var object = {};
+                var $defineProperty = Object.defineProperty;
+                var result = $defineProperty(object, object, object) && $defineProperty;
+            } catch(error) {}
+            return result;
+        }());
+        var toString = {}.toString;
+        var startsWith = function(search) {
+            if (this === null) {
+                throw TypeError();
+            }
+            var string = String(this);
+            if (search && toString.call(search) === '[object RegExp]') {
+                throw TypeError();
+            }
+            var stringLength = string.length;
+            var searchString = String(search);
+            var searchLength = searchString.length;
+            var position = arguments.length > 1 ? arguments[1] : undefined;
+            // `ToInteger`
+            var pos = position ? Number(position) : 0;
+            if (pos != pos) { // better `isNaN`
+                pos = 0;
+            }
+            var start = Math.min(Math.max(pos, 0), stringLength);
+            // Avoid the `indexOf` call if no match is possible
+            if (searchLength + start > stringLength) {
+                return false;
+            }
+            var index = -1;
+            while (++index < searchLength) {
+                if (string.charCodeAt(start + index) !== searchString.charCodeAt(index)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        if (defineProperty) {
+            defineProperty(String.prototype, 'startsWith', {
+                'value': startsWith,
+                'configurable': true,
+                'writable': true
+            });
+        } else {
+            String.prototype.startsWith = startsWith;
+        }
+    }());
+}
+
 (function ($) {
     'use strict';
 
@@ -340,20 +401,21 @@
             if (isRoom) {
                 if (objects[id].type === 'enum' && data.regexEnumRooms.test(id) && data.roomEnums.indexOf(id) === -1) data.roomEnums.push(id);
                 if (objects[id].enums) {
-                    for (var e in objects[id].enums) {
-                        if (data.regexEnumRooms.test(e) && data.roomEnums.indexOf(e) === -1) {
-                            data.roomEnums.push(e);
+                    for (var ee in objects[id].enums) {
+                        if (!objects[id].enums.hasOwnProperty(ee)) continue;
+                        if (data.regexEnumRooms.test(ee) && data.roomEnums.indexOf(ee) === -1) {
+                            data.roomEnums.push(ee);
                         }
-                        data.objects[e] = data.objects[e] || {
-                            _id: e,
+                        data.objects[ee] = data.objects[ee] || {
+                            _id: ee,
                             common: {
-                                name: objects[id].enums[e],
+                                name: objects[id].enums[ee],
                                 members: [id]
                             }
                         };
-                        data.objects[e].common.members = data.objects[e].common.members || [];
-                        if (data.objects[e].common.members.indexOf(id) === -1) {
-                            data.objects[e].common.members.push(id);
+                        data.objects[ee].common.members = data.objects[ee].common.members || [];
+                        if (data.objects[ee].common.members.indexOf(id) === -1) {
+                            data.objects[ee].common.members.push(id);
                         }
                     }
                 }
@@ -363,26 +425,29 @@
                     data.funcEnums.push(id);
                 }
                 if (objects[id].enums) {
-                    for (var e in objects[id].enums) {
-                        if (data.regexEnumFuncs.test(e) && data.funcEnums.indexOf(e) === -1) {
-                            data.funcEnums.push(e);
+                    for (var eee in objects[id].enums) {
+                        if (!objects[id].enums.hasOwnProperty(eee)) continue;
+                        if (data.regexEnumFuncs.test(eee) && data.funcEnums.indexOf(eee) === -1) {
+                            data.funcEnums.push(eee);
                         }
-                        data.objects[e] = data.objects[e] || {
-                            _id: e,
+                        data.objects[eee] = data.objects[eee] || {
+                            _id: eee,
                             common: {
-                                name: objects[id].enums[e],
+                                name: objects[id].enums[eee],
                                 members: [id]
                             }
                         };
-                        data.objects[e].common.members = data.objects[e].common.members || [];
-                        if (data.objects[e].common.members.indexOf(id) === -1) {
-                            data.objects[e].common.members.push(id);
+                        data.objects[eee].common.members = data.objects[eee].common.members || [];
+                        if (data.objects[eee].common.members.indexOf(id) === -1) {
+                            data.objects[eee].common.members.push(id);
                         }
                     }
                 }
             }
 
-            if (isType && objects[id].type && data.types.indexOf(objects[id].type) === -1) data.types.push(objects[id].type);
+            if (isType && objects[id].type && data.types.indexOf(objects[id].type) === -1) {
+                data.types.push(objects[id].type);
+            }
 
             if (isRole && objects[id].common && objects[id].common.role) {
                 try {
@@ -401,13 +466,17 @@
                 if (data.histories.indexOf(h) === -1) data.histories.push(h);
             }
 
+            if (id === 'system.adapter.admin.0') {
+                console.log('A');
+            }
             if (!filterId(data, id)) continue;
 
             treeInsert(data, id, data.currentId === id);
 
             if (objects[id].enums) {
                 for (var e in objects[id].enums) {
-                    if (objects[e] &&
+                    if (objects[id].enums.hasOwnProperty(e) &&
+                        objects[e] &&
                         objects[e].common &&
                         objects[e].common.members &&
                         objects[e].common.members.indexOf(id) === -1) {
@@ -481,11 +550,11 @@
         }
         _deleteTree(node, deletedNodes);
     }
-
+    
     function findTree(data, id) {
         return (function find(tree) {
             if (!tree.children) return;
-            for (var i=tree.children.length-1; i>=0; i--) {
+            for (var i = tree.children.length - 1; i >= 0; i--) {
                 var child = tree.children[i];
                 if (id === child.key) return child;
                 if (id.startsWith(child.key + '.')) {
@@ -495,29 +564,7 @@
             return null;
         })(data.tree);
     }
-
-    // function findTree(data, id) {
-    //     return _findTree(data.tree, treeSplit(data, id, false), 0);
-    // }
-    // function _findTree(tree, parts, index) {
-    //     var num = -1;
-    //     for (var j = 0; j < tree.children.length; j++) {
-    //         if (tree.children[j].title === parts[index]) {
-    //             num = j;
-    //             break;
-    //         }
-    //         //if (tree.children[j].title > parts[index]) break;
-    //     }
-    //
-    //     if (num === -1) return null;
-    //
-    //     if (parts.length - 1 === index) {
-    //         return tree.children[num];
-    //     } else {
-    //         return _findTree(tree.children[num], parts, index + 1);
-    //     }
-    // }
-
+    /*
     function treeInsert(data, id, isExpanded, addedNodes) {
         var idArr = data.list ? [id] : treeSplit(data, id);
         if (!idArr) return console.error('Empty object ID!');
@@ -551,64 +598,88 @@
             }
             tree.id = id;
         })(data.tree, 0);
+    } */
+
+    /*function findTree(data, id) {
+        return _findTree(data.tree, treeSplit(data, id, false), 0);
+    }
+    function _findTree(tree, parts, index) {
+        var num = -1;
+        for (var j = 0; j < tree.children.length; j++) {
+            if (tree.children[j].title === parts[index]) {
+                num = j;
+                break;
+            }
+            if (tree.children[j].title > parts[index]) break;
+        }
+
+        if (num === -1) {
+            return null;
+        }
+
+        if (parts.length - 1 === index) {
+            return tree.children[num];
+        } else {
+            return _findTree(tree.children[num], parts, index + 1);
+        }
+    }*/
+
+    function treeInsert(data, id, isExpanded, addedNodes) {
+        return _treeInsert(data.tree, data.list ? [id] : treeSplit(data, id, false), id, 0, isExpanded, addedNodes, data);
     }
 
-    // function treeInsert(data, id, isExpanded, addedNodes) {
-    //     //return xtreeInsert(data, id, isExpanded, addedNodes);
-    //     return _treeInsert(data.tree, data.list ? [id] : treeSplit(data, id, false), id, 0, isExpanded, addedNodes, data);
-    // }
-    // function _treeInsert(tree, parts, id, index, isExpanded, addedNodes, data) {
-    //     index = index || 0;
-    //
-    //     if (!parts) {
-    //         console.error('Empty object ID!');
-    //         return;
-    //     }
-    //
-    //     var num = -1;
-    //     var j;
-    //     for (j = 0; j < tree.children.length; j++) {
-    //         if (tree.children[j].title === parts[index]) {
-    //             num = j;
-    //             break;
-    //         }
-    //         //if (tree.children[j].title > parts[index]) break;
-    //     }
-    //
-    //     if (num === -1) {
-    //         tree.folder   = true;
-    //         tree.expanded = isExpanded;
-    //
-    //         var fullName = '';
-    //         for (var i = 0; i <= index; i++) {
-    //             fullName += ((fullName) ? '.' : '') + parts[i];
-    //         }
-    //         var obj = {
-    //             key:      (data.root || '') + fullName,
-    //             children: [],
-    //             title:    parts[index],
-    //             folder:   false,
-    //             expanded: false,
-    //             parent:   tree
-    //         };
-    //         if (j === tree.children.length) {
-    //             num = tree.children.length;
-    //             tree.children.push(obj);
-    //         } else {
-    //             num = j;
-    //             tree.children.splice(num, 0, obj);
-    //         }
-    //         if (addedNodes) {
-    //             addedNodes.push(tree.children[num]);
-    //         }
-    //     }
-    //     if (parts.length - 1 === index) {
-    //         tree.children[num].id = id;
-    //     } else {
-    //         tree.children[num].expanded = tree.children[num].expanded || isExpanded;
-    //         _treeInsert(tree.children[num], parts, id, index + 1, isExpanded, addedNodes, data);
-    //     }
-    // }
+    function _treeInsert(tree, parts, id, index, isExpanded, addedNodes, data) {
+        index = index || 0;
+
+        if (!parts) {
+            console.error('Empty object ID!');
+            return;
+        }
+
+        var num = -1;
+        var j;
+        for (j = 0; j < tree.children.length; j++) {
+            if (tree.children[j].title === parts[index]) {
+                num = j;
+                break;
+            }
+            if (tree.children[j].title > parts[index]) break;
+        }
+
+        if (num === -1) {
+            tree.folder   = true;
+            tree.expanded = isExpanded;
+
+            var fullName = '';
+            for (var i = 0; i <= index; i++) {
+                fullName += ((fullName) ? '.' : '') + parts[i];
+            }
+            var obj = {
+                key:      (data.root || '') + fullName,
+                children: [],
+                title:    parts[index],
+                folder:   false,
+                expanded: false,
+                parent:   tree
+            };
+            if (j === tree.children.length) {
+                num = tree.children.length;
+                tree.children.push(obj);
+            } else {
+                num = j;
+                tree.children.splice(num, 0, obj);
+            }
+            if (addedNodes) {
+                addedNodes.push(tree.children[num]);
+            }
+        }
+        if (parts.length - 1 === index) {
+            tree.children[num].id = id;
+        } else {
+            tree.children[num].expanded = tree.children[num].expanded || isExpanded;
+            _treeInsert(tree.children[num], parts, id, index + 1, isExpanded, addedNodes, data);
+        }
+    }
 
     function showActive($dlg, scrollIntoView)  {
         var data = $dlg.data('selectId');
@@ -713,7 +784,7 @@
         e.stopPropagation();
     }
 
-    function clippyShow(e) {
+    function clippyShow(/* e */) {
         if ($(this).hasClass('clippy')) {
             var text = '<button class="clippy-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" ' +
                 'role="button" title="' + $(this).data('copyToClipboard') + '" ' +
@@ -725,16 +796,16 @@
         }
     }
 
-    function clippyHide(e) {
+    function clippyHide(/* e */) {
         $(this).find('.clippy-button').remove();
     }
 
     function installColResize(data, $dlg) {
         if (data.noColumnResize || !$.fn.colResizable) return;
 
-        var data = $dlg.data('selectId');
-        if (data.$tree.is(':visible')) {
-            data.$tree.colResizable({
+        var data_ = $dlg.data('selectId');
+        if (data_.$tree.is(':visible')) {
+            data_.$tree.colResizable({
                 liveDrag: true,
                 onResize: function (event) {
                     syncHeader($dlg);
@@ -803,24 +874,24 @@
             states = getStates(data, id);
             if (states) {
                 text = '<select style="width: calc(100% - 50px); z-index: 2">';
-                for (var t in states) {
-                    if (typeof states[t] !== 'string') continue;
-                    text += '<option value="' + t + '">' + states[t] + '</option>';
+                for (var s in states) {
+                    if (!states.hasOwnProperty(s) || typeof states[s] !== 'string') continue;
+                    text += '<option value="' + s + '">' + states[s] + '</option>';
                 }
                 text += '</select>';
             }
         } else if (attr === 'room') {
             states = findRoomsForObjectAsIds(data, id) || [];
             text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
-            for (var e = 0; e < data.roomEnums.length; e++) {
-                text += '<option value="' + data.roomEnums[e] + '" ' + (states.indexOf(data.roomEnums[e]) !== -1 ? 'selected' : '') + '>' + data.objects[data.roomEnums[e]].common.name + '</option>';
+            for (var eee = 0; eee < data.roomEnums.length; eee++) {
+                text += '<option value="' + data.roomEnums[eee] + '" ' + (states.indexOf(data.roomEnums[eee]) !== -1 ? 'selected' : '') + '>' + data.objects[data.roomEnums[eee]].common.name + '</option>';
             }
             text += '</select>';
         } else if (attr === 'function') {
             states = findFunctionsForObjectAsIds(data, id) || [];
             text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
-            for (var e = 0; e < data.funcEnums.length; e++) {
-                text += '<option value="' + data.funcEnums[e] + '" ' + (states.indexOf(data.funcEnums[e]) !== -1 ? 'selected' : '') + '>' + data.objects[data.funcEnums[e]].common.name + '</option>';
+            for (var ee = 0; ee < data.funcEnums.length; ee++) {
+                text += '<option value="' + data.funcEnums[ee] + '" ' + (states.indexOf(data.funcEnums[ee]) !== -1 ? 'selected' : '') + '>' + data.objects[data.funcEnums[ee]].common.name + '</option>';
             }
             text += '</select>';
         } else if (options) {
@@ -832,6 +903,7 @@
             if (states) {
                 text = '<select style="width: calc(100% - 50px); z-index: 2">';
                 for (var t in states) {
+                    if (!states.hasOwnProperty(t)) continue;
                     text += '<option value="' + t + '">' + states[t] + '</option>';
                 }
                 text += '</select>';
@@ -995,16 +1067,16 @@
         // Store current filter
         var filter = {ID: $('#filter_ID_' + data.instance).val()};
         for (var u = 0; u < data.columns.length; u++) {
-            var name = data.columns[u];
-            if (typeof name === 'object') name = name.name;
-            filter[name] = $('#filter_' + name + '_' + data.instance).val();
+            var _name = data.columns[u];
+            if (typeof _name === 'object') _name = _name.name;
+            filter[_name] = $('#filter_' + _name + '_' + data.instance).val();
         }
 
         var textRooms;
         if (data.columns.indexOf('room') !== -1) {
             textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
-            for (var i = 0; i < data.roomEnums.length; i++) {
-                textRooms += '<option value="' + data.objects[data.roomEnums[i]].common.name + '">' + data.objects[data.roomEnums[i]].common.name + '</option>';
+            for (var j = 0; j < data.roomEnums.length; j++) {
+                textRooms += '<option value="' + data.objects[data.roomEnums[j]].common.name + '">' + data.objects[data.roomEnums[j]].common.name + '</option>';
             }
             textRooms += '</select>';
         } else {
@@ -1027,8 +1099,8 @@
         var textRoles;
         if (data.columns.indexOf('role') !== -1) {
             textRoles = '<select id="filter_role_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-            for (var j = 0; j < data.roles.length; j++) {
-                textRoles += '<option value="' + data.roles[j] + '">' + data.roles[j] + '</option>';
+            for (var k = 0; k < data.roles.length; k++) {
+                textRoles += '<option value="' + data.roles[k] + '">' + data.roles[k] + '</option>';
             }
             textRoles += '</select>';
         }
@@ -1036,8 +1108,8 @@
         var textTypes;
         if (data.columns.indexOf('type') !== -1) {
             textTypes = '<select id="filter_type_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-            for (var k = 0; k < data.types.length; k++) {
-                textTypes += '<option value="' + data.types[k] + '">' + data.types[k] + '</option>';
+            for (var m = 0; m < data.types.length; m++) {
+                textTypes += '<option value="' + data.types[m] + '">' + data.types[m] + '</option>';
             }
             textTypes += '</select>';
         }
@@ -1101,9 +1173,9 @@
         text += '<td class="ui-widget" style="width: 100%; text-align: center; font-weight: bold; font-size: medium">' + data.texts.id + '</td></tr></table></th>';
 
         for (c = 0; c < data.columns.length; c++) {
-            var _name = data.columns[c];
-            if (typeof _name === 'object') _name = name.name;
-            text += '<th class="ui-widget" style="font-size: medium">' + (data.texts[_name] || '') + '</th>';
+            var __name = data.columns[c];
+            if (typeof __name === 'object') __name = __name.name;
+            text += '<th class="ui-widget" style="font-size: medium">' + (data.texts[__name] || '') + '</th>';
         }
 
         text += '<th></th></tr>';
@@ -1160,25 +1232,25 @@
         text += '            <col ' + (data.firstMinWidth ? ('width="' + data.firstMinWidth + '"') : 'width="400px"') + '/>';
 
         for (c = 0; c < data.columns.length; c++) {
-            var name = data.columns[c];
-            if (typeof name === 'object') name = name.name;
-            if (name === 'image') {
+            var name_ = data.columns[c];
+            if (typeof name_ === 'object') name_ = name_.name;
+            if (name_ === 'image') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '24px') + '"/>';
-            } else if (name === 'name') {
+            } else if (name_ === 'name') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
-            } else if (name === 'type') {
+            } else if (name_ === 'type') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name === 'role') {
+            } else if (name_ === 'role') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name === 'room') {
+            } else if (name_ === 'room') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name === 'function') {
+            } else if (name_ === 'function') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name === 'value') {
+            } else if (name_ === 'value') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '150px') + '"/>';
-            } else if (name === 'button') {
+            } else if (name_ === 'button') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '100px') + '"/>';
-            } else if (name === 'enum') {
+            } else if (name_ === 'enum') {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
             } else {
                 text += '<col width="' + (data.widths ? data.widths[c] : '*') + '"/>';
@@ -1206,7 +1278,7 @@
             titlesTabbable: true,     // Add all node titles to TAB chain
             quicksearch:    true,
             source:         data.tree.children,
-            extensions:     ["table", "gridnav", "filter", "themeroller"],
+            extensions:     ['table', 'gridnav', 'filter', 'themeroller'],
             checkbox:       multiselect,
             table: {
                 indentation: 20,
@@ -1861,7 +1933,7 @@
             var isCommon = null;
 
             for (var f in data.filterVals) {
-                if (f === 'length') continue;
+                if (!data.filterVals.hasOwnProperty(f) || f === 'length') continue;
 
                 if (isCommon === null) isCommon = data.objects[node.key] && data.objects[node.key].common;
 
@@ -2121,7 +2193,9 @@
     function storeSettings(data, force) {
         if (typeof Storage === 'undefined' || !data.name) return;
 
-        if (data.timer) clearTimeout(data.timer);
+        if (data.timer) {
+            clearTimeout(data.timer);
+        }
 
         if (force) {
             window.localStorage.setItem(data.name + '-filter', JSON.stringify(data.filterVals));
@@ -2144,7 +2218,7 @@
                 try{
                     f = JSON.parse(f);
                     for (var field in f) {
-                        if (field === 'length') continue;
+                        if (!f.hasOwnProperty(field) || field === 'length') continue;
                         if (!data.filterPresets.hasOwnProperty(field) || data.filterPresets[field]) continue;
                         $('#filter_' + field + '_' + data.instance).val(f[field]).trigger('change');
                     }
@@ -2286,10 +2360,12 @@
                     }
 
                     var connectTimeout = setTimeout(function () {
-                        if (!$('#select-id-dialog').length) {
+                        var $dialog = $('#select-id-dialog');
+                        if (!$dialog.length) {
                             $('body').append('<div id="select-id-dialog"><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span><span>' + (data.texts.noconnection || 'No connection to server') + '</span></div>');
+                            $dialog = $('#select-id-dialog');
                         }
-                        $('#select-id-dialog').dialog({
+                        $dialog.dialog({
                             modal: true
                         });
                     }, 5000);
@@ -2304,7 +2380,9 @@
                     });
 
                     data.socket.on('connect', function () {
-                        if (connectTimeout) clearTimeout(connectTimeout);
+                        if (connectTimeout) {
+                            clearTimeout(connectTimeout);
+                        }
                         this.emit('name', data.connCfg.socketName || 'selectId');
                         this.emit('getObjects', function (err, res) {
                             data.objects = res;

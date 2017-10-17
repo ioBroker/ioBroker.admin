@@ -5,7 +5,7 @@
         "version": "2.0.9",
         "news": {
             "2.0.9": {
-                "en": "fix sorting, when using adaptsers with more than one instance",
+                "en": "fix sorting, when using adapters with more than one instance",
                 "de": "Sortierung für Adapter mit mehr als einer Instanz repariert"
             },
             "2.0.8": {
