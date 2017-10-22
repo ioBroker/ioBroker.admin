@@ -2,11 +2,12 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "2.0.9",
+        "version": "2.0.10",
         "news": {
             "2.0.10": {
                 "en": "added use of delete-key in the objects view.",
-                "de": "Verwendung der Entfernen-Taste in der Objekte-Ansicht hinzugefügt"
+                "de": "Verwendung der Entfernen-Taste in der Objekte-Ansicht hinzugefügt",
+				"ru": "добавлено использование ключа delete в представлении объектов"
             },
             "2.0.9": {
                 "en": "fix sorting, when using adapters with more than one instance",
