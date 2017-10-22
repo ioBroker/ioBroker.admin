@@ -550,7 +550,7 @@ if (!String.prototype.startsWith) {
         }
         _deleteTree(node, deletedNodes);
     }
-    
+
     function findTree(data, id) {
         return (function find(tree) {
             if (!tree.children) return;
@@ -643,7 +643,10 @@ if (!String.prototype.startsWith) {
                 num = j;
                 break;
             }
-            if (tree.children[j].title > parts[index]) break;
+            //* The tree does not necessarily have to be sorted by title.
+            //* With the first read oder refresh, it is ok. The tree is sorted afterwards.
+            //* But in later insertion by e.g. objectChange it can go wrong.
+            //if (tree.children[j].title > parts[index]) break;
         }
 
         if (num === -1) {
@@ -1856,6 +1859,13 @@ if (!String.prototype.startsWith) {
                     node.moveTo(node.getParent(), 'after');
                     node.setActive();
                     break;
+                case 'delete':
+                    var button = $(node.tr).find('.select-button-1');
+                    if (button && button.length) {
+                        button.trigger('click');
+                    }
+                    break;
+
                 /*case 'copy':
                     CLIPBOARD = {
                         mode: data.cmd,
@@ -1876,23 +1886,32 @@ if (!String.prototype.startsWith) {
             var c   = String.fromCharCode(e.which);
             var cmd = null;
 
-            if (e.which === 'c' && e.ctrlKey) {
-                cmd = 'copy';
-            }else if (e.which === $.ui.keyCode.UP && e.ctrlKey) {
-                cmd = 'moveUp';
-            } else if (e.which === $.ui.keyCode.DOWN && e.ctrlKey) {
-                cmd = 'moveDown';
-            } else if (e.which === $.ui.keyCode.RIGHT && e.ctrlKey) {
-                cmd = 'indent';
-            } else if (e.which === $.ui.keyCode.LEFT && e.ctrlKey) {
-                cmd = 'outdent';
+            if (e.ctrlKey) switch (e.which) {
+                case 'c':
+                    cmd = 'copy';
+                    break;
+                case $.ui.keyCode.UP:
+                    cmd = 'moveUp';
+                    break;
+                case $.ui.keyCode.DOWN:
+                    cmd = 'moveDown';
+                    break;
+                case $.ui.keyCode.RIGHT:
+                    cmd = 'indent';
+                    break;
+                case $.ui.keyCode.LEFT:
+                    cmd = 'outdent';
+                    break;
+            } else switch (e.which) {
+                case $.ui.keyCode.DELETE:
+                    cmd = 'delete';
+                    break;
             }
             if (cmd) {
                 $(this).trigger('nodeCommand', {cmd: cmd});
                 return false;
             }
         });
-
 
         function customFilter(node) {
             if (node.parent && node.parent.match) return true;
@@ -2697,8 +2716,16 @@ if (!String.prototype.startsWith) {
                     delete data.objects[id];
                     deleteTree(data, id);
                     if (node) {
+                        var prev = node.getPrevSibling();
+                        var parent = node.parent;
                         node.removeChildren();
                         node.remove();
+                        prev && prev.setActive();
+                        if (!parent.children || !parent.children.length) {
+                            if (parent.parent) parent.parent.setActive();
+                            parent.remove();
+
+                        }
                         // if (node.children && node.children.length) {
                         //     if (node.children.length === 1) {
                         //         node.folder = false;
