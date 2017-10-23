@@ -23,7 +23,9 @@
     var oldPort;
 
     function showHideSettings() {
-        if ($('#secure').prop('checked')) {
+        var $secure = $('#secure');
+        var $auth   = $('#auth');
+        if ($secure.prop('checked')) {
             $('#_certPublic').show();
             $('#_certPrivate').show();
             $('#_certChained').show();
@@ -44,11 +46,11 @@
             $('#_certPublic').hide();
             $('#_certPrivate').hide();
             $('#_certChained').hide();
-            $('#auth').prop('checked', false);
+            $auth.prop('checked', false);
             $('.le-settings').hide();
         }
-        if ($('#auth').prop('checked')) {
-            $('#secure').prop('checked', true);
+        if ($auth.prop('checked')) {
+            $secure.prop('checked', true);
             $('#defaultUser').val('admin');
             $('.defaultUser').hide();
             $('#_ttl').show();
@@ -61,6 +63,10 @@
     // the function loadSettings has to exist ...
     function load(settings, onChange) {
         if (!settings) return;
+
+        if (!settings.thresholdValue) {
+            settings.thresholdValue = 200;
+        }
 
         getIPs(function(ips) {
             for (var i = 0; i < ips.length; i++) {
@@ -78,14 +84,14 @@
 
         $('.value').each(function () {
             var key = $(this).attr('id');
-            // example: select elements with id=key and class=value and insert value
-            if ($('#' + key + '.value').attr('type') === 'checkbox') {
-                $('#' + key + '.value').prop('checked', settings[key]).change(function() {
+            var $value = $('#' + key + '.value');
+            if ($value.attr('type') === 'checkbox') {
+                $value.prop('checked', settings[key]).change(function() {
                     showHideSettings();
                     onChange();
                 });
             } else {
-                $('#' + key + '.value').val(settings[key]).change(onChange).keyup(function() {
+                $value.val(settings[key]).change(onChange).keyup(function() {
                     onChange();
                     // Chack that only numbers entered
                     if ($(this).hasClass('number')) {
@@ -98,7 +104,9 @@
                                 }
                             }
 
-                            if (val != newVal) $(this).val(newVal);
+                            if (val != newVal) {
+                                $(this).val(newVal);
+                            }
                         }
                     }
                 });
@@ -126,7 +134,7 @@
         var obj = {};
         $('.value').each(function () {
             var $this = $(this);
-            if ($this.attr('type') == 'checkbox') {
+            if ($this.attr('type') === 'checkbox') {
                 obj[$this.attr('id')] = $this.prop('checked');
             } else {
                 obj[$this.attr('id')] = $this.val();
@@ -202,7 +210,10 @@
                 <option value="336" class="translate">every 2 weeks</option>
                 <option value="720" class="translate">monthly</option>
             </select>
-        </td><td class="admin-tooltip"></td></tr>
+            </td>
+            <td class="admin-tooltip"></td>
+        </tr>
+        <tr><td><label class="translate" for="thresholdValue">Events threshold value:</label></td><td class="admin-icon"></td><td><input class="value" id="thresholdValue" type="number" min="50"/></td><td class="admin-tooltip"></td></tr>
         <tr><td colspan="2">&nbsp;</td></tr>
         <tr class="le-settings"><td colspan="2"><h3 class="translate">Let's Encrypt settings</h3></tr>
         <tr class="le-settings"><td><label for="leEnabled" class="translate">Use Lets Encrypt certificates:</label></td><td class="admin-icon"></td><td><input class="value" id="leEnabled" type="checkbox" /></td><td class="admin-tooltip" data-link="lets-encrypt-certificates"></td></tr>

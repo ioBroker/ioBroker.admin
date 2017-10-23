@@ -66,6 +66,9 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Changelog
+### 2.0.11 (2017-10-23)
+* (bluefox) Configurable event update disable threshold
+
 ### 2.0.10 (2017-10-22)
 * (soef) added use of delete-key in the objects view
 

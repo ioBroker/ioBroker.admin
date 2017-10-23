@@ -2,8 +2,13 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "2.0.10",
+        "version": "2.0.11",
         "news": {
+            "2.0.11": {
+                "en": "Configurable event update disable threshold",
+                "de": "Konfigurierbar Schwellenwert für Ereignisses",
+                "ru": "Настраиваемое пороговое значение отключения обновления событий"
+            },
             "2.0.10": {
                 "en": "added use of delete-key in the objects view.",
                 "de": "Verwendung der Entfernen-Taste in der Objekte-Ansicht hinzugefügt",
@@ -212,6 +217,7 @@
         "defaultUser":              "admin",
         "tmpPath":                  "/tmp",
         "tmpPathAllow":             false,
+        "thresholdValue":           200,
 
         "leEnabled":                false,
         "leUpdate":                 false,
