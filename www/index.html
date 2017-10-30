@@ -18,7 +18,7 @@
     <script type="text/javascript" src="lib/js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js"></script>
     <script type="text/javascript" src="lib/js/jqGrid/grid.locale-all.js"></script>
-    <script type="text/javascript" src="lib/js/colResizable-1.5.min.js"></script>
+    <script type="text/javascript" src="lib/js/colResizable-1.6.min.js"></script>
     <script type="text/javascript" src="lib/js/jquery.multiselect-1.13.min.js"></script>
     <script type="text/javascript" src="lib/js/semver.min.js"></script>
     <script type="text/javascript" src="./socket.io/socket.io.js"></script>
@@ -35,6 +35,7 @@
     <script src="lib/js/jquery.fancytree.filter.js" type="text/javascript"></script>
     <script src="lib/js/jquery.fancytree.edit.js" type="text/javascript"></script-->
     <script type="text/javascript" src="lib/js/selectID.js"></script>
+    <script type="text/javascript" src="lib/js/selectID1.js"></script>
     <script type="text/javascript" src="lib/js/cron/jquery.cron.js"></script>
     <script type="text/javascript" src="lib/js/cron/cron2text.js"></script>
 
@@ -46,6 +47,7 @@
     <script type="text/javascript" src="js/adminInstances.js"></script>
     <script type="text/javascript" src="js/adminLog.js"></script>
     <script type="text/javascript" src="js/adminObjects.js"></script>
+    <script type="text/javascript" src="js/adminObjects1.js"></script>
     <script type="text/javascript" src="js/adminStates.js"></script>
     <script type="text/javascript" src="js/adminUsers.js"></script>
     <script type="text/javascript" src="js/adminGroups.js"></script>
@@ -53,35 +55,83 @@
     <script type="text/javascript" src="js/admin.js"></script>
 </head>
 <body>
-    <div id="tabs" style="display: none">
+<div id="dialog"></div>
+<div id="tabs" style="display: none; height: 100%;">
         <ul id="tabs-ul">
         </ul>
     </div>
 
     <div id="tab-adapters"  class="admin-tab" style="display:none" data-name="Adapters">
-        <table><tr>
-            <td></td>
-            <td><button id="btn_filter_adapters" class="translateT" title="installed adapters"></button></td>
-            <td><button id="btn_filter_updates" class="translateT" title="adapter with updates"></button></td>
-            <td><button id="btn_filter_custom_url" class="translateT" title="Install from custom URL"></button></td>
-            <td><button id="btn_upgrade_all" class="translateT" title="Upgrade all adapters"></button></td>
-            <td><button id="btn-adapters-expert-mode"></button></td>
-            <td style="width:30px"></td>
-            <td><button id="btn_refresh_adapters" class="translateT" title="update adapter information"></button></td>
-            <td><button id="btn_list_adapters" class="translateT" title="list"></button></td>
-            <td><button id="btn_collapse_adapters" class="translateT" title="collapse all"></button></td>
-            <td><button id="btn_expand_adapters" class="translateT" title="expand all"></button></td>
-            <td><div style="padding-left: 120px"><label class="translate" for="host-adapters">Host:</label> <select id="host-adapters"></select></div></td>
-            <td><div style="padding-left: 100px"><label class="translate" for="adapters-filter">Filter:</label> <input id="adapters-filter" style="width: 100px;margin-right:3px"/><button id="adapters-filter-clear"></button></div></td>
+    <!--<table class="panel-table" style="margin-bottom: 4px; !important" cellspacing="0" cellpadding="0">-->
+    <!-- <table class="panel-table" style="height: 30px; margin-left: 1px; margin-top:2px; margin-bottom: 3px;"  cellspacing="0" cellpadding="0"> -->
+    <!-- <table class="main-toolbar-table" cellpadding="0"> -->
+    <table class="main-toolbar-table">
+<!--        <td> -->
+            <!--<td></td>-->
+        <td>
+            <button id="btn_refresh_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="update adapter information"></button>
+        </td>
+        <td>
+            <button id="btn_list_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="list"></button>
+        </td>
+        <td>
+            <button id="btn_collapse_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="collapse all"></button>
+        </td>
+        <td>
+            <button id="btn_expand_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="expand all"></button>
+        </td>
+
+        <td style="padding-left: 10px">
+            <button id="btn_filter_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="installed adapters"></button>
+        </td>
+        <td>
+            <button id="btn_filter_updates" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="adapter with updates"></button>
+        </td>
+        <td>
+            <button id="btn_filter_custom_url" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="Install from custom URL"></button>
+        </td>
+        <td>
+            <button id="btn_upgrade_all" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="Upgrade all adapters"></button>
+        </td>
+        <td>
+            <button id="btn-adapters-expert-mode" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only "></button>
+        </td>
+        <td>
+            <!-- <table style="border: 1px solid #c0c0c0; /*width: 100%;*/ height:20px; border-spacing: 0px; font-size: 14px;background: #fff; margin-left: 10px;"><tr> -->
+            <table class="panel-input-table"><tr>
+                <td>
+            <!--<span style="display: inline-block; padding-left: 120px">-->
+                <!--<div style="padding-left: 120px">#--><label style="margin-left: 5px; border:0; font-size: 14px;" class="translate" for="host-adapters">Host:</label>
+                </td>
+                <td>
+                <select id="host-adapters" style="border:0; font-size: 14px; padding:1px"></select><!--</div>-->
+                </td>
+             </td></tr></table>
+        </td>
+        <td>
+            <!-- <table style="border: 1px solid #c0c0c0; /*width: 100%;*/ height:20px; border-spacing: 0px; font-size: 14px;background: #fff; margin-left: 10px;"><tr><td> -->
+            <table class="panel-input-table"><tr>
+                <td style="width: 100%"><input id="adapters-filter" style="padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/></td>
+                <td><button id="adapters-filter-clear" style="width: 18px;height: 18px;border: 0;background: #fff;"></button></td>
         </tr></table>
-        <div id="process_running_adapters" class="translate" style="position:absolute; top: 50%; left: 50%; width: 150px; height: 25px; padding: 12px; background: rgba(30, 30, 30, 0.5); display: none; text-align: center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">Processing...</div>
-        <div style="width:100%;height:400px;overflow-y: auto" id="grid-adapters-div"><table id="grid-adapters" style="width:100%;table-layout:fixed;">
+        </td>
+
+
+            <td style="width: 100%;"></td>
+        </tr>
+    </table>
+    <div id="process_running_adapters" class="translate"
+         style="position:absolute; top: 50%; left: 50%; width: 150px; height: 25px; padding: 12px; background: rgba(30, 30, 30, 0.5); display: none; text-align: center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">
+        Processing...
+    </div>
+    <div style="width:100%;height:400px;overflow-y: auto" id="grid-adapters-div">
+        <table id="grid-adapters" class="iob-list-font" style="margin-left: 1px; width:calc(100% - 2px);table-layout:fixed;">
             <colgroup>
                 <col width="320px"/>
                 <col width="*"/>
                 <col width="200px"/>
-                <col width="70px"/>
-                <col width="135px"/>
+                <col width="100px"/>
+                <col width="80px"/>
                 <col width="140px"/>
                 <col width="140px"/>
                 <col width="140px"/>
@@ -91,31 +141,56 @@
                 <th class="translate ui-widget-header">Name</th>
                 <th class="translate ui-widget-header">description</th>
                 <th class="translate ui-widget-header">keywords</th>
-                <th class="translate ui-widget-header">version</th>
                 <th class="translate ui-widget-header">installed</th>
+                <th class="translate ui-widget-header">available</th>
                 <th class="translate ui-widget-header">platform</th>
                 <th class="translate ui-widget-header">license</th>
                 <th class="translate ui-widget-header">install</th>
             </tr>
             </thead>
             <tbody></tbody>
-        </table></div>
+        </table>
     </div>
-    <div id="tab-instances" class="admin-tab" style="display:none" data-name="Instances">
-        <table style="width: 100%; height: 30px">
+</div>
+<div id="tab-instances" class="admin-tab" style="display:none;" data-name="Instances">
+    <!--<table style="width: 100%; height: 30px; padding-left: 6px; padding-top: 4px; padding-buttom: 5px;"> -->
+    <table class="main-toolbar-table">
             <tr>
-                <td><button id="btn-instances-expert-mode"></button></td>
-                <td><button id="btn-instances-reload"></button></td>
+            <td>
+                <button id="btn-instances-reload"></button>
+            </td>
+            <td>
+                <button id="btn-instances-expert-mode"></button>
+            </td>
+            <td>
+                <table class="panel-input-table"><tr>
+                    <td style="width: 100%"><input id="instances-filter" style="padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/></td>
+                    <td><button id="instances-filter-clear" style="width: 18px;height: 18px;border: 0;background: #fff;"></button></td>
+                </tr></table>
+
+            </td>
+            <!--
                 <td style="padding-left: 100px"><label class="translate" style="display: inline-block" for="instances-filter">Filter:</label></td>
                 <td><input style="display: inline-block; width: 100px; margin-right: 3px" id="instances-filter"></td>
-                <td><button style="display: inline-block" id="instances-filter-clear"></button></td>
+            <td>
+                <button style="display: inline-block" id="instances-filter-clear"></button>
+            </td>
+            -->
                 <td style="width: 100%"></td>
-                <td style="white-space: nowrap"><span class="translate">RAM total usage:</span> <span id="totalRam" style="font-weight: bold"></span> <span class="translate">MB</span> <span class="free-mem-label">/</span> <span class="translate free-mem-label">Free RAM:</span> <span id="freeMem" style="font-weight: bold"></span> <span class="translate free-mem-label">MB</span> <span id="freeMemPercent" style="font-weight: bold"></span> [<span class="translate">Host</span>: <span id="currentHost" style="font-weight: bold"></span> - <span id="running_processes"></span>]</td>
+            <td class="ram-info-td">
+                <span class="translate">RAM total usage:</span> <span id="totalRam" class="ram-font-weight"></span>
+                <span class="translate">MB</span> <span class="free-mem-label">/</span>
+                <span class="translate free-mem-label">Free RAM:</span>
+                <span id="freeMemPercent" class="ram-font-weight"></span><span>=</span><span id="freeMem" class="ram-font-weight"></span>
+                <span class="translate free-mem-label">MB</span>
+                [
+                <span class="translate">Host</span>: <span id="currentHost" class="ram-font-weight"></span> - <span id="running_processes"></span>]
+            </td>
             </tr>
         </table>
         <!--table id="grid-instances"></table>
         <div id="pager-instances"></div-->
-        <div style="width: 100%; height: calc(100% - 30px); overflow: auto">
+    <div style="width: 100%; height: calc(100% - 30px); overflow: auto; margin-left:1px; width:calc(100% - 2px)">
             <table class="instance-table" style="width: 100%;">
                 <thead id="grid-instances-head">
                 </thead>
@@ -127,6 +202,11 @@
     <div id="tab-objects"   class="admin-tab" style="display:none" data-name="Objects">
         <div id="grid-objects"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>
     </div>
+<!--<div id="tab-objects1" class="admin-tab" style="display:none; height: calc(100% - 55px); width: 100%; overflow:hidden" data-name="Objects1">-->
+<div id="tab-objects1"class="admin-tab" style="display:none; height: calc(100% - 55px); overflow:hidden" data-name="Objects1">
+    <!--<div id="grid-objects1" style="height: 100%; width: calc(100% - 18px)"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>-->
+    <div id="grid-objects1" style="height: 100%; width: 100%"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>
+</div>
     <div id="tab-states"    class="admin-tab" data-name="States" style="display: none">
         <table id="grid-states"></table>
         <div id="pager-states"></div>
