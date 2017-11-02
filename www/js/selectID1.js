@@ -1410,8 +1410,10 @@ function span (txt, attr) {
             if (data.columns.indexOf (filterNo) !== -1) {
                 if (placeholder === undefined) placeholder = data.texts[filterNo.toLowerCase()];
                 var cbEntries = getComboboxEnums (filterNo);
-                //var cbText = '<select id="filter_type_' + data.instance + '" class="filter_' + data.instance + '" style="font-size: 12px; line-height: 1.5em; padding:0;width: calc(100% + 1px); border:0;">';
-                var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '" style="font-size: 12px; line-height: 0.5em; padding:0;width: calc(100% + 1px); border:0;">';
+                // var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '" style="font-size: 12px; line-height: 0.5em; padding:0;width: calc(100% + 1px); border:0;">';
+                // moved to css: table.main-header-input-table>tbody>tr>td>select
+                var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">';
+
                 var add = function (a, b) {
                     if (Array.isArray (a)) {
                         b = a[0];

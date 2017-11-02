@@ -2,7 +2,7 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "2.0.9",
+        "version": "3.0.0",
         "news": {
             "2.0.10": {
                 "en": "added use of delete-key in the objects view.",

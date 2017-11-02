@@ -1684,6 +1684,10 @@ $(document).ready(function () {
             var index = $tabs.find('a[href="#' + tab + '"]').parent().index() - 1;
             $tabs.tabs('option', 'active', index+1);
             if (tab === 'tab-hosts') tabs.hosts.init();
+            var func;
+            if ((func=tabs[tab.substr(4)]) && (func=func.onSelected)) {
+                func();
+            }
         } else {
             tabs.hosts.init();
         }

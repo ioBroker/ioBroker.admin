@@ -218,43 +218,51 @@
         <iframe class="iframe-in-tab" id="iframe-node-red" style="width:100%"></iframe>
     </div-->
     <div id="tab-events"    class="admin-tab" data-name="Events" style="display:none">
-        <div id="grid-events" class="ui-jqgrid" style="display: block;">
-            <div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix" style="height: 23px">
-                <div class="">
-                    <span class="ui-jqgrid-title translate" style="padding-top: 3px">Events</span>
-                    <table style="border-collapse: collapse; position: absolute; right: 10px;  top: 1px"><tr>
-                        <td><button id="event-pause"></button></td>
-                        <td><button id="event-clear"></button></td>
-                    </tr></table>
-                </div>
+    <div id="grid-events" class="ui-jqgrid" style="height: 100%; display: block;">
+        <table class="main-toolbar-table">
+            <tr>
+                <td>
+                    <button id="event-pause" class="panel-button"></button>
+                </td>
+                <td>
+                    <button id="event-clear" style="font-size: 14px; font-weight: normal;"></button>
+                </td>
+                <td style="width: 90%"></td>
+            </tr>
+        </table>
 
-            </div>
-            <table style="width: 100%; border-collapse: collapse;" class="ui-widget ui-state-default ui-corner-bottom">
+
+        <table style="width: 100%; border-collapse: collapse;" class="main-header-table">
                 <thead>
-                <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
-                    <th class="event-column-1 ui-state-default ui-th-column ui-th-ltr translate">Event</th>
-                    <th class="event-column-2 ui-state-default ui-th-column ui-th-ltr">id</th>
-                    <th class="event-column-3 ui-state-default ui-th-column ui-th-ltr translate">val</th>
-                    <th class="event-column-4 ui-state-default ui-th-column ui-th-ltr translate">ack</th>
-                    <th class="event-column-5 ui-state-default ui-th-column ui-th-ltr translate">from</th>
-                    <th class="event-column-6 ui-state-default ui-th-column ui-th-ltr translate">ts</th>
-                    <th class="event-column-7 ui-state-default ui-th-column ui-th-ltr translate">lc</th>
-                    <th style="color: rgba(0,0,0,0)">aa</th>
-                </tr>
-                <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
-                    <th><select id="event-filter-type"></select></th>
-                    <th><table style="border-spacing: 0; border-collapse: collapse; width: 100%" cellspacing="0" cellpadding="1"><tr><td><input  id="event-filter-id" type="text" style="width:100%;font-size: 0.7em"/></td><td><button id="event-filter-id-clear"></button></td></tr></table></th>
-                    <th><table style="border-spacing: 0; border-collapse: collapse; width: 100%" cellspacing="0" cellpadding="1"><tr><td><input  id="event-filter-val" type="text" style="width:100%;font-size: 0.7em"/></td><td><button id="event-filter-val-clear"></button></td></tr></table></th>
-                    <th><select id="event-filter-ack"><option value="" class="translate">all</option><option value="true" class="translate">ack</option><option value="false" class="translate">not ack</option></select></th>
-                    <th><select id="event-filter-from"></select></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
+            <!--<tr id="events-table-tr" class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">-->
+            <!--<tr id="events-table-tr" class="" style="height: 24px;">-->
+            <tr id="events-table-tr">
                 </tr>
                 </thead>
             </table>
-            <div id="grid-events-inner" style="width: 100%; overflow-y: scroll;">
-                <table id="event-outer" style="width: 100%; border-collapse: collapse; margin-top: -1px" class="ui-widget ui-state-default ui-corner-bottom">
+        <div id="grid-events-inner" style="height: calc(100% - 50px); width: 100%; overflow-y: scroll;">
+            <!--<table id="event-outer" style="width: 100%; border-collapse: collapse; margin-top: -1px"-->
+            <!--class="ui-widget ui-state-default ui-corner-bottom iob-list-table events-list-table">-->
+            <!--<table id="event-outer" style="" class="ui-widget ui-state-default ui-corner-bottom iob-list-table events-list-table">-->
+            <table id="event-outer" class="iob-list-table events-list-table">
+                <colgroup>
+                    <!--<col class="event-column-1" width="10%"/>-->
+                    <!--<col class="event-column-2" width="30%"/>-->
+                    <!--<col class="event-column-3" width="10%"/>-->
+                    <!--<col class="event-column-4" width="9%"/>-->
+                    <!--<col class="event-column-5" width="10%"/>-->
+                    <!--<col class="event-column-6" width="10%"/>-->
+                    <!--<col class="event-column-7" width="10%"/>-->
+
+                    <col width="10%"/>
+                    <col width="30%"/>
+                    <col width="10%"/>
+                    <col width="9%"/>
+                    <col width="10%"/>
+                    <col width="10%"/>
+                    <col width="10%"/>
+                </colgroup>
+
                     <tbody id="event-table">
 
                     </tbody>
