@@ -59,20 +59,52 @@ function Adapters(main) {
         occ:          'schedule'
     };
 
+    function getVersionClass(version) {
+        if (version) {
+            var tmp = version.split ('.');
+            if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
+                version = "planned";
+            } else if (tmp[0] === '0' && tmp[1] === '0') {
+                version = "alpha";
+            } else if (tmp[0] === '0') {
+                version = "beta"
+            } else if (version === 'npm error') {
+                version = "error";
+            } else {
+                version = "stable";
+            }
+        }
+        return version;
+    }
+
     this.prepare = function () {
         that.$grid.fancytree({
             extensions: ['table', 'gridnav', 'filter', 'themeroller'],
             checkbox:   false,
             table: {
-                indentation: 20      // indent 20px per node level
+                indentation: 5      // indent 20px per node level
+            },
+            show: function(currentId, filter, onSuccess) {
+                that.sortTree();
             },
             source:     that.tree,
             renderColumns: function(event, data) {
                 var node = data.node;
                 var $tdList = $(node.tr).find('>td');
+                var obj = that.data[node.key];
 
-                if (!that.data[node.key]) {
+                function ellipsis(txt) {
+                    var ret = '<div style="padding-left: ' + lineIndent + '; overflow: hidden; white-space: nowrap; text-overflow: ellipsis !important;">' +
+                        txt +
+                        '</div>';
+                    return ret;
+                }
+
+                if (!obj) {
                     $tdList.eq(0).css({'font-weight': 'bold'});
+                    $tdList.eq(0).find('img').remove();
+                    $tdList.eq(0).find('span.fancytree-title').attr('style', 'padding-left: 0px !important');
+
                     //$(node.tr).addClass('ui-state-highlight');
 
                     // Calculate total count of adapter and count of installed adapter
@@ -83,31 +115,55 @@ function Adapters(main) {
                             for (var k = 0; k < that.tree[c].children.length; k++) {
                                 if (that.data[that.tree[c].children[k].key].installed) installed++;
                             }
+                            that.tree[c].installed = installed;
+                            node.data.installed = installed;
                             var title;
-                            if (!that.onlyInstalled && !that.onlyUpdatable) {
+                            //if (!that.onlyInstalled && !that.onlyUpdatable) {
                                 title = '[<span title="' + _('Installed from group') + '">' + installed + '</span> / <span title="' + _('Total count in group') + '">' + that.tree[c].children.length + '</span>]';
-                            } else {
-                                title = '<span title="' + _('Installed from group') + '">' + installed + '</span>';
-                            }
-                            $tdList.eq(4).html(title).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
+                                $tdList.eq(1).html(ellipsis('<b>'+installed + '</b> ' + _('of') + '<b> ' + that.tree[c].children.length + '</b> ' + _('Adapters from this Group installed')));
+                            // } else {
+                            //     title = '<span title="' + _('Installed from group') + '">' + installed + '</span>';
+                            //     $tdList.eq(1).html(ellipsis('<b>'+installed + '</b> ' + _('Installed from group')));
+                            // }
+
+                            //$tdList.eq(4).html(title).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
                             break;
                         }
                     }
                     return;
                 }
                 $tdList.eq(0).css({'overflow': 'hidden', 'white-space': 'nowrap'});
-                $tdList.eq(1).html(that.data[node.key].desc).css({'overflow': 'hidden', "white-space": "nowrap", position: 'relative', 'font-weight': that.data[node.key].bold ? 'bold' : null});
-                $tdList.eq(2).html(that.data[node.key].keywords).css({'overflow': 'hidden', "white-space": "nowrap"}).attr('title', that.data[node.key].keywords);
+                //$tdList.eq(1).html(that.data[node.key].desc).css({'overflow': 'hidden', "white-space": "nowrap", position: 'relative', 'font-weight': that.data[node.key].bold ? 'bold' : null});
 
-                $tdList.eq(3).html(that.data[node.key].version).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap", position: 'relative'});
-                $tdList.eq(4).html(that.data[node.key].installed).css({'padding-left': '10px', 'overflow': 'hidden', "white-space": "nowrap"});
-                $tdList.eq(5).html(that.data[node.key].platform).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
-                $tdList.eq(6).html(that.data[node.key].license).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
-                $tdList.eq(7).html(that.data[node.key].install).css({'text-align': 'center'});
+                function setHtml(no, html) {
+                    return $tdList.eq(no).html(ellipsis(html));
+                }
+
+                var idx = obj.desc.indexOf('<div>');
+                var desc = idx >= 0 ? obj.desc.substr(0, idx) : obj.desc;
+                $tdList.eq(1).html(ellipsis(obj.desc))
+                    .attr('title', desc)
+                    .css({"white-space": "nowrap", position: 'relative', 'font-weight': obj.bold ? 'bold' : null}).find('>div>div')
+                    .css('height:22px !important')
+                ;
+
+                setHtml(2, obj.keywords).attr('title', obj.keywords);
+
+                // $tdList.eq(3).html(obj.installed).css({'padding-left': '10px', 'overflow': 'hidden', "white-space": "nowrap"});
+                // $tdList.eq(4).html(obj.version).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap", position: 'relative'});
+                // $tdList.eq(5).html(obj.platform).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
+                // $tdList.eq(6).html(obj.license).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
+                // $tdList.eq(7).html(obj.install).css({'text-align': 'center'});
+                $tdList.eq(3).html(obj.installed);
+                $tdList.eq(4).html(obj.version); //.css({ position: 'relative'});
+                setHtml(5, obj.platform);
+                setHtml(6, obj.license);
+                setHtml(7, obj.install);
+
                 that.initButtons(node.key);
                 // If we render this element, that means it is expanded
-                if (that.isCollapsed[that.data[node.key].group]) {
-                    that.isCollapsed[that.data[node.key].group] = false;
+                if (that.isCollapsed[obj.group]) {
+                    that.isCollapsed[obj.group] = false;
                     that.main.saveConfig('adaptersIsCollapsed', JSON.stringify(that.isCollapsed));
                 }
             },
@@ -126,7 +182,7 @@ function Adapters(main) {
             }
         });
 
-        $('#btn_collapse_adapters').button({icons: {primary: 'ui-icon-folder-collapsed'}, text: false}).css({width: 18, height: 18}).unbind('click').click(function () {
+        $('#btn_collapse_adapters').button({icons: {primary: 'ui-icon-folder-collapsed'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
             $('#process_running_adapters').show();
             setTimeout(function () {
                 that.$grid.fancytree('getRootNode').visit(function (node) {
@@ -136,7 +192,7 @@ function Adapters(main) {
             }, 100);
         });
 
-        $('#btn_expand_adapters').button({icons: {primary: 'ui-icon-folder-open'}, text: false}).css({width: 18, height: 18}).unbind('click').click(function () {
+        $('#btn_expand_adapters').button({icons: {primary: 'ui-icon-folder-open'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
             $('#process_running_adapters').show();
             setTimeout(function () {
                 that.$grid.fancytree('getRootNode').visit(function (node) {
@@ -147,7 +203,7 @@ function Adapters(main) {
             }, 100);
         });
 
-        $('#btn_list_adapters').button({icons: {primary: 'ui-icon-grip-dotted-horizontal'}, text: false}).css({width: 18, height: 18}).unbind('click').click(function () {
+        $('#btn_list_adapters').button({icons: {primary: 'ui-icon-grip-dotted-horizontal'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
             $('#process_running_adapters').show();
             that.isList = !that.isList;
             if (that.isList) {
@@ -170,7 +226,7 @@ function Adapters(main) {
             }, 200);
         });
 
-        $('#btn_filter_adapters').button({icons: {primary: 'ui-icon-star'}, text: false}).css({width: 18, height: 18}).unbind('click').click(function () {
+        $('#btn_filter_adapters').button({icons: {primary: 'ui-icon-star'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
             $('#process_running_adapters').show();
             that.onlyInstalled = !that.onlyInstalled;
             if (that.onlyInstalled) {
@@ -186,7 +242,7 @@ function Adapters(main) {
             }, 200);
         });
 
-        $('#btn_filter_updates').button({icons: {primary: 'ui-icon-info'}, text: false}).css({width: 18, height: 18}).unbind('click').click(function () {
+        $('#btn_filter_updates').button({icons: {primary: 'ui-icon-info'}, text: false})/*.css({width: 18, height: 18}).unbind('click')*/.click(function () {
             $('#process_running_adapters').show();
             that.onlyUpdatable = !that.onlyUpdatable;
             if (that.onlyUpdatable) {
@@ -208,7 +264,8 @@ function Adapters(main) {
             .addClass('icon-github')
             .button({text: false})
             .html('')
-            .css({width: 18, height: 18}).unbind('click')
+            //.css({width: 18, height: 18})
+            .unbind('click')
             .click(function () {
                 // prepare adapters
                 var text = '<option value="">' + _('none') + '</option>';
@@ -279,7 +336,7 @@ function Adapters(main) {
                 });
         });
 
-        $('#btn_upgrade_all').button({icons: {primary: 'ui-icon-flag'}, text: false}).css({width: 18, height: 18}).unbind('click').click(function () {
+        $('#btn_upgrade_all').button({icons: {primary: 'ui-icon-flag'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
             that.main.confirmMessage(_('Do you want to upgrade all adapters?'), _('Question'), 'help', function (result) {
                 if (result) {
                     that.main.cmdExec(null, 'upgrade', function (exitCode) {
@@ -292,7 +349,7 @@ function Adapters(main) {
         $('#btn-adapters-expert-mode').button({
             icons: {primary: 'ui-icon-person'},
             text:  false
-        }).css({width: 18, height: 18}).attr('title', _('_Toggle expert mode')).click(function () {
+        })/*.css({width: 18, height: 18})*/.attr('title', _('_Toggle expert mode')).click(function () {
             that.main.config.expertMode = !that.main.config.expertMode;
             that.main.saveConfig('expertMode', that.main.config.expertMode);
             that.updateExpertMode();
@@ -345,24 +402,25 @@ function Adapters(main) {
             $('#btn_upgrade_all').hide();
         }
 
-        $('#btn_refresh_adapters').button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 18, height: 18}).click(function () {
+        $('#btn_refresh_adapters').button({icons: {primary: 'ui-icon-refresh'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
             that.init(true, true);
         });
 
         // add filter processing
         $('#adapters-filter').keyup(function () {
             $(this).trigger('change');
-        }).on('change', function () {
+        }).on('change', function (event) {
             if (that.filterTimer) {
                 clearTimeout(that.filterTimer);
             }
             that.filterTimer = setTimeout(function () {
                 that.filterTimer = null;
                 that.currentFilter = $('#adapters-filter').val().toLowerCase();
+                event && event.target && $(event.target)[that.currentFilter ? 'addClass' : 'removeClass'] ('input-not-empty');
                 that.main.saveConfig('adaptersCurrentFilter', that.currentFilter);
                 that.$grid.fancytree('getTree').filterNodes(customFilter, false);
             }, 400);
-        });
+        }).trigger('change');
 
         $('#adapters-filter-clear').button({icons: {primary: 'ui-icon-close'}, text: false}).css({width: 16, height: 16}).click(function () {
             $('#adapters-filter').val('').trigger('change');
@@ -528,6 +586,20 @@ function Adapters(main) {
         return '';
     }
 
+    this.sortTree = function() {
+        function sort(c1, c2) {
+            //var d1 = that.data[c1.key], d2 = that.data[c1.key];
+            var inst1 = c1.data.installed || 0, inst2 = c2.data.installed || 0;
+            var ret = inst2 - inst1;
+            if (ret) return ret;
+            var t1 = c1.title.toLowerCase(), t2 = c2.title.toLowerCase();
+            if (t1 > t2) return 1;
+            if (t1 < t2) return -1;
+            return 0;
+        }
+        that.$grid.fancytree('getRootNode').sortChildren(sort, true);
+    };
+
     // ----------------------------- Adapters show and Edit ------------------------------------------------
     this.init = function (update, updateRepo) {
         if (!this.main.objectsLoaded) {
@@ -576,6 +648,25 @@ function Adapters(main) {
                 }
                 listUnsinstalled.sort();
 
+                function getVersionString(version, updatable, news, updatableError) {
+                    //var span = getVersionSpan(version);
+                    var color = getVersionClass(version);
+                    var title = color + '\n\r' + (news || '');
+                    //version = '<table style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
+                    version = //'<div style="height: 100% !important;">' +
+                        '<table style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'color: blue;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
+                        '<tr class="' + color + 'Bg">' +
+                        '<td title="'+title+'">' + version + '</td>' +
+                        '<td style="border: 0; padding: 0; width: 30px">';
+                    if (updatable) {    //xxx
+                        version += '<button class="adapter-update-submit" data-adapter-name="' + adapter + '" ' + (updatableError ? ' disabled title="' + updatableError + '"' : 'title="' + _ ('update') + '"') + '></button>';
+                        //version = version.replace('class="', 'class="updateReady ');
+                        $ ('a[href="#tab-adapters"]').addClass ('updateReady');
+                    }
+                    version += '</td></tr></table>';
+                    return version;
+                }
+
                 that.tree = [];
                 that.data = {};
 
@@ -609,7 +700,9 @@ function Adapters(main) {
                             updatable = true;
                             updatableError = checkDependencies(repository[adapter].dependencies);
                         }
-                        installed = '<table style="border: 0; border-collapse: collapse;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget"><tr><td style="border: 0; padding: 0; width: 50px" title="' + news + '">' + obj.version + '</td>';
+                        //installed = '<table style="border: 0; border-collapse: collapse;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget"><tr><td style="border: 0; padding: 0; width: 50px" title="' + news + '">' + obj.version + '</td>';
+                        installed = '<table style="min-width: 80px; text-align: center; border: 0; border-spacing: 0px;' /*+ (news ? 'font-weight: bold;' : '')*/ + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
+                            '<tr>';
 
                         var _instances = 0;
                         var _enabled   = 0;
@@ -622,45 +715,70 @@ function Adapters(main) {
                             }
                         }
                         if (_instances) {
-                            installed += '<td style="border: 0; padding: 0; width:40px">[<span title="' + _('Installed instances') + '">' + _instances + '</span>';
-                            if (_enabled) installed += '/<span title="' + _('Active instances') + '" class="true">' + _enabled + '</span>';
-                            installed += ']</td>';
+                            // installed += '<td style="border: 0; padding: 0; width:40px">[<span title="' + _('Installed instances') + '">' + _instances + '</span>';
+                            // if (_enabled) installed += '/<span title="' + _('Active instances') + '" class="true">' + _enabled + '</span>';
+                            // installed += ']</td>';
+                            installed += '<td style="border: 0; padding: 0; width:40px">';
+                            if (_enabled !== _instances) {
+                                installed += '<span title="' + _ ('Installed instances') + '">' + _instances + '</span>';
+                                if (_enabled) installed += ' ~ ';
+                            }
+                            if (_enabled) installed += '<span title="' + _('Active instances') + '" class="true">' + _enabled + '</span>';
+                            installed += '</td>';
                         } else {
                             installed += '<td style="border: 0; padding: 0; width: 40px"></td>';
                         }
+                        installed += '<td style="border: 0; padding: 0; width: 50px" title="' + news + '">' + obj.version + '</td>';
 
-                        tmp = installed.split('.');
-                        if (updatable) {
-                            installed += '<td style="border: 0; padding: 0; width: 30px"><button class="adapter-update-submit" data-adapter-name="' + adapter + '" ' + (updatableError ? ' disabled title="' + updatableError + '"' : 'title="' + _('update') + '"')+ '></button></td>';
-                            version = version.replace('class="', 'class="updateReady ');
-                            $('a[href="#tab-adapters"]').addClass('updateReady');
-                        } else if (that.onlyUpdatable) {
-                            continue;
-                        }
+                        //tmp = installed.split('.');
+                        // if (updatable) {    //xxx
+                        //     //TODO
+                        //     // installed += '<td style="border: 0; padding: 0; width: 30px"><button class="adapter-update-submit" data-adapter-name="' + adapter + '" ' + (updatableError ? ' disabled title="' + updatableError + '"' : 'title="' + _('update') + '"')+ '></button></td>';
+                        //     // version = version.replace('class="', 'class="updateReady ');
+                        //     // $('a[href="#tab-adapters"]').addClass('updateReady');
+                        // } else if (that.onlyUpdatable) {
+                        //     continue;
+                        // }
 
                         installed += '</tr></table>';
+                        if (!updatable && that.onlyUpdatable) continue;
                     }
-                    if (version) {
-                        tmp = version.split('.');
-                        if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
-                            version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
-                        } else if (tmp[0] === '0' && tmp[1] === '0') {
-                            version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
-                        } else if (tmp[0] === '0') {
-                            version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
-                        } else if (version === 'npm error') {
-                            version = '<span class="error" title="' + _("Cannot read version from NPM") + '">' + _('npm error') + '</span>';
-                        } else {
-                            version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
-                        }
-                    }
+                    // if (version) {
+                    //     tmp = version.split('.');
+                    //     if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
+                    //         version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
+                    //     } else if (tmp[0] === '0' && tmp[1] === '0') {
+                    //         version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
+                    //     } else if (tmp[0] === '0') {
+                    //         version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
+                    //     } else if (version === 'npm error') {
+                    //         version = '<span class="error" title="' + _("Cannot read version from NPM") + '">' + _('npm error') + '</span>';
+                    //     } else {
+                    //         version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
+                    //     }
+                    // }
+                    //version = getVersionSpan(version);
+
+                    // version = '<table style="min-width: 80px; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
+                    //     '<tr>' +
+                    //     '<td>' + getVersionSpan(version) + '</td>' +
+                    //     '<td style="border: 0; padding: 0; width: 30px">';
+                    // if (updatable) {    //xxx
+                    //     version += '<button class="adapter-update-submit" data-adapter-name="' + adapter + '" ' + (updatableError ? ' disabled title="' + updatableError + '"' : 'title="' + _ ('update') + '"') + '></button>';
+                    //     //version = version.replace('class="', 'class="updateReady ');
+                    //     $ ('a[href="#tab-adapters"]').addClass ('updateReady');
+                    // }
+                    // version += '</td></tr></table>';
+                    version = getVersionString(version, updatable, news, updatableError);
+
 
                     var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
                     var desc  = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
                     desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
                     that.data[adapter] = {
-                        image:      icon ? '<img src="' + icon + '" width="22px" height="22px" />' : '',
+                        //image:      icon ? '<img src="' + icon + '" width="22px" height="22px" />' : '',
+                        image:      icon ? '<img src="' + icon + '" width="18px" height="18px" />' : '',
                         name:       adapter,
                         title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),
                         desc:       desc,
@@ -668,11 +786,11 @@ function Adapters(main) {
                         version:    version,
                         installed:  installed,
                         bold:       obj.highlight || false,
-                        install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit" title="' + _('add instance') + '"></button>' +
-                                 '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit" title="' + _('readme') + '"></button>' +
-                                 ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-upload-submit">' + _('upload') + '</button>' : '') +
-                                 '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit" title="' + _('delete adapter') + '"></button>' +
-                                 ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-update-custom-submit" title="' + _('install specific version') + '"></button>' : ''),
+                        install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit td-button" title="' + _('add instance') + '"></button>' +
+                                 '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit td-button" title="' + _('readme') + '"></button>' +
+                                 ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-upload-submit td-button">' + _('upload') + '</button>' : '') +
+                                 '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit td-button" title="' + _('delete adapter') + '"></button>' +
+                                 ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-update-custom-submit td-button" title="' + _('install specific version') + '"></button>' : ''),
                         platform:   obj.platform,
                         group:      group,
                         license:    obj.license || '',
@@ -698,7 +816,7 @@ function Adapters(main) {
                                 folder:   true,
                                 expanded: !that.isCollapsed[that.data[adapter].group],
                                 children: [],
-                                icon:     that.groupImages[that.data[adapter].group]
+                                icon:     that.groupImages[that.data[adapter].group] ,
                             });
                             igroup = that.tree.length - 1;
                         }
@@ -727,18 +845,19 @@ function Adapters(main) {
 
                         if (repository[adapter] && repository[adapter].version) {
                             version = repository[adapter].version;
-                            tmp = version.split('.');
-                            if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
-                                version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
-                            } else if (tmp[0] === '0' && tmp[1] === '0') {
-                                version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
-                            } else if (tmp[0] === '0') {
-                                version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
-                            } else if (version === 'npm error') {
-                                version = '<span class="error" title="' + _("Cannot read version from NPM") + '">' + _('npm error') + '</span>';
-                            } else {
-                                version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
-                            }
+                            version = getVersionString(version);
+                            // tmp = version.split('.');
+                            // if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
+                            //     version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
+                            // } else if (tmp[0] === '0' && tmp[1] === '0') {
+                            //     version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
+                            // } else if (tmp[0] === '0') {
+                            //     version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
+                            // } else if (version === 'npm error') {
+                            //     version = '<span class="error" title="' + _("Cannot read version from NPM") + '">' + _('npm error') + '</span>';
+                            // } else {
+                            //     version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
+                            // }
                         }
 
                         var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
@@ -746,7 +865,8 @@ function Adapters(main) {
                         desc += showUploadProgress(adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
                         that.data[adapter] = {
-                            image:      repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" width="22px" height="22px" />' : '',
+                            //image:      repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" width="22px" height="22px" />' : '',
+                            image:      repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" width="18px" height="18px" />' : '',
                             name:       adapter,
                             title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),
                             desc:       desc,
@@ -754,11 +874,11 @@ function Adapters(main) {
                             version:    version,
                             bold:       obj.highlight,
                             installed:  '',
-                            install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit">' + _('add instance') + '</button>' +
-                                     '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit">' + _('readme') + '</button>' +
+                            install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit td-button">' + _('add instance') + '</button>' +
+                                     '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit td-button">' + _('readme') + '</button>' +
                                      '<div style="width: 22px; display: inline-block;">&nbsp;</div>' +
-                                     '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit">' + _('delete adapter') + '</button>' +
-                                    ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-update-custom-submit" title="' + _('install specific version') + '"></button>' : ''),
+                                     '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit td-button">' + _('delete adapter') + '</button>' +
+                                    ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-update-custom-submit td-button" title="' + _('install specific version') + '"></button>' : ''),
                             platform:   obj.platform,
                             license:    obj.license || '',
                             licenseUrl: obj.licenseUrl || '',
@@ -805,7 +925,8 @@ function Adapters(main) {
 
                 that.$grid.fancytree('getTree').reload(that.tree);
                 $('#grid-adapters').find('.fancytree-icon').each(function () {
-                    if ($(this).attr('src')) $(this).css({width: 22, height: 22});
+                    //if ($(this).attr('src')) $(this).css({width: 22, height: 22});
+                    if ($(this).attr('src')) $(this).css({width: 18, height: 18});
 
                     $(this).hover(function () {
                         var text = '<div class="icon-large" style="' +
@@ -829,6 +950,7 @@ function Adapters(main) {
                 $('#process_running_adapters').hide();
                 if (that.currentFilter) that.$grid.fancytree('getTree').filterNodes(customFilter, false);
 
+                that.sortTree();
                 that.enableColResize();
             });
         }
@@ -919,7 +1041,7 @@ function Adapters(main) {
             icons: {
                 primary: 'ui-icon-plusthick'
             }
-        }).css({width: 22, height: 18}).unbind('click').on('click', function () {
+        }).css(xytdButton).unbind('click').on('click', function () {
             var adapter = $(this).attr('data-adapter-name');
             that.getAdaptersInfo(that.main.currentHost, false, false, function (repo, installed) {
                 var obj = repo[adapter];
@@ -948,7 +1070,7 @@ function Adapters(main) {
         $('.adapter-delete-submit[data-adapter-name="' + adapter + '"]').button({
             icons: {primary: 'ui-icon-trash'},
             text:  false
-        }).css({width: 22, height: 18}).unbind('click').on('click', function () {
+        }).css(xytdButton).unbind('click').on('click', function () {
             var name = $(this).attr('data-adapter-name');
             that.main.confirmMessage(_('Are you sure?'), _('Question'), 'help', function (result) {
                 if (result) {
@@ -962,14 +1084,14 @@ function Adapters(main) {
         $('.adapter-readme-submit[data-adapter-name="' + adapter + '"]').button({
             icons: {primary: 'ui-icon-help'},
             text: false
-        }).css({width: 22, height: 18}).unbind('click').on('click', function () {
+        }).css(xytdButton).unbind('click').on('click', function () {
             window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
         });
 
         $('.adapter-update-submit[data-adapter-name="' + adapter + '"]').button({
             icons: {primary: 'ui-icon-refresh'},
             text:  false
-        }).css({width: 22, height: 18}).unbind('click').on('click', function () {
+        }).css(xytdButton).unbind('click').on('click', function () {
             var aName = $(this).attr('data-adapter-name');
             if (aName === 'admin') that.main.waitForRestart = true;
 
@@ -981,7 +1103,7 @@ function Adapters(main) {
         $('.adapter-upload-submit[data-adapter-name="' + adapter + '"]').button({
             icons: {primary: 'ui-icon-arrowthickstop-1-s'},
             text:  false
-        }).css({width: 22, height: 18}).unbind('click').on('click', function () {
+        }).css(xytdButton).unbind('click').on('click', function () {
             var aName = $(this).attr('data-adapter-name');
 
             that.main.cmdExec(null, 'upload ' + aName, function (exitCode) {
@@ -995,7 +1117,7 @@ function Adapters(main) {
             icons: {
                 primary: ' ui-icon-triangle-1-s'
             }
-        }).css({width: 22, height: 18}).unbind('click').on('click', function () {
+        }).css(xytdButton).unbind('click').on('click', function () {
             var versions = [];
             if (that.main.objects['system.adapter.' + adapter].common.news) {
                 for (var id in that.main.objects['system.adapter.' + adapter].common.news) {

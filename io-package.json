@@ -2,7 +2,7 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "2.0.11",
+        "version": "3.0.0",
         "news": {
             "2.0.11": {
                 "en": "Configurable event update disable threshold",

@@ -121,14 +121,14 @@ function Instances(main) {
         }
         return result || link;
     }
-    
+
     function replaceInLink(link, adapter, instance) {
         if (typeof link === 'object') {
             var links = JSON.parse(JSON.stringify(link));
             var first;
             for (var v in links) {
-                if (links.hasOwnProperty(v)) {
-                    links[v] = resolveLink(links[v], adapter, instance);
+                if (links.hasOwnProperty (v)) {
+                    links[v] = resolveLink (links[v], adapter, instance);
                     if (!first) first = links[v];
                 }
             }
@@ -259,11 +259,12 @@ function Instances(main) {
         }
     }
 
-    function createHead() {
+    function _createHead() {
         var text = '<tr>';
         // _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('memlimit'), _('alive'), _('connected')],
-        text += '<th style="width: 2em"></th>';
-        text += '<th style="width: 2em"></th>';
+        text += '<th style="width: calc(2em - 6px)"></th>';
+        //text += '<th style="width: 2em"></th>';
+        text += '<th style="width: calc(2em - 6px)"></th>';
         text += '<th style="width: 14em">' + _('instance') + '</th>';
         text += '<th style="width: 12em"></th>';
         text += '<th style="text-align: left">' + _('title') + '</th>';
@@ -283,6 +284,39 @@ function Instances(main) {
         text += '<th style="width: 8em">' + _('RAM usage') + '</th>';
         that.$gridhead.html(text);
     }
+
+    function createHead() {
+        var text = '<tr>';
+        // _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('memlimit'), _('alive'), _('connected')],
+
+
+               ///xxx
+        text += '<th style="width: calc(2em - 6px); border-right-color:transparent;">' +
+            '<span style="overflow:visible;" >' + _('instance') + '</span>' +
+            '</th>';
+        //text += '<th style="width: 2em"></th>';
+        text += '<th style="width: calc(2em - 6px); border-left-color:transparent; border-right-color:transparent;"></th>';
+        //text += '<th style="width: 14em">' + _('instance') + '</th>';
+        text += '<th style="width: 14em; border-left-color:transparent;"></th>';
+        text += '<th style="width: 12em">' + _('buttons') + '</th>';
+        text += '<th style="text-align: left">' + _('title') + '</th>';
+
+        if (that.main.tabs.hosts.list.length > 1) {
+            text += '<th style="width: 10em">' + _('host') + '</th>';
+        }
+
+        text += '<th style="width: 8em">' + _('schedule_group') + '</th>';
+
+        if (that.main.config.expertMode) {
+            text += '<th style="width: 8em">' + _('restart')  + '</th>';
+            text += '<th style="width: 8em">' + _('loglevel') + '</th>';
+            text += '<th style="width: 8em">' + _('memlimit') + '</th>';
+            text += '<th style="width: 8em">' + _('events') + '</th>';
+        }
+        text += '<th style="width: 8em">' + _('RAM usage') + '</th>';
+        that.$gridhead.html(text);
+    }
+
 
     function calculateTotalRam() {
         var host      = that.main.states['system.host.' + that.main.currentHost + '.memRss'];
@@ -310,6 +344,10 @@ function Instances(main) {
         }
     }
 
+    function tdp(x, nachkomma) {
+        return isNaN(x) ? "" : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
     function calculateFreeMem() {
         var host = that.main.states['system.host.' + that.main.currentHost + '.freemem'];
         if (host) {
@@ -317,8 +355,9 @@ function Instances(main) {
             var percent = Math.round((host.val / that.totalmem) * 100);
 
             if (host.val.toString() !== $('#freeMem').text()) {
-                $('#freeMem').html('<span class="highlight ' + (percent < 10 ? 'high-mem' : '') + '">' + host.val + '</span>');
-                $('#freeMemPercent').html('<span class="highlight">(' + percent + '%)</span>');
+                $('#freeMem').html('<span class="highlight ' + (percent < 10 ? 'high-mem' : '') + '">' + tdp(host.val) + '</span>');
+                //$('#freeMemPercent').html('<span class="highlight">(' + percent + '%)</span>');
+                $('#freeMemPercent').html('<span class="highlight">' + percent + '%</span>');
             }
         } else {
             $('.free-mem-label').hide();
@@ -374,14 +413,17 @@ function Instances(main) {
             text += '<td class="instance-state" style="text-align: center"><div class="instance-led" style="margin-left: 0.5em; width: 1em; height: 1em;" data-instance-id="' + instanceId + '"></div></td>';
 
             // icon
-            text += '<td>' + (common.icon ? link + '<img src="adapter/' + adapter + '/' + common.icon + '" style="width: 2em; height: 2em" class="instance-image" data-instance-id="' + instanceId + '"/>' : '') + (link ? '</a>': '') + '</td>';
+            //text += '<td>' + (common.icon ? link + '<img src="adapter/' + adapter + '/' + common.icon + '" style="width: 2em; height: 2em" class="instance-image" data-instance-id="' + instanceId + '"/>' : '') + (link ? '</a>': '') + '</td>';
+            text += '<td>' + (common.icon ? link + '<img src="adapter/' + adapter + '/' + common.icon + '" class="instance-image" data-instance-id="' + instanceId + '"/>' : '') + (link ? '</a>': '') + '</td>';
 
             // name and instance
             text += '<td style="padding-left: 0.5em" data-instance-id="' + instanceId + '" class="instance-name"><b>' + adapter + '.' + instance + '</b></td>';
 
             var isRun = common.onlyWWW || common.enabled;
             // buttons
-            text += '<td style="text-align: left; padding-left: 1em;">' +
+            //text += '<td style="text-align: left; padding-left: 1em;">' +
+//            text += '<td style="text-align: left; padding-left: 1px;">' +
+            text += '<td style="text-align: left;">' +
                 (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-stop-run"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-settings"></button>' +
                 (!common.onlyWWW ? '<button ' + (isRun ? '' : 'disabled ') + 'style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
@@ -456,7 +498,7 @@ function Instances(main) {
                         }
                     })
                 });
-            }    
+            }
         });
 
         $('.instance-name[data-instance-id="' + instanceId + '"]').click(function () {
@@ -645,7 +687,7 @@ function Instances(main) {
             close: function () {
                 // Clear iframe
                 that.$configFrame.attr('src', '');
-                
+
                 // If after wizard some configuratins must be shown
                 if (typeof showConfig !== 'undefined' && showConfig && showConfig.length) {
                     var configId = showConfig.shift();
@@ -1097,7 +1139,7 @@ function Instances(main) {
                 that.showConfigDialog(id);
             });
         if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({icons: {primary: 'ui-icon-note'}, text: false}).css({width: '2em', height: '2em'}).attr('title', _('config'));
+            $e.button({icons: {primary: 'ui-icon-note'}, text: false})./*css({width: '2em', height: '2em'}).*/attr('title', _('config'));
         }
         $e.each(function () {
             var _id = $(this).attr('data-instance-id');
@@ -1113,7 +1155,7 @@ function Instances(main) {
                 });
             });
         if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: '2em', height: '2em'}).attr('title', _('reload'));
+            $e.button({icons: {primary: 'ui-icon-refresh'}, text: false})/*.css({width: '2em', height: '2em'})*/.attr('title', _('reload'));
         }
 
         $e = $('.instance-del' + id).unbind('click')
@@ -1130,7 +1172,7 @@ function Instances(main) {
                 }
             });
         if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({icons: {primary: 'ui-icon-trash'}, text: false}).css({width: '2em', height: '2em'}).attr('title', _('delete'));
+            $e.button({icons: {primary: 'ui-icon-trash'}, text: false})/*.css({width: '2em', height: '2em'})*/.attr('title', _('delete'));
         } else {
             $e.button('enable');
         }
@@ -1173,7 +1215,9 @@ function Instances(main) {
             $e.each(function () {
                 var id = $(this).attr('data-instance-id');
                 $e.button({icons: {primary: that.main.objects[id].common.enabled ? 'ui-icon-pause': 'ui-icon-play'}, text: false})
-                    .css({width: '2em', height: '2em', 'background-color': that.main.objects[id].common.enabled ? 'lightgreen' : '#FF9999'})
+                    //.css({width: '2em', height: '2em', 'background-color': that.main.objects[id].common.enabled ? 'lightgreen' : '#FF9999'})
+                    //.css({width: '1.8em', height: '1.8em', 'background-color': that.main.objects[id].common.enabled ? 'lightgreen' : '#FF9999'})
+                    .css({'background-color': that.main.objects[id].common.enabled ? 'lightgreen' : '#FF9999'})
                     .attr('title', that.main.objects[id].common.enabled ? _('Activated. Click to stop.') : _('Deactivated. Click to start.'));
             });
         }
@@ -1192,7 +1236,7 @@ function Instances(main) {
                         menu += '<li data-link="' + _link[m] + '" data-instance-id="' + $(this).data('instance-id') + '" class="instances-menu-link"><b>' + m + (port ? ' :' + port[1] : '') + (https ? ' - SSL' : '') + '</b></li>';
                     }
                     menu += '<li class="instances-menu-link">' + _('Close') + '</li>';
-                    
+
                     var $instancesMenu = $('#instances-menu');
                     if ($instancesMenu.data('inited')) $instancesMenu.menu('destroy');
 
@@ -1222,7 +1266,7 @@ function Instances(main) {
         if (typeof url === 'object') $e.data('link', url);
 
         if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({icons: {primary: 'ui-icon-image'}, text: false}).css({width: '2em', height: '2em'}).attr('title', _('open web page'));
+            $e.button({icons: {primary: 'ui-icon-image'}, text: false})/*.css({width: '2em', height: '2em'})*/.attr('title', _('open web page'));
         } else {
             $e.button('enable');
         }

@@ -52,6 +52,8 @@ $(document).ready(function () {
         path = '/socket.io';
     }
 
+    var allTabs = {};
+
     var main = {
         objects:        {},
         states:         {},
@@ -74,6 +76,14 @@ $(document).ready(function () {
                 storage.set('adminConfig', JSON.stringify(main.config));
             }
         },
+        saveTabs: function () {
+            this.socket.emit ('setObject', 'system.config', this.systemConfig, function (err) {
+                if (err) {
+                    this.showError (err);
+                }
+            })
+        },
+
         // Helper methods
         upToDate:       function (_new, old) {
             _new = _new.split('.');
@@ -522,6 +532,7 @@ $(document).ready(function () {
         logs:       new Logs(main),
         states:     new States(main),
         objects:    new Objects(main),
+        objects1:   new Objects1(main),
         events:     new Events(main),
         hosts:      new Hosts(main),
         users:      new Users(main),
@@ -593,6 +604,9 @@ $(document).ready(function () {
                         case '#tab-objects':
                             tabs.objects.init();
                             break;
+                        case '#tab-objects1':
+                            tabs.objects1.init();
+                            break;
 
                         case '#tab-hosts':
                             tabs.hosts.init();
@@ -633,65 +647,248 @@ $(document).ready(function () {
                 },
                 create: function () {
                     var $tabs = $('#tabs');
-                    $tabs.find('ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
+                    //$tabs.find('ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
+                    //$tabs.find('ul.ui-tabs-nav').prepend('<li class="header"></li>');
 
-                    var buttons = '<button class="menu-button" id="button-logout" title="' + _('Logout') + '"></button>';
-                    buttons += '<button class="menu-button" id="button-system" title="' + _('System') + '"></button>';
-                    buttons += '<div id="current-user" class="menu-button" style="padding-right: 10px; padding-top: 5px; height: 16px"></div>';
-                    buttons += '<button class="menu-button" id="button-edit-tabs"></button>';
-                    buttons += '<button class="menu-button" id="button-wizard"></button>';
-                    buttons += '<select id="tabs-show"></select>';
+                    // var buttons = '' +
+                    //     //'<table class="panel-table main-admin-buttons" style="border-spacing: 3px; width: auto; position: relative; height: 27px; top: 5px;"><td>' +
+                    //     '<table class="panel-table main-admin-buttons"><td>' +
+                    //     '<td><button class="menu-button panel-button" id="button-wizard"></button></td>' +
+                    //     '<td style="background: #fff;"><span id="current-user" class="" style="height: inherit;  padding-left: 5px; padding-right: 5px; font-size: 12px; margin:0"></span></td>' +
+                    //     '<td><button class="menu-button panel-button" id="button-system" title="' + _('System') + '"></button></td>' +
+                    //     '<td><button class="menu-button panel-button" id="button-logout" title="' + _('Logout') + '"></button></td>' +
+                    //     '<td><button class="menu-button panel-button" id="button-edit-tabs"></button></td>' +
+                    //     '<td><select id="tabs-show"></select></td>' +
+                    //     '</tr></table>' +
+                    //
+                    //     '<div style="color: #fff;  position: absolute; top: 10px; right: 10px;">ioBroker.admin</div>';
+
+                    var buttons = '';
+
+                    if (!main.editTabs) {
+                        buttons += '<table class="choose-tabs-config-button"><tr><td>▽</td></tr></table>';
+                    }
+
+                    //'<table class="panel-table main-admin-buttons" style="border-spacing: 3px; width: auto; position: relative; height: 27px; top: 5px;"><td>' +
+                    buttons += '' +
+                        '<table class="panel-table main-admin-buttons"><tr>' +
+                        '<td><button class="menu-button panel-button" id="button-wizard"></button></td>' +
+
+//                        '<td><button class="menu-button panel-button" id="button-logout" title="' + _('Logout') + '"></button></td>' +
+                        '<td><button class="menu-button panel-button" id="button-system" title="' + _('System') + '"></button></td>' +
+                        '<td style="background: #fff;"><span id="current-user" class="" style="height: inherit;  padding-left: 5px; padding-right: 5px; font-size: 12px; margin:0"></span></td>' +
+                        //'<td><button class="menu-button panel-button" id="button-edit-tabs"></button></td>' +
+//                        '<td><button class="menu-button panel-button" id="button-wizard"></button></td>' +
+                        '<td><button class="menu-button panel-button" id="button-logout" title="' + _('Logout') + '"></button></td>' +
+                        //'<td><select id="tabs-show" style="z-index: 10; font-size: 12px"></select></td>' +
+                        '</tr></table>' +
+
+                        '<div style="color: #fff;  position: absolute; top: 10px; right: 10px;">ioBroker.admin</div>';
+
+
+                    // '<div style="top: 40; z-index: 99;">' +
+                    // '<button class="menu-button panel-button" id="button-logout" title="' + _('Logout') + '"></button>' +
+                    // '<button class="menu-button panel-button" id="button-system" title="' + _('System') + '"></button>' +
+                    // '<div id="current-user" class="menu-button panel-button" style="padding-right: 5px; width: none; padding-top: 5px; background: #fff; color: #000;"></div>' +
+                    // '<button class="menu-button panel-button" id="button-edit-tabs"></button>' +
+                    // '<button class="menu-button panel-button" id="button-wizard"></button>' +
+                    // '<select id="tabs-show"></select>' +
+                    // '</div>'
+
 
                     $tabs.find('ul.ui-tabs-nav').append(buttons);
 
-                    if (showTabs) {
-                        $('#tabs-show')
-                            .html('<option value="">' + _('Show...') + '</option>' + showTabs)
-                            .show()
-                            .selectmenu({
-                                width: 150,
-                                change: function () {
-                                    if ($(this).val()) {
-                                        main.systemConfig.common.tabs.push($(this).val());
-                                        // save
-                                        main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
-                                            if (err) {
-                                                main.showError(err);
+                    // if (showTabs) {
+                    //     $('#tabs-show')
+                    //         .html('<option value="">' + _('Show...') + '</option>' + showTabs)
+                    //         .show()
+                    //         .selectmenu({
+                    //             width: 150,
+                    //             change: function () {
+                    //                 if ($(this).val()) {
+                    //                     main.systemConfig.common.tabs.push($(this).val());
+                    //                     // save
+                    //                     main.saveTabs();
+                    //                     // main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
+                    //                     //     if (err) {
+                    //                     //         main.showError(err);
+                    //                     //     }
+                    //                     // });
+                    //                     initTabs();
+                    //                 }
+                    //             }
+                    //         });
+                    // } else {
+                    //     $('#tabs-show').html('').hide();
+                    // }
+
+                    $('.choose-tabs-config-button').click(function(event) {
+                        var $dialog = $ ('#dialog');
+                        var html = $dialog.html();
+                        if (html) {
+                            $dialog.html('');
+                            $('html').unbind("click");
+                            return;
                                             }
+                        setTimeout(function () {
+                            $('html').bind( "click", function(event){
+                                $dialog.html('');
+                                $('html').unbind("click");
                                         });
-                                        initTabs();
-                                    }
+                        }, 100);
+                        var $e = $ (event.target).parent ().parent ();
+                        var offs = $e.offset ();
+                        offs.top += $e.height () - 2;
+                        offs.left -= 4;
+                        console.log ('offs=', offs);
+                        var text = '' +
+                            '<dialog open style="margin: 0; font-family: Tahoma; font-size: 12px; white-space: nowrap; background: #fff; position: absolute; top: ' + offs.top + 'px; left: ' + offs.left + 'px;">' + // style="overflow: visible; z-index: 999; ">'
+                            '<div style="overflow: visible; z-index: 999; position: absolute; left:0px; top: 0px;">' +
+                            '<ul style="border: 1px solid #909090; line-height: 24px; padding:8px; margin: 0; list-style: none; float: left; background:#fff; color:#000">';
+
+                        //var $lis = $ ('#tabs-ul>li');
+                        var $lis = $ ('#tabs-ul').find('>li');
+                        for (var tid in allTabs) {
+                            var name = allTabs[tid];
+                            var found = false;
+                            $lis.each (function (i, e) {
+                                if (tid === $ (e).attr ('aria-controls')) {
+                                    found = $ (e);
+                                    return false;
                                 }
                             });
-                    } else {
-                        $('#tabs-show').html('').hide();
-                    }
-
-                    $('#button-edit-tabs').button({
-                        icons: {primary: 'ui-icon-pencil'},
-                        text: false
-                    }).click(function () {
-                        if (main.editTabs) {
-                            $('.tab-close').hide();
-                            $('#tabs-show-button').hide();
-                            main.editTabs = false;
-                            $(this).removeClass('ui-state-error');
-                        } else {
-                            $('.tab-close').show();
-                            $('#tabs-show-button').show();
-                            $(this).addClass('ui-state-error');
-                            main.editTabs = true;
+                            var id = 'chk-' + tid;
+                            text += '' +
+                                '<li><input ' + (found ? 'checked' : 'unchecked') + ' style="vertical-align: middle;" class="chk-tab" type="checkbox" id="' + id + '" />' +
+                                '<label style="padding-left: 4px;" for="' + id + '">' + name + '</label></id>';
                         }
+                        text += '' +
+                            '</ul>' +
+                            '</div>' +
+                            '</dialog>';
+                        $dialog.append (text);
+
+                        $('.chk-tab').click(function(event) {
+                            var id = $(event.currentTarget).attr('id').substr(4);
+                            if (event.toElement.checked) {
+                                main.systemConfig.common.tabs.push(id);
+                            } else {
+                                var pos = main.systemConfig.common.tabs.indexOf(id);
+                                if (id !== -1) main.systemConfig.common.tabs.splice(pos, 1);
+                            }
+                            main.saveTabs();
+                                        initTabs();
+                            });
+
                     });
+
+//                     $('#button-edit-tabs').button({
+//                         icons: {primary: 'ui-icon-pencil'},
+//                         text: false
+//                     }).click(function (event) {
+//
+//                         if (1) {
+//
+//                             var $dialog = $ ('#dialog');
+//                             var html = $dialog.html();
+//                             if (html) {
+//                                 $dialog.html('');
+//                                 $('html').unbind("click");
+//                                 return;
+//                             }
+//                             setTimeout(function () {
+//                                 $('html').bind( "click", function(event){
+//                                     $dialog.html('');
+//                                     $('html').unbind("click");
+//                                 });
+//                             }, 100);
+//                             var $e = $ (event.target).parent ().parent ();
+//                             var offs = $e.offset ();
+//                             offs.top += $e.height () - 2;
+//                             offs.left -= 4;
+//                             console.log ('offs=', offs);
+//                             var text = '' +
+//                                 '<dialog open style="margin: 0; font-family: Tahoma; font-size: 12px; white-space: nowrap; background: #fff; position: absolute; top: ' + offs.top + 'px; left: ' + offs.left + 'px;">' + // style="overflow: visible; z-index: 999; ">'
+//                                 '<div style="overflow: visible; z-index: 999; position: absolute; left:0px; top: 0px;">' +
+//                                 '<ul style="border: 1px solid #909090; line-height: 24px; padding:8px; margin: 0; list-style: none; float: left; background:#fff; color:#000">';
+//
+//                             var $lis = $ ('#tabs-ul>li');
+//                             for (var tid in allTabs) {
+//                                 var name = allTabs[tid];
+//                                 var found = false;
+//                                 $lis.each (function (i, e) {
+//                                     if (tid === $ (e).attr ('aria-controls')) {
+//                                         found = $ (e);
+//                                         return false;
+//                                     }
+//                                 });
+//                                 var id = 'chk-' + tid;
+//                                 text += '<li><input ' + (found ? 'checked' : 'unchecked') + ' style="vertical-align: middle;" class="chk-tab" type="checkbox" id="' + id + '" /><label for="' + id + '">' + name + '</label></id>';
+//                             }
+//                             text += '' +
+//                                 '</ul>' +
+//                                 '</div>' +
+//                                 '</dialog>';
+//
+//
+//                             /*
+//                             '<select>' +
+//                             '<option style="line-height: 2em;" value="A">eins</option>' +
+//                             '<option style="line-height: 2em;" value="B">zwei</option>' +
+//                             '</select>' +
+//                             '</div>' +
+//                             '</dialog>';
+// */
+//
+//                             // text = //`<div style="z-index: 100; position: absolute; top: 10px, left: 10px" class="nav-wrapper">
+//                             //         `<nav class="nav-menu" style="z-index: 100; position: absolute; top: 10px, left: 10px">
+//                             //         <ul class="clearfix">
+//                             //         <li>Home</li>
+//                             //         <li>Mitwirkende
+//                             //         </li>
+//                             //         <li>Kontakt
+//                             //         </li>
+//                             //         </ul>
+//                             //         </nav>
+//                             //         </div>`;
+//
+//                             $ ('#dialog').append (text);
+//
+//                             $('.chk-tab').click(function(event) {
+//                                 var id = $(event.currentTarget).attr('id').substr(4);
+//                                 if (event.toElement.checked) {
+//                                     main.systemConfig.common.tabs.push(id);
+//                                 } else {
+//                                     var pos = main.systemConfig.common.tabs.indexOf(id);
+//                                     if (id !== -1) main.systemConfig.common.tabs.splice(pos, 1);
+//                                 }
+//                                 main.saveTabs();
+//                                 initTabs();
+//                             });
+//
+//                             return;
+//                         }
+//                         if (main.editTabs) {
+//                             $('.tab-close').hide();
+//                             $('#tabs-show-button').hide();
+//                             main.editTabs = false;
+//                             $(this).removeClass('ui-state-error');
+//                         } else {
+//                             $('.tab-close').show();
+//                             $('#tabs-show-button').show();
+//                             $(this).addClass('ui-state-error');
+//                             main.editTabs = true;
+//                         }
+//                     });
 
                     main.updateWizard();
 
-                    if (!main.editTabs) {
-                        $('.tab-close').hide();
-                        $('#tabs-show-button').hide();
-                    } else {
-                        $('#button-edit-tabs').addClass('ui-state-error');
-                    }
+                    // if (!main.editTabs) {
+                    //     $('.tab-close').hide();
+                    //     $('#tabs-show-button').hide();
+                    // } else {
+                    //     $('#button-edit-tabs').addClass('ui-state-error');
+                    // }
 
                     $('#button-logout').button({
                         text: false
@@ -740,13 +937,15 @@ $(document).ready(function () {
         var showTabs = '';
 
         var addTabs = [];
-        for (var i = 0; i < main.instances.length; i++) {
-            if (!main.objects[main.instances[i]].common ||
-                !main.objects[main.instances[i]].common.adminTab) continue;
 
-            if (main.objects[main.instances[i]].common.adminTab.singleton) {
+        allTabs = {};
+        for (var i = 0; i < main.instances.length; i++) {
+            var instance = main.instances[i];
+            var instanceObj = main.objects[instance];
+            if (!instanceObj.common || !instanceObj.common.adminTab) continue;
+            if (instanceObj.common.adminTab.singleton) {
                 var isFound = false;
-                var inst1 = main.instances[i].replace(/\.(\d+)$/, '.');
+                var inst1 = instance.replace(/\.(\d+)$/, '.');
                 for (var j = 0; j < addTabs.length; j++) {
                     var inst2 = addTabs[j].replace(/\.(\d+)$/, '.');
                     if (inst1 === inst2) {
@@ -754,54 +953,74 @@ $(document).ready(function () {
                         break;
                     }
                 }
-                if (!isFound) addTabs.push(main.instances[i]);
+                if (!isFound) addTabs.push(instance);
             } else {
-                addTabs.push(main.instances[i]);
+                addTabs.push(instance);
             }
         }
 
         // Build the standard tabs together
         $('.admin-tab').each(function () {
-            list.push($(this).attr('id'));
+            var $this = $(this);
+            var id = $this.attr('id'), name = $this.data('name');
+            list.push(id);
+            allTabs[id] = name;
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf($(this).attr('id')) !==-1) {
-                text += '<li><a href="#' + $(this).attr('id') + '">' + _($(this).data('name')) + '</a><button class="tab-close" data-tab="' + $(this).attr('id') + '"></button></li>\n';
-                $(this).show().appendTo($('#tabs'));
+                //text += '<li><a href="#' + id + '">' + _(name) + '</a><button class="tab-close" data-tab="' + id + '"></button></li>\n';
+                text += '<li><a href="#' + id + '">' + _(name) + '</a></button></li>\n';
+                $this.show().appendTo($('#tabs'));
             } else {
-                if ($(this).parent().prop('tagName') !== 'BODY') {
-                    $(this).appendTo($('body'));
-                    var $t = $(this);
+                if ($this.parent().prop('tagName') !== 'BODY') {
+                    $this.appendTo($('body'));
                     setTimeout(function () {
-                        $t.hide()
+                        $this.hide()
                     }, 100);
                 }
-                showTabs += '<option value="' + $(this).attr('id') + '">' + _($(this).data('name')) + '</option>';
+                showTabs += '<option value="' + id + '">' + _(name) + '</option>';
             }
         });
 
         // Look for adapter tabs
         for (var a = 0; a < addTabs.length; a++) {
-            var name = 'tab-' + main.objects[addTabs[a]].common.name;
-            var link = main.objects[addTabs[a]].common.adminTab.link || '/adapter/' + main.objects[addTabs[a]].common.name + '/tab.html';
+            var tab = main.objects[addTabs[a]];
+            var name = 'tab-' + tab.common.name;
+            var link = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
             var parts = addTabs[a].split('.');
             var buttonName;
 
-            if (main.objects[addTabs[a]].common.adminTab.name) {
-                if (typeof main.objects[addTabs[a]].common.adminTab.name === 'object') {
-                    if (main.objects[addTabs[a]].common.adminTab.name[systemLang]) {
-                        buttonName = main.objects[addTabs[a]].common.adminTab.name[systemLang];
-                    } else if (main.objects[addTabs[a]].common.adminTab.name.en) {
-                        buttonName = _(main.objects[addTabs[a]].common.adminTab.name.en);
+            if (tab.common.adminTab.name) {
+                if (typeof tab.common.adminTab.name === 'object') {
+                    if (tab.common.adminTab.name[systemLang]) {
+                        buttonName = tab.common.adminTab.name[systemLang];
+                    } else if (tab.common.adminTab.name.en) {
+                        buttonName = _(tab.common.adminTab.name.en);
                     } else {
-                        buttonName = _(main.objects[addTabs[a]].common.name);
+                        buttonName = _(tab.common.name);
                     }
                 } else {
-                    buttonName = _(main.objects[addTabs[a]].common.adminTab.name);
+                    buttonName = _(tab.common.adminTab.name);
                 }
             } else {
-                buttonName = _(main.objects[addTabs[a]].common.name);
+                buttonName = _(tab.common.name);
             }
 
-            if (!main.objects[addTabs[a]].common.adminTab.singleton) {
+            // if (main.objects[addTabs[a]].common.adminTab.name) {
+            //     if (typeof main.objects[addTabs[a]].common.adminTab.name === 'object') {
+            //         if (main.objects[addTabs[a]].common.adminTab.name[systemLang]) {
+            //             buttonName = main.objects[addTabs[a]].common.adminTab.name[systemLang];
+            //         } else if (main.objects[addTabs[a]].common.adminTab.name.en) {
+            //             buttonName = _(main.objects[addTabs[a]].common.adminTab.name.en);
+            //         } else {
+            //             buttonName = _(main.objects[addTabs[a]].common.name);
+            //         }
+            //     } else {
+            //         buttonName = _(main.objects[addTabs[a]].common.adminTab.name);
+            //     }
+            // } else {
+            //     buttonName = _(main.objects[addTabs[a]].common.name);
+            // }
+
+            if (!tab.common.adminTab.singleton) {
                 if (link.indexOf('?') !==-1) {
                     link += '&instance=' + parts[3];
                 } else {
@@ -814,6 +1033,7 @@ $(document).ready(function () {
             }
 
             list.push(name);
+            allTabs[name] = buttonName;
 
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(name) !==-1) {
                 var isReplace = false;
@@ -827,7 +1047,8 @@ $(document).ready(function () {
                     isReplace = link.indexOf('%') !== -1;
                 }
 
-                text += '<li><a href="#' + name + '">' + buttonName + '</a><button class="tab-close" data-tab="' + name + '"></button></li>\n';
+                //text += '<li><a href="#' + name + '">' + buttonName + '</a><button class="tab-close" data-tab="' + name + '"></button></li>\n';
+                text += '<li><a href="#' + name + '">' + buttonName + '</a></button></li>\n';
 
                 if (!$('#' + name).length) {
                     var div = '<div id="' + name + '" class="tab-custom ' + (isReplace ? 'link-replace': '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
@@ -851,22 +1072,23 @@ $(document).ready(function () {
         if (!main.systemConfig.common.tabs) main.systemConfig.common.tabs = list;
         $('#tabs-ul').html(text);
 
-        $('.tab-close').button({
-            icons: {primary: 'ui-icon-close'},
-            text: false
-        }).unbind('click').click(function () {
-            var pos = main.systemConfig.common.tabs.indexOf($(this).data('tab'));
-            if (pos !==-1) {
-                main.systemConfig.common.tabs.splice(pos, 1);
-                // save
-                main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
-                    if (err) {
-                        main.showError(err);
-                    }
-                });
-            }
-            initTabs();
-        }).css({width: 16, height: 16});
+        // $('.tab-close').button({
+        //     icons: {primary: 'ui-icon-close'},
+        //     text: false
+        // }).unbind('click').click(function () {
+        //     var pos = main.systemConfig.common.tabs.indexOf($(this).data('tab'));
+        //     if (pos !==-1) {
+        //         main.systemConfig.common.tabs.splice(pos, 1);
+        //         main.saveTabs();
+        //         // save
+        //         // main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
+        //         //     if (err) {
+        //         //         main.showError(err);
+        //         //     }
+        //         // });
+        //     }
+        //     initTabs();
+        // }).css({width: 16, height: 16});
 
         var $tabs = $('#tabs');
         $tabs.hide();
@@ -881,7 +1103,8 @@ $(document).ready(function () {
             var loadTimeout = setTimeout(function() {
                 loadTimeout = null;
                 initHtmlTabs(showTabs);
-            }, 1000);
+                //}, 1000);
+            }, 100);
 
             $('.link-replace').each(function () {
                 // convert "http://%ip%:%port%" to "http://localhost:1880"
@@ -1070,6 +1293,7 @@ $(document).ready(function () {
         } else {
             tabs.states.stateChange(id, state);
             tabs.objects.stateChange(id, state);
+            tabs.objects1.stateChange(id, state);
             tabs.hosts.stateChange(id, state);
 
             if (main.selectId) main.selectId.selectId('state', id, state);
@@ -1078,6 +1302,7 @@ $(document).ready(function () {
         // Update alive and connected of main.instances
         tabs.instances.stateChange(id, state);
         tabs.objects.stateChangeHistory(id, state);
+        tabs.objects1.stateChangeHistory(id, state);
         tabs.adapters.stateChange(id, state);
     }
 
@@ -1107,6 +1332,7 @@ $(document).ready(function () {
         main.addEventMessage(id, null, null, obj);
 
         tabs.objects.objectChange(id, obj);
+        tabs.objects1.objectChange(id, obj);
 
         if (main.selectId) main.selectId.selectId('object', id, obj);
 
@@ -1366,6 +1592,7 @@ $(document).ready(function () {
                                                     'tab-adapters',
                                                     'tab-instances',
                                                     'tab-objects',
+                                                    'tab-objects1',
                                                     'tab-log',
                                                     'tab-scenes',
                                                     'tab-javascript',
@@ -1387,6 +1614,7 @@ $(document).ready(function () {
                                 initAllDialogs();
                                 tabs.hosts.prepare();
                                 tabs.objects.prepare();
+                                tabs.objects1.prepare();
                                 tabs.states.prepare();
                                 tabs.adapters.prepare();
                                 tabs.instances.prepare();
@@ -1394,6 +1622,7 @@ $(document).ready(function () {
                                 tabs.groups.prepare();
                                 tabs.enums.prepare();
                                 tabs.objects.prepareCustoms();
+                                tabs.objects1.prepareCustoms();
                                 tabs.events.prepare();
                                 main.systemDialog.prepare();
                                 resizeGrids();
@@ -1453,8 +1682,12 @@ $(document).ready(function () {
             var tab = 'tab-' + window.location.hash.slice(1);
             var $tabs = $('#tabs');
             var index = $tabs.find('a[href="#' + tab + '"]').parent().index() - 1;
-            $tabs.tabs('option', 'active', index);
+            $tabs.tabs('option', 'active', index+1);
             if (tab === 'tab-hosts') tabs.hosts.init();
+            var func;
+            if ((func=tabs[tab.substr(4)]) && (func=func.onSelected)) {
+                func();
+            }
         } else {
             tabs.hosts.init();
         }
