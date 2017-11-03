@@ -1,6 +1,5 @@
 console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as file path');
 
-
 /* global jQuery */
 /* global document */
 /* jshint -W097 */
@@ -841,36 +840,38 @@ function span(txt, attr) {
         var $parent = $(this).parent();
         var value = $parent.data('clippy');
         var id = $parent.data('id');
-        $('<div position: absolute;left: 5px; top: 5px; right: 5px; bottom: 5px; border: 1px solid #CCC;"><textarea style="margin: 0; border: 0;background: white;width: 100%; height: 100%; resize: none;" ></textarea></div>').dialog({
-            autoOpen: true,
-            modal: true,
-            title: data.texts.edit,
-            width: '50%',
-            height: 200,
-            open: function () {
-                $(this).find('textarea').val(value);
-            },
-            buttons: [
-                {
-                    text: data.texts.select,
-                    click: function () {
-                        var val = $(this).find('textarea').val();
-                        if (val !== value) {
-                            data.quickEditCallback(id, 'val', val, value);
-                            value = '<span style="color: darkviolet; width: 100%;">' + value + '</span>';
-                            $parent.html(value);
-                        }
-                        $(this).dialog('close').dialog('destroy').remove();
-                    }
+        $('<div position: absolute;left: 5px; top: 5px; right: 5px; bottom: 5px; border: 1px solid #CCC;"><textarea style="margin: 0; border: 0;background: white;width: 100%; height: 100%; resize: none;" ></textarea></div>')
+            .dialog({
+                autoOpen: true,
+                modal: true,
+                title: data.texts.edit,
+                width: '50%',
+                height: 200,
+                open: function (event) {
+                    $(this).find('textarea').val(value);
+                    $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                 },
-                {
-                    text: data.texts.cancel,
-                    click: function () {
-                        $(this).dialog('close').dialog('destroy').remove();
+                buttons: [
+                    {
+                        text: data.texts.select,
+                        click: function () {
+                            var val = $(this).find('textarea').val();
+                            if (val !== value) {
+                                data.quickEditCallback(id, 'value', val, value);
+                                value = '<span style="color: darkviolet; width: 100%;">' + value + '</span>';
+                                $parent.html(value);
+                            }
+                            $(this).dialog('close').dialog('destroy').remove();
+                        }
+                    },
+                    {
+                        text: data.texts.cancel,
+                        click: function () {
+                            $(this).dialog('close').dialog('destroy').remove();
+                        }
                     }
-                }
-            ]
-        });
+                ]
+            });
     }
 
     function clippyShow(e) {
@@ -1286,6 +1287,9 @@ function span(txt, attr) {
                 autoOpen: false,
                 modal: true,
                 width: '90%',
+                open: function (event) {
+                    $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                },
                 close: function () {
                     storeSettings (data);
                 },
@@ -3052,7 +3056,10 @@ function span(txt, attr) {
                             $('body').append('<div id="select-id-dialog"><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span><span>' + (data.texts.noconnection || 'No connection to server') + '</span></div>');
                         }
                         $('#select-id-dialog').dialog({
-                            modal: true
+                            modal: true,
+                            open: function (event) {
+                                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                            }
                         });
                     }, 5000);
 
