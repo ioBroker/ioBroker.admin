@@ -875,7 +875,7 @@ function span(txt, attr) {
     function clippyShow(e) {
         var text;
         var data;
-        if ($(this).hasClass('clippy')) {
+        if ($(this).hasClass('clippy') && !$(this).find('.clippy-button').length) {
             data = data || $(this).data('data');
             text = '<button class="clippy-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button" ' +
                 'role="button" title="' + data.texts.copyToClipboard + '" ' +
@@ -887,7 +887,7 @@ function span(txt, attr) {
             $(this).find('.clippy-button').click(clippyCopy);
         }
 
-        if ($(this).hasClass('edit-dialog')) {
+        if ($(this).hasClass('edit-dialog') && !$(this).find('.edit-dialog-button').length) {
             data = data || $(this).data('data');
             text = '<button class="edit-dialog-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button" ' +
                 'role="button" title="' + data.texts.editDialog + '" ' +
@@ -964,15 +964,14 @@ function span(txt, attr) {
         $ ('#filter_' + field + '_' + data.instance).val(val).trigger ('change');
     }
 
-
-
     function onQuickEditField(event) {
         var $this   = $(this);
         var id      = $this.data('id');
         var attr    = $this.data('name');
         var data    = $this.data('selectId');
         var type    = $this.data('type');
-        var clippy  = $this.hasClass('clippy');
+        var clippy  = $this.parent().hasClass('clippy');
+        var editDialog = $this.parent().hasClass('edit-dialog');
         var options = $this.data('options');
         var oldVal  = $this.data('old-value');
         var states  = null;
@@ -987,10 +986,17 @@ function span(txt, attr) {
         //
         // data.$tree.fancytree('getTree')
         //
-        var activeNode = data.$tree.fancytree('getTree');
-        activeNode = activeNode.getActiveNode();
+        // var activeNode = data.$tree.fancytree('getTree');
+        // activeNode = activeNode.getActiveNode();
 
-        if (clippy)  $this.removeClass('clippy');
+        if (clippy)  {
+            $this.parent().removeClass('clippy');
+            $this.parent().find('.clippy-button').remove();
+        }
+        if (editDialog) {
+            $this.parent().removeClass('edit-dialog');
+            $this.parent().find('.edit-dialog-button').remove();
+        }
 
         $this.unbind('click').removeClass('select-id-quick-edit').css('position', 'relative');
 
@@ -1134,7 +1140,12 @@ function span(txt, attr) {
 
         function editDone(ot) {
             if (ot === undefined) ot = $this.data('old-value') || '';
-            if (clippy) $this.addClass ('clippy');
+            if (clippy) {
+                $this.parent().addClass ('clippy');
+            }
+            if (editDialog) {
+                $this.parent().addClass ('edit-dialog');
+            }
             $this.css({'padding-left': oldLeftPadding, width: oldWidth});
             $this.html(ot).click(onQuickEditField).addClass('select-id-quick-edit');
             //if (activeNode && activeNode.lebgth) activeNode.setActive();
