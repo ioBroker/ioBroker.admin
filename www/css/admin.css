@@ -1459,7 +1459,7 @@ table#grid-states>tbody>tr.jqgfirstrow {
     /*background: #f00;*/
 }
 
-#pager-states td:nth-child(3), #pager-states td:nth-child(5) {
+#pager-states_center td:nth-child(3), #pager-states_center td:nth-child(5) {
     visibility: hidden;
 }
 
@@ -1543,8 +1543,13 @@ table#grid-states>tbody>tr.jqgfirstrow {
 }
 
 #pager-states_right {
-    visibility: visible;
     font-size: 0.75em;
+    position:relative;
+    top: 2px;
+}
+
+#grid-states>tbody>tr>td {
+    /*padding-left: 5px;*/   /* Tabelle wird zu groß, so das ein unterer Scrollbar entsteht. */
 }
 
 /*#tab-states .ui-pg-table .ui-icon {*/
