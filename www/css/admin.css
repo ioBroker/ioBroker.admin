@@ -1,3 +1,10 @@
+
+/** global
+    background: #efefef !important;
+
+    td border: 1px solid #e0e0e0
+**/
+
 body {
     font-size: 11px;
     margin: 0;
@@ -301,24 +308,24 @@ table#events {
 }
 
 /* ------------ Log table ------------ */
-.log-column-1 {
-    width: 103px;
-    text-align: right;
-}
-.log-column-2 {
-    width: 180px;
-    font-weight: normal;
-    text-align: center;
-    white-space: nowrap;
-}
-.log-column-3 {
-    width: 75px;
-    text-align: center;
-    font-weight: bold;
-}
-.log-column-4 {
-    font-weight: normal;
-}
+/*.log-column-1 {*/
+    /*width: 120px;*/
+    /*!*text-align: right;*!*/
+/*}*/
+/*.log-column-2 {*/
+    /*width: 180px;*/
+    /*!*font-weight: normal;*!*/
+    /*!*text-align: center;*!*/
+    /*white-space: nowrap;*/
+/*}*/
+/*.log-column-3 {*/
+    /*width: 75px;*/
+    /*!*text-align: center;*!*/
+    /*!*font-weight: bold;*!*/
+/*}*/
+/*.log-column-4 {*/
+    /*font-weight: normal;*/
+/*}*/
 .log-column-1-header {
     width: 100px;
 }
@@ -335,6 +342,7 @@ table#events {
 }
 .log-severity-info {
     color: black;
+    /*background-color: #0ca3d2;*/
 }
 .log-severity-warn {
     color: #ce9900;
@@ -344,8 +352,36 @@ table#events {
 }
 
 #log-table tr:nth-child(even){
-    background: #efefef;
+    /*background: #efefef;*/
+    background-color: #e9e9e9;
 }
+table#log-outer {
+    background: #efefef !important;
+    text-align: left;
+
+    font-weight: normal;
+    font-size: 0.9em;
+    font-family: "Segoe UI", Tahoma, Arial;
+    white-space: nowrap;
+}
+#log-table>tr {
+    height: 24px;
+}
+#log-table>tr>td {
+    text-align: left !important;
+    /*padding-left: 5px !important;*/
+    padding-left: 5px !important;
+
+    border: 1px solid #e0e0e0;
+    /*font-weight: normal;*/
+    /*font-size: 14px;*/
+    /*font-family: "Segoe UI", Tahoma, Arial;*/
+}
+#log-table>tr>td:first-child {
+    color: #0000a0;
+    /*padding-left: 5px !important;*/
+}
+
 
 #drop-zone {
     width: 100%;
@@ -900,16 +936,43 @@ table.panel-table>tbody>tr>td {
     width: 100%;
     padding: 0;
     /*padding-bottom: 3px !important;*/
-    border-spacing: 0 0;
+    border-spacing: 3px 0;
     /*border-collapse: collapse;*/
 
     /*margin-left: 1px;*/
     /*margin-top: 2px;*/
     margin-bottom: 5px;
 
+    position: relative;
+    left: -2px;
     /*margin-bottom: 3px;*/
     /*border-collapse: collapse;*/
 }
+
+table.main-toolbar-table>tbody>tr>td {
+    padding:0;
+    width: 24px !important;
+    height: 24px !important;
+}
+table.main-toolbar-table>tbody>tr>td:last-child {
+    width: 100% !important;
+
+    text-align: right;
+    white-space: nowrap;
+    font-size: 0.75em;
+    font-weight: normal;
+}
+
+table.main-toolbar-table>tbody>tr>td>button {
+    width: 24px;
+    height: 24px;
+}
+
+
+table.main-toolbar-table>tr>td {
+    padding: 10px !important;
+}
+
 
 /*table.main-toolbar-table>tbody>tr>td {*/
     /*padding: 0;*/
@@ -924,9 +987,6 @@ table.instance-table>thead>tr>th {
     font-weight: normal;
 }
 
-table.main-toolbar-table>tr>td {
-    padding: 10px !important;
-}
 
 /* column filter header table ***************/
 .main-header-table {
@@ -942,7 +1002,7 @@ table.main-header-table>tbody>tr, table.main-header-table>thead>tr {
     margin-top: 1px;
 }
 table.main-header-table>tbody>tr>td, table.main-header-table>thead>tr>td, table.main-header-table>thead>tr>th {
-    padding: 0;
+    padding: 0 !important;
     border: 1px solid #c0c0c0 !important;
 }
 
@@ -1459,6 +1519,8 @@ table#grid-states>tbody>tr.jqgfirstrow {
     /*background: #f00;*/
 }
 
+/*#pager-states_center table.tbody.tr.td:nth-child(3), #pager-states table.tbody.tr.td:nth-child(5) {*/
+/*#pager-states td:nth-child(3), #pager-states td:nth-child(5) {*/
 #pager-states_center td:nth-child(3), #pager-states_center td:nth-child(5) {
     visibility: hidden;
 }
@@ -1555,3 +1617,24 @@ table#grid-states>tbody>tr.jqgfirstrow {
 /*#tab-states .ui-pg-table .ui-icon {*/
 
 /*}*/
+
+
+.log-pause-button-active {
+    font-size: 14px;
+    width: 100% !important;
+    text-align: center;
+    padding: 0 !important;
+    margin: 0 !important;
+    padding-right: 5px !important;
+    padding-left: 5px !important;
+}
+.log-pause-button-active:focus {
+    background: #fff !important;
+}
+
+.log-pause-button-active>span {
+    padding:0 !important;
+    width: 100%;
+    font-weight: normal;
+    font-size: 14px;
+}
