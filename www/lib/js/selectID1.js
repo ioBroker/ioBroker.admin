@@ -496,6 +496,7 @@ function span(txt, attr) {
                 var _id = '';
                 for (var p = 0; p < pparts.length; p++) {
                     _id += _id ? '.' + pparts[p] : pparts[p];
+                    if (_id === id) continue;
                     data.counters[_id] = data.counters[_id] || 0;
                     data.counters[_id]++;
                 }
