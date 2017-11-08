@@ -344,9 +344,6 @@ function Instances(main) {
         }
     }
 
-    function tdp(x, nachkomma) {
-        return isNaN(x) ? "" : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
 
     function calculateFreeMem() {
         var host = that.main.states['system.host.' + that.main.currentHost + '.freemem'];

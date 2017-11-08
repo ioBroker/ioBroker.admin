@@ -34,6 +34,9 @@
     <script src="lib/js/jquery.fancytree.gridnav.js" type="text/javascript"></script>
     <script src="lib/js/jquery.fancytree.filter.js" type="text/javascript"></script>
     <script src="lib/js/jquery.fancytree.edit.js" type="text/javascript"></script-->
+
+    <script type="text/javascript" src="js/listHeader.js"></script>
+
     <script type="text/javascript" src="lib/js/selectID.js"></script>
     <script type="text/javascript" src="lib/js/selectID1.js"></script>
     <script type="text/javascript" src="lib/js/cron/jquery.cron.js"></script>
@@ -208,6 +211,26 @@
     <div id="grid-objects1" style="height: 100%; width: 100%"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>
 </div>
     <div id="tab-states"    class="admin-tab" data-name="States" style="display: none">
+    <!--<table><tr><td>-->
+    <!--</td></tr></table>-->
+
+    <table class="main-toolbar-table">
+        <tr><td>:</td></tr>
+    </table>
+
+
+    <!--<table class="main-toolbar-table">-->
+        <!--<tr>-->
+            <!--<td>-->
+                <!--<button id="event-pause" class="panel-button"></button>-->
+            <!--</td>-->
+            <!--<td>-->
+                <!--<button id="event-clear" style="font-size: 14px; font-weight: normal;"></button>-->
+            <!--</td>-->
+            <!--<td style="width: 90%"></td>-->
+        <!--</tr>-->
+    <!--</table>-->
+
         <table id="grid-states"></table>
         <div id="pager-states"></div>
     </div>
@@ -314,19 +337,58 @@
     </div>
     <div id="tab-log"       class="admin-tab" style="display: none" data-name="Log">
         <div id="grid-log" class="ui-jqgrid" style="display: block; height: 100%">
-            <div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">
-                <table style="padding: 0; margin: 0; border-spacing: 0" class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix"><tr>
-                    <td width="100%"><span class="ui-jqgrid-title translate">Log</span></td>
-                    <td id="log-size" style="width: 100px; font-size: 10px; font-weight: normal"></td>
-                    <td><button id="log-pause"         class="translateT" title="Pause output"></button></td>
-                    <td><button id="log-refresh"       class="translateT" title="Refresh log"></button></td>
-                    <td><button id="log-copy"          class="translateT" title="Copy log"></button></td>
-                    <td><button id="log-clear"         class="translateT" title="Clear log"></button></td>
-                    <td><button id="log-clear-on-disk" class="translateT" title="Clear on disk permanent"></button></td>
-                </tr></table>
-            </div>
-            <table id="log-outer-header" style="width: 100%; border-collapse: collapse;" class="ui-widget ui-state-default ui-corner-bottom">
+        <!--<div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">-->
+
+            <!--<table style="padding: 0; margin: 0; border-spacing: 0"-->
+                   <!--class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">-->
+                <!--<tr>-->
+                    <!--<td width="100%"><span class="ui-jqgrid-title translate">Log</span></td>-->
+                    <!--<td id="log-size" style="width: 100px; font-size: 10px; font-weight: normal"></td>-->
+                    <!--<td>-->
+                        <!--<button id="log-pause" class="translateT" title="Pause output"></button>-->
+                    <!--</td>-->
+                    <!--<td>-->
+                        <!--<button id="log-refresh" class="translateT" title="Refresh log"></button>-->
+                    <!--</td>-->
+                    <!--<td>-->
+                        <!--<button id="log-copy" class="translateT" title="Copy log"></button>-->
+                    <!--</td>-->
+                    <!--<td>-->
+                        <!--<button id="log-clear" class="translateT" title="Clear log"></button>-->
+                    <!--</td>-->
+                    <!--<td>-->
+                        <!--<button id="log-clear-on-disk" class="translateT" title="Clear on disk permanent"></button>-->
+                    <!--</td>-->
+                <!--</tr>-->
+            <!--</table>-->
+            <table class="main-toolbar-table">
+                <tr>
+
+                    <td><button id="log-refresh"       class="panel-button translateT" title="Refresh log"></button></td>
+                    <td><button id="log-pause"         class="panel-button translateT" title="Pause output"></button></td>
+                    <td><button id="log-copy"          class="panel-button translateT" title="Copy log"></button></td>
+                    <td><button id="log-clear"         class="panel-button translateT" title="Clear log"></button></td>
+                    <td><button id="log-clear-on-disk" class="panel-button translateT" title="Clear on disk permanent"></button></td>
+                    <td id="log-size" style="text-align: right; white-space: nowrap; font-size: 0.75em; font-weight: normal"></td>
+                    <!--<td style="width: 90% !important"></td>-->
+                    <!--<td>-->
+                    <!--<button id="event-pause" class="panel-button"></button>-->
+                    <!--</td>-->
+                    <!--<td>-->
+                    <!--<button id="event-clear" style="font-size: 14px; font-weight: normal;"></button>-->
+                    <!--</td>-->
+                    <!--<td style="width: 90%"></td>-->
+                </tr>
+            </table>
+
+        <!--</div>-->
+        <!--<table style="width: 100%; border-collapse: collapse;" class="main-header-table">-->
+        <table id="log-outer-header" class="main-header-table" style="width: 100%; border-collapse: collapse;">
+               <!--class="ui-widget ui-state-default ui-corner-bottom">-->
+
                 <thead>
+            <tr></tr>
+            <!--
                     <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
                         <th class="log-column-1-header ui-state-default ui-th-column ui-th-ltr" style="text-align: right"><select id="log-filter-host"></select></th>
                         <th class="log-column-2-header ui-state-default ui-th-column ui-th-ltr translate">ts</th>
@@ -339,10 +401,23 @@
                         </select></th>
                         <th class="log-column-4-header ui-state-default ui-th-column ui-th-ltr" style="text-align: left"><span class="translate" style="padding-right: 10px;padding-left: 5px">message</span><input id="log-filter-message" type="text" size="10"/><button id="log-filter-message-clear">x</button></th>
                     </tr>
+            -->
                 </thead>
             </table>
             <div id="grid-log-inner" style="width: 100%; overflow-y: scroll; height: calc(100% - 60px);">
-                <table id="log-outer" style="width: 100%; border-collapse: collapse; margin-top: -1px" class="ui-widget ui-state-default ui-corner-bottom">
+            <table id="log-outer" style="width: calc(100% - 3px); border-collapse: collapse; margin-top: -1px"
+                   class="ui-widget ui-state-default ui-corner-bottom">
+                <colgroup>
+                    <col width="120px"/>
+                    <col width="180px"/>
+                    <col width="90px"/>
+                    <!--<col width="90%"/>-->
+                </colgroup>
+
+                <thead>
+                <!--<tr style="visibility: hidden; height: 0 !important; background: #f00; "><td></td><td></td><td></td><td></td></tr>-->
+                <tr style="visibility: hidden; height: 0 !important; background: #f00; "><th></th><th></th><th></th><th></th></tr>
+                </thead>
                     <tbody id="log-table">
 
                     </tbody>

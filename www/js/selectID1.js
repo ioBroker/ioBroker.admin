@@ -133,13 +133,20 @@ console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as
      type: "state"
  */
 
+
+function tdp(x, nachkomma) {
+    return isNaN(x) ? "" : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+
 function removeImageFromSettings(data) {
     if (!data || !data.columns) return;
     var idx = data.columns.indexOf('image');
     if (idx >= 0) data.columns.splice(idx, 1);
 }
 
-var lineIndent = '6px';
+//var lineIndent = '6px';
+var lineIndent = '5px';
 var xtdButton = '20px';
 var ytdButton = '20px';
 var xytdButton = { width: 20, height: 20 };
@@ -916,6 +923,7 @@ function span(txt, attr) {
                 //resizeMode: 'flex',
                 resizeMode: 'fit',
                 minWidth: 50,
+                marginLeft: 5,
                 onResize: function (event) {
                     syncHeader($dlg);
                 }

@@ -79,7 +79,7 @@ function States(main) {
             sortname: "id",
             sortorder: "desc",
             viewrecords: true,
-            caption: _('ioBroker States'),
+            //caption: _('ioBroker States'),
             ignoreCase: true,
             ondblClickRow: function (id) {
                 if (!that.main.acl.state.write) return;
@@ -277,6 +277,49 @@ function States(main) {
             cursor: 'pointer'
         });
 
+        that.$grid.parent().parent().addClass('events-grid-div');
+
+        var oldHeader = $('#tab-states').find('.ui-jqgrid-htable');
+        oldHeader.addClass('main-header-table');
+        var $oldTr = oldHeader.find('thead>tr');
+        var newInputTables = $oldTr.eq(1).find('.ui-search-table');
+        var newTh = $oldTr.eq(1).find('th');
+        newInputTables.addClass('main-header-input-table');
+        var newInput = newInputTables.find('input');
+        $oldTr.eq(0).find('th').each(function(i, o) {
+            $(newInput[i]).attr('placeholder', $(o).text().trim()).attr('style', 'position: relative; top: 2px;');
+            //$(o).text('');
+            // $(newTh[i]).attr('id', $(o).attr('id'));
+            // $(o).removeAttr('id');
+
+        });
+        newInputTables.each(function (i, o) {
+            $(o).parent().css({padding: 0});  // div
+            $(o).parent().parent().css({padding: 0}); // th
+            var $a = $($(o).find('a'));
+            $a.css({display: 'block', padding: 0, position: 'relative', top: '1px'});
+            $a.html ('<span style="height:16px;" class="ui-button-icon-primary ui-icon ui-icon-close"></span>')
+
+
+        });
+
+        $oldTr.first().remove();
+        // setTimeout(function() {
+        //     $oldTr.first().css({ /*visibility: 'hidden',*/ position: 'absolute', top: '4px', 'z-index': '100' });
+        // }, 2000);
+        $($oldTr.eq(1)).attr('style', 'border-top: 1px solid #c0c0c0 !important; margin-left: 1px;');
+        $($oldTr.eq(1)).parent().parent().attr('style', 'header: 0 !important');
+        //$($(newHeader).find('tr')).attr('style', 'border: 1px solid #c0c0c0 !important');
+
+
+        var $nav = $('#pager-states');
+        var mainToolbar = $nav.find('table.ui-pg-table').first();
+        // mainToolbar.addClass('main-toolbar-table').css({'font-size': '12px'});
+        // mainToolbar.find('tr').first().css({height: '23px'});
+
+        mainToolbar.find('td').css({ padding: 0 });
+        syncHeader();
+
         if (this.main.config.statesFilter) {
             var filters = JSON.parse(this.main.config.statesFilter);
             if (filters.rules) {
@@ -350,7 +393,24 @@ function States(main) {
         }
     };
 
+    function syncHeader() {
+        var header = $('#tab-states').find('table.main-header-table>thead>tr>th');
+        //var tableTds = that.$grid.find('>tr>td');
+        var trs, tds, len=0;
+        if (!(trs=that.$grid[0].children) || !trs.length || !(trs=trs[0].children) || !(tds = trs[0].children) ) return;
+        $(tds).each(function(i, o) {
+            if (i >= $(tds).length-1) return;
+            var x = $(o).width();
+            //if (x) $(header[i]).width($(o).width()+7);  // mit padding-left: 5
+            if (x) $(header[i]).width($(o).width()+4);
+        });
+    }
+
+
+    var resizeTimer;
     this.resize = function (x, y) {
         this.$grid.setGridHeight(y - 150).setGridWidth(x - 20);
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(syncHeader, 100);
     };
 }
