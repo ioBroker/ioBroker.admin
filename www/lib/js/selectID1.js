@@ -131,15 +131,20 @@
      type: "state"
  */
 
+
+function tdp(x, nachkomma) {
+    return isNaN(x) ? "" : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+
 function removeImageFromSettings(data) {
     if (!data || !data.columns) return;
     var idx = data.columns.indexOf('image');
     if (idx >= 0) data.columns.splice(idx, 1);
 }
 
-var lineIndent = '6px';
-var xtdButton = '20px';
-var ytdButton = '20px';
+//var lineIndent = '6px';
+var lineIndent = '5px';
 var xytdButton = { width: 20, height: 20 };
 function span(txt, attr) {
     //if (txt === undefined) txt = '';
@@ -388,8 +393,6 @@ function span(txt, attr) {
         //var node = tree.getActiveNode();
     }
 
-
-
     function getAllStates(data) {
         var objects = data.objects;
         var isType  = data.columns.indexOf('type') !== -1;
@@ -401,6 +404,7 @@ function span(txt, attr) {
         data.tree = {title: '', children: [], count: 0, root: true};
         data.roomEnums = [];
         data.funcEnums = [];
+        data.counters  = {};
 
         for (var id in objects) {
             if (!objects.hasOwnProperty(id)) continue;
@@ -465,7 +469,9 @@ function span(txt, attr) {
             }
             if (isHist && objects[id].type === 'instance' && (objects[id].common.type === 'storage' || objects[id].common.supportCustoms)) {
                 var h = id.substring('system.adapter.'.length);
-                if (data.histories.indexOf(h) === -1) data.histories.push(h);
+                if (data.histories.indexOf(h) === -1) {
+                    data.histories.push(h);
+                }
             }
 
             if (!filterId(data, id)) continue;
@@ -473,13 +479,25 @@ function span(txt, attr) {
             treeInsert(data, id, data.currentId === id);
 
             if (objects[id].enums) {
-                for (var e in objects[id].enums) {
-                    if (objects[e] &&
-                        objects[e].common &&
-                        objects[e].common.members &&
-                        objects[e].common.members.indexOf(id) === -1) {
-                        objects[e].common.members.push(id);
+                for (var ee in objects[id].enums) {
+                    if (objects.hasOwnProperty(ee) &&
+                        objects[ee] &&
+                        objects[ee].common &&
+                        objects[ee].common.members &&
+                        objects[ee].common.members.indexOf(id) === -1) {
+                        objects[ee].common.members.push(id);
                     }
+                }
+            }
+            // fill counters
+            // TODO: re-calculate counters on updates or deletes
+            if (data.expertMode) {
+                var pparts = id.split('.');
+                var _id = '';
+                for (var p = 0; p < pparts.length; p++) {
+                    _id += _id ? '.' + pparts[p] : pparts[p];
+                    data.counters[_id] = data.counters[_id] || 0;
+                    data.counters[_id]++;
                 }
             }
         }
@@ -914,6 +932,7 @@ function span(txt, attr) {
                 //resizeMode: 'flex',
                 resizeMode: 'fit',
                 minWidth: 50,
+                marginLeft: 5,
                 onResize: function (event) {
                     syncHeader($dlg);
                 }
@@ -1244,7 +1263,6 @@ function span(txt, attr) {
         }
     }
 
-
     function initTreeDialog($dlg, resort) {
         var c;
         //$dlg.css({height: '100%', width: 'calc(100% - 18px)'});
@@ -1317,14 +1335,13 @@ function span(txt, attr) {
         //     if (typeof name === 'object') name = name.name;
         //     filter[name] = $ ('#filter_' + name + '_' + data.instance).val ();
         // }
-
-
+        
         var filter = {};
         forEachColumn(data, function (name) {
             filter[name] = $('#filter_' + name + '_' + data.instance).val ();
         });
 
-        function getComboboxEnums(kind) {
+        function getComboBoxEnums(kind) {
             var i, ret = [];
             switch (kind) {
                 case 'room':
@@ -1460,7 +1477,9 @@ function span(txt, attr) {
 
 
         function textFiltertext (filterNo, placeholder) {
-            if (placeholder === undefined) placeholder = data.texts[filterNo.toLowerCase()];
+            if (placeholder === undefined) {
+                placeholder = data.texts[filterNo.toLowerCase()];
+            }
             return '' +
                 //'<table style="width: 100%; height:100%; padding: 0;border: 1px solid #c0c0c0;border-spacing: 0;border-radius: 2px;">\n' +
                 '<table class="main-header-input-table">' +
@@ -1485,7 +1504,7 @@ function span(txt, attr) {
             var txt = '';
             if (data.columns.indexOf (filterNo) !== -1) {
                 if (placeholder === undefined) placeholder = data.texts[filterNo.toLowerCase()];
-                var cbEntries = getComboboxEnums (filterNo);
+                var cbEntries = getComboBoxEnums (filterNo);
                 // var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '" style="font-size: 12px; line-height: 0.5em; padding:0;width: calc(100% + 1px); border:0;">';
                 // moved to css: table.main-header-input-table>tbody>tr>td>select
                 var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">';
@@ -1781,6 +1800,10 @@ function span(txt, attr) {
                 var isCommon = obj && obj.common;
                 var $firstTD = $tdList.eq(0);
                 $firstTD.css({'overflow': 'hidden'});
+                if (data.counters[key]) {
+                    $firstTD.append('<span style="position: absolute; top: 6px; right: 1px; font-size: smaller;">' + data.counters[key] + '</span>');
+                }
+
                 var base = 0;
 
                 // hide checkbox if only states should be selected
@@ -1913,7 +1936,9 @@ function span(txt, attr) {
                         $elem.html(span(txt));
                     };
 
-                    if (typeof name === 'object') name = name.name;
+                    if (typeof name === 'object') {
+                        name = name.name;
+                    }
                     // if (name === 'image') {
                     //     var icon = '';
                     //     var alt = '';
@@ -1970,7 +1995,7 @@ function span(txt, attr) {
                         case 'name':
                             var icon = getIcon ();
                             //$elem = $tdList.eq(base);
-                            var t = isCommon ? obj.common.name : ''; //).css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '';
+                            var t = isCommon ? (obj.common.name || '') : ''; //).css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '';
                             //$elem.html('<table style="border-spacing:0;"><tr><td><img width="16px" height="16px" src="' + icon + '" alt="' + alt + '"/></td><td class="objects-name-coll-table-td" style="border:0;"><div style="padding-left: 4px;">' + t + '</div></td></tr></table>');
                             //$elem.html('<span><span class="objects-name-coll-icon"><img width="16px" height="16px" src="' + icon + '" alt="' + alt + '"/></span><span class="objects-name-coll-title" style="border:0;">' + t + '</span></tr></span>');
                             //$elem.html('<span><span class="objects-name-coll-icon"><img class="iob-list-icon" src="' + icon + '" alt="' + alt + '"/></span><span class="objects-name-coll-title" style="border:0;">' + t + '</span></tr></span>');
@@ -1998,7 +2023,7 @@ function span(txt, attr) {
                             }).attr ('title', t);
                             //$elem.text(isCommon ? data.objects[node.key].common.name : '').css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '');
                             if (data.quickEdit /*&& obj*/ && data.quickEdit.indexOf ('name') !== -1) {
-                                $e.data ('old-value', isCommon ? obj.common.name : '');
+                                $e.data ('old-value', isCommon ? (obj.common.name || ''): '');
                                 $e.click (onQuickEditField).data ('id', node.key).data ('name', 'name').data ('selectId', data).addClass ('select-id-quick-edit');
                             }
                             //base++;
