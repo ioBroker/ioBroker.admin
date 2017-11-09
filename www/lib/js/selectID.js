@@ -153,7 +153,6 @@ function span (txt, attr) {
     return '<span style="' + style + '">' + txt + '</span>';
 }
 
-
 (function ($) {
     'use strict';
 
@@ -402,7 +401,7 @@ function span (txt, attr) {
         data.tree = {title: '', children: [], count: 0, root: true};
         data.roomEnums = [];
         data.funcEnums = [];
-        data.counters  = {};
+        data.ids       = [];
 
         for (var id in objects) {
             if (!objects.hasOwnProperty(id)) continue;
@@ -488,16 +487,8 @@ function span (txt, attr) {
                 }
             }
             // fill counters
-            // TODO: re-calculate counters on updates or deletes
             if (data.expertMode) {
-                var pparts = id.split('.');
-                var _id = '';
-                for (var p = 0; p < pparts.length; p++) {
-                    _id += _id ? '.' + pparts[p] : pparts[p];
-                    if (_id === id || (p && !objects[_id])) continue;
-                    data.counters[_id] = data.counters[_id] || 0;
-                    data.counters[_id]++;
-                }
+                data.ids.push(id);
             }
         }
         data.inited = true;
@@ -506,6 +497,7 @@ function span (txt, attr) {
         data.roomEnums.sort();
         data.funcEnums.sort();
         data.histories.sort();
+        data.ids.sort();
     }
 
     function treeSplit(data, id) {
@@ -540,7 +532,9 @@ function span (txt, attr) {
 
     function _deleteTree(node, deletedNodes) {
         if (node.parent) {
-            if (deletedNodes && node.id) deletedNodes.push(node);
+            if (deletedNodes && node.id) {
+                deletedNodes.push(node);
+            }
             var p = node.parent;
             if (p.children.length <= 1) {
                 _deleteTree(node.parent);
@@ -569,7 +563,7 @@ function span (txt, attr) {
     function findTree(data, id) {
         return (function find(tree) {
             if (!tree.children) return;
-            for (var i=tree.children.length-1; i>=0; i--) {
+            for (var i = tree.children.length - 1; i >= 0; i--) {
                 var child = tree.children[i];
                 if (id === child.key) return child;
                 if (id.startsWith(child.key + '.')) {
@@ -582,7 +576,7 @@ function span (txt, attr) {
     }
 
     // function xfindTree(data, id) {
-    //     return _findTree(data.tree, treeSplit(data, id, false), 0);
+    //      return _findTree(data.tree, treeSplit(data, id, false), 0);
     // }
     // function _findTree(tree, parts, index) {
     //     var num = -1;
@@ -603,6 +597,7 @@ function span (txt, attr) {
     //     }
     // }
 
+    /*
     function treeInsert(data, id, isExpanded, addedNodes) {
         var idArr = data.list ? [id] : treeSplit(data, id);
         if (!idArr) return console.error('Empty object ID!');
@@ -638,48 +633,13 @@ function span (txt, attr) {
             }
             tree.id = id;
         })(data.tree, 0);
-    }
-
-    // function treeInsert(data, id, isExpanded, addedNodes) {
-    //     var idArr = data.list ? [id] : treeSplit(data, id);
-    //     if (!idArr) return console.error('Empty object ID!');
-    //     var key = '';
-    //
-    //     (function insert(tree, idx) {
-    //         for ( ; idx < idArr.length; idx += 1) {
-    //             if (key) key += '.';
-    //             key += idArr[idx];
-    //             if ((tree=data.objects[key].node)) {
-    //                 if (i === idArr.length-1) return;
-    //                 continue;
-    //             }
-    //             tree.folder = true;
-    //             tree.expanded = isExpanded;
-    //
-    //             var obj = {
-    //                 key: (data.root || '') + idArr.slice (0, idx + 1).join ('.'),
-    //                 children: [],
-    //                 title: idArr[idx],
-    //                 folder: false,
-    //                 expanded: false,
-    //                 parent: tree
-    //             };
-    //             data.objects[obj.key].node = obj;
-    //             tree.children.push (obj);
-    //             if (addedNodes) {
-    //                 addedNodes.push (obj);
-    //             }
-    //             tree = obj;
-    //         }
-    //         tree.id = id;
-    //     })(data.tree, 0);
-    // }
+    } */
 
 
-    function xtreeInsert(data, id, isExpanded, addedNodes) {
-        //return xtreeInsert(data, id, isExpanded, addedNodes);
+    function treeInsert(data, id, isExpanded, addedNodes) {
         return _treeInsert(data.tree, data.list ? [id] : treeSplit(data, id, false), id, 0, isExpanded, addedNodes, data);
     }
+
     function _treeInsert(tree, parts, id, index, isExpanded, addedNodes, data) {
         index = index || 0;
 
@@ -695,7 +655,7 @@ function span (txt, attr) {
                 num = j;
                 break;
             }
-            //if (tree.children[j].title > parts[index]) break;
+            // if (tree.children[j].title > parts[index]) break;
         }
 
         if (num === -1) {
@@ -752,6 +712,7 @@ function span (txt, attr) {
         }
     }
 
+    /*
     function xsyncHeader($dlg) {
         // read width of data.$tree and set the same width for header
         var data = $dlg.data('selectId');
@@ -761,7 +722,7 @@ function span (txt, attr) {
         for (var i = 1; i < thSrc.length; i++) {
             $(thDest[i]).attr('width', $(thSrc[i]).width());
         }
-    }
+    }*/
 
     function syncHeader($dlg) {
         // read width of data.$tree and set the same width for header
@@ -771,8 +732,8 @@ function span (txt, attr) {
         var thDest = $header.find('>tbody>tr>td');	//if table headers are specified in its semantically correct tag, are obtained
         var thSrc = data.$tree.find('>tbody>tr>td');
         for (var i = 0; i < thDest.length-1; i++) {
-            var olddest = $(thDest[i]).width();
-            $(thDest[i]).attr('width', $(thSrc[i]).width()+1);
+            // var olddest = $(thDest[i]).width();
+            $(thDest[i]).attr('width', $(thSrc[i]).width() + 1);
         }
     }
 
@@ -1804,8 +1765,16 @@ function span (txt, attr) {
                 var isCommon = obj && obj.common;
                 var $firstTD = $tdList.eq(0);
                 $firstTD.css({'overflow': 'hidden'});
-                if (data.counters[key]) {
-                    $firstTD.append('<span style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + data.counters[key] + '</span>');
+                var cnt = countChildren(key, data);
+                var $cnt = $firstTD.find('.select-id-cnt');
+                if (cnt) {
+                    if ($cnt.length) {
+                        $cnt.text('#' + cnt);
+                    } else {
+                        $firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
+                    }
+                } else {
+                    $cnt.remove();
                 }
 
                 var base = 0;
@@ -2035,15 +2004,14 @@ function span (txt, attr) {
                         case 'type':
                             //$tdList.eq(base++).text(obj ? obj.type: '');
                             //$tdList.eq(base++).html('<span style="padding-left: 5px;">' + (obj ? obj.type: '') + '</span>');
-                            setText (obj ? obj.type : '');
+                            setText(obj ? obj.type || '' : '');
                             //base += 1;
                             break;
                         case 'role':
                             //$elem = $tdList.eq(base);
                             //val = isCommon ? data.objects[node.key].common.role : '';
                             val = isCommon ? obj.common.role || '' : '';
-                            //$elem.text(val);
-                            setText (val);
+                            setText(val);
 
                             if (data.quickEdit && obj && data.quickEdit.indexOf ('role') !== -1) {
                                 $elem.data ('old-value', val);
@@ -2068,8 +2036,7 @@ function span (txt, attr) {
                             } else {
                                 val = '';
                             }
-                            //$elem.text(val);
-                            setText (val);
+                            setText(val);
 
                             if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf ('room') !== -1) {
                                 $elem.data ('old-value', val);
@@ -2097,8 +2064,7 @@ function span (txt, attr) {
                             } else {
                                 val = '';
                             }
-                            //$elem.text(val);
-                            setText (val);
+                            setText(val);
 
                             if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf ('function') !== -1) {
                                 $elem.data ('old-value', val);
@@ -2247,10 +2213,7 @@ function span (txt, attr) {
                                         text += '<button data-id="' + node.key + '" class="select-button-' + j + ' select-button-custom td-button"></button>';
                                     }
 
-                                    //$tdList.eq(base).html(text);
-                                    //$tdList.eq(base).html(span(text));
-                                    setText (text);
-                                    //$elem.css ({'padding-left': '5px !important'});
+                                    setText(text);
 
                                     for (var p = 0; p < data.buttons.length; p++) {
                                         var btn = $tr.find ('.select-button-' + p + '[data-id="' + node.key + '"]').button (data.buttons[p]).click (function () {
@@ -2263,8 +2226,7 @@ function span (txt, attr) {
                                         if (data.buttons[p].match) data.buttons[p].match.call (btn, node.key);
                                     }
                                 } else {
-                                    //$tdList.eq(base).text('');
-                                    $elem.text ('');
+                                    $elem.text('');
                                 }
                             } else if (data.editEnd) {
                                 text = '<button data-id="' + node.key + '" class="select-button-edit"></button>' +
@@ -2375,6 +2337,7 @@ function span (txt, attr) {
                 }
             }
         };
+
         if (data.editEnd) {
             foptions.extensions.push('edit');
             foptions.edit = {
@@ -2966,6 +2929,53 @@ function span (txt, attr) {
         }
     }
 
+    function countChildren(id, data) {
+        var pos = data.ids.indexOf(id);
+        var len = data.ids.length;
+        var cnt = 0;
+        if (id.indexOf('.') === -1 || (
+                data.objects[id] && (data.objects[id].type === 'state' || data.objects[id].type === 'adapter'))) {
+            return cnt;
+        }
+        if (pos === -1) {
+            pos = 0;
+            while (pos < len && data.ids[pos] < id) {
+                pos++;
+            }
+            pos--;
+        }
+        if (pos !== -1) {
+            pos++;
+            while (pos < len && data.ids[pos].startsWith(id + '.')) {
+                pos++;
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+
+    function recalcChildrenCounters(node, data) {
+        var id  = node.key;
+        var $tr = $(node.tr);
+        var $firstTD = $tr.find('>td').eq(0);
+        var cnt = countChildren(id, data);
+        if (cnt) {
+            var $cnt = $firstTD.find('.select-id-cnt');
+            if ($cnt.length) {
+                $cnt.text('#' + cnt);
+            } else {
+                $firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
+            }
+        } else {
+            $firstTD.find('.select-id-cnt').remove();
+        }
+        if (node.children && node.children.length) {
+            for (var c = 0; c < node.children.length; c++) {
+                recalcChildrenCounters(node.children[c], data);
+            }
+        }
+    }
+
     var methods = {
         init: function (options) {
             // done, just to show possible settings, this is not required
@@ -3379,8 +3389,17 @@ function span (txt, attr) {
                     data.objects[id] = obj;
                     var addedNodes = [];
 
-                    if (!filterId(data, id)) return;
-
+                    if (!filterId(data, id)) {
+                        return;
+                    }
+                    // add ID to IDS;
+                    if (data.ids.length) {
+                        var p = 0;
+                        while (data.ids[p] < id) {
+                            p++;
+                        }
+                        data.ids.splice(p, 0, id);
+                    }
                     treeInsert(data, id, false, addedNodes);
 
                     for (var i = 0; i < addedNodes.length; i++) {
@@ -3425,18 +3444,37 @@ function span (txt, attr) {
                 } else if (!obj) {
                     // object deleted
                     delete data.objects[id];
+
                     deleteTree(data, id);
+
+                    if (data.ids.length) {
+                        var pos = data.ids.indexOf(id);
+                        if (pos !== -1) {
+                            data.ids.splice(pos, 1);
+                        }
+                    }
+
                     if (node) {
                         var prev = node.getPrevSibling();
                         var parent = node.parent;
                         node.removeChildren();
                         node.remove();
                         prev && prev.setActive();
-                        if (!parent.children || !parent.children.length) {
-                            if (parent.parent) parent.parent.setActive();
-                            parent.remove();
 
+                        while (parent && (!parent.children || !parent.children.length)) {
+                            var _parent = parent.parent;
+                            parent.remove();
+                            if (_parent) {
+                                _parent.setActive();
+                            }
+                            parent = _parent;
                         }
+
+                        // recalculate numbers of all children
+                        if (data.ids.length) {
+                            recalcChildrenCounters(parent, data);
+                        }
+
                         // if (node.children && node.children.length) {
                         //     if (node.children.length === 1) {
                         //         node.folder = false;
@@ -3454,7 +3492,9 @@ function span (txt, attr) {
                     }
                 } else {
                     // object updated
-                    if (node) node.render(true);
+                    if (node) {
+                        node.render(true);
+                    }
                 }
             }
             return this;
