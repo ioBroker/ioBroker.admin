@@ -18,6 +18,7 @@
 
 //if (typeof Worker === 'undefined') alert('your browser does not support WebWorkers :-(');
 
+
 Array.prototype.remove = function () {
     var what;
     var a = arguments;
@@ -44,6 +45,7 @@ var adapterRedirect = function (redirect, timeout) { // used in adapter settings
         }, timeout || 5000);
     }
 };
+
 
 (function ($) {
 $(document).ready(function () {
@@ -84,7 +86,7 @@ $(document).ready(function () {
             })
         },
 
-        // Helper methods
+    // Helper methods
         upToDate:       function (_new, old) {
             _new = _new.split('.');
             old = old.split('.');
@@ -532,7 +534,7 @@ $(document).ready(function () {
         logs:       new Logs(main),
         states:     new States(main),
         objects:    new Objects(main),
-        objects1:   new Objects1(main),
+        //objects1:   new Objects1(main),
         events:     new Events(main),
         hosts:      new Hosts(main),
         users:      new Users(main),
@@ -604,9 +606,9 @@ $(document).ready(function () {
                         case '#tab-objects':
                             tabs.objects.init();
                             break;
-                        case '#tab-objects1':
-                            tabs.objects1.init();
-                            break;
+                        // case '#tab-objects1':
+                        //     tabs.objects1.init();
+                        //     break;
 
                         case '#tab-hosts':
                             tabs.hosts.init();
@@ -729,12 +731,12 @@ $(document).ready(function () {
                             $dialog.html('');
                             $('html').unbind("click");
                             return;
-                                            }
+                        }
                         setTimeout(function () {
                             $('html').bind( "click", function(event){
                                 $dialog.html('');
                                 $('html').unbind("click");
-                                        });
+                            });
                         }, 100);
                         var $e = $ (event.target).parent ().parent ();
                         var offs = $e.offset ();
@@ -777,8 +779,8 @@ $(document).ready(function () {
                                 if (id !== -1) main.systemConfig.common.tabs.splice(pos, 1);
                             }
                             main.saveTabs();
-                                        initTabs();
-                            });
+                            initTabs();
+                        });
 
                     });
 
@@ -935,7 +937,6 @@ $(document).ready(function () {
         var text     = '';
         var list     = [];
         var showTabs = '';
-
         var addTabs = [];
 
         allTabs = {};
@@ -1102,7 +1103,7 @@ $(document).ready(function () {
             // If some objects cannot be read => go by timeout
             var loadTimeout = setTimeout(function() {
                 loadTimeout = null;
-                initHtmlTabs(showTabs);
+                initHtmlTabs (showTabs);
                 //}, 1000);
             }, 100);
 
@@ -1293,7 +1294,7 @@ $(document).ready(function () {
         } else {
             tabs.states.stateChange(id, state);
             tabs.objects.stateChange(id, state);
-            tabs.objects1.stateChange(id, state);
+            //tabs.objects1.stateChange(id, state);
             tabs.hosts.stateChange(id, state);
 
             if (main.selectId) main.selectId.selectId('state', id, state);
@@ -1302,7 +1303,7 @@ $(document).ready(function () {
         // Update alive and connected of main.instances
         tabs.instances.stateChange(id, state);
         tabs.objects.stateChangeHistory(id, state);
-        tabs.objects1.stateChangeHistory(id, state);
+        //tabs.objects1.stateChangeHistory(id, state);
         tabs.adapters.stateChange(id, state);
     }
 
@@ -1332,7 +1333,7 @@ $(document).ready(function () {
         main.addEventMessage(id, null, null, obj);
 
         tabs.objects.objectChange(id, obj);
-        tabs.objects1.objectChange(id, obj);
+        //tabs.objects1.objectChange(id, obj);
 
         if (main.selectId) main.selectId.selectId('object', id, obj);
 
@@ -1592,7 +1593,7 @@ $(document).ready(function () {
                                                     'tab-adapters',
                                                     'tab-instances',
                                                     'tab-objects',
-                                                    'tab-objects1',
+                                                    //'tab-objects1',
                                                     'tab-log',
                                                     'tab-scenes',
                                                     'tab-javascript',
@@ -1614,7 +1615,7 @@ $(document).ready(function () {
                                 initAllDialogs();
                                 tabs.hosts.prepare();
                                 tabs.objects.prepare();
-                                tabs.objects1.prepare();
+                                //tabs.objects1.prepare();
                                 tabs.states.prepare();
                                 tabs.adapters.prepare();
                                 tabs.instances.prepare();
@@ -1622,7 +1623,7 @@ $(document).ready(function () {
                                 tabs.groups.prepare();
                                 tabs.enums.prepare();
                                 tabs.objects.prepareCustoms();
-                                tabs.objects1.prepareCustoms();
+                                //tabs.objects1.prepareCustoms();
                                 tabs.events.prepare();
                                 main.systemDialog.prepare();
                                 resizeGrids();
@@ -1697,3 +1698,4 @@ $(document).ready(function () {
 
 });
 })(jQuery);
+

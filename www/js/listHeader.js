@@ -33,30 +33,50 @@ function IobListHeader (header, options) {
     if (options.list) this.setList(options.list);
 
 
+    // this.syncHeader = function () {
+    //     if (typeof $listTds !== 'object') return;
+    //
+    //     this.syncHeader = function() {
+    //         var px = $listTds.parent().width();
+    //         $listTds.each (function (i, o) {
+    //             if (i >= $listTds.length - 1) return;
+    //             //$ ($headerThs[i]).css({ width: $(o).css('width')});
+    //             //$ ($headerThs[i]).width ($(o).width());
+    //             //return;
+    //             // var x = $ (o).width ();
+    //             // if (x) $ ($headerThs[i]).width ($ (o).width () + options.colWidthOffset);
+    //             o = $(o);
+    //             var x, xs = o.css('width');
+    //             if (xs.indexOf('%') >= 0) {
+    //                 x = parseInt(xs) * px / 100;
+    //             } else {
+    //                 x =$(o).width();
+    //             }
+    //             if (x) $ ($headerThs[i]).width (x + options.colWidthOffset);
+    //         });
+    //     };
+    //     this.syncHeader();
+    // };
+
     this.syncHeader = function () {
         if (typeof $listTds !== 'object') return;
 
         this.syncHeader = function() {
-            var px = $listTds.parent().width();
+            var offs = $dlg.selectID_Offset || 0;
             $listTds.each (function (i, o) {
                 if (i >= $listTds.length - 1) return;
-                //$ ($headerThs[i]).css({ width: $(o).css('width')});
-                //$ ($headerThs[i]).width ($(o).width());
-                //return;
-                // var x = $ (o).width ();
-                // if (x) $ ($headerThs[i]).width ($ (o).width () + options.colWidthOffset);
-                o = $(o);
-                var x, xs = o.css('width');
-                if (xs.indexOf('%') >= 0) {
-                    x = parseInt(xs) * px / 100;
-                } else {
-                    x =$(o).width();
-                }
-                if (x) $ ($headerThs[i]).width (x + options.colWidthOffset);
+                var x = $(o).width();
+                if (x) $ ($headerThs[i]).width (x + offs);
             });
+            if ($dlg.selectID_Offset === undefined) {
+                $dlg.selectID_Offset = $ ($listTds[1]).offset ().left - $ ($headerThs[1]).offset ().left;
+                this.syncHeader($dlg);
+            }
         };
         this.syncHeader();
     };
+
+
 
     var resizeTimer;
     $(window).resize(function (x, y) {
@@ -86,42 +106,41 @@ function IobListHeader (header, options) {
         var txt = '';
         switch (what) {
             case 'combobox':
-                txt =
-                    '<td style="width: 100%">\n' +
-                    //'    <select id="' + id + '" title="' + title + '">' + opts + '</select>' +
-                    '    <select id="' + id + '" title="' + title + '">'+'</select>' +
-                    '</td>' +
-                    '<td>' +
-                    '    <button id="' + id + '-clear" role="button" title=""></button>' +
-                    '</td>';
+                txt = `
+                    <td style="width: 100%">
+                        <select id="${id}" title="${title}">'+'</select>
+                    </td>
+                    <td>
+                        <button id="${id}-clear" role="button" title=""></button>
+                    </td>`;
                 break;
             case "edit":
-                txt =
-                    '<td style="width: 100%">' +
-                    '    <input placeholder="' + title + '" type="text" id="' + id + '" title="' + title + '">' +
-                    '</td>' +
-                    '<td>' +
-                    '    <button id="' + id + '-clear" role="button" title="' + title + '"></button>' +
-                    '</td>';
+                txt = `
+                    <td style="width: 100%">
+                        <input placeholder="${title}" type="text" id="${id}" title="${title}">
+                    </td>
+                    <td>
+                        <button id="${id}-clear" role="button" title="${title}"></button>
+                    </td>`;
                 break;
             case "text":
-                txt =
-                    '<td style="width: 100%"><span>' + title +
-                    '</span></td>';
+                txt = `
+                    <td style="width: 100%"><span>${title}
+                    </span></td>`;
                 break;
         }
 
         $header.append (
             //'<td class="event-column-' + ++cnt + '">' +
-            '<th>' +
-            '<table class="main-header-input-table" style="width: 100%;">' +
-            '    <tbody>' +
-            '    <tr style="background: #ffffff; ">' +
-            txt +
-            '    </tr>' +
-            '    </tbody>' +
-            '</table>' +
-            '</th>'
+            `<th>
+            <table class="main-header-input-table" style="width: 100%;">
+                <tbody>
+                <tr style="background: #ffffff; ">
+                    ${txt} 
+                </tr>
+                </tbody>
+            </table>
+            </th>`
         );
 
         var fisId = '#' + id;
@@ -187,6 +206,7 @@ function IobListHeader (header, options) {
             }
         });
         $headerThs = $header.find('>th');
+        return elem;
     };
 }
 

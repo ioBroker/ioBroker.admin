@@ -59,6 +59,24 @@ function Adapters(main) {
         occ:          'schedule'
     };
 
+    // function getVersionSpan(version) {
+    //     if (version) {
+    //         var tmp = version.split ('.');
+    //         if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
+    //             version = '<span class="planned" title="' + _ ("planned") + '">' + version + '</span>';
+    //         } else if (tmp[0] === '0' && tmp[1] === '0') {
+    //             version = '<span class="alpha" title="' + _ ("alpha") + '">' + version + '</span>';
+    //         } else if (tmp[0] === '0') {
+    //             version = '<span class="beta" title="' + _ ("beta") + '">' + version + '</span>';
+    //         } else if (version === 'npm error') {
+    //             version = '<span class="error" title="' + _ ("Cannot read version from NPM") + '">' + _ ('npm error') + '</span>';
+    //         } else {
+    //             version = '<span class="stable" title="' + _ ("stable") + '">' + version + '</span>';
+    //         }
+    //     }
+    //     return version;
+    // }
+
     function getVersionClass(version) {
         if (version) {
             var tmp = version.split ('.');
@@ -77,6 +95,7 @@ function Adapters(main) {
         return version;
     }
 
+
     this.prepare = function () {
         that.$grid.fancytree({
             extensions: ['table', 'gridnav', 'filter', 'themeroller'],
@@ -92,6 +111,8 @@ function Adapters(main) {
                 var node = data.node;
                 var $tdList = $(node.tr).find('>td');
                 var obj = that.data[node.key];
+
+
 
                 function ellipsis(txt) {
                     var ret = '<div style="padding-left: ' + lineIndent + '; overflow: hidden; white-space: nowrap; text-overflow: ellipsis !important;">' +
@@ -132,6 +153,7 @@ function Adapters(main) {
                     }
                     return;
                 }
+
                 $tdList.eq(0).css({'overflow': 'hidden', 'white-space': 'nowrap'});
                 //$tdList.eq(1).html(that.data[node.key].desc).css({'overflow': 'hidden', "white-space": "nowrap", position: 'relative', 'font-weight': that.data[node.key].bold ? 'bold' : null});
 
@@ -667,6 +689,27 @@ function Adapters(main) {
                     return version;
                 }
 
+
+                // function xxgetVersionString(version, updatable, news, updatableError) {
+                //     //var span = getVersionSpan(version);
+                //     var color = getVersionClass(version);
+                //     var title = color + '\n\r' + (news || '');
+                //     //version = '<table style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
+                //     version = //'<div style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'color: blue;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
+                //
+                //         '<div class="' + color + 'Bg" style="padding-left: ' + lineIndent + '; display: flex; height: 100% !important; width: 100%;">' +
+                //         '<div class="' + color + 'Bg" style="width: 50%; height: 100%;">' + version + '</div>' +
+                //         '<div stype="border: 0; padding: 0; width: 50%;height: 100%;">';
+                //     if (updatable) {    //xxx
+                //         version += '<button class="adapter-update-submit" data-adapter-name="' + adapter + '" ' + (updatableError ? ' disabled title="' + updatableError + '"' : 'title="' + _ ('update') + '"') + '></button>';
+                //         //version = version.replace('class="', 'class="updateReady ');
+                //         $ ('a[href="#tab-adapters"]').addClass ('updateReady');
+                //     }
+                //     version += '</div></div>';
+                //     return version;
+                // }
+
+
                 that.tree = [];
                 that.data = {};
 
@@ -817,22 +860,26 @@ function Adapters(main) {
                                 expanded: !that.isCollapsed[that.data[adapter].group],
                                 children: [],
                                 icon:     that.groupImages[that.data[adapter].group] ,
+                                //installed: 0
                             });
                             igroup = that.tree.length - 1;
                         }
                         that.tree[igroup].children.push({
                             icon:     icon,
                             title:    that.data[adapter].title || adapter,
-                            key:      adapter
+                            key:      adapter,
+                            //installed: 0
                         });
                     } else {
                         that.tree.push({
                             icon:     icon,
                             title:    that.data[adapter].title || adapter,
-                            key:      adapter
+                            key:      adapter,
+                            //installed: 0
                         });
                     }
                 }
+                //that.sortTree();
 
                 if (!that.onlyInstalled && !that.onlyUpdatable) {
                     for (i = 0; i < listUnsinstalled.length; i++) {
