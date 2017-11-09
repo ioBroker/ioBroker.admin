@@ -7,23 +7,6 @@ function Logs(main) {                                                           
     this.logLinesCount        = 0;
     this.logLinesStart        = 0;
 
-    // TODO Pause must work...
-
-    //this.logHosts             = [];
-    //this.logFilterTimeout     = null; // entfernen
-    // this.logFilterHost        = '';
-    // this.logFilterSeverity    = '';
-    // this.logFilterMessage     = '';
-    // this.$logFilterHost       = null;
-    // this.$logFilterSeverity   = null;
-    // this.$logFilterMessage    = null;
-
-    // this.logPauseList         = [];
-    // this.logPauseMode         = false;
-    // this.logPauseOverflow     = false;
-    // //this.logPauseCounterSpan  = null;
-    // this.logPauseCounter      = [];
-
     var $logTable, $logOuter, $logPause;
     var logFilterHost = '', logFilterSeverity = '', logFilterMessage = '';
     var pause = {
@@ -71,9 +54,8 @@ function Logs(main) {                                                           
 
         $('#log-refresh').button({icons:{primary: 'ui-icon-refresh'}, text: false}).click(function () {
             that.clear();
-        })/*.css({width: 20, height: 20})*/;
+        });
 
-        //$('#log-pause')
         $logPause
             .button({icons:{primary: 'ui-icon-pause'}, text: false})
             //.css({height: 20})
@@ -86,7 +68,7 @@ function Logs(main) {                                                           
 
         $('#log-clear').button({icons:{primary: 'ui-icon-close'}, text: false}).click(function () {
             that.clear(false);
-        })/*.css({width: 20, height: 20});*/
+        });
 
         $('#log-copy-text').click(function () {
             $('#log-copy-text').hide().html('');
@@ -97,13 +79,13 @@ function Logs(main) {                                                           
             var text = '<span class="error">' + _('copy note') + '</span>';
             $('#tabs').hide();
             $('#log-copy-text').show().html(text + '<br><table style="width: 100%; font-size:12px" id="log-copy-table">' + $logTable.html() + '</table>');
-            var lines = $('#log-copy-table .log-column-4');
+            var lines = $('#log-copy-table').find('.log-column-4');
             for (var t = 0; t < lines.length; t++) {
                 var q = $(lines[t]);
                 q.html(q.attr('title'));
                 q.attr('title', '');
             }
-        })/*.css({width: 20, height: 20})*/;
+        });
     };
 
     function installColResize() {
@@ -135,7 +117,7 @@ function Logs(main) {                                                           
     }
 
     this.resize = function (width, height) {
-        width = width;
+        //width = width;
     };
 
     // -------------------------------- Logs ------------------------------------------------------------
@@ -152,11 +134,11 @@ function Logs(main) {                                                           
             setTimeout(function () {
                 var message = {message: '', severity: 'debug', from: '', ts: ''};
                 var size = lines ? lines.pop() : -1;
-                if (size != -1) {
+                if (size !== -1) {
                     size = parseInt(size);
                     $('#log-size').html((_('Log size:') + ' ' + ((size / (1024 * 1024)).toFixed(2) + ' MB ')).replace(/ /g, '&nbsp;'));
                 }
-                for (var i = 0, len=lines.length; i < len; i++) {
+                for (var i = 0, len = lines.length; i < len; i++) {
                     if (!lines[i]) continue;
                     var line = lines[i];
                     // 2014-12-05 14:47:10.739 - info: iobroker  ERR! network In most cases you are behind a proxy or have bad network settings.npm ERR! network
