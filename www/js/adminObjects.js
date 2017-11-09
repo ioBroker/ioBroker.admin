@@ -681,7 +681,7 @@ function Objects(main) {
                                 default:
                                     if (newValue === 'true') newValue = true;
                                     if (newValue === 'false') newValue = false;
-                                    // "4.0" !== parseFloat("4.0").toString()
+                                    // '4.0' !== parseFloat('4.0').toString()
                                     if (parseFloat(newValue).toString() === newValue.toString().replace(/[.,]0*$/, '')) newValue = parseFloat(newValue);
                                     break;
                             }
@@ -695,10 +695,10 @@ function Objects(main) {
 
                             if (!_obj) {
                                 _obj = {
-                                    type: "meta",
+                                    type: 'meta',
                                     common: {
-                                        typ: "meta.user",
-                                        role: ""
+                                        typ: 'meta.user',
+                                        role: ''
                                     },
                                     native: {},
                                     _id: id
