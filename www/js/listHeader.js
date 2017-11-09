@@ -22,7 +22,7 @@ function IobListHeader(header, options) {
         }
         if (!$tds || !$tds.length) return;
         if ($tds[0].tagName !== 'TD' && $tds[0].tagName !== 'TH') {
-            $tds = $tds.find (">thead>tr:first>th,>thead>tr:first>td");
+            $tds = $tds.find('>thead>tr:first>th,>thead>tr:first>td');
             if (!$tds.length) $tds = _list.find (">tbody>tr:first>th,>tr:first>th,>tbody>tr:first>td, >tr:first>td");
         }
         $listTds = $tds;
@@ -59,15 +59,15 @@ function IobListHeader(header, options) {
         if (typeof $listTds !== 'object') return;
 
         this.syncHeader = function() {
-            var offs = $dlg.selectID_Offset || 0;
-            $listTds.each (function (i, o) {
+            var offs = $header.selectID_Offset || 0;
+            $listTds.each(function (i, o) {
                 if (i >= $listTds.length - 1) return;
                 var x = $(o).width();
-                if (x) $ ($headerThs[i]).width (x + offs);
+                if (x) $ ($headerThs[i]).width(x + offs);
             });
-            if ($dlg.selectID_Offset === undefined) {
-                $dlg.selectID_Offset = $ ($listTds[1]).offset ().left - $ ($headerThs[1]).offset ().left;
-                this.syncHeader($dlg);
+            if ($header.selectID_Offset === undefined) {
+                $header.selectID_Offset = $($listTds[1]).offset().left - $($headerThs[1]).offset().left;
+                this.syncHeader();
             }
         };
         this.syncHeader();

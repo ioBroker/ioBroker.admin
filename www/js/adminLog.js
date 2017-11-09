@@ -38,7 +38,7 @@ function Logs(main) {                                                           
         $logTable = $('#log-table');
         $logPause = $('#log-pause');
 
-        hdr = IobListHeader ('log-outer-header', { list: $logOuter, colWidthOffset: 1, prefix: 'log-filter' });
+        hdr = IobListHeader('log-outer-header', {list: $logOuter, colWidthOffset: 1, prefix: 'log-filter'});
         hdr.doFilter = that.filter;
 
         hdr.add('combobox', 'from', 'host');
