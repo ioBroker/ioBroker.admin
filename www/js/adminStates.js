@@ -225,14 +225,14 @@ function States(main) {
                     if (val === 'true')  val = true;
                     if (val === 'false') val = false;
 
-                    if (parseFloat(val).toString() == val) val = parseFloat(val);
+                    if (parseFloat(val).toString() === val) val = parseFloat(val);
 
                     var ack = that.$grid.jqGrid('getCell', stateLastSelected, 'ack');
 
                     if (ack === 'true')  ack = true;
                     if (ack === 'false') ack = false;
 
-                    if (that.main.objects[id] &&  that.main.objects[id].common && that.main.objects[id].common.role == 'value.time') {
+                    if (that.main.objects[id] &&  that.main.objects[id].common && that.main.objects[id].common.role === 'value.time') {
                         val = (new Date(val)).getTime();
                     }
 
@@ -278,8 +278,10 @@ function States(main) {
         });
 
         that.$grid.parent().parent().addClass('events-grid-div');
+        //that.$grid.parent().onResize: function (event) {
 
-        var oldHeader = $('#tab-states').find('.ui-jqgrid-htable');
+
+            var oldHeader = $('#tab-states').find('.ui-jqgrid-htable');
         oldHeader.addClass('main-header-table');
         var $oldTr = oldHeader.find('thead>tr');
         var newInputTables = $oldTr.eq(1).find('.ui-search-table');
@@ -413,4 +415,5 @@ function States(main) {
         if (resizeTimer) clearTimeout(resizeTimer);
         resizeTimer = setTimeout(syncHeader, 100);
     };
+
 }

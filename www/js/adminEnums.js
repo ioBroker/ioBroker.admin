@@ -1,6 +1,6 @@
 function Enums(main) {
     'use strict';
-    
+
     var that               = this;
     this.main              = main;
     this.list              = [];
@@ -136,7 +136,8 @@ function Enums(main) {
             } else if (members[i]) {
                 that.$gridMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {
                     _id:  members[i],
-                    name: '<span style="color: red; font-weight: bold; font-style: italic;">object missing</span>',
+                    //name: '<span style="color: red; font-weight: bold; font-style: italic;">object missing</span>',
+                    name: '<span style="color: red; font-style: italic;">object missing</span>',
                     type: ''
                 });
             }
@@ -256,7 +257,7 @@ function Enums(main) {
 
     this.prepare = function () {
         prepareEnumMembers();
-        
+
         $dialogEnum.dialog({
             autoOpen:   false,
             modal:      true,
@@ -294,10 +295,10 @@ function Enums(main) {
             var t = $('#enum-gen-id');
             t.html(t[0]._original + '.' + $(this).val().replace(/ /, '_').toLowerCase());
         });
-        
+
         $('#load_grid-enums').show();
     };
-    
+
     this.init = function (update, expandId) {
         if (!this.main || !this.main.objectsLoaded) {
             setTimeout(that.init, 250);
@@ -339,8 +340,10 @@ function Enums(main) {
                     enum:     _('Members')
                 },
                 filter:   {type: 'enum'},
-                columns:  ['name', 'enum', 'button'],
-                widths:   ['150', '*', '120'],
+                //columns:  ['name', 'enum', 'button'],
+                columns:  ['ID', 'name', 'enum', 'button'],
+                //widths:   ['150', '*', '120'],
+                widths:   ['170', '170', '*', '120'],
                 quickEdit: ['name'],
                 quickEditCallback: function (id, attr, newValue, oldValue) {
                     if (newValue !== oldValue) {
@@ -358,6 +361,21 @@ function Enums(main) {
                     }
                 },
                 buttons:  [
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-note'
+                        },
+                        click: function (id) {
+                            enumMembers(id);
+                        },
+                        match: function (id) {
+                            if (id.split('.').length <= 2) this.hide();
+                        },
+                        width: 26,
+                        height: 20
+                    },
+
                     {
                         text: false,
                         icons: {
@@ -469,14 +487,14 @@ function Enums(main) {
             }
 
             if (this.updateTimers) clearTimeout(this.updateTimers);
-            
+
             this.updateTimers = setTimeout(function () {
                 that.updateTimers = null;
                 that.init(true);
             }, 200);
         }
     };
-    
+
     this.resize = function (width, height) {
         if (this.$grid) {
             this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);

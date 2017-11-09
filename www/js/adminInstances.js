@@ -171,7 +171,7 @@ function Instances(main) {
 
             if (that.main.states[adapter + '.' + instance + '.info.connection'] || that.main.objects[adapter + '.' + instance + '.info.connection']) {
                 title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to %s: ', adapter) + '</td><td>';
-                var val = that.main.states[adapter + '.' + instance + '.info.connection'] ? that.main.states[adapter + '.' + instance + '.info.connection'].val : false;
+                let val = that.main.states[adapter + '.' + instance + '.info.connection'] ? that.main.states[adapter + '.' + instance + '.info.connection'].val : false;
                 if (!val) {
                     state = state === 'red' ? 'red' : 'orange';
                     title += '<span style="color: red">' + _('false') + '</span>';
@@ -207,14 +207,14 @@ function Instances(main) {
 
             if (that.main.states[adapter + '.' + instance + '.info.connection'] || that.main.objects[adapter + '.' + instance + '.info.connection']) {
                 title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to %s: ', adapter) + '</td><td>';
-                var val_ = that.main.states[adapter + '.' + instance + '.info.connection'] ? that.main.states[adapter + '.' + instance + '.info.connection'].val : false;
-                if (!val_) {
+                let val = that.main.states[adapter + '.' + instance + '.info.connection'] ? that.main.states[adapter + '.' + instance + '.info.connection'].val : false;
+                if (!val) {
                     title += _('false');
                 } else {
-                    if (val_ === true) {
+                    if (val === true) {
                         title += '<span style="color: green">' + _('true') + '</span>';
                     } else {
-                        title += '<span style="color: green">' + val_ + '</span>';
+                        title += '<span style="color: green">' + val + '</span>';
                     }
                 }
                 title += '</td></tr>';
@@ -1122,6 +1122,8 @@ function Instances(main) {
         var $e = $('.instance-edit' + id).unbind('click').click(function () {
             that.onEdit($(this).attr('data-instance-id'));
         });
+
+        //var buttonSize = {width: '2em', height: '2em'}
 
         if (!$e.find('.ui-button-icon-primary').length) {
             $e.button({

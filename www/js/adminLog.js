@@ -1,5 +1,4 @@
-function Logs(main) {
-    'use strict';
+function Logs(main) {                                                                       'use strict';
 
     var that                  = this;
     this.main                 = main;
@@ -7,6 +6,20 @@ function Logs(main) {
 
     this.logLinesCount        = 0;
     this.logLinesStart        = 0;
+    //this.logHosts             = [];
+    //this.logFilterTimeout     = null; // entfernen
+    // this.logFilterHost        = '';
+    // this.logFilterSeverity    = '';
+    // this.logFilterMessage     = '';
+    // this.$logFilterHost       = null;
+    // this.$logFilterSeverity   = null;
+    // this.$logFilterMessage    = null;
+
+    // this.logPauseList         = [];
+    // this.logPauseMode         = false;
+    // this.logPauseOverflow     = false;
+    // //this.logPauseCounterSpan  = null;
+    // this.logPauseCounter      = [];
 
     var $logTable, $logOuter, $logPause;
     var logFilterHost = '', logFilterSeverity = '', logFilterMessage = '';
@@ -28,7 +41,7 @@ function Logs(main) {
         hdr = IobListHeader ('log-outer-header', { list: $logOuter, colWidthOffset: 1, prefix: 'log-filter' });
         hdr.doFilter = that.filter;
 
-        hdr.add('combobox', 'Adapter', 'host');
+        hdr.add('combobox', 'from', 'host');
         hdr.add('text', 'Time');
         hdr.add('combobox', '', 'severity', [
             { val: "", name: 'debug' },
@@ -36,7 +49,7 @@ function Logs(main) {
             { val: "info", name: 'info' },
             { val: "warn", name: 'warn' },
             { val: "error", name: 'error' }
-        ]);
+        ]).$filter.attr('title', _('severity'));
         hdr.add('edit', 'Message', 'message');
 
         $('#log-clear-on-disk').button({icons:{primary: 'ui-icon-trash'}, text: false}).click(function () {
@@ -87,7 +100,7 @@ function Logs(main) {
                 q.html(q.attr('title'));
                 q.attr('title', '');
             }
-        }).css({width: 20, height: 20});
+        })/*.css({width: 20, height: 20})*/;
     };
 
     function installColResize() {
@@ -217,10 +230,10 @@ function Logs(main) {
             hdr.host.checkAddOption(message.from, function (o) {
                 return { val: o.replace(/\./g, '-'), name: o };
             })
-            }
+        }
 
         var visible = '';
-        var from    = message.from ? message.from.replace(/\./g, '-') : '';
+        var from = message.from ? message.from.replace(/\./g, '-') : '';
 
         if (this.logFilterHost && this.logFilterHost !== from) visible = 'display: none';
 

@@ -38,17 +38,17 @@ function Events(main) {
         function changeHandler(id) {
             if (id[0] !== '#') id = '#' + id;
             $(id).change(function () {
-            if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
-            eventFilterTimeout = setTimeout(filterEvents, 1000);
-        }).keyup(function (e) {
-            if (e.which === 13) {
-                filterEvents();
-            } else {
-                $(this).trigger('change');
-            }
-        });
+                if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
+                eventFilterTimeout = setTimeout(filterEvents, 1000);
+            }).keyup(function (e) {
+                if (e.which === 13) {
+                    filterEvents();
+                } else {
+                    $(this).trigger('change');
+                }
+            });
 
-            }
+        }
 
         var handlers = [];
 
@@ -64,7 +64,7 @@ function Events(main) {
                 '    </tbody>' +
                 '</table>' +
                 '</td>'
-            }
+        }
 
         function addCombobox (id, title, options) {
             handlers.push(id);
@@ -74,7 +74,7 @@ function Events(main) {
                 var o = options[i];
                 if (typeof o === 'string') {
                     o = { val: o, name: o }
-            }
+                }
                 var name = i===0 ? title + ' (' + _(o.name) + ')' : _(o.name);
                 opts += '<option value="' + o.val + '">' + name + '</option>';
             }
@@ -548,4 +548,5 @@ function Events(main) {
         }
     };
 }
+
 

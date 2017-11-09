@@ -10,6 +10,13 @@ function Objects(main) {
     this.customEnabled  = null;
     this.currentCustoms = null; // Id of the currently shown customs dialog
 
+    //var selectId = this.$grid.selectId.bind(this.$grid);
+    var selectId = function () {
+        if (!that.$grid || !that.$grid.selectId) return;
+        selectId = that.$grid.selectId.bind(that.$grid);
+        return that.$grid.selectId.apply(that.$grid, arguments);
+    };
+
     this.prepare = function () {
         this.$dialog.dialog({
             autoOpen:   false,
@@ -357,16 +364,19 @@ function Objects(main) {
     }
 
     this.stateChange = function (id, state) {
-        if (this.$grid) this.$grid.selectId('state', id, state);
+        //if (this.$grid) this.$grid.selectId('state', id, state);
+        if (this.$grid) selectId('state', id, state);
     };
 
     this.objectChange = function (id, obj) {
-        if (this.$grid) this.$grid.selectId('object', id, obj);
+        //if (this.$grid) this.$grid.selectId('object', id, obj);
+        if (this.$grid) selectId('object', id, obj);
     };
 
     this.reinit = function () {
         this.checkCustoms();
-        if (this.$grid) this.$grid.selectId('reinit');
+        //if (this.$grid) this.$grid.selectId('reinit');
+        if (this.$grid) selectId('reinit');
     };
 
     this.resize = function (width, height) {
@@ -435,7 +445,7 @@ function Objects(main) {
         _syncEnum(id, toCheck, newArray, function (err) {
             if (err) that.main.showError(err);
             // force update of object
-            that.$grid.selectId('object', id, that.main.objects[id]);
+            selectId('object', id, that.main.objects[id]);
         });
     }
 
@@ -470,6 +480,7 @@ function Objects(main) {
                     cancel:   _('Cancel'),
                     all:      _('All'),
                     id:       _('ID'),
+                    ID:       _('ID'),
                     name:     _('Name'),
                     role:     _('Role'),
                     room:     _('Room'),
@@ -490,9 +501,12 @@ function Objects(main) {
                     copyToClipboard: _('Copy to clipboard'),
                     expertMode: _('Toggle expert mode'),
                     refresh:	_('Update'),
-                    sort:       _('Sort alphabetically')
+                    sort:       _('Sort alphabetically'),
+                    button: 'History'
                 },
-                columns: ['image', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
+                //columns: ['image', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
+                columns: ['ID', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
+                //columns: ['id', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
                 buttons: [
                     {
                         text: false,
@@ -503,7 +517,9 @@ function Objects(main) {
                             that.edit(id);
                         },
                         match: function (id) {
-                            if (!that.main.objects[id]) this[0].outerHTML = '<div style="width: 26px; height: 1px; display: inline-block;"></div>';
+                            var $this = $(this);
+                            //if (!that.main.objects[id]) this[0].outerHTML = '<div style="width: 26px; height: 1px; display: inline-block;"></div>';
+                            if (!that.main.objects[id]) this[0].outerHTML = '<div class="td-button-placeholder"></div>';
                         },
                         width: 26,
                         height: 20
@@ -575,7 +591,7 @@ function Objects(main) {
                         },
                         title: _('Add new child object to selected parent'),
                         click: function () {
-                            var id = that.$grid.selectId('getActual') || '';
+                            var id = selectId('getActual') || '';
                             $('#object-tab-new-object-parent').val(id);
                             $('#object-tab-new-object-name').val(_('newObject'));
 
@@ -600,7 +616,7 @@ function Objects(main) {
                         },
                         title: _('Add Objecttree from JSON File'),
                         click: function () {
-                            var id = that.$grid.selectId('getActual') || '';
+                            var id = selectId('getActual') || '';
                             var input = document.createElement('input');
                             input.setAttribute('type', 'file');
                             input.setAttribute('id', 'files');
@@ -619,7 +635,7 @@ function Objects(main) {
                         },
                         title: _('Save Objecttree as JSON File'),
                         click: function () {
-                            var id = that.$grid.selectId('getActual') || '';
+                            var id = selectId('getActual') || '';
                             var result = {};
                             $.map(that.main.objects, function (val, key) {
                                 if (!key.search(id)) result[key] = val;
@@ -677,6 +693,18 @@ function Objects(main) {
                         main.socket.emit('getObject', id, function (err, _obj) {
                             if (err) return that.main.showError(err);
 
+                            if (!_obj) {
+                                _obj = {
+                                    type: "meta",
+                                    common: {
+                                        typ: "meta.user",
+                                        role: ""
+                                    },
+                                    native: {},
+                                    _id: id
+                                }
+                            }
+
                             _obj.common[attr] = newValue;
                             main.socket.emit('setObject', _obj._id, _obj, function (err) {
                                 if (err) that.main.showError(err);
@@ -701,7 +729,7 @@ function Objects(main) {
                     icons:    {primary: 'ui-icon-gear'},
                     text:     false,
                     callback: function () {
-                        var _ids = that.$grid.selectId('getFilteredIds');
+                        var _ids = selectId('getFilteredIds');
                         var ids = [];
                         for (var i = 0; i < _ids.length; i++) {
                             if (that.main.objects[_ids[i]] && that.main.objects[_ids[i]].type === 'state') ids.push(_ids[i]);
@@ -717,7 +745,8 @@ function Objects(main) {
                 settings.customButtonFilter = null;
             }
 
-            that.$grid.selectId('init', settings).selectId('show');
+            selectId('init', settings)
+                .selectId('show');
         }
     };
 
@@ -1617,7 +1646,7 @@ function Objects(main) {
                                 return;
                             }
                             var _obj = json[obj];
-                            console.log(id + ' = ' + _obj.type);
+                            //console.log(id + ' = ' + _obj.type);
                             if (json[obj].type === 'state') {
                                 that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
                             }
@@ -1630,7 +1659,7 @@ function Objects(main) {
                             return;
                         }
                         var _obj = json[obj];
-                        console.log(id + ' = ' + _obj.type);
+                        //console.log(id + ' = ' + _obj.type);
                         if (json[obj].type === 'state') {
                             that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
                         }
