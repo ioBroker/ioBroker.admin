@@ -23,7 +23,7 @@ function IobListHeader(header, options) {
         if (!$tds || !$tds.length) return;
         if ($tds[0].tagName !== 'TD' && $tds[0].tagName !== 'TH') {
             $tds = $tds.find('>thead>tr:first>th,>thead>tr:first>td');
-            if (!$tds.length) $tds = _list.find (">tbody>tr:first>th,>tr:first>th,>tbody>tr:first>td, >tr:first>td");
+            if (!$tds.length) $tds = _list.find('>tbody>tr:first>th,>tr:first>th,>tbody>tr:first>td, >tr:first>td');
         }
         $listTds = $tds;
     };
@@ -104,9 +104,6 @@ function IobListHeader(header, options) {
                 txt =
                     '<td style="width: 100%">' +
                     '    <select id="' + id + '" title="' + title + '">'+'</select>' +
-                    '</td>' +
-                    '<td>' +
-                    '   <button id="' + id + '-clear" role="button" title=""></button>' +
                     '</td>';
                 break;
             case 'edit':

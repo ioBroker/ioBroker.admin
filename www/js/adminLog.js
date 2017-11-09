@@ -6,6 +6,9 @@ function Logs(main) {                                                           
 
     this.logLinesCount        = 0;
     this.logLinesStart        = 0;
+
+    // TODO Pause must work...
+
     //this.logHosts             = [];
     //this.logFilterTimeout     = null; // entfernen
     // this.logFilterHost        = '';
