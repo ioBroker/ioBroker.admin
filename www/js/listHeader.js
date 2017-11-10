@@ -60,7 +60,7 @@ function IobListHeader (header, options) {
 
     this.syncHeader = function () {
         if (typeof $listTds !== 'object') return;
-
+        let $dlg = $($headerTds[0]);
         this.syncHeader = function() {
             var offs = $dlg.selectID_Offset || 0;
             $listTds.each (function (i, o) {
