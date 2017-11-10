@@ -1059,7 +1059,7 @@ $(document).ready(function () {
                     if (name === 'tab-javascript') { // temporary, until javascript tab ist adapted
                         $ ('#' + name).find ('.iframe-in-tab').on ('load', function () {
                             let header = $ (this).contents ().find ('body>header');
-                            if (headere && header.length) header.append ('<link rel="stylesheet" type="text/css" href="../../css/admin.css"/>');
+                            if (header && header.length) header.append ('<link rel="stylesheet" type="text/css" href="../../css/admin.css"/>');
                         })
                     }
                 } else {
