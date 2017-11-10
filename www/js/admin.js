@@ -1053,15 +1053,17 @@ $(document).ready(function () {
 
                 if (!$('#' + name).length) {
                     var div = '<div id="' + name + '" class="tab-custom ' + (isReplace ? 'link-replace': '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
-                        '<iframe class="iframe-in-tab" style="border: 0; solid #FFF; display:block; left: 0; top: 0; width: 100%;"></iframe></div>';
+                        '<iframe class="iframe-in-tab" style="border: 0; solid #FFF; display:block; left: 0; top: 0; width: 100%;"' +
+                        '></iframe></div>';
                     $(div).appendTo($('#tabs'));
 
-                    if (name === 'tab-javascript') { // temporary, until javascript tab ist adapted
-                        $ ('#' + name).find ('.iframe-in-tab').on ('load', function () {
-                            let header = $ (this).contents ().find ('body>header');
-                            if (header && header.length) header.append ('<link rel="stylesheet" type="text/css" href="../../css/admin.css"/>');
-                        })
-                    }
+                    //if (name === 'tab-javascript') { // temporary, until javascript tab ist adapted
+                    $ ('#' + name).find ('.iframe-in-tab').on ('load', function () {
+                        let elem = $ (this).contents ().find ('body>header');
+                        if (!elem || !elem.length) elem = $ (this).contents ().find ('head');
+                        if (elem && elem.length) elem.append ('<link rel="stylesheet" type="text/css" href="../../css/admin.css"/>');
+                    })
+                    //}
                 } else {
                     $('#' + name).show().appendTo($('#tabs'));
                 }

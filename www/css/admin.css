@@ -555,9 +555,6 @@ thead#grid-instances-head,
   width: 1.8em;
   height: 1.8em;
 }
-table.fancytree-ext-table {
-  border-collapse: unset;
-}
 /*.fancytree-node ui-state-active {*/
 .ui-state-active {
   /*background: #800000 !important;*/
