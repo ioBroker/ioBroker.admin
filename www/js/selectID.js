@@ -2163,7 +2163,7 @@ function span (txt, attr) {
                                 } else {
                                     t = '#' + obj.common.members.length;
                                 }
-                                $elem.html(`<div class="iob-ellipsis">${t}</div>`);
+                                $elem.html('<div class="iob-ellipsis">' + t + '</div>');
                                 $elem.attr ('title', obj.common.members.join ('\x0A'));
                             } else {
                                 $elem.text ('');

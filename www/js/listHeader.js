@@ -104,43 +104,95 @@ function IobListHeader (header, options) {
         title = _(title);
 
         var txt = '';
+        // switch (what) {
+        //     case 'combobox':
+        //         txt = `
+        //             <td style="width: 100%">
+        //                 <select id="${id}" title="${title}">'+'</select>
+        //             </td>
+        //             <td>
+        //                 <button id="${id}-clear" role="button" title=""></button>
+        //             </td>`;
+        //         break;
+        //     case "edit":
+        //         txt = `
+        //             <td style="width: 100%">
+        //                 <input placeholder="${title}" type="text" id="${id}" title="${title}">
+        //             </td>
+        //             <td>
+        //                 <button id="${id}-clear" role="button" title="${title}"></button>
+        //             </td>`;
+        //         break;
+        //     case "text":
+        //         txt = `
+        //             <td style="width: 100%"><span>${title}
+        //             </span></td>`;
+        //         break;
+        // }
+        //
+        // $header.append (
+        //     //'<td class="event-column-' + ++cnt + '">' +
+        //     `<th>
+        //     <table class="main-header-input-table" style="width: 100%;">
+        //         <tbody>
+        //         <tr style="background: #ffffff; ">
+        //             ${txt}
+        //         </tr>
+        //         </tbody>
+        //     </table>
+        //     </th>`
+        // );
+
         switch (what) {
             case 'combobox':
-                txt = `
-                    <td style="width: 100%">
-                        <select id="${id}" title="${title}">'+'</select>
-                    </td>
-                    <td>
-                        <button id="${id}-clear" role="button" title=""></button>
-                    </td>`;
+                txt = '' +
+                    '<td style="width: 100%">' +
+                    '    <select id="' + id + '" title="${title}">'+'</select>' +
+                    '</td>' +
+                    '<td>' +
+                    '    <button id="' + id + '-clear" role="button" title=""></button>' +
+                    '</td>';
                 break;
             case "edit":
-                txt = `
-                    <td style="width: 100%">
-                        <input placeholder="${title}" type="text" id="${id}" title="${title}">
-                    </td>
-                    <td>
-                        <button id="${id}-clear" role="button" title="${title}"></button>
-                    </td>`;
+                txt = '' +
+                    '<td style="width: 100%">' +
+                    '    <input placeholder="' + title + '" type="text" id="${id}" title="' + title + '">' +
+                    '</td>' +
+                    '<td>' +
+                    '    <button id="' + id + '-clear" role="button" title="' + title + '"></button>' +
+                    '</td>';
                 break;
             case "text":
-                txt = `
-                    <td style="width: 100%"><span>${title}
-                    </span></td>`;
+                txt = '' +
+                    '<td style="width: 100%"><span>' + title +
+                    '</span></td>';
                 break;
         }
 
+        // $header.append (
+        //     //'<td class="event-column-' + ++cnt + '">' +
+        //     `<th>
+        //     <table class="main-header-input-table" style="width: 100%;">
+        //         <tbody>
+        //         <tr style="background: #ffffff; ">
+        //             ${txt}
+        //         </tr>
+        //         </tbody>
+        //     </table>
+        //     </th>`
+        // );
+
         $header.append (
             //'<td class="event-column-' + ++cnt + '">' +
-            `<th>
-            <table class="main-header-input-table" style="width: 100%;">
-                <tbody>
-                <tr style="background: #ffffff; ">
-                    ${txt} 
-                </tr>
-                </tbody>
-            </table>
-            </th>`
+            '<th>' +
+            '<table class="main-header-input-table" style="width: 100%;">' +
+            '    <tbody>' +
+            '    <tr style="background: #ffffff; ">' +
+            '        ${txt}' +
+            '    </tr>' +
+            '    </tbody>' +
+            '</table>' +
+            '</th>'
         );
 
         var fisId = '#' + id;
