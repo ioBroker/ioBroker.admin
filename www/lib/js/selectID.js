@@ -755,9 +755,16 @@ function span (txt, attr) {
         //$header.attr('width', data.$tree.width());
         var thDest = $header.find('>tbody>tr>td');	//if table headers are specified in its semantically correct tag, are obtained
         var thSrc = data.$tree.find('>tbody>tr>td');
+        var offs = $dlg.selectID_Offset || 0;
+
         for (var i = 0; i < thDest.length-1; i++) {
-            var olddest = $(thDest[i]).width();
-            $(thDest[i]).attr('width', $(thSrc[i]).width()+1);
+            //var olddest = $(thDest[i]).width();
+            $(thDest[i]).attr('width', $(thSrc[i]).width()+offs);
+        }
+        if ($dlg.selectID_Offset === undefined) {
+            if (($dlg.selectID_Offset = $ (thSrc[1]).offset ().left - $ (thDest[1]).offset ().left)) {
+                syncHeader ($dlg);
+            }
         }
     }
 
@@ -928,69 +935,14 @@ function span (txt, attr) {
         var oldVal  = $this.data('old-value');
         var states  = null;
         var $parent = $(event.currentTarget).parent();
-        //var activeNode = $(this).fancytree('getTree').getActiveNode();
-
-        // var tree = data.$tree.fancytree('getTree');
-        //
-        // var node = tree.getActiveNode();
-        //
-        //
-        //
-        // data.$tree.fancytree('getTree')
-        //
         var activeNode = data.$tree.fancytree('getTree');
         activeNode = activeNode.getActiveNode();
 
         if (clippy)  $this.removeClass('clippy');
 
         $this.unbind('click').removeClass('select-id-quick-edit').css('position', 'relative');
-
-        //var css = 'cursor: pointer; position: absolute;width: 16px; height: 16px; top: 2px; border-radius: 6px; z-index: 3; background-color: lightgray';
-        var css = 'cursor: pointer; position: absolute;width: 16px; height: 16px; top: 4px; border-radius: 0px; vertical-align: middle; z-index: 3;';
-
         type = type === 'boolean' ? 'checkbox' : 'text';
         var text;
-
-        // if (attr === 'value') {
-        //     states = getStates(data, id);
-        //     if (states) {
-        //         text = '<select style="width: calc(100% - 50px); z-index: 2">';
-        //         for (var t in states) {
-        //             if (typeof states[t] !== 'string') continue;
-        //             text += '<option value="' + t + '">' + states[t] + '</option>';
-        //         }
-        //         text += '</select>';
-        //     }
-        // } else if (attr === 'room') {
-        //     states = findRoomsForObjectAsIds(data, id) || [];
-        //     text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
-        //     for (var e = 0; e < data.roomEnums.length; e++) {
-        //         text += '<option value="' + data.roomEnums[e] + '" ' + (states.indexOf(data.roomEnums[e]) !== -1 ? 'selected' : '') + '>' + data.objects[data.roomEnums[e]].common.name + '</option>';
-        //     }
-        //     text += '</select>';
-        // } else if (attr === 'function') {
-        //     states = findFunctionsForObjectAsIds(data, id) || [];
-        //     text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
-        //     for (var e = 0; e < data.funcEnums.length; e++) {
-        //         text += '<option value="' + data.funcEnums[e] + '" ' + (states.indexOf(data.funcEnums[e]) !== -1 ? 'selected' : '') + '>' + data.objects[data.funcEnums[e]].common.name + '</option>';
-        //     }
-        //     text += '</select>';
-        // } else if (options) {
-        //     if (typeof options === 'function') {
-        //         states = options(id, attr);
-        //     } else {
-        //         states = options;
-        //     }
-        //     if (states) {
-        //         text = '<select style="width: calc(100% - 50px); z-index: 2">';
-        //         for (var t in states) {
-        //             text += '<option value="' + t + '">' + states[t] + '</option>';
-        //         }
-        //         text += '</select>';
-        //     } else if (states === false) {
-        //         return;
-        //     }
-        // }
 
         switch(attr) {
             case 'value':
@@ -1038,22 +990,22 @@ function span (txt, attr) {
             }
         }
 
-        //text = text || '<input style="' + (type !== 'checkbox' ? 'width: 100%; height: 24px; border-spacing:0;border:0;padding:0;margin:0;padding-left:4px;' : '') + ' z-index: 2" type="' + type + '"/>';
-        text = text || '<input style="z-index: 2" type="' + type + '"' + (type !== 'checkbox' ? 'class="objects-inline-edit"' : '') + '/>';
+        text = text || '<input type="' + type + '"' + (type !== 'checkbox' ? 'class="objects-inline-edit"' : '') + '/>';
 
         var timeout = null;
 
         $this.html(text +
-            '<div class="ui-icon ui-icon-check        select-id-quick-edit-ok"     style="' + css + ';right: 22px"></div>' +
-            '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '" style="' + css + ';right: 2px"></div>');
+            '<div class="ui-icon ui-icon-check select-id-quick-edit-ok"></div>' +
+            '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '"></div>');
         var oldLeftPadding = $this.css('padding-left');
-        var oldWidth = $this.css('width');
-        //$this.css({'padding-left':'2px', 'padding-bottom': '3px', width: 'calc(100% - 28px)'});
-        var isTitleEdit = $this.is ('.objects-name-coll-title');
-        //$this.css({'padding-left':'2px', 'padding-bottom': '2px', width: isTitleEdit ? 'calc(100% - 28px)' : 'calc(100% - 0px)'});       // mit paading-buttom erhöht sich die Zeilenhöhe um einen Pixel!
-        $this.css({'padding-left':'2px', width: isTitleEdit ? 'calc(100% - 28px)' : 'calc(100% - 0px)'});
-
+        //var oldWidth = $this.css('width');
+        var oldWidth= $this.attr('width');
         var $input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
+
+        if ($input.width() > $this.width() - 34) {
+            var x = Math.max ($input.width() - ($this.width() - 34), 34);
+            $input.css({ 'padding-right': x });
+        }
 
         if (attr === 'room' || attr === 'function') {
             $input.multiselect({
@@ -1071,22 +1023,11 @@ function span (txt, attr) {
             });
         }
 
-        // $this.find('.select-id-quick-edit-cancel').click(function (e)  {
-        //     if (timeout) clearTimeout(timeout);
-        //     timeout = null;
-        //     e.preventDefault();
-        //     e.stopPropagation();
-        //     var old = $this.data('old-value');
-        //     if (old === undefined) old = '';
-        //     $this.html(old).click(onQuickEditField).addClass('select-id-quick-edit');
-        //     if (clippy) $this.addClass('clippy');
-        // });
-
-
         function editDone(ot) {
             if (ot === undefined) ot = $this.data('old-value') || '';
             if (clippy) $this.addClass ('clippy');
-            $this.css({'padding-left':oldLeftPadding, width:oldWidth});
+            $this.css({'padding-left':oldLeftPadding});
+            if (!oldWidth) $this.removeAttr('width'); else $this.attr('width', oldWidth);
             $this.html (ot).click (onQuickEditField).addClass ('select-id-quick-edit');
             //if (activeNode && activeNode.lebgth) activeNode.setActive();
             setTimeout(function() {
@@ -1103,9 +1044,6 @@ function span (txt, attr) {
             e.stopPropagation();
             var old = $this.data('old-value');
             editDone();
-            // if (old === undefined) old = '';
-            // $this.html(old).click(onQuickEditField).addClass('select-id-quick-edit');
-            // if (clippy) $this.addClass('clippy');
         }
 
         $this.find('.select-id-quick-edit-cancel').click(handleCancel);
@@ -1133,17 +1071,11 @@ function span (txt, attr) {
                     _oldText = '<span style="color: darkviolet; width: 100%;">' + _oldText + '</span>';
                 }
                 editDone(_oldText);
-                // if (clippy) $this.addClass('clippy');
-                // $this.html(_oldText).click(onQuickEditField).addClass('select-id-quick-edit');
             }.bind(this), 100);
         }).keyup(function (e) {
             if (e.which === 13) $(this).trigger('blur');
             if (e.which === 27) {
                 handleCancel(e);
-                // if (clippy) $this.addClass('clippy');
-                // var old = $this.data('old-value');
-                // if (old === undefined) old = '';
-                // $this.html(old).click(onQuickEditField).addClass('select-id-quick-edit');
             }
         });
 
@@ -1183,6 +1115,10 @@ function span (txt, attr) {
         //$dlg.css({height: '100%', width: 'calc(100% - 18px)'});
         $dlg.css({height: '100%', width: '100%'});
         var data = $dlg.data ('selectId');
+        if (data.columns && data.columns[0] !== 'ID') {
+            data.columns.unshift('ID');
+            if (data.widths) data.widths.unshift('170px');
+        }
 
         removeImageFromSettings (data);
         //var noStates = (data.objects && !data.states);
@@ -1486,7 +1422,7 @@ function span (txt, attr) {
                     text += '<table class="main-header-input-table"><tbody><tr><td style="padding-left: ' + lineIndent + '">' + _(name) + '</td></tr></tbody></table>';
                 }
             } else {
-                text += '<td>';
+                text += '<span style="padding-left: ' + lineIndent + '">' + _(name) + '</span>';
             }
             text += '</td>';
         });
@@ -1585,7 +1521,7 @@ function span (txt, attr) {
         }
 
 
-        text = text.replace(/\n/g, '');
+        //text = text.replace(/\n/g, '');
         $dlg.html(text);
 
         data.$tree = $('#selectID_' + data.instance);
@@ -2607,6 +2543,13 @@ function span (txt, attr) {
         }
 
         restoreExpandeds(data, expandeds);
+        var resizeTimer;
+        $(window).resize(function (x, y) {
+            if (resizeTimer) clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(syncHeader.bind(null, $dlg), 100);
+        });
+        $dlg.trigger('resize');
+
 
         var changeTimer;
 
