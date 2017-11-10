@@ -92,6 +92,8 @@ table#events {
   border-left: none;
   border-right: none;
 }
+/** tabs **/
+/**/
 .ui-tabs-panel {
   border: none;
   padding: 7px !important;
@@ -100,6 +102,7 @@ table#events {
 .ui-jqgrid-titlebar-close {
   display: none !important;
 }
+/**/
 #edit-object-common,
 #edit-object-native {
   font-size: 12px;
@@ -133,9 +136,6 @@ table#events {
   background-repeat: no-repeat;
   background-size: 20px;
   background-position: 5px 2px;
-}
-.admin-tab {
-  height: calc(100% - 55px);
 }
 .customs-row-title {
   width: 100%;
@@ -1212,3 +1212,18 @@ input.objects-inline-edit {
   z-index: 2;
 }
 /**/
+.admin-tab {
+  height: calc(100% - 47px);
+}
+.grid-main-div {
+  height: calc(100% - 50px);
+}
+.grid-main-wh-div {
+  height: calc(100% -  71px);
+}
+.grid-main-wob-div {
+  height: calc(100% -  12px);
+}
+#gview_grid-states {
+  height: calc(100% - 36px);
+}

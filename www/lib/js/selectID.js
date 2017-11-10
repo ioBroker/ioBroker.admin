@@ -1105,7 +1105,7 @@ function span (txt, attr) {
         var data = $dlg.data ('selectId');
         if (data.columns && data.columns[0] !== 'ID') {
             data.columns.unshift('ID');
-            if (data.widths) data.widths.unshift('170px');
+            if (data.widths) data.widths.unshift('200px');
         }
 
         removeImageFromSettings (data);
@@ -1217,7 +1217,7 @@ function span (txt, attr) {
             return ret;
         }
 
-
+/*
         var textRooms;
         if (data.columns.indexOf ('room') !== -1) {
             textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
@@ -1259,6 +1259,7 @@ function span (txt, attr) {
             }
             textTypes += '</select>';
         }
+  */
 
         var tds = '<td><button class="ui-button-icon-only panel-button" id="btn_refresh_' + data.instance + '"></button></td>';
         tds += '<td><button class="panel-button" id="btn_list_' + data.instance + '"></button></td>';
@@ -1420,7 +1421,8 @@ function span (txt, attr) {
         text += '    </table>';
 
         //text += '<div style="width: calc(100% - 18px); height: ' + (data.buttons ? 'calc(100% - 30px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll">';
-        text += '<div style="width: 100%; height: ' + (data.buttons ? 'calc(100% - 54px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll">';
+        //text += '<div style="width: 100%; height: ' + (data.buttons ? 'calc(100% - 54px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll">';
+        text += '<div class="' + (data.buttons ? 'grid-main-wh-div' : 'grid-main-wob-div') + '" style="width: 100%; padding:0; overflow-y: scroll">';
         text += ' <table class="iob-list-font objects-list-table" style="width: calc(100%-5px);" id="selectID_' + data.instance + '" cellspacing="0" cellpadding="0">';
         text += '        <colgroup>';
 
@@ -2756,6 +2758,9 @@ function span (txt, attr) {
         //loadSettings(data);
         installColResize(data, $dlg);
         loadSettings(data);
+        setTimeout(function () {
+        $dlg.css({height: '100%'}); //xxx
+        }, 500);
 
         // set preset filters
         for (var field in data.filterPresets) {
