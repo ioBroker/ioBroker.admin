@@ -1,4 +1,3 @@
-console.error('This file is deprecated. Please use "../../lib/js/selectID.js" as file path');
 /*
 /*
  Copyright 2014-2017 bluefox <dogafox@gmail.com>
@@ -734,17 +733,6 @@ function span (txt, attr) {
                     return false;
                 }
             });
-        }
-    }
-
-    function xsyncHeader($dlg) {
-        // read width of data.$tree and set the same width for header
-        var data = $dlg.data('selectId');
-        var $header = $('#selectID_header_' + data.instance);
-        var thDest = $header.find('>colgroup>col');	//if table headers are specified in its semantically correct tag, are obtained
-        var thSrc = data.$tree.find('>thead>tr>th');
-        for (var i = 1; i < thSrc.length; i++) {
-            $(thDest[i]).attr('width', $(thSrc[i]).width());
         }
     }
 
