@@ -2177,7 +2177,7 @@ function span (txt, attr) {
                                         .addClass ('select-id-quick-edit');
                                 }
 
-                                $tr.find ('.select-button-push[data-id="' + node.key + '"]').button ({
+                                $tr.find('.select-button-push[data-id="' + node.key + '"]').button({
                                     text: false,
                                     icons: {
                                         primary: 'ui-icon-arrowthickstop-1-s'
@@ -2219,14 +2219,14 @@ function span (txt, attr) {
                                     setText(text);
 
                                     for (var p = 0; p < data.buttons.length; p++) {
-                                        var btn = $tr.find ('.select-button-' + p + '[data-id="' + node.key + '"]').button (data.buttons[p]).click (function () {
-                                            var cb = $ (this).data ('callback');
-                                            if (cb) cb.call ($ (this), $ (this).attr ('data-id'));
-                                        }).data ('callback', data.buttons[p].click).attr ('title', data.buttons[p].title || '');
-                                        if (btn.length === 0) continue;
-                                        if (data.buttons[p].width) btn.css ({width: data.buttons[p].width});
-                                        if (data.buttons[p].height) btn.css ({height: data.buttons[p].height});
-                                        if (data.buttons[p].match) data.buttons[p].match.call (btn, node.key);
+                                        var $btn = $tr.find('.select-button-' + p + '[data-id="' + node.key + '"]').button(data.buttons[p]).click(function () {
+                                            var cb = $(this).data('callback');
+                                            if (cb) cb.call($(this), $(this).attr('data-id'));
+                                        }).data('callback', data.buttons[p].click).attr('title', data.buttons[p].title || '');
+                                        if ($btn.length === 0) continue;
+                                        if (data.buttons[p].width)  $btn.css({width: data.buttons[p].width});
+                                        if (data.buttons[p].height) $btn.css({height: data.buttons[p].height});
+                                        if (data.buttons[p].match)  $btn.buttons[p].match.call($btn, node.key);
                                     }
                                 } else {
                                     $elem.text('');
@@ -2238,7 +2238,7 @@ function span (txt, attr) {
                             }
 
                             if (data.editEnd) {
-                                $tr.find ('.select-button-edit[data-id="' + node.key + '"]').button ({
+                                $tr.find ('.select-button-edit[data-id="' + node.key + '"]').button({
                                     text: false,
                                     icons: {
                                         primary: 'ui-icon-pencil'
@@ -2247,7 +2247,7 @@ function span (txt, attr) {
                                     $ (this).data ('node').editStart ();
                                 }).attr ('title', data.texts.edit).data ('node', node).css ({width: 26, height: 20});
 
-                                $tr.find ('.select-button-ok[data-id="' + node.key + '"]').button ({
+                                $tr.find ('.select-button-ok[data-id="' + node.key + '"]').button({
                                     text: false,
                                     icons: {
                                         primary: 'ui-icon-check'
@@ -2256,12 +2256,12 @@ function span (txt, attr) {
                                     var node = $ (this).data ('node');
                                     node.editFinished = true;
                                     node.editEnd (true);
-                                }).attr ('title', data.texts.ok).data ('node', node).hide ().css ({
+                                }).attr ('title', data.texts.ok).data ('node', node).hide ().css({
                                     width: 26,
                                     height: 20
                                 });
 
-                                $tr.find ('.select-button-cancel[data-id="' + node.key + '"]').button ({
+                                $tr.find ('.select-button-cancel[data-id="' + node.key + '"]').button({
                                     text: false,
                                     icons: {
                                         primary: 'ui-icon-close'
@@ -2270,7 +2270,7 @@ function span (txt, attr) {
                                     var node = $ (this).data ('node');
                                     node.editFinished = true;
                                     node.editEnd (false);
-                                }).attr ('title', data.texts.cancel).data ('node', node).hide ().css ({
+                                }).attr ('title', data.texts.cancel).data ('node', node).hide ().css({
                                     width: 26,
                                     height: 20
                                 });
