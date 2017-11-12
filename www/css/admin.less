@@ -7,7 +7,9 @@
 @iob-font: "Segoe UI", Tahoma, Arial, "Courier New" !important;
 //@list-font-size: 12px;   // .86em;
 //@list-font-size: .86rem;
-@list-font-size: .78rem;
+
+//@list-font-size: .78rem;
+@list-font-size: .82rem;
 //@list-font-size: .9rem;
 // 0.93em
 
@@ -19,6 +21,17 @@
 
 @list-header-background: #fff;
 @toolbar-background: #fff;
+
+@tabs-padding-top: 5px;
+@tabs-padding: 7px;
+@tabs-height: 32px;
+@main-toolbar-height: 30px;
+@main-toolbar-full-height: 30px + 5px; // 5px margin-bottom
+@header-height: 24px;
+
+@grid-offset: @tabs-padding-top + @tabs-padding + @main-toolbar-full-height;
+@grid-offset-wh: @grid-offset + @header-height;
+
 
 .iob-font {
     font-family: @iob-font;
@@ -123,16 +136,23 @@ table#events {
     border-right: none;
 }
 
+/** tabs **/
+/**/
+
+
 .ui-tabs-panel {
     border: none;
-    padding: 7px !important;
-    padding-top: 5px !important;
+    padding: @tabs-padding !important;
+    padding-top: @tabs-padding-top !important;
 }
+
 
 
 .ui-jqgrid-titlebar-close {
     display: none !important;
 }
+
+/**/
 
 #edit-object-common,
 #edit-object-native {
@@ -169,9 +189,9 @@ table#events {
     background-size: 20px;
     background-position: 5px 2px;
 }
-.admin-tab {
-    height: calc(~'100% - 55px');
-}
+//.admin-tab {
+//    height: calc(~'100% - 55px');
+//}
 
 .customs-row-title {
     width: 100%;
@@ -452,7 +472,7 @@ table#log-outer {
 //    font-family: @iob-font;
 //}
 .instance-table {
-//.hosts-table {
+    //.hosts-table {
     .new-iob-list-table;
     //table-layout: fixed;
     //border: @td-border;
@@ -620,7 +640,7 @@ thead#grid-instances-head,
 }
 
 table.fancytree-ext-table {
-    border-collapse: unset;
+    //border-collapse: unset; //xxx new
 }
 
 /*.fancytree-node ui-state-active {*/
@@ -722,7 +742,7 @@ table.objects-list-table td {
 
 /*table.fancytree-ext-table tbody tr td, .objects-list-table {*/
 table.fancytree-ext-table>tbody>tr>td,
-//.objects-list-table,
+    //.objects-list-table,
 .iob-list-table,
 #grid-states>tbody>tr {
     border: @td-border !important;
@@ -789,8 +809,9 @@ table.panel-table>tbody>tr>td {
     margin:0;
 }
 
+
 .main-toolbar-table {
-    height: 30px;
+    height: @main-toolbar-height;
     width: 100%;
     padding: 0;
     border-spacing: 3px 0;
@@ -1094,11 +1115,12 @@ table.main-header-input-table>tbody>tr>td>input {
     border: 0;
 }
 
+
 #tabs-ul {
     .iob-font;
     overflow: hidden;
     font-size: 14px !important;
-    height: 32px;
+    height: @tabs-height;
     background: #5f5d5d;
     font-weight: normal !important;
     left: -3px;
@@ -1410,12 +1432,42 @@ input.objects-inline-edit {
 /**/
 
 tr.fancytree-match>td>span.fancytree-node {
-//.fancytree-match .fancytree-node {
+    //.fancytree-match .fancytree-node {
     //display: inline-flex;
     //background: #f00 !important;
 }
 
 
+.admin-tab { // äußerster div eines Tabs
+    //height: calc(~'100% - '@tabs-height);
+    height: calc(~'100% - 47px');
+}
+//#tab-adapters    {
+//    height: calc(~'100% - '@tabs-height);
+//}
+//#grid-adapters-div {
+//    height: calc(~'100% - ' @grid-offset);
+//}
+//.iob-tab {
+//    height: calc(~'100% - ' @tabs-height);
+//}
+.grid-main-div {
+    //height: calc(~'100% - ' @grid-offset);
+    height: calc(~'100% - 50px');
+}
+.grid-main-wh-div { // with header
+    height: calc(~'100% - '@grid-offset-wh);
+}
+.grid-main-wob-div { // without buttons
+    height: calc(~'100% - '@grid-offset - @main-toolbar-full-height);
+}
+
+#gview_grid-states {
+    height: calc(~'100% - 36px');
+}
+//#grid-objects {
+//    height: calc(100% - 0px);
+//}
 //.my-inline-block {
 //    display: inline-block;
 //    font-size: 0;

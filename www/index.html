@@ -127,7 +127,9 @@
          style="position:absolute; top: 50%; left: 50%; width: 150px; height: 25px; padding: 12px; background: rgba(30, 30, 30, 0.5); display: none; text-align: center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">
         Processing...
     </div>
-    <div style="width:100%;height:400px;overflow-y: auto" id="grid-adapters-div">
+    <!--<div style="width:100%;height:400px;overflow-y: auto" id="grid-adapters-div">-->
+    <div class="grid-main-div" style="width:100%;overflow-y: auto" id="grid-adapters-div">
+
         <table id="grid-adapters" class="iob-list-font" style="margin-left: 1px; width:calc(100% - 2px);table-layout:fixed;">
             <colgroup>
                 <col width="320px"/>
@@ -193,7 +195,7 @@
         </table>
         <!--table id="grid-instances"></table>
         <div id="pager-instances"></div-->
-    <div style="width: 100%; height: calc(100% - 30px); overflow: auto; margin-left:1px; width:calc(100% - 2px)">
+    <div class="grid-main-div" style="width: 100%; height: calc(100% - 30px); overflow: auto; margin-left:1px; width:calc(100% - 2px)">
             <table class="instance-table" style="width: 100%;">
                 <thead id="grid-instances-head">
                 </thead>
@@ -203,13 +205,11 @@
         </div>
     </div>
     <div id="tab-objects"   class="admin-tab" style="display:none" data-name="Objects">
-        <div id="grid-objects"><span class="translate" style="width: calc(100% - 100px); width: calc(100% - 20px); text-align: center">Loading...</span></div>
+        <div id="grid-objects" class="grid-main-div"><span class="translate" style="width: calc(100% - 100px); width: calc(100% - 20px); text-align: center">Loading...</span></div>
     </div>
-<!--<div id="tab-objects1" class="admin-tab" style="display:none; height: calc(100% - 55px); width: 100%; overflow:hidden" data-name="Objects1">-->
-<div id="tab-objects1"class="admin-tab" style="display:none; height: calc(100% - 55px); overflow:hidden" data-name="Objects1">
-    <!--<div id="grid-objects1" style="height: 100%; width: calc(100% - 18px)"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>-->
-    <div id="grid-objects1" style="height: 100%; width: 100%"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>
-</div>
+<!--<div id="tab-objects1"class="admin-tab" style="display:none; height: calc(100% - 55px); overflow:hidden" data-name="Objects1">-->
+    <!--<div id="grid-objects1" style="height: 100%; width: 100%"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>-->
+<!--</div>-->
     <div id="tab-states"    class="admin-tab" data-name="States" style="display: none">
     <!--<table><tr><td>-->
     <!--</td></tr></table>-->
@@ -404,7 +404,9 @@
             -->
                 </thead>
             </table>
-            <div id="grid-log-inner" style="width: 100%; overflow-y: scroll; height: calc(100% - 60px);">
+
+        <!--<div id="grid-log-inner" style="width: 100%; overflow-y: scroll; height: calc(100% - 60px);">-->
+        <div id="grid-log-inner" class="grid-main-wh-div" style="width: 100%; overflow-y: scroll;">
             <table id="log-outer" style="width: calc(100% - 3px); border-collapse: collapse; margin-top: -1px"
                    class="ui-widget ui-state-default ui-corner-bottom">
                 <colgroup>

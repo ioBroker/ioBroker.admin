@@ -17,19 +17,19 @@ table#grid-states {
 }
 .iob-font-12,
 .main-header-table {
-  font-size: 0.78rem !important;
+  font-size: 0.82rem !important;
 }
 .iob-list-font,
 table.fancytree-ext-table > tbody > tr > td,
 .iob-list-table,
 #grid-states > tbody > tr,
 table#grid-states {
-  font-size: 0.78rem !important;
+  font-size: 0.82rem !important;
   /*font-size: 0.9em !important;*/
 }
 .new-iob-list-table,
 .objects-list-table {
-  font-size: 0.78rem !important;
+  font-size: 0.82rem !important;
   /*font-size: 0.9em !important;*/
   background: #efefef !important;
   white-space: nowrap;
@@ -68,7 +68,7 @@ table#events {
   outline: none;
 }
 .ui-jqgrid tr.jqgrow td {
-  font-size: 0.78rem;
+  font-size: 0.82rem;
 }
 .ui-jqgrid .ui-pg-input {
   height: 20px !important;
@@ -92,6 +92,8 @@ table#events {
   border-left: none;
   border-right: none;
 }
+/** tabs **/
+/**/
 .ui-tabs-panel {
   border: none;
   padding: 7px !important;
@@ -100,6 +102,7 @@ table#events {
 .ui-jqgrid-titlebar-close {
   display: none !important;
 }
+/**/
 #edit-object-common,
 #edit-object-native {
   font-size: 12px;
@@ -133,9 +136,6 @@ table#events {
   background-repeat: no-repeat;
   background-size: 20px;
   background-position: 5px 2px;
-}
-.admin-tab {
-  height: calc(100% - 55px);
 }
 .customs-row-title {
   width: 100%;
@@ -304,7 +304,7 @@ table#events {
   background-color: #e9e9e9;
 }
 table#log-outer {
-  font-size: 0.78rem !important;
+  font-size: 0.82rem !important;
   /*font-size: 0.9em !important;*/
   background: #efefef !important;
   white-space: nowrap;
@@ -389,7 +389,7 @@ table#log-outer {
 /** instance table **/
 /**/
 .instance-table {
-  font-size: 0.78rem !important;
+  font-size: 0.82rem !important;
   /*font-size: 0.9em !important;*/
   background: #efefef !important;
   white-space: nowrap;
@@ -469,7 +469,7 @@ button.instance-web {
 }
 /**/
 .hosts-table {
-  font-size: 0.78rem !important;
+  font-size: 0.82rem !important;
   /*font-size: 0.9em !important;*/
   background: #efefef !important;
   white-space: nowrap;
@@ -549,14 +549,11 @@ thead#grid-instances-head,
   background-color: #e0e0e0;
   text-align: left;
   color: #000;
-  font-size: 0.78rem !important;
+  font-size: 0.82rem !important;
 }
 .ui-button-icon-only {
   width: 1.8em;
   height: 1.8em;
-}
-table.fancytree-ext-table {
-  border-collapse: unset;
 }
 /*.fancytree-node ui-state-active {*/
 .ui-state-active {
@@ -652,7 +649,7 @@ table.fancytree-ext-table > tbody > tr > td > table > tbody > tr > td {
 }
 .iob-list-table {
   border: 0;
-  font-size: 0.78rem !important;
+  font-size: 0.82rem !important;
   font-weight: normal !important;
 }
 table.iob-list-table > tbody > tr {
@@ -661,7 +658,7 @@ table.iob-list-table > tbody > tr {
 .events-list-table {
   border: 0;
   overflow: auto;
-  font-size: 0.78rem !important;
+  font-size: 0.82rem !important;
   font-weight: normal !important;
   color: #000 !important;
   width: calc(100% - 1px);
@@ -756,7 +753,7 @@ table.main-header-table > thead > tr > th {
   border-spacing: 0;
   border-radius: 2px;
   font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
 }
 .main-header-input-table > tbody > tr {
   background: #fff;
@@ -782,7 +779,7 @@ table.main-header-input-table > tbody > tr > td > select,
 table.main-header-input-table > tbody > tr > td > input,
 table.main-header-input-table > tbody > tr > td > span {
   font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   padding: 0;
   border: 0;
 }
@@ -820,7 +817,7 @@ table.main-header-input-table > tbody > tr > td > input {
   /*?*/
 }
 .list-column-header-filter {
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   line-height: 1.5em;
   width: 100%;
   padding: 0;
@@ -889,7 +886,7 @@ table.main-header-input-table > tbody > tr > td > input {
   color: #000;
   text-align: left;
   font-weight: normal;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   padding-left: 5px;
   vertical-align: middle;
 }
@@ -1203,7 +1200,7 @@ select ~ .select-id-quick-edit-cancel {
   width: calc(100% - 0px);
   z-index: 2;
   font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   vertical-align: middle;
   text-overflow-mode: clip;
 }
@@ -1215,3 +1212,18 @@ input.objects-inline-edit {
   z-index: 2;
 }
 /**/
+.admin-tab {
+  height: calc(100% - 47px);
+}
+.grid-main-div {
+  height: calc(100% - 50px);
+}
+.grid-main-wh-div {
+  height: calc(100% -  71px);
+}
+.grid-main-wob-div {
+  height: calc(100% -  12px);
+}
+#gview_grid-states {
+  height: calc(100% - 36px);
+}
