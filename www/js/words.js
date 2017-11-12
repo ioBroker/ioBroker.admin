@@ -40,6 +40,7 @@ systemDictionary = {
     "ack":                  {"en": "ack",                   "de": "Bestätigt",              "ru": "Подтв."},
     "not ack":              {"en": "not ack",               "de": "nicht Best.",            "ru": "Не подтв."},
     "from":                 {"en": "from",                  "de": "Quelle",                 "ru": "От"},
+    "of":                   {"en": "of",                    "de": "von",                    "ru": "из"},
     "lc":                   {"en": "lc",                    "de": "Geändert",               "ru": "Изменён"},
     "title":                {"en": "title",                 "de": "Titel",                  "ru": "Заголовок"},
     "desc":                 {"en": "desc",                  "de": "Beschreibung",           "ru": "Описание"},
@@ -141,6 +142,11 @@ systemDictionary = {
         "en": "select member by double click",
         "de": "Mitglied durch Doppelklick auswählen",
         "ru": "Выберите участника двойным щелчком"
+    },
+    "Adapters from this Group installed": {
+        "en": "Adapters from this Group installed",
+        "de": "Adaptern aus dieser Gruppe instaliert",
+        "ru": "драйверов из этой группы установлено"
     },
     "config instance":      {"en": "config instance",       "de": "Instanz konfigurieren",  "ru": "Настройка экземпляра"},
     "add instance":         {"en": "add instance",          "de": "Instanz hinzufügen",     "ru": "Установить драйвер"},

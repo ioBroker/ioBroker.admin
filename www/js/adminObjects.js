@@ -380,7 +380,7 @@ function Objects(main) {
     };
 
     this.resize = function (width, height) {
-        if (this.$grid) this.$grid.height(height - 100).width(width - 20);
+        //if (this.$grid) this.$grid.height(height - 100).width(width - 20);
     };
 
     function _syncEnum(id, enumIds, newArray, cb) {
@@ -461,18 +461,12 @@ function Objects(main) {
             this.$grid[0]._isInited = true;
             if (this.customEnabled === null) this.checkCustoms();
 
-            var x = $(window).width();
-            var y = $(window).height();
-            if (x < 720) x = 720;
-            if (y < 480) y = 480;
-
-            that.$grid.height(y - 100).width(x - 20);
-
             var settings = {
                 objects:  main.objects,
                 states:   main.states,
                 noDialog: true,
                 name:     'admin-objects',
+                useHistory: this.customEnabled,
                 showButtonsForNotExistingObjects: true,
                 expertModeRegEx: /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin|^script\./,
                 texts: {
@@ -517,9 +511,9 @@ function Objects(main) {
                             that.edit(id);
                         },
                         match: function (id) {
-                            var $this = $(this);
-                            //if (!that.main.objects[id]) this[0].outerHTML = '<div style="width: 26px; height: 1px; display: inline-block;"></div>';
-                            if (!that.main.objects[id]) this[0].outerHTML = '<div class="td-button-placeholder"></div>';
+                            if (!that.main.objects[id])  {
+                                this[0].outerHTML = '<div class="td-button-placeholder"></div>';
+                            }
                         },
                         width: 26,
                         height: 20
@@ -966,7 +960,7 @@ function Objects(main) {
             if (this.main.objects[this.main.instances[u]].common &&
                 (this.main.objects[this.main.instances[u]].common.type === 'storage' || this.main.objects[this.main.instances[u]].common.supportCustoms) &&
                 this.main.objects[this.main.instances[u]].common.enabled) {
-                if (this.customEnabled !== null && this.customEnabled != true) {
+                if (this.customEnabled !== null && this.customEnabled !== true) {
                     this.customEnabled = true;
                     // update customs buttons
                     this.init(true);
@@ -977,7 +971,7 @@ function Objects(main) {
                 return;
             }
         }
-        if (this.customEnabled !== null && this.customEnabled != false) {
+        if (this.customEnabled !== null && this.customEnabled !== false) {
             this.customEnabled = false;
             // update custom button
             this.init(true);
@@ -1022,7 +1016,7 @@ function Objects(main) {
                 '" data-adapter="' + data + '"><img class="customs-row-title-icon" width="20" src="' + img + '" /><span class="customs-row-title-settings">' + _('Settings for %s', '') + '</span>' + data +
                // '<input type="checkbox" data-field="enabled" data-default="false">' +
                 '</div>' +
-                '<div class="customs-settings" style="' + (hidden ? 'display: none' : '') + '">' +
+                '<div class="customs-settings" style="' + (hidden ? 'display: none' : '') + '; overflow-x: hidden">' +
                 $('script[data-template-name="' + adapter + '"]').html() +
                 '</div>';
 
@@ -1036,7 +1030,9 @@ function Objects(main) {
                 var def   = $this.attr('data-default');
                 if (def === 'true')  def = true;
                 if (def === 'false') def = false;
-                if (def == parseFloat(def).toString()) def = parseFloat(def);
+                if (def.toString().replace(/\+/, '') === parseFloat(def).toString()) {
+                    def = parseFloat(def);
+                }
 
                 that.defaults[adapter][field] = def;
                 if (field === 'enabled') {
@@ -1310,10 +1306,10 @@ function Objects(main) {
             },
             cache: true,
             url:   '/adapter/' + adapter + '/custom.html',
-            success: function(_data) {
+            success: function (_data) {
                 callback(null, _data);
             },
-            error: function(jqXHR) {
+            error: function (jqXHR) {
                 // todo: TODO: remove some day (08.2016)
                 $.ajax({
                     headers: {
@@ -1324,7 +1320,7 @@ function Objects(main) {
                     success: function(_data) {
                         callback(null, _data);
                     },
-                    error: function(jqXHR) {
+                    error: function (jqXHR) {
                         callback(jqXHR.responseText);
                     }
                 });
@@ -1498,7 +1494,7 @@ function Objects(main) {
 
     this.resizeHistory = function () {
         var $iFrame = $('#iframe-history-chart');
-        $iFrame.css({height: this.$dialogCustoms.height() - 70, width: this.$dialogCustoms.width() - 10});
+        // $iFrame.css({height: this.$dialogCustoms.height() - 70, width: this.$dialogCustoms.width() - 10});
         var timeout = $iFrame.data('timeout');
         if (timeout) clearTimeout(timeout);
 
@@ -1612,7 +1608,7 @@ function Objects(main) {
             ],
             open: function (event, ui) {
                 $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
-                $('#iframe-history-chart').css({height: $(this).height() - 120, width: $(this).width() - 30});
+                // $('#iframe-history-chart').css({height: $(this).height() - 120, width: $(this).width() - 30});
             },
             close: function () {
                 if (that.historyTimeout) {

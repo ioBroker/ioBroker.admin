@@ -731,7 +731,7 @@ function span (txt, attr) {
         //$header.attr('width', data.$tree.width());
         var thDest = $header.find('>tbody>tr>td');	//if table headers are specified in its semantically correct tag, are obtained
         var thSrc = data.$tree.find('>tbody>tr>td');
-        for (var i = 0; i < thDest.length-1; i++) {
+        for (var i = 0; i < thDest.length - 1; i++) {
             // var olddest = $(thDest[i]).width();
             $(thDest[i]).attr('width', $(thSrc[i]).width() + 1);
         }
@@ -936,13 +936,13 @@ function span (txt, attr) {
         return states;
     }
 
-    function getFilter(data, name) {
+    /*function getFilter(data, name) {
         return $ ('#filter_' + name + '_' + data.instance);
-    }
+    }*/
 
     function setFilterVal(data, field, val) {
         if (!field) return;
-        $ ('#filter_' + field + '_' + data.instance).val(val).trigger ('change');
+        $ ('#filter_' + field + '_' + data.instance).val(val).trigger('change');
     }
 
     function onQuickEditField(event) {
@@ -1407,8 +1407,9 @@ function span (txt, attr) {
         //tds += '<td class="ui-widget" style="width: 100%; text-align: center; font-weight: bold; font-size: medium">' + data.texts.id + '</td></tr></table></th>';
         //tds += '<td style="width: 100%;"></td></td></tr></table></th>';
 
-        tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_history_' + data.instance + '"></button></td>';
-
+        if (data.useHistory) {
+            tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_history_' + data.instance + '" style="position: absolute; top: 5px; right: 20px"></button></td>';
+        }
 
         var text = '<div id="' + data.instance + '-div" style="width:100%; height:100%">' +
             //var text = '<div id="' + data.instance + '-div" >' +
@@ -1442,7 +1443,7 @@ function span (txt, attr) {
             if (placeholder === undefined) {
                 placeholder = data.texts[filterNo.toLowerCase()];
             }
-            return '' +
+            var txt =
                 //'<table style="width: 100%; height:100%; padding: 0;border: 1px solid #c0c0c0;border-spacing: 0;border-radius: 2px;">\n' +
                 '<table class="main-header-input-table">' +
 
@@ -1450,16 +1451,20 @@ function span (txt, attr) {
                 '        <tr style="background: #ffffff; ">' +
                 '            <td style="width: 100%">' +
                 '                <input placeholder="' + placeholder + '" style="width: 100%; padding: 0; padding-left: ' + lineIndent + ';font-size: 12px;border: 0;line-height: 1.5em;" type="text" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
-                '            </td>' +
+                '            </td>';
                 //                '            <td style="vertical-align: middle; border: 0;">\n' +
+
+            txt +=
                 '            <td>' +
                 '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">' +
                 //'                    <span class="ui-button-text"></span>\n' +
                 '                </button>' +
-                '            </td>' +
+                '            </td>';
+            txt +=
                 '        </tr>' +
                 '        </tbody>' +
                 '    </table>';
+            return txt;
         }
 
         function textCombobox (filterNo, placeholder) {
@@ -1479,7 +1484,7 @@ function span (txt, attr) {
                     else if (b === undefined) b = a;
                     cbText += '<option style="line-height: 0.5em; background: #fff" value="' + a + '">' + b + '</option>';
                 };
-                add ("", placeholder + ' (' + data.texts.all + ')');
+                add('', placeholder + ' (' + data.texts.all + ')');
                 for (var i = 0, len = cbEntries.length; i < len; i++) {
                     add (cbEntries[i]);
                 }
@@ -1488,23 +1493,15 @@ function span (txt, attr) {
                 txt = '' +
                     //'<table style="width: 100%;padding: 0;border: 1px solid #c0c0c0;border-spacing: 0;border-radius: 2px;">' +
                     '<table class="main-header-input-table" style="width: 100%;">' +     // width is already in css
-                    '        <tbody>' +
+                    '    <tbody>' +
                     '        <tr style="background: #ffffff; ">' +                       // tr background is already in css
                     '            <td style="width: 100%">';                              // td-width is already in css
                 txt += cbText;
                 txt += '' +
                     '            </td>' +
-                    //'            <td style="vertical-align: top;border: 0;">' +
-                    '            <td>' +
-                    //                '                <button data-id="filter_' + filterNo + '" class="" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">\n' +
-                    '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">' +
-                    //                '                    <span class="ui-button-icon-primary ui-icon ui-icon-close" style="position: relative;left: -6px;"></span>\n' +
-                    //'                    <span class="ui-button-text"></span>' +
-                    '                </button>' +
-                    '            </td>' +
                     '        </tr>' +
-                    '        </tbody>' +
-                    '    </table>';
+                    '    </tbody>' +
+                    '</table>';
             } else {
                 if (filterNo === 'room') {
                     if (data.rooms) delete data.rooms;
@@ -1524,16 +1521,20 @@ function span (txt, attr) {
             //text += '<td style="position: relative;left: 0; padding:0">';
             text += '<td>';
             if (name === 'ID' || name === 'name' || name === 'value' || name === 'enum') {
-                text += textFiltertext (name);
+                text += textFiltertext(name);
             } else if (name === 'type' || name === 'role' || name === 'room' || name === 'function') {
-                text += textCombobox (name);
+                text += textCombobox(name);
             } else if (name === 'button') {
                 //text += '<td>';
                 if (data.customButtonFilter) {
-                    text += textCombobox (name);
+                    text += textCombobox(name);
                 } else {
                     //text += '<table class="main-header-input-table"><tbody><tr><td><div>' + _(name) + '</div></td></tr></tbody></table>';
-                    text += '<table class="main-header-input-table"><tbody><tr><td style="padding-left: ' + lineIndent + '">' + _(name) + '</td></tr></tbody></table>';
+                    if (name === 'buttons' || name === 'button') {
+                        text += '<span style="padding-left: ' + lineIndent + '"></span>';
+                    } else {
+                        text += '<table class="main-header-input-table"><tbody><tr><td style="padding-left: ' + lineIndent + '">' + _(name) + '</td></tr></tbody></table>';
+                    }
                 }
             } else {
                 text += '<td>';
@@ -1546,9 +1547,9 @@ function span (txt, attr) {
         text += '    </table>';
 
         //text += '<div style="width: calc(100% - 18px); height: ' + (data.buttons ? 'calc(100% - 30px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll">';
-        text += '<div style="width: 100%; height: ' + (data.buttons ? 'calc(100% - 54px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll">';
-        text += ' <table class="iob-list-font objects-list-table" style="width: calc(100%-5px);" id="selectID_' + data.instance + '" cellspacing="0" cellpadding="0">';
-        text += '        <colgroup>';
+        text += '<div style="width: 100%; height: ' + (data.buttons ? 'calc(100% - 54px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll; overflow-x: hidden">';
+        text += '   <table class="iob-list-font objects-list-table" style="/*width: calc(100% - 5px);*/" id="selectID_' + data.instance + '" cellspacing="0" cellpadding="0">';
+        text += '       <colgroup>';
 
         var thead = '<thead class="grid-objects-head"><tr>';
 
@@ -1634,8 +1635,8 @@ function span (txt, attr) {
 
                 $elem.css ({position: 'relative'})
                     .data('data', data)
-                    .mouseenter (clippyShow)
-                    .mouseleave (clippyHide);
+                    .mouseenter(clippyShow)
+                    .mouseleave(clippyHide);
             }
         }
 
@@ -1743,7 +1744,9 @@ function span (txt, attr) {
                     newIds.push(selectedNodes[i].key);
                 }
 
-                if (_data.onChange) _data.onChange(newIds, _data.selectedID);
+                if (_data.onChange) {
+                    _data.onChange(newIds, _data.selectedID);
+                }
 
                 _data.selectedID = newIds;
 
@@ -2770,11 +2773,11 @@ function span (txt, attr) {
         $('#btn_history_' + data.instance).button({icons: {primary: 'ui-icon-gear'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
             $('#process_running_' + data.instance).show();
 
-            setTimeout(data.customButtonFilter.callback, 1);
-
+            setTimeout(function () {
+                data.customButtonFilter.callback();
+                $('#process_running_' + data.instance).hide();
+            }, 1);
         }).attr('title', data.texts.history);
-
-
 
         $('#btn_select_all_' + data.instance).button({icons: {primary: 'ui-icon-circle-check'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
             $('#process_running_' + data.instance).show();
