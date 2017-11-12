@@ -256,7 +256,7 @@ function span (txt, attr) {
         if (!data.$tree) return null;
         var expandeds = {};
         (function getIt(node) {
-            if (!node.children) return;
+            if (!node.children || typeof node.children !== 'object') return;
             node.children.forEach(function(_node) {
                 if (_node.expanded) {
                     expandeds[_node.key] = true;
@@ -270,7 +270,7 @@ function span (txt, attr) {
     function restoreExpandeds(data, expandeds) {
         if (!expandeds || !data.$tree) return;
         (function setIt(node) {
-            if (!node.children) return;
+            if (!node.children || typeof node.children !== 'object') return;
             node.children.forEach(function(_node) {
                 if (expandeds[_node.key]) {
                     _node.setExpanded();
@@ -1237,17 +1237,17 @@ function span (txt, attr) {
 
         // load expert mode flag
         if (typeof Storage !== 'undefined' && data.name && data.expertModeRegEx) {
-            data.expertMode = window.localStorage.getItem (data.name + '-expert');
+            data.expertMode = window.localStorage.getItem(data.name + '-expert');
             data.expertMode = (data.expertMode === true || data.expertMode === 'true');
         }
         if (typeof Storage !== 'undefined' && data.name) { //} && data.sort) {
-            data.sort = window.localStorage.getItem (data.name + '-sort');
+            data.sort = window.localStorage.getItem(data.name + '-sort');
             data.sort = (data.sort === true || data.sort === 'true');
         }
 
         // Get all states
-        var expandeds = getExpandeds (data);
-        getAllStates (data);
+        var expandeds = getExpandeds(data);
+        getAllStates(data);
 
         if (!data.noDialog && !data.buttonsDlg) {
             data.buttonsDlg = [
@@ -1255,19 +1255,19 @@ function span (txt, attr) {
                     id: data.instance + '-button-ok',
                     text: data.texts.select,
                     click: function () {
-                        var _data = $dlg.data ('selectId');
-                        if (_data && _data.onSuccess) _data.onSuccess (_data.selectedID, _data.currentId, _data.objects[_data.selectedID]);
+                        var _data = $dlg.data('selectId');
+                        if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId, _data.objects[_data.selectedID]);
                         _data.currentId = _data.selectedID;
-                        storeSettings (data);
-                        $dlg.dialog ('close');
+                        storeSettings(data);
+                        $dlg.dialog('close');
                     }
                 },
                 {
                     id: data.instance + '-button-cancel',
                     text: data.texts.cancel,
                     click: function () {
-                        storeSettings (data);
-                        $ (this).dialog ('close');
+                        storeSettings(data);
+                        $ (this).dialog('close');
                     }
                 }
             ];
@@ -2221,12 +2221,12 @@ function span (txt, attr) {
                                     for (var p = 0; p < data.buttons.length; p++) {
                                         var $btn = $tr.find('.select-button-' + p + '[data-id="' + node.key + '"]').button(data.buttons[p]).click(function () {
                                             var cb = $(this).data('callback');
-                                            if (cb) cb.call($(this), $(this).attr('data-id'));
+                                            if (cb) cb.call($(this), $(this).data('id'));
                                         }).data('callback', data.buttons[p].click).attr('title', data.buttons[p].title || '');
                                         if ($btn.length === 0) continue;
                                         if (data.buttons[p].width)  $btn.css({width: data.buttons[p].width});
                                         if (data.buttons[p].height) $btn.css({height: data.buttons[p].height});
-                                        if (data.buttons[p].match)  $btn.buttons[p].match.call($btn, node.key);
+                                        if (data.buttons[p].match)  data.buttons[p].match.call($btn, node.key);
                                     }
                                 } else {
                                     $elem.text('');
@@ -2685,7 +2685,7 @@ function span (txt, attr) {
         });
 
         $('.filter_btn_' + data.instance).button({icons: {primary: 'ui-icon-close'}, text: false})./*css({width: 18, height: 18}).*/click(function () {
-            $('#' + $(this).attr('data-id')).val('').trigger('change');  //filter buttons action
+            $('#' + $(this).data('id')).val('').trigger('change');  //filter buttons action
         });
 
         $('#btn_collapse_' + data.instance).button({icons: {primary: 'ui-icon-folder-collapsed'}, text: false})./*css({width: 18, height: 18}).*/click(function () {

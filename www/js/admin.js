@@ -1057,11 +1057,11 @@ $(document).ready(function () {
                     $(div).appendTo($('#tabs'));
 
                     //if (name === 'tab-javascript') { // temporary, until javascript tab ist adapted
-                    $ ('#' + name).find ('.iframe-in-tab').on ('load', function () {
+                    /*$('#' + name).find ('.iframe-in-tab').on('load', function () {
                         var elem = $ (this).contents ().find('body>header');
-                        if (!elem || !elem.length) elem = $(this).contents ().find ('head');
+                        if (!elem || !elem.length) elem = $(this).contents ().find('head');
                         if (elem && elem.length) elem.append('<link rel="stylesheet" type="text/css" href="../../css/admin.css"/>');
-                    })
+                    });*/
                     //}
                 } else {
                     $('#' + name).show().appendTo($('#tabs'));
