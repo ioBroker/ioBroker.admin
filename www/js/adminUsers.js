@@ -25,7 +25,7 @@ function Users(main) {
             sortname: "id",
             sortorder: "desc",
             viewrecords: true,
-            caption: _('ioBroker users'),
+            //caption: _('ioBroker users'),
             ignoreCase: true,
             onSelectRow: function (id, e) {
                 if (id && id !== that.userLastSelected) {
@@ -169,6 +169,9 @@ function Users(main) {
                 }
             ]
         });
+
+        patchPager(this, 'users');
+
         $('#edit-user-name').keydown(function (event) {
             if (event.which == 13) $('#edit-user-pass').focus();
         });
@@ -299,7 +302,7 @@ function Users(main) {
             }, 200);
         }
     };
-    
+
     this.resize = function (width, height) {
         this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
     };

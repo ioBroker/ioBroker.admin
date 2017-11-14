@@ -750,8 +750,11 @@ function span (txt, attr) {
             $(thDest[i]).attr('width', $(thSrc[i]).width()+offs);
         }
         if ($dlg.selectID_Offset === undefined) {
-            if (($dlg.selectID_Offset = $ (thSrc[1]).offset ().left - $ (thDest[1]).offset ().left)) {
-                syncHeader ($dlg);
+            var x = $ (thSrc[1]).offset ().left;
+            if (x) {
+                if (($dlg.selectID_Offset = x - $ (thDest[1]).offset ().left)) {
+                    syncHeader ($dlg);
+                }
             }
         }
     }
@@ -1264,7 +1267,8 @@ function span (txt, attr) {
         var tds = '<td><button class="ui-button-icon-only panel-button" id="btn_refresh_' + data.instance + '"></button></td>';
         tds += '<td><button class="panel-button" id="btn_list_' + data.instance + '"></button></td>';
         tds += '<td><button class="panel-button" id="btn_collapse_' + data.instance + '"></button></td>';
-        tds += '<td><button class="panel-button" id="btn_expand_' + data.instance + '"></button></td><td class="select-id-custom-buttons"></td>';
+        tds += '<td><button class="panel-button" id="btn_expand_' + data.instance + '"></button></td>' +
+               '<td class="select-id-custom-buttons"></td>';
         if (data.filter && data.filter.type === 'state' && multiselect) {
             tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_select_all_' + data.instance + '"></button></td>';
             tds += '<td><button class="panel-button" id="btn_unselect_all_' + data.instance + '"></button></td>';
@@ -1276,7 +1280,8 @@ function span (txt, attr) {
         tds += '<td><button class="panel-button" id="btn_sort_' + data.instance + '"></button></td>';
 
         if (data.panelButtons) {
-            tds += '<td style="width: 20px">&nbsp;&nbsp;</td>';
+            //tds += '<td style="width: 20px">&nbsp;&nbsp;</td>';
+            tds += '<td class="iob-toolbar-sep"></td>';
             for (c = 0; c < data.panelButtons.length; c++) {
                 tds += '<td><button class="panel-button" id="btn_custom_' + data.instance + '_' + c + '"></button></td>';
             }

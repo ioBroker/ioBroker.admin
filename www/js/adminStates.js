@@ -277,50 +277,7 @@ function States(main) {
             cursor: 'pointer'
         });
 
-        that.$grid.parent().parent().addClass('events-grid-div');
-        //that.$grid.parent().onResize: function (event) {
-
-
-            var oldHeader = $('#tab-states').find('.ui-jqgrid-htable');
-        oldHeader.addClass('main-header-table');
-        var $oldTr = oldHeader.find('thead>tr');
-        var newInputTables = $oldTr.eq(1).find('.ui-search-table');
-        var newTh = $oldTr.eq(1).find('th');
-        newInputTables.addClass('main-header-input-table');
-        var newInput = newInputTables.find('input');
-        $oldTr.eq(0).find('th').each(function(i, o) {
-            $(newInput[i]).attr('placeholder', $(o).text().trim()).attr('style', 'position: relative; top: 2px;');
-            //$(o).text('');
-            // $(newTh[i]).attr('id', $(o).attr('id'));
-            // $(o).removeAttr('id');
-
-        });
-        newInputTables.each(function (i, o) {
-            $(o).parent().css({padding: 0});  // div
-            $(o).parent().parent().css({padding: 0}); // th
-            var $a = $($(o).find('a'));
-            $a.css({display: 'block', padding: 0, position: 'relative', top: '1px'});
-            $a.html ('<span style="height:16px;" class="ui-button-icon-primary ui-icon ui-icon-close"></span>')
-
-
-        });
-
-        $oldTr.first().remove();
-        // setTimeout(function() {
-        //     $oldTr.first().css({ /*visibility: 'hidden',*/ position: 'absolute', top: '4px', 'z-index': '100' });
-        // }, 2000);
-        $($oldTr.eq(1)).attr('style', 'border-top: 1px solid #c0c0c0 !important; margin-left: 1px;');
-        $($oldTr.eq(1)).parent().parent().attr('style', 'header: 0 !important');
-        //$($(newHeader).find('tr')).attr('style', 'border: 1px solid #c0c0c0 !important');
-
-
-        var $nav = $('#pager-states');
-        var mainToolbar = $nav.find('table.ui-pg-table').first();
-        // mainToolbar.addClass('main-toolbar-table').css({'font-size': '12px'});
-        // mainToolbar.find('tr').first().css({height: '23px'});
-
-        mainToolbar.find('td').css({ padding: 0 });
-        syncHeader();
+        patchPager(that, 'states');
 
         if (this.main.config.statesFilter) {
             var filters = JSON.parse(this.main.config.statesFilter);

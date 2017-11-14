@@ -1695,8 +1695,22 @@ $(document).ready(function () {
             $tabs.tabs('option', 'active', index+1);
             if (tab === 'tab-hosts') tabs.hosts.init();
             var func;
-            if ((func=tabs[tab.substr(4)]) && (func=func.onSelected)) {
-                func();
+            // if ((func=tabs[tab.substr(4)]) && (func=func.onSelected)) {
+            //     func();
+            // }
+            if ((func=tabs[tab.substr(4)])) {
+               if (func.onSelected) func.onSelected();
+               setTimeout(function () {
+                   var x = $(window).width();
+                   var y = $(window).height();
+                   if (x < 720) {
+                       x = 720;
+                   }
+                   if (y < 480) {
+                       y = 480;
+                   }
+                   func.resize(x,y);
+               }, 10);
             }
         } else {
             tabs.hosts.init();
