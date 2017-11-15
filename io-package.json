@@ -2,8 +2,12 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "news": {
+            "3.0.0": {
+                "en": "gui redesigned",
+                "de": "Benutzeroberfäche neu gestaltet"
+            },
             "2.0.10": {
                 "en": "added use of delete-key in the objects view.",
                 "de": "Verwendung der Entfernen-Taste in der Objekte-Ansicht hinzugefügt"

@@ -717,11 +717,11 @@ table.panel-table > tbody > tr > td {
 table.main-toolbar-table > tbody > tr {
   white-space: nowrap;
 }
-table.main-toolbar-table > tbody > tr > td:last-child {
+table.main-toolbar-table > tbody > tr > td:not(:first-child):last-child {
   width: auto !important;
   text-align: right;
   white-space: nowrap;
-  font-size: 0.75em;
+  font-size: 0.75rem;
   font-weight: normal;
 }
 table.main-toolbar-table > tbody > tr > td > button {
@@ -748,7 +748,7 @@ table.main-toolbar-table > tbody > tr > td {
 table.main-toolbar-table > tbody > tr > td:hover {
   border: 1px solid #d0d0d0;
 }
-table.main-toolbar-table > tbody > tr > td:last-child:hover {
+table.main-toolbar-table > tbody > tr > td:not(:first-child):last-child:hover {
   border: #fff;
 }
 #tab-adapters table.main-toolbar-table {
@@ -1387,4 +1387,10 @@ div.iob-pager {
 .main-toolbar-table > tbody > tr > td.select-id-custom-buttons {
   width: 4px !important;
   visibility: hidden;
+}
+span.dark-blue {
+  color: #009;
+}
+span.dark-green {
+  color: #090;
 }
