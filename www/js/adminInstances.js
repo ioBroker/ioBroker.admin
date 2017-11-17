@@ -298,7 +298,7 @@ function Instances(main) {
         text += '<th style="width: calc(2em - 6px); border-left-color:transparent; border-right-color:transparent;"></th>';
         //text += '<th style="width: 14em">' + _('instance') + '</th>';
         text += '<th style="width: 14em; border-left-color:transparent;"></th>';
-        text += '<th style="width: 12em">' + _('buttons') + '</th>';
+        text += '<th style="width: 12em">' + _('actions') + '</th>';
         text += '<th style="text-align: left">' + _('title') + '</th>';
 
         if (that.main.tabs.hosts.list.length > 1) {

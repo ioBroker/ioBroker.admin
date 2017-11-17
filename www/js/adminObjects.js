@@ -1030,7 +1030,7 @@ function Objects(main) {
                 var def   = $this.attr('data-default');
                 if (def === 'true')  def = true;
                 if (def === 'false') def = false;
-                if (def.toString().replace(/\+/, '') === parseFloat(def).toString()) {
+                if (def !== undefined && def.toString().replace(/\+/, '') === parseFloat(def).toString()) {
                     def = parseFloat(def);
                 }
 
