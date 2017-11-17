@@ -131,6 +131,7 @@
      type: "state"
  */
 
+
 function tdp(x, nachkomma) {
     return isNaN(x) ? "" : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
@@ -152,6 +153,7 @@ function span (txt, attr) {
     if (attr) style += attr;
     return '<span style="' + style + '">' + txt + '</span>';
 }
+
 
 (function ($) {
     'use strict';
@@ -257,8 +259,8 @@ function span (txt, attr) {
         var expandeds = {};
         (function getIt(nodes) {
             if (!Array.isArray(nodes.children)) return;
-            for (let i=0, len=nodes.children.length; i<len; i++) {
-                let node = nodes.children[i];
+            for (var i = 0, len = nodes.children.length; i < len; i++) {
+                var node = nodes.children[i];
                 if (node.expanded) {
                     expandeds[node.key] = true;
                 }
@@ -272,8 +274,8 @@ function span (txt, attr) {
         if (!expandeds || !data.$tree) return;
         (function setIt(nodes) {
             if (!Array.isArray(nodes.children)) return;
-            for (let i=0, len=nodes.children.length; i<len; i++) {
-                let node = nodes.children[i];
+            for (var i = 0, len = nodes.children.length; i < len; i++) {
+                var node = nodes.children[i];
                 if (expandeds[node.key]) {
                     node.setExpanded();
                     //node.setActive();
@@ -578,7 +580,7 @@ function span (txt, attr) {
     }
 
     // function xfindTree(data, id) {
-    //      return _findTree(data.tree, treeSplit(data, id, false), 0);
+    //     return _findTree(data.tree, treeSplit(data, id, false), 0);
     // }
     // function _findTree(tree, parts, index) {
     //     var num = -1;
@@ -641,7 +643,6 @@ function span (txt, attr) {
     function treeInsert(data, id, isExpanded, addedNodes) {
         return _treeInsert(data.tree, data.list ? [id] : treeSplit(data, id, false), id, 0, isExpanded, addedNodes, data);
     }
-
     function _treeInsert(tree, parts, id, index, isExpanded, addedNodes, data) {
         index = index || 0;
 
@@ -657,7 +658,7 @@ function span (txt, attr) {
                 num = j;
                 break;
             }
-            // if (tree.children[j].title > parts[index]) break;
+            //if (tree.children[j].title > parts[index]) break;
         }
 
         if (num === -1) {
@@ -714,18 +715,6 @@ function span (txt, attr) {
         }
     }
 
-    /*
-    function xsyncHeader($dlg) {
-        // read width of data.$tree and set the same width for header
-        var data = $dlg.data('selectId');
-        var $header = $('#selectID_header_' + data.instance);
-        var thDest = $header.find('>colgroup>col');	//if table headers are specified in its semantically correct tag, are obtained
-        var thSrc = data.$tree.find('>thead>tr>th');
-        for (var i = 1; i < thSrc.length; i++) {
-            $(thDest[i]).attr('width', $(thSrc[i]).width());
-        }
-    }*/
-
     function syncHeader($dlg) {
         var data = $dlg.data('selectId');
         var $header = $('#selectID_header_' + data.instance);
@@ -733,12 +722,13 @@ function span (txt, attr) {
         var thSrc = data.$tree.find('>tbody>tr>td');
 
         var x, o;
-        for (var i = 0; i < thDest.length-1; i++) {
+        for (var i = 0; i < thDest.length - 1; i++) {
             if ((x = $(thSrc[i]).width())) {
                 $(thDest[i]).attr('width', x);
-                if ((o = $ (thSrc[i+1]).offset().left))
-                    if ((o -= $ (thDest[i+1]).offset().left)) {
+                if ((o = $ (thSrc[i + 1]).offset().left)) {
+                    if ((o -= $ (thDest[i + 1]).offset().left)) {
                         $(thDest[i]).attr('width', x + o);
+                    }
                 }
             }
         }
@@ -899,9 +889,11 @@ function span (txt, attr) {
                 //resizeMode: 'flex',
                 resizeMode: 'fit',
                 minWidth: 50,
+
                 partialRefresh: true,
                 marginLeft: 5,
                 postbackSafe:true,
+
                 onResize: function (event) {
                     syncHeader($dlg);
                 }
@@ -966,17 +958,6 @@ function span (txt, attr) {
         var $parent = $(event.currentTarget).parent();
         //var activeNode = $(this).fancytree('getTree').getActiveNode();
 
-        // var tree = data.$tree.fancytree('getTree');
-        //
-        // var node = tree.getActiveNode();
-        //
-        //
-        //
-        // data.$tree.fancytree('getTree')
-        //
-        // var activeNode = data.$tree.fancytree('getTree');
-        // activeNode = activeNode.getActiveNode();
-
         if (clippy)  {
             $this.parent().removeClass('clippy');
             $this.parent().find('.clippy-button').remove();
@@ -993,47 +974,6 @@ function span (txt, attr) {
 
         type = type === 'boolean' ? 'checkbox' : 'text';
         var text;
-
-        // if (attr === 'value') {
-        //     states = getStates(data, id);
-        //     if (states) {
-        //         text = '<select style="width: calc(100% - 50px); z-index: 2">';
-        //         for (var t in states) {
-        //             if (typeof states[t] !== 'string') continue;
-        //             text += '<option value="' + t + '">' + states[t] + '</option>';
-        //         }
-        //         text += '</select>';
-        //     }
-        // } else if (attr === 'room') {
-        //     states = findRoomsForObjectAsIds(data, id) || [];
-        //     text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
-        //     for (var e = 0; e < data.roomEnums.length; e++) {
-        //         text += '<option value="' + data.roomEnums[e] + '" ' + (states.indexOf(data.roomEnums[e]) !== -1 ? 'selected' : '') + '>' + data.objects[data.roomEnums[e]].common.name + '</option>';
-        //     }
-        //     text += '</select>';
-        // } else if (attr === 'function') {
-        //     states = findFunctionsForObjectAsIds(data, id) || [];
-        //     text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
-        //     for (var e = 0; e < data.funcEnums.length; e++) {
-        //         text += '<option value="' + data.funcEnums[e] + '" ' + (states.indexOf(data.funcEnums[e]) !== -1 ? 'selected' : '') + '>' + data.objects[data.funcEnums[e]].common.name + '</option>';
-        //     }
-        //     text += '</select>';
-        // } else if (options) {
-        //     if (typeof options === 'function') {
-        //         states = options(id, attr);
-        //     } else {
-        //         states = options;
-        //     }
-        //     if (states) {
-        //         text = '<select style="width: calc(100% - 50px); z-index: 2">';
-        //         for (var t in states) {
-        //             text += '<option value="' + t + '">' + states[t] + '</option>';
-        //         }
-        //         text += '</select>';
-        //     } else if (states === false) {
-        //         return;
-        //     }
-        // }
 
         switch(attr) {
             case 'value':
@@ -1094,9 +1034,14 @@ function span (txt, attr) {
         //$this.css({'padding-left':'2px', 'padding-bottom': '3px', width: 'calc(100% - 28px)'});
         var isTitleEdit = $this.is ('.objects-name-coll-title');
         //$this.css({'padding-left':'2px', 'padding-bottom': '2px', width: isTitleEdit ? 'calc(100% - 28px)' : 'calc(100% - 0px)'});       // mit paading-buttom erhöht sich die Zeilenhöhe um einen Pixel!
-        $this.css({'padding-left':'2px', width: isTitleEdit ? 'calc(100% - 28px)' : 'calc(100% - 0px)'});
+        $this.css({'padding-left': 2, width: isTitleEdit ? 'calc(100% - 28px)' : 'calc(100% - 0px)'});
 
         var $input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
+
+        if ($input.width() > $this.width() - 34) {
+            var x = Math.max($input.width() - ($this.width() - 34), 34);
+            $input.css({'padding-right': x});
+        }
 
         if (attr === 'room' || attr === 'function') {
             $input.multiselect({
@@ -1114,18 +1059,6 @@ function span (txt, attr) {
             });
         }
 
-        // $this.find('.select-id-quick-edit-cancel').click(function (e)  {
-        //     if (timeout) clearTimeout(timeout);
-        //     timeout = null;
-        //     e.preventDefault();
-        //     e.stopPropagation();
-        //     var old = $this.data('old-value');
-        //     if (old === undefined) old = '';
-        //     $this.html(old).click(onQuickEditField).addClass('select-id-quick-edit');
-        //     if (clippy) $this.addClass('clippy');
-        // });
-
-
         function editDone(ot) {
             if (ot === undefined) ot = $this.data('old-value') || '';
             if (clippy) {
@@ -1134,7 +1067,12 @@ function span (txt, attr) {
             if (editDialog) {
                 $this.parent().addClass ('edit-dialog');
             }
-            $this.css({'padding-left':oldLeftPadding, width:oldWidth});
+            $this.css({'padding-left': oldLeftPadding});
+            if (!oldWidth) {
+                $this.removeAttr('width');
+            } else {
+                $this.attr('width', oldWidth);
+            }
             $this.html (ot).click (onQuickEditField).addClass ('select-id-quick-edit');
             //if (activeNode && activeNode.lebgth) activeNode.setActive();
             setTimeout(function() {
@@ -1151,11 +1089,8 @@ function span (txt, attr) {
             }
             e.preventDefault();
             e.stopPropagation();
-            //var old = $this.data('old-value');
+            // var old = $this.data('old-value');
             editDone();
-            // if (old === undefined) old = '';
-            // $this.html(old).click(onQuickEditField).addClass('select-id-quick-edit');
-            // if (clippy) $this.addClass('clippy');
         }
 
         $this.find('.select-id-quick-edit-cancel').click(handleCancel);
@@ -1187,17 +1122,11 @@ function span (txt, attr) {
                     _oldText = '<span style="color: darkviolet; width: 100%;">' + _oldText + '</span>';
                 }
                 editDone(_oldText);
-                // if (clippy) $this.addClass('clippy');
-                // $this.html(_oldText).click(onQuickEditField).addClass('select-id-quick-edit');
             }.bind(this), 100);
         }).keyup(function (e) {
             if (e.which === 13) $(this).trigger('blur');
             if (e.which === 27) {
                 handleCancel(e);
-                // if (clippy) $this.addClass('clippy');
-                // var old = $this.data('old-value');
-                // if (old === undefined) old = '';
-                // $this.html(old).click(onQuickEditField).addClass('select-id-quick-edit');
             }
         });
 
@@ -1236,11 +1165,15 @@ function span (txt, attr) {
         var c;
         //$dlg.css({height: '100%', width: 'calc(100% - 18px)'});
         if ($dlg.attr('id') !== 'dialog-select-member') {
-        $dlg.css({height: '100%', width: '100%'});
+            $dlg.css({height: '100%', width: '100%'});
         } else {
             $dlg.css ({height: 'calc(100% - 110px)', width: '100%'});
         }
         var data = $dlg.data ('selectId');
+        if (data.columns && data.columns[0] !== 'ID') {
+            data.columns.unshift('ID');
+            if (data.widths) data.widths.unshift('200px');
+        }
 
         removeImageFromSettings (data);
         //var noStates = (data.objects && !data.states);
@@ -1309,9 +1242,10 @@ function span (txt, attr) {
         //     filter[name] = $ ('#filter_' + name + '_' + data.instance).val ();
         // }
 
+
         var filter = {};
         forEachColumn(data, function (name) {
-            filter[name] = $ ('#filter_' + name + '_' + data.instance).val ();
+            filter[name] = $('#filter_' + name + '_' + data.instance).val ();
         });
 
         function getComboBoxEnums(kind) {
@@ -1319,87 +1253,89 @@ function span (txt, attr) {
             switch (kind) {
                 case 'room':
                     for (i = 0; i < data.roomEnums.length; i++) {
-                        ret.push (data.objects[data.roomEnums[i]].common.name);
+                        ret.push(data.objects[data.roomEnums[i]].common.name);
                     }
                     // if (data.rooms) delete data.rooms;
                     // if (data.roomsColored) delete data.roomsColored;
                     return ret;
                 case 'function':
                     for (i = 0; i < data.funcEnums.length; i++) {
-                        ret.push (data.objects[data.funcEnums[i]].common.name);
+                        ret.push(data.objects[data.funcEnums[i]].common.name);
                     }
                     // if (data.funcs) delete data.funcs;
                     // if (data.funcsColored) delete data.funcsColored;
                     return ret;
                 case 'role':
                     for (var j = 0; j < data.roles.length; j++) {
-                        ret.push (data.roles[j]);
+                        ret.push(data.roles[j]);
                     }
                     return ret;
                 case 'type':
                     for (var k = 0; k < data.types.length; k++) {
-                        ret.push (data.types[k]);
+                        ret.push(data.types[k]);
                     }
                     return ret;
                 case 'button':
-                    ret.push ([data.texts.all, ""]);
-                    ret.push ([data.texts.with, "true"]);
-                    ret.push ([data.texts.without, "false"]);
+                    ret.push([data.texts.all, '']);
+                    ret.push([data.texts.with, 'true']);
+                    ret.push([data.texts.without, 'false']);
                     for (var h = 0; h < data.histories.length; h++) {
-                        ret.push (data.histories[h]);
+                        ret.push(data.histories[h]);
                     }
                     return ret;
             }
             return ret;
         }
 
-        /*var textRooms;
-        if (data.columns.indexOf ('room') !== -1) {
-            textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
-            for (var r = 0; r < data.roomEnums.length; r++) {
-                textRooms += '<option value="' + data.objects[data.roomEnums[r]].common.name + '">' + data.objects[data.roomEnums[r]].common.name + '</option>';
-            }
-            textRooms += '</select>';
-        } else {
-            if (data.rooms) delete data.rooms;
-            if (data.roomsColored) delete data.roomsColored;
-        }
+        /*
+                var textRooms;
+                if (data.columns.indexOf ('room') !== -1) {
+                    textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
+                    for (var i = 0; i < data.roomEnums.length; i++) {
+                        textRooms += '<option value="' + data.objects[data.roomEnums[i]].common.name + '">' + data.objects[data.roomEnums[i]].common.name + '</option>';
+                    }
+                    textRooms += '</select>';
+                } else {
+                    if (data.rooms) delete data.rooms;
+                    if (data.roomsColored) delete data.roomsColored;
+                }
 
-        var textFuncs;
-        if (data.columns.indexOf ('function') !== -1) {
-            textFuncs = '<select id="filter_function_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
-            for (var i = 0; i < data.funcEnums.length; i++) {
-                textFuncs += '<option value="' + data.objects[data.funcEnums[i]].common.name + '">' + data.objects[data.funcEnums[i]].common.name + '</option>';
-            }
-            textFuncs += '</select>';
-        } else {
-            if (data.funcs) delete data.funcs;
-            if (data.funcsColored) delete data.funcsColored;
-        }*/
+                var textFuncs;
+                if (data.columns.indexOf ('function') !== -1) {
+                    textFuncs = '<select id="filter_function_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
+                    for (var i = 0; i < data.funcEnums.length; i++) {
+                        textFuncs += '<option value="' + data.objects[data.funcEnums[i]].common.name + '">' + data.objects[data.funcEnums[i]].common.name + '</option>';
+                    }
+                    textFuncs += '</select>';
+                } else {
+                    if (data.funcs) delete data.funcs;
+                    if (data.funcsColored) delete data.funcsColored;
+                }
 
-        /*var textRoles;
-        if (data.columns.indexOf ('role') !== -1) {
-            textRoles = '<select id="filter_role_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-            for (var j = 0; j < data.roles.length; j++) {
-                textRoles += '<option value="' + data.roles[j] + '">' + data.roles[j] + '</option>';
-            }
-            textRoles += '</select>';
-        }*/
+                var textRoles;
+                if (data.columns.indexOf ('role') !== -1) {
+                    textRoles = '<select id="filter_role_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
+                    for (var j = 0; j < data.roles.length; j++) {
+                        textRoles += '<option value="' + data.roles[j] + '">' + data.roles[j] + '</option>';
+                    }
+                    textRoles += '</select>';
+                }
 
-        /*var textTypes;
-        if (data.columns.indexOf ('type') !== -1) {
-            textTypes = '<select id="filter_type_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-            for (var k = 0; k < data.types.length; k++) {
-                textTypes += '<option value="' + data.types[k] + '">' + data.types[k] + '</option>';
-            }
-            textTypes += '</select>';
-        }*/
+                var textTypes;
+                if (data.columns.indexOf ('type') !== -1) {
+                    textTypes = '<select id="filter_type_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
+                    for (var k = 0; k < data.types.length; k++) {
+                        textTypes += '<option value="' + data.types[k] + '">' + data.types[k] + '</option>';
+                    }
+                    textTypes += '</select>';
+                }
+          */
 
         var tds = '<td><button class="ui-button-icon-only panel-button" id="btn_refresh_' + data.instance + '"></button></td>';
         tds += '<td><button class="panel-button" id="btn_list_' + data.instance + '"></button></td>';
         tds += '<td><button class="panel-button" id="btn_collapse_' + data.instance + '"></button></td>';
         tds += '<td><button class="panel-button" id="btn_expand_' + data.instance + '"></button></td>' +
-               '<td class="select-id-custom-buttons"></td>';
+            '<td class="select-id-custom-buttons"></td>';
         if (data.filter && data.filter.type === 'state' && multiselect) {
             tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_select_all_' + data.instance + '"></button></td>';
             tds += '<td><button class="panel-button" id="btn_unselect_all_' + data.instance + '"></button></td>';
@@ -1506,15 +1442,15 @@ function span (txt, attr) {
                 txt = '' +
                     //'<table style="width: 100%;padding: 0;border: 1px solid #c0c0c0;border-spacing: 0;border-radius: 2px;">' +
                     '<table class="main-header-input-table" style="width: 100%;">' +     // width is already in css
-                    '    <tbody>' +
+                    '        <tbody>' +
                     '        <tr style="background: #ffffff; ">' +                       // tr background is already in css
                     '            <td style="width: 100%">';                              // td-width is already in css
                 txt += cbText;
                 txt += '' +
                     '            </td>' +
                     '        </tr>' +
-                    '    </tbody>' +
-                    '</table>';
+                    '        </tbody>' +
+                    '    </table>';
             } else {
                 if (filterNo === 'room') {
                     if (data.rooms) delete data.rooms;
@@ -1546,11 +1482,11 @@ function span (txt, attr) {
                     if (name === 'buttons' || name === 'button') {
                         text += '<span style="padding-left: ' + lineIndent + '"></span>';
                     } else {
-                        text += '<table class="main-header-input-table"><tbody><tr><td style="padding-left: ' + lineIndent + '">' + _(name) + '</td></tr></tbody></table>';
-                    }
+                    	text += '<table class="main-header-input-table"><tbody><tr><td style="padding-left: ' + lineIndent + '">' + _(name) + '</td></tr></tbody></table>';
+                	}
                 }
             } else {
-                text += '<td>';
+                text += '<span style="padding-left: ' + lineIndent + '">' + _(name) + '</span>';
             }
             text += '</td>';
         });
@@ -1560,9 +1496,10 @@ function span (txt, attr) {
         text += '    </table>';
 
         //text += '<div style="width: calc(100% - 18px); height: ' + (data.buttons ? 'calc(100% - 30px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll">';
-        text += '<div style="width: 100%; height: ' + (data.buttons ? 'calc(100% - 54px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll; overflow-x: hidden">';
-        text += '   <table class="iob-list-font objects-list-table" style="/*width: calc(100% - 5px);*/" id="selectID_' + data.instance + '" cellspacing="0" cellpadding="0">';
-        text += '       <colgroup>';
+        //text += '<div style="width: 100%; height: ' + (data.buttons ? 'calc(100% - 54px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll">';
+        text += '<div class="' + (data.buttons ? 'grid-main-wh-div' : 'grid-main-wob-div') + '" style="width: 100%; padding:0; overflow-y: scroll">';
+        text += ' <table class="iob-list-font objects-list-table" style="width: calc(100%-5px);" id="selectID_' + data.instance + '" cellspacing="0" cellpadding="0">';
+        text += '        <colgroup>';
 
         var thead = '<thead class="grid-objects-head"><tr>';
 
@@ -1584,6 +1521,8 @@ function span (txt, attr) {
             text += '<col width="' + w + '"/>';
             thead += '<th style="width: ' + w + ';"></th>';
         });
+
+
 
         // for (c = 0; c < data.columns.length; c++) {
         //     var name = data.columns[c];
@@ -1653,7 +1592,8 @@ function span (txt, attr) {
             }
         }
 
-        text = text.replace(/\n/g, '');
+
+        //text = text.replace(/\n/g, '');
         $dlg.html(text);
 
         data.$tree = $('#selectID_' + data.instance);
@@ -1998,18 +1938,25 @@ function span (txt, attr) {
                             // //'</span>');
                             // );
 
-                            $elem.html ('<span style="padding-left: ' + lineIndent + '; height: 100%;">' +
-                                '<span class="objects-name-coll-icon" style="vertical-align: middle">' + icon + '</span>' +
-                                '<span class="objects-name-coll-title" style="border:0;">' + t + '</span>' +
+                            // $elem.html ('<span style="padding-left: ' + (icon ? lineIndent : 0) + '; height: 100%;">' +
+                            //     (icon ? '<span class="objects-name-coll-icon" style="vertical-align: middle">' + icon + '</span>' : '') +
+                            //     '<span class="objects-name-coll-title" style="border:0;">' + t + '</span>' +
+                            //     '</span>');
+
+                            $elem.html ('<span style="padding-left: ' + (icon ? lineIndent : 0) + '; height: 100%; width: 100%">' +
+                                (icon ? '<span class="objects-name-coll-icon" style="vertical-align: middle">' + icon + '</span>' : '') +
+                                '<div class="objects-name-coll-title iob-ellipsis" style="border:0;">' + t + '</div>' +
                                 '</span>');
+
 
                             var $e = $elem.find ('.objects-name-coll-title');
                             if (!t) $e.css ({'vertical-align': 'middle'});
-                            $e.css ({
-                                overflow: 'hidden',
-                                'white-space': 'nowrap',
-                                'text-overflow': 'ellipsis'
-                            }).attr ('title', t);
+                            // $e.css ({
+                            //     overflow: 'hidden',
+                            //     'white-space': 'nowrap',
+                            //     'text-overflow': 'ellipsis'
+                            // }).attr ('title', t);
+                            $e.attr ('title', t);
                             //$elem.text(isCommon ? data.objects[node.key].common.name : '').css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '');
                             if (data.quickEdit /*&& obj*/ && data.quickEdit.indexOf ('name') !== -1) {
                                 $e.data ('old-value', isCommon ? (obj.common.name || ''): '');
@@ -2274,16 +2221,16 @@ function span (txt, attr) {
                                     height: 20
                                 });
 
-                                $tr.find ('.select-button-cancel[data-id="' + node.key + '"]').button({
+                                $tr.find('.select-button-cancel[data-id="' + node.key + '"]').button({
                                     text: false,
                                     icons: {
                                         primary: 'ui-icon-close'
                                     }
-                                }).click (function () {
+                                }).click(function () {
                                     var node = $ (this).data ('node');
                                     node.editFinished = true;
                                     node.editEnd (false);
-                                }).attr ('title', data.texts.cancel).data ('node', node).hide ().css({
+                                }).attr('title', data.texts.cancel).data('node', node).hide().css({
                                     width: 26,
                                     height: 20
                                 });
@@ -2353,7 +2300,6 @@ function span (txt, attr) {
                 }
             }
         };
-
         if (data.editEnd) {
             foptions.extensions.push('edit');
             foptions.edit = {
@@ -2615,6 +2561,7 @@ function span (txt, attr) {
             for (var f in data.filterVals) {
                 //if (f === 'length') continue;
                 //if (isCommon === null) isCommon = obj && obj.common;
+
                 switch (f) {
                     case 'length':
                         continue;
@@ -2667,6 +2614,13 @@ function span (txt, attr) {
         }
 
         restoreExpandeds(data, expandeds);
+        var resizeTimer;
+        $(window).resize(function (x, y) {
+            if (resizeTimer) clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(syncHeader.bind(null, $dlg), 100);
+        });
+        $dlg.trigger('resize');
+
 
         var changeTimer;
 
@@ -2792,6 +2746,8 @@ function span (txt, attr) {
             }, 1);
         }).attr('title', data.texts.history);
 
+
+
         $('#btn_select_all_' + data.instance).button({icons: {primary: 'ui-icon-circle-check'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
             $('#process_running_' + data.instance).show();
             setTimeout(function () {
@@ -2886,7 +2842,7 @@ function span (txt, attr) {
         installColResize(data, $dlg);
         loadSettings(data);
         if ($dlg.attr('id') !== 'dialog-select-member') setTimeout(function () {
-        $dlg.css({height: '100%'}); //xxx
+            $dlg.css({height: '100%'}); //xxx
         }, 500);
 
         // set preset filters
@@ -3463,7 +3419,6 @@ function span (txt, attr) {
                 } else if (!obj) {
                     // object deleted
                     delete data.objects[id];
-
                     deleteTree(data, id);
 
                     if (data.ids.length) {
@@ -3493,7 +3448,6 @@ function span (txt, attr) {
                         if (data.ids.length) {
                             recalcChildrenCounters(parent, data);
                         }
-
                         // if (node.children && node.children.length) {
                         //     if (node.children.length === 1) {
                         //         node.folder = false;
