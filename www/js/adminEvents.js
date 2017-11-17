@@ -128,14 +128,9 @@ function Events(main) {
         addText('lc');
 
         var header = '';
-        // for (var i=0; i<handlers.length; i++) {
-        //     header += '<th class="event-column-' + (i+1) + '"></th>';
-        // }
-        // header += '</tr><tr>';
 
         $header = $('#events-table-tr');
         $header.html(header + html);
-        //$header.append(header + html);
 
         for (var i=0; i<handlers.length; i++) {
             clearHandler(handlers[i]);
@@ -237,16 +232,27 @@ function Events(main) {
         this.eventPauseCounterSpan = $('#event-pause .ui-button-text');
 
         // bind "clear events" button
-        $('#event-clear').button({
+        var $eventClear = $('#event-clear');
+        $eventClear.button({
             icons: {
-                primary: 'ui-icon-trash'
+                primary: 'ui-icon-close'
             },
-            label: _('clear')
-        }).unbind('click').click(function () {
+            text: false,
+            //label: _('clear')
+        })
+            .attr('title', _('clear'))
+            .unbind('click').click(function () {
             eventsLinesCount = 0;
             eventsLinesStart = 0;
             $('#event-table').html('');
-        }).css({ height: 24 }).find('span').last().css({position: 'relative', top: "-4px"/*, display: 'inline-flex'*/ });
+        })
+            .prepend(_('Clear list'))
+            .attr('style', 'width: 100% !important; padding-left: 20px !important; font-size: 12px; vertical-align: middle; padding-top: 3px !important; padding-right: 5px !important; color:#000')
+            .find('span').css({left: '10px'})
+        ;
+
+        //$eventClear.find('span').last().css({ position: 'relative', height: '0', left: '28px', top: "-4px"/*, display: 'inline-flex'*/ });
+        //$eventClear.find('span').first().css({ position: 'relative', left: 0, top: 0 });
 
         this.eventPauseCounterSpan.css({'padding-top': 1, 'padding-bottom' : 0});
 

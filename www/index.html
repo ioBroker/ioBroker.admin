@@ -59,6 +59,7 @@
 </head>
 <body>
 <div id="dialog"></div>
+<div id="_toolbar-button_" class="toolbar-button" style="display: none; visibility: hidden">used to get button size</div>
 <div id="tabs" style="display: none; height: 100%;">
         <ul id="tabs-ul">
         </ul>
@@ -84,7 +85,8 @@
             <button id="btn_expand_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="expand all"></button>
         </td>
 
-        <td style="padding-left: 10px">
+        <td class="iob-toolbar-sep"></td>
+        <td>
             <button id="btn_filter_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="installed adapters"></button>
         </td>
         <td>
@@ -99,6 +101,23 @@
         <td>
             <button id="btn-adapters-expert-mode" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only "></button>
         </td>
+        <td class="iob-toolbar-sep"></td>
+        <!--<td style="width:30px"></td>-->
+
+
+<!--            <td>
+                <span class="" style="padding-left: 10px">
+                        id="host-adapters"></select>
+                </span>
+            </td>
+            <td>
+                <span class="adapters-filter-input" style="padding-left: 10px"><label class="translate" for="adapters-filter"></label>
+                    <input id="adapters-filter" style="width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/>
+                    <button id="adapters-filter-clear" style="width: 18px;height: 18px;border: 0;background: #fff;"></button>
+                </span>
+            </td>
+            -->
+
         <td>
             <!-- <table style="border: 1px solid #c0c0c0; /*width: 100%;*/ height:20px; border-spacing: 0px; font-size: 14px;background: #fff; margin-left: 10px;"><tr> -->
             <table class="panel-input-table"><tr>
@@ -111,6 +130,7 @@
                 </td>
              </td></tr></table>
         </td>
+        <td class="iob-toolbar-sep"></td>
         <td>
             <!-- <table style="border: 1px solid #c0c0c0; /*width: 100%;*/ height:20px; border-spacing: 0px; font-size: 14px;background: #fff; margin-left: 10px;"><tr><td> -->
             <table class="panel-input-table"><tr>
@@ -214,9 +234,9 @@
     <!--<table><tr><td>-->
     <!--</td></tr></table>-->
 
-    <table class="main-toolbar-table">
-        <tr><td>:</td></tr>
-    </table>
+    <!--<table class="main-toolbar-table">-->
+        <!--<tr><td></td></tr>-->
+    <!--</table>-->
 
 
     <!--<table class="main-toolbar-table">-->
@@ -248,7 +268,8 @@
                     <button id="event-pause" class="panel-button"></button>
                 </td>
                 <td>
-                    <button id="event-clear" style="font-size: 14px; font-weight: normal;"></button>
+                    <!--<button id="event-clear" style="font-size: 12px; font-weight: normal;"></button>-->
+                    <button id="event-clear" class="toolbar-icon-text-button"></button>
                 </td>
                 <td style="width: 90%"></td>
             </tr>
@@ -295,10 +316,18 @@
         </div>
     </div>
     <div id="tab-groups"    class="admin-tab" style="display:none" data-name="Groups">
+    <!--<table class="main-toolbar-table">-->
+        <!--<tr><td></td></tr>-->
+    <!--</table>-->
         <table id="grid-groups"></table>
         <div id="pager-groups"></div>
     </div>
     <div id="tab-users"     class="admin-tab" style="display:none" data-name="Users">
+    <!--<table class="main-toolbar-table">-->
+        <!--<tr><td></td></tr>-->
+    <!--</table>-->
+
+
         <table id="grid-users"></table>
         <div id="pager-users"></div>
     </div>
@@ -306,17 +335,21 @@
         <div id="grid-enums" style="width: 100%; height: 100%"><span class="translate">Loading...</span></div>
     </div>
     <div id="tab-hosts"     class="admin-tab" style="display:none" data-name="Hosts">
-        <table style="width: 100%; height: 30px">
+    <table class="main-toolbar-table">
             <tr>
                 <td><button id="btn-hosts-reload"></button></td>
-                <td style="padding-left: 100px"><label class="translate" style="display: inline-block" for="hosts-filter">Filter:</label></td>
-                <td><input style="display: inline-block; width: 100px; margin-right: 3px" id="hosts-filter"></td>
-                <td><button style="display: inline-block" id="hosts-filter-clear"></button></td>
+            <td class="iob-toolbar-sep"></td>
+            <td>
+                <table class="panel-input-table"><tr>
+                    <td style="width: 100%"><input id="hosts-filter" style="padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/></td>
+                    <td><button id="hosts-filter-clear" style="display: inline-block; width: 18px;height: 18px;border: 0;background: #fff;"></button></td>
+                </tr></table>
+            </td>
                 <td style="width: 100%"></td>
             </tr>
         </table>
 
-        <table class="hosts-table" style="width: 100%;">
+    <table class="hosts-table iob-list-table" style="width: 100%; margin-left: 1px">
             <thead id="grid-hosts-head">
                 <tr>
                     <th class="translate ui-widget-header" style="width: 40px"></th>

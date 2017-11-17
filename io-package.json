@@ -2,14 +2,18 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "news": {
-            "2.0.11": {
+            "3.0.1": {
+                "en": "gui redesigned",
+                "de": "Benutzeroberfäche neu gestaltet"
+            },            
+			"2.0.11": {
                 "en": "Configurable event update disable threshold",
                 "de": "Konfigurierbar Schwellenwert für Ereignisses",
                 "ru": "Настраиваемое пороговое значение отключения обновления событий"
-            },
-            "2.0.10": {
+            },            
+			"2.0.10": {
                 "en": "added use of delete-key in the objects view.",
                 "de": "Verwendung der Entfernen-Taste in der Objekte-Ansicht hinzugefügt",
 				"ru": "добавлено использование ключа delete в представлении объектов"

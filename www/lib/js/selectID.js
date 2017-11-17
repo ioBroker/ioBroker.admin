@@ -255,29 +255,31 @@ function span (txt, attr) {
     function getExpandeds(data) {
         if (!data.$tree) return null;
         var expandeds = {};
-        (function getIt(node) {
-            if (!node.children || typeof node.children !== 'object') return;
-            node.children.forEach(function(_node) {
-                if (_node.expanded) {
-                    expandeds[_node.key] = true;
+        (function getIt(nodes) {
+            if (!Array.isArray(nodes.children)) return;
+            for (let i=0, len=nodes.children.length; i<len; i++) {
+                let node = nodes.children[i];
+                if (node.expanded) {
+                    expandeds[node.key] = true;
                 }
-                getIt(_node);
-            })
+                getIt(node);
+            }
         })(data.$tree.fancytree('getRootNode'));
         return expandeds;
     }
 
     function restoreExpandeds(data, expandeds) {
         if (!expandeds || !data.$tree) return;
-        (function setIt(node) {
-            if (!node.children || typeof node.children !== 'object') return;
-            node.children.forEach(function(_node) {
-                if (expandeds[_node.key]) {
-                    _node.setExpanded();
-                    //_node.setActive();
+        (function setIt(nodes) {
+            if (!Array.isArray(nodes.children)) return;
+            for (let i=0, len=nodes.children.length; i<len; i++) {
+                let node = nodes.children[i];
+                if (expandeds[node.key]) {
+                    node.setExpanded();
+                    //node.setActive();
                 }
-                setIt(_node);
-            })
+                setIt(node);
+            }
         })(data.$tree.fancytree('getRootNode'));
         expandeds = null;
     }
@@ -725,15 +727,20 @@ function span (txt, attr) {
     }*/
 
     function syncHeader($dlg) {
-        // read width of data.$tree and set the same width for header
         var data = $dlg.data('selectId');
         var $header = $('#selectID_header_' + data.instance);
-        //$header.attr('width', data.$tree.width());
         var thDest = $header.find('>tbody>tr>td');	//if table headers are specified in its semantically correct tag, are obtained
         var thSrc = data.$tree.find('>tbody>tr>td');
-        for (var i = 0; i < thDest.length - 1; i++) {
-            // var olddest = $(thDest[i]).width();
-            $(thDest[i]).attr('width', $(thSrc[i]).width() + 1);
+
+        var x, o;
+        for (var i = 0; i < thDest.length-1; i++) {
+            if ((x = $(thSrc[i]).width())) {
+                $(thDest[i]).attr('width', x);
+                if ((o = $ (thSrc[i+1]).offset().left))
+                    if ((o -= $ (thDest[i+1]).offset().left)) {
+                        $(thDest[i]).attr('width', x + o);
+                }
+            }
         }
     }
 
@@ -1228,7 +1235,11 @@ function span (txt, attr) {
     function initTreeDialog($dlg, resort) {
         var c;
         //$dlg.css({height: '100%', width: 'calc(100% - 18px)'});
+        if ($dlg.attr('id') !== 'dialog-select-member') {
         $dlg.css({height: '100%', width: '100%'});
+        } else {
+            $dlg.css ({height: 'calc(100% - 110px)', width: '100%'});
+        }
         var data = $dlg.data ('selectId');
 
         removeImageFromSettings (data);
@@ -1387,7 +1398,8 @@ function span (txt, attr) {
         var tds = '<td><button class="ui-button-icon-only panel-button" id="btn_refresh_' + data.instance + '"></button></td>';
         tds += '<td><button class="panel-button" id="btn_list_' + data.instance + '"></button></td>';
         tds += '<td><button class="panel-button" id="btn_collapse_' + data.instance + '"></button></td>';
-        tds += '<td><button class="panel-button" id="btn_expand_' + data.instance + '"></button></td><td class="select-id-custom-buttons"></td>';
+        tds += '<td><button class="panel-button" id="btn_expand_' + data.instance + '"></button></td>' +
+               '<td class="select-id-custom-buttons"></td>';
         if (data.filter && data.filter.type === 'state' && multiselect) {
             tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_select_all_' + data.instance + '"></button></td>';
             tds += '<td><button class="panel-button" id="btn_unselect_all_' + data.instance + '"></button></td>';
@@ -1399,7 +1411,8 @@ function span (txt, attr) {
         tds += '<td><button class="panel-button" id="btn_sort_' + data.instance + '"></button></td>';
 
         if (data.panelButtons) {
-            tds += '<td style="width: 20px">&nbsp;&nbsp;</td>';
+            //tds += '<td style="width: 20px">&nbsp;&nbsp;</td>';
+            tds += '<td class="iob-toolbar-sep"></td>';
             for (c = 0; c < data.panelButtons.length; c++) {
                 tds += '<td><button class="panel-button" id="btn_custom_' + data.instance + '_' + c + '"></button></td>';
             }
@@ -2872,6 +2885,9 @@ function span (txt, attr) {
         //loadSettings(data);
         installColResize(data, $dlg);
         loadSettings(data);
+        if ($dlg.attr('id') !== 'dialog-select-member') setTimeout(function () {
+        $dlg.css({height: '100%'}); //xxx
+        }, 500);
 
         // set preset filters
         for (var field in data.filterPresets) {

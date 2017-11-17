@@ -7,7 +7,7 @@ function Groups(main) {
     this.$dialog = $('#dialog-group');
     this.main    = main;
     this.groupLastSelected = null;
-    
+
     this.prepare = function () {
         that.$grid.jqGrid({
             datatype: 'local',
@@ -25,7 +25,7 @@ function Groups(main) {
             sortname:   'id',
             sortorder:  'desc',
             viewrecords: true,
-            caption: _('ioBroker groups'),
+            //caption: _('ioBroker groups'),
             gridComplete: function () {
                 $('.group-users-edit').multiselect({
                     selectedList: 4,
@@ -92,6 +92,9 @@ function Groups(main) {
                 }
             ]
         });
+
+        patchPager(this, 'groups');
+
         $('#edit-group-name').keydown(function (event) {
             if (event.which == 13) $('#edit-group-desc').focus();
         });
@@ -357,7 +360,7 @@ function Groups(main) {
             }, 200);
         }
     }
-    
+
     this.resize = function (width, height) {
         this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
     }

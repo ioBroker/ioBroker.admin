@@ -141,7 +141,8 @@ function Adapters(main) {
                             var title;
                             //if (!that.onlyInstalled && !that.onlyUpdatable) {
                                 title = '[<span title="' + _('Installed from group') + '">' + installed + '</span> / <span title="' + _('Total count in group') + '">' + that.tree[c].children.length + '</span>]';
-                                $tdList.eq(1).html(ellipsis('<b>'+installed + '</b> ' + _('of') + '<b> ' + that.tree[c].children.length + '</b> ' + _('Adapters from this Group installed')));
+                                //$tdList.eq(1).html(ellipsis('<b>'+installed + '</b> ' + _('of') + '<b> ' + that.tree[c].children.length + '</b> ' + _('Adapters from this Group installed')));
+                                $tdList.eq(1).html(ellipsis('<span class="dark-green">' + installed + '</span> ' + _('of') + '<span class="dark-blue"> ' + that.tree[c].children.length + '</span> ' + _('Adapters from this Group installed')));
                             // } else {
                             //     title = '<span title="' + _('Installed from group') + '">' + installed + '</span>';
                             //     $tdList.eq(1).html(ellipsis('<b>'+installed + '</b> ' + _('Installed from group')));
