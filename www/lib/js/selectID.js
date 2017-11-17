@@ -256,29 +256,31 @@ function span (txt, attr) {
     function getExpandeds(data) {
         if (!data.$tree) return null;
         var expandeds = {};
-        (function getIt(node) {
-            if (!node.children) return;
-            node.children.forEach(function(_node) {
-                if (_node.expanded) {
-                    expandeds[_node.key] = true;
+        (function getIt(nodes) {
+            if (!Array.isArray(nodes.children)) return;
+            for (let i=0, len=nodes.children.length; i<len; i++) {
+                let node = nodes.children[i];
+                if (node.expanded) {
+                    expandeds[node.key] = true;
                 }
-                getIt(_node);
-            })
+                getIt(node);
+            }
         })(data.$tree.fancytree('getRootNode'));
         return expandeds;
     }
 
     function restoreExpandeds(data, expandeds) {
         if (!expandeds || !data.$tree) return;
-        (function setIt(node) {
-            if (!node.children) return;
-            node.children.forEach(function(_node) {
-                if (expandeds[_node.key]) {
-                    _node.setExpanded();
-                    //_node.setActive();
+        (function setIt(nodes) {
+            if (!Array.isArray(nodes.children)) return;
+            for (let i=0, len=nodes.children.length; i<len; i++) {
+                let node = nodes.children[i];
+                if (expandeds[node.key]) {
+                    node.setExpanded();
+                    //node.setActive();
                 }
-                setIt(_node);
-            })
+                setIt(node);
+            }
         })(data.$tree.fancytree('getRootNode'));
         expandeds = null;
     }
@@ -737,23 +739,18 @@ function span (txt, attr) {
     }
 
     function syncHeader($dlg) {
-        // read width of data.$tree and set the same width for header
         var data = $dlg.data('selectId');
         var $header = $('#selectID_header_' + data.instance);
-        //$header.attr('width', data.$tree.width());
         var thDest = $header.find('>tbody>tr>td');	//if table headers are specified in its semantically correct tag, are obtained
         var thSrc = data.$tree.find('>tbody>tr>td');
-        var offs = $dlg.selectID_Offset || 0;
 
+        var x, o;
         for (var i = 0; i < thDest.length-1; i++) {
-            //var olddest = $(thDest[i]).width();
-            $(thDest[i]).attr('width', $(thSrc[i]).width()+offs);
-        }
-        if ($dlg.selectID_Offset === undefined) {
-            var x = $ (thSrc[1]).offset ().left;
-            if (x) {
-                if (($dlg.selectID_Offset = x - $ (thDest[1]).offset ().left)) {
-                    syncHeader ($dlg);
+            if ((x = $(thSrc[i]).width())) {
+                $(thDest[i]).attr('width', x);
+                if ((o = $ (thSrc[i+1]).offset().left))
+                    if ((o -= $ (thDest[i+1]).offset().left)) {
+                        $(thDest[i]).attr('width', x + o);
                 }
             }
         }
@@ -1104,7 +1101,11 @@ function span (txt, attr) {
     function initTreeDialog($dlg, resort) {
         var c;
         //$dlg.css({height: '100%', width: 'calc(100% - 18px)'});
+        if ($dlg.attr('id') !== 'dialog-select-member') {
         $dlg.css({height: '100%', width: '100%'});
+        } else {
+            $dlg.css ({height: 'calc(100% - 110px)', width: '100%'});
+        }
         var data = $dlg.data ('selectId');
         if (data.columns && data.columns[0] !== 'ID') {
             data.columns.unshift('ID');
@@ -2763,7 +2764,7 @@ function span (txt, attr) {
         //loadSettings(data);
         installColResize(data, $dlg);
         loadSettings(data);
-        setTimeout(function () {
+        if ($dlg.attr('id') !== 'dialog-select-member') setTimeout(function () {
         $dlg.css({height: '100%'}); //xxx
         }, 500);
 

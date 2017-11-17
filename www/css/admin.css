@@ -1394,3 +1394,6 @@ span.dark-blue {
 span.dark-green {
   color: #090;
 }
+div#dialog-select-member > div:first-child {
+  height: calc(100% - 45px) !important;
+}
