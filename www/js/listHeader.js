@@ -39,11 +39,11 @@ function IobListHeader(header, options) {
                 var x = $(o).width();
                 if (x) $ ($headerThs[i]).width(x + offs);
             });
-            if ($dlg.selectID_Offset === undefined) {
+            if ($header.selectID_Offset === undefined) {
                 var x = $($listTds[1]).offset().left;
                 if (x) {
-                    $dlg.selectID_Offset = x - $($headerThs[1]).offset().left;
-                    this.syncHeader($dlg);
+                    $header.selectID_Offset = x - $($headerThs[1]).offset().left;
+                    this.syncHeader();
                 }
             }
         };

@@ -1,5 +1,5 @@
 function Events(main) {
-    "use strict";
+    'use strict';
 
     var that =                   this;
     this.main =                  main;
@@ -18,9 +18,14 @@ function Events(main) {
     this.eventPauseCounterSpan = null;
     this.eventPauseCounter =     [];
 
-    var filter = { type: {}, id: {}, val:{}, ack: {}, from: {} };
+    var filter = {
+        type: {},
+        id:   {},
+        val:  {},
+        ack:  {},
+        from: {}
+    };
     var $header;
-
 
     this.prepare = function () {
 
@@ -51,10 +56,9 @@ function Events(main) {
         }
 
         var handlers = [];
-
         var html = '';
 
-        var cnt = 0;
+        // var cnt = 0;
         function add(text) {
             html +=
                 //'<td class="event-column-' + ++cnt + '">' +
@@ -70,16 +74,17 @@ function Events(main) {
             handlers.push(id);
             title = _(title);
             var opts = '';
-            if (options) for (var i=0; i<options.length; i++) {
-                var o = options[i];
-                if (typeof o === 'string') {
-                    o = { val: o, name: o }
+            if (options) {
+                for (var i = 0; i < options.length; i++) {
+                    var o = options[i];
+                    if (typeof o === 'string') {
+                        o = { val: o, name: o }
+                    }
+                    var name = i === 0 ? title + ' (' + _(o.name) + ')' : _(o.name);
+                    opts += '<option value="' + o.val + '">' + name + '</option>';
                 }
-                var name = i===0 ? title + ' (' + _(o.name) + ')' : _(o.name);
-                opts += '<option value="' + o.val + '">' + name + '</option>';
             }
-            add(
-                '    <tr style="background: #ffffff; ">' +
+            add('    <tr style="background: #ffffff; ">' +
                 '        <td style="width: 100%">\n' +
                 '            <select id="' + id + '" title="' + title + '">' + opts + '</select>' +
                 '        </td>' +
@@ -119,9 +124,9 @@ function Events(main) {
         addEdit('event-filter-id', 'ID');
         addEdit('event-filter-val', 'Value');
         addCombobox('event-filter-ack', 'ack', [
-            { val: "", name: 'all' },
-            { val: "true", name: 'ack' },
-            { val: "false", name: 'not ack' }
+            {val: '',      name: 'all'},
+            {val: 'true',  name: 'ack'},
+            {val: 'false', name: 'not ack'}
         ]);
         addCombobox('event-filter-from', 'from');
         addText('ts');
@@ -132,19 +137,26 @@ function Events(main) {
         $header = $('#events-table-tr');
         $header.html(header + html);
 
-        for (var i=0; i<handlers.length; i++) {
+        for (var i = 0; i < handlers.length; i++) {
             clearHandler(handlers[i]);
             changeHandler(handlers[i]);
         }
 
 
         for (var n in filter) {
-            var fi = filter[n], $fi = fi.$ = $('#event-filter-' + n);
+            var fi = filter[n];
+            var $fi = fi.$ = $('#event-filter-' + n);
             if (!$fi.length) return;
-            fi.setAllOption = function () {
-                $fi.html('<option value="">' + _(n) + ' ('+_('all') + ')</option>');
-            };
-            if ($fi[0].tagName === 'SELECT' && n !== 'ack') fi.setAllOption();
+            
+            fi.setAllOption = (function ($fi_, n_) {
+                return function () {
+                    $fi_.html('<option value="">' + _(n_) + ' (' + _('all') + ')</option>');
+                };
+            })($fi, n);
+
+            if ($fi[0].tagName === 'SELECT' && n !== 'ack') {
+                fi.setAllOption();
+            }
         }
         Object.defineProperty(filter, 'getValues', {
             value: function () {
@@ -220,8 +232,8 @@ function Events(main) {
         //         $('#event-filter-id').val('').trigger('change');
         //     }
         // });
-
-        $('#event-pause')
+        var $eventPause = $('#event-pause');
+        $eventPause
             .button({icons:{primary: 'ui-icon-pause'}, text: false})
             //.css({height: 25})
             .attr('title', _('Pause output'))
@@ -229,7 +241,7 @@ function Events(main) {
                 that.pause();
             });
 
-        this.eventPauseCounterSpan = $('#event-pause .ui-button-text');
+        this.eventPauseCounterSpan = $eventPause.find('.ui-button-text');
 
         // bind "clear events" button
         var $eventClear = $('#event-clear');
@@ -237,15 +249,15 @@ function Events(main) {
             icons: {
                 primary: 'ui-icon-close'
             },
-            text: false,
+            text: false
             //label: _('clear')
         })
             .attr('title', _('clear'))
             .unbind('click').click(function () {
-            eventsLinesCount = 0;
-            eventsLinesStart = 0;
-            $('#event-table').html('');
-        })
+                eventsLinesCount = 0;
+                eventsLinesStart = 0;
+                $('#event-table').html('');
+            })
             .prepend(_('Clear list'))
             .attr('style', 'width: 100% !important; padding-left: 20px !important; font-size: 12px; vertical-align: middle; padding-top: 3px !important; padding-right: 5px !important; color:#000')
             .find('span').css({left: '10px'})
@@ -263,15 +275,18 @@ function Events(main) {
 
     function syncHeader() {
         var headerTds = $header.find('>td');
-        //var tableTds = that.$table.find('>tr>td');
-        var tableTds = that.$table.find('>tr>td');
-        var trs, tds, len=0;
-        if (!(trs=that.$table[0].children) || !trs.length || !(tds = trs[0].children) ) return;
+        // var tableTds = that.$table.find('>tr>td');
+        var trs;
+        var tds;
+        var len = 0;
+        if (!(trs = that.$table[0].children) || !trs.length || !(tds = trs[0].children) ) return;
         $(tds).each(function(i, o) {
-            if (i >= $(tds).length-1) return;
+            if (i >= $(tds).length - 1) return;
             var x = $(o).width();
             len += x;
-            if (x) $(headerTds[i]).width($(o).width()+6);
+            if (x) {
+                $(headerTds[i]).width($(o).width() + 6);
+            }
         });
         return len;
     }
@@ -287,7 +302,7 @@ function Events(main) {
         var from = '';
         var tc;
         var lc;
-        filter.getValues();
+        if (filter.getValues) filter.getValues();
 
         if (obj) {
             type = 'objectChange';
@@ -476,7 +491,7 @@ function Events(main) {
             clearTimeout(eventFilterTimeout);
             eventFilterTimeout = null;
         }
-        filter.getValues();
+        if (filter.getValues) filter.getValues();
         // var filterType = $('#event-filter-type').val();
         // var filterId   = $('#event-filter-id').val().toLocaleLowerCase();
         // var filterVal  = $('#event-filter-val').val();
@@ -521,13 +536,14 @@ function Events(main) {
     };
 
     this.pause = function () {
+        var $eventPause = $('#event-pause');
         if (!this.eventPauseMode) {
-            $('#event-pause')
+            $eventPause
                 .addClass('ui-state-focus')
                 .button('option', 'text', true)
                 .button('option', 'icons', {primary: null});
 
-            this.eventPauseCounterSpan = $('#event-pause .ui-button-text');
+            this.eventPauseCounterSpan = $eventPause.find('.ui-button-text');
             this.eventPauseCounterSpan.html('0').css({'padding-top': '1px', 'padding-bottom': '0px'});
             this.eventPauseCounter  = 0;
             this.eventPauseMode     = true;
@@ -547,7 +563,7 @@ function Events(main) {
             this.eventPauseList     = [];
             this.eventPauseCounter  = 0;
 
-            $('#event-pause')
+            $eventPause
                 .removeClass('ui-state-error ui-state-focus')
                 .attr('title', _('Pause output'))
                 .button('option', 'text', false).button('option', 'icons', {primary: 'ui-icon-pause'});
