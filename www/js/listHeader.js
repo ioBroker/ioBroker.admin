@@ -1,5 +1,5 @@
 
-
+var addAll2FilterCombobox = false;
 
 function IobListHeader (header, options) {
     if (!(this instanceof IobListHeader)) return new IobListHeader(header, options);
@@ -70,7 +70,7 @@ function IobListHeader (header, options) {
     this.doFilter = function () {};
 
     function allOption(name, selectedVal) {
-        name = name ? _(name) + ' ('+_('all') + ')' : _('all');
+        if (addAll2FilterCombobox) name = name ? _(name) + ' ('+_('all') + ')' : _('all');
         return '<option value="" ' + ((selectedVal === "") ? 'selected' : '') + '>' + name + '</option>';
     }
 
@@ -79,49 +79,11 @@ function IobListHeader (header, options) {
         title = _(title);
 
         var txt = '';
-        // switch (what) {
-        //     case 'combobox':
-        //         txt = `
-        //             <td style="width: 100%">
-        //                 <select id="${id}" title="${title}">'+'</select>
-        //             </td>
-        //             <td>
-        //                 <button id="${id}-clear" role="button" title=""></button>
-        //             </td>`;
-        //         break;
-        //     case "edit":
-        //         txt = `
-        //             <td style="width: 100%">
-        //                 <input placeholder="${title}" type="text" id="${id}" title="${title}">
-        //             </td>
-        //             <td>
-        //                 <button id="${id}-clear" role="button" title="${title}"></button>
-        //             </td>`;
-        //         break;
-        //     case "text":
-        //         txt = `
-        //             <td style="width: 100%"><span>${title}
-        //             </span></td>`;
-        //         break;
-        // }
-        //
-        // $header.append (
-        //     //'<td class="event-column-' + ++cnt + '">' +
-        //     `<th>
-        //     <table class="main-header-input-table" style="width: 100%;">
-        //         <tbody>
-        //         <tr style="background: #ffffff; ">
-        //             ${txt}
-        //         </tr>
-        //         </tbody>
-        //     </table>
-        //     </th>`
-        // );
-
         switch (what) {
             case 'combobox':
                 txt = '' +
-                    '<td style="width: 100%">' +
+                    //'<td style="width: 100%">' +
+                    '<td>' +
                     '    <select id="' + id + '" title="${title}">'+'</select>' +
                     '</td>' +
                     '<td>' +
@@ -130,8 +92,9 @@ function IobListHeader (header, options) {
                 break;
             case "edit":
                 txt = '' +
-                    '<td style="width: 100%">' +
-                    '    <input placeholder="' + title + '" type="text" id="${id}" title="' + title + '">' +
+                    //'<td style="width: 100%">' +
+                    '<td>' +
+                    '    <input id="' + id + '" placeholder="' + title + '" type="text" id="${id}" title="' + title + '">' +
                     '</td>' +
                     '<td>' +
                     '    <button id="' + id + '-clear" role="button" title="' + title + '"></button>' +
@@ -160,9 +123,11 @@ function IobListHeader (header, options) {
         $header.append (
             //'<td class="event-column-' + ++cnt + '">' +
             '<th>' +
-            '<table class="main-header-input-table" style="width: 100%;">' +
+            //'<table class="main-header-input-table" style="width: 100%;">' +
+            '<table class="main-header-input-table">' +
             '    <tbody>' +
-            '    <tr style="background: #ffffff; ">' +
+            //'    <tr style="background: #ffffff; ">' +
+            '    <tr>' +
                     txt +
             '    </tr>' +
             '    </tbody>' +
@@ -221,10 +186,11 @@ function IobListHeader (header, options) {
         });
 
         var eventFilterTimeout;
-        $id.change(function () {
+        $id.change(function (event) {
             if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
             elem.selectedVal = $id.val();
             eventFilterTimeout = setTimeout(self.doFilter, what!=='combobox' ? 400 : 0);
+            elem.$filter.parent().parent()[elem.selectedVal ? 'addClass' : 'removeClass'] ('filter-active');
         }).keyup(function (event) {
             if (event.which === 13) {
                 self.doFilter();

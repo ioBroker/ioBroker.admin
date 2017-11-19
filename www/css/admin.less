@@ -834,11 +834,14 @@ table.instance-table>thead>tr>th {
     background: @list-header-background;
     &:extend(.iob-font-12);
 }
-table.main-header-table>tbody>tr, table.main-header-table>thead>tr {
+table.main-header-table>tbody>tr,
+table.main-header-table>thead>tr {
     height: (@toolbar-size - 1px) !important;
     margin-top: 1px;
 }
-table.main-header-table>tbody>tr>td, table.main-header-table>thead>tr>td, table.main-header-table>thead>tr>th {
+table.main-header-table>tbody>tr>td,
+table.main-header-table>thead>tr>td,
+table.main-header-table>thead>tr>th {
     padding: 0 !important;
     border: @td-toolbar-border !important;
 }
@@ -850,7 +853,8 @@ tr.jqgfirstrow>td {
     padding-left: @line-indent !important;
 }
 
-.main-header-input-table, .panel-input-table {
+.main-header-input-table,
+.panel-input-table {
     width: 100%;
     height: 100%;
     padding: 0;
@@ -873,8 +877,18 @@ table.main-header-input-table>tbody>tr>td>button {
     width: 18px;
     height: 18px;
     border: 0 !important;
-    background: @list-header-background;
+    background: @list-header-background !important;
+    display: none;
 }
+table.main-header-input-table>tbody>tr.filter-active>td>button {
+    display: unset;
+}
+table.main-header-input-table>tbody>tr.filter-active>td>input,
+table.main-header-input-table>tbody>tr.filter-active>td>select {
+    //.input-not-empty {
+    background-color: #ffbfb6 !important;
+}
+
 
 table.main-header-input-table>tbody>tr>td>select>option {
     padding: 0;
@@ -888,21 +902,28 @@ table.main-header-input-table>tbody>tr>td>span {
     font-size: @list-font-size;
     padding: 0;
     border: 0;
+    //height: (@header-height - 4px) !important; //xxxx
+    height: (@header-height - 2px) !important; //xxxx
 }
-table.main-header-input-table>tbody>tr>td>input, table.main-header-input-table>tbody>tr>td>span {
+table.main-header-input-table>tbody>tr>td>input,
+table.main-header-input-table>tbody>tr>td>span {
     padding-left: @line-indent;
 }
 
 table.main-header-input-table>tbody>tr>td>select {
-    line-height: 0.5em;
+    //line-height: 0.5em;
+    line-height: (@header-height - 2px);
     /*width: calc(~'100% + 1px');*/
     width: calc(~'100% - 1px');
 }
 
 table.main-header-input-table>tbody>tr>td>input {
-    width: 100%;
+    width: calc(100% - 1px);
     line-height: 1.5em;
 }
+
+
+
 
 /*******************************************/
 
@@ -979,10 +1000,6 @@ table.main-header-input-table>tbody>tr>td>input {
     font-size: 14px;
 }
 
-
-.input-not-empty {
-    background-color: #ffbfb6 !important;
-}
 
 #grid-adapters, .adapters-list-table {
     width: 100%;
@@ -1564,3 +1581,36 @@ span.dark-green {
 div#dialog-select-member>div:first-child {
     height: calc(~'100% - 45px') !important;
 }
+
+
+.main-header-input-table select{
+    padding-left: 5px !important;
+    font-size: 16px;
+    line-height: (@header-height - 2px);
+    background: url("../img/arrow-down-10x10.png") no-repeat right #fff;
+    -webkit-appearance: none;
+    background-position-x: calc(~'100% - 3px');
+    background-size: 10px;
+}
+
+//.main-header-input-table select:focus{
+//    //background-position-x: calc(~'100% - 4px');
+//    background: none;
+//
+//}
+
+
+//#selectID_0>colgroup>col:last-child {
+//    width: 80px !important;
+//}
+
+//.objects-list-table>colgroup>col:last-child {
+
+.objects-list-table>colgroup>col:nth-child(8) {
+    width: 80px !important;
+    min-width: 80px !important;
+}
+
+//table.main-header-input-table>tbody>tr>td>select>option {
+//    line-height: 30px !important;
+//}

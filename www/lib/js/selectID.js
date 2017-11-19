@@ -751,7 +751,7 @@ function span (txt, attr) {
                 if ((o = $ (thSrc[i+1]).offset().left))
                     if ((o -= $ (thDest[i+1]).offset().left)) {
                         $(thDest[i]).attr('width', x + o);
-                }
+                    }
             }
         }
     }
@@ -924,10 +924,10 @@ function span (txt, attr) {
         var states  = null;
         var $parent = $(event.currentTarget).parent();
         var activeNode = data.$tree.fancytree('getTree');
+
         activeNode = activeNode.getActiveNode();
 
         if (clippy)  $this.removeClass('clippy');
-
         $this.unbind('click').removeClass('select-id-quick-edit').css('position', 'relative');
         type = type === 'boolean' ? 'checkbox' : 'text';
         var text;
@@ -1035,7 +1035,6 @@ function span (txt, attr) {
         }
 
         $this.find('.select-id-quick-edit-cancel').click(handleCancel);
-
         $this.find('.select-id-quick-edit-ok').click(function ()  {
             var _$input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
             _$input.trigger('blur');
@@ -1102,7 +1101,7 @@ function span (txt, attr) {
         var c;
         //$dlg.css({height: '100%', width: 'calc(100% - 18px)'});
         if ($dlg.attr('id') !== 'dialog-select-member') {
-        $dlg.css({height: '100%', width: '100%'});
+            $dlg.css ({height: '100%', width: '100%'});
         } else {
             $dlg.css ({height: 'calc(100% - 110px)', width: '100%'});
         }
@@ -1221,126 +1220,103 @@ function span (txt, attr) {
             return ret;
         }
 
-/*
-        var textRooms;
-        if (data.columns.indexOf ('room') !== -1) {
-            textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
-            for (var i = 0; i < data.roomEnums.length; i++) {
-                textRooms += '<option value="' + data.objects[data.roomEnums[i]].common.name + '">' + data.objects[data.roomEnums[i]].common.name + '</option>';
-            }
-            textRooms += '</select>';
-        } else {
-            if (data.rooms) delete data.rooms;
-            if (data.roomsColored) delete data.roomsColored;
-        }
+        /*
+                var textRooms;
+                if (data.columns.indexOf ('room') !== -1) {
+                    textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
+                    for (var i = 0; i < data.roomEnums.length; i++) {
+                        textRooms += '<option value="' + data.objects[data.roomEnums[i]].common.name + '">' + data.objects[data.roomEnums[i]].common.name + '</option>';
+                    }
+                    textRooms += '</select>';
+                } else {
+                    if (data.rooms) delete data.rooms;
+                    if (data.roomsColored) delete data.roomsColored;
+                }
 
-        var textFuncs;
-        if (data.columns.indexOf ('function') !== -1) {
-            textFuncs = '<select id="filter_function_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
-            for (var i = 0; i < data.funcEnums.length; i++) {
-                textFuncs += '<option value="' + data.objects[data.funcEnums[i]].common.name + '">' + data.objects[data.funcEnums[i]].common.name + '</option>';
-            }
-            textFuncs += '</select>';
-        } else {
-            if (data.funcs) delete data.funcs;
-            if (data.funcsColored) delete data.funcsColored;
-        }
+                var textFuncs;
+                if (data.columns.indexOf ('function') !== -1) {
+                    textFuncs = '<select id="filter_function_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
+                    for (var i = 0; i < data.funcEnums.length; i++) {
+                        textFuncs += '<option value="' + data.objects[data.funcEnums[i]].common.name + '">' + data.objects[data.funcEnums[i]].common.name + '</option>';
+                    }
+                    textFuncs += '</select>';
+                } else {
+                    if (data.funcs) delete data.funcs;
+                    if (data.funcsColored) delete data.funcsColored;
+                }
 
-        var textRoles;
-        if (data.columns.indexOf ('role') !== -1) {
-            textRoles = '<select id="filter_role_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-            for (var j = 0; j < data.roles.length; j++) {
-                textRoles += '<option value="' + data.roles[j] + '">' + data.roles[j] + '</option>';
-            }
-            textRoles += '</select>';
-        }
+                var textRoles;
+                if (data.columns.indexOf ('role') !== -1) {
+                    textRoles = '<select id="filter_role_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
+                    for (var j = 0; j < data.roles.length; j++) {
+                        textRoles += '<option value="' + data.roles[j] + '">' + data.roles[j] + '</option>';
+                    }
+                    textRoles += '</select>';
+                }
 
-        var textTypes;
-        if (data.columns.indexOf ('type') !== -1) {
-            textTypes = '<select id="filter_type_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-            for (var k = 0; k < data.types.length; k++) {
-                textTypes += '<option value="' + data.types[k] + '">' + data.types[k] + '</option>';
-            }
-            textTypes += '</select>';
-        }
-  */
-
-        var tds = '<td><button class="ui-button-icon-only panel-button" id="btn_refresh_' + data.instance + '"></button></td>';
-        tds += '<td><button class="panel-button" id="btn_list_' + data.instance + '"></button></td>';
-        tds += '<td><button class="panel-button" id="btn_collapse_' + data.instance + '"></button></td>';
-        tds += '<td><button class="panel-button" id="btn_expand_' + data.instance + '"></button></td>' +
-               '<td class="select-id-custom-buttons"></td>';
+                var textTypes;
+                if (data.columns.indexOf ('type') !== -1) {
+                    textTypes = '<select id="filter_type_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
+                    for (var k = 0; k < data.types.length; k++) {
+                        textTypes += '<option value="' + data.types[k] + '">' + data.types[k] + '</option>';
+                    }
+                    textTypes += '</select>';
+                }
+          */
+        // toolbar buttons
+        var tds =
+            '<td><button class="ui-button-icon-only panel-button" id="btn_refresh_' + data.instance + '"></button></td>' +
+            '<td><button class="panel-button" id="btn_list_' + data.instance + '"></button></td>' +
+            '<td><button class="panel-button" id="btn_collapse_' + data.instance + '"></button></td>'  +
+            '<td><button class="panel-button" id="btn_expand_' + data.instance + '"></button></td>' +
+            '<td class="select-id-custom-buttons"></td>';
         if (data.filter && data.filter.type === 'state' && multiselect) {
-            tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_select_all_' + data.instance + '"></button></td>';
-            tds += '<td><button class="panel-button" id="btn_unselect_all_' + data.instance + '"></button></td>';
-            tds += '<td><button class="panel-button" id="btn_invert_selection_' + data.instance + '"></button></td>';
+            tds +=
+                '<td style="padding-left: 10px"><button class="panel-button" id="btn_select_all_' + data.instance + '"></button></td>' +
+                '<td><button class="panel-button" id="btn_unselect_all_' + data.instance + '"></button></td>' +
+                '<td><button class="panel-button" id="btn_invert_selection_' + data.instance + '"></button></td>';
         }
         if (data.expertModeRegEx) {
-            tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_expert_' + data.instance + '"></button></td>';
+            tds +=
+                '<td style="padding-left: 10px"><button class="panel-button" id="btn_expert_' + data.instance + '"></button></td>';
         }
         tds += '<td><button class="panel-button" id="btn_sort_' + data.instance + '"></button></td>';
 
         if (data.panelButtons) {
-            //tds += '<td style="width: 20px">&nbsp;&nbsp;</td>';
             tds += '<td class="iob-toolbar-sep"></td>';
             for (c = 0; c < data.panelButtons.length; c++) {
                 tds += '<td><button class="panel-button" id="btn_custom_' + data.instance + '_' + c + '"></button></td>';
             }
         }
-        //tds += '<td class="ui-widget" style="width: 100%; text-align: center; font-weight: bold; font-size: medium">' + data.texts.id + '</td></tr></table></th>';
-        //tds += '<td style="width: 100%;"></td></td></tr></table></th>';
-
         tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_history_' + data.instance + '"></button></td>';
 
-
-        var text = '<div id="' + data.instance + '-div" style="width:100%; height:100%">' +
-            //var text = '<div id="' + data.instance + '-div" >' +
-            //'<table class="a" style="width: 100%; height: 30px; border-collapse: collapse;">' +
-            //'<table class="main-toolbar-table" style="border-collapse: collapse;" cellpadding="0">' +
-            //'<table class="main-toolbar-table" cellpadding="0">' +
+        var text = '' +
+            '<div id="' + data.instance + '-div" style="width:100%; height:100%">' +
             '<table class="main-toolbar-table">' +
-            //TODO xxxx !!!!'<table class="main-toolbar-table">' +
-            // '<thead>' +
-            // '<tr><th></th></tr>' +
-            // '<tr column-span="2">' +
-            // '<td>' +
-            // '<table class="panel-table"  cellspacing="0" cellpadding="0">' +
-            // '<thead>' +
-            // '<tr><th></th></tr>' +
-            '<tr>' + tds + '<td style="width: 100%;"></td></tr>' +
-            //'</thead>' +
-            //'</table>' +
-            //'</td>' +
-            '</tr>' +
-            //'</thead>' +
+            '     <tr>' + tds + '<td style="width: 100%;"></td></tr>' +
+            '     </tr>' +
             '</table>' +
-
-            //'<div class="a1" style="width: 100%; height: calc(100% - 30px); overflow: auto">' +
-            //'<table id="selectID_header_' + data.instance + '" style="width: calc(100% - 18px); padding: 0; height: 30px" cellspacing="0" cellpadding="0">';
-            //'<table id="selectID_header_' + data.instance + '"cellspacing="0" cellpadding="0" style="height: 23px; margin-left: 1px">';
-            '<table id="selectID_header_' + data.instance + '" class="main-header-table">';
-
+            '<table id="selectID_header_' + data.instance + '" class="main-header-table">'
+        ;
+        //--
 
         function textFiltertext (filterNo, placeholder) {
             if (placeholder === undefined) placeholder = data.texts[filterNo.toLowerCase()];
             return '' +
-                //'<table style="width: 100%; height:100%; padding: 0;border: 1px solid #c0c0c0;border-spacing: 0;border-radius: 2px;">\n' +
                 '<table class="main-header-input-table">' +
-
-                '        <tbody>' +
+                '    <tbody>' +
                 '        <tr style="background: #ffffff; ">' +
                 '            <td style="width: 100%">' +
-                '                <input placeholder="' + placeholder + '" style="width: 100%; padding: 0; padding-left: ' + lineIndent + ';font-size: 12px;border: 0;line-height: 1.5em;" type="text" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
+                //'                <input placeholder="' + placeholder + '" style="width: 100%; padding: 0; padding-left: ' + lineIndent + ';font-size: 12px;border: 0;line-height: 1.5em;" type="text" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
+                '                <input placeholder="' + placeholder + '" type="text" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
                 '            </td>' +
-                //                '            <td style="vertical-align: middle; border: 0;">\n' +
                 '            <td>' +
                 '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">' +
-                //'                    <span class="ui-button-text"></span>\n' +
                 '                </button>' +
                 '            </td>' +
                 '        </tr>' +
-                '        </tbody>' +
-                '    </table>';
+                '    </tbody>' +
+                '</table>';
         }
 
         function textCombobox (filterNo, placeholder) {
@@ -1348,10 +1324,7 @@ function span (txt, attr) {
             if (data.columns.indexOf (filterNo) !== -1) {
                 if (placeholder === undefined) placeholder = data.texts[filterNo.toLowerCase()];
                 var cbEntries = getComboboxEnums (filterNo);
-                // var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '" style="font-size: 12px; line-height: 0.5em; padding:0;width: calc(100% + 1px); border:0;">';
-                // moved to css: table.main-header-input-table>tbody>tr>td>select
                 var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">';
-
                 var add = function (a, b) {
                     if (Array.isArray (a)) {
                         b = a[0];
@@ -1360,27 +1333,25 @@ function span (txt, attr) {
                     else if (b === undefined) b = a;
                     cbText += '<option style="line-height: 0.5em; background: #fff" value="' + a + '">' + b + '</option>';
                 };
-                add ("", placeholder + ' (' + data.texts.all + ')');
+                if (addAll2FilterCombobox) add ("", placeholder + ' (' + data.texts.all + ')');
+                else add ("", placeholder);
                 for (var i = 0, len = cbEntries.length; i < len; i++) {
                     add (cbEntries[i]);
                 }
                 cbText += '</select>';
 
                 txt = '' +
-                    //'<table style="width: 100%;padding: 0;border: 1px solid #c0c0c0;border-spacing: 0;border-radius: 2px;">' +
-                    '<table class="main-header-input-table" style="width: 100%;">' +     // width is already in css
+                    //'<table class="main-header-input-table" style="width: 100%;">' +     // width is already in css
+                    '<table class="main-header-input-table">' +     // width is already in css
                     '        <tbody>' +
                     '        <tr style="background: #ffffff; ">' +                       // tr background is already in css
                     '            <td style="width: 100%">';                              // td-width is already in css
                 txt += cbText;
                 txt += '' +
                     '            </td>' +
-                    //'            <td style="vertical-align: top;border: 0;">' +
                     '            <td>' +
-                    //                '                <button data-id="filter_' + filterNo + '" class="" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">\n' +
-                    '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">' +
-                    //                '                    <span class="ui-button-icon-primary ui-icon ui-icon-close" style="position: relative;left: -6px;"></span>\n' +
-                    //'                    <span class="ui-button-text"></span>' +
+                    //'                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">' +
+                    '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="">' +
                     '                </button>' +
                     '            </td>' +
                     '        </tr>' +
@@ -1402,18 +1373,15 @@ function span (txt, attr) {
         text += '            <tr>'; //<td></td>';
 
         forEachColumn(data, function(name) {
-            //text += '<td style="position: relative;left: 0; padding:0">';
             text += '<td>';
             if (name === 'ID' || name === 'name' || name === 'value' || name === 'enum') {
                 text += textFiltertext (name);
             } else if (name === 'type' || name === 'role' || name === 'room' || name === 'function') {
                 text += textCombobox (name);
             } else if (name === 'button') {
-                //text += '<td>';
                 if (data.customButtonFilter) {
                     text += textCombobox (name);
                 } else {
-                    //text += '<table class="main-header-input-table"><tbody><tr><td><div>' + _(name) + '</div></td></tr></tbody></table>';
                     text += '<table class="main-header-input-table"><tbody><tr><td style="padding-left: ' + lineIndent + '">' + _(name) + '</td></tr></tbody></table>';
                 }
             } else {
@@ -1426,84 +1394,32 @@ function span (txt, attr) {
         text += '        </tbody>';
         text += '    </table>';
 
-        //text += '<div style="width: calc(100% - 18px); height: ' + (data.buttons ? 'calc(100% - 30px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll">';
-        //text += '<div style="width: 100%; height: ' + (data.buttons ? 'calc(100% - 54px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll">';
         text += '<div class="' + (data.buttons ? 'grid-main-wh-div' : 'grid-main-wob-div') + '" style="width: 100%; padding:0; overflow-y: scroll">';
         text += ' <table class="iob-list-font objects-list-table" style="width: calc(100%-5px);" id="selectID_' + data.instance + '" cellspacing="0" cellpadding="0">';
         text += '        <colgroup>';
 
         var thead = '<thead class="grid-objects-head"><tr>';
 
-        var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '10%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '5%', enum: '2%'};
-        // for (var c=0, len=data.columns.length; c<len; c++) {
-        //     var name = data.columns[c];
-        //     if (typeof name === 'object') name = name.name;
-        //     if (name === 'image') continue;
-        //     //text += '<col width="' + (data.widths ? data.widths[c] : ((widths[name] || 2) + '%')) + '"/>';
-        //     var w = (widths[name] || 2) + '%';
-        //     text += '<col width="' + ((widths[name] || 2) + '%') + '"/>';
-        //     thead += '<th style="width: ' + w + ';"></th>';
-        //     //thead += '<th></th>';
-        // }
+        //var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '10%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '5%', enum: '2%'};
+
+        var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '6%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '9%', enum: '2%'};
+
         forEachColumn (data, function(name, i) {
-            //if (name === 'image') return;
-            //text += '<col width="' + (data.widths ? data.widths[c] : ((widths[name] || 2) + '%')) + '"/>';
             var w = data.widths ? data.widths[i] : widths[name] || '2%';
             text += '<col width="' + w + '"/>';
             thead += '<th style="width: ' + w + ';"></th>';
         });
 
-
-
-        // for (c = 0; c < data.columns.length; c++) {
-        //     var name = data.columns[c];
-        //     if (typeof name === 'object') name = name.name;
-        //     if (name === 'image') {
-        //         //text += '<col width="' + (data.widths ? data.widths[c] : '24px') + '"></col>';
-        //     } else if (name === 'name') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '20%') + '"/>';
-        //     } else if (name === 'type') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'role') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'room') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'function') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'value') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'button') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '5%') + '"/>';
-        //     } else if (name === 'enum') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '2%') + '"/>';
-        //     } else {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '2%') + '"/>';
-        //     }
-        // }
-
-        // text += '        </colgroup>';
-        // text += '        <thead>';
-        // text += '            <tr><th></th><th></th>';
-        // for (c = 0; c < data.columns.length; c++) {
-        //     text += '<th>Hallo</th>';
-        // }
-        // text += '</tr>';
-        // text += '        </thead>';
-        // text += '        <tbody>';
-        // text += '        </tbody>';
-        // text += '    </table></div><div id="process_running_' + data.instance + '" style="position: absolute; top: 50%; left: 50%; width: 150px; height: 25px; padding: 12px; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">' + data.texts.wait + '</div>';
-
         text += '        </colgroup>';
+
         text += thead + '</tr></thead>';
 
         text += '        <tbody>';
         text += '        </tbody>';
-        //text += '    </table></div></div>' +
         text += '    </table></div>' +
             '<div id="process_running_' + data.instance + '" style="position: absolute; top: 50%; left: 50%; width: 150px; height: 25px; padding: 12px; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">' + data.texts.wait + '</div>' +
             '</div>'
         ;
-
 
         function addClippyToElement($elem, key) {
             if (!data.noCopyToClipboard) {
@@ -1516,8 +1432,6 @@ function span (txt, attr) {
             }
         }
 
-
-        //text = text.replace(/\n/g, '');
         $dlg.html(text);
 
         data.$tree = $('#selectID_' + data.instance);
@@ -2560,7 +2474,10 @@ function span (txt, attr) {
                 //$e.css({background: val ? '#ffbfb6' : '#ffffff'});
                 //if (val) $e.addClass('input-not-empty'); else $e.removeClass('input-not-empty');
                 $e[val ? 'addClass' : 'removeClass'] ('input-not-empty');
+                $e.parent().parent().find('button').css({'display': val? 'unset' : 'none'});
+                $e.parent().parent()[val ? 'addClass' : 'removeClass'] ('filter-active');
             }
+
             var $e = $ ('#process_running_' + data.instance);
             $e.show ();
             data.$tree.fancytree ('getTree').filterNodes (customFilter, false);
@@ -2765,7 +2682,7 @@ function span (txt, attr) {
         installColResize(data, $dlg);
         loadSettings(data);
         if ($dlg.attr('id') !== 'dialog-select-member') setTimeout(function () {
-        $dlg.css({height: '100%'}); //xxx
+            $dlg.css({height: '100%'}); //xxx
         }, 500);
 
         // set preset filters
