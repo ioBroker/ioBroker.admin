@@ -1327,40 +1327,40 @@ function span (txt, attr) {
         ;
 
 
-        function textFiltertext (filterNo, placeholder) {
+        function textFiltertext(filterNo, placeholder) {
             if (placeholder === undefined) {
-                placeholder = data.texts[filterNo.toLowerCase()];
+                placeholder = data.texts[filterNo.toLowerCase()] || '';
             }
-            return
-                '<table class="main-header-input-table">' +
-                '        <tbody>' +
-                '        <tr style="background: #ffffff; ">' +
-                '            <td style="width: 100%">' +
-                //'                <input placeholder="' + placeholder + '" style="width: 100%; padding: 0; padding-left: ' + lineIndent + ';font-size: 12px;border: 0;line-height: 1.5em;" type="text" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
-                '                <input placeholder="' + placeholder + '" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
-                '            </td>' +
-                '            <td>' +
-                '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">' +
-                '                </button>' +
-                '            </td>' +
-                '        </tr>' +
-                '        </tbody>' +
-                '    </table>';
+            return  '<table class="main-header-input-table">' +
+                    '        <tbody>' +
+                    '        <tr style="background: #ffffff; ">' +
+                    '            <td style="width: 100%">' +
+                    //'                <input placeholder="' + placeholder + '" style="width: 100%; padding: 0; padding-left: ' + lineIndent + ';font-size: 12px;border: 0;line-height: 1.5em;" type="text" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
+                    '                <input placeholder="' + placeholder + '" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
+                    '            </td>' +
+                    '            <td>' +
+                    '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">' +
+                    '                </button>' +
+                    '            </td>' +
+                    '        </tr>' +
+                    '        </tbody>' +
+                    '    </table>';
         }
 
         function textCombobox(filterNo, placeholder) {
             var txt = '';
             if (data.columns.indexOf (filterNo) !== -1) {
-                if (placeholder === undefined) placeholder = data.texts[filterNo.toLowerCase()];
+                if (placeholder === undefined) placeholder = data.texts[filterNo.toLowerCase()] || '';
                 var cbEntries = getComboBoxEnums(filterNo);
                 var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">';
 
                 var add = function (a, b) {
-                    if (Array.isArray (a)) {
+                    if (Array.isArray(a)) {
                         b = a[0];
                         a = a[1]
+                    } else if (b === undefined) {
+                        b = a;
                     }
-                    else if (b === undefined) b = a;
                     cbText += '<option style="line-height: 0.5em; background: #fff" value="' + a + '">' + b + '</option>';
                 };
                 if (typeof addAll2FilterCombobox !== 'undefined' && addAll2FilterCombobox) {
