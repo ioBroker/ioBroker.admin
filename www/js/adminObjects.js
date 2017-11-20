@@ -461,6 +461,13 @@ function Objects(main) {
             this.$grid[0]._isInited = true;
             if (this.customEnabled === null) this.checkCustoms();
 
+            // var x = $(window).width();
+            // var y = $(window).height();
+            // if (x < 720) x = 720;
+            // if (y < 480) y = 480;
+            //
+            // that.$grid.height(y - 100).width(x - 20);
+
             var settings = {
                 objects:  main.objects,
                 states:   main.states,

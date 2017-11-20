@@ -2,7 +2,7 @@
     "common": {
         "name":                     "admin",
         "title":                    "ioBroker Admin",
-        "version": "3.0.1",
+        "version": "3.0.3",
         "news": {
             "3.0.1": {
                 "en": "gui redesigned",

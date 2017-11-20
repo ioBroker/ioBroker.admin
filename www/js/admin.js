@@ -1056,13 +1056,12 @@ $(document).ready(function () {
                         '></iframe></div>';
                     $(div).appendTo($('#tabs'));
 
-                    //if (name === 'tab-javascript') { // temporary, until javascript tab ist adapted
-                    /*$('#' + name).find ('.iframe-in-tab').on('load', function () {
+                    // TODO: temporary, until other tab will be adapted
+                    $('#' + name).find ('.iframe-in-tab').on('load', function () {
                         var elem = $ (this).contents ().find('body>header');
                         if (!elem || !elem.length) elem = $(this).contents ().find('head');
                         if (elem && elem.length) elem.append('<link rel="stylesheet" type="text/css" href="../../css/admin.css"/>');
-                    });*/
-                    //}
+                    });
                 } else {
                     $('#' + name).show().appendTo($('#tabs'));
                 }
@@ -1076,7 +1075,6 @@ $(document).ready(function () {
                 $('#' + $(this).attr('id')).remove();
             }
         });
-
 
         if (!main.systemConfig.common.tabs) main.systemConfig.common.tabs = list;
         $('#tabs-ul').html(text);

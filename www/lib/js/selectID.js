@@ -3,9 +3,9 @@
 /* jshint -W097 */
 /* jshint strict: false */
 /*
- Copyright 2014-2017 bluefox <dogafox@gmail.com>
+ MIT, Copyright 2014-2017 bluefox <dogafox@gmail.com>, soef
 
- version: 1.0.6 (2017.11.03)
+ version: 1.0.7 (2017.11.20)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -131,6 +131,7 @@
      type: "state"
  */
 
+var addAll2FilterCombobox = false;
 
 function tdp(x, nachkomma) {
     return isNaN(x) ? "" : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -970,7 +971,7 @@ function span (txt, attr) {
         $this.unbind('click').removeClass('select-id-quick-edit').css('position', 'relative');
 
         //var css = 'cursor: pointer; position: absolute;width: 16px; height: 16px; top: 2px; border-radius: 6px; z-index: 3; background-color: lightgray';
-        var css = 'cursor: pointer; position: absolute;width: 16px; height: 16px; top: 4px; border-radius: 0px; vertical-align: middle; z-index: 3;';
+        var css = 'cursor: pointer; position: absolute; width: 16px; height: 16px; top: 4px; border-radius: 0px; vertical-align: middle; z-index: 3;';
 
         type = type === 'boolean' ? 'checkbox' : 'text';
         var text;
@@ -1027,13 +1028,13 @@ function span (txt, attr) {
         var timeout = null;
 
         $this.html(text +
-            '<div class="ui-icon ui-icon-check        select-id-quick-edit-ok"     style="' + css + ';right: 22px"></div>' +
-            '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '" style="' + css + ';right: 2px"></div>');
+            '<div class="ui-icon ui-icon-check        select-id-quick-edit-ok"     style="' + css + '; right: 22px"></div>' +
+            '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '" style="' + css + '; right: 2px"></div>');
         var oldLeftPadding = $this.css('padding-left');
         var oldWidth = $this.css('width');
         //$this.css({'padding-left':'2px', 'padding-bottom': '3px', width: 'calc(100% - 28px)'});
-        var isTitleEdit = $this.is ('.objects-name-coll-title');
-        //$this.css({'padding-left':'2px', 'padding-bottom': '2px', width: isTitleEdit ? 'calc(100% - 28px)' : 'calc(100% - 0px)'});       // mit paading-buttom erhöht sich die Zeilenhöhe um einen Pixel!
+        var isTitleEdit = $this.is('.objects-name-coll-title');
+        //$this.css({'padding-left': 2, 'padding-bottom': 2, width: isTitleEdit ? 'calc(100% - 28px)' : 'calc(100% - 0px)'});       // mit paading-buttom erhöht sich die Zeilenhöhe um einen Pixel!
         $this.css({'padding-left': 2, width: isTitleEdit ? 'calc(100% - 28px)' : 'calc(100% - 0px)'});
 
         var $input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
@@ -1287,50 +1288,7 @@ function span (txt, attr) {
             return ret;
         }
 
-        /*
-                var textRooms;
-                if (data.columns.indexOf ('room') !== -1) {
-                    textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
-                    for (var i = 0; i < data.roomEnums.length; i++) {
-                        textRooms += '<option value="' + data.objects[data.roomEnums[i]].common.name + '">' + data.objects[data.roomEnums[i]].common.name + '</option>';
-                    }
-                    textRooms += '</select>';
-                } else {
-                    if (data.rooms) delete data.rooms;
-                    if (data.roomsColored) delete data.roomsColored;
-                }
-
-                var textFuncs;
-                if (data.columns.indexOf ('function') !== -1) {
-                    textFuncs = '<select id="filter_function_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
-                    for (var i = 0; i < data.funcEnums.length; i++) {
-                        textFuncs += '<option value="' + data.objects[data.funcEnums[i]].common.name + '">' + data.objects[data.funcEnums[i]].common.name + '</option>';
-                    }
-                    textFuncs += '</select>';
-                } else {
-                    if (data.funcs) delete data.funcs;
-                    if (data.funcsColored) delete data.funcsColored;
-                }
-
-                var textRoles;
-                if (data.columns.indexOf ('role') !== -1) {
-                    textRoles = '<select id="filter_role_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-                    for (var j = 0; j < data.roles.length; j++) {
-                        textRoles += '<option value="' + data.roles[j] + '">' + data.roles[j] + '</option>';
-                    }
-                    textRoles += '</select>';
-                }
-
-                var textTypes;
-                if (data.columns.indexOf ('type') !== -1) {
-                    textTypes = '<select id="filter_type_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-                    for (var k = 0; k < data.types.length; k++) {
-                        textTypes += '<option value="' + data.types[k] + '">' + data.types[k] + '</option>';
-                    }
-                    textTypes += '</select>';
-                }
-          */
-
+        // toolbar buttons
         var tds = 
             '<td><button class="ui-button-icon-only panel-button" id="btn_refresh_' + data.instance + '"></button></td>' +
             '<td><button class="panel-button" id="btn_list_' + data.instance + '"></button></td>' +
@@ -1366,8 +1324,8 @@ function span (txt, attr) {
             '    <tr>' + tds + '<td style="width: 100%;"></td>' +
             '    </tr>' +
             '</table>' +
-
-            '<table id="selectID_header_' + data.instance + '" class="main-header-table">';
+            '<table id="selectID_header_' + data.instance + '" class="main-header-table">'
+        ;
 
 
         function textFiltertext (filterNo, placeholder) {
@@ -1376,7 +1334,6 @@ function span (txt, attr) {
             }
             var txt =
                 '<table class="main-header-input-table">' +
-
                 '        <tbody>' +
                 '        <tr style="background: #ffffff; ">' +
                 '            <td style="width: 100%">' +
@@ -1386,19 +1343,18 @@ function span (txt, attr) {
                 '            <td>' +
                 '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">' +
                 '                </button>' +
-                '            </td>';
-            txt +=
+                '            </td>' +
                 '        </tr>' +
                 '        </tbody>' +
                 '    </table>';
             return txt;
         }
 
-        function textCombobox (filterNo, placeholder) {
+        function textCombobox(filterNo, placeholder) {
             var txt = '';
             if (data.columns.indexOf (filterNo) !== -1) {
                 if (placeholder === undefined) placeholder = data.texts[filterNo.toLowerCase()];
-                var cbEntries = getComboBoxEnums (filterNo);
+                var cbEntries = getComboBoxEnums(filterNo);
                 var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">';
 
                 var add = function (a, b) {
@@ -1427,6 +1383,10 @@ function span (txt, attr) {
                     '            <td style="width: 100%">';
                 txt += cbText;
                 txt += '' +
+                    '            </td>' +
+                    '            <td>' +
+                    //'                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="">' +
+                    //'                </button>' +
                     '            </td>' +
                     '        </tr>' +
                     '        </tbody>' +
@@ -1478,7 +1438,7 @@ function span (txt, attr) {
 
         var thead = '<thead class="grid-objects-head"><tr>';
 
-        //var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '10%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '5%', enum: '2%'};
+
         var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '6%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '9%', enum: '2%'};
 
         forEachColumn(data, function(name, i) {
@@ -1516,8 +1476,6 @@ function span (txt, attr) {
             }
         }
 
-
-        //text = text.replace(/\n/g, '');
         $dlg.html(text);
 
         data.$tree = $('#selectID_' + data.instance);
@@ -3452,19 +3410,3 @@ function span (txt, attr) {
         }
     };
 })(jQuery);
-
-
-/*
-Object View:
-- Sort option added to object view
-- Icon size in object view icon column reduced from 20 to 16 px
-- Distance between icon and name column extended
-- admin.js._delObject function overworked
-- bugfix: when deleting an object with childs, now all entries will disappear
-- some tree.visit loops replace by tree.getNodeByKey
-- expanded folders will now stay expanded after a tree view refresh
-- selectID.js.findTree overworked
-- selectID.js.treeInsert overworked
-- bugfix: selectID.js.filterid extended to filter out not expert entries (for entries inserted by object change)
-
-*/
