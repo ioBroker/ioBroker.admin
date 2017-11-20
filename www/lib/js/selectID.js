@@ -3,7 +3,7 @@
 /* jshint -W097 */
 /* jshint strict: false */
 /*
- MIT, Copyright 2014-2017 bluefox <dogafox@gmail.com>, soef
+ MIT, Copyright 2014-2017 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
 
  version: 1.0.7 (2017.11.20)
 
@@ -981,9 +981,9 @@ function span (txt, attr) {
                 states = getStates (data, id);
                 if (states) {
                     text = '<select style="width: calc(100% - 50px); z-index: 2">';
-                    for (var t in states) {
-                        if (typeof states[t] !== 'string') continue;
-                        text += '<option value="' + t + '">' + states[t] + '</option>';
+                    for (var s in states) {
+                        if (!states.hasOwnProperty(s) || typeof states[s] !== 'string') continue;
+                        text += '<option value="' + s + '">' + states[s] + '</option>';
                     }
                     text += '</select>';
                 }
@@ -991,8 +991,8 @@ function span (txt, attr) {
             case 'room':
                 states = findRoomsForObjectAsIds (data, id) || [];
                 text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
-                for (var e = 0; e < data.roomEnums.length; e++) {
-                    text += '<option value="' + data.roomEnums[e] + '" ' + (states.indexOf (data.roomEnums[e]) !== -1 ? 'selected' : '') + '>' + data.objects[data.roomEnums[e]].common.name + '</option>';
+                for (var ee = 0; ee < data.roomEnums.length; ee++) {
+                    text += '<option value="' + data.roomEnums[ee] + '" ' + (states.indexOf (data.roomEnums[ee]) !== -1 ? 'selected' : '') + '>' + data.objects[data.roomEnums[ee]].common.name + '</option>';
                 }
                 text += '</select>';
                 break;
@@ -1013,7 +1013,9 @@ function span (txt, attr) {
                 if (states) {
                     text = '<select style="width: calc(100% - 50px); z-index: 2">';
                     for (var t in states) {
-                        text += '<option value="' + t + '">' + states[t] + '</option>';
+                        if (states.hasOwnProperty(t)) {
+                            text += '<option value="' + t + '">' + states[t] + '</option>';
+                        }
                     }
                     text += '</select>';
                 } else if (states === false) {
@@ -1030,11 +1032,10 @@ function span (txt, attr) {
         $this.html(text +
             '<div class="ui-icon ui-icon-check        select-id-quick-edit-ok"     style="' + css + '; right: 22px"></div>' +
             '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '" style="' + css + '; right: 2px"></div>');
+
         var oldLeftPadding = $this.css('padding-left');
         var oldWidth = $this.css('width');
-        //$this.css({'padding-left':'2px', 'padding-bottom': '3px', width: 'calc(100% - 28px)'});
         var isTitleEdit = $this.is('.objects-name-coll-title');
-        //$this.css({'padding-left': 2, 'padding-bottom': 2, width: isTitleEdit ? 'calc(100% - 28px)' : 'calc(100% - 0px)'});       // mit paading-buttom erhöht sich die Zeilenhöhe um einen Pixel!
         $this.css({'padding-left': 2, width: isTitleEdit ? 'calc(100% - 28px)' : 'calc(100% - 0px)'});
 
         var $input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
@@ -1131,9 +1132,9 @@ function span (txt, attr) {
             }
         });
 
-        if (typeof e === 'object') {
-            e.preventDefault();
-            e.stopPropagation();
+        if (typeof event === 'object') {
+            event.preventDefault();
+            event.stopPropagation();
         }
 
         setTimeout(function () {
@@ -1332,7 +1333,7 @@ function span (txt, attr) {
             if (placeholder === undefined) {
                 placeholder = data.texts[filterNo.toLowerCase()];
             }
-            var txt =
+            return
                 '<table class="main-header-input-table">' +
                 '        <tbody>' +
                 '        <tr style="background: #ffffff; ">' +
@@ -1347,7 +1348,6 @@ function span (txt, attr) {
                 '        </tr>' +
                 '        </tbody>' +
                 '    </table>';
-            return txt;
         }
 
         function textCombobox(filterNo, placeholder) {
@@ -2584,10 +2584,11 @@ function span (txt, attr) {
         }).attr('title', data.texts.tree);
 
         if (data.list) {
-            $('#btn_list_' + data.instance).addClass('ui-state-error');
+            $('#btn_list_' + data.instance)
+                .addClass('ui-state-error')
+                .attr('title', data.texts.list);
             $('#btn_expand_' + data.instance).hide();
             $('#btn_collapse_' + data.instance).hide();
-            $('#btn_list_' + data.instance).attr('title', data.texts.list);
         }
 
         $('#btn_refresh_' + data.instance).button({icons: {primary: 'ui-icon-refresh'}, text: false})./*css({width: "1.5em", height: "1.5em"}).*/click(function () {
@@ -3028,8 +3029,8 @@ function span (txt, attr) {
 
                     if (data.inited && currentId !== undefined && (data.currentId !== currentId)) {
                         // Deactivate current line
-                        var tree = data.$tree.fancytree('getTree');
-                        tree.visit(function (node) {
+                        var tree_ = data.$tree.fancytree('getTree');
+                        tree_.visit(function (node) {
                             if (node.key === data.currentId) {
                                 node.setActive(false);
                                 return false;
@@ -3051,8 +3052,8 @@ function span (txt, attr) {
                     initTreeDialog($dlg);
                 } else {
                     if (data.selectedID) {
-                        var tree = data.$tree.fancytree('getTree');
-                        tree.visit(function (node) {
+                        var tree__ = data.$tree.fancytree('getTree');
+                        tree__.visit(function (node) {
                             if (node.key === data.selectedID) {
                                 node.setActive();
                                 node.makeVisible({scrollIntoView: false});
@@ -3383,7 +3384,9 @@ function span (txt, attr) {
                 var tree = data.$tree.fancytree('getTree');
                 var nodes = [];
                 tree.visit(function (n) {
-                    if (n.match) nodes.push(n.key);
+                    if (n.match) {
+                        nodes.push(n.key);
+                    }
                 });
                 return nodes;
             }
