@@ -142,7 +142,7 @@ function Adapters(main) {
                             //if (!that.onlyInstalled && !that.onlyUpdatable) {
                                 title = '[<span title="' + _('Installed from group') + '">' + installed + '</span> / <span title="' + _('Total count in group') + '">' + that.tree[c].children.length + '</span>]';
                                 //$tdList.eq(1).html(ellipsis('<b>'+installed + '</b> ' + _('of') + '<b> ' + that.tree[c].children.length + '</b> ' + _('Adapters from this Group installed')));
-                                $tdList.eq(1).html(ellipsis('<span class="dark-green">'+installed + '</span> ' + _('of') + '<span class="dark-blue"> ' + that.tree[c].children.length + '</span> ' + _('Adapters from this Group installed')));
+                                $tdList.eq(1).html(ellipsis('<span class="dark-green">' + installed + '</span> ' + _('of') + '<span class="dark-blue"> ' + that.tree[c].children.length + '</span> ' + _('Adapters from this Group installed')));
                             // } else {
                             //     title = '<span title="' + _('Installed from group') + '">' + installed + '</span>';
                             //     $tdList.eq(1).html(ellipsis('<b>'+installed + '</b> ' + _('Installed from group')));
@@ -162,7 +162,7 @@ function Adapters(main) {
                     return $tdList.eq(no).html(ellipsis(html));
                 }
 
-                var idx = obj.desc.indexOf('<div>');
+                var idx = obj.desc.indexOf('<div');
                 var desc = idx >= 0 ? obj.desc.substr(0, idx) : obj.desc;
                 $tdList.eq(1).html(ellipsis(obj.desc))
                     .attr('title', desc)
@@ -677,7 +677,8 @@ function Adapters(main) {
                     var title = color + '\n\r' + (news || '');
                     //version = '<table style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
                     version = //'<div style="height: 100% !important;">' +
-                        '<table style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'color: blue;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
+                        //'<table style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'color: blue;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
+                        '<table style="cursor: alias; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'color: blue;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
                         '<tr class="' + color + 'Bg">' +
                         '<td title="'+title+'">' + version + '</td>' +
                         '<td style="border: 0; padding: 0; width: 30px">';
@@ -1246,7 +1247,18 @@ function Adapters(main) {
         } else {
             percent = group;
         }
-        text += percent ? '<table title="' + _('Upload') + ' ' + percent + '%" class="no-space" style="width:100%; height: 100%; opacity: 0.7"><tr style="height: 100%" class="no-space"><td class="no-space" style="width:' + percent + '%;background: blue"></td><td style="width:' + (100 - percent) + '%;opacity: 0.1" class="no-space"></td></tr></table>' : '';
+        //percent = 80;
+        if (percent) {
+            text +=
+                '<table style="height: 3px; " title="' + _('Upload') + ' ' + percent + '%" class="no-space" style="width:100%; height: 100%; opacity: 0.7">' +
+                    '<tr style="height: 100%" class="no-space">' +
+                        '<td class="no-space" style="width:' + percent + '%;background: blue"></td>' +
+                        '<td style="width:' + (100 - percent) + '%;opacity: 0.1" class="no-space"></td>' +
+                    '</tr>' +
+                '</table>'
+            ;
+        }
+        //text += percent ? '<table title="' + _('Upload') + ' ' + percent + '%" class="no-space" style="width:100%; height: 100%; opacity: 0.7"><tr style="height: 100%" class="no-space"><td class="no-space" style="width:' + percent + '%;background: blue"></td><td style="width:' + (100 - percent) + '%;opacity: 0.1" class="no-space"></td></tr></table>' : '';
 
         if (adapter) text += '</div>';
         return text;

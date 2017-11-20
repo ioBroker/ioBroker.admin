@@ -50,6 +50,11 @@ systemDictionary = {
         "de": "Port um die Domain zu prüfen:",
         "ru": "Порт для проверки доменного имени:"
     },
+    "Events threshold value:": {
+        "en": "Events threshold value:",
+        "de": "Ereignisschwellenwert:",
+        "ru": "Порог отключения обновлений:"
+    },
 
     "tooltip_bind": {
         "en": "IP address, where the admin will run",
@@ -105,6 +110,11 @@ systemDictionary = {
         "en": "Check adapter updates",
         "de": "Prüfe regelmässig auf Adapter-Updates",
         "ru": "Регулярно проверять на наличие обновлений драйверов"
+    },
+    "tooltip_thresholdValue": {
+        "en": "if browser receives too many events in 3 seconds, update will be stopped",
+        "de": "Wenn der Browser in 3 Sekunden zu viele Ereignisse empfängt, wird das Update beendet",
+        "ru": "если браузер получает слишком много событий за 3 секунды, обновление будет остановлено"
     },
     "tooltip_leEnabled": {
         "en": "Use Let's Encrypt certificates",

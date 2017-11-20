@@ -1,8 +1,11 @@
-/*
+/* global jQuery */
+/* global document */
+/* jshint -W097 */
+/* jshint strict: false */
 /*
  Copyright 2014-2017 bluefox <dogafox@gmail.com>
 
- version: 1.0.4 (2017.04.25)
+ version: 1.0.6 (2017.11.03)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -128,6 +131,7 @@
      type: "state"
  */
 
+var addAll2FilterCombobox = false;
 
 function tdp(x, nachkomma) {
     return isNaN(x) ? "" : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -141,8 +145,6 @@ function removeImageFromSettings(data) {
 
 //var lineIndent = '6px';
 var lineIndent = '5px';
-var xtdButton = '20px';
-var ytdButton = '20px';
 var xytdButton = { width: 20, height: 20 };
 function span (txt, attr) {
     //if (txt === undefined) txt = '';
@@ -258,8 +260,8 @@ function span (txt, attr) {
         var expandeds = {};
         (function getIt(nodes) {
             if (!Array.isArray(nodes.children)) return;
-            for (let i=0, len=nodes.children.length; i<len; i++) {
-                let node = nodes.children[i];
+            for (var i = 0, len = nodes.children.length; i < len; i++) {
+                var node = nodes.children[i];
                 if (node.expanded) {
                     expandeds[node.key] = true;
                 }
@@ -273,8 +275,8 @@ function span (txt, attr) {
         if (!expandeds || !data.$tree) return;
         (function setIt(nodes) {
             if (!Array.isArray(nodes.children)) return;
-            for (let i=0, len=nodes.children.length; i<len; i++) {
-                let node = nodes.children[i];
+            for (var i = 0, len = nodes.children.length; i < len; i++) {
+                var node = nodes.children[i];
                 if (expandeds[node.key]) {
                     node.setExpanded();
                     //node.setActive();
@@ -404,9 +406,10 @@ function span (txt, attr) {
         data.tree = {title: '', children: [], count: 0, root: true};
         data.roomEnums = [];
         data.funcEnums = [];
+        data.ids       = [];
 
         for (var id in objects) {
-
+            if (!objects.hasOwnProperty(id)) continue;
             if (isRoom) {
                 if (objects[id].type === 'enum' && data.regexEnumRooms.test(id) && data.roomEnums.indexOf(id) === -1) data.roomEnums.push(id);
                 if (objects[id].enums) {
@@ -468,7 +471,9 @@ function span (txt, attr) {
             }
             if (isHist && objects[id].type === 'instance' && (objects[id].common.type === 'storage' || objects[id].common.supportCustoms)) {
                 var h = id.substring('system.adapter.'.length);
-                if (data.histories.indexOf(h) === -1) data.histories.push(h);
+                if (data.histories.indexOf(h) === -1) {
+                    data.histories.push(h);
+                }
             }
 
             if (!filterId(data, id)) continue;
@@ -476,14 +481,19 @@ function span (txt, attr) {
             treeInsert(data, id, data.currentId === id);
 
             if (objects[id].enums) {
-                for (var e in objects[id].enums) {
-                    if (objects[e] &&
-                        objects[e].common &&
-                        objects[e].common.members &&
-                        objects[e].common.members.indexOf(id) === -1) {
-                        objects[e].common.members.push(id);
+                for (var ee in objects[id].enums) {
+                    if (objects.hasOwnProperty(ee) &&
+                        objects[ee] &&
+                        objects[ee].common &&
+                        objects[ee].common.members &&
+                        objects[ee].common.members.indexOf(id) === -1) {
+                        objects[ee].common.members.push(id);
                     }
                 }
+            }
+            // fill counters
+            if (data.expertMode) {
+                data.ids.push(id);
             }
         }
         data.inited = true;
@@ -492,6 +502,7 @@ function span (txt, attr) {
         data.roomEnums.sort();
         data.funcEnums.sort();
         data.histories.sort();
+        data.ids.sort();
     }
 
     function treeSplit(data, id) {
@@ -526,7 +537,9 @@ function span (txt, attr) {
 
     function _deleteTree(node, deletedNodes) {
         if (node.parent) {
-            if (deletedNodes && node.id) deletedNodes.push(node);
+            if (deletedNodes && node.id) {
+                deletedNodes.push(node);
+            }
             var p = node.parent;
             if (p.children.length <= 1) {
                 _deleteTree(node.parent);
@@ -555,7 +568,7 @@ function span (txt, attr) {
     function findTree(data, id) {
         return (function find(tree) {
             if (!tree.children) return;
-            for (var i=tree.children.length-1; i>=0; i--) {
+            for (var i = tree.children.length - 1; i >= 0; i--) {
                 var child = tree.children[i];
                 if (id === child.key) return child;
                 if (id.startsWith(child.key + '.')) {
@@ -589,6 +602,7 @@ function span (txt, attr) {
     //     }
     // }
 
+    /*
     function treeInsert(data, id, isExpanded, addedNodes) {
         var idArr = data.list ? [id] : treeSplit(data, id);
         if (!idArr) return console.error('Empty object ID!');
@@ -624,46 +638,10 @@ function span (txt, attr) {
             }
             tree.id = id;
         })(data.tree, 0);
-    }
-
-    // function treeInsert(data, id, isExpanded, addedNodes) {
-    //     var idArr = data.list ? [id] : treeSplit(data, id);
-    //     if (!idArr) return console.error('Empty object ID!');
-    //     var key = '';
-    //
-    //     (function insert(tree, idx) {
-    //         for ( ; idx < idArr.length; idx += 1) {
-    //             if (key) key += '.';
-    //             key += idArr[idx];
-    //             if ((tree=data.objects[key].node)) {
-    //                 if (i === idArr.length-1) return;
-    //                 continue;
-    //             }
-    //             tree.folder = true;
-    //             tree.expanded = isExpanded;
-    //
-    //             var obj = {
-    //                 key: (data.root || '') + idArr.slice (0, idx + 1).join ('.'),
-    //                 children: [],
-    //                 title: idArr[idx],
-    //                 folder: false,
-    //                 expanded: false,
-    //                 parent: tree
-    //             };
-    //             data.objects[obj.key].node = obj;
-    //             tree.children.push (obj);
-    //             if (addedNodes) {
-    //                 addedNodes.push (obj);
-    //             }
-    //             tree = obj;
-    //         }
-    //         tree.id = id;
-    //     })(data.tree, 0);
-    // }
+    } */
 
 
-    function xtreeInsert(data, id, isExpanded, addedNodes) {
-        //return xtreeInsert(data, id, isExpanded, addedNodes);
+    function treeInsert(data, id, isExpanded, addedNodes) {
         return _treeInsert(data.tree, data.list ? [id] : treeSplit(data, id, false), id, 0, isExpanded, addedNodes, data);
     }
     function _treeInsert(tree, parts, id, index, isExpanded, addedNodes, data) {
@@ -739,19 +717,20 @@ function span (txt, attr) {
     }
 
     function syncHeader($dlg) {
-        var data = $dlg.data('selectId');
-        var $header = $('#selectID_header_' + data.instance);
-        var thDest = $header.find('>tbody>tr>td');	//if table headers are specified in its semantically correct tag, are obtained
-        var thSrc = data.$tree.find('>tbody>tr>td');
+        var data = $dlg.data ('selectId');
+        var $header = $ ('#selectID_header_' + data.instance);
+        var thDest = $header.find ('>tbody>tr>td');	//if table headers are specified in its semantically correct tag, are obtained
+        var thSrc = data.$tree.find ('>tbody>tr>td');
 
         var x, o;
-        for (var i = 0; i < thDest.length-1; i++) {
-            if ((x = $(thSrc[i]).width())) {
-                $(thDest[i]).attr('width', x);
-                if ((o = $ (thSrc[i+1]).offset().left))
-                    if ((o -= $ (thDest[i+1]).offset().left)) {
-                        $(thDest[i]).attr('width', x + o);
+        for (var i = 0; i < thDest.length - 1; i++) {
+            if ((x = $ (thSrc[i]).width ())) {
+                $ (thDest[i]).attr ('width', x);
+                if ((o = $ (thSrc[i + 1]).offset ().left)) {
+                    if ((o -= $ (thDest[i + 1]).offset ().left)) {
+                        $ (thDest[i]).attr ('width', x + o);
                     }
+                }
             }
         }
     }
@@ -830,21 +809,75 @@ function span (txt, attr) {
         e.stopPropagation();
     }
 
+    function editValueDialog(e) {
+        var data = $(this).data('data');
+        var $parent = $(this).parent();
+        var value = $parent.data('clippy');
+        var id = $parent.data('id');
+        $('<div position: absolute;left: 5px; top: 5px; right: 5px; bottom: 5px; border: 1px solid #CCC;"><textarea style="margin: 0; border: 0;background: white;width: 100%; height: 100%; resize: none;" ></textarea></div>')
+            .dialog({
+                autoOpen: true,
+                modal: true,
+                title: data.texts.edit,
+                width: '50%',
+                height: 200,
+                open: function (event) {
+                    $(this).find('textarea').val(value);
+                    $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                },
+                buttons: [
+                    {
+                        text: data.texts.select,
+                        click: function () {
+                            var val = $(this).find('textarea').val();
+                            if (val !== value) {
+                                data.quickEditCallback(id, 'value', val, value);
+                                value = '<span style="color: darkviolet; width: 100%;">' + value + '</span>';
+                                $parent.html(value);
+                            }
+                            $(this).dialog('close').dialog('destroy').remove();
+                        }
+                    },
+                    {
+                        text: data.texts.cancel,
+                        click: function () {
+                            $(this).dialog('close').dialog('destroy').remove();
+                        }
+                    }
+                ]
+            });
+    }
+
     function clippyShow(e) {
-        if ($(this).hasClass('clippy')) {
-            var text = '<button class="clippy-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button" ' +
-                'role="button" title="' + $(this).data('copyToClipboard') + '" ' +
+        var text;
+        var data;
+        if ($(this).hasClass('clippy') && !$(this).find('.clippy-button').length) {
+            data = data || $(this).data('data');
+            text = '<button class="clippy-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button" ' +
+                'role="button" title="' + data.texts.copyToClipboard + '" ' +
                 //'style="position: absolute; right: 0; top: 0; width: 36px; height: 18px;z-index: 1">' +
-                'style="position: absolute; right: 0; top: 0; z-index: 1; margin-top:2px;">' +
+                'style="position: absolute; right: 0; top: 0; z-index: 1; margin-top: 1px;">' +
                 '<span class="ui-button-icon-primary ui-icon ui-icon-clipboard" ></span></button>';
 
             $(this).append(text);
             $(this).find('.clippy-button').click(clippyCopy);
         }
+
+        if ($(this).hasClass('edit-dialog') && !$(this).find('.edit-dialog-button').length) {
+            data = data || $(this).data('data');
+            text = '<button class="edit-dialog-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button" ' +
+                'role="button" title="' + data.texts.editDialog + '" ' +
+                //'style="position: absolute; right: 0; top: 0; width: 36px; height: 18px;z-index: 1">' +
+                'style="position: absolute; right: 22px; top: 0; z-index: 1; margin-top: 1px;">' +
+                '<span class="ui-button-icon-primary ui-icon ui-icon-pencil"></span></button>';
+            $(this).append(text);
+            $(this).find('.edit-dialog-button').click(editValueDialog).data('data', data);
+        }
     }
 
     function clippyHide(e) {
         $(this).find('.clippy-button').remove();
+        $(this).find('.edit-dialog-button').remove();
     }
 
     function installColResize(data, $dlg) {
@@ -903,13 +936,13 @@ function span (txt, attr) {
         return states;
     }
 
-    function getFilter(data, name) {
+    /*function getFilter(data, name) {
         return $ ('#filter_' + name + '_' + data.instance);
-    }
+    }*/
 
     function setFilterVal(data, field, val) {
         if (!field) return;
-        $ ('#filter_' + field + '_' + data.instance).val(val).trigger ('change');
+        $ ('#filter_' + field + '_' + data.instance).val(val).trigger('change');
     }
 
     function onQuickEditField(event) {
@@ -918,17 +951,27 @@ function span (txt, attr) {
         var attr    = $this.data('name');
         var data    = $this.data('selectId');
         var type    = $this.data('type');
-        var clippy  = $this.hasClass('clippy');
+        var clippy  = $this.parent().hasClass('clippy');
+        var editDialog = $this.parent().hasClass('edit-dialog');
         var options = $this.data('options');
         var oldVal  = $this.data('old-value');
         var states  = null;
         var $parent = $(event.currentTarget).parent();
-        var activeNode = data.$tree.fancytree('getTree');
 
-        activeNode = activeNode.getActiveNode();
+        //var activeNode = data.$tree.fancytree('getTree');
+        //activeNode = activeNode.getActiveNode();
 
-        if (clippy)  $this.removeClass('clippy');
+        if (clippy)  {
+            $this.parent().removeClass('clippy');
+            $this.parent().find('.clippy-button').remove(); //???
+        }
+        if (editDialog) {
+            $this.parent().removeClass('edit-dialog');
+            $this.parent().find('.edit-dialog-button').remove(); //???
+        }
         $this.unbind('click').removeClass('select-id-quick-edit').css('position', 'relative');
+        //var css = 'cursor: pointer; position: absolute;width: 16px; height: 16px; top: 4px; border-radius: 0px; vertical-align: middle; z-index: 3;';
+
         type = type === 'boolean' ? 'checkbox' : 'text';
         var text;
 
@@ -991,8 +1034,8 @@ function span (txt, attr) {
         var $input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
 
         if ($input.width() > $this.width() - 34) {
-            var x = Math.max ($input.width() - ($this.width() - 34), 34);
-            $input.css({ 'padding-right': x });
+            var x = Math.max($input.width() - ($this.width() - 34), 34);
+            $input.css({'padding-right': x});
         }
 
         if (attr === 'room' || attr === 'function') {
@@ -1011,11 +1054,35 @@ function span (txt, attr) {
             });
         }
 
+        // function editDone(ot) {
+        //     if (ot === undefined) ot = $this.data('old-value') || '';
+        //     if (clippy) $this.addClass ('clippy');
+        //     $this.css({'padding-left':oldLeftPadding});
+        //     if (!oldWidth) $this.removeAttr('width'); else $this.attr('width', oldWidth);
+        //     $this.html (ot).click (onQuickEditField).addClass ('select-id-quick-edit');
+        //     //if (activeNode && activeNode.lebgth) activeNode.setActive();
+        //     setTimeout(function() {
+        //         //$(event.currentTarget).parent().trigger('click'); // re-select the line so we can continue using the keyboard
+        //         $parent.trigger('click'); // re-select the line so we can continue using the keyboard
+        //     }, 50);
+        //     //$(event.currentTarget).parent().focus().select();
+        // }
+
+
         function editDone(ot) {
             if (ot === undefined) ot = $this.data('old-value') || '';
-            if (clippy) $this.addClass ('clippy');
-            $this.css({'padding-left':oldLeftPadding});
-            if (!oldWidth) $this.removeAttr('width'); else $this.attr('width', oldWidth);
+            if (clippy) {
+                $this.parent().addClass ('clippy');
+            }
+            if (editDialog) {
+                $this.parent().addClass ('edit-dialog');
+            }
+            $this.css({'padding-left': oldLeftPadding});
+            if (!oldWidth) {
+                $this.removeAttr('width');
+            } else {
+                $this.attr('width', oldWidth);
+            }
             $this.html (ot).click (onQuickEditField).addClass ('select-id-quick-edit');
             //if (activeNode && activeNode.lebgth) activeNode.setActive();
             setTimeout(function() {
@@ -1026,11 +1093,13 @@ function span (txt, attr) {
         }
 
         function handleCancel(e) {
-            if (timeout) clearTimeout(timeout);
-            timeout = null;
+            if (timeout) {
+                clearTimeout(timeout);
+                timeout = null;
+            }
             e.preventDefault();
             e.stopPropagation();
-            var old = $this.data('old-value');
+            // var old = $this.data('old-value');
             editDone();
         }
 
@@ -1043,7 +1112,9 @@ function span (txt, attr) {
         if (type === 'checkbox') {
             $input.prop('checked', oldVal);
         } else {
-            if (attr !== 'room' && attr !== 'function') $input.val(oldVal);
+            if (attr !== 'room' && attr !== 'function') {
+                $input.val(oldVal);
+            }
         }
 
         $input.blur(function () {
@@ -1051,7 +1122,9 @@ function span (txt, attr) {
             timeout = setTimeout(function () {
                 var _oldText = $this.data('old-value');
                 var val = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();
-                if ((attr === 'room' || attr === 'function') && !val) val = [];
+                if ((attr === 'room' || attr === 'function') && !val) {
+                    val = [];
+                }
 
                 if (attr === 'value' || JSON.stringify(val) !== JSON.stringify(_oldText)) {
                     data.quickEditCallback(id, attr, val, _oldText);
@@ -1117,17 +1190,17 @@ function span (txt, attr) {
 
         // load expert mode flag
         if (typeof Storage !== 'undefined' && data.name && data.expertModeRegEx) {
-            data.expertMode = window.localStorage.getItem (data.name + '-expert');
+            data.expertMode = window.localStorage.getItem(data.name + '-expert');
             data.expertMode = (data.expertMode === true || data.expertMode === 'true');
         }
         if (typeof Storage !== 'undefined' && data.name) { //} && data.sort) {
-            data.sort = window.localStorage.getItem (data.name + '-sort');
+            data.sort = window.localStorage.getItem(data.name + '-sort');
             data.sort = (data.sort === true || data.sort === 'true');
         }
 
         // Get all states
-        var expandeds = getExpandeds (data);
-        getAllStates (data);
+        var expandeds = getExpandeds(data);
+        getAllStates(data);
 
         if (!data.noDialog && !data.buttonsDlg) {
             data.buttonsDlg = [
@@ -1135,19 +1208,19 @@ function span (txt, attr) {
                     id: data.instance + '-button-ok',
                     text: data.texts.select,
                     click: function () {
-                        var _data = $dlg.data ('selectId');
-                        if (_data && _data.onSuccess) _data.onSuccess (_data.selectedID, _data.currentId, _data.objects[_data.selectedID]);
+                        var _data = $dlg.data('selectId');
+                        if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId, _data.objects[_data.selectedID]);
                         _data.currentId = _data.selectedID;
-                        storeSettings (data);
-                        $dlg.dialog ('close');
+                        storeSettings(data);
+                        $dlg.dialog('close');
                     }
                 },
                 {
                     id: data.instance + '-button-cancel',
                     text: data.texts.cancel,
                     click: function () {
-                        storeSettings (data);
-                        $ (this).dialog ('close');
+                        storeSettings(data);
+                        $ (this).dialog('close');
                     }
                 }
             ];
@@ -1156,6 +1229,9 @@ function span (txt, attr) {
                 autoOpen: false,
                 modal: true,
                 width: '90%',
+                open: function (event) {
+                    $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                },
                 close: function () {
                     storeSettings (data);
                 },
@@ -1178,91 +1254,48 @@ function span (txt, attr) {
 
         var filter = {};
         forEachColumn(data, function (name) {
-            filter[name] = $ ('#filter_' + name + '_' + data.instance).val ();
+            filter[name] = $('#filter_' + name + '_' + data.instance).val ();
         });
 
-        function getComboboxEnums (kind) {
+        function getComboBoxEnums(kind) {
             var i, ret = [];
             switch (kind) {
                 case 'room':
                     for (i = 0; i < data.roomEnums.length; i++) {
-                        ret.push (data.objects[data.roomEnums[i]].common.name);
+                        ret.push(data.objects[data.roomEnums[i]].common.name);
                     }
                     // if (data.rooms) delete data.rooms;
                     // if (data.roomsColored) delete data.roomsColored;
                     return ret;
                 case 'function':
                     for (i = 0; i < data.funcEnums.length; i++) {
-                        ret.push (data.objects[data.funcEnums[i]].common.name);
+                        ret.push(data.objects[data.funcEnums[i]].common.name);
                     }
                     // if (data.funcs) delete data.funcs;
                     // if (data.funcsColored) delete data.funcsColored;
                     return ret;
                 case 'role':
                     for (var j = 0; j < data.roles.length; j++) {
-                        ret.push (data.roles[j]);
+                        ret.push(data.roles[j]);
                     }
                     return ret;
                 case 'type':
                     for (var k = 0; k < data.types.length; k++) {
-                        ret.push (data.types[k]);
+                        ret.push(data.types[k]);
                     }
                     return ret;
                 case 'button':
-                    ret.push ([data.texts.all, ""]);
-                    ret.push ([data.texts.with, "true"]);
-                    ret.push ([data.texts.without, "false"]);
+                    ret.push([data.texts.all, '']);
+                    ret.push([data.texts.with, 'true']);
+                    ret.push([data.texts.without, 'false']);
                     for (var h = 0; h < data.histories.length; h++) {
-                        ret.push (data.histories[h]);
+                        ret.push(data.histories[h]);
                     }
                     return ret;
             }
             return ret;
         }
 
-        /*
-                var textRooms;
-                if (data.columns.indexOf ('room') !== -1) {
-                    textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
-                    for (var i = 0; i < data.roomEnums.length; i++) {
-                        textRooms += '<option value="' + data.objects[data.roomEnums[i]].common.name + '">' + data.objects[data.roomEnums[i]].common.name + '</option>';
-                    }
-                    textRooms += '</select>';
-                } else {
-                    if (data.rooms) delete data.rooms;
-                    if (data.roomsColored) delete data.roomsColored;
-                }
-
-                var textFuncs;
-                if (data.columns.indexOf ('function') !== -1) {
-                    textFuncs = '<select id="filter_function_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
-                    for (var i = 0; i < data.funcEnums.length; i++) {
-                        textFuncs += '<option value="' + data.objects[data.funcEnums[i]].common.name + '">' + data.objects[data.funcEnums[i]].common.name + '</option>';
-                    }
-                    textFuncs += '</select>';
-                } else {
-                    if (data.funcs) delete data.funcs;
-                    if (data.funcsColored) delete data.funcsColored;
-                }
-
-                var textRoles;
-                if (data.columns.indexOf ('role') !== -1) {
-                    textRoles = '<select id="filter_role_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-                    for (var j = 0; j < data.roles.length; j++) {
-                        textRoles += '<option value="' + data.roles[j] + '">' + data.roles[j] + '</option>';
-                    }
-                    textRoles += '</select>';
-                }
-
-                var textTypes;
-                if (data.columns.indexOf ('type') !== -1) {
-                    textTypes = '<select id="filter_type_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-                    for (var k = 0; k < data.types.length; k++) {
-                        textTypes += '<option value="' + data.types[k] + '">' + data.types[k] + '</option>';
-                    }
-                    textTypes += '</select>';
-                }
-          */
         // toolbar buttons
         var tds =
             '<td><button class="ui-button-icon-only panel-button" id="btn_refresh_' + data.instance + '"></button></td>' +
@@ -1375,14 +1408,19 @@ function span (txt, attr) {
         forEachColumn(data, function(name) {
             text += '<td>';
             if (name === 'ID' || name === 'name' || name === 'value' || name === 'enum') {
-                text += textFiltertext (name);
+                text += textFiltertext(name);
             } else if (name === 'type' || name === 'role' || name === 'room' || name === 'function') {
-                text += textCombobox (name);
+                text += textCombobox(name);
             } else if (name === 'button') {
                 if (data.customButtonFilter) {
-                    text += textCombobox (name);
+                    text += textCombobox(name);
                 } else {
                     text += '<table class="main-header-input-table"><tbody><tr><td style="padding-left: ' + lineIndent + '">' + _(name) + '</td></tr></tbody></table>';
+                    if (name === 'buttons' || name === 'button') {
+                        text += '<span style="padding-left: ' + lineIndent + '"></span>';
+                    } else {
+                    	text += '<table class="main-header-input-table"><tbody><tr><td style="padding-left: ' + lineIndent + '">' + _(name) + '</td></tr></tbody></table>';
+                	}
                 }
             } else {
                 text += '<span style="padding-left: ' + lineIndent + '">' + _(name) + '</span>';
@@ -1421,14 +1459,22 @@ function span (txt, attr) {
             '</div>'
         ;
 
-        function addClippyToElement($elem, key) {
+        function addClippyToElement($elem, key, objectId) {
             if (!data.noCopyToClipboard) {
-                $elem.addClass ('clippy');
-                if (key !== undefined) $elem.data ('clippy', key);
+                $elem.addClass('clippy' + (objectId ? ' edit-dialog' : ''));
+
+                if (key !== undefined) {
+                    $elem.data('clippy', key);
+                }
+
+                if (objectId) {
+                    $elem.data('id', objectId);
+                }
+
                 $elem.css ({position: 'relative'})
-                    .data ('copyToClipboard', data.texts.copyToClipboard || data.texts.copyTpClipboard)
-                    .mouseenter (clippyShow)
-                    .mouseleave (clippyHide);
+                    .data('data', data)
+                    .mouseenter(clippyShow)
+                    .mouseleave(clippyHide);
             }
         }
 
@@ -1448,18 +1494,18 @@ function span (txt, attr) {
             ///////////////////////////////////////////
 
             source:         data.tree.children,
-            extensions:     ["table", "gridnav", "filter", "themeroller"],
-            // extensions:     ["table", "gridnav", "filter", "themeroller", "wide"],
+            extensions:     ['table', 'gridnav', 'filter', 'themeroller'],
+            // extensions:     ['table', 'gridnav', 'filter', 'themeroller', 'wide'],
             // wide: {
-            //     // iconWidth: "32px",     // Adjust this if @fancy-icon-width != "16px"
-            //     // iconSpacing: "6px", // Adjust this if @fancy-icon-spacing != "3px"
-            //     // labelSpacing: "6px",   // Adjust this if padding between icon and label !=  "3px"
-            //     // levelOfs: "32px"     // Adjust this if ul padding != "16px"
+            //     // iconWidth: '32px',     // Adjust this if @fancy-icon-width != '16px'
+            //     // iconSpacing: '6px', // Adjust this if @fancy-icon-spacing != '3px'
+            //     // labelSpacing: '6px',   // Adjust this if padding between icon and label !=  '3px'
+            //     // levelOfs: '32px'     // Adjust this if ul padding != '16px'
             // },
 
             themeroller: {
-                addClass: "",  // no rounded corners
-                selectedClass: "iob-state-active"
+                addClass: '',  // no rounded corners
+                selectedClass: 'iob-state-active'
             },
 
             checkbox:       multiselect,
@@ -1480,10 +1526,10 @@ function span (txt, attr) {
             // keydown: function(event, data){
             //     var KC = $.ui.keyCode;
             //
-            //     if( $(event.originalEvent.target).is(":input") ){
+            //     if( $(event.originalEvent.target).is(':input') ){
             //
             //         // When inside an input, let the control handle the keys
-            //         data.result = "preventNav";
+            //         data.result = 'preventNav';
             //
             //         // But do the tree navigation on Ctrl + NAV_KEY
             //         switch( event.which ){
@@ -1517,7 +1563,7 @@ function span (txt, attr) {
                         } else {
                             $dlg.dialog('option', 'title', _data.texts.selectid + ' - ' + (newId || ' '));
                         }
-                        // Enable/ disable "Select" button
+                        // Enable/ disable 'Select' button
                         if (_data.objects[newId]) { // && _data.objects[newId].type === 'state') {
                             $('#' + _data.instance + '-button-ok').removeClass('ui-state-disabled');
                         } else {
@@ -1535,11 +1581,13 @@ function span (txt, attr) {
                     newIds.push(selectedNodes[i].key);
                 }
 
-                if (_data.onChange) _data.onChange(newIds, _data.selectedID);
+                if (_data.onChange) {
+                    _data.onChange(newIds, _data.selectedID);
+                }
 
                 _data.selectedID = newIds;
 
-                // Enable/ disable "Select" button
+                // Enable/ disable 'Select' button
                 if (newIds.length > 0) {
                     $('#' + _data.instance + '-button-ok').removeClass('ui-state-disabled');
                 } else {
@@ -1557,6 +1605,18 @@ function span (txt, attr) {
                 var isCommon = obj && obj.common;
                 var $firstTD = $tdList.eq(0);
                 $firstTD.css({'overflow': 'hidden'});
+                var cnt = countChildren(key, data);
+                var $cnt = $firstTD.find('.select-id-cnt');  ///???
+                if (cnt) {
+                    if ($cnt.length) {
+                        $cnt.text('#' + cnt);
+                    } else {
+                        $firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
+                    }
+                } else {
+                    $cnt.remove();
+                }
+
                 var base = 0;
 
                 // hide checkbox if only states should be selected
@@ -1579,13 +1639,6 @@ function span (txt, attr) {
 
                 if (!data.noCopyToClipboard) {
                     addClippyToElement($firstTD, node.key);
-                    // $firstTD
-                    //     .addClass('clippy')
-                    //     .data('clippy', node.key)
-                    //     .css({position: 'relative'})
-                    //     .data('copyToClipboard', data.texts.copyToClipboard || data.texts.copyTpClipboard)
-                    //     .mouseenter(clippyShow)
-                    //     .mouseleave(clippyHide);
                 }
 
                 if (data.useNameAsId && obj && obj.common && obj.common.name) {
@@ -1696,7 +1749,9 @@ function span (txt, attr) {
                         $elem.html(span(txt));
                     };
 
-                    if (typeof name === 'object') name = name.name;
+                    if (typeof name === 'object') {
+                        name = name.name;
+                    }
                     // if (name === 'image') {
                     //     var icon = '';
                     //     var alt = '';
@@ -1753,7 +1808,7 @@ function span (txt, attr) {
                         case 'name':
                             var icon = getIcon ();
                             //$elem = $tdList.eq(base);
-                            var t = isCommon ? obj.common.name : ''; //).css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '';
+                            var t = isCommon ? (obj.common.name || '') : ''; //).css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '';
                             //$elem.html('<table style="border-spacing:0;"><tr><td><img width="16px" height="16px" src="' + icon + '" alt="' + alt + '"/></td><td class="objects-name-coll-table-td" style="border:0;"><div style="padding-left: 4px;">' + t + '</div></td></tr></table>');
                             //$elem.html('<span><span class="objects-name-coll-icon"><img width="16px" height="16px" src="' + icon + '" alt="' + alt + '"/></span><span class="objects-name-coll-title" style="border:0;">' + t + '</span></tr></span>');
                             //$elem.html('<span><span class="objects-name-coll-icon"><img class="iob-list-icon" src="' + icon + '" alt="' + alt + '"/></span><span class="objects-name-coll-title" style="border:0;">' + t + '</span></tr></span>');
@@ -1788,7 +1843,7 @@ function span (txt, attr) {
                             $e.attr ('title', t);
                             //$elem.text(isCommon ? data.objects[node.key].common.name : '').css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '');
                             if (data.quickEdit /*&& obj*/ && data.quickEdit.indexOf ('name') !== -1) {
-                                $e.data ('old-value', isCommon ? obj.common.name : '');
+                                $e.data ('old-value', isCommon ? (obj.common.name || ''): '');
                                 $e.click (onQuickEditField).data ('id', node.key).data ('name', 'name').data ('selectId', data).addClass ('select-id-quick-edit');
                             }
                             //base++;
@@ -1796,15 +1851,14 @@ function span (txt, attr) {
                         case 'type':
                             //$tdList.eq(base++).text(obj ? obj.type: '');
                             //$tdList.eq(base++).html('<span style="padding-left: 5px;">' + (obj ? obj.type: '') + '</span>');
-                            setText (obj ? obj.type : '');
+                            setText(obj ? obj.type || '' : '');
                             //base += 1;
                             break;
                         case 'role':
                             //$elem = $tdList.eq(base);
                             //val = isCommon ? data.objects[node.key].common.role : '';
-                            val = isCommon ? obj.common.role : '';
-                            //$elem.text(val);
-                            setText (val);
+                            val = isCommon ? obj.common.role || '' : '';
+                            setText(val);
 
                             if (data.quickEdit && obj && data.quickEdit.indexOf ('role') !== -1) {
                                 $elem.data ('old-value', val);
@@ -1829,8 +1883,7 @@ function span (txt, attr) {
                             } else {
                                 val = '';
                             }
-                            //$elem.text(val);
-                            setText (val);
+                            setText(val);
 
                             if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf ('room') !== -1) {
                                 $elem.data ('old-value', val);
@@ -1858,8 +1911,7 @@ function span (txt, attr) {
                             } else {
                                 val = '';
                             }
-                            //$elem.text(val);
-                            setText (val);
+                            setText(val);
 
                             if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf ('function') !== -1) {
                                 $elem.data ('old-value', val);
@@ -1930,13 +1982,10 @@ function span (txt, attr) {
 
                                 //if (!data.noCopyToClipboard && obj && obj.type === 'state' && common.type !== 'file') {
                                 if (obj && obj.type === 'state' && common.type !== 'file') {
-                                    //addClippyToElement ($elem);
-                                    addClippyToElement ($span);
-                                    // $elem.data('clippy', state.val)
-                                    //     .addClass('clippy')
-                                    //     .data('copyToClipboard', data.texts.copyToClipboard || data.texts.copyTpClipboard)
-                                    //     .mouseenter(clippyShow)
-                                    //     .mouseleave(clippyHide);
+                                    addClippyToElement($elem, state.val,
+                                        obj &&
+                                        obj.type === 'state' &&
+                                        (data.expertMode || obj.common.write !== false) ? key : undefined);
                                 }
 
                             } else {
@@ -1972,7 +2021,7 @@ function span (txt, attr) {
                                         .addClass ('select-id-quick-edit');
                                 }
 
-                                $tr.find ('.select-button-push[data-id="' + node.key + '"]').button ({
+                                $tr.find('.select-button-push[data-id="' + node.key + '"]').button({
                                     text: false,
                                     icons: {
                                         primary: 'ui-icon-arrowthickstop-1-s'
@@ -2011,24 +2060,20 @@ function span (txt, attr) {
                                         text += '<button data-id="' + node.key + '" class="select-button-' + j + ' select-button-custom td-button"></button>';
                                     }
 
-                                    //$tdList.eq(base).html(text);
-                                    //$tdList.eq(base).html(span(text));
-                                    setText (text);
-                                    //$elem.css ({'padding-left': '5px !important'});
+                                    setText(text);
 
                                     for (var p = 0; p < data.buttons.length; p++) {
-                                        var btn = $tr.find ('.select-button-' + p + '[data-id="' + node.key + '"]').button (data.buttons[p]).click (function () {
-                                            var cb = $ (this).data ('callback');
-                                            if (cb) cb.call ($ (this), $ (this).attr ('data-id'));
-                                        }).data ('callback', data.buttons[p].click).attr ('title', data.buttons[p].title || '');
-                                        if (btn.length === 0) continue;
-                                        if (data.buttons[p].width) btn.css ({width: data.buttons[p].width});
-                                        if (data.buttons[p].height) btn.css ({height: data.buttons[p].height});
-                                        if (data.buttons[p].match) data.buttons[p].match.call (btn, node.key);
+                                        var $btn = $tr.find('.select-button-' + p + '[data-id="' + node.key + '"]').button(data.buttons[p]).click(function () {
+                                            var cb = $(this).data('callback');
+                                            if (cb) cb.call($(this), $(this).data('id'));
+                                        }).data('callback', data.buttons[p].click).attr('title', data.buttons[p].title || '');
+                                        if ($btn.length === 0) continue;
+                                        if (data.buttons[p].width)  $btn.css({width: data.buttons[p].width});
+                                        if (data.buttons[p].height) $btn.css({height: data.buttons[p].height});
+                                        if (data.buttons[p].match)  data.buttons[p].match.call($btn, node.key);
                                     }
                                 } else {
-                                    //$tdList.eq(base).text('');
-                                    $elem.text ('');
+                                    $elem.text('');
                                 }
                             } else if (data.editEnd) {
                                 text = '<button data-id="' + node.key + '" class="select-button-edit"></button>' +
@@ -2037,7 +2082,7 @@ function span (txt, attr) {
                             }
 
                             if (data.editEnd) {
-                                $tr.find ('.select-button-edit[data-id="' + node.key + '"]').button ({
+                                $tr.find ('.select-button-edit[data-id="' + node.key + '"]').button({
                                     text: false,
                                     icons: {
                                         primary: 'ui-icon-pencil'
@@ -2046,7 +2091,7 @@ function span (txt, attr) {
                                     $ (this).data ('node').editStart ();
                                 }).attr ('title', data.texts.edit).data ('node', node).css ({width: 26, height: 20});
 
-                                $tr.find ('.select-button-ok[data-id="' + node.key + '"]').button ({
+                                $tr.find ('.select-button-ok[data-id="' + node.key + '"]').button({
                                     text: false,
                                     icons: {
                                         primary: 'ui-icon-check'
@@ -2055,21 +2100,21 @@ function span (txt, attr) {
                                     var node = $ (this).data ('node');
                                     node.editFinished = true;
                                     node.editEnd (true);
-                                }).attr ('title', data.texts.ok).data ('node', node).hide ().css ({
+                                }).attr ('title', data.texts.ok).data ('node', node).hide ().css({
                                     width: 26,
                                     height: 20
                                 });
 
-                                $tr.find ('.select-button-cancel[data-id="' + node.key + '"]').button ({
+                                $tr.find('.select-button-cancel[data-id="' + node.key + '"]').button({
                                     text: false,
                                     icons: {
                                         primary: 'ui-icon-close'
                                     }
-                                }).click (function () {
+                                }).click(function () {
                                     var node = $ (this).data ('node');
                                     node.editFinished = true;
                                     node.editEnd (false);
-                                }).attr ('title', data.texts.cancel).data ('node', node).hide ().css ({
+                                }).attr('title', data.texts.cancel).data('node', node).hide().css({
                                     width: 26,
                                     height: 20
                                 });
@@ -2078,13 +2123,13 @@ function span (txt, attr) {
                             break;
                         case 'enum':
                             if (isCommon && obj.common.members && obj.common.members.length > 0) {
-                                let t;
+                                var te;
                                 if (obj.common.members.length < 4) {
-                                    t =  '#' + obj.common.members.length + ' ' + obj.common.members.join (', ');
+                                    te =  '#' + obj.common.members.length + ' ' + obj.common.members.join (', ');
                                 } else {
-                                    t = '#' + obj.common.members.length;
+                                    te = '#' + obj.common.members.length;
                                 }
-                                $elem.html('<div class="iob-ellipsis">' + t + '</div>');
+                                $elem.html('<div class="iob-ellipsis">' + te + '</div>');
                                 $elem.attr ('title', obj.common.members.join ('\x0A'));
                             } else {
                                 $elem.text ('');
@@ -2492,9 +2537,9 @@ function span (txt, attr) {
                 $(that).trigger('change');
             }, 200);
         });
-        //xxxxxxxxxxxxxxxxxx
+
         $('.filter_btn_' + data.instance).button({icons: {primary: 'ui-icon-close'}, text: false})./*css({width: 18, height: 18}).*/click(function () {
-            $('#' + $(this).attr('data-id')).val('').trigger('change');  //filter buttons action
+            $('#' + $(this).data('id')).val('').trigger('change');  //filter buttons action
         });
 
         $('#btn_collapse_' + data.instance).button({icons: {primary: 'ui-icon-folder-collapsed'}, text: false})./*css({width: 18, height: 18}).*/click(function () {
@@ -2582,8 +2627,10 @@ function span (txt, attr) {
         $('#btn_history_' + data.instance).button({icons: {primary: 'ui-icon-gear'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
             $('#process_running_' + data.instance).show();
 
-            setTimeout(data.customButtonFilter.callback, 1);
-
+            setTimeout(function () {
+                data.customButtonFilter.callback();
+                $('#process_running_' + data.instance).hide();
+            }, 1);
         }).attr('title', data.texts.history);
 
 
@@ -2744,6 +2791,53 @@ function span (txt, attr) {
         }
     }
 
+    function countChildren(id, data) {
+        var pos = data.ids.indexOf(id);
+        var len = data.ids.length;
+        var cnt = 0;
+        if (id.indexOf('.') === -1 || (
+                data.objects[id] && (data.objects[id].type === 'state' || data.objects[id].type === 'adapter'))) {
+            return cnt;
+        }
+        if (pos === -1) {
+            pos = 0;
+            while (pos < len && data.ids[pos] < id) {
+                pos++;
+            }
+            pos--;
+        }
+        if (pos !== -1) {
+            pos++;
+            while (pos < len && data.ids[pos].startsWith(id + '.')) {
+                pos++;
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+
+    function recalcChildrenCounters(node, data) {
+        var id  = node.key;
+        var $tr = $(node.tr);
+        var $firstTD = $tr.find('>td').eq(0);
+        var cnt = countChildren(id, data);
+        if (cnt) {
+            var $cnt = $firstTD.find('.select-id-cnt');
+            if ($cnt.length) {
+                $cnt.text('#' + cnt);
+            } else {
+                $firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
+            }
+        } else {
+            $firstTD.find('.select-id-cnt').remove();
+        }
+        if (node.children && node.children.length) {
+            for (var c = 0; c < node.children.length; c++) {
+                recalcChildrenCounters(node.children[c], data);
+            }
+        }
+    }
+
     var methods = {
         init: function (options) {
             // done, just to show possible settings, this is not required
@@ -2873,7 +2967,10 @@ function span (txt, attr) {
                             $('body').append('<div id="select-id-dialog"><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span><span>' + (data.texts.noconnection || 'No connection to server') + '</span></div>');
                         }
                         $('#select-id-dialog').dialog({
-                            modal: true
+                            modal: true,
+                            open: function (event) {
+                                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                            }
                         });
                     }, 5000);
 
@@ -3154,8 +3251,17 @@ function span (txt, attr) {
                     data.objects[id] = obj;
                     var addedNodes = [];
 
-                    if (!filterId(data, id)) return;
-
+                    if (!filterId(data, id)) {
+                        return;
+                    }
+                    // add ID to IDS;
+                    if (data.ids.length) {
+                        var p = 0;
+                        while (data.ids[p] < id) {
+                            p++;
+                        }
+                        data.ids.splice(p, 0, id);
+                    }
                     treeInsert(data, id, false, addedNodes);
 
                     for (var i = 0; i < addedNodes.length; i++) {
@@ -3201,16 +3307,33 @@ function span (txt, attr) {
                     // object deleted
                     delete data.objects[id];
                     deleteTree(data, id);
+
+                    if (data.ids.length) {
+                        var pos = data.ids.indexOf(id);
+                        if (pos !== -1) {
+                            data.ids.splice(pos, 1);
+                        }
+                    }
+
                     if (node) {
                         var prev = node.getPrevSibling();
                         var parent = node.parent;
                         node.removeChildren();
                         node.remove();
                         prev && prev.setActive();
-                        if (!parent.children || !parent.children.length) {
-                            if (parent.parent) parent.parent.setActive();
-                            parent.remove();
 
+                        while (parent && (!parent.children || !parent.children.length)) {
+                            var _parent = parent.parent;
+                            parent.remove();
+                            if (_parent) {
+                                _parent.setActive();
+                            }
+                            parent = _parent;
+                        }
+
+                        // recalculate numbers of all children
+                        if (data.ids.length) {
+                            recalcChildrenCounters(parent, data);
                         }
                         // if (node.children && node.children.length) {
                         //     if (node.children.length === 1) {
@@ -3229,7 +3352,9 @@ function span (txt, attr) {
                     }
                 } else {
                     // object updated
-                    if (node) node.render(true);
+                    if (node) {
+                        node.render(true);
+                    }
                 }
             }
             return this;

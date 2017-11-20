@@ -38,7 +38,6 @@
     <script type="text/javascript" src="js/listHeader.js"></script>
 
     <script type="text/javascript" src="lib/js/selectID.js"></script>
-    <script type="text/javascript" src="lib/js/selectID1.js"></script>
     <script type="text/javascript" src="lib/js/cron/jquery.cron.js"></script>
     <script type="text/javascript" src="lib/js/cron/cron2text.js"></script>
 
@@ -126,7 +125,7 @@
                 <!--<div style="padding-left: 120px">#--><label style="margin-left: 5px; border:0; font-size: 14px;" class="translate" for="host-adapters">Host:</label>
                 </td>
                 <td>
-                <select id="host-adapters" style="border:0; font-size: 14px; padding:1px"></select><!--</div>-->
+                <select id="host-adapters" style="border:0; font-size: 14px; padding-top: 1px; margin-top: 1px"></select><!--</div>-->
                 </td>
              </td></tr></table>
         </td>
@@ -156,7 +155,7 @@
                 <col width="*"/>
                 <col width="200px"/>
                 <col width="100px"/>
-                <col width="80px"/>
+                <col width="80px" style="min-width: 80px;"/>
                 <col width="140px"/>
                 <col width="140px"/>
                 <col width="140px"/>
@@ -167,7 +166,7 @@
                 <th class="translate ui-widget-header">description</th>
                 <th class="translate ui-widget-header">keywords</th>
                 <th class="translate ui-widget-header">installed</th>
-                <th class="translate ui-widget-header">available</th>
+                <th class="translate ui-widget-header"><div style="min-width: 80px;">available</div></th>
                 <th class="translate ui-widget-header">platform</th>
                 <th class="translate ui-widget-header">license</th>
                 <th class="translate ui-widget-header">install</th>
@@ -215,7 +214,7 @@
         </table>
         <!--table id="grid-instances"></table>
         <div id="pager-instances"></div-->
-    <div class="grid-main-div" style="width: 100%; overflow: auto; margin-left:1px; width:calc(100% - 2px)">
+    <div class="grid-main-div" style="width: 100%; height: calc(100% - 30px); overflow: auto; margin-left:1px; width:calc(100% - 2px)">
             <table class="instance-table" style="width: 100%;">
                 <thead id="grid-instances-head">
                 </thead>
@@ -225,7 +224,7 @@
         </div>
     </div>
     <div id="tab-objects"   class="admin-tab" style="display:none" data-name="Objects">
-    <div id="grid-objects" class="grid-main-div"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>
+        <div id="grid-objects" class="grid-main-div"><span class="translate" style="width: calc(100% - 100px); width: calc(100% - 20px); text-align: center">Loading...</span></div>
     </div>
 <!--<div id="tab-objects1"class="admin-tab" style="display:none; height: calc(100% - 55px); overflow:hidden" data-name="Objects1">-->
     <!--<div id="grid-objects1" style="height: 100%; width: 100%"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>-->
@@ -734,7 +733,7 @@
                 <li><a href="#tab-customs-table" class="translate">Table</a></li>
                 <li><a href="#tab-customs-chart" class="translate">Chart</a></li>
             </ul>
-            <div id="tab-customs-settings" style="height: calc(100% - 65px)">
+            <div id="tab-customs-settings" style="height: calc(100% - 65px);">
                 <div id="customs-tabs" style="width: 100%"></div>
                 <div style="display: none" id="customs-templates"></div>
             </div>
@@ -761,7 +760,7 @@
             </div>
             <div id="tab-customs-chart" style="height: calc(100% - 65px)">
                 <div><label class="translate" for="history-chart-instance">Show values of instance</label><select id="history-chart-instance"></select><button id="history-chart-instance-refresh"></button></div>
-                <iframe id="iframe-history-chart" style="border: 0; overflow: hidden"></iframe>
+                <iframe id="iframe-history-chart" style="border: 0; overflow: hidden; height: calc(100% - 120px); width: calc(100% - 30px)"></iframe>
             </div>
         </div>
     </div>
@@ -1114,7 +1113,7 @@
                         <td>
                             <button id="detectCoordinates"></button>
                         </td>
-                    </tr--->
+                    </tr-->
                     <tr><td><label class="translate" for="system_latitude">Latitude:</label></td>
                         <td>
                             <input id="system_latitude" class="system-settings value" />
@@ -1310,7 +1309,7 @@
     <div id="dialog-cron"   style="display: none">
         <div id="div-cron"></div>
     </div>
-    <ul id="instances-menu" style="position: absolute; display: none; width: 150px" data-visible="false"></ul>
-    <ul id="adapters-menu"  style="position: absolute; display: none; width: 80px" data-visible="false"></ul>
+    <ul id="instances-menu" style="position: absolute; display: none; width: 150px; z-index: 1" data-visible="false"></ul>
+    <ul id="adapters-menu"  style="position: absolute; display: none; width: 80px; z-index: 1; border: 1px solid #605e5e;" data-visible="false"></ul>
 </body>
 </html>

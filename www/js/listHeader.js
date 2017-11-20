@@ -25,12 +25,33 @@ function IobListHeader (header, options) {
         }
         if (!$tds || !$tds.length) return;
         if ($tds[0].tagName !== 'TD' && $tds[0].tagName !== 'TH') {
-            $tds = $tds.find (">thead>tr:first>th,>thead>tr:first>td");
-            if (!$tds.length) $tds = _list.find (">tbody>tr:first>th,>tr:first>th,>tbody>tr:first>td, >tr:first>td");
+            $tds = $tds.find('>thead>tr:first>th,>thead>tr:first>td');
+            if (!$tds.length) $tds = _list.find('>tbody>tr:first>th,>tr:first>th,>tbody>tr:first>td, >tr:first>td');
         }
         $listTds = $tds;
     };
     if (options.list) this.setList(options.list);
+
+    // this.syncHeader = function () {
+    //     if (typeof $listTds !== 'object') return;
+    //
+    //     this.syncHeader = function() {
+    //         var offs = $header.selectID_Offset || 0;
+    //         $listTds.each(function (i, o) {
+    //             if (i >= $listTds.length - 1) return;
+    //             var x = $(o).width();
+    //             if (x) $ ($headerThs[i]).width(x + offs);
+    //         });
+    //         if ($header.selectID_Offset === undefined) {
+    //             var x = $($listTds[1]).offset().left;
+    //             if (x) {
+    //                 $header.selectID_Offset = x - $($headerThs[1]).offset().left;
+    //                 this.syncHeader();
+    //             }
+    //         }
+    //     };
+    //     this.syncHeader();
+    // };
 
     this.syncHeader = function () {
         if (typeof $listTds !== 'object') return;
@@ -53,13 +74,14 @@ function IobListHeader (header, options) {
         this.syncHeader();
     };
 
+
     var resizeTimer;
     $(window).resize(function (x, y) {
         if (resizeTimer) clearTimeout(resizeTimer);
         resizeTimer = setTimeout(self.syncHeader.bind(self), 100);
     });
 
-    function buildId (id, fis) {
+    function buildId(id, fis) {
         if (!id || (fis && id[0] === '#')) return id;
         if (options.prefix && id.substr(0, options.prefix.length) !== options.prefix) {
             id = options.prefix + '-' + id;
@@ -107,19 +129,6 @@ function IobListHeader (header, options) {
                 break;
         }
 
-        // $header.append (
-        //     //'<td class="event-column-' + ++cnt + '">' +
-        //     `<th>
-        //     <table class="main-header-input-table" style="width: 100%;">
-        //         <tbody>
-        //         <tr style="background: #ffffff; ">
-        //             ${txt}
-        //         </tr>
-        //         </tbody>
-        //     </table>
-        //     </th>`
-        // );
-
         $header.append (
             //'<td class="event-column-' + ++cnt + '">' +
             '<th>' +
@@ -128,7 +137,7 @@ function IobListHeader (header, options) {
             '    <tbody>' +
             //'    <tr style="background: #ffffff; ">' +
             '    <tr>' +
-                    txt +
+            txt +
             '    </tr>' +
             '    </tbody>' +
             '</table>' +
