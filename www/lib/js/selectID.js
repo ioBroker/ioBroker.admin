@@ -150,15 +150,14 @@ function removeImageFromSettings(data) {
 //var lineIndent = '6px';
 var lineIndent = '5px';
 var xytdButton = { width: 20, height: 20 };
-function span (txt, attr) {
+function span(txt, attr) {
     //if (txt === undefined) txt = '';
     //return txt;
 
-    var style = style='padding-left: ' + lineIndent + ';';
+    var style = 'padding-left: ' + lineIndent + ';';
     if (attr) style += attr;
     return '<span style="' + style + '">' + txt + '</span>';
 }
-
 
 (function ($) {
     'use strict';
@@ -1062,10 +1061,10 @@ function span (txt, attr) {
         function editDone(ot) {
             if (ot === undefined) ot = $this.data('old-value') || '';
             if (clippy) {
-                $this.parent().addClass ('clippy');
+                $this.parent().addClass('clippy');
             }
             if (editDialog) {
-                $this.parent().addClass ('edit-dialog');
+                $this.parent().addClass('edit-dialog');
             }
             $this.css({'padding-left': oldLeftPadding});
             if (!oldWidth) {
@@ -1073,7 +1072,7 @@ function span (txt, attr) {
             } else {
                 $this.attr('width', oldWidth);
             }
-            $this.html (ot).click (onQuickEditField).addClass ('select-id-quick-edit');
+            $this.html(ot).click(onQuickEditField).addClass('select-id-quick-edit');
             //if (activeNode && activeNode.lebgth) activeNode.setActive();
             setTimeout(function() {
                 //$(event.currentTarget).parent().trigger('click'); // re-select the line so we can continue using the keyboard
@@ -1164,12 +1163,12 @@ function span (txt, attr) {
     function initTreeDialog($dlg, resort) {
         var c;
         //$dlg.css({height: '100%', width: 'calc(100% - 18px)'});
-        if ($dlg.attr('id') !== 'dialog-select-member') {
+        if ($dlg.attr('id') !== 'dialog-select-member' && $dlg.attr('id') !== 'dialog-select-members') {
             $dlg.css({height: '100%', width: '100%'});
         } else {
             $dlg.css({height: 'calc(100% - 110px)', width: '100%'});
         }
-        var data = $dlg.data ('selectId');
+        var data = $dlg.data('selectId');
         if (data.columns && data.columns[0] !== 'ID') {
             data.columns.unshift('ID');
             if (data.widths) data.widths.unshift('200px');
@@ -2728,9 +2727,13 @@ function span (txt, attr) {
         //loadSettings(data);
         installColResize(data, $dlg);
         loadSettings(data);
-        if ($dlg.attr('id') !== 'dialog-select-member') setTimeout(function () {
-            $dlg.css({height: '100%'}); //xxx
-        }, 500);
+        if ($dlg.attr('id') !== 'dialog-select-member' && $dlg.attr('id') !== 'dialog-select-members') {
+            setTimeout(function () {
+                $dlg.css({height: '100%'}); //xxx
+            }, 500);
+        } else if ($dlg.attr('id') === 'dialog-select-members') {
+            $dlg.find('div:first-child').css({height: 'calc(100% - 50px)'});
+        }
 
         // set preset filters
         for (var field in data.filterPresets) {
