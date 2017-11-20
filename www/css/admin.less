@@ -802,7 +802,8 @@ table.main-toolbar-table > tbody > tr > td:hover { //}, table.main-toolbar-table
     border: @toolbar-outer-hover;
 }
 table.main-toolbar-table > tbody > tr > td:not(:first-child):last-child:hover { //}, table.main-toolbar-table>tbody>tr>td>div {
-    border: @toolbar-background;
+    //border: 1px solid @iob-background;
+    border: 1px solid transparent;
 }
 
 #tab-adapters table.main-toolbar-table {
@@ -836,7 +837,7 @@ table.instance-table>thead>tr>th {
 }
 table.main-header-table>tbody>tr,
 table.main-header-table>thead>tr {
-    height: (@toolbar-size - 1px) !important;
+    height: @toolbar-size - 1px !important;
     margin-top: 1px;
 }
 table.main-header-table>tbody>tr>td,
@@ -873,6 +874,19 @@ table.main-header-input-table>tbody>tr>td {
     width: 100% // neu
 }
 
+table.main-header-input-table>tbody>tr>td>input:hover,
+table.main-header-input-table>tbody>tr>td>select:hover {
+    width: calc(~'100% - 0px');
+    outline: @toolbar-outer-hover;
+    outline-offset: -1px;
+}
+table.main-header-input-table>tbody>tr>td>select:hover {
+    width: calc(~'100% - 0px');
+    background-position-x: calc(~'100% - 4px');
+
+}
+
+
 table.main-header-input-table>tbody>tr>td>button {
     width: 18px;
     height: 18px;
@@ -887,6 +901,7 @@ table.main-header-input-table>tbody>tr.filter-active>td>input,
 table.main-header-input-table>tbody>tr.filter-active>td>select {
     //.input-not-empty {
     background-color: #ffbfb6 !important;
+    //width: calc(~'100% - 0px');
 }
 
 
@@ -909,6 +924,15 @@ table.main-header-input-table>tbody>tr>td>input,
 table.main-header-input-table>tbody>tr>td>span {
     padding-left: @line-indent;
 }
+table.main-header-input-table>tbody>tr>td>span {
+    cursor: default;
+}
+table.main-header-input-table>tbody>tr>td>select {
+    cursor: pointer;
+}
+#grid-instances-head>tr:first-child {
+    cursor: default;
+}
 
 table.main-header-input-table>tbody>tr>td>select {
     //line-height: 0.5em;
@@ -918,7 +942,7 @@ table.main-header-input-table>tbody>tr>td>select {
 }
 
 table.main-header-input-table>tbody>tr>td>input {
-    width: calc(100% - 1px);
+    width: calc(~'100% - 1px');
     line-height: 1.5em;
 }
 
@@ -1614,3 +1638,7 @@ div#dialog-select-member>div:first-child {
 //table.main-header-input-table>tbody>tr>td>select>option {
 //    line-height: 30px !important;
 //}
+
+#grid-instances-head>tr {
+    height: @header-height;
+}

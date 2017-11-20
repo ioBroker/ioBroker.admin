@@ -473,6 +473,16 @@ button.instance-stop-run {
   display: inline-block;
   background-color: lightgreen;
 }
+/*
+tr.instance-adapter>td>button>span.ui-icon-pause {    ///xxx
+    //background: #88f !important;
+    background-color: rgba(0, 255, 0, 0.1) !important;
+}
+tr.instance-adapter>td>button>span.ui-icon-play {
+    //background: #8ff !important;
+    background-color: rgba(255, 0, 0, 0.1) !important;
+}
+*/
 button.instance-settings,
 button.instance-reload,
 button.instance-del,
@@ -749,7 +759,7 @@ table.main-toolbar-table > tbody > tr > td:hover {
   border: 1px solid #d0d0d0;
 }
 table.main-toolbar-table > tbody > tr > td:not(:first-child):last-child:hover {
-  border: #fff;
+  border: 1px solid transparent;
 }
 #tab-adapters table.main-toolbar-table {
   left: -2px;
@@ -809,6 +819,16 @@ table.main-header-input-table > tbody > tr > td {
   /*?*/
   width: 100%;
 }
+table.main-header-input-table > tbody > tr > td > input:hover,
+table.main-header-input-table > tbody > tr > td > select:hover {
+  width: calc(100% - 0px);
+  outline: 1px solid #d0d0d0;
+  outline-offset: -1px;
+}
+table.main-header-input-table > tbody > tr > td > select:hover {
+  width: calc(100% - 0px);
+  background-position-x: calc(100% - 4px);
+}
 table.main-header-input-table > tbody > tr > td > button {
   width: 18px;
   height: 18px;
@@ -840,13 +860,22 @@ table.main-header-input-table > tbody > tr > td > input,
 table.main-header-input-table > tbody > tr > td > span {
   padding-left: 5px;
 }
+table.main-header-input-table > tbody > tr > td > span {
+  cursor: default;
+}
+table.main-header-input-table > tbody > tr > td > select {
+  cursor: pointer;
+}
+#grid-instances-head > tr:first-child {
+  cursor: default;
+}
 table.main-header-input-table > tbody > tr > td > select {
   line-height: 22px;
   /*width: calc(~'100% + 1px');*/
   width: calc(100% - 1px);
 }
 table.main-header-input-table > tbody > tr > td > input {
-  width: calc(99%);
+  width: calc(100% - 1px);
   line-height: 1.5em;
 }
 /*******************************************/
@@ -1415,4 +1444,7 @@ div#dialog-select-member > div:first-child {
 .objects-list-table > colgroup > col:nth-child(8) {
   width: 80px !important;
   min-width: 80px !important;
+}
+#grid-instances-head > tr {
+  height: 24px;
 }

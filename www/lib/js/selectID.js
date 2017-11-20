@@ -1257,7 +1257,7 @@ function span (txt, attr) {
             filter[name] = $('#filter_' + name + '_' + data.instance).val ();
         });
 
-        function getComboBoxEnums(kind) {
+        function getComboboxEnums(kind) {
             var i, ret = [];
             switch (kind) {
                 case 'room':
