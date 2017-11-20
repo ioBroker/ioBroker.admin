@@ -961,11 +961,11 @@ function span (txt, attr) {
 
         if (clippy)  {
             $this.parent().removeClass('clippy');
-            $this.parent().find('.clippy-button').remove();
+            $this.parent().find('.clippy-button').remove(); // delete clippy buttons because they overlay the edit field
         }
         if (editDialog) {
             $this.parent().removeClass('edit-dialog');
-            $this.parent().find('.edit-dialog-button').remove();
+            $this.parent().find('.edit-dialog-button').remove(); // delete edit buttons because they overlay the edit field
         }
 
         $this.unbind('click').removeClass('select-id-quick-edit').css('position', 'relative');
@@ -1604,14 +1604,20 @@ function span (txt, attr) {
                 var $firstTD = $tdList.eq(0);
                 $firstTD.css({'overflow': 'hidden'});
                 var cnt = countChildren(key, data);
+
+                // Show number of all children as small grey number
                 var $cnt = $firstTD.find('.select-id-cnt');
+                // If node has some children
                 if (cnt) {
                     if ($cnt.length) {
+                        // modify it if span yet exists
                         $cnt.text('#' + cnt);
                     } else {
+                        // create new span
                         $firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
                     }
                 } else {
+                    // remove this span, because object may be was updated
                     $cnt.remove();
                 }
 
