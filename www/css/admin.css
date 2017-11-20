@@ -813,7 +813,15 @@ table.main-header-input-table > tbody > tr > td > button {
   width: 18px;
   height: 18px;
   border: 0 !important;
-  background: #fff;
+  background: #fff !important;
+  display: none;
+}
+table.main-header-input-table > tbody > tr.filter-active > td > button {
+  display: unset;
+}
+table.main-header-input-table > tbody > tr.filter-active > td > input,
+table.main-header-input-table > tbody > tr.filter-active > td > select {
+  background-color: #ffbfb6 !important;
 }
 table.main-header-input-table > tbody > tr > td > select > option {
   padding: 0;
@@ -826,18 +834,19 @@ table.main-header-input-table > tbody > tr > td > span {
   font-size: 0.82rem;
   padding: 0;
   border: 0;
+  height: 22px !important;
 }
 table.main-header-input-table > tbody > tr > td > input,
 table.main-header-input-table > tbody > tr > td > span {
   padding-left: 5px;
 }
 table.main-header-input-table > tbody > tr > td > select {
-  line-height: 0.5em;
+  line-height: 22px;
   /*width: calc(~'100% + 1px');*/
   width: calc(100% - 1px);
 }
 table.main-header-input-table > tbody > tr > td > input {
-  width: 100%;
+  width: calc(99%);
   line-height: 1.5em;
 }
 /*******************************************/
@@ -907,9 +916,6 @@ table.main-header-input-table > tbody > tr > td > input {
   border: 1px solid #fff;
   margin-left: 20px;
   font-size: 14px;
-}
-.input-not-empty {
-  background-color: #ffbfb6 !important;
 }
 #grid-adapters,
 .adapters-list-table {
@@ -1396,4 +1402,17 @@ span.dark-green {
 }
 div#dialog-select-member > div:first-child {
   height: calc(100% - 45px) !important;
+}
+.main-header-input-table select {
+  padding-left: 5px !important;
+  font-size: 16px;
+  line-height: 22px;
+  background: url("../img/arrow-down-10x10.png") no-repeat right #fff;
+  -webkit-appearance: none;
+  background-position-x: calc(100% - 3px);
+  background-size: 10px;
+}
+.objects-list-table > colgroup > col:nth-child(8) {
+  width: 80px !important;
+  min-width: 80px !important;
 }

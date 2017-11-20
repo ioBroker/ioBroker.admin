@@ -1331,60 +1331,42 @@ function span (txt, attr) {
                 }
           */
 
-        var tds = '<td><button class="ui-button-icon-only panel-button" id="btn_refresh_' + data.instance + '"></button></td>';
-        tds += '<td><button class="panel-button" id="btn_list_' + data.instance + '"></button></td>';
-        tds += '<td><button class="panel-button" id="btn_collapse_' + data.instance + '"></button></td>';
-        tds += '<td><button class="panel-button" id="btn_expand_' + data.instance + '"></button></td>' +
+        var tds = 
+            '<td><button class="ui-button-icon-only panel-button" id="btn_refresh_' + data.instance + '"></button></td>' +
+            '<td><button class="panel-button" id="btn_list_' + data.instance + '"></button></td>' +
+            '<td><button class="panel-button" id="btn_collapse_' + data.instance + '"></button></td>'  +
+            '<td><button class="panel-button" id="btn_expand_' + data.instance + '"></button></td>' +
             '<td class="select-id-custom-buttons"></td>';
         if (data.filter && data.filter.type === 'state' && multiselect) {
-            tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_select_all_' + data.instance + '"></button></td>';
-            tds += '<td><button class="panel-button" id="btn_unselect_all_' + data.instance + '"></button></td>';
-            tds += '<td><button class="panel-button" id="btn_invert_selection_' + data.instance + '"></button></td>';
+            tds += 
+                '<td style="padding-left: 10px"><button class="panel-button" id="btn_select_all_' + data.instance + '"></button></td>' +
+                '<td><button class="panel-button" id="btn_unselect_all_' + data.instance + '"></button></td>' +
+                '<td><button class="panel-button" id="btn_invert_selection_' + data.instance + '"></button></td>';
         }
         if (data.expertModeRegEx) {
-            tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_expert_' + data.instance + '"></button></td>';
+            tds += 
+                   '<td style="padding-left: 10px"><button class="panel-button" id="btn_expert_' + data.instance + '"></button></td>';
         }
         tds += '<td><button class="panel-button" id="btn_sort_' + data.instance + '"></button></td>';
 
         if (data.panelButtons) {
-            //tds += '<td style="width: 20px">&nbsp;&nbsp;</td>';
             tds += '<td class="iob-toolbar-sep"></td>';
             for (c = 0; c < data.panelButtons.length; c++) {
                 tds += '<td><button class="panel-button" id="btn_custom_' + data.instance + '_' + c + '"></button></td>';
             }
         }
-        //tds += '<td class="ui-widget" style="width: 100%; text-align: center; font-weight: bold; font-size: medium">' + data.texts.id + '</td></tr></table></th>';
-        //tds += '<td style="width: 100%;"></td></td></tr></table></th>';
 
         if (data.useHistory) {
             tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_history_' + data.instance + '" style="position: absolute; top: 5px; right: 20px"></button></td>';
         }
 
-        var text = '<div id="' + data.instance + '-div" style="width:100%; height:100%">' +
-            //var text = '<div id="' + data.instance + '-div" >' +
-            //'<table class="a" style="width: 100%; height: 30px; border-collapse: collapse;">' +
-            //'<table class="main-toolbar-table" style="border-collapse: collapse;" cellpadding="0">' +
-            //'<table class="main-toolbar-table" cellpadding="0">' +
+        var text = 
+            '<div id="' + data.instance + '-div" style="width: 100%; height: 100%">' +
             '<table class="main-toolbar-table">' +
-            //TODO xxxx !!!!'<table class="main-toolbar-table">' +
-            // '<thead>' +
-            // '<tr><th></th></tr>' +
-            // '<tr column-span="2">' +
-            // '<td>' +
-            // '<table class="panel-table"  cellspacing="0" cellpadding="0">' +
-            // '<thead>' +
-            // '<tr><th></th></tr>' +
-            '<tr>' + tds + '<td style="width: 100%;"></td></tr>' +
-            //'</thead>' +
-            //'</table>' +
-            //'</td>' +
-            '</tr>' +
-            //'</thead>' +
+            '    <tr>' + tds + '<td style="width: 100%;"></td>' +
+            '    </tr>' +
             '</table>' +
 
-            //'<div class="a1" style="width: 100%; height: calc(100% - 30px); overflow: auto">' +
-            //'<table id="selectID_header_' + data.instance + '" style="width: calc(100% - 18px); padding: 0; height: 30px" cellspacing="0" cellpadding="0">';
-            //'<table id="selectID_header_' + data.instance + '"cellspacing="0" cellpadding="0" style="height: 23px; margin-left: 1px">';
             '<table id="selectID_header_' + data.instance + '" class="main-header-table">';
 
 
@@ -1393,20 +1375,16 @@ function span (txt, attr) {
                 placeholder = data.texts[filterNo.toLowerCase()];
             }
             var txt =
-                //'<table style="width: 100%; height:100%; padding: 0;border: 1px solid #c0c0c0;border-spacing: 0;border-radius: 2px;">\n' +
                 '<table class="main-header-input-table">' +
 
                 '        <tbody>' +
                 '        <tr style="background: #ffffff; ">' +
                 '            <td style="width: 100%">' +
-                '                <input placeholder="' + placeholder + '" style="width: 100%; padding: 0; padding-left: ' + lineIndent + ';font-size: 12px;border: 0;line-height: 1.5em;" type="text" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
-                '            </td>';
-                //                '            <td style="vertical-align: middle; border: 0;">\n' +
-
-            txt +=
+                //'                <input placeholder="' + placeholder + '" style="width: 100%; padding: 0; padding-left: ' + lineIndent + ';font-size: 12px;border: 0;line-height: 1.5em;" type="text" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
+                '                <input placeholder="' + placeholder + '" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
+                '            </td>' +
                 '            <td>' +
                 '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">' +
-                //'                    <span class="ui-button-text"></span>\n' +
                 '                </button>' +
                 '            </td>';
             txt +=
@@ -1421,8 +1399,6 @@ function span (txt, attr) {
             if (data.columns.indexOf (filterNo) !== -1) {
                 if (placeholder === undefined) placeholder = data.texts[filterNo.toLowerCase()];
                 var cbEntries = getComboBoxEnums (filterNo);
-                // var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '" style="font-size: 12px; line-height: 0.5em; padding:0;width: calc(100% + 1px); border:0;">';
-                // moved to css: table.main-header-input-table>tbody>tr>td>select
                 var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">';
 
                 var add = function (a, b) {
@@ -1433,7 +1409,11 @@ function span (txt, attr) {
                     else if (b === undefined) b = a;
                     cbText += '<option style="line-height: 0.5em; background: #fff" value="' + a + '">' + b + '</option>';
                 };
-                add('', placeholder + ' (' + data.texts.all + ')');
+                if (typeof addAll2FilterCombobox !== 'undefined' && addAll2FilterCombobox) {
+                    add('', placeholder + ' (' + data.texts.all + ')');
+                } else {
+                    add('', placeholder);
+                }
                 for (var i = 0, len = cbEntries.length; i < len; i++) {
                     add (cbEntries[i]);
                 }
@@ -1441,10 +1421,10 @@ function span (txt, attr) {
 
                 txt = '' +
                     //'<table style="width: 100%;padding: 0;border: 1px solid #c0c0c0;border-spacing: 0;border-radius: 2px;">' +
-                    '<table class="main-header-input-table" style="width: 100%;">' +     // width is already in css
+                    '<table class="main-header-input-table">' +
                     '        <tbody>' +
-                    '        <tr style="background: #ffffff; ">' +                       // tr background is already in css
-                    '            <td style="width: 100%">';                              // td-width is already in css
+                    '        <tr style="background: #ffffff; ">' +
+                    '            <td style="width: 100%">';
                 txt += cbText;
                 txt += '' +
                     '            </td>' +
@@ -1467,18 +1447,15 @@ function span (txt, attr) {
         text += '            <tr>'; //<td></td>';
 
         forEachColumn(data, function(name) {
-            //text += '<td style="position: relative;left: 0; padding:0">';
             text += '<td>';
             if (name === 'ID' || name === 'name' || name === 'value' || name === 'enum') {
                 text += textFiltertext(name);
             } else if (name === 'type' || name === 'role' || name === 'room' || name === 'function') {
                 text += textCombobox(name);
             } else if (name === 'button') {
-                //text += '<td>';
                 if (data.customButtonFilter) {
                     text += textCombobox(name);
                 } else {
-                    //text += '<table class="main-header-input-table"><tbody><tr><td><div>' + _(name) + '</div></td></tr></tbody></table>';
                     if (name === 'buttons' || name === 'button') {
                         text += '<span style="padding-left: ' + lineIndent + '"></span>';
                     } else {
@@ -1495,79 +1472,26 @@ function span (txt, attr) {
         text += '        </tbody>';
         text += '    </table>';
 
-        //text += '<div style="width: calc(100% - 18px); height: ' + (data.buttons ? 'calc(100% - 30px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll">';
-        //text += '<div style="width: 100%; height: ' + (data.buttons ? 'calc(100% - 54px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll">';
         text += '<div class="' + (data.buttons ? 'grid-main-wh-div' : 'grid-main-wob-div') + '" style="width: 100%; padding:0; overflow-y: scroll">';
         text += ' <table class="iob-list-font objects-list-table" style="width: calc(100%-5px);" id="selectID_' + data.instance + '" cellspacing="0" cellpadding="0">';
         text += '        <colgroup>';
 
         var thead = '<thead class="grid-objects-head"><tr>';
 
-        var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '10%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '5%', enum: '2%'};
-        // for (var c=0, len=data.columns.length; c<len; c++) {
-        //     var name = data.columns[c];
-        //     if (typeof name === 'object') name = name.name;
-        //     if (name === 'image') continue;
-        //     //text += '<col width="' + (data.widths ? data.widths[c] : ((widths[name] || 2) + '%')) + '"/>';
-        //     var w = (widths[name] || 2) + '%';
-        //     text += '<col width="' + ((widths[name] || 2) + '%') + '"/>';
-        //     thead += '<th style="width: ' + w + ';"></th>';
-        //     //thead += '<th></th>';
-        // }
-        forEachColumn (data, function(name, i) {
-            //if (name === 'image') return;
-            //text += '<col width="' + (data.widths ? data.widths[c] : ((widths[name] || 2) + '%')) + '"/>';
+        //var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '10%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '5%', enum: '2%'};
+        var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '6%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '9%', enum: '2%'};
+
+        forEachColumn(data, function(name, i) {
             var w = data.widths ? data.widths[i] : widths[name] || '2%';
             text += '<col width="' + w + '"/>';
             thead += '<th style="width: ' + w + ';"></th>';
         });
-
-
-
-        // for (c = 0; c < data.columns.length; c++) {
-        //     var name = data.columns[c];
-        //     if (typeof name === 'object') name = name.name;
-        //     if (name === 'image') {
-        //         //text += '<col width="' + (data.widths ? data.widths[c] : '24px') + '"></col>';
-        //     } else if (name === 'name') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '20%') + '"/>';
-        //     } else if (name === 'type') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'role') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'room') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'function') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'value') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'button') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '5%') + '"/>';
-        //     } else if (name === 'enum') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '2%') + '"/>';
-        //     } else {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '2%') + '"/>';
-        //     }
-        // }
-
-        // text += '        </colgroup>';
-        // text += '        <thead>';
-        // text += '            <tr><th></th><th></th>';
-        // for (c = 0; c < data.columns.length; c++) {
-        //     text += '<th>Hallo</th>';
-        // }
-        // text += '</tr>';
-        // text += '        </thead>';
-        // text += '        <tbody>';
-        // text += '        </tbody>';
-        // text += '    </table></div><div id="process_running_' + data.instance + '" style="position: absolute; top: 50%; left: 50%; width: 150px; height: 25px; padding: 12px; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">' + data.texts.wait + '</div>';
 
         text += '        </colgroup>';
         text += thead + '</tr></thead>';
 
         text += '        <tbody>';
         text += '        </tbody>';
-        //text += '    </table></div></div>' +
         text += '    </table></div>' +
             '<div id="process_running_' + data.instance + '" style="position: absolute; top: 50%; left: 50%; width: 150px; height: 25px; padding: 12px; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">' + data.texts.wait + '</div>' +
             '</div>'
@@ -2629,14 +2553,17 @@ function span (txt, attr) {
             if (changeTimer) clearTimeout(changeTimer);
             //changeTimer = setTimeout(function() {
             if (event && event.target) {
-                var $e = $ (event.target);
+                var $e = $(event.target);
                 var val = $e.val ();
                 //$e.parent().parent().css({background: val ? '#ffbfb6' : '#ffffff'});
                 //$e.css({background: val ? '#ffbfb6' : '#ffffff'});
                 //if (val) $e.addClass('input-not-empty'); else $e.removeClass('input-not-empty');
                 $e[val ? 'addClass' : 'removeClass'] ('input-not-empty');
+                $e.parent().parent().find('button').css({'display': val? 'unset' : 'none'});
+                $e.parent().parent()[val ? 'addClass' : 'removeClass'] ('filter-active');
             }
-            var $e = $ ('#process_running_' + data.instance);
+
+            var $e = $('#process_running_' + data.instance);
             $e.show ();
             data.$tree.fancytree ('getTree').filterNodes (customFilter, false);
             $e.hide ();
@@ -2717,7 +2644,6 @@ function span (txt, attr) {
         $('#btn_sort_' + data.instance).button({icons: {primary: 'ui-icon-bookmark'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
             $('#process_running_' + data.instance).show();
 
-
             data.sort = !data.sort;
             if (data.sort) {
                 $('#btn_sort_' + data.instance).addClass('ui-state-error');
@@ -2725,7 +2651,6 @@ function span (txt, attr) {
                 $('#btn_sort_' + data.instance).removeClass('ui-state-error');
             }
             storeSettings(data, true);
-
 
             setTimeout(function () {
                 data.inited = false;
@@ -2745,8 +2670,6 @@ function span (txt, attr) {
                 $('#process_running_' + data.instance).hide();
             }, 1);
         }).attr('title', data.texts.history);
-
-
 
         $('#btn_select_all_' + data.instance).button({icons: {primary: 'ui-icon-circle-check'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
             $('#process_running_' + data.instance).show();
@@ -2847,7 +2770,7 @@ function span (txt, attr) {
 
         // set preset filters
         for (var field in data.filterPresets) {
-            if (!data.filterPresets[field]) continue;
+            if (!data.filterPresets.hasOwnProperty(field) || !data.filterPresets[field]) continue;
             if (typeof data.filterPresets[field] === 'object') {
                 //$('#filter_' + field + '_' + data.instance).val(data.filterPresets[field][0]).trigger('change');
                 setFilterVal(data, field, data.filterPresets[field][0]);
@@ -2887,7 +2810,7 @@ function span (txt, attr) {
                     removeImageFromSettings(f);
                     //setTimeout(function() {
                     for (var field in f) {
-                        if (field === 'length') continue;
+                        if (!f.hasOwnProperty(field) || field === 'length') continue;
                         if (data.filterPresets[field]) continue;
                         //$('#filter_' + field + '_' + data.instance).val(f[field]).trigger('change');
                         setFilterVal(data, field, f[field]);
@@ -3253,7 +3176,7 @@ function span (txt, attr) {
                 if (!data || !data.$tree) continue;
 
                 var tree = data.$tree.fancytree('getTree');
-                var node = tree.getNodeByKey(id);
+                var node = tree && tree.getNodeByKey(id);
                 // var node = null;
                 // tree.visit(function (n) {
                 //     if (n.key === id) {
