@@ -68,6 +68,10 @@
              webServer:    null,   // link to webserver, by default ":8082"
              filterPresets: null,  // Object with predefined filters, eg {role: 'level.dimmer'} or {type: 'state'}
              roleExactly:   false, // If the role must be equal or just content the filter value
+             sortConfig: {
+                     statesFirst: true,     // Show states before folders
+                     ignoreSortOrder: false // Ignore standard sort order of fancytree
+             },
              texts: {
                  select:   'Select',
                  cancel:   'Cancel',
@@ -287,16 +291,10 @@ function span (txt, attr) {
         expandeds = null;
     }
 
-    // TODO move this to settings
-    var sortConfig = {
-        statesFirst: true,
-        ignoreSortOrder: false
-    };
-
     function sortTree(data) {
         var objects = data.objects;
         var checkStatesFirst;
-        switch (sortConfig.statesFirst) {
+        switch (data.sortConfig.statesFirst) {
             case undefined: checkStatesFirst = function() { return 0 }; break;
             case true:      checkStatesFirst = function(child1, child2) { return ((~~child2.folder) - (~~child1.folder))}; break;
             case false:     checkStatesFirst = function(child1, child2) { return ((~~child1.folder) - (~~child2.folder))}; break;
@@ -325,7 +323,7 @@ function span (txt, attr) {
                     // if (s1 > s2) return 1;
                     // if (s1 < s2) return -1;
 
-                    if (!sortConfig.ignoreSortOrder && c1.sortOrder && c2.sortOrder) {
+                    if (!data.sortConfig.ignoreSortOrder && c1.sortOrder && c2.sortOrder) {
                         if (c1.sortOrder > c2.sortOrder) return 1;
                         if (c1.sortOrder < c2.sortOrder) return -1;
                         return 0;
@@ -344,7 +342,7 @@ function span (txt, attr) {
         function sortByKey(child1, child2) {
             var ret = checkStatesFirst(child1, child2);
             if (ret) return ret;
-            if (!sortConfig.ignoreSortOrder) {
+            if (!data.sortConfig.ignoreSortOrder) {
                 var o1 = objects[child1.key], o2 = objects[child2.key];
                 if (o1 && o2) {
                     var c1 = o1.common, c2 = o2.common;
@@ -482,7 +480,7 @@ function span (txt, attr) {
 
             if (objects[id].enums) {
                 for (var ee in objects[id].enums) {
-                    if (objects.hasOwnProperty(ee) &&
+                    if (objects[id].enums.hasOwnProperty(ee) &&
                         objects[ee] &&
                         objects[ee].common &&
                         objects[ee].common.members &&
@@ -886,14 +884,14 @@ function span (txt, attr) {
         var data = $dlg.data('selectId');
         if (data.$tree.is(':visible')) {
             data.$tree.colResizable({
-                liveDrag: true,
-                //resizeMode: 'flex',
-                resizeMode: 'fit',
-                minWidth: 50,
+                liveDrag:       true,
+                //resizeMode:   'flex',
+                resizeMode:     'fit',
+                minWidth:       50,
 
                 partialRefresh: true,
-                marginLeft: 5,
-                postbackSafe:true,
+                marginLeft:     5,
+                postbackSafe:   true,
 
                 onResize: function (event) {
                     syncHeader($dlg);
@@ -1169,7 +1167,7 @@ function span (txt, attr) {
         if ($dlg.attr('id') !== 'dialog-select-member') {
             $dlg.css({height: '100%', width: '100%'});
         } else {
-            $dlg.css ({height: 'calc(100% - 110px)', width: '100%'});
+            $dlg.css({height: 'calc(100% - 110px)', width: '100%'});
         }
         var data = $dlg.data ('selectId');
         if (data.columns && data.columns[0] !== 'ID') {
@@ -2188,6 +2186,7 @@ function span (txt, attr) {
                 }
             }
         };
+
         if (data.editEnd) {
             foptions.extensions.push('edit');
             foptions.edit = {
@@ -2518,7 +2517,7 @@ function span (txt, attr) {
             //changeTimer = setTimeout(function() {
             if (event && event.target) {
                 var $e = $(event.target);
-                var val = $e.val ();
+                var val = $e.val();
                 //$e.parent().parent().css({background: val ? '#ffbfb6' : '#ffffff'});
                 //$e.css({background: val ? '#ffbfb6' : '#ffffff'});
                 //if (val) $e.addClass('input-not-empty'); else $e.removeClass('input-not-empty');
@@ -2527,10 +2526,10 @@ function span (txt, attr) {
                 $e.parent().parent()[val ? 'addClass' : 'removeClass'] ('filter-active');
             }
 
-            var $e = $('#process_running_' + data.instance);
-            $e.show ();
+            var $ee = $('#process_running_' + data.instance);
+            $ee.show ();
             data.$tree.fancytree ('getTree').filterNodes (customFilter, false);
-            $e.hide ();
+            $ee.hide ();
             //}, 0);
         }).keyup(function () {
             var tree = data.$tree[0];
@@ -2854,6 +2853,10 @@ function span (txt, attr) {
                 zindex:     null,
                 list:       false,
                 name:       null,
+                sortConfig:       {
+                    statesFirst:     true,
+                    ignoreSortOrder: false
+                },
                 //columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button']
                 columns: ['name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button']
             }, options);
