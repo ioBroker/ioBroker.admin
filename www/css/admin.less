@@ -469,7 +469,8 @@ table.events-list-table>tbody>tr>td {
 }
 
 .events-grid-div {
-    height: calc(~'100% - 50px') !important;
+    //height: calc(~'100% - 50px') !important;
+    height: calc(~'100% - 24px') !important;
 }
 
 @grid-tables: states, groups, users, enums;
@@ -664,4 +665,11 @@ div.iob-pager table {
 
 #grid-hosts-head>tr:first-child {
     height: @header-height;
+}
+
+table#grid-users,
+table#grid-states,
+table#grid-groups {
+    //width: calc(~'100% - 100px');
+    width: unset !important;   // otherwise there is a horizontal scrollbar at the bottom, for whatever the reason is!
 }
