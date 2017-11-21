@@ -409,7 +409,8 @@ table.main-header-input-table > tbody > tr.filter-active > td > button {
 }
 table.main-header-input-table > tbody > tr.filter-active > td > input,
 table.main-header-input-table > tbody > tr.filter-active > td > select,
-table.main-header-input-table > tbody > tr.filter-active {
+table.main-header-input-table > tbody > tr.filter-active,
+.input-not-empty {
   background-color: #ffbfb6 !important;
 }
 table.main-header-input-table > tbody > tr > td > select > option {

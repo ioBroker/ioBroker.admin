@@ -40,7 +40,6 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-less": "^3.3.2",
-    "gulp-watch-less": "^1.0.1",
     "mocha": "^3.5.3",
     "chai": "^4.1.2"
   },
