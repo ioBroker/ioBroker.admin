@@ -5,6 +5,7 @@
     <link rel="stylesheet" type="text/css" href="lib/css/themes/jquery-ui/redmond/jquery-ui.structure.min.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/themes/jquery-ui/redmond/jquery-ui.theme.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/admin.css"/>
+    <link rel="stylesheet" type="text/css" href="css/tiles.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/jqGrid/ui.jqgrid-4.5.4.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/jquery.multiselect-1.13.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/fancytree/ui.fancytree.min.css"/>
@@ -41,6 +42,7 @@
     <script type="text/javascript" src="lib/js/cron/jquery.cron.js"></script>
     <script type="text/javascript" src="lib/js/cron/cron2text.js"></script>
 
+    <script type="text/javascript" src="js/tiles.js"></script>
     <script type="text/javascript" src="js/adminAdapters.js"></script>
     <script type="text/javascript" src="js/adminInstances.js"></script>
     <script type="text/javascript" src="js/adminEnums.js"></script>
@@ -71,6 +73,9 @@
     <table class="main-toolbar-table">
 <!--        <td> -->
             <!--<td></td>-->
+        <td>
+            <button id="btn_switch_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="change view mode"></button>
+        </td>
         <td>
             <button id="btn_refresh_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="update adapter information"></button>
         </td>
@@ -147,9 +152,8 @@
         Processing...
     </div>
     <!--<div style="width:100%;height:400px;overflow-y: auto" id="grid-adapters-div">-->
-    <div class="grid-main-div" style="width:100%;overflow-y: auto" id="grid-adapters-div">
-
-        <table id="grid-adapters" class="iob-list-font" style="margin-left: 1px; width:calc(100% - 2px);table-layout:fixed;">
+    <div class="grid-main-div" style="width: 100%; overflow-y: auto" id="grid-adapters-div">
+        <table id="grid-adapters" class="iob-list-font" style="margin-left: 1px; width: calc(100% - 2px); table-layout: fixed;">
             <colgroup>
                 <col width="320px"/>
                 <col width="*"/>
@@ -174,6 +178,8 @@
             </thead>
             <tbody></tbody>
         </table>
+        <div id="grid-adapters-tiles" class="tiles" style="display: none">
+        </div>
     </div>
 </div>
 <div id="tab-instances" class="admin-tab" style="display:none;" data-name="Instances">

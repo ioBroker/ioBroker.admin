@@ -85,6 +85,9 @@ function IobListHeader (header, options) {
                     //'<td style="width: 100%">' +
                     '<td>' +
                     '    <select id="' + id + '" title="' + title + '"></select>' +
+                    '</td>' +
+                    '<td>' +
+                    '    <button id="' + id + '-clear" role="button" title=""></button>' +
                     '</td>';
                 break;
             case 'edit':
@@ -138,7 +141,7 @@ function IobListHeader (header, options) {
                 function addOption(val, name) {
                     txt += '<option value="' + val + '" ' + ((name === selectedVal) ? 'selected' : '') + '>' + name + '</option>'
                 }
-                for (var i=0, len=this.options.length; i<len; i++) {
+                for (var i = 0, len = this.options.length; i < len; i++) {
                     var option = this.options[i];
                     if (cb) {
                         var v = cb(option, i);
@@ -186,9 +189,6 @@ function IobListHeader (header, options) {
         return elem;
     };
 }
-
-
-
 
 function patchPager (parent, view) {
 

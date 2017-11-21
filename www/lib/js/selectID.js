@@ -1382,8 +1382,8 @@ function span(txt, attr) {
                 txt += '' +
                     '            </td>' +
                     '            <td>' +
-                    //'                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="">' +
-                    //'                </button>' +
+                    '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="">' +
+                    '                </button>' +
                     '            </td>' +
                     '        </tr>' +
                     '        </tbody>' +

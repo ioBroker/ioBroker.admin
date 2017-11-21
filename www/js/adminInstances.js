@@ -171,7 +171,7 @@ function Instances(main) {
 
             if (that.main.states[adapter + '.' + instance + '.info.connection'] || that.main.objects[adapter + '.' + instance + '.info.connection']) {
                 title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to %s: ', adapter) + '</td><td>';
-                let val = that.main.states[adapter + '.' + instance + '.info.connection'] ? that.main.states[adapter + '.' + instance + '.info.connection'].val : false;
+                var val = that.main.states[adapter + '.' + instance + '.info.connection'] ? that.main.states[adapter + '.' + instance + '.info.connection'].val : false;
                 if (!val) {
                     state = state === 'red' ? 'red' : 'orange';
                     title += '<span style="color: red">' + _('false') + '</span>';
@@ -207,7 +207,7 @@ function Instances(main) {
 
             if (that.main.states[adapter + '.' + instance + '.info.connection'] || that.main.objects[adapter + '.' + instance + '.info.connection']) {
                 title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to %s: ', adapter) + '</td><td>';
-                let val = that.main.states[adapter + '.' + instance + '.info.connection'] ? that.main.states[adapter + '.' + instance + '.info.connection'].val : false;
+                var val = that.main.states[adapter + '.' + instance + '.info.connection'] ? that.main.states[adapter + '.' + instance + '.info.connection'].val : false;
                 if (!val) {
                     title += _('false');
                 } else {
@@ -317,7 +317,6 @@ function Instances(main) {
         that.$gridhead.html(text);
     }
 
-
     function calculateTotalRam() {
         var host      = that.main.states['system.host.' + that.main.currentHost + '.memRss'];
         var processes = 1;
@@ -343,7 +342,6 @@ function Instances(main) {
             $running_processes.html('<span class="highlight">' + text + '</span>')
         }
     }
-
 
     function calculateFreeMem() {
         var host = that.main.states['system.host.' + that.main.currentHost + '.freemem'];
@@ -743,8 +741,16 @@ function Instances(main) {
         $('#div-cron').cron({value: ''});
 
         $('#instances-filter').change(function () {
-            that.main.saveConfig('instancesFilter', $(this).val());
-            applyFilter($(this).val());
+            var val = $(this).val();
+            if (val) {
+                $(this).addClass('input-not-empty');
+                $('#instances-filter-clear').show();
+            } else {
+                $(this).removeClass('input-not-empty');
+                $('#instances-filter-clear').hide();
+            }
+            that.main.saveConfig('instancesFilter', val);
+            applyFilter(val);
         }).keyup(function () {
             if (that.filterTimeout) clearTimeout(that.filterTimeout);
             that.filterTimeout = setTimeout(function () {
@@ -752,7 +758,10 @@ function Instances(main) {
             }, 300);
         });
         if (that.main.config.instancesFilter && that.main.config.instancesFilter[0] !== '{') {
-            $('#instances-filter').val(that.main.config.instancesFilter);
+            $('#instances-filter').addClass('input-not-empty').val(that.main.config.instancesFilter);
+            $('#instances-filter-clear').show();
+        } else {
+            $('#instances-filter-clear').hide();
         }
 
         //$('#load_grid-instances').show();

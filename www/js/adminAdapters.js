@@ -6,8 +6,9 @@ function Adapters(main) {
     this.curRepository =         null;
     this.curRepoLastUpdate =     null;
     this.curInstalled =          null;
-    this.list = [];
-    this.$grid =  $('#grid-adapters');
+    this.list   = [];
+    this.$grid  =  $('#grid-adapters');
+    this.$tiles =  $('#grid-adapters-tiles');
     this.main = main;
     this.tree = [];
     this.data = {};
@@ -54,6 +55,7 @@ function Adapters(main) {
     this.onlyUpdatable = false;
     this.currentFilter = '';
     this.isCollapsed   = {};
+    this.isTiles = true;
 
     this.types = {
         occ:          'schedule'
@@ -95,158 +97,210 @@ function Adapters(main) {
         return version;
     }
 
+    function prepareTable() {
+        that.$grid.show();
+        that.$tiles.html('').hide();
 
-    this.prepare = function () {
-        that.$grid.fancytree({
-            extensions: ['table', 'gridnav', 'filter', 'themeroller'],
-            checkbox:   false,
-            table: {
-                indentation: 5      // indent 20px per node level
-            },
-            show: function(currentId, filter, onSuccess) {
-                that.sortTree();
-            },
-            source:     that.tree,
-            renderColumns: function(event, data) {
-                var node = data.node;
-                var $tdList = $(node.tr).find('>td');
-                var obj = that.data[node.key];
+        if (!that.$grid.data('inited')) {
+            that.$grid.data('inited', true);
+            that.$grid.fancytree({
+                extensions: ['table', 'gridnav', 'filter', 'themeroller'],
+                checkbox:   false,
+                table: {
+                    indentation: 5      // indent 20px per node level
+                },
+                show: function (currentId, filter, onSuccess) {
+                    that.sortTree();
+                },
+                source:     that.tree,
+                renderColumns: function(event, data) {
+                    var node = data.node;
+                    var $tdList = $(node.tr).find('>td');
+                    var obj = that.data[node.key];
 
 
 
-                function ellipsis(txt) {
-                    var ret = '<div style="padding-left: ' + lineIndent + '; overflow: hidden; white-space: nowrap; text-overflow: ellipsis !important;">' +
-                        txt +
-                        '</div>';
-                    return ret;
-                }
+                    function ellipsis(txt) {
+                        var ret = '<div style="padding-left: ' + lineIndent + '; overflow: hidden; white-space: nowrap; text-overflow: ellipsis !important;">' +
+                            txt +
+                            '</div>';
+                        return ret;
+                    }
 
-                if (!obj) {
-                    $tdList.eq(0).css({'font-weight': 'bold'});
-                    $tdList.eq(0).find('img').remove();
-                    $tdList.eq(0).find('span.fancytree-title').attr('style', 'padding-left: 0px !important');
+                    if (!obj) {
+                        $tdList.eq(0).css({'font-weight': 'bold'});
+                        $tdList.eq(0).find('img').remove();
+                        $tdList.eq(0).find('span.fancytree-title').attr('style', 'padding-left: 0px !important');
 
-                    //$(node.tr).addClass('ui-state-highlight');
+                        //$(node.tr).addClass('ui-state-highlight');
 
-                    // Calculate total count of adapter and count of installed adapter
-                    for (var c = 0; c < that.tree.length; c++) {
-                        if (that.tree[c].key === node.key) {
-                            $tdList.eq(1).html(that.tree[c].desc).css({'overflow': 'hidden', 'white-space': 'nowrap', position: 'relative'});
-                            var installed = 0;
-                            for (var k = 0; k < that.tree[c].children.length; k++) {
-                                if (that.data[that.tree[c].children[k].key].installed) installed++;
-                            }
-                            that.tree[c].installed = installed;
-                            node.data.installed = installed;
-                            var title;
-                            //if (!that.onlyInstalled && !that.onlyUpdatable) {
+                        // Calculate total count of adapter and count of installed adapter
+                        for (var c = 0; c < that.tree.length; c++) {
+                            if (that.tree[c].key === node.key) {
+                                $tdList.eq(1).html(that.tree[c].desc).css({'overflow': 'hidden', 'white-space': 'nowrap', position: 'relative'});
+                                var installed = 0;
+                                for (var k = 0; k < that.tree[c].children.length; k++) {
+                                    if (that.data[that.tree[c].children[k].key].installed) installed++;
+                                }
+                                that.tree[c].installed = installed;
+                                node.data.installed = installed;
+                                var title;
+                                //if (!that.onlyInstalled && !that.onlyUpdatable) {
                                 title = '[<span title="' + _('Installed from group') + '">' + installed + '</span> / <span title="' + _('Total count in group') + '">' + that.tree[c].children.length + '</span>]';
                                 //$tdList.eq(1).html(ellipsis('<b>'+installed + '</b> ' + _('of') + '<b> ' + that.tree[c].children.length + '</b> ' + _('Adapters from this Group installed')));
                                 $tdList.eq(1).html(ellipsis('<span class="dark-green">' + installed + '</span> ' + _('of') + '<span class="dark-blue"> ' + that.tree[c].children.length + '</span> ' + _('Adapters from this Group installed')));
-                            // } else {
-                            //     title = '<span title="' + _('Installed from group') + '">' + installed + '</span>';
-                            //     $tdList.eq(1).html(ellipsis('<b>'+installed + '</b> ' + _('Installed from group')));
-                            // }
+                                // } else {
+                                //     title = '<span title="' + _('Installed from group') + '">' + installed + '</span>';
+                                //     $tdList.eq(1).html(ellipsis('<b>'+installed + '</b> ' + _('Installed from group')));
+                                // }
 
-                            //$tdList.eq(4).html(title).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
-                            break;
+                                //$tdList.eq(4).html(title).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
+                                break;
+                            }
                         }
+                        return;
                     }
-                    return;
-                }
 
-                $tdList.eq(0).css({'overflow': 'hidden', 'white-space': 'nowrap'});
-                //$tdList.eq(1).html(that.data[node.key].desc).css({'overflow': 'hidden', "white-space": "nowrap", position: 'relative', 'font-weight': that.data[node.key].bold ? 'bold' : null});
+                    $tdList.eq(0).css({'overflow': 'hidden', 'white-space': 'nowrap'});
+                    //$tdList.eq(1).html(that.data[node.key].desc).css({'overflow': 'hidden', "white-space": "nowrap", position: 'relative', 'font-weight': that.data[node.key].bold ? 'bold' : null});
 
-                function setHtml(no, html) {
-                    return $tdList.eq(no).html(ellipsis(html));
-                }
+                    function setHtml(no, html) {
+                        return $tdList.eq(no).html(ellipsis(html));
+                    }
 
-                var idx = obj.desc.indexOf('<div');
-                var desc = idx >= 0 ? obj.desc.substr(0, idx) : obj.desc;
-                $tdList.eq(1).html(ellipsis(obj.desc))
-                    .attr('title', desc)
-                    .css({"white-space": "nowrap", position: 'relative', 'font-weight': obj.bold ? 'bold' : null}).find('>div>div')
-                    .css('height:22px !important')
-                ;
+                    var idx = obj.desc.indexOf('<div');
+                    var desc = idx >= 0 ? obj.desc.substr(0, idx) : obj.desc;
+                    $tdList.eq(1).html(ellipsis(obj.desc))
+                        .attr('title', desc)
+                        .css({"white-space": "nowrap", position: 'relative', 'font-weight': obj.bold ? 'bold' : null}).find('>div>div')
+                        .css('height:22px !important')
+                    ;
 
-                setHtml(2, obj.keywords).attr('title', obj.keywords);
+                    setHtml(2, obj.keywords).attr('title', obj.keywords);
 
-                // $tdList.eq(3).html(obj.installed).css({'padding-left': '10px', 'overflow': 'hidden', "white-space": "nowrap"});
-                // $tdList.eq(4).html(obj.version).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap", position: 'relative'});
-                // $tdList.eq(5).html(obj.platform).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
-                // $tdList.eq(6).html(obj.license).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
-                // $tdList.eq(7).html(obj.install).css({'text-align': 'center'});
-                $tdList.eq(3).html(obj.installed);
-                $tdList.eq(4).html(obj.version); //.css({ position: 'relative'});
-                setHtml(5, obj.platform);
-                setHtml(6, obj.license);
-                setHtml(7, obj.install);
+                    // $tdList.eq(3).html(obj.installed).css({'padding-left': '10px', 'overflow': 'hidden', "white-space": "nowrap"});
+                    // $tdList.eq(4).html(obj.version).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap", position: 'relative'});
+                    // $tdList.eq(5).html(obj.platform).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
+                    // $tdList.eq(6).html(obj.license).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
+                    // $tdList.eq(7).html(obj.install).css({'text-align': 'center'});
+                    $tdList.eq(3).html(obj.installed);
+                    $tdList.eq(4).html(obj.version); //.css({ position: 'relative'});
+                    setHtml(5, obj.platform);
+                    setHtml(6, obj.license);
+                    setHtml(7, obj.install);
 
-                that.initButtons(node.key);
-                // If we render this element, that means it is expanded
-                if (that.isCollapsed[obj.group]) {
-                    that.isCollapsed[obj.group] = false;
+                    that.initButtons(node.key);
+                    // If we render this element, that means it is expanded
+                    if (that.isCollapsed[obj.group]) {
+                        that.isCollapsed[obj.group] = false;
+                        that.main.saveConfig('adaptersIsCollapsed', JSON.stringify(that.isCollapsed));
+                    }
+                },
+                gridnav: {
+                    autofocusInput:   false,
+                    handleCursorKeys: true
+                },
+                filter: {
+                    mode: 'hide',
+                    autoApply: true
+                },
+                collapse: function(event, data) {
+                    if (that.isCollapsed[data.node.key]) return;
+                    that.isCollapsed[data.node.key] = true;
                     that.main.saveConfig('adaptersIsCollapsed', JSON.stringify(that.isCollapsed));
                 }
-            },
-            gridnav: {
-                autofocusInput:   false,
-                handleCursorKeys: true
-            },
-            filter: {
-                mode: 'hide',
-                autoApply: true
-            },
-            collapse: function(event, data) {
-                if (that.isCollapsed[data.node.key]) return;
-                that.isCollapsed[data.node.key] = true;
-                that.main.saveConfig('adaptersIsCollapsed', JSON.stringify(that.isCollapsed));
-            }
-        });
+            });
 
-        $('#btn_collapse_adapters').button({icons: {primary: 'ui-icon-folder-collapsed'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
-            $('#process_running_adapters').show();
-            setTimeout(function () {
-                that.$grid.fancytree('getRootNode').visit(function (node) {
-                    if (!that.filterVals.length || node.match || node.subMatch) node.setExpanded(false);
-                });
-                $('#process_running_adapters').hide();
-            }, 100);
-        });
+            $('#btn_collapse_adapters').show().button({icons: {primary: 'ui-icon-folder-collapsed'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
+                $('#process_running_adapters').show();
+                setTimeout(function () {
+                    that.$grid.fancytree('getRootNode').visit(function (node) {
+                        if (!that.filterVals.length || node.match || node.subMatch) node.setExpanded(false);
+                    });
+                    $('#process_running_adapters').hide();
+                }, 100);
+            });
 
-        $('#btn_expand_adapters').button({icons: {primary: 'ui-icon-folder-open'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
-            $('#process_running_adapters').show();
-            setTimeout(function () {
-                that.$grid.fancytree('getRootNode').visit(function (node) {
-                    if (!that.filterVals.length || node.match || node.subMatch)
-                        node.setExpanded(true);
-                });
-                $('#process_running_adapters').hide();
-            }, 100);
-        });
+            $('#btn_expand_adapters').show().button({icons: {primary: 'ui-icon-folder-open'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
+                $('#process_running_adapters').show();
+                setTimeout(function () {
+                    that.$grid.fancytree('getRootNode').visit(function (node) {
+                        if (!that.filterVals.length || node.match || node.subMatch)
+                            node.setExpanded(true);
+                    });
+                    $('#process_running_adapters').hide();
+                }, 100);
+            });
 
-        $('#btn_list_adapters').button({icons: {primary: 'ui-icon-grip-dotted-horizontal'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
+            $('#btn_list_adapters').show().button({icons: {primary: 'ui-icon-grip-dotted-horizontal'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
+                $('#process_running_adapters').show();
+                that.isList = !that.isList;
+                if (that.isList) {
+                    $('#btn_list_adapters').addClass('ui-state-error');
+                    $('#btn_expand_adapters').hide();
+                    $('#btn_collapse_adapters').hide();
+                    $(this).attr('title', _('list'));
+                } else {
+                    $('#btn_list_adapters').removeClass('ui-state-error');
+                    $('#btn_expand_adapters').show();
+                    $('#btn_collapse_adapters').show();
+                    $(this).attr('title', _('tree'));
+                }
+                that.main.saveConfig('adaptersIsList', that.isList);
+                $('#process_running_adapters').show();
+
+                setTimeout(function () {
+                    that.init(true);
+                    $('#process_running_adapters').hide();
+                }, 200);
+            });
+        } else {
+            $('#btn_collapse_adapters').show();
+            $('#btn_expand_adapters').show();
+            $('#btn_list_adapters').show();
+        }
+
+        if (that.isList) {
+            $('#btn_list_adapters').addClass('ui-state-error').attr('title', _('tree'));
+            $('#btn_expand_adapters').hide();
+            $('#btn_collapse_adapters').hide();
+        } else {
+            $('#btn_list_adapters').removeClass('ui-state-error').attr('title', _('list'));
+            $('#btn_expand_adapters').show();
+            $('#btn_collapse_adapters').show();
+        }
+    }
+
+    function prepareTiles() {
+        that.$grid.hide();
+        that.$tiles.show();
+        $('#btn_list_adapters').hide();
+        $('#btn_collapse_adapters').hide();
+        $('#btn_expand_adapters').hide();
+    }
+
+    this.prepare = function () {
+        $('#btn_switch_adapters').button({icons: {primary: 'ui-icon-image'}, text: false}).unbind('click').click(function () {
             $('#process_running_adapters').show();
-            that.isList = !that.isList;
-            if (that.isList) {
-                $('#btn_list_adapters').addClass('ui-state-error');
-                $('#btn_expand_adapters').hide();
-                $('#btn_collapse_adapters').hide();
-                $(this).attr('title', _('list'));
+            that.isTiles = !that.isTiles;
+
+            if (that.isTiles) {
+                $(this).button('option', 'icons', {primary: 'ui-icon-calculator'});
             } else {
-                $('#btn_list_adapters').removeClass('ui-state-error');
-                $('#btn_expand_adapters').show();
-                $('#btn_collapse_adapters').show();
-                $(this).attr('title', _('tree'));
+                $(this).button('option', 'icons', {primary: 'ui-icon-image'});
             }
-            that.main.saveConfig('adaptersIsList', that.isList);
-            $('#process_running_adapters').show();
+
+            that.main.saveConfig('adaptersIsTiles', that.isTiles);
 
             setTimeout(function () {
+                if (that.isTiles) {
+                    prepareTiles();
+                } else {
+                    prepareTable();
+                }
                 that.init(true);
                 $('#process_running_adapters').hide();
-            }, 200);
+            }, 50);
         });
 
         $('#btn_filter_adapters').button({icons: {primary: 'ui-icon-star'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
@@ -262,7 +316,7 @@ function Adapters(main) {
             setTimeout(function () {
                 that.init(true);
                 $('#process_running_adapters').hide();
-            }, 200);
+            }, 50);
         });
 
         $('#btn_filter_updates').button({icons: {primary: 'ui-icon-info'}, text: false})/*.css({width: 18, height: 18}).unbind('click')*/.click(function () {
@@ -357,7 +411,7 @@ function Adapters(main) {
                         }
                     ]
                 });
-        });
+            });
 
         $('#btn_upgrade_all').button({icons: {primary: 'ui-icon-flag'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
             that.main.confirmMessage(_('Do you want to upgrade all adapters?'), _('Question'), 'help', function (result) {
@@ -403,17 +457,24 @@ function Adapters(main) {
         });
 
         // Load settings
-        that.isList = that.main.config.adaptersIsList || false;
+        that.isTiles       = that.main.config.adaptersIsTiles || false;
+        that.isList        = that.main.config.adaptersIsList || false;
         that.onlyInstalled = that.main.config.adaptersOnlyInstalled || false;
         that.onlyUpdatable = that.main.config.adaptersOnlyUpdatable || false;
         that.currentFilter = that.main.config.adaptersCurrentFilter || '';
         that.isCollapsed   = that.main.config.adaptersIsCollapsed ? JSON.parse(that.main.config.adaptersIsCollapsed) : {};
-        $('#adapters-filter').val(that.currentFilter);
+        if (that.currentFilter) {
+            $('#adapters-filter').addClass('input-not-empty').val(that.currentFilter);
+            $('#instances-filter-clear').show();
+        } else {
+            $('#instances-filter-clear').hide();
+        }
 
-        if (that.isList) {
-            $('#btn_list_adapters').addClass('ui-state-error').attr('title', _('tree'));
-            $('#btn_expand_adapters').hide();
-            $('#btn_collapse_adapters').hide();
+        if (this.isTiles) {
+            $('#btn_switch_adapters').button('option', 'icons', {primary: 'ui-icon-calculator'});
+            prepareTiles();
+        } else {
+            prepareTable();
         }
 
         if (that.onlyInstalled) $('#btn_filter_adapters').addClass('ui-state-error');
@@ -439,9 +500,19 @@ function Adapters(main) {
             that.filterTimer = setTimeout(function () {
                 that.filterTimer = null;
                 that.currentFilter = $('#adapters-filter').val().toLowerCase();
-                event && event.target && $(event.target)[that.currentFilter ? 'addClass' : 'removeClass'] ('input-not-empty');
+                event && event.target && $(event.target)[that.currentFilter ? 'addClass' : 'removeClass']('input-not-empty');
+                if (that.currentFilter) {
+                    $('#adapters-filter-clear').show();
+                } else {
+                    $('#adapters-filter-clear').hide();
+                }
+
                 that.main.saveConfig('adaptersCurrentFilter', that.currentFilter);
-                that.$grid.fancytree('getTree').filterNodes(customFilter, false);
+                if (that.isTiles) {
+
+                } else {
+                    that.$grid.fancytree('getTree').filterNodes(customFilter, false);
+                }
             }, 400);
         }).trigger('change');
 
@@ -642,7 +713,7 @@ function Adapters(main) {
             this.getAdaptersInfo(this.main.currentHost, update, updateRepo, function (repository, installedList) {
                 var obj;
                 var version;
-                var tmp;
+                // var tmp;
                 var adapter;
 
                 var listInstalled = [];
@@ -691,7 +762,6 @@ function Adapters(main) {
                     return version;
                 }
 
-
                 // function xxgetVersionString(version, updatable, news, updatableError) {
                 //     //var span = getVersionSpan(version);
                 //     var color = getVersionClass(version);
@@ -710,7 +780,6 @@ function Adapters(main) {
                 //     version += '</div></div>';
                 //     return version;
                 // }
-
 
                 that.tree = [];
                 that.data = {};
@@ -823,7 +892,8 @@ function Adapters(main) {
 
                     that.data[adapter] = {
                         //image:      icon ? '<img src="' + icon + '" width="22px" height="22px" />' : '',
-                        image:      icon ? '<img src="' + icon + '" width="18px" height="18px" />' : '',
+                        image:      icon ? '<img src="' + icon + '" class="adapter-table-icon" />' : '',
+                        icon:       icon || '',
                         name:       adapter,
                         title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),
                         desc:       desc,
@@ -861,7 +931,7 @@ function Adapters(main) {
                                 folder:   true,
                                 expanded: !that.isCollapsed[that.data[adapter].group],
                                 children: [],
-                                icon:     that.groupImages[that.data[adapter].group] ,
+                                icon:     that.groupImages[that.data[adapter].group]
                                 //installed: 0
                             });
                             igroup = that.tree.length - 1;
@@ -911,11 +981,12 @@ function Adapters(main) {
 
                         var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
                         var desc = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
-                        desc += showUploadProgress(adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
+                        desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
                         that.data[adapter] = {
                             //image:      repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" width="22px" height="22px" />' : '',
-                            image:      repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" width="18px" height="18px" />' : '',
+                            image:      repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" class="adapter-table-icon" />' : '',
+                            icon:       repository[adapter].extIcon,
                             name:       adapter,
                             title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),
                             desc:       desc,
@@ -928,6 +999,7 @@ function Adapters(main) {
                                      '<div style="width: 22px; display: inline-block;">&nbsp;</div>' +
                                      '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit td-button">' + _('delete adapter') + '</button>' +
                                     ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-update-custom-submit td-button" title="' + _('install specific version') + '"></button>' : ''),
+                            // TODO do not show adapters not for this platform
                             platform:   obj.platform,
                             license:    obj.license || '',
                             licenseUrl: obj.licenseUrl || '',
@@ -972,35 +1044,61 @@ function Adapters(main) {
                     }
                 }
 
-                that.$grid.fancytree('getTree').reload(that.tree);
-                $('#grid-adapters').find('.fancytree-icon').each(function () {
-                    //if ($(this).attr('src')) $(this).css({width: 22, height: 22});
-                    if ($(this).attr('src')) $(this).css({width: 18, height: 18});
+                if (that.isTiles) {
+                    var text = '';
+                    for (var a in that.data) {
+                        if (!that.data.hasOwnProperty(a)) continue;
+                        var ad = that.data[a];
 
-                    $(this).hover(function () {
-                        var text = '<div class="icon-large" style="' +
-                            'left: ' + Math.round($(this).position().left + $(this).width() + 5) + 'px;"><img src="' + $(this).attr('src') + '"/></div>';
-                        var $big = $(text);
-                        $big.insertAfter($(this));
-                        $(this).data('big', $big[0]);
-                        var h = parseFloat($big.height());
-                        var top = Math.round($(this).position().top - ((h - parseFloat($(this).height())) / 2));
-                        if (h + top > (window.innerHeight || document.documentElement.clientHeight)) {
-                            top = (window.innerHeight || document.documentElement.clientHeight) - h;
+                        text += '<div class="tile" data-id="' + ad.name + '">';
+                        text += '    <div class="title">' + ad.title + '</div>';
+                        text += '    <img class="icon" src="' + ad.icon + '" />';
+                        text += '    <div class="desc">' + ad.desc + '</div>';
+                        text += '    <div class="buttons">' + ad.install + '</div>';
+                        text += '</div>';
+                    }
+                    that.$tiles.html(text);
+                    // init buttons
+                    for (var b in that.data) {
+                        if (that.data.hasOwnProperty(b)) {
+                            that.initButtons(b);
                         }
-                        $big.css({top: top});
+                    }
+                } else {
+                    that.$grid.fancytree('getTree').reload(that.tree);
+                    $('#grid-adapters').find('.fancytree-icon').each(function () {
+                        if ($(this).attr('src')) {
+                            $(this).css({width: 18, height: 18});
+                        }
 
-                    }, function () {
-                        var big = $(this).data('big');
-                        $(big).remove();
-                        $(this).data('big', undefined);
+                        $(this).hover(function () {
+                            var text = '<div class="icon-large" style="' +
+                                'left: ' + Math.round($(this).position().left + $(this).width() + 5) + 'px;"><img src="' + $(this).attr('src') + '"/></div>';
+                            var $big = $(text);
+                            $big.insertAfter($(this));
+                            $(this).data('big', $big[0]);
+                            var h = parseFloat($big.height());
+                            var top = Math.round($(this).position().top - ((h - parseFloat($(this).height())) / 2));
+                            if (h + top > (window.innerHeight || document.documentElement.clientHeight)) {
+                                top = (window.innerHeight || document.documentElement.clientHeight) - h;
+                            }
+                            $big.css({top: top});
+
+                        }, function () {
+                            var big = $(this).data('big');
+                            $(big).remove();
+                            $(this).data('big', undefined);
+                        });
                     });
-                });
-                $('#process_running_adapters').hide();
-                if (that.currentFilter) that.$grid.fancytree('getTree').filterNodes(customFilter, false);
 
-                that.sortTree();
-                that.enableColResize();
+                    if (that.currentFilter) {
+                        that.$grid.fancytree('getTree').filterNodes(customFilter, false);
+                    }
+
+                    that.sortTree();
+                    that.enableColResize();
+                }
+                $('#process_running_adapters').hide();
             });
         }
     };
@@ -1237,6 +1335,7 @@ function Adapters(main) {
 
     function showUploadProgress(group, adapter, percent) {
         var text = '';
+        var opened;
         if (adapter || typeof group === 'string') {
             if (adapter) {
                 text += '<div class="adapter-upload-progress" data-adapter-name="' + adapter + '"';
@@ -1244,8 +1343,10 @@ function Adapters(main) {
                 text += '<div class="group-upload-progress"';
             }
             text += ' data-adapter-group="' + group + '" style="position: absolute; width: 100%; height: 100%; opacity: ' + (percent ? 0.7 : 0) + '; top: 0; left: 0">';
+            opened = true;
         } else {
             percent = group;
+            group = null;
         }
         //percent = 80;
         if (percent) {
@@ -1260,7 +1361,9 @@ function Adapters(main) {
         }
         //text += percent ? '<table title="' + _('Upload') + ' ' + percent + '%" class="no-space" style="width:100%; height: 100%; opacity: 0.7"><tr style="height: 100%" class="no-space"><td class="no-space" style="width:' + percent + '%;background: blue"></td><td style="width:' + (100 - percent) + '%;opacity: 0.1" class="no-space"></td></tr></table>' : '';
 
-        if (adapter) text += '</div>';
+        if (opened) {
+            text += '</div>';
+        }
         return text;
     }
 
