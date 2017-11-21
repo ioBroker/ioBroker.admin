@@ -159,6 +159,16 @@ function span(txt, attr) {
     return '<span style="' + style + '">' + txt + '</span>';
 }
 
+function filterChanged(e) {
+    var $e = $(e);
+    var val = $e.val ();
+    var tr = $e.parent ().parent ();
+    tr.find ('td').last().css ({'display': val ? 'unset' : 'none'});   //
+    tr [val ? 'addClass' : 'removeClass'] ('filter-active');         // set background of <tr>
+    tr.find('button').attr('style' , 'background: transparent !important;');
+}
+
+
 (function ($) {
     'use strict';
 
@@ -1413,11 +1423,11 @@ function span(txt, attr) {
                 if (data.customButtonFilter) {
                     text += textCombobox(name);
                 } else {
-                    if (name === 'buttons' || name === 'button') {
+                    //if (name === 'buttons' || name === 'button') {
                         text += '<span style="padding-left: ' + lineIndent + '"></span>';
-                    } else {
-                    	text += '<table class="main-header-input-table"><tbody><tr><td style="padding-left: ' + lineIndent + '">' + _(name) + '</td></tr></tbody></table>';
-                	}
+                    // } else {
+                    //     text += '<table class="main-header-input-table"><tbody><tr><td style="padding-left: ' + lineIndent + '">' + _(name) + '</td></tr></tbody></table>';
+                    // }
                 }
             } else {
                 text += '<span style="padding-left: ' + lineIndent + '">' + _(name) + '</span>';
@@ -1611,7 +1621,7 @@ function span(txt, attr) {
                         $cnt.text('#' + cnt);
                     } else {
                         // create new span
-                        $firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
+                        $firstTD.append('<span class="select-id-cnt">#' + cnt + '</span>');
                     }
                 } else {
                     // remove this span, because object may be was updated
@@ -2515,14 +2525,15 @@ function span(txt, attr) {
             if (changeTimer) clearTimeout(changeTimer);
             //changeTimer = setTimeout(function() {
             if (event && event.target) {
-                var $e = $(event.target);
-                var val = $e.val();
-                //$e.parent().parent().css({background: val ? '#ffbfb6' : '#ffffff'});
-                //$e.css({background: val ? '#ffbfb6' : '#ffffff'});
-                //if (val) $e.addClass('input-not-empty'); else $e.removeClass('input-not-empty');
-                $e[val ? 'addClass' : 'removeClass'] ('input-not-empty');
-                $e.parent().parent().find('button').css({'display': val? 'unset' : 'none'});
-                $e.parent().parent()[val ? 'addClass' : 'removeClass'] ('filter-active');
+                // var $e = $ (event.target);
+                // var val = $e.val ();
+                // //$e.parent().parent().css({background: val ? '#ffbfb6' : '#ffffff'});
+                // //$e.css({background: val ? '#ffbfb6' : '#ffffff'});
+                // //if (val) $e.addClass('input-not-empty'); else $e.removeClass('input-not-empty');
+                // $e[val ? 'addClass' : 'removeClass'] ('input-not-empty');
+                // $e.parent().parent().find('button').css({'display': val? 'unset' : 'none'});
+                // $e.parent().parent()[val ? 'addClass' : 'removeClass'] ('filter-active');
+                filterChanged(event.target);
             }
 
             var $ee = $('#process_running_' + data.instance);
@@ -2829,7 +2840,8 @@ function span(txt, attr) {
             if ($cnt.length) {
                 $cnt.text('#' + cnt);
             } else {
-                $firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
+                //$firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
+                $firstTD.append('<span class="select-id-cnt">#' + cnt + '</span>');
             }
         } else {
             $firstTD.find('.select-id-cnt').remove();

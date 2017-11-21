@@ -3,16 +3,16 @@ function Adapters(main) {
 
     var that = this;
 
-    this.curRepository =         null;
-    this.curRepoLastUpdate =     null;
-    this.curInstalled =          null;
+    this.curRepository     = null;
+    this.curRepoLastUpdate = null;
+    this.curInstalled      = null;
     this.list   = [];
     this.$grid  =  $('#grid-adapters');
     this.$tiles =  $('#grid-adapters-tiles');
-    this.main = main;
-    this.tree = [];
-    this.data = {};
-    this.urls = {};
+    this.main   = main;
+    this.tree   = [];
+    this.data   = {};
+    this.urls   = {};
     this.groupImages = {
         'common adapters_group':  'img/common.png',
         'general_group':          'img/common.png',
@@ -279,6 +279,26 @@ function Adapters(main) {
         $('#btn_expand_adapters').hide();
     }
 
+    function onOnlyUpdatableChanged() {
+        if (that.onlyUpdatable) {
+            $('#btn_filter_updates').addClass('ui-state-error');
+            $('#btn_upgrade_all').show();
+        } else {
+            $('#btn_upgrade_all').hide();
+            $('#btn_filter_updates').removeClass('ui-state-error');
+        }
+    }
+
+    function onExpertmodeChanged() {
+        if (that.main.config.expertMode) {
+            $('#btn-adapters-expert-mode').addClass('ui-state-error');
+            $('#btn_upgrade_all').show();
+        } else {
+            $('#btn-adapters-expert-mode').removeClass('ui-state-error');
+            onOnlyUpdatableChanged();
+        }
+    }
+
     this.prepare = function () {
         $('#btn_switch_adapters').button({icons: {primary: 'ui-icon-image'}, text: false}).unbind('click').click(function () {
             $('#process_running_adapters').show();
@@ -322,13 +342,7 @@ function Adapters(main) {
         $('#btn_filter_updates').button({icons: {primary: 'ui-icon-info'}, text: false})/*.css({width: 18, height: 18}).unbind('click')*/.click(function () {
             $('#process_running_adapters').show();
             that.onlyUpdatable = !that.onlyUpdatable;
-            if (that.onlyUpdatable) {
-                $('#btn_filter_updates').addClass('ui-state-error');
-                $('#btn_upgrade_all').show();
-            } else {
-                $('#btn_filter_updates').removeClass('ui-state-error');
-                $('#btn_upgrade_all').hide();
-            }
+            onOnlyUpdatableChanged();
             that.main.saveConfig('adaptersOnlyUpdatable', that.onlyUpdatable);
 
             setTimeout(function () {
@@ -345,11 +359,13 @@ function Adapters(main) {
             .unbind('click')
             .click(function () {
                 // prepare adapters
-                var text = '<option value="">' + _('none') + '</option>';
+                var text  = '<option value="">' + _('none') + '</option>';
                 var order = [];
                 var url;
                 for (url in that.urls) {
-                    order.push(url);
+                    if (that.urls.hasOwnProperty(url)) {
+                        order.push(url);
+                    }
                 }
                 order.sort();
 
@@ -477,14 +493,7 @@ function Adapters(main) {
             prepareTable();
         }
 
-        if (that.onlyInstalled) $('#btn_filter_adapters').addClass('ui-state-error');
-
-        if (that.onlyUpdatable || that.main.config.expertMode) {
-            if (that.onlyUpdatable) $('#btn_filter_updates').addClass('ui-state-error');
-            $('#btn_upgrade_all').show();
-        } else {
-            $('#btn_upgrade_all').hide();
-        }
+        onExpertmodeChanged();
 
         $('#btn_refresh_adapters').button({icons: {primary: 'ui-icon-refresh'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
             that.init(true, true);
@@ -523,18 +532,19 @@ function Adapters(main) {
 
     this.updateExpertMode = function () {
         this.init(true);
-        if (that.main.config.expertMode) {
-            $('#btn-adapters-expert-mode').addClass('ui-state-error');
-            $('#btn_upgrade_all').show();
-        } else {
-            $('#btn-adapters-expert-mode').removeClass('ui-state-error');
-
-            if (that.onlyUpdatable) {
-                $('#btn_upgrade_all').show();
-            } else {
-                $('#btn_upgrade_all').hide();
-            }
-        }
+        onExpertmodeChanged();
+        // if (that.main.config.expertMode) {
+        //     $('#btn-adapters-expert-mode').addClass('ui-state-error');
+        //     $('#btn_upgrade_all').show();
+        // } else {
+        //     $('#btn-adapters-expert-mode').removeClass('ui-state-error');
+//
+        //     if (that.onlyUpdatable) {
+        //         $('#btn_upgrade_all').show();
+        //     } else {
+        //         $('#btn_upgrade_all').hide();
+        //     }
+        // }
     };
 
     function customFilter(node) {
@@ -748,10 +758,9 @@ function Adapters(main) {
                     var title = color + '\n\r' + (news || '');
                     //version = '<table style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
                     version = //'<div style="height: 100% !important;">' +
-                        //'<table style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'color: blue;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
-                        '<table style="cursor: alias; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'color: blue;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
+                        '<table style="cursor: alias; width: 100%; text-align: center; border: 0; border-spacing: 0;' + (news ? 'color: blue;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
                         '<tr class="' + color + 'Bg">' +
-                        '<td title="'+title+'">' + version + '</td>' +
+                        '<td title="' + title + '">' + version + '</td>' +
                         '<td style="border: 0; padding: 0; width: 30px">';
                     if (updatable) {    //xxx
                         version += '<button class="adapter-update-submit" data-adapter-name="' + adapter + '" ' + (updatableError ? ' disabled title="' + updatableError + '"' : 'title="' + _ ('update') + '"') + '></button>';

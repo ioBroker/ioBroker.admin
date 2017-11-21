@@ -177,7 +177,8 @@ function IobListHeader (header, options) {
             if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
             elem.selectedVal = $id.val();
             eventFilterTimeout = setTimeout(self.doFilter, what!=='combobox' ? 400 : 0);
-            elem.$filter.parent().parent()[elem.selectedVal ? 'addClass' : 'removeClass'] ('filter-active');
+            filterChanged($id);
+            //elem.$filter.parent().parent()[elem.selectedVal ? 'addClass' : 'removeClass'] ('filter-active');
         }).keyup(function (event) {
             if (event.which === 13) {
                 self.doFilter();

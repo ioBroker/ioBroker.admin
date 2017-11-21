@@ -42,9 +42,10 @@ function Events(main) {
 
         function changeHandler(id) {
             if (id[0] !== '#') id = '#' + id;
-            $(id).change(function () {
+            $(id).change(function (event) {
                 if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
                 eventFilterTimeout = setTimeout(filterEvents, 1000);
+                filterChanged(event.target);
             }).keyup(function (e) {
                 if (e.which === 13) {
                     filterEvents();
@@ -147,7 +148,7 @@ function Events(main) {
             var fi = filter[n];
             var $fi = fi.$ = $('#event-filter-' + n);
             if (!$fi.length) return;
-            
+
             fi.setAllOption = (function ($fi_, n_) {
                 return function () {
                     $fi_.html('<option value="">' + _(n_) + ' (' + _('all') + ')</option>');

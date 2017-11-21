@@ -8,6 +8,13 @@ function Groups(main) {
     this.main    = main;
     this.groupLastSelected = null;
 
+    function onFilterChanged() {
+        var inputs = $('#gview_grid-groups').find('.main-header-input-table>tbody>tr>td>input');
+        inputs.each(function (i, o) {
+            filterChanged(o);
+        })
+    }
+
     this.prepare = function () {
         that.$grid.jqGrid({
             datatype: 'local',
@@ -55,7 +62,10 @@ function Groups(main) {
             enableClear:   false,
             afterSearch:   function () {
                 that.initButtons();
-            }
+            },
+            beforeSearch: onFilterChanged,
+            beforeClear: onFilterChanged
+
         }).navGrid('#pager-groups', {
             search:  false,
             edit:    false,
@@ -102,6 +112,7 @@ function Groups(main) {
             if (event.which == 13) saveGroup();
         });
         $("#load_grid-groups").show();
+        onFilterChanged();
 
         var operations = [
             'http',
