@@ -432,7 +432,7 @@ table.main-header-input-table > tbody > tr.filter-active > td > button {
 }
 table.main-header-input-table > tbody > tr.filter-active > td > input,
 table.main-header-input-table > tbody > tr.filter-active > td > select,
-.input-not-empty {
+table.main-header-input-table > tbody > tr.filter-active {
   background-color: #ffbfb6 !important;
 }
 table.main-header-input-table > tbody > tr > td > select > option {
@@ -1163,17 +1163,12 @@ table.events-list-table > tbody > tr > td {
   padding: 0;
   border: 0;
 }
+#grid-adapters > thead > tr {
+  cursor: default;
+}
 #grid-adapters .adapter-table-icon {
   width: 18px;
   height: 18px;
-}
-.fancytree-title {
-  padding-left: 5px !important;
-  display: inline-flex !important;
-  align-items: center;
-}
-#grid-adapters > thead > tr {
-  cursor: default;
 }
 /** adapters end **/
 .main-admin-buttons {

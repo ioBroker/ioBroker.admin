@@ -5,6 +5,7 @@
   "contributors": [
     "bluefox <dogafox@gmail.com>",
     "apollon77",
+    "soef <soef@gmx.net>",
     "hobbyquaker <hq@ccu.io>"
   ],
   "homepage": "https://github.com/ioBroker/ioBroker.admin",
@@ -37,11 +38,9 @@
     "xtend": "^4.0.1"
   },
   "devDependencies": {
-    "grunt": "^1.0.1",
-    "grunt-replace": "^1.0.1",
-    "grunt-contrib-jshint": "^1.1.0",
-    "grunt-jscs": "^3.0.1",
-    "grunt-http": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-less": "^3.3.2",
+    "gulp-watch-less": "^1.0.1",
     "mocha": "^3.5.3",
     "chai": "^4.1.2"
   },
