@@ -1,4 +1,7 @@
-function IobListHeader(header, options) {
+
+var addAll2FilterCombobox = false;
+
+function IobListHeader (header, options) {
     if (!(this instanceof IobListHeader)) return new IobListHeader(header, options);
 
     if (options === undefined) options = {};
@@ -29,26 +32,48 @@ function IobListHeader(header, options) {
     };
     if (options.list) this.setList(options.list);
 
+    // this.syncHeader = function () {
+    //     if (typeof $listTds !== 'object') return;
+    //
+    //     this.syncHeader = function() {
+    //         var offs = $header.selectID_Offset || 0;
+    //         $listTds.each(function (i, o) {
+    //             if (i >= $listTds.length - 1) return;
+    //             var x = $(o).width();
+    //             if (x) $ ($headerThs[i]).width(x + offs);
+    //         });
+    //         if ($header.selectID_Offset === undefined) {
+    //             var x = $($listTds[1]).offset().left;
+    //             if (x) {
+    //                 $header.selectID_Offset = x - $($headerThs[1]).offset().left;
+    //                 this.syncHeader();
+    //             }
+    //         }
+    //     };
+    //     this.syncHeader();
+    // };
+
     this.syncHeader = function () {
         if (typeof $listTds !== 'object') return;
-
+        let $dlg = $($headerThs[0]);
         this.syncHeader = function() {
-            var offs = $header.selectID_Offset || 0;
-            $listTds.each(function (i, o) {
+            var offs = $dlg.selectID_Offset || 0;
+            $listTds.each (function (i, o) {
                 if (i >= $listTds.length - 1) return;
-                var x = $(o).width();
-                if (x) $ ($headerThs[i]).width(x + offs);
+                let x = $(o).width();
+                if (x) $ ($headerThs[i]).width (x + offs);
             });
-            if ($header.selectID_Offset === undefined) {
-                var x = $($listTds[1]).offset().left;
+            if ($dlg.selectID_Offset === undefined) {
+                let x = $($listTds[1]).offset ().left;
                 if (x) {
-                    $header.selectID_Offset = x - $($headerThs[1]).offset().left;
-                    this.syncHeader();
+                    $dlg.selectID_Offset = x - $ ($headerThs[1]).offset ().left;
+                    this.syncHeader($dlg);
                 }
             }
         };
         this.syncHeader();
     };
+
 
     var resizeTimer;
     $(window).resize(function (x, y) {
@@ -67,7 +92,7 @@ function IobListHeader(header, options) {
     this.doFilter = function () {};
 
     function allOption(name, selectedVal) {
-        name = name ? _(name) + ' ('+_('all') + ')' : _('all');
+        if (addAll2FilterCombobox) name = name ? _(name) + ' ('+_('all') + ')' : _('all');
         return '<option value="" ' + ((selectedVal === "") ? 'selected' : '') + '>' + name + '</option>';
     }
 
@@ -78,22 +103,27 @@ function IobListHeader(header, options) {
         var txt = '';
         switch (what) {
             case 'combobox':
-                txt =
-                    '<td style="width: 100%">' +
-                    '    <select id="' + id + '" title="' + title + '">'+'</select>' +
-                    '</td>';
-                break;
-            case 'edit':
-                txt =
-                    '<td style="width: 100%">' +
-                    '    <input placeholder="' + title + '" type="text" id="' + id + '" title="' + title + '">' +
+                txt = '' +
+                    //'<td style="width: 100%">' +
+                    '<td>' +
+                    '    <select id="' + id + '" title="${title}">'+'</select>' +
                     '</td>' +
                     '<td>' +
-                    '    <button id="' + id + '-clear" role="button" title="${title}"></button>' +
+                    '    <button id="' + id + '-clear" role="button" title=""></button>' +
                     '</td>';
                 break;
-            case 'text':
-                txt =
+            case "edit":
+                txt = '' +
+                    //'<td style="width: 100%">' +
+                    '<td>' +
+                    '    <input id="' + id + '" placeholder="' + title + '" type="text" id="${id}" title="' + title + '">' +
+                    '</td>' +
+                    '<td>' +
+                    '    <button id="' + id + '-clear" role="button" title="' + title + '"></button>' +
+                    '</td>';
+                break;
+            case "text":
+                txt = '' +
                     '<td style="width: 100%"><span>' + title +
                     '</span></td>';
                 break;
@@ -102,10 +132,12 @@ function IobListHeader(header, options) {
         $header.append (
             //'<td class="event-column-' + ++cnt + '">' +
             '<th>' +
-            '<table class="main-header-input-table" style="width: 100%;">' +
+            //'<table class="main-header-input-table" style="width: 100%;">' +
+            '<table class="main-header-input-table">' +
             '    <tbody>' +
-            '    <tr style="background: #ffffff; ">' +
-                    txt +
+            //'    <tr style="background: #ffffff; ">' +
+            '    <tr>' +
+            txt +
             '    </tr>' +
             '    </tbody>' +
             '</table>' +
@@ -163,10 +195,12 @@ function IobListHeader(header, options) {
         });
 
         var eventFilterTimeout;
-        $id.change(function () {
+        $id.change(function (event) {
             if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
             elem.selectedVal = $id.val();
             eventFilterTimeout = setTimeout(self.doFilter, what!=='combobox' ? 400 : 0);
+            filterChanged($id);
+            //elem.$filter.parent().parent()[elem.selectedVal ? 'addClass' : 'removeClass'] ('filter-active');
         }).keyup(function (event) {
             if (event.which === 13) {
                 self.doFilter();

@@ -95,6 +95,26 @@ function Adapters(main) {
         return version;
     }
 
+    function onOnlyUpdatableChanged() {
+        if (that.onlyUpdatable) {
+            $ ('#btn_filter_updates').addClass ('ui-state-error');
+            $ ('#btn_upgrade_all').show ();
+        } else {
+            $ ('#btn_upgrade_all').hide ();
+            $ ('#btn_filter_updates').removeClass ('ui-state-error');
+        }
+    }
+
+    function onExpertmodeChanged() {
+        if (that.main.config.expertMode) {
+            $('#btn-adapters-expert-mode').addClass('ui-state-error');
+            $('#btn_upgrade_all').show();
+        } else {
+            $('#btn-adapters-expert-mode').removeClass('ui-state-error');
+            onOnlyUpdatableChanged();
+        }
+    }
+
 
     this.prepare = function () {
         that.$grid.fancytree({
@@ -162,7 +182,7 @@ function Adapters(main) {
                     return $tdList.eq(no).html(ellipsis(html));
                 }
 
-                var idx = obj.desc.indexOf('<div>');
+                var idx = obj.desc.indexOf('<div');
                 var desc = idx >= 0 ? obj.desc.substr(0, idx) : obj.desc;
                 $tdList.eq(1).html(ellipsis(obj.desc))
                     .attr('title', desc)
@@ -268,13 +288,15 @@ function Adapters(main) {
         $('#btn_filter_updates').button({icons: {primary: 'ui-icon-info'}, text: false})/*.css({width: 18, height: 18}).unbind('click')*/.click(function () {
             $('#process_running_adapters').show();
             that.onlyUpdatable = !that.onlyUpdatable;
-            if (that.onlyUpdatable) {
-                $('#btn_filter_updates').addClass('ui-state-error');
-                $('#btn_upgrade_all').show();
-            } else {
-                $('#btn_filter_updates').removeClass('ui-state-error');
-                $('#btn_upgrade_all').hide();
-            }
+            onOnlyUpdatableChanged();
+
+            // if (that.onlyUpdatable) {
+            //     $('#btn_filter_updates').addClass('ui-state-error');
+            //     $('#btn_upgrade_all').show();
+            // } else {
+            //     $('#btn_filter_updates').removeClass('ui-state-error');
+            //     $('#btn_upgrade_all').hide();
+            // }
             that.main.saveConfig('adaptersOnlyUpdatable', that.onlyUpdatable);
 
             setTimeout(function () {
@@ -416,14 +438,15 @@ function Adapters(main) {
             $('#btn_collapse_adapters').hide();
         }
 
-        if (that.onlyInstalled) $('#btn_filter_adapters').addClass('ui-state-error');
-
-        if (that.onlyUpdatable || that.main.config.expertMode) {
-            if (that.onlyUpdatable) $('#btn_filter_updates').addClass('ui-state-error');
-            $('#btn_upgrade_all').show();
-        } else {
-            $('#btn_upgrade_all').hide();
-        }
+        onExpertmodeChanged();
+        // if (that.onlyInstalled) $('#btn_filter_adapters').addClass('ui-state-error');
+        //
+        // if (that.onlyUpdatable || that.main.config.expertMode) {
+        //     if (that.onlyUpdatable) $('#btn_filter_updates').addClass('ui-state-error');
+        //     $('#btn_upgrade_all').show();
+        // } else {
+        //     $('#btn_upgrade_all').hide();
+        // }
 
         $('#btn_refresh_adapters').button({icons: {primary: 'ui-icon-refresh'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
             that.init(true, true);
@@ -452,18 +475,19 @@ function Adapters(main) {
 
     this.updateExpertMode = function () {
         this.init(true);
-        if (that.main.config.expertMode) {
-            $('#btn-adapters-expert-mode').addClass('ui-state-error');
-            $('#btn_upgrade_all').show();
-        } else {
-            $('#btn-adapters-expert-mode').removeClass('ui-state-error');
-
-            if (that.onlyUpdatable) {
-                $('#btn_upgrade_all').show();
-            } else {
-                $('#btn_upgrade_all').hide();
-            }
-        }
+        onExpertmodeChanged();
+        // if (that.main.config.expertMode) {
+        //     $('#btn-adapters-expert-mode').addClass('ui-state-error');
+        //     $('#btn_upgrade_all').show();
+        // } else {
+        //     $('#btn-adapters-expert-mode').removeClass('ui-state-error');
+        //
+        //     if (that.onlyUpdatable) {
+        //         $('#btn_upgrade_all').show();
+        //     } else {
+        //         $('#btn_upgrade_all').hide();
+        //     }
+        // }
     };
 
     function customFilter(node) {
@@ -677,7 +701,7 @@ function Adapters(main) {
                     var title = color + '\n\r' + (news || '');
                     //version = '<table style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
                     version = //'<div style="height: 100% !important;">' +
-                        '<table style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'color: blue;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
+                        '<table style="cursor: alias; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'color: blue;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
                         '<tr class="' + color + 'Bg">' +
                         '<td title="'+title+'">' + version + '</td>' +
                         '<td style="border: 0; padding: 0; width: 30px">';
@@ -1246,7 +1270,18 @@ function Adapters(main) {
         } else {
             percent = group;
         }
-        text += percent ? '<table title="' + _('Upload') + ' ' + percent + '%" class="no-space" style="width:100%; height: 100%; opacity: 0.7"><tr style="height: 100%" class="no-space"><td class="no-space" style="width:' + percent + '%;background: blue"></td><td style="width:' + (100 - percent) + '%;opacity: 0.1" class="no-space"></td></tr></table>' : '';
+        //percent = 80;
+        if (percent) {
+            text +=
+                '<table style="height: 3px; " title="' + _('Upload') + ' ' + percent + '%" class="no-space" style="width:100%; height: 100%; opacity: 0.7">' +
+                    '<tr style="height: 100%" class="no-space">' +
+                        '<td class="no-space" style="width:' + percent + '%;background: blue"></td>' +
+                        '<td style="width:' + (100 - percent) + '%;opacity: 0.1" class="no-space"></td>' +
+                    '</tr>' +
+                '</table>'
+            ;
+        }
+        //text += percent ? '<table title="' + _('Upload') + ' ' + percent + '%" class="no-space" style="width:100%; height: 100%; opacity: 0.7"><tr style="height: 100%" class="no-space"><td class="no-space" style="width:' + percent + '%;background: blue"></td><td style="width:' + (100 - percent) + '%;opacity: 0.1" class="no-space"></td></tr></table>' : '';
 
         if (adapter) text += '</div>';
         return text;

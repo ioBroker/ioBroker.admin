@@ -1,0 +1,189 @@
+
+@import "common";
+
+
+#grid-history {
+    font-size: small;
+}
+.grid-history-odd {
+    background: #eee;
+}
+.grid-history-even {
+
+}
+.true {
+    color: #06960E;
+    font-weight: bold;
+}
+.false {
+    color: #D92626;
+    font-weight: normal;
+}
+.error {
+    color: #D92626;
+    font-weight: normal;
+}
+
+
+.highlight {
+    animation: highlight 2s;
+}
+
+@-moz-keyframes spin    { 100% { -moz-transform:    rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin         { 100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
+
+
+#drop-zone {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    opacity: 0.8;
+    top: 0;
+    left: 0;
+    background: #eee;
+    border: 1px solid #ccc;
+
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    z-index: 1;
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.dropZone-error {
+    background: #faa !important;
+    color: #f00;
+}
+
+
+.objects-folder {
+    height: 0.8em;
+    width: 0.8em;
+    margin: 0.3em;
+}
+
+
+.objects-name-coll-table-td {
+    border-spacing: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+.objects-name-coll-icon {
+    /*position: relative;*/
+    /*top: 3px;*/
+    vertical-align: sub;
+}
+
+.objects-name-coll-title {
+    border-spacing: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    display: inline-block;
+    padding-left: @line-indent;
+    vertical-align: middle;
+}
+
+.objects-inline-edit {
+    width: 100%;
+    height: 24px;
+    border:0;
+    padding:0;
+    margin:0;
+    padding-left:4px;
+}
+
+
+table.objects-list-table td {
+    border: @td-border;
+}
+
+.objects-list-table {
+    &:extend(.new-iob-list-table);
+    width: calc(~'100% - 10px');
+    margin-left:1px; /* for mouse over rahmen */
+    margin-right:5px;
+
+    outline: 5px;
+    outline-offset: -1px;
+    border-collapse: collapse;
+    padding:0;
+    table-layout:fixed;
+    overflow:auto;
+    white-space:nowrap;
+}
+
+.objects-list-table>tbody>tr>td {
+    padding-left: @line-indent;
+}
+
+.objects-list-table .fancytree-title {
+    font-weight: normal !important;
+}
+
+/** inline edit **/
+/**/
+.select-id-quick-edit-ok,
+.select-id-quick-edit-cancel {
+    right: 22px;
+    cursor: pointer;
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 4px;
+    border-radius: 0;
+    vertical-align: middle;
+    z-index: 3;
+}
+.select-id-quick-edit-cancel {
+    right: 6px;
+}
+select ~ .select-id-quick-edit-ok,        // only if type = combobx
+select ~ .select-id-quick-edit-cancel {   // only if type = combobx
+    top:1px;
+}
+
+@quick-edit-padding: 4px;
+.objects-inline-edit {
+    position: relative;
+    left: -@quick-edit-padding;
+    padding-left: @quick-edit-padding;
+    padding-right: @quick-edit-padding;
+    width: calc(~'100% - 0px');
+    //max-width: calc(~'100px - 10px');
+    z-index: 2;
+    font-family: @iob-font;
+    font-size: @list-font-size;
+    vertical-align: middle;
+    text-overflow-mode: clip;
+}
+.objects-name-coll-title .objects-inline-edit {  // only for object name
+    //background:#f00;
+    width: calc(~'100% + '@quick-edit-padding - 1);
+
+}
+input.objects-inline-edit {
+    width: calc(~'100% - 2px');
+    z-index: 2;
+}
+.objects-name-coll-title {
+}
+
+.objects-list-table>colgroup>col:nth-child(8) {
+    width: 80px !important;
+    min-width: 80px !important;
+}
+
+.grid-objects-head,
+.grid-objects-head tr.ui-widget-header th {
+    line-height: 1.6em !important;
+    background-color: #e0e0e0;
+    text-align: left;
+    color: #000;
+    font-size: @list-font-size !important;
+}

@@ -48,6 +48,22 @@ function States(main) {
         return obj;
     }
 
+    // function filterChanged(e) {
+    //     var $e = $(e);
+    //     var val = $e.val ();
+    //     //$e.parent ().parent ().find ('button').css ({'display': val ? 'unset' : 'none'});   //
+    //     $e.parent ().parent ().find ('td').last().css ({'display': val ? 'unset' : 'none'});   //
+    //     $e.parent ().parent ()[val ? 'addClass' : 'removeClass'] ('filter-active');         // set background of <tr>
+    // }
+
+
+    function onFilterChanged() {
+         var inputs = $('#gview_grid-states').find('.main-header-input-table>tbody>tr>td>input');
+         inputs.each(function (i, o) {
+             filterChanged(o);
+         })
+    }
+
     this.prepare = function () {
         var stateEdit = false;
         var stateLastSelected;
@@ -93,15 +109,16 @@ function States(main) {
                     stateLastSelected = id;
                 }
                 var _id = id.substring(6);//'state_'.length
+                var object = main.objects[_id];
 
-                if (main.objects[_id] &&
-                    main.objects[_id].common &&
-                    main.objects[_id].common.type == 'boolean' &&
-                    main.objects[_id].common.states) {
-                    var states = main.objects[_id].common.states;
-                    if (typeof main.objects[_id].common.states == 'string' && main.objects[_id].common.states[0] == '{') {
+                if (object &&
+                    object.common &&
+                    object.common.type == 'boolean' &&
+                    object.common.states) {
+                    var states = object.common.states;
+                    if (typeof object.common.states == 'string' && object.common.states[0] == '{') {
                         try {
-                            states = JSON.parse(main.objects[_id].common.states);
+                            states = JSON.parse(object.common.states);
                             var text = '';
                             for (var s in states) {
                                 text += text ? ';' : '';
@@ -112,7 +129,7 @@ function States(main) {
                             console.error('Cannot parse states: ' + main.objects[_id].common.states);
                             states = null;
                         }
-                    } else if (typeof main.objects[_id].common.states == 'object') {
+                    } else if (typeof object.common.states == 'object') {
                         var text = '';
                         for (var s in states) {
                             text += text ? ';' : '';
@@ -137,9 +154,9 @@ function States(main) {
 
                     }
                 } else if (
-                    main.objects[_id] &&
-                    main.objects[_id].common &&
-                    main.objects[_id].common.type == 'boolean') {
+                    object &&
+                    object.common &&
+                    object.common.type == 'boolean') {
                     that.$grid.setColProp('val', {
                         editable:    true,
                         edittype:    'checkbox',
@@ -147,14 +164,14 @@ function States(main) {
                         align:       'center'
                     });
                 } else if (
-                    main.objects[_id] &&
-                    main.objects[_id].common &&
-                    main.objects[_id].common.type == 'number' &&
-                    main.objects[_id].common.states) {
-                    var states = main.objects[_id].common.states;
-                    if (typeof main.objects[_id].common.states == 'string' && main.objects[_id].common.states[0] == '{') {
+                    object &&
+                    object.common &&
+                    object.common.type == 'number' &&
+                    object.common.states) {
+                    var states = object.common.states;
+                    if (typeof object.common.states == 'string' && object.common.states[0] == '{') {
                         try {
-                            states = JSON.parse(main.objects[_id].common.states);
+                            states = JSON.parse(object.common.states);
                             var text = '';
                             for (var s in states) {
                                 text += text ? ';' : '';
@@ -165,7 +182,7 @@ function States(main) {
                             console.error('Cannot parse states: ' + main.objects[_id].common.states);
                             states = null;
                         }
-                    } else if (typeof main.objects[_id].common.states == 'object') {
+                    } else if (typeof object.common.states == 'object') {
                         var text = '';
                         for (var s in states) {
                             text += text ? ';' : '';
@@ -258,7 +275,10 @@ function States(main) {
                 //initStateButtons();
                 // Save filter
                 that.main.saveConfig('statesFilter', that.$grid.getGridParam("postData").filters);
-            }
+            },
+            beforeSearch: onFilterChanged,
+            beforeClear: onFilterChanged
+
         }).navGrid('#pager-states', {
             search:  false,
             edit:    false,
@@ -288,6 +308,7 @@ function States(main) {
             }
         }
         $('#load_grid-states').show();
+        onFilterChanged();
     };
 
     this.init = function (update) {

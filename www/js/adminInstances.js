@@ -1213,11 +1213,12 @@ function Instances(main) {
         if (!$e.find('.ui-button-icon-primary').length) {
             $e.each(function () {
                 var id = $(this).attr('data-instance-id');
-                $e.button({icons: {primary: that.main.objects[id].common.enabled ? 'ui-icon-pause': 'ui-icon-play'}, text: false})
-                    //.css({width: '2em', height: '2em', 'background-color': that.main.objects[id].common.enabled ? 'lightgreen' : '#FF9999'})
-                    //.css({width: '1.8em', height: '1.8em', 'background-color': that.main.objects[id].common.enabled ? 'lightgreen' : '#FF9999'})
-                    .css({'background-color': that.main.objects[id].common.enabled ? 'lightgreen' : '#FF9999'})
-                    .attr('title', that.main.objects[id].common.enabled ? _('Activated. Click to stop.') : _('Deactivated. Click to start.'));
+                var enabled = that.main.objects[id].common.enabled;
+                $e.button({icons: {primary: enabled ? 'ui-icon-pause': 'ui-icon-play'}, text: false})
+                    //.css({'background-color': enabled ? 'lightgreen' : '#FF9999'})
+                    //.css({'background-color': enabled ? 'rgba(0, 255, 0, 0.15)' : 'rgba(255, 0, 0, 0.15)'})
+                    .css({'background-color': enabled ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)'})
+                    .attr('title', enabled ? _('Activated. Click to stop.') : _('Deactivated. Click to start.'));
             });
         }
 

@@ -131,6 +131,7 @@
      type: "state"
  */
 
+var addAll2FilterCombobox = false;
 
 function tdp(x, nachkomma) {
     return isNaN(x) ? "" : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -152,6 +153,15 @@ function span (txt, attr) {
     var style = style='padding-left: ' + lineIndent + ';';
     if (attr) style += attr;
     return '<span style="' + style + '">' + txt + '</span>';
+}
+
+function filterChanged(e) {
+    var $e = $(e);
+    var val = $e.val ();
+    var tr = $e.parent ().parent ();
+    tr.find ('td').last().css ({'display': val ? 'unset' : 'none'});   //
+    tr [val ? 'addClass' : 'removeClass'] ('filter-active');         // set background of <tr>
+    tr.find('button').attr('style' , 'background: transparent !important;');
 }
 
 
@@ -716,18 +726,18 @@ function span (txt, attr) {
     }
 
     function syncHeader($dlg) {
-        var data = $dlg.data('selectId');
-        var $header = $('#selectID_header_' + data.instance);
-        var thDest = $header.find('>tbody>tr>td');	//if table headers are specified in its semantically correct tag, are obtained
-        var thSrc = data.$tree.find('>tbody>tr>td');
+        var data = $dlg.data ('selectId');
+        var $header = $ ('#selectID_header_' + data.instance);
+        var thDest = $header.find ('>tbody>tr>td');	//if table headers are specified in its semantically correct tag, are obtained
+        var thSrc = data.$tree.find ('>tbody>tr>td');
 
         var x, o;
         for (var i = 0; i < thDest.length - 1; i++) {
-            if ((x = $(thSrc[i]).width())) {
-                $(thDest[i]).attr('width', x);
-                if ((o = $ (thSrc[i + 1]).offset().left)) {
-                    if ((o -= $ (thDest[i + 1]).offset().left)) {
-                        $(thDest[i]).attr('width', x + o);
+            if ((x = $ (thSrc[i]).width ())) {
+                $ (thDest[i]).attr ('width', x);
+                if ((o = $ (thSrc[i + 1]).offset ().left)) {
+                    if ((o -= $ (thDest[i + 1]).offset ().left)) {
+                        $ (thDest[i]).attr ('width', x + o);
                     }
                 }
             }
@@ -956,21 +966,20 @@ function span (txt, attr) {
         var oldVal  = $this.data('old-value');
         var states  = null;
         var $parent = $(event.currentTarget).parent();
-        //var activeNode = $(this).fancytree('getTree').getActiveNode();
+
+        //var activeNode = data.$tree.fancytree('getTree');
+        //activeNode = activeNode.getActiveNode();
 
         if (clippy)  {
             $this.parent().removeClass('clippy');
-            $this.parent().find('.clippy-button').remove();
+            $this.parent().find('.clippy-button').remove(); //???
         }
         if (editDialog) {
             $this.parent().removeClass('edit-dialog');
-            $this.parent().find('.edit-dialog-button').remove();
+            $this.parent().find('.edit-dialog-button').remove(); //???
         }
-
         $this.unbind('click').removeClass('select-id-quick-edit').css('position', 'relative');
-
-        //var css = 'cursor: pointer; position: absolute;width: 16px; height: 16px; top: 2px; border-radius: 6px; z-index: 3; background-color: lightgray';
-        var css = 'cursor: pointer; position: absolute;width: 16px; height: 16px; top: 4px; border-radius: 0px; vertical-align: middle; z-index: 3;';
+        //var css = 'cursor: pointer; position: absolute;width: 16px; height: 16px; top: 4px; border-radius: 0px; vertical-align: middle; z-index: 3;';
 
         type = type === 'boolean' ? 'checkbox' : 'text';
         var text;
@@ -1021,21 +1030,16 @@ function span (txt, attr) {
             }
         }
 
-        //text = text || '<input style="' + (type !== 'checkbox' ? 'width: 100%; height: 24px; border-spacing:0;border:0;padding:0;margin:0;padding-left:4px;' : '') + ' z-index: 2" type="' + type + '"/>';
-        text = text || '<input style="z-index: 2" type="' + type + '"' + (type !== 'checkbox' ? 'class="objects-inline-edit"' : '') + '/>';
+        text = text || '<input type="' + type + '"' + (type !== 'checkbox' ? 'class="objects-inline-edit"' : '') + '/>';
 
         var timeout = null;
 
         $this.html(text +
-            '<div class="ui-icon ui-icon-check        select-id-quick-edit-ok"     style="' + css + ';right: 22px"></div>' +
-            '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '" style="' + css + ';right: 2px"></div>');
+            '<div class="ui-icon ui-icon-check select-id-quick-edit-ok"></div>' +
+            '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '"></div>');
         var oldLeftPadding = $this.css('padding-left');
-        var oldWidth = $this.css('width');
-        //$this.css({'padding-left':'2px', 'padding-bottom': '3px', width: 'calc(100% - 28px)'});
-        var isTitleEdit = $this.is ('.objects-name-coll-title');
-        //$this.css({'padding-left':'2px', 'padding-bottom': '2px', width: isTitleEdit ? 'calc(100% - 28px)' : 'calc(100% - 0px)'});       // mit paading-buttom erhöht sich die Zeilenhöhe um einen Pixel!
-        $this.css({'padding-left': 2, width: isTitleEdit ? 'calc(100% - 28px)' : 'calc(100% - 0px)'});
-
+        //var oldWidth = $this.css('width');
+        var oldWidth= $this.attr('width');
         var $input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
 
         if ($input.width() > $this.width() - 34) {
@@ -1058,6 +1062,21 @@ function span (txt, attr) {
                 $(this).autocomplete('search', '');
             });
         }
+
+        // function editDone(ot) {
+        //     if (ot === undefined) ot = $this.data('old-value') || '';
+        //     if (clippy) $this.addClass ('clippy');
+        //     $this.css({'padding-left':oldLeftPadding});
+        //     if (!oldWidth) $this.removeAttr('width'); else $this.attr('width', oldWidth);
+        //     $this.html (ot).click (onQuickEditField).addClass ('select-id-quick-edit');
+        //     //if (activeNode && activeNode.lebgth) activeNode.setActive();
+        //     setTimeout(function() {
+        //         //$(event.currentTarget).parent().trigger('click'); // re-select the line so we can continue using the keyboard
+        //         $parent.trigger('click'); // re-select the line so we can continue using the keyboard
+        //     }, 50);
+        //     //$(event.currentTarget).parent().focus().select();
+        // }
+
 
         function editDone(ot) {
             if (ot === undefined) ot = $this.data('old-value') || '';
@@ -1094,7 +1113,6 @@ function span (txt, attr) {
         }
 
         $this.find('.select-id-quick-edit-cancel').click(handleCancel);
-
         $this.find('.select-id-quick-edit-ok').click(function ()  {
             var _$input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
             _$input.trigger('blur');
@@ -1165,7 +1183,7 @@ function span (txt, attr) {
         var c;
         //$dlg.css({height: '100%', width: 'calc(100% - 18px)'});
         if ($dlg.attr('id') !== 'dialog-select-member') {
-            $dlg.css({height: '100%', width: '100%'});
+            $dlg.css ({height: '100%', width: '100%'});
         } else {
             $dlg.css ({height: 'calc(100% - 110px)', width: '100%'});
         }
@@ -1248,7 +1266,7 @@ function span (txt, attr) {
             filter[name] = $('#filter_' + name + '_' + data.instance).val ();
         });
 
-        function getComboBoxEnums(kind) {
+        function getComboboxEnums(kind) {
             var i, ret = [];
             switch (kind) {
                 case 'room':
@@ -1287,144 +1305,68 @@ function span (txt, attr) {
             return ret;
         }
 
-        /*
-                var textRooms;
-                if (data.columns.indexOf ('room') !== -1) {
-                    textRooms = '<select id="filter_room_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
-                    for (var i = 0; i < data.roomEnums.length; i++) {
-                        textRooms += '<option value="' + data.objects[data.roomEnums[i]].common.name + '">' + data.objects[data.roomEnums[i]].common.name + '</option>';
-                    }
-                    textRooms += '</select>';
-                } else {
-                    if (data.rooms) delete data.rooms;
-                    if (data.roomsColored) delete data.roomsColored;
-                }
-
-                var textFuncs;
-                if (data.columns.indexOf ('function') !== -1) {
-                    textFuncs = '<select id="filter_function_' + data.instance + '" class="filter_' + data.instance + '" style="padding: 0; width: 150px"><option value="">' + data.texts.all + '</option>';
-                    for (var i = 0; i < data.funcEnums.length; i++) {
-                        textFuncs += '<option value="' + data.objects[data.funcEnums[i]].common.name + '">' + data.objects[data.funcEnums[i]].common.name + '</option>';
-                    }
-                    textFuncs += '</select>';
-                } else {
-                    if (data.funcs) delete data.funcs;
-                    if (data.funcsColored) delete data.funcsColored;
-                }
-
-                var textRoles;
-                if (data.columns.indexOf ('role') !== -1) {
-                    textRoles = '<select id="filter_role_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-                    for (var j = 0; j < data.roles.length; j++) {
-                        textRoles += '<option value="' + data.roles[j] + '">' + data.roles[j] + '</option>';
-                    }
-                    textRoles += '</select>';
-                }
-
-                var textTypes;
-                if (data.columns.indexOf ('type') !== -1) {
-                    textTypes = '<select id="filter_type_' + data.instance + '" class="filter_' + data.instance + '" style="padding:0;width:150px"><option value="">' + data.texts.all + '</option>';
-                    for (var k = 0; k < data.types.length; k++) {
-                        textTypes += '<option value="' + data.types[k] + '">' + data.types[k] + '</option>';
-                    }
-                    textTypes += '</select>';
-                }
-          */
-
-        var tds = '<td><button class="ui-button-icon-only panel-button" id="btn_refresh_' + data.instance + '"></button></td>';
-        tds += '<td><button class="panel-button" id="btn_list_' + data.instance + '"></button></td>';
-        tds += '<td><button class="panel-button" id="btn_collapse_' + data.instance + '"></button></td>';
-        tds += '<td><button class="panel-button" id="btn_expand_' + data.instance + '"></button></td>' +
+        // toolbar buttons
+        var tds =
+            '<td><button class="ui-button-icon-only panel-button" id="btn_refresh_' + data.instance + '"></button></td>' +
+            '<td><button class="panel-button" id="btn_list_' + data.instance + '"></button></td>' +
+            '<td><button class="panel-button" id="btn_collapse_' + data.instance + '"></button></td>'  +
+            '<td><button class="panel-button" id="btn_expand_' + data.instance + '"></button></td>' +
             '<td class="select-id-custom-buttons"></td>';
         if (data.filter && data.filter.type === 'state' && multiselect) {
-            tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_select_all_' + data.instance + '"></button></td>';
-            tds += '<td><button class="panel-button" id="btn_unselect_all_' + data.instance + '"></button></td>';
-            tds += '<td><button class="panel-button" id="btn_invert_selection_' + data.instance + '"></button></td>';
+            tds +=
+                '<td style="padding-left: 10px"><button class="panel-button" id="btn_select_all_' + data.instance + '"></button></td>' +
+                '<td><button class="panel-button" id="btn_unselect_all_' + data.instance + '"></button></td>' +
+                '<td><button class="panel-button" id="btn_invert_selection_' + data.instance + '"></button></td>';
         }
         if (data.expertModeRegEx) {
-            tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_expert_' + data.instance + '"></button></td>';
+            tds +=
+                '<td style="padding-left: 10px"><button class="panel-button" id="btn_expert_' + data.instance + '"></button></td>';
         }
         tds += '<td><button class="panel-button" id="btn_sort_' + data.instance + '"></button></td>';
 
         if (data.panelButtons) {
-            //tds += '<td style="width: 20px">&nbsp;&nbsp;</td>';
             tds += '<td class="iob-toolbar-sep"></td>';
             for (c = 0; c < data.panelButtons.length; c++) {
                 tds += '<td><button class="panel-button" id="btn_custom_' + data.instance + '_' + c + '"></button></td>';
             }
         }
-        //tds += '<td class="ui-widget" style="width: 100%; text-align: center; font-weight: bold; font-size: medium">' + data.texts.id + '</td></tr></table></th>';
-        //tds += '<td style="width: 100%;"></td></td></tr></table></th>';
+        tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_history_' + data.instance + '"></button></td>';
 
-        if (data.useHistory) {
-            tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_history_' + data.instance + '" style="position: absolute; top: 5px; right: 20px"></button></td>';
-        }
-
-        var text = '<div id="' + data.instance + '-div" style="width:100%; height:100%">' +
-            //var text = '<div id="' + data.instance + '-div" >' +
-            //'<table class="a" style="width: 100%; height: 30px; border-collapse: collapse;">' +
-            //'<table class="main-toolbar-table" style="border-collapse: collapse;" cellpadding="0">' +
-            //'<table class="main-toolbar-table" cellpadding="0">' +
+        var text = '' +
+            '<div id="' + data.instance + '-div" style="width:100%; height:100%">' +
             '<table class="main-toolbar-table">' +
-            //TODO xxxx !!!!'<table class="main-toolbar-table">' +
-            // '<thead>' +
-            // '<tr><th></th></tr>' +
-            // '<tr column-span="2">' +
-            // '<td>' +
-            // '<table class="panel-table"  cellspacing="0" cellpadding="0">' +
-            // '<thead>' +
-            // '<tr><th></th></tr>' +
-            '<tr>' + tds + '<td style="width: 100%;"></td></tr>' +
-            //'</thead>' +
-            //'</table>' +
-            //'</td>' +
-            '</tr>' +
-            //'</thead>' +
+            '     <tr>' + tds + '<td style="width: 100%;"></td></tr>' +
+            '     </tr>' +
             '</table>' +
-
-            //'<div class="a1" style="width: 100%; height: calc(100% - 30px); overflow: auto">' +
-            //'<table id="selectID_header_' + data.instance + '" style="width: calc(100% - 18px); padding: 0; height: 30px" cellspacing="0" cellpadding="0">';
-            //'<table id="selectID_header_' + data.instance + '"cellspacing="0" cellpadding="0" style="height: 23px; margin-left: 1px">';
-            '<table id="selectID_header_' + data.instance + '" class="main-header-table">';
-
+            '<table id="selectID_header_' + data.instance + '" class="main-header-table">'
+        ;
+        //--
 
         function textFiltertext (filterNo, placeholder) {
-            if (placeholder === undefined) {
-                placeholder = data.texts[filterNo.toLowerCase()];
-            }
-            var txt =
-                //'<table style="width: 100%; height:100%; padding: 0;border: 1px solid #c0c0c0;border-spacing: 0;border-radius: 2px;">\n' +
+            if (placeholder === undefined) placeholder = data.texts[filterNo.toLowerCase()];
+            return '' +
                 '<table class="main-header-input-table">' +
-
-                '        <tbody>' +
+                '    <tbody>' +
                 '        <tr style="background: #ffffff; ">' +
                 '            <td style="width: 100%">' +
-                '                <input placeholder="' + placeholder + '" style="width: 100%; padding: 0; padding-left: ' + lineIndent + ';font-size: 12px;border: 0;line-height: 1.5em;" type="text" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
-                '            </td>';
-                //                '            <td style="vertical-align: middle; border: 0;">\n' +
-
-            txt +=
+                //'                <input placeholder="' + placeholder + '" style="width: 100%; padding: 0; padding-left: ' + lineIndent + ';font-size: 12px;border: 0;line-height: 1.5em;" type="text" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
+                '                <input placeholder="' + placeholder + '" type="text" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
+                '            </td>' +
                 '            <td>' +
                 '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">' +
-                //'                    <span class="ui-button-text"></span>\n' +
                 '                </button>' +
-                '            </td>';
-            txt +=
+                '            </td>' +
                 '        </tr>' +
-                '        </tbody>' +
-                '    </table>';
-            return txt;
+                '    </tbody>' +
+                '</table>';
         }
 
         function textCombobox (filterNo, placeholder) {
             var txt = '';
             if (data.columns.indexOf (filterNo) !== -1) {
                 if (placeholder === undefined) placeholder = data.texts[filterNo.toLowerCase()];
-                var cbEntries = getComboBoxEnums (filterNo);
-                // var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '" style="font-size: 12px; line-height: 0.5em; padding:0;width: calc(100% + 1px); border:0;">';
-                // moved to css: table.main-header-input-table>tbody>tr>td>select
+                var cbEntries = getComboboxEnums (filterNo);
                 var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">';
-
                 var add = function (a, b) {
                     if (Array.isArray (a)) {
                         b = a[0];
@@ -1433,20 +1375,26 @@ function span (txt, attr) {
                     else if (b === undefined) b = a;
                     cbText += '<option style="line-height: 0.5em; background: #fff" value="' + a + '">' + b + '</option>';
                 };
-                add('', placeholder + ' (' + data.texts.all + ')');
+                if (addAll2FilterCombobox) add ("", placeholder + ' (' + data.texts.all + ')');
+                else add ("", placeholder);
                 for (var i = 0, len = cbEntries.length; i < len; i++) {
                     add (cbEntries[i]);
                 }
                 cbText += '</select>';
 
                 txt = '' +
-                    //'<table style="width: 100%;padding: 0;border: 1px solid #c0c0c0;border-spacing: 0;border-radius: 2px;">' +
-                    '<table class="main-header-input-table" style="width: 100%;">' +     // width is already in css
+                    //'<table class="main-header-input-table" style="width: 100%;">' +     // width is already in css
+                    '<table class="main-header-input-table">' +     // width is already in css
                     '        <tbody>' +
                     '        <tr style="background: #ffffff; ">' +                       // tr background is already in css
                     '            <td style="width: 100%">';                              // td-width is already in css
                 txt += cbText;
                 txt += '' +
+                    '            </td>' +
+                    '            <td>' +
+                    //'                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">' +
+                    '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="">' +
+                    '                </button>' +
                     '            </td>' +
                     '        </tr>' +
                     '        </tbody>' +
@@ -1467,23 +1415,20 @@ function span (txt, attr) {
         text += '            <tr>'; //<td></td>';
 
         forEachColumn(data, function(name) {
-            //text += '<td style="position: relative;left: 0; padding:0">';
             text += '<td>';
             if (name === 'ID' || name === 'name' || name === 'value' || name === 'enum') {
                 text += textFiltertext(name);
             } else if (name === 'type' || name === 'role' || name === 'room' || name === 'function') {
                 text += textCombobox(name);
             } else if (name === 'button') {
-                //text += '<td>';
                 if (data.customButtonFilter) {
                     text += textCombobox(name);
                 } else {
-                    //text += '<table class="main-header-input-table"><tbody><tr><td><div>' + _(name) + '</div></td></tr></tbody></table>';
-                    if (name === 'buttons' || name === 'button') {
+                    //if (name === 'buttons' || name === 'button') {
                         text += '<span style="padding-left: ' + lineIndent + '"></span>';
-                    } else {
-                    	text += '<table class="main-header-input-table"><tbody><tr><td style="padding-left: ' + lineIndent + '">' + _(name) + '</td></tr></tbody></table>';
-                	}
+                    // } else {
+                    //     text += '<table class="main-header-input-table"><tbody><tr><td style="padding-left: ' + lineIndent + '">' + _(name) + '</td></tr></tbody></table>';
+                    // }
                 }
             } else {
                 text += '<span style="padding-left: ' + lineIndent + '">' + _(name) + '</span>';
@@ -1495,79 +1440,28 @@ function span (txt, attr) {
         text += '        </tbody>';
         text += '    </table>';
 
-        //text += '<div style="width: calc(100% - 18px); height: ' + (data.buttons ? 'calc(100% - 30px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll">';
-        //text += '<div style="width: 100%; height: ' + (data.buttons ? 'calc(100% - 54px)' : 'calc(100% - 30px)') + '; padding:0; overflow-y: scroll">';
         text += '<div class="' + (data.buttons ? 'grid-main-wh-div' : 'grid-main-wob-div') + '" style="width: 100%; padding:0; overflow-y: scroll">';
         text += ' <table class="iob-list-font objects-list-table" style="width: calc(100%-5px);" id="selectID_' + data.instance + '" cellspacing="0" cellpadding="0">';
         text += '        <colgroup>';
 
         var thead = '<thead class="grid-objects-head"><tr>';
 
-        var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '10%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '5%', enum: '2%'};
-        // for (var c=0, len=data.columns.length; c<len; c++) {
-        //     var name = data.columns[c];
-        //     if (typeof name === 'object') name = name.name;
-        //     if (name === 'image') continue;
-        //     //text += '<col width="' + (data.widths ? data.widths[c] : ((widths[name] || 2) + '%')) + '"/>';
-        //     var w = (widths[name] || 2) + '%';
-        //     text += '<col width="' + ((widths[name] || 2) + '%') + '"/>';
-        //     thead += '<th style="width: ' + w + ';"></th>';
-        //     //thead += '<th></th>';
-        // }
+        //var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '10%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '5%', enum: '2%'};
+
+        var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '6%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '9%', enum: '2%'};
+
         forEachColumn (data, function(name, i) {
-            //if (name === 'image') return;
-            //text += '<col width="' + (data.widths ? data.widths[c] : ((widths[name] || 2) + '%')) + '"/>';
             var w = data.widths ? data.widths[i] : widths[name] || '2%';
             text += '<col width="' + w + '"/>';
             thead += '<th style="width: ' + w + ';"></th>';
         });
 
-
-
-        // for (c = 0; c < data.columns.length; c++) {
-        //     var name = data.columns[c];
-        //     if (typeof name === 'object') name = name.name;
-        //     if (name === 'image') {
-        //         //text += '<col width="' + (data.widths ? data.widths[c] : '24px') + '"></col>';
-        //     } else if (name === 'name') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '20%') + '"/>';
-        //     } else if (name === 'type') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'role') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'room') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'function') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'value') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '10%') + '"/>';
-        //     } else if (name === 'button') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '5%') + '"/>';
-        //     } else if (name === 'enum') {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '2%') + '"/>';
-        //     } else {
-        //         text += '<col width="' + (data.widths ? data.widths[c] : '2%') + '"/>';
-        //     }
-        // }
-
-        // text += '        </colgroup>';
-        // text += '        <thead>';
-        // text += '            <tr><th></th><th></th>';
-        // for (c = 0; c < data.columns.length; c++) {
-        //     text += '<th>Hallo</th>';
-        // }
-        // text += '</tr>';
-        // text += '        </thead>';
-        // text += '        <tbody>';
-        // text += '        </tbody>';
-        // text += '    </table></div><div id="process_running_' + data.instance + '" style="position: absolute; top: 50%; left: 50%; width: 150px; height: 25px; padding: 12px; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">' + data.texts.wait + '</div>';
-
         text += '        </colgroup>';
+
         text += thead + '</tr></thead>';
 
         text += '        <tbody>';
         text += '        </tbody>';
-        //text += '    </table></div></div>' +
         text += '    </table></div>' +
             '<div id="process_running_' + data.instance + '" style="position: absolute; top: 50%; left: 50%; width: 150px; height: 25px; padding: 12px; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">' + data.texts.wait + '</div>' +
             '</div>'
@@ -1592,8 +1486,6 @@ function span (txt, attr) {
             }
         }
 
-
-        //text = text.replace(/\n/g, '');
         $dlg.html(text);
 
         data.$tree = $('#selectID_' + data.instance);
@@ -1722,12 +1614,13 @@ function span (txt, attr) {
                 var $firstTD = $tdList.eq(0);
                 $firstTD.css({'overflow': 'hidden'});
                 var cnt = countChildren(key, data);
-                var $cnt = $firstTD.find('.select-id-cnt');
+                var $cnt = $firstTD.find('.select-id-cnt');  ///???
                 if (cnt) {
                     if ($cnt.length) {
                         $cnt.text('#' + cnt);
                     } else {
-                        $firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
+                        //$firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
+                        $firstTD.append('<span class="select-id-cnt">#' + cnt + '</span>');
                     }
                 } else {
                     $cnt.remove();
@@ -2629,13 +2522,17 @@ function span (txt, attr) {
             if (changeTimer) clearTimeout(changeTimer);
             //changeTimer = setTimeout(function() {
             if (event && event.target) {
-                var $e = $ (event.target);
-                var val = $e.val ();
-                //$e.parent().parent().css({background: val ? '#ffbfb6' : '#ffffff'});
-                //$e.css({background: val ? '#ffbfb6' : '#ffffff'});
-                //if (val) $e.addClass('input-not-empty'); else $e.removeClass('input-not-empty');
-                $e[val ? 'addClass' : 'removeClass'] ('input-not-empty');
+                // var $e = $ (event.target);
+                // var val = $e.val ();
+                // //$e.parent().parent().css({background: val ? '#ffbfb6' : '#ffffff'});
+                // //$e.css({background: val ? '#ffbfb6' : '#ffffff'});
+                // //if (val) $e.addClass('input-not-empty'); else $e.removeClass('input-not-empty');
+                // $e[val ? 'addClass' : 'removeClass'] ('input-not-empty');
+                // $e.parent().parent().find('button').css({'display': val? 'unset' : 'none'});
+                // $e.parent().parent()[val ? 'addClass' : 'removeClass'] ('filter-active');
+                filterChanged(event.target);
             }
+
             var $e = $ ('#process_running_' + data.instance);
             $e.show ();
             data.$tree.fancytree ('getTree').filterNodes (customFilter, false);
@@ -2939,7 +2836,8 @@ function span (txt, attr) {
             if ($cnt.length) {
                 $cnt.text('#' + cnt);
             } else {
-                $firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
+                //$firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
+                $firstTD.append('<span class="select-id-cnt">#' + cnt + '</span>');
             }
         } else {
             $firstTD.find('.select-id-cnt').remove();
@@ -3530,18 +3428,3 @@ function span (txt, attr) {
     };
 })(jQuery);
 
-
-/*
-Object View:
-- Sort option added to object view
-- Icon size in object view icon column reduced from 20 to 16 px
-- Distance between icon and name column extended
-- admin.js._delObject function overworked
-- bugfix: when deleting an object with childs, now all entries will disappear
-- some tree.visit loops replace by tree.getNodeByKey
-- expanded folders will now stay expanded after a tree view refresh
-- selectID.js.findTree overworked
-- selectID.js.treeInsert overworked
-- bugfix: selectID.js.filterid extended to filter out not expert entries (for entries inserted by object change)
-
-*/
