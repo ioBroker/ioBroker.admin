@@ -88,6 +88,9 @@ table#log-outer {
     margin-top: @header-table-distance - 3px !important;
     margin-left: 1px;
 }
+#log-outer>thead>tr>th {
+    .th-0;
+}
 #log-table>tr {
     height: 24px;
 }
@@ -112,6 +115,11 @@ table#log-outer {
     background-color: @even-bg-color;
     height: 2em;
 }
+
+//#grid-instances>tr:nth-child(2n) {
+//    background-color: @even-bg-color;
+//    height: 2em;
+//}
 
 .instance-table {
     .new-iob-list-table;
@@ -273,8 +281,17 @@ thead#grid-instances-head {
 /** events tab ******************/
 /**/
 
+.th-0 {
+    height: 0 !important;
+    padding: 0;
+    border: 0;
+}
+
 #event-outer {
     border-collapse: collapse;
+}
+#event-outer>thead>tr, #event-outer>thead>tr>th  {
+    .th-0;
 }
 
 #events_threshold {
@@ -313,6 +330,11 @@ table.events-list-table>tbody>tr>td {
     margin: 0;
     padding-left: 5px;
     border: @td-border;
+}
+#grid-events-inner {
+    height: calc(~'100% - 60px');
+    width: 100%;
+    overflow-y: scroll;
 }
 /** events ends **/
 
@@ -655,7 +677,7 @@ div.iob-pager table {
     top: 2px;
 }
 
-.grid-instances-head>tr {
+#grid-instances-head>tr {
     height: @header-height;
 }
 
