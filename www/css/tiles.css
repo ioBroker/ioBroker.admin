@@ -1,9 +1,33 @@
 /* -- Google typography ------------------------------- */
+@media screen and (min-width: 1921px) {
+    .tiles {
+        grid-template-columns: 16% 16% 16% 16% 16% 16%;
+    }
+}
+@media screen and (max-width: 1920px) {
+    .tiles {
+        grid-template-columns: 20% 20% 20% 20% 20%;
+    }
+}
+@media screen and (max-width: 1280px) {
+    .tiles {
+        grid-template-columns: 25% 25% 25% 25%;
+    }
+}
+@media screen and (max-width: 860px) {
+    .tiles {
+        grid-template-columns: 33% 33% 33%;
+    }
+}
+@media screen and (max-width: 640px) {
+    .tiles {
+        grid-template-columns: 50% 50%;
+    }
+}
 .tiles {
     width: calc(100% - 20px);
     height: 100%;
     display: grid;
-    grid-template-columns: 20% 20% 20% 20% 20%;
     grid-gap: 0;
     background-color: #fff;
     color: #444;
@@ -19,7 +43,7 @@
     color: rgba(0, 0, 0, 0.87);
     transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0 1px 6px, rgba(0, 0, 0, 0.12) 0 1px 4px;
     border-radius: 2px;
     max-height: 200px;
 }

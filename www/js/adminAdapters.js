@@ -925,14 +925,14 @@ function Adapters(main) {
                     if (obj.type && that.types[adapter]) console.log('Adapter "' + adapter + '" has own type. Remove from admin.');
 
                     if (!that.isList) {
-                        var igroup = -1;
-                        for (var j = 0; j < that.tree.length; j++) {
-                            if (that.tree[j].key === that.data[adapter].group) {
-                                igroup = j;
+                        var iGroup = -1;
+                        for (var jj = 0; jj < that.tree.length; jj++) {
+                            if (that.tree[jj].key === that.data[adapter].group) {
+                                iGroup = jj;
                                 break;
                             }
                         }
-                        if (igroup < 0) {
+                        if (iGroup < 0) {
                             that.tree.push({
                                 title:    _(that.data[adapter].group),
                                 desc:     showUploadProgress(group),
@@ -941,22 +941,19 @@ function Adapters(main) {
                                 expanded: !that.isCollapsed[that.data[adapter].group],
                                 children: [],
                                 icon:     that.groupImages[that.data[adapter].group]
-                                //installed: 0
                             });
-                            igroup = that.tree.length - 1;
+                            iGroup = that.tree.length - 1;
                         }
-                        that.tree[igroup].children.push({
+                        that.tree[iGroup].children.push({
                             icon:     icon,
                             title:    that.data[adapter].title || adapter,
-                            key:      adapter,
-                            //installed: 0
+                            key:      adapter
                         });
                     } else {
                         that.tree.push({
                             icon:     icon,
                             title:    that.data[adapter].title || adapter,
-                            key:      adapter,
-                            //installed: 0
+                            key:      adapter
                         });
                     }
                 }
