@@ -7,6 +7,9 @@ table#log-outer,
 thead#grid-instances-head,
 .hosts-table,
 div.iob-pager,
+#dialog-system table,
+#iob-body .ui-button-text-only,
+#iob-body .ui-button-text,
 table.fancytree-ext-table > tbody > tr > td,
 .iob-list-table,
 .main-header-table,
@@ -557,28 +560,28 @@ table.main-header-input-table > tbody > tr > td.ui-search-input > input {
 .ui-corner-top,
 .ui-corner-left,
 .ui-corner-tl {
-  border-top-left-radius: 1px;
+  border-top-left-radius: unset;
 }
 .ui-corner-all,
 .ui-corner-top,
 .ui-corner-right,
 .ui-corner-tr {
-  border-top-right-radius: 1px;
+  border-top-right-radius: unset;
 }
 .ui-corner-all,
 .ui-corner-bottom,
 .ui-corner-left,
 .ui-corner-bl {
-  border-bottom-left-radius: 1px;
+  border-bottom-left-radius: unset;
 }
 .ui-corner-all,
 .ui-corner-bottom,
 .ui-corner-right,
 .ui-corner-br {
-  border-bottom-right-radius: 1px;
+  border-bottom-right-radius: unset;
 }
 .ui-corner-all {
-  border: 0;
+  border: unset;
 }
 .fancytree-title {
   padding-bottom: 0 !important;
@@ -1189,51 +1192,78 @@ table.events-list-table > tbody > tr > td {
 }
 /** adapters end **/
 .main-admin-buttons {
-  border-spacing: 3px;
+  border-spacing: 4px;
   width: auto;
   position: relative;
   height: 27px;
-  margin-left: 2px;
+  margin-top: 1px;
 }
+.tabs-ul,
 #tabs-ul {
   font-family: "Segoe UI", Tahoma, Arial, "Courier New" !important;
   font-weight: normal;
   overflow: hidden;
   font-size: 14px !important;
-  height: 32px;
+  height: 34px;
   background: #5f5d5d;
   font-weight: normal !important;
-  left: -3px;
   position: relative;
   display: flex;
+  padding: 0 !important;
 }
+.choose-tabs-config-button,
+.tabs-ul-li,
 #tabs-ul > li {
   border: 0;
   padding: 0;
   margin: 0;
-  top: -3px;
-  height: calc(100% + 2px) !important;
-}
-#tabs-ul > li,
-.choose-tabs-config-button {
   border-bottom: 1px solid #e0e0e0;
   border-right: 1px solid #e0e0e0;
+  border-top: 2px solid transparent;
+  height: 31px;
 }
+.tabs-ul > li {
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+  border-right: 1px solid #e0e0e0 !important;
+  border-top: 2px solid transparent !important;
+  height: 31px !important;
+}
+.tabs-ul li.ui-state-active,
 #tabs-ul li.ui-state-active {
   border-right: 1px solid #d0d0d0;
   height: 100% !important;
   border-bottom: 3px solid #efefef;
+  border-top: 2px solid #384bdd;
 }
+.tabs-ul li a,
 #tabs-ul li a {
-  height: fit-content;
+  height: 26px;
   font-weight: normal !important;
   margin: 0;
+  padding-top: 6px;
+  padding-bottom: 0;
 }
+.tabs-ul li a,
+#tabs-ul li a {
+  /* height: fit-content; */
+  height: 26px;
+  font-weight: normal !important;
+  margin: 0;
+  /* margin-bottom: 10px !important; */
+  /* top: -1; */
+  /* position: relative; */
+  /* padding-bottom: 1px; */
+}
+.tabs-ul li.ui-state-active a,
 #tabs-ul li.ui-state-active a {
   color: #000;
   font-weight: normal !important;
   background-color: #efefef;
 }
+.tabs-ul li a:hover,
 #tabs-ul li a:hover {
   color: #606060;
 }
@@ -1248,10 +1278,9 @@ table.events-list-table > tbody > tr > td {
   font-weight: 600;
 }
 .choose-tabs-config-button {
-  height: 35px;
+  height: 34px;
   width: 18px;
   background: #fff;
-  top: -3px;
   position: relative;
   text-align: center;
   font-size: 10px;
@@ -1381,7 +1410,7 @@ table#grid-enums > tbody > tr:first-child {
   height: calc(100% - 50px);
 }
 .grid-main-wh-div {
-  height: calc(100% -  71px);
+  height: calc(100% -  73px);
 }
 .grid-main-wob-div {
   height: calc(100% -  12px);
@@ -1425,7 +1454,7 @@ table#grid-enums > tbody > tr:first-child {
   margin: 3px !important;
 }
 div.iob-pager {
-  height: 35px !important;
+  height: 37px !important;
   background: transparent !important;
   position: absolute !important;
   top: -37px;
@@ -1511,4 +1540,14 @@ table#grid-users,
 table#grid-states,
 table#grid-groups {
   width: unset !important;
+}
+#dialog-system table {
+  font-size: 0.82rem !important;
+}
+#iob-body .ui-button-text-only,
+#iob-body .ui-button-text {
+  font-size: 0.82rem !important;
+}
+#dialog-system ul {
+  background: #efefef !important;
 }

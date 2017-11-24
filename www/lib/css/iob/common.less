@@ -22,18 +22,24 @@
 @toolbar-button-distance: 2px; // + 2 from td's border
 @toolbar-button-full-distance: @toolbar-button-distance + 2; // including the 2 from td's border
 @toolbar-background: #fff;
-@td-toolbar-border: 1px solid #c0c0c0;
+@td-toolbar-border-size: 1px;
+@td-toolbar-border: @td-toolbar-border-size solid #c0c0c0;
 @toolbar-y-margin: 8px;
 @toolbar-image-size: 16px;
 @toolbar-outer-hover: 1px solid #d0d0d0;
+//@main-toolbar-height: 30px;
+//@main-toolbar-full-height: 30px + 5px; // 5px margin-bottom
+//@main-toolbar-height: 26px; // incl. 2px border from td
+@main-toolbar-full-height: @toolbar-size + @td-toolbar-border-size * 2 + @toolbar-y-margin * 2 - @tabs-padding-top;
+
 
 @list-header-background: #fff;
 
 @tabs-padding-top: 5px;
 @tabs-padding: 7px;
-@tabs-height: 32px;
-@main-toolbar-height: 30px;
-@main-toolbar-full-height: 30px + 5px; // 5px margin-bottom
+//@tabs-height: 32px;
+@tabs-height: 34px;
+
 @header-height: 24px;
 
 @grid-offset: @tabs-padding-top + @tabs-padding + @main-toolbar-full-height;
@@ -646,34 +652,35 @@ table.main-header-input-table>tbody>tr>td.ui-search-input>input {
     transform: translateY(-50%); /* or try 50% */
 }
 
+@corner-radius: unset;
 /* Corner radius */
 .ui-corner-all,
 .ui-corner-top,
 .ui-corner-left,
 .ui-corner-tl {
-    border-top-left-radius: 1px;
+    border-top-left-radius: @corner-radius;
 }
 .ui-corner-all,
 .ui-corner-top,
 .ui-corner-right,
 .ui-corner-tr {
-    border-top-right-radius: 1px;
+    border-top-right-radius: @corner-radius;
 }
 .ui-corner-all,
 .ui-corner-bottom,
 .ui-corner-left,
 .ui-corner-bl {
-    border-bottom-left-radius: 1px;
+    border-bottom-left-radius: @corner-radius;
 }
 .ui-corner-all,
 .ui-corner-bottom,
 .ui-corner-right,
 .ui-corner-br {
-    border-bottom-right-radius: 1px;
+    border-bottom-right-radius: @corner-radius;
 }
 
 .ui-corner-all {
-    border: 0;
+    border: @corner-radius;
 }
 
 

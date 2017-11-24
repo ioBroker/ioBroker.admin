@@ -685,7 +685,7 @@ $(document).ready(function () {
                         //'<td><select id="tabs-show" style="z-index: 10; font-size: 12px"></select></td>' +
                         '</tr></table>' +
 
-                        '<div style="color: #fff; position: absolute; top: 10px; right: 10px;">ioBroker.admin ' + (main.objects['system.adapter.admin'] && main.objects['system.adapter.admin'].common && main.objects['system.adapter.admin'].common.version) + '</div>';
+                        '<div style="color: #fff; position: absolute; top: 8px; right: 10px;">ioBroker.admin ' + (main.objects['system.adapter.admin'] && main.objects['system.adapter.admin'].common && main.objects['system.adapter.admin'].common.version) + '</div>';
 
                     // '<div style="top: 40; z-index: 99;">' +
                     // '<button class="menu-button panel-button" id="button-logout" title="' + _('Logout') + '"></button>' +
@@ -697,7 +697,10 @@ $(document).ready(function () {
                     // '</div>'
 
 
-                    $tabs.find('ul.ui-tabs-nav').append(buttons);
+                        //
+                        var v = $tabs.find('#main-buttons');
+                        if (v.length) v.append(buttons);   //xxxx
+                        else $tabs.find('ul.ui-tabs-nav').append(buttons);
 
                     // if (showTabs) {
                     //     $('#tabs-show')

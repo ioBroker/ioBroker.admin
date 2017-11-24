@@ -1619,8 +1619,8 @@ function filterChanged(e) {
                     if ($cnt.length) {
                         $cnt.text('#' + cnt);
                     } else {
-                        $firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
-                        //$firstTD.append('<span class="select-id-cnt">#' + cnt + '</span>');
+                        //$firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
+                        $firstTD.append('<span class="select-id-cnt">#' + cnt + '</span>');
                     }
                 } else {
                     $cnt.remove();
@@ -2836,8 +2836,8 @@ function filterChanged(e) {
             if ($cnt.length) {
                 $cnt.text('#' + cnt);
             } else {
-                $firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
-                //$firstTD.append('<span class="select-id-cnt">#' + cnt + '</span>');
+                //$firstTD.append('<span class="select-id-cnt" style="position: absolute; top: 6px; right: 1px; font-size: smaller; color: lightslategray">#' + cnt + '</span>');
+                $firstTD.append('<span class="select-id-cnt">#' + cnt + '</span>');
             }
         } else {
             $firstTD.find('.select-id-cnt').remove();
