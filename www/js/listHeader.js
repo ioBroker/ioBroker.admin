@@ -26,6 +26,7 @@ function IobListHeader (header, options) {
         if (!$tds || !$tds.length) return;
         if ($tds[0].tagName !== 'TD' && $tds[0].tagName !== 'TH') {
             $tds = $tds.find('>thead>tr:first>th,>thead>tr:first>td');
+            //if (!$tds.length) $tds = _list.find('>colgroup>col');
             if (!$tds.length) $tds = _list.find('>tbody>tr:first>th,>tr:first>th,>tbody>tr:first>td, >tr:first>td');
         }
         $listTds = $tds;
@@ -74,7 +75,9 @@ function IobListHeader (header, options) {
         return '<option value="" ' + ((selectedVal === "") ? 'selected' : '') + '>' + name + '</option>';
     }
 
+    self.ids = [];
     self.add = function (what, title, _id, selectOptions) {
+        if (_id === undefined) _id = title;
         var id = buildId(_id);
         title = _(title);
 
@@ -126,8 +129,10 @@ function IobListHeader (header, options) {
         var $id = $(fisId);
         var elem = self[_id] = {
             $filter: $id,
-            val: $id.val.bind($id)
+            val: $id.val.bind($id),
+            selectedVal: $id.val() || ''
         };
+        self.ids.push(_id);
 
         if (what === 'combobox') {
             elem.options = [];

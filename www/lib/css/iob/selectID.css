@@ -537,28 +537,28 @@ table.main-header-input-table > tbody > tr > td.ui-search-input > input {
 .ui-corner-top,
 .ui-corner-left,
 .ui-corner-tl {
-  border-top-left-radius: 1px;
+  border-top-left-radius: unset;
 }
 .ui-corner-all,
 .ui-corner-top,
 .ui-corner-right,
 .ui-corner-tr {
-  border-top-right-radius: 1px;
+  border-top-right-radius: unset;
 }
 .ui-corner-all,
 .ui-corner-bottom,
 .ui-corner-left,
 .ui-corner-bl {
-  border-bottom-left-radius: 1px;
+  border-bottom-left-radius: unset;
 }
 .ui-corner-all,
 .ui-corner-bottom,
 .ui-corner-right,
 .ui-corner-br {
-  border-bottom-right-radius: 1px;
+  border-bottom-right-radius: unset;
 }
 .ui-corner-all {
-  border: 0;
+  border: unset;
 }
 .fancytree-title {
   padding-bottom: 0 !important;

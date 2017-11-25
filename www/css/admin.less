@@ -88,6 +88,9 @@ table#log-outer {
     margin-top: @header-table-distance - 3px !important;
     margin-left: 1px;
 }
+#log-outer>thead>tr>th {
+    .th-0;
+}
 #log-table>tr {
     height: 24px;
 }
@@ -112,6 +115,11 @@ table#log-outer {
     background-color: @even-bg-color;
     height: 2em;
 }
+
+//#grid-instances>tr:nth-child(2n) {
+//    background-color: @even-bg-color;
+//    height: 2em;
+//}
 
 .instance-table {
     .new-iob-list-table;
@@ -273,8 +281,17 @@ thead#grid-instances-head {
 /** events tab ******************/
 /**/
 
+.th-0 {
+    height: 0 !important;
+    padding: 0;
+    border: 0;
+}
+
 #event-outer {
     border-collapse: collapse;
+}
+#event-outer>thead>tr, #event-outer>thead>tr>th  {
+    .th-0;
 }
 
 #events_threshold {
@@ -305,14 +322,21 @@ thead#grid-instances-head {
     margin-left:1px; /* for mouse over rahmen */
     background: #efefef !important;
 }
-table.events-list-table>tbody>tr {
+
+table.events-list-table > tbody > tr {
     height: 25px;
 }
+
 table.events-list-table>tbody>tr>td {
     padding: 0;
     margin: 0;
     padding-left: 5px;
     border: @td-border;
+}
+#grid-events-inner {
+    height: calc(~'100% - 60px');
+    width: 100%;
+    overflow-y: scroll;
 }
 /** events ends **/
 
@@ -389,14 +413,30 @@ table.events-list-table>tbody>tr>td {
 
 
 .main-admin-buttons {
-    border-spacing: 3px;
+    border-spacing: @toolbar-button-full-distance;
     width: auto;
     position: relative;
     height: 27px;
-    margin-left: 2px;
+    //margin-left: 2px;
+    margin-top: 1px;
 }
 
 
+//#tabs-ul {
+//    .iob-font;
+//    overflow: hidden;
+//    font-size: 14px !important;
+//    height: @tabs-height;
+//    background: #5f5d5d;
+//    font-weight: normal !important;
+//    left: -3px;
+//    width: calc(~'100% - 3px');
+//    position: relative;
+//    display: flex;
+//}
+
+//#tabs-system>ul,
+.tabs-ul,
 #tabs-ul {
     .iob-font;
     overflow: hidden;
@@ -404,43 +444,82 @@ table.events-list-table>tbody>tr>td {
     height: @tabs-height;
     background: #5f5d5d;
     font-weight: normal !important;
-    left: -3px;
+    // left: -3px;
     position: relative;
     display: flex;
+    //width: calc(100% - 3px);
+    padding: 0 !important;
 }
 
-#tabs-ul>li {
+//#tabs-ul>li {
+///*    border: 0;
+//    padding:0;
+//    margin:0;*/
+//
+//    //top: -3px;
+//    //height: calc(~'100% + 2px') !important;
+//    //height: @tabs-height - 3px;
+//}
+
+.choose-tabs-config-button,
+    //#tabs-system>ul>li,
+.tabs-ul-li,
+#tabs-ul>li  {
     border: 0;
     padding:0;
     margin:0;
-    top: -3px;
-    height: calc(~'100% + 2px') !important;
-}
-
-#tabs-ul>li, .choose-tabs-config-button {
     border-bottom: 1px solid #e0e0e0;
     border-right: 1px solid #e0e0e0;
+    //height: @tabs-height !important;
+    border-top: 2px solid transparent; // for blue mark if aktive. see below
+    height: @tabs-height - 3px; // border top + bottom
+}
+.tabs-ul>li {
+    //.choose-tabs-config-button !important;
+    .tabs-ul-li !important;
 }
 
-
+//#tabs-system li.ui-state-active, //new
+.tabs-ul li.ui-state-active,
 #tabs-ul li.ui-state-active{
     border-right: 1px solid #d0d0d0;
     height: 100% !important;
-
     border-bottom: 3px solid #efefef;
+    border-top: 2px solid #384bdd;
 }
 
+.tabs-ul li a,
 #tabs-ul li a{
-    height: fit-content;
+    //height: fit-content;
+    height: @tabs-height - 6 - 2;
     font-weight: normal !important;
     margin:0;
+    padding-top: 6px;
+    padding-bottom: 0;
 }
 
+.tabs-ul li a,
+#tabs-ul li a {
+    /* height: fit-content; */
+    height: 26px;
+    font-weight: normal !important;
+    margin: 0;
+    /* margin-bottom: 10px !important; */
+    /* top: -1; */
+    /* position: relative; */
+    /* padding-bottom: 1px; */
+}
+
+//#tabs-system li.ui-state-active a, // new
+.tabs-ul li.ui-state-active a,
 #tabs-ul li.ui-state-active a{
     color: #000;
     font-weight: normal !important;
     background-color: #efefef;
 }
+
+
+.tabs-ul li a:hover,
 #tabs-ul li a:hover{
     color: #606060;
 }
@@ -457,10 +536,11 @@ table.events-list-table>tbody>tr>td {
 }
 
 .choose-tabs-config-button {
-    height: 35px;
+    //height: 35px;
+    height: @tabs-height;
     width: 18px;
     background: #fff;
-    top: -3px;
+    //top: -3px;
     position: relative;
     text-align: center;
     font-size: 10px;
@@ -551,7 +631,8 @@ table.events-list-table>tbody>tr>td {
     height: calc(~'100% - 40px');
     position: relative;
     left: 1px;
-    top: @main-toolbar-full-height + 2px;
+    //top: @main-toolbar-full-height + 2px;
+    top: @main-toolbar-full-height;
 }
 
 .pager-left>table { // first td
@@ -659,7 +740,7 @@ div.iob-pager table {
     top: 2px;
 }
 
-.grid-instances-head>tr {
+#grid-instances-head>tr {
     height: @header-height;
 }
 
@@ -672,4 +753,24 @@ table#grid-states,
 table#grid-groups {
     //width: calc(~'100% - 100px');
     width: unset !important;   // otherwise there is a horizontal scrollbar at the bottom, for whatever the reason is!
+}
+
+
+
+#dialog-system table {
+    .iob-font-12 !important;
+}
+
+
+#iob-body .ui-button-text-only, #iob-body .ui-button-text {
+    //padding: .4em 1em;
+    .iob-font-12;
+}
+//#iob-boby, #iob-body input, #iob-body select, input, select {
+//    .iob-font-12 !important;
+//    font-size: 12px !important;
+//}
+
+#dialog-system ul {
+    background: @iob-background !important;
 }
