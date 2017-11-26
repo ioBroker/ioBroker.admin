@@ -943,7 +943,7 @@ function Instances(main) {
     this.init = function (update) {
         if (!this.main.objectsLoaded) {
             setTimeout(function () {
-                that.init();
+                that.init(update);
             }, 250);
             return;
         }
@@ -1042,20 +1042,19 @@ function Instances(main) {
                         that.init(true);
                     }, 200);
 
-
                     // open automatically config dialog
                     if (!obj.common.noConfig) {
                         setTimeout(function () {
                             if (!that.$configFrame.attr('src') && !$('#dialog-license').is(':visible')) {
                                 // if tab2 is not active => activate it
-                                $('#tabs').tabs('option', 'active', 1);
+                                // $('#tabs').tabs('option', 'active', 1);
+                                window.onhashchange('tab-instances');
 
                                 // open configuration dialog
                                 that.showConfigDialog(id);
                             }
                         }, 2000);
                     }
-
                 } else {
                     if (id.indexOf('.web.') !== -1) {
                         if (this.updateTimer) clearTimeout(this.updateTimer);
@@ -1065,6 +1064,7 @@ function Instances(main) {
                             that.init(true);
                         }, 200);
                     } else {
+                        debugger;
                         // update just one line or
                         this.$grid.find('.instance-adapter[data-instance-id="' + id + '"]').html(showOneAdapter(this.$grid, id, this.main.config.instanceForm, true));
                     }

@@ -1,23 +1,23 @@
-/* jshint -W097 */// jshint strict:true
+/* jshint -W097 */
+/* jshint strict:true */
 /* jslint vars: true */
 /* global io:false */
 /* global jQuery:false */
 /* jslint browser:true */
 /* jshint browser:true */
-/*global _ */
-/*global ace */
-/*global console */
-/*global alert */
-/*global confirm */
-/*global systemLang: true */
-/*global license */
-/*global translateAll */
-/*global initGridLanguage */
-/*global systemLang */
+/* global _ */
+/* global ace */
+/* global console */
+/* global alert */
+/* global confirm */
+/* global systemLang: true */
+/* global license */
+/* global translateAll */
+/* global initGridLanguage */
+/* global systemLang */
 'use strict';
 
 //if (typeof Worker === 'undefined') alert('your browser does not support WebWorkers :-(');
-
 
 Array.prototype.remove = function () {
     var what;
@@ -511,7 +511,9 @@ $(document).ready(function () {
                         icons: {primary: ' ui-icon-search'},
                         text: false
                     }).click(function () {
-                        $('#tabs').tabs('option', 'active', 1);
+                        // TABS
+                        // $('#tabs').tabs('option', 'active', 1);
+                        navigation('tab-instances');
                         // open configuration dialog
                         main.tabs.instances.showConfigDialog('system.adapter.discovery.0');
                     }).attr('title', _('Device discovery'));
@@ -848,7 +850,7 @@ $(document).ready(function () {
         navigation();
     }
 
-    function initHtmlTabs(showTabs) {
+    function initHtmlTabs(/* showTabs */) {
         // jQuery UI initializations
         var $tabs = $('#tabs');
         if (!$tabs.data('inited')) {
@@ -961,7 +963,7 @@ $(document).ready(function () {
         // extract all additional instances
         var text     = '';
         var list     = [];
-        var showTabs = '';
+        // var showTabs = '';
         var addTabs = [];
 
         allTabs = {};
@@ -991,19 +993,20 @@ $(document).ready(function () {
             var id = $this.attr('id'), name = $this.data('name');
             list.push(id);
             allTabs[id] = name;
-            if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf($(this).attr('id')) !==-1) {
-                //text += '<li><a href="#' + id + '">' + _(name) + '</a><button class="tab-close" data-tab="' + id + '"></button></li>\n';
-                text += '<li><a href="#' + id + '">' + _(name) + '</a></button></li>\n';
-                $this.show().appendTo($('#tabs'));
-            } else {
-                if ($this.parent().prop('tagName') !== 'BODY') {
-                    $this.appendTo($('body'));
-                    setTimeout(function () {
-                        $this.hide()
-                    }, 100);
-                }
-                showTabs += '<option value="' + id + '">' + _(name) + '</option>';
-            }
+            // TABS
+            // if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf($(this).attr('id')) !==-1) {
+            //     //text += '<li><a href="#' + id + '">' + _(name) + '</a><button class="tab-close" data-tab="' + id + '"></button></li>\n';
+            //     text += '<li><a href="#' + id + '">' + _(name) + '</a></button></li>\n';
+            //     $this.show().appendTo($('#tabs'));
+            // } else {
+            //     if ($this.parent().prop('tagName') !== 'BODY') {
+            //         $this.appendTo($('body'));
+            //         setTimeout(function () {
+            //             $this.hide()
+            //         }, 100);
+            //     }
+            //     showTabs += '<option value="' + id + '">' + _(name) + '</option>';
+            // }
         });
 
         // Look for adapter tabs
@@ -1086,14 +1089,14 @@ $(document).ready(function () {
                     $('#' + name).find ('.iframe-in-tab').on('load', function () {
                         var elem = $ (this).contents ().find('body>header');
                         if (!elem || !elem.length) elem = $(this).contents ().find('head');
-                        if (elem && elem.length) elem.append('<link rel="stylesheet" type="text/css" href="../../css/admin.css"/>');
+                        if (elem && elem.length) elem.append('<link rel="stylesheet" type="text/css" href="../../lib/css/iob/selectID.css"/>');
                     });
                 } else {
                     $('#' + name).show().appendTo($('#tabs'));
                 }
             } else {
                 $('#' + name).hide().appendTo($('body'));
-                showTabs += '<option value="' + name + '">' + buttonName + '</option>';
+                // showTabs += '<option value="' + name + '">' + buttonName + '</option>';
             }
         }
         $('.tab-custom').each(function () {
@@ -1103,6 +1106,7 @@ $(document).ready(function () {
         });
 
         if (!main.systemConfig.common.tabs) main.systemConfig.common.tabs = list;
+        // TABS
         $('#tabs-ul').html(text);
 
         // $('.tab-close').button({
@@ -1123,19 +1127,20 @@ $(document).ready(function () {
         //     initTabs();
         // }).css({width: 16, height: 16});
 
-        var $tabs = $('#tabs');
-        $tabs.hide();
-        if ($tabs.tabs('instance')) {
-            $tabs.tabs('destroy');
-            $tabs.data('inited', false);
-        }
+        // TABS
+        // var $tabs = $('#tabs');
+        // $tabs.hide();
+        // if ($tabs.tabs('instance')) {
+        //     $tabs.tabs('destroy');
+        //     $tabs.data('inited', false);
+        // }
         if ($('.link-replace').length) {
             var countLink = 0;
 
             // If some objects cannot be read => go by timeout
             var loadTimeout = setTimeout(function() {
                 loadTimeout = null;
-                initHtmlTabs(showTabs);
+                initHtmlTabs(/*showTabs*/);
                 //}, 1000);
             }, 100);
 
@@ -1149,12 +1154,12 @@ $(document).ready(function () {
                             clearTimeout(loadTimeout);
                             loadTimeout = null;
                         }
-                        initHtmlTabs(showTabs);
+                        initHtmlTabs(/*showTabs*/);
                     }
                 });
             });
         } else {
-            initHtmlTabs(showTabs);
+            initHtmlTabs(/*showTabs*/);
         }
     }
 
@@ -1437,10 +1442,9 @@ $(document).ready(function () {
         return $adminBody;
     };
 
-    function selectSideNav() {
+    main.selectSideNav = function (tab) {
         $('.admin-sidemenu-items').not(this).removeClass('admin-sidemenu-active');
         $(this).addClass('admin-sidemenu-active');
-        var tab = $(this).data('tab');
 
         if (window.location.hash !== '#' + tab.replace(/^tab-/, '')) {
             window.location.hash = '#' + tab.replace(/^tab-/, '');
@@ -1458,7 +1462,7 @@ $(document).ready(function () {
             }
         }
         var $adminBody = main.removeNavBody();
-        $panel.show().appendTo('.admin-sidemenu-body');
+        $panel.show().appendTo($adminBody);
 
         switch (tab) {
             case 'tab-objects':
@@ -1501,7 +1505,7 @@ $(document).ready(function () {
                 tabs.logs.init();
                 break;
         }
-    }
+    };
 
     function initSideNav() {
         // TABS
@@ -1535,7 +1539,9 @@ $(document).ready(function () {
             }, 400);
         });
 
-        $('.admin-sidemenu-items').click(selectSideNav);
+        $('.admin-sidemenu-items').click(function () {
+            main.selectSideNav($(this).data('tab'));
+        });
     }
 
     // ---------------------------- Socket.io methods ---------------------------------------------
