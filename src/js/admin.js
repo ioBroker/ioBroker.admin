@@ -1077,7 +1077,7 @@ $(document).ready(function () {
                 text += '<li><a href="#' + name + '">' + buttonName + '</a></li>\n';
 
                 if (!$('#' + name).length) {
-                    var div = '<div id="' + name + '" data-name="' + buttonName + '" class="tab-custom ' + (isReplace ? 'link-replace' : '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
+                    var div = '<div id="' + name + '" data-name="' + buttonName + '" class="tab-custom admin-sidemenu-body-content ' + (isReplace ? 'link-replace' : '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
                         '<iframe class="iframe-in-tab" style="border: 0; solid #FFF; display: block; left: 0; top: 0; width: 100%; height: 100%"' +
                         '></iframe></div>';
                     $(div).appendTo($('#tabs'));
@@ -1431,6 +1431,12 @@ $(document).ready(function () {
         }, 10000);
     }
 
+    main.removeNavBody = function () {
+        var $adminBody = $('.admin-sidemenu-body');
+        $adminBody.find('.admin-sidemenu-body-content').hide().appendTo('body');
+        return $adminBody;
+    };
+
     function selectSideNav() {
         $('.admin-sidemenu-items').not(this).removeClass('admin-sidemenu-active');
         $(this).addClass('admin-sidemenu-active');
@@ -1451,9 +1457,7 @@ $(document).ready(function () {
                 $('#admin_sidemenu_menu').data('problem-link', tab);
             }
         }
-        var $adminBody = $('.admin-sidemenu-body');
-        $adminBody.find('.admin-tab').hide().appendTo('body');
-        $adminBody.find('.tab-custom').hide().appendTo('body');
+        var $adminBody = main.removeNavBody();
         $panel.show().appendTo('.admin-sidemenu-body');
 
         switch (tab) {

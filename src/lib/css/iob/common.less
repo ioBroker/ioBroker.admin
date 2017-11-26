@@ -24,7 +24,7 @@
 @toolbar-background: #fff;
 @td-toolbar-border-size: 1px;
 @td-toolbar-border: @td-toolbar-border-size solid #c0c0c0;
-@toolbar-y-margin: 8px;
+@toolbar-y-margin: 2px;
 @toolbar-image-size: 16px;
 @toolbar-outer-hover: 1px solid #d0d0d0;
 //@main-toolbar-height: 30px;
@@ -92,9 +92,10 @@ table.iob-list-table>thead>tr>th {
 
 
 .toolbar-frame {
-    height: @toolbar-size;
-    margin-top: (@toolbar-y-margin - @tabs-padding-top);
-    margin-bottom: @toolbar-y-margin;
+    height:         @toolbar-size;
+    //margin-top:     (@toolbar-y-margin - @tabs-padding-top);
+    margin-bottom:  @toolbar-y-margin;
+    margin-top:     @toolbar-y-margin;
 }
 
 .line-indent {
@@ -404,10 +405,11 @@ table.main-toolbar-table > tbody > tr > td > button:hover { //}, table.main-tool
 }
 table.main-toolbar-table > tbody > tr > td { //}, table.main-toolbar-table>tbody>tr>td>div {
     border: 1px solid transparent;
-    padding:0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
     width: @toolbar-size !important;
     height: @toolbar-size !important;
-
     padding-left: 0 !important; //new
 }
 

@@ -1,9 +1,9 @@
 'use strict';
 
-var less   = require('gulp-less');
-var gulp   = require('gulp');
-var uglify = require('gulp-uglify');
-var concat = require('gulp-concat');
+var less       = require('gulp-less');
+var gulp       = require('gulp');
+var uglify     = require('gulp-uglify');
+var concat     = require('gulp-concat');
 var sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('lessApp', function () {
@@ -60,7 +60,7 @@ gulp.task('compressVendor', function () {
         .pipe(gulp.dest('./www/lib/js'));
 });
 
-gulp.task('copy1', function () {
+gulp.task('copySrc', function () {
     return gulp.src([
         './src/**/*.*',
         '!./src/**/*.less',
@@ -68,14 +68,14 @@ gulp.task('copy1', function () {
     ])
     .pipe(gulp.dest('./www'));
 });
-gulp.task('copy2', function () {
+gulp.task('copyAce', function () {
     return gulp.src([
         './src/lib/js/ace-1.2.0/mode-json.js',
         './src/lib/js/ace-1.2.0/worker-json.js'
     ],  {base: './src/lib/js/ace-1.2.0/'})
         .pipe(gulp.dest('./www'));
 });
-gulp.task('copy', ['copy1', 'copy2']);
+gulp.task('copy', ['copySrc', 'copyAce']);
 
 gulp.task('watch', function () {
     gulp.watch(['./www/css/*.less', './www/lib/css/iob/*.less'], ['lessIob', 'lessApp']);

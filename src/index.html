@@ -86,7 +86,7 @@
     <div class="admin-sidemenu-body"></div>
     <div class="admin-sidemenu-footer"></div>
 </div>
-<div id="tab-adapters"  class="admin-tab" style="display: none" data-name="Adapters">
+<div id="tab-adapters"  class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Adapters">
     <!--<table class="panel-table" style="margin-bottom: 4px; !important" cellspacing="0" cellpadding="0">-->
     <!-- <table class="panel-table" style="height: 30px; margin-left: 1px; margin-top:2px; margin-bottom: 3px;"  cellspacing="0" cellpadding="0"> -->
     <!-- <table class="main-toolbar-table" cellpadding="0"> -->
@@ -201,7 +201,7 @@
         </div>
     </div>
 </div>
-<div id="tab-instances" class="admin-tab" style="display: none" data-name="Instances">
+<div id="tab-instances" class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Instances">
     <!--<table style="width: 100%; height: 30px; padding-left: 6px; padding-top: 4px; padding-buttom: 5px;"> -->
     <table class="main-toolbar-table">
         <tr>
@@ -248,13 +248,13 @@
         </table>
     </div>
 </div>
-<div id="tab-objects"   class="admin-tab" style="display: none" data-name="Objects">
+<div id="tab-objects"   class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Objects">
     <div id="grid-objects" class="grid-main-div"><span class="translate" style="width: calc(100% - 100px); width: calc(100% - 20px); text-align: center">Loading...</span></div>
 </div>
 <!--<div id="tab-objects1"class="admin-tab" style="display: none; height: calc(100% - 55px); overflow:hidden" data-name="Objects1">-->
 <!--<div id="grid-objects1" style="height: 100%; width: 100%"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>-->
 <!--</div>-->
-<div id="tab-states"    class="admin-tab" data-name="States" style="display: none">
+<div id="tab-states"    class="admin-tab admin-sidemenu-body-content" data-name="States" style="display: none">
     <!--<table><tr><td>-->
     <!--</td></tr></table>-->
 
@@ -284,7 +284,7 @@
 <!--div id="tab-node-red"  class="admin-tab" style="display: none" data-name="Node-red" style="display: none" >
     <iframe class="iframe-in-tab" id="iframe-node-red" style="width:100%"></iframe>
 </div-->
-<div id="tab-events"    class="admin-tab" data-name="Events" style="display: none">
+<div id="tab-events"    class="admin-tab admin-sidemenu-body-content" data-name="Events" style="display: none">
     <div id="grid-events" class="ui-jqgrid" style="height: 100%; display: block;">
         <table class="main-toolbar-table">
             <tr>
@@ -337,14 +337,14 @@
         </div>
     </div>
 </div>
-<div id="tab-groups"    class="admin-tab" style="display: none" data-name="Groups">
+<div id="tab-groups"    class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Groups">
     <!--<table class="main-toolbar-table">-->
     <!--<tr><td></td></tr>-->
     <!--</table>-->
     <table id="grid-groups"></table>
     <div id="pager-groups"></div>
 </div>
-<div id="tab-users"     class="admin-tab" style="display: none" data-name="Users">
+<div id="tab-users"     class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Users">
     <!--<table class="main-toolbar-table">-->
     <!--<tr><td></td></tr>-->
     <!--</table>-->
@@ -353,10 +353,10 @@
     <table id="grid-users"></table>
     <div id="pager-users"></div>
 </div>
-<div id="tab-enums"     class="admin-tab" style="display: none" data-name="Enums">
+<div id="tab-enums"     class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Enums">
     <div id="grid-enums" style="width: 100%; height: 100%"><span class="translate">Loading...</span></div>
 </div>
-<div id="tab-hosts"     class="admin-tab" style="display: none" data-name="Hosts">
+<div id="tab-hosts"     class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Hosts">
     <table class="main-toolbar-table">
         <tr>
             <td><button id="btn-hosts-reload"></button></td>
@@ -390,7 +390,7 @@
     </table>
     <!--div id="pager-hosts"></div -->
 </div>
-<div id="tab-log"       class="admin-tab" style="display: none" data-name="Log">
+<div id="tab-log"       class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Log">
     <div id="grid-log" class="ui-jqgrid" style="display: block; height: 100%">
         <!--<div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">-->
 
@@ -807,7 +807,7 @@
 </div>
 <div id="connecting" style="left:50%; top:50%;position: fixed;"><img class="wait-rotate" src="img/gear.png"/></div>
 <div id="events_threshold" class="translate translateT"  style="display: none" title="Click do activate events again, or just wait one minute">Too many events</div>
-<div id="dialog-system" title="System settings" class="translateT" style="display: none">
+<div id="dialog-system" title="System settings" class="translateT admin-sidemenu-body-content" style="display: none">
     <div id="tabs-system">
         <ul class="tabs-ul">
             <li><a href="#tab-system-main"  class="translate">Main settings</a></li>

@@ -647,8 +647,124 @@ function System(main) {
         return old !== JSON.stringify(acl);
     }
 
-
     this.init = function () {
+        var buttons = [
+            {
+                text: _('Save'),
+                click: function () {
+                    var common = main.systemConfig.common;
+                    var languageChanged   = false;
+                    var activeRepoChanged = false;
+
+                    finishEditingCerts();
+                    finishEditingRepo();
+                    finishEditingRights();
+
+                    $('.system-settings.value').each(function () {
+                        var $this = $(this);
+                        var id = $this.attr('id').substring('system_'.length);
+
+                        if ($this.attr('type') === 'checkbox') {
+                            common[id] = $this.prop('checked');
+                        } else {
+                            if (id === 'language'   && common.language   !== $this.val()) languageChanged   = true;
+                            if (id === 'activeRepo' && common.activeRepo !== $this.val()) activeRepoChanged = true;
+                            common[id] = $this.val();
+                            if (id === 'isFloatComma') {
+                                common[id] = (common[id] === 'true' || common[id] === true);
+                            }
+                        }
+                    });
+
+                    // Fill the repositories list
+                    var links = {};
+                    if (that.systemRepos) {
+                        for (var r in that.systemRepos.native.repositories) {
+                            if (that.systemRepos.native.repositories.hasOwnProperty(r) && typeof that.systemRepos.native.repositories[r] === 'object' && that.systemRepos.native.repositories[r].json) {
+                                links[that.systemRepos.native.repositories[r].link] = that.systemRepos.native.repositories[r].json;
+                            }
+                        }
+                        that.systemRepos.native.repositories = {};
+                    }
+
+                    var data = $gridRepo.jqGrid('getRowData');
+                    if (that.systemRepos) {
+                        var first = null;
+                        for (var i = 0; i < data.length; i++) {
+                            that.systemRepos.native.repositories[data[i].name] = {link: data[i].link, json: null};
+                            if (links[data[i].link]) that.systemRepos.native.repositories[data[i].name].json = links[data[i].link];
+                            if (!first) first = data[i].name;
+                        }
+                        // Check if the active repository still exist in the list
+                        if (!first) {
+                            if (common.activeRepo) {
+                                activeRepoChanged = true;
+                                common.activeRepo = '';
+                            }
+                        } else if (!that.systemRepos.native.repositories[common.activeRepo]) {
+                            activeRepoChanged = true;
+                            common.activeRepo = first;
+                        }
+                    }
+                    common.diag = $('#diagMode').val();
+
+                    if (that.systemCerts) {
+                        // Fill the certificates list
+                        that.systemCerts.native.certificates = {};
+                        data = $gridCerts.jqGrid('getRowData');
+                        for (var j = 0; j < data.length; j++) {
+                            that.systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
+                        }
+
+                        $('.system-le-settings.value').each(function () {
+                            var $this = $(this);
+                            var id = $this.data('name');
+
+                            if ($this.attr('type') === 'checkbox') {
+                                that.systemCerts.native.letsEncrypt[id] = $this.prop('checked');
+                            } else {
+                                that.systemCerts.native.letsEncrypt[id] = $this.val();
+                            }
+                        });
+                    }
+
+                    main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
+                        if (!err) {
+                            main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function () {
+                                main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function () {
+                                    if (languageChanged) {
+                                        window.location.reload();
+                                    } else {
+                                        var $currentTab = $dialogSystem.data('current');
+                                        $dialogSystem.data('current', null);
+                                        var $adminBody = main.removeNavBody();
+                                        $currentTab.show().appendTo($adminBody);
+                                        // $dialogSystem.dialog('close');
+                                        if (activeRepoChanged) {
+                                            setTimeout(function () {
+                                                main.tabs.adapters.init(true);
+                                            }, 0);
+                                        }
+                                    }
+                                });
+                            });
+                        } else {
+                            main.showError(err);
+                        }
+                    });
+                }
+            },
+            {
+                text: _('Cancel'),
+                click: function () {
+                    //$dialogSystem.dialog('close');
+                    var $currentTab = $dialogSystem.data('current');
+                    $dialogSystem.data('current', null);
+                    var $adminBody = main.removeNavBody();
+                    $currentTab.show().appendTo($adminBody);
+                }
+            }
+        ];
         if (!main.systemConfig.error) {
             $('#button-system').button({
                 icons: {primary: 'ui-icon-gear'},
@@ -725,7 +841,20 @@ function System(main) {
                     }
                 });
 
-                $dialogSystem.dialog('open');
+                // $dialogSystem.dialog('open');
+
+                var $adminBody = $('.admin-sidemenu-body');
+                var $currentTab = $adminBody.find('.admin-sidemenu-body-content');
+                $currentTab.hide().appendTo('body');
+                $dialogSystem.show().appendTo('.admin-sidemenu-body');
+                $dialogSystem.data('current', $currentTab);
+                if (!$dialogSystem.find('.dialog-system-buttons').length) {
+                    var $div = $('<div class="dialog-system-buttons"></div>');
+                    for (var b = 0; b < buttons.length; b++) {
+                        $div.append($('<button>' + buttons[b].text + '</button>').click(buttons[b].click));
+                    }
+                    $dialogSystem.append($div);
+                }
             });
         } else {
             $('#button-system').hide();
@@ -733,120 +862,129 @@ function System(main) {
     };
 
     this.prepare = function () {
-        $dialogSystem.dialog({
+        var buttons = [
+            {
+                text: _('Save'),
+                click: function () {
+                    var common = main.systemConfig.common;
+                    var languageChanged   = false;
+                    var activeRepoChanged = false;
+
+                    finishEditingCerts();
+                    finishEditingRepo();
+                    finishEditingRights();
+
+                    $('.system-settings.value').each(function () {
+                        var $this = $(this);
+                        var id = $this.attr('id').substring('system_'.length);
+
+                        if ($this.attr('type') === 'checkbox') {
+                            common[id] = $this.prop('checked');
+                        } else {
+                            if (id === 'language'   && common.language   !== $this.val()) languageChanged   = true;
+                            if (id === 'activeRepo' && common.activeRepo !== $this.val()) activeRepoChanged = true;
+                            common[id] = $this.val();
+                            if (id === 'isFloatComma') {
+                                common[id] = (common[id] === 'true' || common[id] === true);
+                            }
+                        }
+                    });
+
+                    // Fill the repositories list
+                    var links = {};
+                    if (that.systemRepos) {
+                        for (var r in that.systemRepos.native.repositories) {
+                            if (that.systemRepos.native.repositories.hasOwnProperty(r) && typeof that.systemRepos.native.repositories[r] === 'object' && that.systemRepos.native.repositories[r].json) {
+                                links[that.systemRepos.native.repositories[r].link] = that.systemRepos.native.repositories[r].json;
+                            }
+                        }
+                        that.systemRepos.native.repositories = {};
+                    }
+
+                    var data = $gridRepo.jqGrid('getRowData');
+                    if (that.systemRepos) {
+                        var first = null;
+                        for (var i = 0; i < data.length; i++) {
+                            that.systemRepos.native.repositories[data[i].name] = {link: data[i].link, json: null};
+                            if (links[data[i].link]) that.systemRepos.native.repositories[data[i].name].json = links[data[i].link];
+                            if (!first) first = data[i].name;
+                        }
+                        // Check if the active repository still exist in the list
+                        if (!first) {
+                            if (common.activeRepo) {
+                                activeRepoChanged = true;
+                                common.activeRepo = '';
+                            }
+                        } else if (!that.systemRepos.native.repositories[common.activeRepo]) {
+                            activeRepoChanged = true;
+                            common.activeRepo = first;
+                        }
+                    }
+                    common.diag = $('#diagMode').val();
+
+                    if (that.systemCerts) {
+                        // Fill the certificates list
+                        that.systemCerts.native.certificates = {};
+                        data = $gridCerts.jqGrid('getRowData');
+                        for (var j = 0; j < data.length; j++) {
+                            that.systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
+                        }
+
+                        $('.system-le-settings.value').each(function () {
+                            var $this = $(this);
+                            var id = $this.data('name');
+
+                            if ($this.attr('type') === 'checkbox') {
+                                that.systemCerts.native.letsEncrypt[id] = $this.prop('checked');
+                            } else {
+                                that.systemCerts.native.letsEncrypt[id] = $this.val();
+                            }
+                        });
+                    }
+
+                    main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
+                        if (!err) {
+                            main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function () {
+                                main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function () {
+                                    if (languageChanged) {
+                                        window.location.reload();
+                                    } else {
+                                        var $currentTab = $dialogSystem.data('current');
+                                        $dialogSystem.data('current', null);
+                                        var $adminBody = main.removeNavBody();
+                                        $currentTab.show().appendTo($adminBody);
+                                        // $dialogSystem.dialog('close');
+                                        if (activeRepoChanged) {
+                                            setTimeout(function () {
+                                                main.tabs.adapters.init(true);
+                                            }, 0);
+                                        }
+                                    }
+                                });
+                            });
+                        } else {
+                            main.showError(err);
+                        }
+                    });
+                }
+            },
+            {
+                text: _('Cancel'),
+                click: function () {
+                    //$dialogSystem.dialog('close');
+                    var $currentTab = $dialogSystem.data('current');
+                    $dialogSystem.data('current', null);
+                    var $adminBody = main.removeNavBody();
+                    $currentTab.show().appendTo($adminBody);
+                }
+            }
+        ];
+        /*$dialogSystem.dialog({
             autoOpen:   false,
             modal:      true,
             width:      900,
             height:     480,
-            buttons: [
-                {
-                    text: _('Save'),
-                    click: function () {
-                        var common = main.systemConfig.common;
-                        var languageChanged   = false;
-                        var activeRepoChanged = false;
-
-                        finishEditingCerts();
-                        finishEditingRepo();
-                        finishEditingRights();
-
-                        $('.system-settings.value').each(function () {
-                            var $this = $(this);
-                            var id = $this.attr('id').substring('system_'.length);
-
-                            if ($this.attr('type') === 'checkbox') {
-                                common[id] = $this.prop('checked');
-                            } else {
-                                if (id === 'language'   && common.language   !== $this.val()) languageChanged   = true;
-                                if (id === 'activeRepo' && common.activeRepo !== $this.val()) activeRepoChanged = true;
-                                common[id] = $this.val();
-                                if (id === 'isFloatComma') {
-                                    common[id] = (common[id] === 'true' || common[id] === true);
-                                }
-                            }
-                        });
-
-                        // Fill the repositories list
-                        var links = {};
-                        if (that.systemRepos) {
-                            for (var r in that.systemRepos.native.repositories) {
-                                if (that.systemRepos.native.repositories.hasOwnProperty(r) && typeof that.systemRepos.native.repositories[r] === 'object' && that.systemRepos.native.repositories[r].json) {
-                                    links[that.systemRepos.native.repositories[r].link] = that.systemRepos.native.repositories[r].json;
-                                }
-                            }
-                            that.systemRepos.native.repositories = {};
-                        }
-
-                        var data = $gridRepo.jqGrid('getRowData');
-                        if (that.systemRepos) {
-                            var first = null;
-                            for (var i = 0; i < data.length; i++) {
-                                that.systemRepos.native.repositories[data[i].name] = {link: data[i].link, json: null};
-                                if (links[data[i].link]) that.systemRepos.native.repositories[data[i].name].json = links[data[i].link];
-                                if (!first) first = data[i].name;
-                            }
-                            // Check if the active repository still exist in the list
-                            if (!first) {
-                                if (common.activeRepo) {
-                                    activeRepoChanged = true;
-                                    common.activeRepo = '';
-                                }
-                            } else if (!that.systemRepos.native.repositories[common.activeRepo]) {
-                                activeRepoChanged = true;
-                                common.activeRepo = first;
-                            }
-                        }
-                        common.diag = $('#diagMode').val();
-
-                        if (that.systemCerts) {
-                            // Fill the certificates list
-                            that.systemCerts.native.certificates = {};
-                            data = $gridCerts.jqGrid('getRowData');
-                            for (var j = 0; j < data.length; j++) {
-                                that.systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
-                            }
-
-                            $('.system-le-settings.value').each(function () {
-                                var $this = $(this);
-                                var id = $this.data('name');
-
-                                if ($this.attr('type') === 'checkbox') {
-                                    that.systemCerts.native.letsEncrypt[id] = $this.prop('checked');
-                                } else {
-                                    that.systemCerts.native.letsEncrypt[id] = $this.val();
-                                }
-                            });
-                        }
-
-                        main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
-                            if (!err) {
-                                main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function (/* err */) {
-                                    main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function (/* err */) {
-                                        if (languageChanged) {
-                                            window.location.reload();
-                                        } else {
-                                            $dialogSystem.dialog('close');
-                                            if (activeRepoChanged) {
-                                                setTimeout(function () {
-                                                    tabs.adapters.init(true);
-                                                }, 0);
-                                            }
-                                        }
-                                    });
-                                });
-                            } else {
-                                main.showError(err);
-                            }
-                        });
-                    }
-                },
-                {
-                    text: _('Cancel'),
-                    click: function () {
-                        $dialogSystem.dialog('close');
-                    }
-                }
-            ],
+            buttons: buttons,
             open: function (event, ui) {
                 $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                 $gridRepo.setGridHeight($(this).height() - 150).setGridWidth($(this).width() - 40);
@@ -859,7 +997,7 @@ function System(main) {
                 $gridRepo.setGridHeight($(this).height() - 160).setGridWidth($(this).width() - 40);
                 $gridCerts.setGridHeight($(this).height() - 160).setGridWidth($(this).width() - 40);
             }
-        });
+        });*/
 
         prepareRepos();
         prepareCerts();
