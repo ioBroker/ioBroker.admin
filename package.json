@@ -38,10 +38,13 @@
     "xtend": "^4.0.1"
   },
   "devDependencies": {
+    "chai": "^4.1.2",
     "gulp": "^3.9.1",
     "gulp-less": "^3.3.2",
-    "mocha": "^3.5.3",
-    "chai": "^4.1.2"
+    "gulp-uglify": "^3.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-sourcemaps": "^2.6.1",
+    "mocha": "^3.5.3"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"

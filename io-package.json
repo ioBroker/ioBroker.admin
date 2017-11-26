@@ -4,9 +4,10 @@
         "title":                    "ioBroker Admin",
         "version": "3.0.5",
         "news": {
-            "3.0.1": {
+            "3.0.5": {
                 "en": "gui redesigned",
-                "de": "Benutzeroberfäche neu gestaltet"
+                "de": "Benutzeroberfäche neu gestaltet",
+                "ru": "Новый стиль"
             },
 			"2.0.11": {
                 "en": "Configurable event update disable threshold",
@@ -36,131 +37,6 @@
                 "en": "Show the history charts if the web server has the https option on too",
                 "de": "Zeige Charts auch wenn WEB server is https",
                 "ru": "Показывать графики даже если web сервер на https"
-            },
-			"2.0.3": {
-                "en": "Fix user access rights for sendToHost",
-                "de": "Korrigiere die Anwenderrechte für sendToHost",
-                "ru": "Исправлены права доступа для sendToHost"
-            },
-            "2.0.2": {
-                "en": "Add the editing of the default access rights",
-                "de": "Zugefügt die Bearbeitung der Standardzugriffsrechte hinzu",
-                "ru": "Добавлена настройка прав доступа по умолчанию"
-            },
-			"2.0.1": {
-                "en": "Allow access via iobroker.pro",
-                "de": "Erlaube Zugrif über iobroker.pro",
-                "ru": "Разрешает доступ через iobroker.pro"
-            },
-            "1.8.3": {
-                "en": "allow access on tmp directory",
-                "de": "Erlaube Zugrif auf Tmp-Verzeichnis",
-                "ru": "Разрешает доступ на Tmp директорию"
-            },
-            "1.8.0": {
-                "en": "split into modules",
-                "de": "Modularize",
-                "ru": "Модульная архитектура"
-            },
-            "1.7.6": {
-                "en": "Fix edit of the enum name",
-                "de": "Korrigiere die Änderung vom Aufzählungennamen",
-                "ru": "Исправить изменение категорий"
-            },
-            "1.7.5": {
-                "en": "do not open configuration dialog for instances with no config",
-                "de": "Öffne den Konfigurationsdialog nicht für die Instanzen ohne config",
-                "ru": "Не открывать диалоговое окно конфигурации для драйверов без конфигурации"
-            },
-            "1.7.3": {
-                "en": "fix license dialog\nupdate german translation",
-                "de": "Korrigiere Lizenzdialog.\nKorrigiere Übersetzung",
-                "ru": "Исправлен диалог для соглашения с лицензией"
-            },
-            "1.7.1": {
-                "en": "fix save button functionality\nUpdate german translations\npatch repositories to support stable",
-                "de": "Fix save Knopf Funktionalität\nDeutsch Übersetzungen anpassen\nPatch-Repositories, um stable zu unterstützen",
-                "ru": "Исправлена функциональность кнопки сохранения\nобновлён немецкий перевод\nИсправления для поддержки stable repo"
-            },
-		    "1.7.0": {
-                "en": "See changelog in readme.md",
-                "de": "Sehe ChangeLog in README.md",
-                "ru": "Смотри ChangeLog в README.md"
-            },
-            "1.6.12": {
-                "en": "Show messages rates for adapters",
-                "de": "Zeige Meldungsraten für Adapter",
-                "ru": "Показывать количество сообщений для инстанций"
-            },
-            "1.6.11": {
-                "en": "Support of web extensions\nFix error in expert mode on adapter tab",
-                "de": "Unterstützung von WEB-Erweiterungen\nKorrigiere Anzeige von Expert mode auf Adapter-Tab",
-                "ru": "Поддержка WEB расширений\nИсправлено отображение режима эксперта на странице драйверов"
-            },
-            "1.6.9": {
-                "en": "Fix problem with the enums editing",
-                "de": "Korrigiere das Problem mit Aufzählungen-Editierung",
-                "ru": "Исправлено редактирование категорий"
-            },
-            "1.6.8": {
-                "en": "Fix problem with install of instances",
-                "de": "Korrigiere das Problem mit Instanzinstallation",
-                "ru": "Исправлена установка экземпляров драйверов"
-            },
-            "1.6.7": {
-                "en": "expert mode in adapters: allow install of js-controller from git, allow install specific adapter version",
-                "de": "Expertenmodus in Adapter: erlaube Installation von js-controller vom git, erluabe installation von belibieger Adapterversion",
-                "ru": "Режим эксперта в Драйверах: можно устанавливть js-controller c git, можно установить любую версию драйвера"
-            },
-            "1.6.5": {
-                "en": "update selectID.js\nremove js-controller from github install\nbetter log messages in GUI",
-                "de": "Update selectID Dialog\nNehme js-controller aus Guthub Menü raus\nBessere GUI für logs",
-                "ru": "Обновлён диалог выбора ID\nУбран js-controller из меню установки с github\nУлучшен GUI для логов"
-            },
-            "1.6.4": {
-                "en": "Changes for JS adapter",
-                "de": "Änderungen für JS-Adapter",
-                "ru": "Изменения для Драйвера JS"
-            },
-		    "1.6.3": {
-                "en": "fix upload of custom installations",
-                "de": "Korrigiere upload von GitHub Installationen ",
-                "ru": "Исправлено обновление драйверов с github"
-            },
-            "1.6.2": {
-                "en": "fix hosts leds\nfix error in system settings\nadd upgrade all button",
-                "de": "Korrigiere LEDs für Hosts\nKorrigiere Fehler in der Systemeinstellungen\nUpgrade alle Knopf hinzugefügt",
-                "ru": "Исправлен баг на странице хосты с LED\nИсправлена ошибка в системных настройках\nДобавлена кнопка Обновить все драйвера"
-            },
-            "1.6.1": {
-                "en": "change hosts tab",
-                "de": "Ändere Hosts-Tab",
-                "ru": "Страница Хосты изменена"
-            },
-            "1.6.0": {
-                "en": "new Lets Encrypt concept",
-                "de": "Neues Konzept für Lets Encrypt",
-                "ru": "Новый концепт для Lets Encrypt"
-            },
-            "1.5.3": {
-                "en": "Debug outputs for letsencrypt",
-                "de": "Debug-Ausgaben für letsencrypt",
-                "ru": "Debug выводы для letsencrypt"
-            },
-            "1.5.2": {
-                "en": "use pure letsencrypt module",
-                "de": "Benutze nut letsencrypt module",
-                "ru": "Используется только letsencrypt модуль"
-            },
-            "1.5.1": {
-                "en": "fix error in instances table",
-                "de": "fix error in instances table",
-                "ru": "fix error in instances table"
-            },
-            "1.5.0": {
-                "en": "add support of Lets Encrypt",
-                "de": "add support of Lets Encrypt",
-                "ru": "add support of Lets Encrypt"
             }
         },
         "desc": {

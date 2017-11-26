@@ -1,0 +1,1338 @@
+<html>
+<head>
+    <title>ioBroker.admin</title>
+    <link rel="stylesheet" type="text/css" href="lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="lib/css/themes/jquery-ui/redmond/jquery-ui.structure.min.css"/>
+    <link rel="stylesheet" type="text/css" href="lib/css/themes/jquery-ui/redmond/jquery-ui.theme.min.css"/>
+    <!--link rel="stylesheet" type="text/css" href="css/admin.css"/>
+    <link rel="stylesheet" type="text/css" href="css/tiles.css"/>
+    <link rel="stylesheet" type="text/css" href="css/sidenav.css"/-->
+    <link rel="stylesheet" type="text/css" href="css/app.css"/>
+    <link rel="stylesheet" type="text/css" href="lib/css/jqGrid/ui.jqgrid-4.5.4.css"/>
+    <link rel="stylesheet" type="text/css" href="lib/css/jquery.multiselect-1.13.css"/>
+    <link rel="stylesheet" type="text/css" href="lib/css/fancytree/ui.fancytree.min.css"/>
+    <link rel="stylesheet" type="text/css" href="lib/css/cron/jquery.cron.css"/>
+
+    <link class="favicon" href="favicon.ico" type="image/x-icon" rel="icon" />
+    <link class="favicon" href="favicon.ico" type="image/x-icon" rel="shortcut icon" />
+    <link class="favicon" href="favicon.ico" type="image/x-icon" />
+
+    <!--script type="text/javascript" src="lib/js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="lib/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js"></script>
+    <script type="text/javascript" src="lib/js/jqGrid/grid.locale-all.js"></script>
+    <script type="text/javascript" src="lib/js/colResizable-1.6.min.js"></script>
+    <script type="text/javascript" src="lib/js/jquery.multiselect-1.13.min.js"></script>
+    <script type="text/javascript" src="lib/js/semver.min.js"></script>
+    <script type="text/javascript" src="lib/js/ace-1.2.0/ace.js"></script>
+    <script type="text/javascript" src="lib/js/loStorage.js"></script>
+    <script type="text/javascript" src="lib/js/translate.js"></script>
+    <script type="text/javascript" src="js/words.js"></script><!--this file must be after translate.js -->
+    <!--script type="text/javascript" src="js/license.js"></script-->
+    <script type="text/javascript" src="./socket.io/socket.io.js"></script>
+
+    <!--script type="text/javascript" src="lib/js/jquery.fancytree-all.min.js"></script-->
+    <script type="text/javascript" src="lib/js/vendor.js"></script>
+    <!--script type="text/javascript" src="js/listHeader.js"></script-->
+
+    <!--script type="text/javascript" src="lib/js/selectID.js"></script>
+    <script type="text/javascript" src="lib/js/cron/jquery.cron.js"></script>
+    <script type="text/javascript" src="lib/js/cron/cron2text.js"></script-->
+
+    <!--script type="text/javascript" src="js/adminAdapters.js"></script>
+    <script type="text/javascript" src="js/adminInstances.js"></script>
+    <script type="text/javascript" src="js/adminEnums.js"></script>
+    <script type="text/javascript" src="js/adminEvents.js"></script>
+    <script type="text/javascript" src="js/adminHosts.js"></script>
+    <script type="text/javascript" src="js/adminInstances.js"></script>
+    <script type="text/javascript" src="js/adminLog.js"></script>
+    <script type="text/javascript" src="js/adminObjects.js"></script>
+    <script type="text/javascript" src="js/adminStates.js"></script>
+    <script type="text/javascript" src="js/adminUsers.js"></script>
+    <script type="text/javascript" src="js/adminGroups.js"></script>
+    <script type="text/javascript" src="js/adminSystem.js"></script>
+    <script type="text/javascript" src="js/admin.js"></script-->
+    <script type="text/javascript" src="js/app.js"></script>
+
+</head>
+<body>
+<div id="dialog"></div>
+<div id="_toolbar-button_" class="toolbar-button" style="display: none; visibility: hidden">used to get button size</div>
+<div id="tabs" style="display: none; height: 100%;">
+    <ul id="tabs-ul">
+    </ul>
+</div>
+<!--<div id="tabs" style="display: none; height: 100%;">-->
+    <!--<div><table><tbody><tr>-->
+        <!--<td>-->
+            <!--<ul id="tabs-ul">-->
+            <!--</ul>-->
+        <!--</td>-->
+        <!--<td>-->
+            <!--<div id="main-buttons">-->
+                <!--main buttons-->
+            <!--</div>-->
+        <!--</td>-->
+    <!--</tr></tbody></table></div>-->
+<!--</div>-->
+
+<div id="admin_sidemenu_menu" class="admin-sidemenu">
+    <div class="admin-sidemenu-logo"><img src="img/logo.png" /></div>
+    <div class="choose-tabs-config-button">▽</div>
+    <div class="admin-sidemenu-menu"></div>
+</div>
+<div id="admin_sidemenu_main">
+    <div class="admin-sidemenu-header"></div>
+    <div class="admin-sidemenu-body"></div>
+    <div class="admin-sidemenu-footer"></div>
+</div>
+<div id="tab-adapters"  class="admin-tab" style="display: none" data-name="Adapters">
+    <!--<table class="panel-table" style="margin-bottom: 4px; !important" cellspacing="0" cellpadding="0">-->
+    <!-- <table class="panel-table" style="height: 30px; margin-left: 1px; margin-top:2px; margin-bottom: 3px;"  cellspacing="0" cellpadding="0"> -->
+    <!-- <table class="main-toolbar-table" cellpadding="0"> -->
+    <table class="main-toolbar-table">
+        <!--        <td> -->
+        <!--<td></td>-->
+        <td>
+            <button id="btn_switch_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="change view mode"></button>
+        </td>
+        <td>
+            <button id="btn_refresh_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="update adapter information"></button>
+        </td>
+        <td>
+            <button id="btn_list_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="list"></button>
+        </td>
+        <td>
+            <button id="btn_collapse_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="collapse all"></button>
+        </td>
+        <td>
+            <button id="btn_expand_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="expand all"></button>
+        </td>
+
+        <td class="iob-toolbar-sep"></td>
+        <td>
+            <button id="btn_filter_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="installed adapters"></button>
+        </td>
+        <td>
+            <button id="btn_filter_updates" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="adapter with updates"></button>
+        </td>
+        <td class="iob-toolbar-sep"></td>
+        <td>
+            <button id="btn_filter_custom_url" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="Install from custom URL"></button>
+        </td>
+        <td>
+            <button id="btn_upgrade_all" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="Upgrade all adapters"></button>
+        </td>
+        <td>
+            <button id="btn-adapters-expert-mode" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only "></button>
+        </td>
+        <td class="iob-toolbar-sep"></td>
+        <!--<td style="width:30px"></td>-->
+
+
+        <!--            <td>
+                        <span class="" style="padding-left: 10px">
+                                id="host-adapters"></select>
+                        </span>
+                    </td>
+                    <td>
+                        <span class="adapters-filter-input" style="padding-left: 10px"><label class="translate" for="adapters-filter"></label>
+                            <input id="adapters-filter" style="width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/>
+                            <button id="adapters-filter-clear" style="width: 18px;height: 18px;border: 0;background: #fff;"></button>
+                        </span>
+                    </td>
+                    -->
+
+        <td>
+            <!-- <table style="border: 1px solid #c0c0c0; /*width: 100%;*/ height:20px; border-spacing: 0px; font-size: 14px;background: #fff; margin-left: 10px;"><tr> -->
+            <table class="panel-input-table"><tr>
+                <td>
+                    <!--<span style="display: inline-block; padding-left: 120px">-->
+                    <!--<div style="padding-left: 120px">#--><label style="margin-left: 5px; border:0; font-size: 14px;" class="translate" for="host-adapters">Host:</label>
+                </td>
+                <td>
+                    <select id="host-adapters" style="border:0; font-size: 14px; padding-top: 1px; margin-top: 1px"></select><!--</div>-->
+                </td>
+                </td></tr></table>
+        </td>
+        <td class="iob-toolbar-sep"></td>
+        <td>
+            <!-- <table style="border: 1px solid #c0c0c0; /*width: 100%;*/ height:20px; border-spacing: 0px; font-size: 14px;background: #fff; margin-left: 10px;"><tr><td> -->
+            <table class="panel-input-table"><tr>
+                <td style="width: 100%"><input id="adapters-filter" style="padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/></td>
+                <td><button id="adapters-filter-clear" style="width: 18px;height: 18px;border: 0;background: #fff;"></button></td>
+            </tr></table>
+        </td>
+
+
+        <td style="width: 100%;"></td>
+        </tr>
+    </table>
+    <div id="process_running_adapters" class="translate">Processing...</div>
+    <!--<div style="width:100%;height:400px;overflow-y: auto" id="grid-adapters-div">-->
+    <div class="grid-main-div" style="width: 100%; overflow-y: auto" id="grid-adapters-div">
+        <table id="grid-adapters" class="iob-list-font" style="margin-left: 1px; width: calc(100% - 2px); table-layout: fixed;">
+            <colgroup>
+                <col width="320px"/>
+                <col width="*"/>
+                <col width="200px"/>
+                <col width="100px"/>
+                <col width="80px" style="min-width: 80px;"/>
+                <!--col width="140px"/--> <!-- // actually there is only one platform -->
+                <col width="140px"/>
+                <col width="140px"/>
+            </colgroup>
+            <thead>
+            <tr>
+                <th class="translate ui-widget-header">Name</th>
+                <th class="translate ui-widget-header">description</th>
+                <th class="translate ui-widget-header">keywords</th>
+                <th class="translate ui-widget-header">installed</th>
+                <!--<th class="translate ui-widget-header"><div class="translate" style="min-width: 80px;">available</div></th>-->
+                <th class="translate ui-widget-header">available</th>
+                <!-- th class="translate ui-widget-header">platform</th--> <!-- // actually there is only one platform -->
+                <th class="translate ui-widget-header">license</th>
+                <th class="translate ui-widget-header">install</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div id="grid-adapters-tiles" class="tiles" style="display: none">
+        </div>
+    </div>
+</div>
+<div id="tab-instances" class="admin-tab" style="display: none" data-name="Instances">
+    <!--<table style="width: 100%; height: 30px; padding-left: 6px; padding-top: 4px; padding-buttom: 5px;"> -->
+    <table class="main-toolbar-table">
+        <tr>
+            <td>
+                <button id="btn-instances-reload"></button>
+            </td>
+            <td>
+                <button id="btn-instances-expert-mode"></button>
+            </td>
+            <td>
+                <table class="panel-input-table"><tr>
+                    <td style="width: 100%"><input id="instances-filter" style="padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/></td>
+                    <td><button id="instances-filter-clear" style="width: 18px;height: 18px;border: 0;background: #fff;"></button></td>
+                </tr></table>
+
+            </td>
+            <!--
+                <td style="padding-left: 100px"><label class="translate" style="display: inline-block" for="instances-filter">Filter:</label></td>
+                <td><input style="display: inline-block; width: 100px; margin-right: 3px" id="instances-filter"></td>
+            <td>
+                <button style="display: inline-block" id="instances-filter-clear"></button>
+            </td>
+            -->
+            <td style="width: 100%"></td>
+            <td class="ram-info-td">
+                <span class="translate">RAM total usage:</span> <span id="totalRam" class="ram-font-weight"></span>
+                <span class="translate">MB</span> <span class="free-mem-label">/</span>
+                <span class="translate free-mem-label">Free RAM:</span>
+                <span id="freeMemPercent" class="ram-font-weight"></span><span>=</span><span id="freeMem" class="ram-font-weight"></span>
+                <span class="translate free-mem-label">MB</span>
+                [
+                <span class="translate">Host</span>: <span id="currentHost" class="ram-font-weight"></span> - <span id="running_processes"></span>]
+            </td>
+        </tr>
+    </table>
+    <!--table id="grid-instances"></table>
+    <div id="pager-instances"></div-->
+    <div class="grid-main-div" style="width: 100%; height: calc(100% - 30px); overflow: auto; margin-left:1px; width:calc(100% - 2px)">
+        <table class="instance-table" style="width: 100%;">
+            <thead id="grid-instances-head">
+            </thead>
+            <tbody id="grid-instances">
+            </tbody>
+        </table>
+    </div>
+</div>
+<div id="tab-objects"   class="admin-tab" style="display: none" data-name="Objects">
+    <div id="grid-objects" class="grid-main-div"><span class="translate" style="width: calc(100% - 100px); width: calc(100% - 20px); text-align: center">Loading...</span></div>
+</div>
+<!--<div id="tab-objects1"class="admin-tab" style="display: none; height: calc(100% - 55px); overflow:hidden" data-name="Objects1">-->
+<!--<div id="grid-objects1" style="height: 100%; width: 100%"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>-->
+<!--</div>-->
+<div id="tab-states"    class="admin-tab" data-name="States" style="display: none">
+    <!--<table><tr><td>-->
+    <!--</td></tr></table>-->
+
+    <!--<table class="main-toolbar-table">-->
+    <!--<tr><td></td></tr>-->
+    <!--</table>-->
+
+
+    <!--<table class="main-toolbar-table">-->
+    <!--<tr>-->
+    <!--<td>-->
+    <!--<button id="event-pause" class="panel-button"></button>-->
+    <!--</td>-->
+    <!--<td>-->
+    <!--<button id="event-clear" style="font-size: 14px; font-weight: normal;"></button>-->
+    <!--</td>-->
+    <!--<td style="width: 90%"></td>-->
+    <!--</tr>-->
+    <!--</table>-->
+
+    <table id="grid-states"></table>
+    <div id="pager-states"></div>
+</div>
+<!--div id="tab-scripts"   class="admin-tab" style="display: none" data-name="Scripts">
+    <iframe class="iframe-in-tab" style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%;" src="/adapter/javascript/tab.html"></iframe>
+</div-->
+<!--div id="tab-node-red"  class="admin-tab" style="display: none" data-name="Node-red" style="display: none" >
+    <iframe class="iframe-in-tab" id="iframe-node-red" style="width:100%"></iframe>
+</div-->
+<div id="tab-events"    class="admin-tab" data-name="Events" style="display: none">
+    <div id="grid-events" class="ui-jqgrid" style="height: 100%; display: block;">
+        <table class="main-toolbar-table">
+            <tr>
+                <td>
+                    <button id="event-pause" class="panel-button" style="width: 3em !important;"></button>
+                </td>
+                <td>
+                    <!--<button id="event-clear" style="font-size: 12px; font-weight: normal;"></button>-->
+                    <button id="event-clear" class="toolbar-icon-text-button"></button>
+                </td>
+                <td style="width: 90%"></td>
+            </tr>
+        </table>
+
+
+        <table style="width: 100%; border-collapse: collapse;" class="main-header-table">
+            <thead>
+            <!--<tr id="events-table-tr" class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">-->
+            <!--<tr id="events-table-tr" class="" style="height: 24px;">-->
+            <tr id="events-table-tr">
+            </tr>
+            </thead>
+        </table>
+        <!--<div id="grid-events-inner" style="height: calc(100% - 54px); width: 100%; overflow-y: scroll;">-->
+        <div id="grid-events-inner">
+            <!--<table id="event-outer" style="width: 100%; border-collapse: collapse; margin-top: -1px"-->
+            <!--class="ui-widget ui-state-default ui-corner-bottom iob-list-table events-list-table">-->
+            <!--<table id="event-outer" style="" class="ui-widget ui-state-default ui-corner-bottom iob-list-table events-list-table">-->
+            <table id="event-outer" class="iob-list-table events-list-table">
+                <colgroup>
+
+                    <col width="10%"/>
+                    <col width="30%"/>
+                    <col width="10%"/>
+                    <col width="9%"/>
+                    <col width="10%"/>
+                    <col width="10%"/>
+                    <col width="10%"/>
+                </colgroup>
+                <thead>
+                <tr style="visibility: hidden; height: 0 !important; background: #f00; "><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr>
+                </thead>
+
+
+                <tbody id="event-table">
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+<div id="tab-groups"    class="admin-tab" style="display: none" data-name="Groups">
+    <!--<table class="main-toolbar-table">-->
+    <!--<tr><td></td></tr>-->
+    <!--</table>-->
+    <table id="grid-groups"></table>
+    <div id="pager-groups"></div>
+</div>
+<div id="tab-users"     class="admin-tab" style="display: none" data-name="Users">
+    <!--<table class="main-toolbar-table">-->
+    <!--<tr><td></td></tr>-->
+    <!--</table>-->
+
+
+    <table id="grid-users"></table>
+    <div id="pager-users"></div>
+</div>
+<div id="tab-enums"     class="admin-tab" style="display: none" data-name="Enums">
+    <div id="grid-enums" style="width: 100%; height: 100%"><span class="translate">Loading...</span></div>
+</div>
+<div id="tab-hosts"     class="admin-tab" style="display: none" data-name="Hosts">
+    <table class="main-toolbar-table">
+        <tr>
+            <td><button id="btn-hosts-reload"></button></td>
+            <td class="iob-toolbar-sep"></td>
+            <td>
+                <table class="panel-input-table"><tr>
+                    <td style="width: 100%"><input id="hosts-filter" style="padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/></td>
+                    <td><button id="hosts-filter-clear" style="display: inline-block; width: 18px;height: 18px;border: 0;background: #fff;"></button></td>
+                </tr></table>
+            </td>
+            <td style="width: 100%"></td>
+        </tr>
+    </table>
+
+    <table class="hosts-table iob-list-table" style="width: 100%; margin-left: 1px">
+        <thead id="grid-hosts-head">
+        <tr>
+            <th class="translate ui-widget-header" style="width: 40px"></th>
+            <th class="translate ui-widget-header">name</th>
+            <th class="translate ui-widget-header">type</th>
+            <th class="translate ui-widget-header">title</th>
+            <th class="translate ui-widget-header">platform</th>
+            <th class="translate ui-widget-header">os</th>
+            <th class="translate ui-widget-header">available</th>
+            <th class="translate ui-widget-header">installed</th>
+            <th class="translate ui-widget-header">events</th>
+        </tr>
+        </thead>
+        <tbody id="grid-hosts">
+        </tbody>
+    </table>
+    <!--div id="pager-hosts"></div -->
+</div>
+<div id="tab-log"       class="admin-tab" style="display: none" data-name="Log">
+    <div id="grid-log" class="ui-jqgrid" style="display: block; height: 100%">
+        <!--<div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">-->
+
+        <!--<table style="padding: 0; margin: 0; border-spacing: 0"-->
+        <!--class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">-->
+        <!--<tr>-->
+        <!--<td width="100%"><span class="ui-jqgrid-title translate">Log</span></td>-->
+        <!--<td id="log-size" style="width: 100px; font-size: 10px; font-weight: normal"></td>-->
+        <!--<td>-->
+        <!--<button id="log-pause" class="translateT" title="Pause output"></button>-->
+        <!--</td>-->
+        <!--<td>-->
+        <!--<button id="log-refresh" class="translateT" title="Refresh log"></button>-->
+        <!--</td>-->
+        <!--<td>-->
+        <!--<button id="log-copy" class="translateT" title="Copy log"></button>-->
+        <!--</td>-->
+        <!--<td>-->
+        <!--<button id="log-clear" class="translateT" title="Clear log"></button>-->
+        <!--</td>-->
+        <!--<td>-->
+        <!--<button id="log-clear-on-disk" class="translateT" title="Clear on disk permanent"></button>-->
+        <!--</td>-->
+        <!--</tr>-->
+        <!--</table>-->
+        <table class="main-toolbar-table">
+            <tr>
+
+                <td><button id="log-refresh"       class="panel-button translateT" title="Refresh log"></button></td>
+                <td><button id="log-pause"         class="panel-button translateT" title="Pause output" style="width: 3em !important;"></button></td>
+                <td><button id="log-copy"          class="panel-button translateT" title="Copy log"></button></td>
+                <td><button id="log-clear"         class="panel-button translateT" title="Clear log"></button></td>
+                <td><button id="log-clear-on-disk" class="panel-button translateT" title="Clear on disk permanent"></button></td>
+                <td id="log-size" style="text-align: right; white-space: nowrap; font-size: 0.75em; font-weight: normal"></td>
+                <!--<td style="width: 90% !important"></td>-->
+                <!--<td>-->
+                <!--<button id="event-pause" class="panel-button"></button>-->
+                <!--</td>-->
+                <!--<td>-->
+                <!--<button id="event-clear" style="font-size: 14px; font-weight: normal;"></button>-->
+                <!--</td>-->
+                <!--<td style="width: 90%"></td>-->
+            </tr>
+        </table>
+
+        <!--</div>-->
+        <!--<table style="width: 100%; border-collapse: collapse;" class="main-header-table">-->
+        <table id="log-outer-header" class="main-header-table" style="width: 100%; border-collapse: collapse;">
+            <!--class="ui-widget ui-state-default ui-corner-bottom">-->
+
+            <thead>
+            <tr></tr>
+            <!--
+                    <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
+                        <th class="log-column-1-header ui-state-default ui-th-column ui-th-ltr" style="text-align: right"><select id="log-filter-host"></select></th>
+                        <th class="log-column-2-header ui-state-default ui-th-column ui-th-ltr translate">ts</th>
+                        <th class="log-column-3-header ui-state-default ui-th-column ui-th-ltr"><select id="log-filter-severity">
+                            <option value=""      class="translate">debug</option>
+                            <option value="silly" class="translate">silly</option>
+                            <option value="info"  class="translate">info</option>
+                            <option value="warn"  class="translate">warn</option>
+                            <option value="error" class="translate">error</option>
+                        </select></th>
+                        <th class="log-column-4-header ui-state-default ui-th-column ui-th-ltr" style="text-align: left"><span class="translate" style="padding-right: 10px;padding-left: 5px">message</span><input id="log-filter-message" type="text" size="10"/><button id="log-filter-message-clear">x</button></th>
+                    </tr>
+            -->
+            </thead>
+        </table>
+
+        <!--<div id="grid-log-inner" style="width: 100%; overflow-y: scroll; height: calc(100% - 60px);">-->
+        <div id="grid-log-inner" class="grid-main-wh-div" style="width: 100%; overflow-y: scroll;">
+            <table id="log-outer" style="width: calc(100% - 3px); border-collapse: collapse; margin-top: -1px"
+                   class="ui-widget ui-state-default ui-corner-bottom">
+                <colgroup>
+                    <col width="120px"/>
+                    <col width="180px"/>
+                    <col width="90px"/>
+                    <!--<col width="90%"/>-->
+                </colgroup>
+
+                <thead>
+                <!--<tr style="visibility: hidden; height: 0 !important; background: #f00; "><td></td><td></td><td></td><td></td></tr>-->
+                <tr style="visibility: hidden; height: 0 !important; background: #f00; "><th></th><th></th><th></th><th></th></tr>
+                </thead>
+                <tbody id="log-table">
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<div id="dialog-object" style="display: none">
+    <table>
+        <tr>
+            <td><label class="translate" for="edit-object-id">ID</label></td>
+            <td><input size="60" id="edit-object-id" readonly style="opacity: 0.7"></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><label class="translate" for="edit-object-name">name</label></td>
+            <td><input size="60" id="edit-object-name"></td>
+            <td><label class="translate" for="edit-object-type">type</label></td>
+            <td>
+                <select id="edit-object-type" disabled="disabled">
+                    <option>device</option>
+                    <option>channel</option>
+                    <option>state</option>
+                    <option>enum</option>
+                    <option>host</option>
+                    <option>adapter</option>
+                    <option>instance</option>
+                    <option>meta</option>
+                    <option>config</option>
+                    <option>path</option>
+                    <option>file</option>
+                    <option>script</option>
+                    <option>group</option>
+                    <option>user</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <div id="object-tabs" style="width:100%; height: calc(100% - 70px)">
+        <ul>
+            <li><a href="#object-tab-common" class="translate">common</a></li>
+            <li><a href="#object-tab-native" class="translate">native</a></li>
+            <li><a href="#object-tab-acl" class="translate">Access control</a></li>
+            <li><a href="#object-tab-rest" class="translate">rest</a></li>
+            <li><a href="#object-tab-raw" class="translate">raw</a></li>
+        </ul>
+        <div id="object-tab-common" style="width: calc(100% - 15px); height: calc(100% - 50px); overflow: auto">
+            <button id="object-tab-new-common"></button>
+            <table style="width: 100%">
+                <thead>
+                <tr>
+                    <th class="translate ui-widget-header" style="width: 100px">Name</th>
+                    <th class="translate ui-widget-header" style="width: 100%">Value</th>
+                    <th class="translate ui-widget-header" style="width: 25px"></th>
+                </tr>
+                </thead>
+                <tbody id="object-tab-common-table">
+
+                </tbody>
+            </table>
+        </div>
+        <div id="object-tab-native" style="width: calc(100% - 15px); height: calc(100% - 50px); overflow: auto">
+            <button id="object-tab-new-native" class="translateB">New</button>
+            <table style="width: 100%">
+                <thead>
+                <tr>
+                    <th class="translate ui-widget-header" style="width: 100px">Name</th>
+                    <th class="translate ui-widget-header" style="width: 100%">Value</th>
+                    <th class="translate ui-widget-header" style="width: 25px"></th>
+                </tr>
+                </thead>
+                <tbody id="object-tab-native-table">
+
+                </tbody>
+            </table>
+        </div>
+        <div id="object-tab-acl" style="width: calc(100% - 15px); height: calc(100% - 50px); overflow: auto">
+            <table id="object-tab-acl-table" style="width: 100%">
+                <tr><td><label class="translate" for="object-tab-acl-owner">Owner user</label></td><td><select id="object-tab-acl-owner"></select></td></tr>
+                <tr><td><label class="translate" for="object-tab-acl-group">Owner group</label></td><td><select id="object-tab-acl-group"></select></td></tr>
+                <tr><td><label class="translate">Object rights</label></td><td>
+                    <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                        <tr>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td></tr>
+                        <tr>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">read</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">write</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">read</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">write</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">read</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">write</td>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-obj-owner-read"  /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-obj-owner-write" /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-obj-group-read"  /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-obj-group-write" /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-obj-every-read"  /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-obj-every-write" /></td>
+                        </tr>
+                    </table>
+                </td></tr>
+                <tr id="object-tab-acl-state"><td class="translate">States rights</td><td>
+                    <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                        <tr>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td>
+                        </tr>
+                        <tr>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">read</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">write</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">read</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">write</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">read</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">write</td>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-state-owner-read"  /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-state-owner-write" /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-state-group-read"  /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-state-group-write" /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-state-every-read"  /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-state-every-write" /></td>
+                        </tr>
+                    </table>
+                </td></tr>
+            </table>
+        </div>
+        <div id="object-tab-rest" style="width: calc(100% - 15px); height: calc(100% - 50px); overflow: auto">
+            <textarea id="view-object-rest" readonly style="width:100%; height: 100%"></textarea>
+        </div>
+        <div id="object-tab-raw" style="width: calc(100% - 15px); height: calc(100% - 50px); overflow: auto">
+            <div id="view-object-raw" style="width: 100%; height: 100%">Test!</div>
+            <!--textarea id="view-object-raw" style="width:100%; height: 100%"></textarea-->
+        </div>
+    </div>
+    <!--table style="width: 100%">
+        <tr>
+            <td style="width: 50%">
+                <span class="translate">common</span><br/>
+                <textarea id="edit-object-common"></textarea>
+            </td>
+            <td style="width: 50%">
+                <span class="translate">native</span><br/>
+                <textarea id="edit-object-native"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%" colspan="2">
+                <span class="translate">rest</span><br/>
+                <textarea id="view-object-full" readonly></textarea>
+            </td>
+        </tr>
+    </table-->
+</div>
+<div id="dialog-new-field" class="translateT" title="Add new field" style="display: none">
+    <table style="width: 100%">
+        <tr>
+            <td><label for="object-tab-new-name" class="translate">Name</label></td>
+            <td><input id="object-tab-new-name" type="text" style="width: 100%"/></td>
+        </tr>
+    </table>
+</div>
+<div id="dialog-new-object" class="translateT" title="Add new object: " style="display: none">
+    <table>
+        <tr>
+            <td><label for="object-tab-new-object-parent" class="translate">Parent</label></td>
+            <td><input id="object-tab-new-object-parent" type="text" size="40" readonly style="background: lightgrey"/></td>
+        </tr>
+        <tr>
+            <td><label for="object-tab-new-object-name" class="translate">Name</label></td>
+            <td><input id="object-tab-new-object-name" type="text" size="40"/></td>
+        </tr>
+        <tr>
+            <td><label for="object-tab-new-object-type" class="translate">Type</label></td>
+            <td><select id="object-tab-new-object-type">
+                <option value="state"   class="translate">State</option>
+                <option value="channel" class="translate">Channel</option>
+                <option value="device"  class="translate">Device</option>
+            </select></td>
+        </tr>
+        <tr id="object-tabe-new-object-tr">
+            <td><label for="object-tab-new-state-type" class="translate">State&nbsp;type</label></td>
+            <td><select id="object-tab-new-state-type">
+                <option value="boolean" class="translate">boolean</option>
+                <option value="switch"  class="translate">switch</option>
+                <option value="string"  class="translate">string</option>
+                <option value="number"  class="translate">number</option>
+                <option value="enum"    class="translate">multi</option>
+                <option value="array"   class="translate">array</option>
+                <option value="object"  class="translate">object</option>
+                <option value="mixed"   class="translate">mixed</option>
+            </select></td>
+        </tr>
+    </table>
+</div>
+<div id="dialog-enum" class="translateT" title="edit enum" style="display: none">
+    <table>
+        <tr>
+            <td><label for="enum-name" class="translate">Name</label></td>
+            <td><input id="enum-name" type="text" size="40"/></td>
+        </tr>
+        <tr>
+            <td><label for="enum-gen-id" class="translate">Generated&nbsp;ID:</label></td>
+            <td><span id="enum-gen-id"></span></td>
+        </tr>
+    </table>
+</div>
+<div id="dialog-enum-members" style="display: none">
+    <label class="translate" style="padding-right: 10px" for="enum-name-edit">Name:</label><input id="enum-name-edit" size="20" disabled/>
+    <table id="grid-enum-members"></table>
+    <div id="pager-enum-members"></div>
+</div>
+<div id="dialog-script" style="display: none">
+    <table style="width: 100%">
+        <tr>
+            <td style="width: 100px"><label class="translate" for="edit-script-name">name</label></td>
+            <td colspan="2"><input size="60" id="edit-script-name"></td>
+        </tr>
+        <tr>
+            <td><label class="translate" for="edit-script-engine-type">engine type</label></td>
+            <td style="width: 100px">
+                <select id="edit-script-engine-type"></select>
+            </td>
+            <td style="text-align:right">
+                <button id="edit-insert-id" class="translate">Insert</button>
+            </td>
+        </tr>
+    </table><br/>
+    <!--<textarea id="edit-script-source"></textarea>-->
+    <div id="script-editor">Test!</div>
+    <input type="hidden" id="edit-script-id">
+</div>
+<div id="dialog-user" style="display: none">
+    <table>
+        <tr>
+            <td><label class="translate" for="edit-user-name">name</label></td>
+            <td><input size="15" id="edit-user-name"></td>
+        </tr>
+        <tr>
+            <td><label class="translate" for="edit-user-pass">password</label></td>
+            <td><input size="15" id="edit-user-pass" type="password"></td>
+        </tr>
+        <tr>
+            <td><label class="translate" for="edit-user-passconf">confirm password</label></td>
+            <td><input size="15" id="edit-user-passconf" type="password"></td>
+        </tr>
+    </table><br/>
+    <input type="hidden" id="edit-user-id">
+</div>
+<div id="dialog-group" style="display: none">
+    <table>
+        <tr>
+            <td><label class="translate" for="edit-group-name">name</label></td>
+            <td><input size="15" id="edit-group-name"></td>
+        </tr>
+        <tr>
+            <td><label class="translate" for="edit-group-desc">description</label></td>
+            <td><input size="40" id="edit-group-desc"></td>
+        </tr>
+    </table>
+    <table id="edit-group-table"></table>
+    <br/>
+    <input type="hidden" id="edit-group-id">
+</div>
+<div id="dialog-select-member" style="display: none">
+    <!--div id="tree-select-member" style="width:100%; height:100%"></div-->
+</div>
+<div id="dialog-customs" style="display: none">
+    <div id="tabs-customs">
+        <ul>
+            <li><a href="#tab-customs-settings" class="translate">Settings</a></li>
+            <li><a href="#tab-customs-table" class="translate">Table</a></li>
+            <li><a href="#tab-customs-chart" class="translate">Chart</a></li>
+        </ul>
+        <div id="tab-customs-settings" style="height: calc(100% - 65px);">
+            <div id="customs-tabs" style="width: 100%"></div>
+            <div style="display: none" id="customs-templates"></div>
+        </div>
+        <div id="tab-customs-table" style="height: calc(100% - 65px); overflow-y: scroll">
+            <div><label class="translate" for="history-table-instance">Show values of instance</label><select id="history-table-instance"></select><button id="history-table-instance-refresh"></button></div>
+            <table id="grid-history" style="width: 100%; max-height: calc(100% - 30px)">
+                <thead>
+                <col width="160" valign="top">
+                <col width="60"  valign="top">
+                <col width="80"  valign="top">
+                <col width="140" valign="top">
+                <col width="140" valign="top">
+                <tr>
+                    <th class="translate ui-state-default">val</th>
+                    <th class="translate ui-state-default">ack</th>
+                    <th class="translate ui-state-default">from</th>
+                    <th class="translate ui-state-default">ts</th>
+                    <th class="translate ui-state-default">lc</th>
+                </tr>
+                </thead>
+                <tbody id="grid-history-body">
+                </tbody>
+            </table>
+        </div>
+        <div id="tab-customs-chart" style="height: calc(100% - 65px)">
+            <div><label class="translate" for="history-chart-instance">Show values of instance</label><select id="history-chart-instance"></select><button id="history-chart-instance-refresh"></button></div>
+            <iframe id="iframe-history-chart" style="border: 0; overflow: hidden; height: calc(100% - 120px); width: calc(100% - 30px)"></iframe>
+        </div>
+    </div>
+</div>
+<div id="dialog-command" title="command execution" class="translateT" style="display: none">
+    <textarea style="font-family: courier, monospace; font-size: 11px; resize: none" id="stdout" disabled="disabled" cols="120" rows="30"></textarea>
+</div>
+<div id="dialog-config" title="adater configuration" style="display: none; overflow:hidden">
+    <iframe style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%; height: 100%" id="config-iframe" name="config-iframe"></iframe>
+</div>
+<div id="dialog-license" title="license agreement" class="translateT" style="display: none; z-index: 102">
+    <table><tr><td id="license_language_label"><label class="translate" for="license_language">Select language</label></td>
+        <td><select id="license_language">
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="ru">русский</option>
+        </select></td></tr>
+    </table>
+    <input id="license_diag" type="checkbox"/><span class="translate" id="license_checkbox" style="color:red">license_checkbox</span>
+    <h3 id="license_terms" class="translate">License terms</h3>
+    <div id="license_text" style="width: 100%"></div>
+</div>
+<div id="connecting" style="left:50%; top:50%;position: fixed;"><img class="wait-rotate" src="img/gear.png"/></div>
+<div id="events_threshold" class="translate translateT"  style="display: none" title="Click do activate events again, or just wait one minute">Too many events</div>
+<div id="dialog-system" title="System settings" class="translateT" style="display: none">
+    <div id="tabs-system">
+        <ul class="tabs-ul">
+            <li><a href="#tab-system-main"  class="translate">Main settings</a></li>
+            <li><a href="#tab-system-repo"  class="translate">Repositories</a></li>
+            <li><a href="#tab-system-certs" class="translate">Certificates</a></li>
+            <li><a href="#tab-system-letsencrypt" class="translate">Let's encrypt SSL</a></li>
+            <li><a href="#tab-system-acl"   class="translate">Default ACL</a></li>
+            <li><a href="#tab-system-diag"  class="translate">Statistics</a></li>
+        </ul>
+        <div id="tab-system-main">
+            <table>
+                <tr><td><label class="translate" for="system_language">System language:</label></td>
+                    <td>
+                        <select id="system_language" class="system-settings value">
+                            <option value="en">English</option>
+                            <option value="de">Deutsch</option>
+                            <option value="ru">русский</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td><label class="translate" for="system_tempUnit">Temperature units:</label></td>
+                    <td>
+                        <select id="system_tempUnit" class="system-settings value">
+                            <option value="°C">°C</option>
+                            <option value="°F">°F</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td><label class="translate" for="system_currency">Currency:</label></td>
+                    <td>
+                        <input type="text" size="5" maxlength="5" id="system_currency" class="system-settings value"/>
+                    </td>
+                </tr>
+                <tr><td><label class="translate" for="system_dateFormat">Date format:</label></td>
+                    <td>
+                        <select id="system_dateFormat" class="system-settings value">
+                            <option value="DD.MM.YYYY" class="translate">DD.MM.YYYY</option>
+                            <option value="DD.MM.YY"   class="translate">DD.MM.YY</option>
+                            <option value="DD/MM/YYYY" class="translate">DD/MM/YYYY</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td ><label class="translate" for="system_isFloatComma">Float divider:</label></td>
+                    <td>
+                        <select id="system_isFloatComma" class="system-settings value">
+                            <option value="true"  class="translate">comma</option>
+                            <option value="false" class="translate">point</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td><label class="translate" for="system_defaultHistory">Default history instance:</label></td>
+                    <td>
+                        <select id="system_defaultHistory" class="system-settings value">
+                        </select>
+                    </td>
+                </tr>
+                <tr><td><label class="translate" for="system_activeRepo">Active repository:</label></td>
+                    <td>
+                        <select id="system_activeRepo" class="system-settings value">
+                        </select>
+                    </td>
+                </tr>
+                <tr><td><label class="translate" for="system_country">Country:</label></td>
+                    <td>
+                        <select id="system_country" class="system-settings value">
+                            <option value="">Please select country</option>
+                            <option value="Afghanistan" class="translate">Afghanistan</option>
+                            <option value="Albania" class="translate">Albania</option>
+                            <option value="Algeria" class="translate">Algeria</option>
+                            <option value="American Samoa" class="translate">American Samoa</option>
+                            <option value="Andorra" class="translate">Andorra</option>
+                            <option value="Angola" class="translate">Angola</option>
+                            <option value="Anguilla" class="translate">Anguilla</option>
+                            <option value="Antarctica" class="translate">Antarctica</option>
+                            <option value="Antigua and Barbuda" class="translate">Antigua and Barbuda</option>
+                            <option value="Argentina" class="translate">Argentina</option>
+                            <option value="Armenia" class="translate">Armenia</option>
+                            <option value="Aruba" class="translate">Aruba</option>
+                            <option value="Australia" class="translate">Australia</option>
+                            <option value="Austria" class="translate">Austria</option>
+                            <option value="Azerbaijan" class="translate">Azerbaijan</option>
+                            <option value="Bahamas" class="translate">Bahamas</option>
+                            <option value="Bahrain" class="translate">Bahrain</option>
+                            <option value="Bangladesh" class="translate">Bangladesh</option>
+                            <option value="Barbados" class="translate">Barbados</option>
+                            <option value="Belarus" class="translate">Belarus</option>
+                            <option value="Belgium" class="translate">Belgium</option>
+                            <option value="Belize" class="translate">Belize</option>
+                            <option value="Benin" class="translate">Benin</option>
+                            <option value="Bermuda" class="translate">Bermuda</option>
+                            <option value="Bhutan" class="translate">Bhutan</option>
+                            <option value="Bolivia" class="translate">Bolivia</option>
+                            <option value="Bosnia and Herzegovina" class="translate">Bosnia and Herzegovina</option>
+                            <option value="Botswana" class="translate">Botswana</option>
+                            <option value="Bouvet Island" class="translate">Bouvet Island</option>
+                            <option value="Brazil" class="translate">Brazil</option>
+                            <option value="British Indian Ocean Territory" class="translate">British Indian Ocean Territory</option>
+                            <option value="Brunei Darussalam" class="translate">Brunei Darussalam</option>
+                            <option value="Bulgaria" class="translate">Bulgaria</option>
+                            <option value="Burkina Faso" class="translate">Burkina Faso</option>
+                            <option value="Burundi" class="translate">Burundi</option>
+                            <option value="Cambodia" class="translate">Cambodia</option>
+                            <option value="Cameroon" class="translate">Cameroon</option>
+                            <option value="Canada" class="translate">Canada</option>
+                            <option value="Cape Verde" class="translate">Cape Verde</option>
+                            <option value="Cayman Islands" class="translate">Cayman Islands</option>
+                            <option value="Central African Republic" class="translate">Central African Republic</option>
+                            <option value="Chad" class="translate">Chad</option>
+                            <option value="Chile" class="translate">Chile</option>
+                            <option value="China" class="translate">China</option>
+                            <option value="Christmas Island" class="translate">Christmas Island</option>
+                            <option>Cocos (Keeling) Islands</option>
+                            <option value="Colombia" class="translate">Colombia</option>
+                            <option value="Comoros" class="translate">Comoros</option>
+                            <option value="Congo" class="translate">Congo</option>
+                            <option value="Cook Islands" class="translate">Cook Islands</option>
+                            <option value="Costa Rica" class="translate">Costa Rica</option>
+                            <option>Croatia (Hrvatska)</option>
+                            <option value="Cuba" class="translate">Cuba</option>
+                            <option value="Cyprus" class="translate">Cyprus</option>
+                            <option value="Czech Republic" class="translate">Czech Republic</option>
+                            <option value="Denmark" class="translate">Denmark</option>
+                            <option value="Djibouti" class="translate">Djibouti</option>
+                            <option value="Dominica" class="translate">Dominica</option>
+                            <option value="Dominican Republic" class="translate">Dominican Republic</option>
+                            <option value="East Timor" class="translate">East Timor</option>
+                            <option value="Ecuador" class="translate">Ecuador</option>
+                            <option value="Egypt" class="translate">Egypt</option>
+                            <option value="El Salvador" class="translate">El Salvador</option>
+                            <option value="Equatorial Guinea" class="translate">Equatorial Guinea</option>
+                            <option value="Eritrea" class="translate">Eritrea</option>
+                            <option value="Estonia" class="translate">Estonia</option>
+                            <option value="Ethiopia" class="translate">Ethiopia</option>
+                            <option>Falkland Islands (Malvinas)</option>
+                            <option value="Faroe Islands" class="translate">Faroe Islands</option>
+                            <option value="Fiji" class="translate">Fiji</option>
+                            <option value="Finland" class="translate">Finland</option>
+                            <option value="France" class="translate">France</option>
+                            <option>France, Metropolitan</option>
+                            <option value="French Guiana" class="translate">French Guiana</option>
+                            <option value="French Polynesia" class="translate">French Polynesia</option>
+                            <option value="French Southern Territories" class="translate">French Southern Territories</option>
+                            <option value="Gabon" class="translate">Gabon</option>
+                            <option value="Gambia" class="translate">Gambia</option>
+                            <option value="Georgia" class="translate">Georgia</option>
+                            <option value="Germany" class="translate">Germany</option>
+                            <option value="Ghana" class="translate">Ghana</option>
+                            <option value="Gibraltar" class="translate">Gibraltar</option>
+                            <option value="Guernsey" class="translate">Guernsey</option>
+                            <option value="Greece" class="translate">Greece</option>
+                            <option value="Greenland" class="translate">Greenland</option>
+                            <option value="Grenada" class="translate">Grenada</option>
+                            <option value="Guadeloupe" class="translate">Guadeloupe</option>
+                            <option value="Guam" class="translate">Guam</option>
+                            <option value="Guatemala" class="translate">Guatemala</option>
+                            <option value="Guinea" class="translate">Guinea</option>
+                            <option>Guinea-Bissau</option>
+                            <option value="Guyana" class="translate">Guyana</option>
+                            <option value="Haiti" class="translate">Haiti</option>
+                            <option value="Heard and Mc Donald Islands" class="translate">Heard and Mc Donald Islands</option>
+                            <option value="Honduras" class="translate">Honduras</option>
+                            <option value="Hong Kong" class="translate">Hong Kong</option>
+                            <option value="Hungary" class="translate">Hungary</option>
+                            <option value="Iceland" class="translate">Iceland</option>
+                            <option value="India" class="translate">India</option>
+                            <option value="Isle of Man" class="translate">Isle of Man</option>
+                            <option value="Indonesia" class="translate">Indonesia</option>
+                            <option>Iran (Islamic Republic of)</option>
+                            <option value="Iraq" class="translate">Iraq</option>
+                            <option value="Ireland" class="translate">Ireland</option>
+                            <option value="Israel" class="translate">Israel</option>
+                            <option value="Italy" class="translate">Italy</option>
+                            <option value="Ivory Coast" class="translate">Ivory Coast</option>
+                            <option value="Jersey" class="translate">Jersey</option>
+                            <option value="Jamaica" class="translate">Jamaica</option>
+                            <option value="Japan" class="translate">Japan</option>
+                            <option value="Jordan" class="translate">Jordan</option>
+                            <option value="Kazakhstan" class="translate">Kazakhstan</option>
+                            <option value="Kenya" class="translate">Kenya</option>
+                            <option value="Kiribati" class="translate">Kiribati</option>
+                            <option>Korea, Democratic People''s Republic of</option>
+                            <option>Korea, Republic of</option>
+                            <option value="Kosovo" class="translate">Kosovo</option>
+                            <option value="Kuwait" class="translate">Kuwait</option>
+                            <option value="Kyrgyzstan" class="translate">Kyrgyzstan</option>
+                            <option>Lao People''s Democratic Republic</option>
+                            <option value="Latvia" class="translate">Latvia</option>
+                            <option value="Lebanon" class="translate">Lebanon</option>
+                            <option value="Lesotho" class="translate">Lesotho</option>
+                            <option value="Liberia" class="translate">Liberia</option>
+                            <option value="Libyan Arab Jamahiriya" class="translate">Libyan Arab Jamahiriya</option>
+                            <option value="Liechtenstein" class="translate">Liechtenstein</option>
+                            <option value="Lithuania" class="translate">Lithuania</option>
+                            <option value="Luxembourg" class="translate">Luxembourg</option>
+                            <option value="Macau" class="translate">Macau</option>
+                            <option value="Macedonia" class="translate">Macedonia</option>
+                            <option value="Madagascar" class="translate">Madagascar</option>
+                            <option value="Malawi" class="translate">Malawi</option>
+                            <option value="Malaysia" class="translate">Malaysia</option>
+                            <option value="Maldives" class="translate">Maldives</option>
+                            <option value="Mali" class="translate">Mali</option>
+                            <option value="Malta" class="translate">Malta</option>
+                            <option value="Marshall Islands" class="translate">Marshall Islands</option>
+                            <option value="Martinique" class="translate">Martinique</option>
+                            <option value="Mauritania" class="translate">Mauritania</option>
+                            <option value="Mauritius" class="translate">Mauritius</option>
+                            <option value="Mayotte" class="translate">Mayotte</option>
+                            <option value="Mexico" class="translate">Mexico</option>
+                            <option>Micronesia, Federated States of</option>
+                            <option>Moldova, Republic of</option>
+                            <option value="Monaco" class="translate">Monaco</option>
+                            <option value="Mongolia" class="translate">Mongolia</option>
+                            <option value="Montenegro" class="translate">Montenegro</option>
+                            <option value="Montserrat" class="translate">Montserrat</option>
+                            <option value="Morocco" class="translate">Morocco</option>
+                            <option value="Mozambique" class="translate">Mozambique</option>
+                            <option value="Myanmar" class="translate">Myanmar</option>
+                            <option value="Namibia" class="translate">Namibia</option>
+                            <option value="Nauru" class="translate">Nauru</option>
+                            <option value="Nepal" class="translate">Nepal</option>
+                            <option value="Netherlands" class="translate">Netherlands</option>
+                            <option value="Netherlands Antilles" class="translate">Netherlands Antilles</option>
+                            <option value="New Caledonia" class="translate">New Caledonia</option>
+                            <option value="New Zealand" class="translate">New Zealand</option>
+                            <option value="Nicaragua" class="translate">Nicaragua</option>
+                            <option value="Niger" class="translate">Niger</option>
+                            <option value="Nigeria" class="translate">Nigeria</option>
+                            <option value="Niue" class="translate">Niue</option>
+                            <option value="Norfolk Island" class="translate">Norfolk Island</option>
+                            <option value="Northern Mariana Islands" class="translate">Northern Mariana Islands</option>
+                            <option value="Norway" class="translate">Norway</option>
+                            <option value="Oman" class="translate">Oman</option>
+                            <option value="Pakistan" class="translate">Pakistan</option>
+                            <option value="Palau" class="translate">Palau</option>
+                            <option value="Palestine" class="translate">Palestine</option>
+                            <option value="Panama" class="translate">Panama</option>
+                            <option value="Papua New Guinea" class="translate">Papua New Guinea</option>
+                            <option value="Paraguay" class="translate">Paraguay</option>
+                            <option value="Peru" class="translate">Peru</option>
+                            <option value="Philippines" class="translate">Philippines</option>
+                            <option value="Pitcairn" class="translate">Pitcairn</option>
+                            <option value="Poland" class="translate">Poland</option>
+                            <option value="Portugal" class="translate">Portugal</option>
+                            <option value="Puerto Rico" class="translate">Puerto Rico</option>
+                            <option value="Qatar" class="translate">Qatar</option>
+                            <option value="Reunion" class="translate">Reunion</option>
+                            <option value="Romania" class="translate">Romania</option>
+                            <option value="Russian Federation" class="translate">Russian Federation</option>
+                            <option value="Rwanda" class="translate">Rwanda</option>
+                            <option value="Saint Kitts and Nevis" class="translate">Saint Kitts and Nevis</option>
+                            <option value="Saint Lucia" class="translate">Saint Lucia</option>
+                            <option value="Saint Vincent and the Grenadines" class="translate">Saint Vincent and the Grenadines</option>
+                            <option value="Samoa" class="translate">Samoa</option>
+                            <option value="San Marino" class="translate">San Marino</option>
+                            <option value="Sao Tome and Principe" class="translate">Sao Tome and Principe</option>
+                            <option value="Saudi Arabia" class="translate">Saudi Arabia</option>
+                            <option value="Senegal" class="translate">Senegal</option>
+                            <option value="Serbia" class="translate">Serbia</option>
+                            <option value="Seychelles" class="translate">Seychelles</option>
+                            <option value="Sierra Leone" class="translate">Sierra Leone</option>
+                            <option value="Singapore" class="translate">Singapore</option>
+                            <option value="Slovakia" class="translate">Slovakia</option>
+                            <option value="Slovenia" class="translate">Slovenia</option>
+                            <option value="Solomon Islands" class="translate">Solomon Islands</option>
+                            <option value="Somalia" class="translate">Somalia</option>
+                            <option value="South Africa" class="translate">South Africa</option>
+                            <option value="South Georgia South Sandwich Islands" class="translate">South Georgia South Sandwich Islands</option>
+                            <option value="Spain" class="translate">Spain</option>
+                            <option value="Sri Lanka" class="translate">Sri Lanka</option>
+                            <option>St. Helena</option>
+                            <option>St. Pierre and Miquelon</option>
+                            <option value="Sudan" class="translate">Sudan</option>
+                            <option value="Suriname" class="translate">Suriname</option>
+                            <option value="Svalbard and Jan Mayen Islands" class="translate">Svalbard and Jan Mayen Islands</option>
+                            <option value="Swaziland" class="translate">Swaziland</option>
+                            <option value="Sweden" class="translate">Sweden</option>
+                            <option value="Switzerland" class="translate">Switzerland</option>
+                            <option value="Syrian Arab Republic" class="translate">Syrian Arab Republic</option>
+                            <option value="Taiwan" class="translate">Taiwan</option>
+                            <option value="Tajikistan" class="translate">Tajikistan</option>
+                            <option>Tanzania, United Republic of</option>
+                            <option value="Thailand" class="translate">Thailand</option>
+                            <option value="Togo" class="translate">Togo</option>
+                            <option value="Tokelau" class="translate">Tokelau</option>
+                            <option value="Tonga" class="translate">Tonga</option>
+                            <option value="Trinidad and Tobago" class="translate">Trinidad and Tobago</option>
+                            <option value="Tunisia" class="translate">Tunisia</option>
+                            <option value="Turkey" class="translate">Turkey</option>
+                            <option value="Turkmenistan" class="translate">Turkmenistan</option>
+                            <option value="Turks and Caicos Islands" class="translate">Turks and Caicos Islands</option>
+                            <option value="Tuvalu" class="translate">Tuvalu</option>
+                            <option value="Uganda" class="translate">Uganda</option>
+                            <option value="Ukraine" class="translate">Ukraine</option>
+                            <option value="United Arab Emirates" class="translate">United Arab Emirates</option>
+                            <option value="United Kingdom" class="translate">United Kingdom</option>
+                            <option value="United States" class="translate">United States</option>
+                            <option value="United States minor outlying islands" class="translate">United States minor outlying islands</option>
+                            <option value="Uruguay" class="translate">Uruguay</option>
+                            <option value="Uzbekistan" class="translate">Uzbekistan</option>
+                            <option value="Vanuatu" class="translate">Vanuatu</option>
+                            <option value="Vatican City State" class="translate">Vatican City State</option>
+                            <option value="Venezuela" class="translate">Venezuela</option>
+                            <option value="Vietnam" class="translate">Vietnam</option>
+                            <option>Virgin Islands (British)</option>
+                            <option>Virgin Islands (U.S.)</option>
+                            <option value="Wallis and Futuna Islands" class="translate">Wallis and Futuna Islands</option>
+                            <option value="Western Sahara" class="translate">Western Sahara</option>
+                            <option value="Yemen" class="translate">Yemen</option>
+                            <option value="Zaire" class="translate">Zaire</option>
+                            <option value="Zambia" class="translate">Zambia</option>
+                            <option value="Zimbabwe" class="translate">Zimbabwe</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td><label class="translate" for="system_city">City:</label></td>
+                    <td>
+                        <input id="system_city" class="system-settings value" style="width: 250px;" />
+                    </td>
+                </tr>
+                <!--tr><td><label class="translate" for="system_address">Address:</label></td>
+                    <td>
+                        <input id="system_address" style="width: 250px;"/>
+                    </td>
+                </tr>
+                <tr><td></td>
+                    <td>
+                        <button id="detectCoordinates"></button>
+                    </td>
+                </tr-->
+                <tr><td><label class="translate" for="system_latitude">Latitude:</label></td>
+                    <td>
+                        <input id="system_latitude" class="system-settings value" />
+                    </td>
+                </tr>
+                <tr><td><label class="translate" for="system_longitude">Longitude:</label></td>
+                    <td>
+                        <input id="system_longitude" class="system-settings value" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="tab-system-repo">
+            <table id="grid-repos"></table>
+            <div id="pager-repos"></div>
+        </div>
+        <div id="tab-system-certs" class="dropZone">
+            <div id="drop-zone" style="display: none"><div style="padding-top:20%" class="translate" id="drop-text"></div>
+                <input type="file" id="drop-file" style="display: none">
+            </div>
+            <table id="grid-certs"></table>
+            <div id="pager-certs"></div>
+        </div>
+        <div id="tab-system-letsencrypt">
+            <p class="translate">letsnecrypt_help</p>
+            <table>
+                <tr>
+                    <td><label class="translate" for="system_le_email">Email for account:</label></td>
+                    <td><input id="system_le_email" class="system-le-settings value" data-name="email"/></td>
+                    <td class="translate">letsnecrypt_help_email</td>
+                </tr>
+                <tr>
+                    <td><label class="translate" for="system_le_domains">Domains:</label></td>
+                    <td><input id="system_le_domains" class="system-le-settings value" data-name="domains"/></td>
+                    <td class="translate">letsnecrypt_help_domains</td>
+                </tr>
+                <tr>
+                    <td><label class="translate" for="system_le_path">Path to storage:</label></td>
+                    <td><input id="system_le_path" class="system-le-settings value" data-name="path"/></td>
+                    <td class="translate">letsnecrypt_help_path</td>
+                </tr>
+            </table>
+        </div>
+        <div id="tab-system-acl" aria-labelledby="ui-id-54" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-hidden="false" style="display: block;">
+            <h3 class="translate" style="margin-bottom: 0px;">Access control list</h3>
+            <table id="tab-system-acl-table" style="width: 100%">
+                <tbody><tr><td><label class="translate" for="tab-system-acl-owner">Owner user</label></td><td><select id="tab-system-acl-owner"></select></td></tr>
+                <tr><td><label class="translate" for="tab-system-acl-group" >Owner group</label></td><td><select id="tab-system-acl-group"></select></td></tr>
+                <tr><td><label class="translate">Object rights</label></td><td>
+                    <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                        <tbody><tr>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td></tr>
+                        <tr>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-owner-read">read</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-owner-write">write</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-group-read" >read</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-group-write">write</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-every-read">read</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-every-write">write</label></td>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-owner-read"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-owner-write"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-group-read"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-group-write"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-every-read"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-every-write"></td>
+                        </tr>
+                        </tbody></table>
+                </td></tr>
+                <tr><td class="translate">States rights</td><td>
+                    <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                        <tbody><tr>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td>
+                        </tr>
+                        <tr>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-owner-read">read</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-owner-write">write</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-group-read">read</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-group-write">write</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-every-read">read</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-every-write">write</label></td>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-owner-read"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-owner-write"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-group-read"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-group-write"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-every-read"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-every-write"></td>
+                        </tr>
+                        </tbody></table>
+                </td></tr>
+                <tr><td class="translate">File rights</td><td>
+                    <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                        <tbody><tr>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td>
+                        </tr>
+                        <tr>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-owner-read">read</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-owner-write">write</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-group-read">read</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-group-write">write</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-every-read">read</label></td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-every-write">write</label></td>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-owner-read"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-owner-write"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-group-read"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-group-write"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-every-read"></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-every-write"></td>
+                        </tr>
+                        </tbody></table>
+                </td></tr>
+                </tbody></table>
+        </div>
+        <div id="tab-system-diag">
+            <table id="table-diag">
+                <tr>
+                    <td class="translate">Note:</td>
+                    <td class="translate">diag-note</td>
+                </tr>
+                <tr>
+                    <td><label  class="translate" for="diagMode">Statistics:</label></td>
+                    <td><select id="diagMode">
+                        <option value="none" class="translate">none</option>
+                        <option value="normal" class="translate">normal</option>
+                        <option value="no-city" class="translate">no-city</option>
+                        <option value="extended" class="translate">extended</option>
+                    </select></td>
+                </tr>
+                <tr>
+                    <td class="translate" style="vertical-align: top">Sent data:</td>
+                    <td><pre id="diagSample" style="font-size: 10px"></pre></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="dialog-install-url" class="translateT" title="Install from custom URL" style="display: none">
+    <div id="install-tabs">
+        <ul>
+            <li><a href="#install-github" class="translate">From github</a></li>
+            <li><a href="#install-custom" class="translate">Custom</a></li>
+        </ul>
+        <div id="install-github" style="display: inline-block">
+            <div class="translate" style="display: inline-block">Select adapter:</div>
+            <select id="install-github-link" style="display: inline-block"></select>
+            <br>
+            <label for="install-github-debug" class="translate">Debug outputs:</label>
+            <input id="install-github-debug" type="checkbox" />
+        </div>
+        <div id="install-custom">
+            <table style="width: 100%">
+                <tr>
+                    <td><label for="install-url-link" class="translate">URL or file path:</label></td>
+                    <td><input id="install-url-link" type="text" style="width: 100%"/></td>
+                </tr>
+                <tr>
+                    <td><label for="install-url-debug" class="translate">Debug outputs:</label></td>
+                    <td><input id="install-url-debug" type="checkbox" /></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="log-copy-text"      title="Copy log"     style="display: none; width:100%; height: 100%; background: white; top:0; left:0; position: absolute; z-index:2000"></div>
+<div id="dialog-message"     title="Message"      style="display: none">
+    <p>
+        <span id="dialog-message-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
+        <span id="dialog-message-text"></span>
+    </p>
+</div>
+<div id="dialog-confirm"     title="Question"     style="display: none">
+    <p>
+        <span id="dialog-confirm-icon" class="ui-icon ui-icon-circle-check" style="float: left; margin:0 7px 50px 0;"></span>
+        <span id="dialog-confirm-text"></span>
+    </p>
+</div>
+<div id="dialog-host-update" title="Instructions" style="display: none">
+    <p><span class="translate">update-part1</span></p>
+    <p class="translate">You can check changelog here</p>
+    <textarea readonly id="dialog-host-update-instructions" style="width: 100%; height: 100px; resize: none;"></textarea>
+</div>
+<div id="dialog-cron"   style="display: none">
+    <div id="div-cron"></div>
+</div>
+<ul id="instances-menu" style="position: absolute; display: none; width: 150px; z-index: 1" data-visible="false"></ul>
+<ul id="adapters-menu"  style="position: absolute; display: none; width: 80px; z-index: 1; border: 1px solid #605e5e;" data-visible="false"></ul>
+</body>
+</html>

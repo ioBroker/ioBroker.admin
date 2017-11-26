@@ -1,0 +1,69 @@
+body {
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Lucida Grande,Lucida Sans,Arial,sans-serif;
+}
+
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited, .ui-state-hover a, .ui-state-hover a:link, .ui-state-hover a:visited  {
+    outline: none;
+}
+
+#tabs {
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+}
+
+.header {
+    padding-left: 4px;
+}
+
+.header input {
+    margin: 4px;
+
+}
+
+.ui-tabs-nav {
+    border-radius: 0;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+#adapter-container {
+    font-size: 0.82em;
+}
+
+h4 {
+    font-size: 12px;
+    width: 370px;
+    padding-left:5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    background-color: lightblue;
+}
+.table-values th {
+    background: #686868;
+    color: #FFF;
+    font-weight: bold;
+}
+.table-values tr:nth-child(even) {
+    background: #d0d0d0;
+}
+
+/* tooltips */
+.admin-tooltip-icon {
+    width: 11px;
+}
+.admin-tooltip-text {
+    font-size: smaller;
+    font-style: italic;
+    color: gray;
+}
+.admin-icon {
+    width: 11px;
+}
