@@ -15,12 +15,12 @@
 
     .admin-sidemenu-logo {
         transition: opacity @admin-sidemenu-transition; // 0.5 second transition effect to slide in the sidenav */
-        opacity: 1;
+        opacity:    1;
         position:   fixed;
         top:        3px;
-        left:       0;
+        left:       3px;
         img {
-            width: 110px
+            width: 106px
         }
     }
 
@@ -46,6 +46,12 @@
     .admin-sidemenu-menu {
         width:  100%;
         height: 100%;
+    }
+    a i {
+        padding-right: 0.5rem;
+    }
+    a .fa-empty {
+        width: 0.9rem;
     }
     // Position and style the close button (top right corner)
     .admin-sidemenu-close {
@@ -80,6 +86,10 @@
     }
 }
 
+.btn {
+    margin-left: 0.5rem;
+}
+
 #admin_sidemenu_main {
     transition: margin-left @admin-sidemenu-transition;
     padding:    0;
@@ -92,7 +102,7 @@
     }
 
     .main-admin-buttons{
-        padding-top:    4px;
+        padding-top:    2px;
     }
     .admin-sidemenu-header {
         height:         @admin-sidemenu-main-header-height;
@@ -103,7 +113,8 @@
         transition:     margin-left @admin-sidemenu-transition;
     }
     .admin-sidemenu-body {
-        width:      100%;
+        padding-left: 3px;
+        width:      calc(~"100% - 3px");
         height:     calc(~"100% - " @admin-sidemenu-main-header-height ~" - " @admin-sidemenu-main-footer-height);
         overflow:   hidden;
     }

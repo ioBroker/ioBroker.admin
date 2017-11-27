@@ -266,7 +266,7 @@ function Instances(main) {
         //text += '<th style="width: 2em"></th>';
         text += '<th style="width: calc(2em - 6px)"></th>';
         text += '<th style="width: 14em">' + _('instance') + '</th>';
-        text += '<th style="width: 12em"></th>';
+        text += '<th style="width: 13.1em"></th>';
         text += '<th style="text-align: left">' + _('title') + '</th>';
 
         if (that.main.tabs.hosts.list.length > 1) {
@@ -298,7 +298,7 @@ function Instances(main) {
         text += '<th style="width: calc(2em - 6px); border-left-color:transparent; border-right-color:transparent;"></th>';
         //text += '<th style="width: 14em">' + _('instance') + '</th>';
         text += '<th style="width: 14em; border-left-color:transparent;"></th>';
-        text += '<th style="width: 12em">' + _('actions') + '</th>';
+        text += '<th style="width: 13.1em">' + _('actions') + '</th>';
         text += '<th style="text-align: left">' + _('title') + '</th>';
 
         if (that.main.tabs.hosts.list.length > 1) {
@@ -419,9 +419,9 @@ function Instances(main) {
             //text += '<td style="text-align: left; padding-left: 1em;">' +
 //            text += '<td style="text-align: left; padding-left: 1px;">' +
             text += '<td style="text-align: left;">' +
-                (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-stop-run"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
+                (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-stop-run"></button>' : '<div class="ui-button instance-empty">&nbsp;</div>') +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-settings"></button>' +
-                (!common.onlyWWW ? '<button ' + (isRun ? '' : 'disabled ') + 'style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' : '<div class="ui-button" style="display: inline-block; width: 2em">&nbsp;</div>') +
+                (!common.onlyWWW ? '<button ' + (isRun ? '' : 'disabled ') + 'style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' : '<div class="ui-button instance-empty">&nbsp;</div>') +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-del"></button>'+
                 (url ? '<button ' + (isRun ? '' : 'disabled ') + 'style="display: inline-block" data-link="' + (typeof url !== 'object' ? url : '') +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '') +
                 '</td>';

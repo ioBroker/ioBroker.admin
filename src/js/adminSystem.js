@@ -651,6 +651,7 @@ function System(main) {
         var buttons = [
             {
                 text: _('Save'),
+                _class: 'btn btn-active',
                 click: function () {
                     var common = main.systemConfig.common;
                     var languageChanged   = false;
@@ -756,6 +757,7 @@ function System(main) {
             },
             {
                 text: _('Cancel'),
+                _class: 'btn',
                 click: function () {
                     //$dialogSystem.dialog('close');
                     var $currentTab = $dialogSystem.data('current');
@@ -849,9 +851,9 @@ function System(main) {
                 $dialogSystem.show().appendTo('.admin-sidemenu-body');
                 $dialogSystem.data('current', $currentTab);
                 if (!$dialogSystem.find('.dialog-system-buttons').length) {
-                    var $div = $('<div class="dialog-system-buttons"></div>');
+                    var $div = $('<nav class="dialog-system-buttons nav-wrapper"></nav>');
                     for (var b = 0; b < buttons.length; b++) {
-                        $div.append($('<button>' + buttons[b].text + '</button>').click(buttons[b].click));
+                        $div.append($('<a class="' + (buttons[b]._class || '') + '">' + buttons[b].text + '</a>').click(buttons[b].click));
                     }
                     $dialogSystem.append($div);
                 }
@@ -862,9 +864,10 @@ function System(main) {
     };
 
     this.prepare = function () {
-        var buttons = [
+        /*var buttons = [
             {
                 text: _('Save'),
+                _class: 'm btn btn-active',
                 click: function () {
                     var common = main.systemConfig.common;
                     var languageChanged   = false;
@@ -970,6 +973,7 @@ function System(main) {
             },
             {
                 text: _('Cancel'),
+                _class: 'm btn',
                 click: function () {
                     //$dialogSystem.dialog('close');
                     var $currentTab = $dialogSystem.data('current');
@@ -978,7 +982,7 @@ function System(main) {
                     $currentTab.show().appendTo($adminBody);
                 }
             }
-        ];
+        ];*/
         /*$dialogSystem.dialog({
             autoOpen:   false,
             modal:      true,

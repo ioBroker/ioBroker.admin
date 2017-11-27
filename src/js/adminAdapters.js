@@ -55,7 +55,7 @@ function Adapters(main) {
     this.onlyUpdatable = false;
     this.currentFilter = '';
     this.isCollapsed   = {};
-    this.isTiles = true;
+    this.isTiles       = true;
 
     this.types = {
         occ:          'schedule'
@@ -490,7 +490,7 @@ function Adapters(main) {
         });
 
         // Load settings
-        that.isTiles       = that.main.config.adaptersIsTiles || false;
+        that.isTiles       = (that.main.config.adaptersIsTiles !== undefined && that.main.config.adaptersIsTiles !== null) ? that.main.config.adaptersIsTiles : true;
         that.isList        = that.main.config.adaptersIsList || false;
         that.onlyInstalled = that.main.config.adaptersOnlyInstalled || false;
         that.onlyUpdatable = that.main.config.adaptersOnlyUpdatable || false;
@@ -746,7 +746,7 @@ function Adapters(main) {
                 var adapter;
 
                 var listInstalled = [];
-                var listUnsinstalled = [];
+                var listNonInstalled = [];
 
                 if (installedList) {
                     for (adapter in installedList) {
@@ -767,9 +767,9 @@ function Adapters(main) {
                     if (!obj || obj.controller) continue;
                     version = '';
                     if (installedList && installedList[adapter]) continue;
-                    listUnsinstalled.push(adapter);
+                    listNonInstalled.push(adapter);
                 }
-                listUnsinstalled.sort();
+                listNonInstalled.sort();
 
                 function getVersionString(version, updatable, news, updatableError) {
                     //var span = getVersionSpan(version);
@@ -987,8 +987,8 @@ function Adapters(main) {
                 //that.sortTree();
 
                 if (!that.onlyInstalled && !that.onlyUpdatable) {
-                    for (i = 0; i < listUnsinstalled.length; i++) {
-                        adapter = listUnsinstalled[i];
+                    for (i = 0; i < listNonInstalled.length; i++) {
+                        adapter = listNonInstalled[i];
 
                         obj = repository[adapter];
                         if (!obj || obj.controller) continue;

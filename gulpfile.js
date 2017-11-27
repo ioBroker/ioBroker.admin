@@ -1,18 +1,35 @@
 'use strict';
 
-var less       = require('gulp-less');
-var gulp       = require('gulp');
-var uglify     = require('gulp-uglify');
-var concat     = require('gulp-concat');
-var sourcemaps = require('gulp-sourcemaps');
+var less        = require('gulp-less');
+var sass        = require('gulp-sass');
+var gulp        = require('gulp');
+var uglify      = require('gulp-uglify');
+var concat      = require('gulp-concat');
+var sourcemaps  = require('gulp-sourcemaps');
+var materialize = require.resolve('materialize-css');
+var addsrc      = require('gulp-add-src');
+var cleanCSS    = require('gulp-clean-css');
+
+
+gulp.task('sassMaterialize', function () {
+    gulp.src(['./src/materialize-css/sass/**/*.scss'])
+        .pipe(sass({
+            paths: [ ]
+        }))
+        .pipe(concat('mater.css'))
+//        .pipe(cleanCSS({compatibility: 'ie8'}))
+        .pipe(gulp.dest('./www/lib/css'));
+
+});
 
 gulp.task('lessApp', function () {
-    return gulp.src(['./src/css/*.less'])
+    gulp.src(['./src/css/*.less'])
         .pipe(sourcemaps.init())
         .pipe(less({
             paths: [ ]
         }))
         .pipe(concat('app.css'))
+        .pipe(cleanCSS({compatibility: 'ie8'}))
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/css'));
 });

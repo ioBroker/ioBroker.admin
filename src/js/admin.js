@@ -1507,6 +1507,16 @@ $(document).ready(function () {
         }
     };
 
+    var tabsInfo = {
+        'tab-adapters':         {order: 1, icon: 'fa-folder'},
+        'tab-instances':        {order: 2, icon: 'fa-file-code-o'},
+        'tab-objects':          {order: 3, icon: 'fa-list'},
+        'tab-log':              {order: 4, icon: 'fa-file-text'},
+        'tab-scenes':           {order: 5, icon: 'fa-play'},
+        'tab-javascript':       {order: 6},
+        'tab-text2command-0':   {order: 7, icon: 'fa-hand-o-right'}
+    };
+
     function initSideNav() {
         // TABS
         // $('#tabs').appendTo('#admin_sidemenu_main');
@@ -1514,18 +1524,50 @@ $(document).ready(function () {
         var lines = ''; //logo.png
         lines += '<a href="javascript:void(0)" class="admin-sidemenu-close"><span></span></a>';
 
+        var elements = [];
         $('.admin-tab').each(function () {
             var id = $(this).attr('id');
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !==-1) {
-                lines += '<a href="javascript:void(0)" class="admin-sidemenu-items" data-tab="' + $(this).attr('id') + '">' + $(this).data('name') + '</a>'
+                elements.push({
+                    line: '<a href="javascript:void(0)" class="admin-sidemenu-items" data-tab="' + id + '">' +
+                        (tabsInfo[id].icon ? '<i class="fa ' + tabsInfo[id].icon + '"></i>' : '<i class="fa fa-empty">&nbsp;</i>') +
+                        $(this).data('name') + '</a>',
+                    id: id
+                });
             }
         });
         $('.tab-custom').each(function () {
             var id = $(this).attr('id');
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !==-1) {
-                lines += '<a href="javascript:void(0)" class="admin-sidemenu-items" data-tab="' + $(this).attr('id') + '">' + $(this).data('name') + '</a>'
+                var icon;
+                if (tabsInfo[id].icon) {
+                    icon = tabsInfo[id].icon;
+                } else {
+                    var _id = 'system.adapter.' + id.substring(4);
+                    if (main.objects[_id] && main.objects[_id].adminTab && main.objects[_id]['fa-icon']) {
+                        icon = main.objects[_id]['fa-icon'];
+                    }
+                }
+
+                elements.push({
+                    line: '<a href="javascript:void(0)" class="admin-sidemenu-items" data-tab="' + id + '">' +
+                    (icon ? '<i class="fa ' + icon + '"></i>' : '<i class="fa fa-empty">&nbsp;</i>') +
+                    $(this).data('name') + '</a>',
+                    id: id
+                });
             }
         });
+
+        elements.sort(function (a, b) {
+            if (!tabsInfo[a] && !tabsInfo[b]) return 0;
+            if (!tabsInfo[a]) return 1;
+            if (!tabsInfo[b]) return -1;
+            return tabsInfo[a].order - tabsInfo[b].order;
+        });
+
+        for (var e = 0; e < elements.length; e++) {
+            lines += elements[e].line;
+        }
 
         $('#admin_sidemenu_menu').find('.admin-sidemenu-menu').html(lines);
 

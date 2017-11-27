@@ -6,4 +6,5 @@ node_modules
 test
 docs
 .travis.yml
+src
 appveyor.yml

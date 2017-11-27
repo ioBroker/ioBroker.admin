@@ -9,6 +9,30 @@ body {
     .iob-font;
 }
 
+/* fallback */
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    // src: url(./fonts/material.woff2) format('woff2');
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+
 #event-clear {
     .iob-font;
 }
@@ -188,12 +212,7 @@ table.instance-table>tbody>tr>td {
     padding: 0 !important;
 }
 
-button.instance-stop-run {
-    width: 26px;
-    height: 26px;
-    display: inline-block;
-    background-color: lightgreen;
-}
+
 
 /*
 tr.instance-adapter>td>button>span.ui-icon-pause {    ///xxx
@@ -205,10 +224,17 @@ tr.instance-adapter>td>button>span.ui-icon-play {
     background-color: rgba(255, 0, 0, 0.1) !important;
 }
 */
-
-button.instance-settings, button.instance-reload, button.instance-del, button.instance-web {
+.instance-empty {
+    width: 2.6em;
+    height: 2.6em;
+}
+button.instance-settings, button.instance-reload, button.instance-del, button.instance-web, button.instance-stop-run, button.instance-empty {
     width: 2em;
     height: 2em;
+    display: inline-block;
+}
+button.instance-stop-run {
+    background-color: lightgreen;
 }
 
 .instance-image {
