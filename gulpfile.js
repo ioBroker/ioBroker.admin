@@ -10,16 +10,29 @@ var materialize = require.resolve('materialize-css');
 var addsrc      = require('gulp-add-src');
 var cleanCSS    = require('gulp-clean-css');
 
-
 gulp.task('sassMaterialize', function () {
     gulp.src(['./src/materialize-css/sass/**/*.scss'])
         .pipe(sass({
             paths: [ ]
         }))
-        .pipe(concat('mater.css'))
+        .pipe(concat('materialize.css'))
 //        .pipe(cleanCSS({compatibility: 'ie8'}))
         .pipe(gulp.dest('./www/lib/css'));
 
+});
+gulp.task('compressMaterialize', function () {
+    return gulp.src([
+        './src/materialize-css/js/velocity.min.js',
+        './src/materialize-css/js/global.js',
+        './src/materialize-css/js/tabs.js',
+        './src/materialize-css/js/dropdown.js',
+        './src/materialize-css/js/forms.js'
+    ])
+    .pipe(sourcemaps.init())
+    .pipe(concat('materialize.js'))
+    .pipe(uglify())
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest('./www/lib/js'));
 });
 
 gulp.task('lessApp', function () {
@@ -95,8 +108,11 @@ gulp.task('copyAce', function () {
 gulp.task('copy', ['copySrc', 'copyAce']);
 
 gulp.task('watch', function () {
-    gulp.watch(['./www/css/*.less', './www/lib/css/iob/*.less'], ['lessIob', 'lessApp']);
+    gulp.watch(['./www/css/*.less'], ['lessApp']);
+    gulp.watch(['./www/lib/css/iob/*.less'], ['lessApp']);
+    gulp.watch(['./src/materialize-css/sass/**/*.scss'], ['sassMaterialize']);
+    gulp.watch(['./src/js/*.js'], ['compressApp']);
 });
 
-gulp.task('default', ['lessIob', 'lessApp', 'compressApp', 'compressVendor', 'copy']);
+gulp.task('default', ['lessIob', 'lessApp', 'sassMaterialize', 'compressApp', 'compressVendor', 'compressMaterialize', 'copy']);
 

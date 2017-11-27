@@ -1,5 +1,5 @@
-
 @import "../lib/css/iob/selectID";
+@import "commons";
 
 body {
     font-size: 12px;
@@ -14,7 +14,7 @@ body {
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;
-    // src: url(./fonts/material.woff2) format('woff2');
+    src: url(./../lib/fonts/material.woff2) format('woff2');
 }
 
 .material-icons {
@@ -462,6 +462,28 @@ table.events-list-table>tbody>tr>td {
     height: 27px;
     //margin-left: 2px;
     margin-top: 1px;
+    padding-left: 0.5rem;
+    a {
+        margin-left: 0.5rem;
+    }
+    .button-version {
+        color:      @admin-sidemenu-color;
+        position:   absolute;
+        top:        0;
+        right:      1rem;
+    }
+    .button-current-user {
+        padding-left: 1rem;
+        div {
+            position: relative;
+            height: @admin-sidemenu-main-header-height;
+            span {
+                position: absolute;
+                top: 0;
+                left: 2rem;
+            }
+        }
+    }
 }
 
 
@@ -798,13 +820,6 @@ table#grid-groups {
     width: unset !important;   // otherwise there is a horizontal scrollbar at the bottom, for whatever the reason is!
 }
 
-
-
-#dialog-system table {
-    .iob-font-12 !important;
-}
-
-
 #iob-body .ui-button-text-only, #iob-body .ui-button-text {
     //padding: .4em 1em;
     .iob-font-12;
@@ -813,7 +828,3 @@ table#grid-groups {
 //    .iob-font-12 !important;
 //    font-size: 12px !important;
 //}
-
-#dialog-system ul {
-    background: @iob-background !important;
-}

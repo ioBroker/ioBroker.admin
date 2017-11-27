@@ -768,10 +768,10 @@ function System(main) {
             }
         ];
         if (!main.systemConfig.error) {
-            $('#button-system').button({
+            $('#button-system')/*.button({
                 icons: {primary: 'ui-icon-gear'},
                 text: false
-            }).click(function () {
+            })*/.click(function () {
                 var $system_activeRepo = $('#system_activeRepo');
                 $system_activeRepo.html('');
                 if (that.systemRepos && that.systemRepos.native.repositories) {
@@ -833,7 +833,7 @@ function System(main) {
                     }
                 });
 
-                $('#tabs-system').tabs({
+                $('#tabs-system').find('.tabs').mtabs({
                     activate: function (event, ui)  {
                         if (ui.newPanel.selector === '#tab-system-certs') {
                             $('#drop-zone').show().css({opacity: 1}).animate({opacity: 0}, 2000, function () {
@@ -851,12 +851,21 @@ function System(main) {
                 $dialogSystem.show().appendTo('.admin-sidemenu-body');
                 $dialogSystem.data('current', $currentTab);
                 if (!$dialogSystem.find('.dialog-system-buttons').length) {
-                    var $div = $('<nav class="dialog-system-buttons nav-wrapper"></nav>');
+                    var $div = $('<nav class="dialog-system-buttons nav-wrapper footer"></nav>');
                     for (var b = 0; b < buttons.length; b++) {
                         $div.append($('<a class="' + (buttons[b]._class || '') + '">' + buttons[b].text + '</a>').click(buttons[b].click));
                     }
                     $dialogSystem.append($div);
                 }
+
+                if (typeof Materialize !== 'undefined') {
+                    Materialize.updateTextFields();
+                    $dialogSystem.find('select').material_select();
+                    $('#tabs-system').mtabs('select_tab', 'tab-system-main');
+                }
+
+                ///$gridRepo.setGridHeight($(this).height() - 160).setGridWidth($(this).width() - 40);
+                //$gridCerts.setGridHeight($(this).height() - 160).setGridWidth($(this).width() - 40);
             });
         } else {
             $('#button-system').hide();

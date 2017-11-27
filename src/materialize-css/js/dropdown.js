@@ -268,7 +268,8 @@
     });
   }; // End dropdown plugin
 
-  $(document).ready(function(){
+    // iobroker disable autoinit
+  /*$(document).ready(function(){
     $('.dropdown-button').dropdown();
-  });
+  });*/
 }( jQuery ));

@@ -101,9 +101,6 @@
         padding-left: 10px;
     }
 
-    .main-admin-buttons{
-        padding-top:    2px;
-    }
     .admin-sidemenu-header {
         height:         @admin-sidemenu-main-header-height;
         overflow:       hidden;
@@ -138,6 +135,12 @@
     width:      @admin-sidemenu-width;
     overflow-y: auto;
 
+    .admin-sidemenu-items {
+        i {
+            padding-right: 0.2rem;
+        }
+    }
+
     // scrollbar
     &::-webkit-scrollbar-track {
         background-color: @admin-sidemenu-background;
@@ -164,7 +167,7 @@
     }
     .admin-sidemenu-header {
         width: 100%;
-        padding-left: 30px;
+        //padding-left: 30px;
     }
     .admin-sidemenu-close {
         left:           0;

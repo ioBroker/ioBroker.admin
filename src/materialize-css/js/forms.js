@@ -28,9 +28,11 @@
     });
 
     // Add active if input element has been pre-populated on document ready
+    /*  // iobroker disable autoinit
     $(document).ready(function() {
       Materialize.updateTextFields();
     });
+    */
 
     // HTML DOM FORM RESET handling
     $(document).on('reset', function(e) {

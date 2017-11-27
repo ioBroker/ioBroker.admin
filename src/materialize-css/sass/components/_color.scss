@@ -5,7 +5,22 @@
 //}
 
 // Google Color Palette defined: http://www.google.com/design/spec/style/color.html
-
+$iob: (
+  "base":       #2196f3,
+  "lighten-5":  #e3f2fd,
+  "lighten-4":  #bbdefb,
+  "lighten-3":  #90caf9,
+  "lighten-2":  #64b5f6,
+//   "base":       #42a5f5,
+  "lighten-1":  #2196f3,
+  "darken-1":   #1e88e5,
+  "darken-2":   #1976d2,
+  "darken-3":   #1565c0,
+  "darken-4":   #0d47a1,
+  "accent-1":   #82b1ff,
+  "accent-2":   #448aff,
+  "accent-3":   #2979ff
+);
 
 $materialize-red: (
   "base":       #e51c23,
@@ -338,6 +353,7 @@ $shades: (
 );
 
 $colors: (
+  "iob": $iob,
   "materialize-red": $materialize-red,
   "red": $red,
   "pink": $pink,

@@ -507,10 +507,10 @@ $(document).ready(function () {
             if (main.objects['system.adapter.discovery.0']) {
                 if (!$wizard.data('inited')) {
                     $wizard.data('inited', true);
-                    $wizard.button({
+                    $wizard/*.button({
                         icons: {primary: ' ui-icon-search'},
                         text: false
-                    }).click(function () {
+                    })*/.click(function () {
                         // TABS
                         // $('#tabs').tabs('option', 'active', 1);
                         navigation('tab-instances');
@@ -606,19 +606,14 @@ $(document).ready(function () {
 
         //'<table class="panel-table main-admin-buttons" style="border-spacing: 3px; width: auto; position: relative; height: 27px; top: 5px;"><td>' +
         buttons += '' +
-            '<table class="panel-table main-admin-buttons"><tr>' +
-            '<td><button class="menu-button panel-button" id="button-wizard"></button></td>' +
+            '<nav class="main-admin-buttons"><div class="nav-wrapper "><ul class="left">' +
+            '<li><a id="button-wizard"><i class="material-icons">search</i></a></li>' +
+            '<li><a id="button-system" title="' + _('System') + '"><i class="material-icons">build</i></a></li>' +
+            '<li class="button-current-user"><div><i class="material-icons" style="display: inline">account_box</i><span id="current-user"></span></div></li>'+
+            '<li><a id="button-logout" title="' + _('Logout') + '"><i class="material-icons">input</i></a></li>' +
 
-            //                        '<td><button class="menu-button panel-button" id="button-logout" title="' + _('Logout') + '"></button></td>' +
-            '<td><button class="menu-button panel-button" id="button-system" title="' + _('System') + '"></button></td>' +
-            '<td style="background: #fff;"><span id="current-user" class="" style="height: inherit;  padding-left: 5px; padding-right: 5px; font-size: 12px; margin:0"></span></td>' +
-            //'<td><button class="menu-button panel-button" id="button-edit-tabs"></button></td>' +
-            //                        '<td><button class="menu-button panel-button" id="button-wizard"></button></td>' +
-            '<td><button class="menu-button panel-button" id="button-logout" title="' + _('Logout') + '"></button></td>' +
-            //'<td><select id="tabs-show" style="z-index: 10; font-size: 12px"></select></td>' +
-            '</tr></table>' +
-
-            '<div style="color: #fff; position: absolute; top: 8px; right: 10px;">ioBroker.admin ' + (main.objects['system.adapter.admin'] && main.objects['system.adapter.admin'].common && main.objects['system.adapter.admin'].common.version) + '</div>';
+            '<span class="button-version">ioBroker.admin ' + (main.objects['system.adapter.admin'] && main.objects['system.adapter.admin'].common && main.objects['system.adapter.admin'].common.version) + '</span>' +
+            '</div></nav>';
 
         // '<div style="top: 40; z-index: 99;">' +
         // '<button class="menu-button panel-button" id="button-logout" title="' + _('Logout') + '"></button>' +
@@ -1528,7 +1523,7 @@ $(document).ready(function () {
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !==-1) {
                 elements.push({
                     line: '<a href="javascript:void(0)" class="admin-sidemenu-items" data-tab="' + id + '">' +
-                        (tabsInfo[id].icon ? '<i class="fa ' + tabsInfo[id].icon + '"></i>' : '<i class="fa fa-empty">&nbsp;</i>') +
+                        (tabsInfo[id] && tabsInfo[id].icon ? '<i class="fa ' + tabsInfo[id].icon + '"></i>' : '<i class="fa fa-empty">&nbsp;</i>') +
                         $(this).data('name') + '</a>',
                     id: id
                 });
@@ -1538,7 +1533,7 @@ $(document).ready(function () {
             var id = $(this).attr('id');
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !==-1) {
                 var icon;
-                if (tabsInfo[id].icon) {
+                if (tabsInfo[id] && tabsInfo[id].icon) {
                     icon = tabsInfo[id].icon;
                 } else {
                     var _id = 'system.adapter.' + id.substring(4);

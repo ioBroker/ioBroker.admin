@@ -1,11 +1,21 @@
 @import "commons";
-@import "materializeConstants";
+@import "materializeConsts";
+
+#tab-system-main {
+  height: 100%;
+  overflow: auto;
+}
+#tabs-system {
+  overflow: hidden;
+  height: calc(~"100% - 48px");
+  .page {
+    background: #f5f2f0;
+    height: calc(~"100% - 48px")
+  }
+}
 
 #tab-system-diag {
   display: block;
   height: calc(~"100% - 40px");
   overflow-y: auto;
-}
-#tabs-system {
-  overflow: hidden;
 }

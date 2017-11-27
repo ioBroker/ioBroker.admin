@@ -35,14 +35,15 @@
 // 1. Colors
 // ==========================================================================
 
-$primary-color: color("materialize-red", "lighten-2") !default;
+//$primary-color: color("materialize-red", "lighten-2") !default;
+$primary-color: color("iob", "lighten-2") !default;
 $primary-color-light: lighten($primary-color, 15%) !default;
 $primary-color-dark: darken($primary-color, 15%) !default;
 
-$secondary-color: color("teal", "lighten-1") !default;
-$success-color: color("green", "base") !default;
+$secondary-color: color("iob", "lighten-1") !default;
+$success-color: color("teal", "base") !default;
 $error-color: color("red", "base") !default;
-$link-color: color("light-blue", "darken-1") !default;
+$link-color: color("iob", "darken-1") !default;
 
 
 // 2. Badges
@@ -275,7 +276,7 @@ $spinner-default-color: $secondary-color !default;
 // ==========================================================================
 
 $tabs-underline-color: $primary-color-light !default;
-$tabs-text-color: $primary-color !default;
+$tabs-text-color: darken($primary-color, 20%) !default;
 $tabs-bg-color: #fff !default;
 
 
