@@ -548,8 +548,6 @@ $(document).ready(function () {
     main.tabs      = tabs;
     main.systemDialog = new System(main);
 
-    var children =              {};
-
     var cmdCallback =           null;
     var stdout;
     var activeCmdId =           null;
