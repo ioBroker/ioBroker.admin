@@ -663,7 +663,9 @@ function System(main) {
 
                     $('.system-settings.value').each(function () {
                         var $this = $(this);
-                        var id = $this.attr('id').substring('system_'.length);
+                        var id = $this.attr('id');
+                        if (!id) return;
+                        id = id.substring('system_'.length);
 
                         if ($this.attr('type') === 'checkbox') {
                             common[id] = $this.prop('checked');
@@ -802,7 +804,9 @@ function System(main) {
 
                 $('.system-settings.value').each(function () {
                     var $this = $(this);
-                    var id = $this.attr('id').substring('system_'.length);
+                    var id = $this.attr('id');
+                    if (!id) return;
+                    id = id.substring('system_'.length);
 
                     if ($this.attr('type') === 'checkbox') {
                         $this.prop('checked', main.systemConfig.common[id]);
