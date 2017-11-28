@@ -46,11 +46,13 @@
     .admin-sidemenu-menu {
         width:  100%;
         height: 100%;
+        margin: 0;
     }
     a i {
-        padding-right: 0.5rem;
+        //padding-right: 0.5rem;
+        margin: 0 0.5rem 0 0 !important;
     }
-    a .fa-empty {
+    a .icon-empty {
         width: 0.9rem;
     }
     // Position and style the close button (top right corner)
@@ -136,9 +138,10 @@
     overflow-y: auto;
 
     .admin-sidemenu-items {
-        i {
+        cursor: pointer;
+        /*i {
             padding-right: 0.2rem;
-        }
+        }*/
     }
 
     // scrollbar

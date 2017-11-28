@@ -405,43 +405,6 @@ $(document).ready(function () {
             }
         },
 
-        /*
-        __delObject:    function ($tree, id, callback) {
-            var leaf = $tree ? $tree.selectId('getTreeInfo', id) : null;
-            //var leaf = treeFindLeaf(id);
-            if (leaf && leaf.children) {
-                for (var e = 0; e < leaf.children.length; e++) {
-                    main.delObject($tree, leaf.children[e], function () {
-                        main.delObject($tree, id, callback, true);
-                    }, true);
-                    break;
-                }
-            } else {
-                if (main.objects[id] && main.objects[id].common && main.objects[id].common['object-non-deletable']) {
-                    main.showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
-                    if (callback) callback(null, id);
-                } else {
-                    main.socket.emit('delObject', id, function (err) {
-                        if (err && err !=='Not exists') {
-                            main.showError(err);
-                            return;
-                        }
-                        main.socket.emit('delState', id, function (err) {
-                            if (err && err !=='Not exists') {
-                                main.showError(err);
-                                return;
-                            }
-                            if (callback) {
-                                setTimeout(function () {
-                                    callback(null, id);
-                                }, 0);
-                            }
-                        });
-                    });
-                }
-            }
-        },
-        */
         delObject:      function ($tree, id, callback) {
             var leaf = $tree ? $tree.selectId('getTreeInfo', id) : null;
             if (main.objects[id]) {
@@ -580,84 +543,19 @@ $(document).ready(function () {
     }
 
     function initHtmlButtons() {
-        // var $tabs = $('#tabs');
-        //$tabs.find('ul.ui-tabs-nav').prepend('<li class="header">ioBroker.admin</li>');
-        //$tabs.find('ul.ui-tabs-nav').prepend('<li class="header"></li>');
-
-        // var buttons = '' +
-        //     //'<table class="panel-table main-admin-buttons" style="border-spacing: 3px; width: auto; position: relative; height: 27px; top: 5px;"><td>' +
-        //     '<table class="panel-table main-admin-buttons"><td>' +
-        //     '<td><button class="menu-button panel-button" id="button-wizard"></button></td>' +
-        //     '<td style="background: #fff;"><span id="current-user" class="" style="height: inherit;  padding-left: 5px; padding-right: 5px; font-size: 12px; margin:0"></span></td>' +
-        //     '<td><button class="menu-button panel-button" id="button-system" title="' + _('System') + '"></button></td>' +
-        //     '<td><button class="menu-button panel-button" id="button-logout" title="' + _('Logout') + '"></button></td>' +
-        //     '<td><button class="menu-button panel-button" id="button-edit-tabs"></button></td>' +
-        //     '<td><select id="tabs-show"></select></td>' +
-        //     '</tr></table>' +
-        //
-        //     '<div style="color: #fff;  position: absolute; top: 10px; right: 10px;">ioBroker.admin</div>';
-
         var buttons = '';
 
-        // TABS
-        if (0 && !main.editTabs) {
-            buttons += '<table class="choose-tabs-config-button"><tr><td>▽</td></tr></table>';
-        }
-
-        //'<table class="panel-table main-admin-buttons" style="border-spacing: 3px; width: auto; position: relative; height: 27px; top: 5px;"><td>' +
+        // todo: move these buttons into index.html
         buttons += '' +
             '<nav class="main-admin-buttons"><div class="nav-wrapper "><ul class="left">' +
             '<li><a id="button-wizard"><i class="material-icons">search</i></a></li>' +
             '<li><a id="button-system" title="' + _('System') + '"><i class="material-icons">build</i></a></li>' +
-            '<li class="button-current-user"><div><i class="material-icons" style="display: inline">account_box</i><span id="current-user"></span></div></li>'+
             '<li><a id="button-logout" title="' + _('Logout') + '"><i class="material-icons">input</i></a></li>' +
 
             '<span class="button-version">ioBroker.admin ' + (main.objects['system.adapter.admin'] && main.objects['system.adapter.admin'].common && main.objects['system.adapter.admin'].common.version) + '</span>' +
             '</div></nav>';
 
-        // '<div style="top: 40; z-index: 99;">' +
-        // '<button class="menu-button panel-button" id="button-logout" title="' + _('Logout') + '"></button>' +
-        // '<button class="menu-button panel-button" id="button-system" title="' + _('System') + '"></button>' +
-        // '<div id="current-user" class="menu-button panel-button" style="padding-right: 5px; width: none; padding-top: 5px; background: #fff; color: #000;"></div>' +
-        // '<button class="menu-button panel-button" id="button-edit-tabs"></button>' +
-        // '<button class="menu-button panel-button" id="button-wizard"></button>' +
-        // '<select id="tabs-show"></select>' +
-        // '</div>'
-
-        // TABS
-        // $tabs.find('ul.ui-tabs-nav').append(buttons);
-        //var v = $tabs.find('#main-buttons');
-        //if (v.length) {
-        //    v.append(buttons);
-        //}   //xxxx
-        //else {
-        //    $tabs.find('ul.ui-tabs-nav').append(buttons);
-        //}
         $('.admin-sidemenu-header').append(buttons);
-
-        // if (showTabs) {
-        //     $('#tabs-show')
-        //         .html('<option value="">' + _('Show...') + '</option>' + showTabs)
-        //         .show()
-        //         .selectmenu({
-        //             width: 150,
-        //             change: function () {
-        //                 if ($(this).val()) {
-        //                     main.systemConfig.common.tabs.push($(this).val());
-        //                     // save
-        //                     main.saveTabs();
-        //                     // main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
-        //                     //     if (err) {
-        //                     //         main.showError(err);
-        //                     //     }
-        //                     // });
-        //                     initTabs();
-        //                 }
-        //             }
-        //         });
-        // } else {
-        //     $('#tabs-show').html('').hide();
-        // }
 
         $('.choose-tabs-config-button').click(function(event) {
             var $dialog = $ ('#dialog');
@@ -723,113 +621,7 @@ $(document).ready(function () {
             });
         });
 
-//                     $('#button-edit-tabs').button({
-//                         icons: {primary: 'ui-icon-pencil'},
-//                         text: false
-//                     }).click(function (event) {
-//
-//                         if (1) {
-//
-//                             var $dialog = $ ('#dialog');
-//                             var html = $dialog.html();
-//                             if (html) {
-//                                 $dialog.html('');
-//                                 $('html').unbind("click");
-//                                 return;
-//                             }
-//                             setTimeout(function () {
-//                                 $('html').bind( "click", function(event){
-//                                     $dialog.html('');
-//                                     $('html').unbind("click");
-//                                 });
-//                             }, 100);
-//                             var $e = $ (event.target).parent ().parent ();
-//                             var offs = $e.offset ();
-//                             offs.top += $e.height () - 2;
-//                             offs.left -= 4;
-//                             console.log ('offs=', offs);
-//                             var text = '' +
-//                                 '<dialog open style="margin: 0; font-family: Tahoma; font-size: 12px; white-space: nowrap; background: #fff; position: absolute; top: ' + offs.top + 'px; left: ' + offs.left + 'px;">' + // style="overflow: visible; z-index: 999; ">'
-//                                 '<div style="overflow: visible; z-index: 999; position: absolute; left:0px; top: 0px;">' +
-//                                 '<ul style="border: 1px solid #909090; line-height: 24px; padding:8px; margin: 0; list-style: none; float: left; background:#fff; color:#000">';
-//
-//                             var $lis = $ ('#tabs-ul>li');
-//                             for (var tid in allTabs) {
-//                                 var name = allTabs[tid];
-//                                 var found = false;
-//                                 $lis.each (function (i, e) {
-//                                     if (tid === $ (e).attr ('aria-controls')) {
-//                                         found = $ (e);
-//                                         return false;
-//                                     }
-//                                 });
-//                                 var id = 'chk-' + tid;
-//                                 text += '<li><input ' + (found ? 'checked' : 'unchecked') + ' style="vertical-align: middle;" class="chk-tab" type="checkbox" id="' + id + '" /><label for="' + id + '">' + name + '</label></id>';
-//                             }
-//                             text += '' +
-//                                 '</ul>' +
-//                                 '</div>' +
-//                                 '</dialog>';
-//
-//
-//
-//                             // '<select>' +
-//                             // '<option style="line-height: 2em;" value="A">eins</option>' +
-//                             // '<option style="line-height: 2em;" value="B">zwei</option>' +
-//                             // '</select>' +
-//                             // '</div>' +
-//                             // '</dialog>';
-//
-//
-//                             // text = //`<div style="z-index: 100; position: absolute; top: 10px, left: 10px" class="nav-wrapper">
-//                             //         `<nav class="nav-menu" style="z-index: 100; position: absolute; top: 10px, left: 10px">
-//                             //         <ul class="clearfix">
-//                             //         <li>Home</li>
-//                             //         <li>Mitwirkende
-//                             //         </li>
-//                             //         <li>Kontakt
-//                             //         </li>
-//                             //         </ul>
-//                             //         </nav>
-//                             //         </div>`;
-//
-//                             $ ('#dialog').append (text);
-//
-//                             $('.chk-tab').click(function(event) {
-//                                 var id = $(event.currentTarget).attr('id').substr(4);
-//                                 if (event.toElement.checked) {
-//                                     main.systemConfig.common.tabs.push(id);
-//                                 } else {
-//                                     var pos = main.systemConfig.common.tabs.indexOf(id);
-//                                     if (id !== -1) main.systemConfig.common.tabs.splice(pos, 1);
-//                                 }
-//                                 main.saveTabs();
-//                                 initTabs();
-//                             });
-//
-//                             return;
-//                         }
-//                         if (main.editTabs) {
-//                             $('.tab-close').hide();
-//                             $('#tabs-show-button').hide();
-//                             main.editTabs = false;
-//                             $(this).removeClass('ui-state-error');
-//                         } else {
-//                             $('.tab-close').show();
-//                             $('#tabs-show-button').show();
-//                             $(this).addClass('ui-state-error');
-//                             main.editTabs = true;
-//                         }
-//                     });
-
         main.updateWizard();
-
-        // if (!main.editTabs) {
-        //     $('.tab-close').hide();
-        //     $('#tabs-show-button').hide();
-        // } else {
-        //     $('#button-edit-tabs').addClass('ui-state-error');
-        // }
 
         $('#button-logout').button({
             text: false
@@ -849,84 +641,13 @@ $(document).ready(function () {
         if (!$tabs.data('inited')) {
             $tabs.data('inited', true);
 
-            // TABS
             initSideNav();
             initHtmlButtons();
 
-            // TABS
-            /*$tabs.show().tabs({
-                activate: function (event, ui) {
-                    window.location.hash = '#' + ui.newPanel.selector.slice(5);
-
-                    var $panel = $(ui.newPanel.selector);
-                    // Init source for iframe
-                    if ($panel.length) {
-                        var link = $panel.data('src');
-                        if (link && link.indexOf('%') === -1) {
-                            var $iframe = $panel.find('iframe');
-                            if ($iframe.length && !$iframe.attr('src')) {
-                                $iframe.attr('src', link);
-                            }
-                        } else {
-                            $tabs.data('problem-link', ui.newPanel.selector);
-                        }
-                    }
-
-                    switch (ui.newPanel.selector) {
-                        case '#tab-objects':
-                            tabs.objects.init();
-                            break;
-                        // case '#tab-objects1':
-                        //     tabs.objects1.init();
-                        //     break;
-
-                        case '#tab-hosts':
-                            tabs.hosts.init();
-                            break;
-
-                        case '#tab-states':
-                            tabs.states.init();
-                            break;
-
-                        case '#tab-scripts':
-                            break;
-
-                        case '#tab-adapters':
-                            tabs.hosts.initList();
-                            tabs.adapters.enableColResize();
-                            break;
-
-                        case '#tab-instances':
-                            tabs.instances.init();
-                            break;
-
-                        case '#tab-users':
-                            tabs.users.init();
-                            break;
-
-                        case '#tab-groups':
-                            tabs.groups.init();
-                            break;
-
-                        case '#tab-enums':
-                            tabs.enums.init();
-                            break;
-
-                        case '#tab-log':
-                            tabs.logs.init();
-                            break;
-                    }
-                },
-                create: function () {
-                    initHtmlButtons();
-                }
-            });*/
             main.socket.emit('authEnabled', function (auth, user) {
                 if (!auth) $('#button-logout').remove();
                 $('#current-user').html(user ? user[0].toUpperCase() + user.substring(1).toLowerCase() : '');
             });
-            // TABS
-            // resizeGrids();
 
             $('#events_threshold').click(function () {
                 main.socket.emit('eventsThreshold', false);
@@ -986,20 +707,6 @@ $(document).ready(function () {
             var id = $this.attr('id'), name = $this.data('name');
             list.push(id);
             allTabs[id] = name;
-            // TABS
-            // if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf($(this).attr('id')) !==-1) {
-            //     //text += '<li><a href="#' + id + '">' + _(name) + '</a><button class="tab-close" data-tab="' + id + '"></button></li>\n';
-            //     text += '<li><a href="#' + id + '">' + _(name) + '</a></button></li>\n';
-            //     $this.show().appendTo($('#tabs'));
-            // } else {
-            //     if ($this.parent().prop('tagName') !== 'BODY') {
-            //         $this.appendTo($('body'));
-            //         setTimeout(function () {
-            //             $this.hide()
-            //         }, 100);
-            //     }
-            //     showTabs += '<option value="' + id + '">' + _(name) + '</option>';
-            // }
         });
 
         // Look for adapter tabs
@@ -1102,31 +809,6 @@ $(document).ready(function () {
         // TABS
         $('#tabs-ul').html(text);
 
-        // $('.tab-close').button({
-        //     icons: {primary: 'ui-icon-close'},
-        //     text: false
-        // }).unbind('click').click(function () {
-        //     var pos = main.systemConfig.common.tabs.indexOf($(this).data('tab'));
-        //     if (pos !==-1) {
-        //         main.systemConfig.common.tabs.splice(pos, 1);
-        //         main.saveTabs();
-        //         // save
-        //         // main.socket.emit('setObject', 'system.config', main.systemConfig, function (err) {
-        //         //     if (err) {
-        //         //         main.showError(err);
-        //         //     }
-        //         // });
-        //     }
-        //     initTabs();
-        // }).css({width: 16, height: 16});
-
-        // TABS
-        // var $tabs = $('#tabs');
-        // $tabs.hide();
-        // if ($tabs.tabs('instance')) {
-        //     $tabs.tabs('destroy');
-        //     $tabs.data('inited', false);
-        // }
         if ($('.link-replace').length) {
             var countLink = 0;
 
@@ -1134,7 +816,6 @@ $(document).ready(function () {
             var loadTimeout = setTimeout(function() {
                 loadTimeout = null;
                 initHtmlTabs(/*showTabs*/);
-                //}, 1000);
             }, 100);
 
             $('.link-replace').each(function () {
@@ -1362,7 +1043,6 @@ $(document).ready(function () {
         main.addEventMessage(id, null, null, obj);
 
         tabs.objects.objectChange(id, obj);
-        //tabs.objects1.objectChange(id, obj);
 
         if (main.selectId) main.selectId.selectId('object', id, obj);
 
@@ -1501,37 +1181,38 @@ $(document).ready(function () {
     };
 
     var tabsInfo = {
-        'tab-adapters':         {order: 1, icon: 'fa-folder'},
-        'tab-instances':        {order: 2, icon: 'fa-file-code-o'},
-        'tab-objects':          {order: 3, icon: 'fa-list'},
-        'tab-log':              {order: 4, icon: 'fa-file-text'},
-        'tab-scenes':           {order: 5, icon: 'fa-play'},
+        'tab-adapters':         {order: 1, icon: 'store'},
+        'tab-instances':        {order: 2, icon: 'subtitles'},
+        'tab-objects':          {order: 3, icon: 'view_list'},
+        'tab-log':              {order: 4, icon: 'view_headline'},
+        'tab-scenes':           {order: 5, icon: 'subscriptions'},
         'tab-javascript':       {order: 6},
-        'tab-text2command-0':   {order: 7, icon: 'fa-hand-o-right'}
+        'tab-text2command-0':   {order: 7, icon: 'ac_unit'},
+        'tab-hosts':            {order: 8, icon: 'storage'}
     };
 
     function initSideNav() {
-        // TABS
-        // $('#tabs').appendTo('#admin_sidemenu_main');
-
         var lines = ''; //logo.png
-        lines += '<a href="javascript:void(0)" class="admin-sidemenu-close"><span></span></a>';
+        //lines += '<a href="javascript:void(0)" class="admin-sidemenu-close"><span></span></a>';
 
         var elements = [];
         $('.admin-tab').each(function () {
             var id = $(this).attr('id');
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !==-1) {
                 elements.push({
-                    line: '<a href="javascript:void(0)" class="admin-sidemenu-items" data-tab="' + id + '">' +
+                    /*line: '<a href="javascript:void(0)" class="admin-sidemenu-items" data-tab="' + id + '">' +
                         (tabsInfo[id] && tabsInfo[id].icon ? '<i class="fa ' + tabsInfo[id].icon + '"></i>' : '<i class="fa fa-empty">&nbsp;</i>') +
-                        $(this).data('name') + '</a>',
+                        $(this).data('name') + '</a>',*/
+                    line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
+                            (tabsInfo[id] && tabsInfo[id].icon ? '<i class="material-icons">' + tabsInfo[id].icon + '</i>' : '<i class="icon-empty">&nbsp;</i>') +
+                            $(this).data('name') + '</a></li>',
                     id: id
                 });
             }
         });
         $('.tab-custom').each(function () {
             var id = $(this).attr('id');
-            if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !==-1) {
+            if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !== -1) {
                 var icon;
                 if (tabsInfo[id] && tabsInfo[id].icon) {
                     icon = tabsInfo[id].icon;
@@ -1543,9 +1224,12 @@ $(document).ready(function () {
                 }
 
                 elements.push({
-                    line: '<a href="javascript:void(0)" class="admin-sidemenu-items" data-tab="' + id + '">' +
+                    line: /*'<a href="javascript:void(0)" class="admin-sidemenu-items" data-tab="' + id + '">' +
                     (icon ? '<i class="fa ' + icon + '"></i>' : '<i class="fa fa-empty">&nbsp;</i>') +
-                    $(this).data('name') + '</a>',
+                    $(this).data('name') + '</a>',*/
+                    '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
+                    (icon ? '<i class="material-icons">' + icon + '</i>' : '<i class="icon-empty">&nbsp;</i>') +
+                    $(this).data('name') + '</a></li>',
                     id: id
                 });
             }
@@ -1562,7 +1246,7 @@ $(document).ready(function () {
             lines += elements[e].line;
         }
 
-        $('#admin_sidemenu_menu').find('.admin-sidemenu-menu').html(lines);
+        $('#admin_sidemenu_menu').find('.admin-sidemenu-menu').append(lines);
 
         $('.admin-sidemenu-close').click(function () {
             $('#admin_sidemenu_main').toggleClass('admin-sidemenu-closed');
@@ -1581,12 +1265,9 @@ $(document).ready(function () {
 
     // ---------------------------- Socket.io methods ---------------------------------------------
     main.socket.on('log', function (message) {
-        //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
         tabs.logs.add(message);
     });
     main.socket.on('error', function (error) {
-        //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
-        //addMessageLog({message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()});
         console.log(error);
     });
 
@@ -1858,15 +1539,15 @@ $(document).ready(function () {
     function navigation() {
         if (window.location.hash) {
             var tab = 'tab-' + window.location.hash.slice(1);
-            // var $tabs = $('#tabs');
-            // var index = $tabs.find('a[href="#' + tab + '"]').parent().index() - 1;
-            // $tabs.tabs('option', 'active', index + 1);
-            $('.admin-sidemenu-items[data-tab="' + tab + '"]').trigger('click');
+
+            var $item = $('.admin-sidemenu-items[data-tab="' + tab + '"]');
+            if (!$item.length) {
+                $item = $('.admin-sidemenu-items[data-tab="tab-adapters"]');
+            }
+
+            $item.trigger('click');
 
             var func;
-            // if ((func=tabs[tab.substr(4)]) && (func=func.onSelected)) {
-            //     func();
-            // }
             if ((func = tabs[tab.substr(4)])) {
                 if (func.onSelected) {
 					func.onSelected();
@@ -1885,6 +1566,7 @@ $(document).ready(function () {
             }
         } else {
             tabs.hosts.init();
+            $('.admin-sidemenu-items[data-tab="tab-adapters"]').trigger('click');
         }
     }
 

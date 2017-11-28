@@ -26,6 +26,7 @@ gulp.task('compressMaterialize', function () {
         './src/materialize-css/js/global.js',
         './src/materialize-css/js/tabs.js',
         './src/materialize-css/js/dropdown.js',
+        './src/materialize-css/js/toasts.js',
         './src/materialize-css/js/forms.js'
     ])
     .pipe(sourcemaps.init())

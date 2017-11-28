@@ -7,12 +7,12 @@
     <!--link rel="stylesheet" type="text/css" href="css/admin.css"/>
     <link rel="stylesheet" type="text/css" href="css/tiles.css"/>
     <link rel="stylesheet" type="text/css" href="css/sidenav.css"/-->
-    <link rel="stylesheet" type="text/css" href="css/app.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/jqGrid/ui.jqgrid-4.5.4.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/jquery.multiselect-1.13.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/fancytree/ui.fancytree.min.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/cron/jquery.cron.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css"/>
 
     <link class="favicon" href="favicon.ico" type="image/x-icon" rel="icon" />
     <link class="favicon" href="favicon.ico" type="image/x-icon" rel="shortcut icon" />
@@ -64,24 +64,21 @@
     <ul id="tabs-ul">
     </ul>
 </div>
-<!--<div id="tabs" style="display: none; height: 100%;">-->
-<!--<div><table><tbody><tr>-->
-<!--<td>-->
-<!--<ul id="tabs-ul">-->
-<!--</ul>-->
-<!--</td>-->
-<!--<td>-->
-<!--<div id="main-buttons">-->
-<!--main buttons-->
-<!--</div>-->
-<!--</td>-->
-<!--</tr></tbody></table></div>-->
-<!--</div>-->
 
-<div id="admin_sidemenu_menu" class="admin-sidemenu">
-    <div class="admin-sidemenu-logo"><img src="img/logo.png" /></div>
-    <div class="choose-tabs-config-button">▽</div>
-    <div class="admin-sidemenu-menu"></div>
+<div id="admin_sidemenu_menu" class="admin-sidemenu m">
+    <!--div class="admin-sidemenu-logo"><img src="img/logo.png" /></div-->
+    <div class="side-nav">
+        <div class="choose-tabs-config-button">▽</div>
+        <ul class="admin-sidemenu-menu">
+            <li>
+                <div class="user-view">
+                    <a><i class="large material-icons">account_circle</i></a>
+                    <a><span class="white-text name" id="current-user"></span></a>
+                    <a><span class="white-text email" id="current-group">Group</span></a>
+                </div>
+            </li>
+        </ul>
+    </div>
 </div>
 <div id="admin_sidemenu_main">
     <div class="admin-sidemenu-header m"></div>
@@ -253,9 +250,6 @@
 <div id="tab-objects"   class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Objects">
     <div id="grid-objects" class="grid-main-div"><span class="translate" style="width: calc(100% - 100px); width: calc(100% - 20px); text-align: center">Loading...</span></div>
 </div>
-<!--<div id="tab-objects1"class="admin-tab" style="display: none; height: calc(100% - 55px); overflow:hidden" data-name="Objects1">-->
-<!--<div id="grid-objects1" style="height: 100%; width: 100%"><span class="translate" style="width:100%; text-align: center">Loading...</span></div>-->
-<!--</div>-->
 <div id="tab-states"    class="admin-tab admin-sidemenu-body-content" data-name="States" style="display: none">
     <!--<table><tr><td>-->
     <!--</td></tr></table>-->
@@ -280,12 +274,6 @@
     <table id="grid-states"></table>
     <div id="pager-states"></div>
 </div>
-<!--div id="tab-scripts"   class="admin-tab" style="display: none" data-name="Scripts">
-    <iframe class="iframe-in-tab" style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%;" src="/adapter/javascript/tab.html"></iframe>
-</div-->
-<!--div id="tab-node-red"  class="admin-tab" style="display: none" data-name="Node-red" style="display: none" >
-    <iframe class="iframe-in-tab" id="iframe-node-red" style="width:100%"></iframe>
-</div-->
 <div id="tab-events"    class="admin-tab admin-sidemenu-body-content" data-name="Events" style="display: none">
     <div id="grid-events" class="ui-jqgrid" style="height: 100%; display: block;">
         <table class="main-toolbar-table">
