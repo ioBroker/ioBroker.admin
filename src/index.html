@@ -827,7 +827,7 @@
                 <div class="row">
                     <form class="col s12">
                         <div class="row">
-                            <div class="input-field col s12">
+                            <div class="input-field col s12 m6 l3">
                                 <select id="system_language" class="system-settings value">
                                     <option value="en">English</option>
                                     <option value="de">Deutsch</option>
@@ -837,20 +837,20 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6 l3">
                                 <select id="system_tempUnit" class="system-settings value">
                                     <option value="°C">°C</option>
                                     <option value="°F">°F</option>
                                 </select>
                                 <label class="translate" for="system_tempUnit">Temperature units:</label>
                             </div>
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6 l3">
                                 <input type="text" size="5" maxlength="5" id="system_currency" class="system-settings value"/>
                                 <label class="translate" for="system_currency">Currency:</label>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6 l3">
                                 <select id="system_dateFormat" class="system-settings value">
                                     <option value="DD.MM.YYYY" class="translate">DD.MM.YYYY</option>
                                     <option value="DD.MM.YY"   class="translate">DD.MM.YY</option>
@@ -858,7 +858,7 @@
                                 </select>
                                 <label class="translate" for="system_dateFormat">Date format:</label>
                             </div>
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6 l3">
                                 <select id="system_isFloatComma" class="system-settings value">
                                     <option value="true"  class="translate">comma</option>
                                     <option value="false" class="translate">point</option>
@@ -867,19 +867,19 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6 l3">
                                 <select id="system_defaultHistory" class="system-settings value">
                                 </select>
                                 <label class="translate" for="system_defaultHistory">Default history instance:</label>
                             </div>
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6 l3">
                                 <select id="system_activeRepo" class="system-settings value">
                                 </select>
                                 <label class="translate" for="system_activeRepo">Active repository:</label>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6 l3">
                                 <select id="system_country" class="system-settings value">
                                     <option value="">Please select country</option>
                                     <option value="Afghanistan" class="translate">Afghanistan</option>
@@ -1130,11 +1130,10 @@
                                 </select>
                                 <label class="translate" for="system_country">Country:</label>
                             </div>
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6 l3">
                                 <input id="system_city" class="system-settings value select-wrapper" />
                                 <label class="translate" for="system_city">City:</label>
                             </div>
-                        </div>
                     <!--tr><td><label class="translate" for="system_address">Address:</label></td>
                         <td>
                             <input id="system_address" style="width: 250px;"/>
@@ -1145,151 +1144,201 @@
                             <button id="detectCoordinates"></button>
                         </td>
                     </tr-->
-                        <div class="row">
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6 l3">
                                 <input id="system_latitude" class="system-settings value select-wrapper" />
                                 <label class="translate" for="system_latitude">Latitude:</label>
                             </div>
-                            <div class="input-field col s6">
+                            <div class="input-field col s12 m6 l3">
                                 <input id="system_longitude" class="system-settings value select-wrapper" />
-                                <label class="translate" for="system_longitude">Longitude:</label></td>
+                                <label class="translate" for="system_longitude">Longitude:</label>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
             <div id="tab-system-repo"   class="col s12 page">
-                <table id="grid-repos"></table>
-                <div id="pager-repos"></div>
+                <div class="row">
+                    <a class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                </div>
+                <div class="row">
+                    <table id="grid-repos" class="table-values">
+                        <thead>
+                            <tr>
+                                <th data-name="_index"    class="col s1"           data-style="padding-top: 1rem; text-align: right"></th>
+                                <th data-name="name"      class="col s2 translate" data-style="text-align: right">name</th>
+                                <th data-name="link"      class="col s8 translate">link</th>
+                                <th data-buttons="delete" class="col s1" data-style="padding-top: 0.5rem;"></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
             <div id="tab-system-certs"  class="dropZone col s12 page">
                 <div id="drop-zone" style="display: none"><div style="padding-top:20%" class="translate" id="drop-text"></div>
                     <input type="file" id="drop-file" style="display: none">
                 </div>
-                <table id="grid-certs"></table>
-                <div id="pager-certs"></div>
+                <div class="row">
+                    <a class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                    <span class="translate" style="padding-left: 1rem">you can use absolute path to certificate, like '/opt/certs/cert.pem'</span>
+                </div>
+                <div class="row">
+                    <table id="grid-certs" class="table-values">
+                        <thead>
+                        <tr>
+                            <th data-name="_index"      class="col s1"           data-style="padding-top: 1rem; text-align: right"></th>
+                            <th data-name="name"        class="col s2 translate" data-style="text-align: right">name</th>
+                            <th data-name="certificate" class="col s8 translate">certificate</th>
+                            <th data-buttons="delete"   class="col s1" data-style="padding-top: 0.5rem;"></th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+
             </div>
             <div id="tab-system-letsencrypt" class="col s12 page">
-                <p class="translate">letsnecrypt_help</p>
-                <table>
-                    <tr>
-                        <td><label class="translate" for="system_le_email">Email for account:</label></td>
-                        <td><input id="system_le_email" class="system-le-settings value" data-name="email"/></td>
-                        <td class="translate">letsnecrypt_help_email</td>
-                    </tr>
-                    <tr>
-                        <td><label class="translate" for="system_le_domains">Domains:</label></td>
-                        <td><input id="system_le_domains" class="system-le-settings value" data-name="domains"/></td>
-                        <td class="translate">letsnecrypt_help_domains</td>
-                    </tr>
-                    <tr>
-                        <td><label class="translate" for="system_le_path">Path to storage:</label></td>
-                        <td><input id="system_le_path" class="system-le-settings value" data-name="path"/></td>
-                        <td class="translate">letsnecrypt_help_path</td>
-                    </tr>
-                </table>
+                <div class="row translate">letsnecrypt_help</div>
+                <div class="row">
+                    <div class="input-field col s12 m6 l3">
+                        <input id="system_le_email" type="text" class="system-le-settings value" data-name="email"/>
+                        <label class="translate" for="system_le_email">Email for account:</label>
+                        <!--div class="translate">letsnecrypt_help_email</div-->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12 m6 l3">
+                        <input id="system_le_domains" type="text" class="system-le-settings value " data-name="domains"/>
+                        <label class="translate" for="system_le_domains">Domains:</label>
+                        <!--div class="translate">letsnecrypt_help_domains</div-->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12 m6 l3">
+                        <input id="system_le_path" type="text" class="system-le-settings value" data-name="path"/>
+                        <label class="translate" for="system_le_path">Path to storage:</label>
+                        <!--div class="translate">letsnecrypt_help_path</div-->
+                    </div>
+                </div>
             </div>
             <div id="tab-system-acl"    class="col s12 page">
-                <h3 class="translate" style="margin-bottom: 0px;">Access control list</h3>
-                <table id="tab-system-acl-table" style="width: 100%">
-                    <tbody><tr><td><label class="translate" for="tab-system-acl-owner">Owner user</label></td><td><select id="tab-system-acl-owner"></select></td></tr>
-                    <tr><td><label class="translate" for="tab-system-acl-group" >Owner group</label></td><td><select id="tab-system-acl-group"></select></td></tr>
-                    <tr><td><label class="translate">Object rights</label></td><td>
-                        <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
-                            <tbody><tr>
-                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
-                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
-                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td></tr>
-                            <tr>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-owner-read">read</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-owner-write">write</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-group-read" >read</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-group-write">write</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-every-read">read</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-every-write">write</label></td>
-                            </tr>
-                            <tr>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-owner-read"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-owner-write"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-group-read"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-group-write"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-every-read"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-obj-every-write"></td>
-                            </tr>
-                            </tbody></table>
-                    </td></tr>
-                    <tr><td class="translate">States rights</td><td>
-                        <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
-                            <tbody><tr>
-                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
-                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
-                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td>
-                            </tr>
-                            <tr>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-owner-read">read</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-owner-write">write</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-group-read">read</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-group-write">write</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-every-read">read</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-every-write">write</label></td>
-                            </tr>
-                            <tr>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-owner-read"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-owner-write"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-group-read"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-group-write"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-every-read"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-state-every-write"></td>
-                            </tr>
-                            </tbody></table>
-                    </td></tr>
-                    <tr><td class="translate">File rights</td><td>
-                        <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
-                            <tbody><tr>
-                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
-                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
-                                <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td>
-                            </tr>
-                            <tr>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-owner-read">read</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-owner-write">write</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-group-read">read</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-group-write">write</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-every-read">read</label></td>
-                                <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-every-write">write</label></td>
-                            </tr>
-                            <tr>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-owner-read"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-owner-write"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-group-read"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-group-write"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-every-read"></td>
-                                <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="tab-system-acl-file-every-write"></td>
-                            </tr>
-                            </tbody></table>
-                    </td></tr>
-                    </tbody></table>
+                <div class="row">
+                    <h5 class="translate" style="margin-bottom: 0;">Access control list</h5>
+                    <div class="row">
+                        <div class="input-field col s12 m6 l3">
+                            <select id="tab-system-acl-owner"></select>
+                            <label class="translate" for="tab-system-acl-owner">Owner user</label>
+                        </div>
+                        <div class="input-field col s12 m6 l3">
+                            <select id="tab-system-acl-group"></select>
+                            <label class="translate" for="tab-system-acl-group" >Owner group</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12 m6 l4">
+                            <h6 class="translate" style="margin-bottom: 0;">Object rights</h6>
+                            <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                                <tbody><tr>
+                                    <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
+                                    <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
+                                    <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td></tr>
+                                <tr>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-owner-read">read</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-owner-write">write</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-group-read" >read</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-group-write">write</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-every-read">read</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-every-write">write</label></td>
+                                </tr>
+                                <tr>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-owner-read"/><label for="tab-system-acl-obj-owner-read"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-owner-write"/><label for="tab-system-acl-obj-owner-write"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-group-read"/><label for="tab-system-acl-obj-group-read"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-group-write"/><label for="tab-system-acl-obj-group-write"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-every-read"/><label for="tab-system-acl-obj-every-read"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-every-write"/><label for="tab-system-acl-obj-every-write"></label></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col s12 m6 l4">
+                            <h6 class="translate" style="margin-bottom: 0;">States rights</h6>
+                            <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                                <tbody><tr>
+                                    <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
+                                    <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
+                                    <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-owner-read">read</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-owner-write">write</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-group-read">read</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-group-write">write</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-every-read">read</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-every-write">write</label></td>
+                                </tr>
+                                <tr>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-owner-read"/><label for="tab-system-acl-state-owner-read"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-owner-write"/><label for="tab-system-acl-state-owner-write"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-group-read"/><label for="tab-system-acl-state-group-read"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-group-write"/><label for="tab-system-acl-state-group-write"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-every-read"/><label for="tab-system-acl-state-every-read"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-every-write"/><label for="tab-system-acl-state-every-write"></label></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col s12 m6 l4">
+                            <h6 class="translate" style="margin-bottom: 0;">File rights</h6>
+                            <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                                <tbody><tr>
+                                    <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
+                                    <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
+                                    <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-owner-read">read</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-owner-write">write</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-group-read">read</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-group-write">write</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-every-read">read</label></td>
+                                    <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-every-write">write</label></td>
+                                </tr>
+                                <tr>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-owner-read"/><label for="tab-system-acl-file-owner-read"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-owner-write"/><label for="tab-system-acl-file-owner-write"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-group-read"/><label for="tab-system-acl-file-group-read"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-group-write"/><label for="tab-system-acl-file-group-write"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-every-read"/><label for="tab-system-acl-file-every-read"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-every-write"/><label for="tab-system-acl-file-every-write"></label></td>
+                                </tr>
+                                </tbody></table>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div id="tab-system-diag"   class="col s12 page">
-                <table id="table-diag">
-                    <tr>
-                        <td class="translate">Note:</td>
-                        <td class="translate">diag-note</td>
-                    </tr>
-                    <tr>
-                        <td><label  class="translate" for="diagMode">Statistics:</label></td>
-                        <td><select id="diagMode">
+                <div class="row">
+                    <div class="input-field col s6 m3 l2">
+                        <div class="card blue-grey darken-1">
+                            <div class="card-content white-text">
+                                <span class="card-title translate">Note:</span>
+                                <p class="translate">diag-note</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-field col s6 m3 l2">
+                        <select id="diagMode">
                             <option value="none" class="translate">none</option>
                             <option value="normal" class="translate">normal</option>
                             <option value="no-city" class="translate">no-city</option>
                             <option value="extended" class="translate">extended</option>
-                        </select></td>
-                    </tr>
-                    <tr>
-                        <td class="translate" style="vertical-align: top">Sent data:</td>
-                        <td><pre id="diagSample" style="font-size: 10px"></pre></td>
-                    </tr>
-                </table>
+                        </select>
+                        <label  class="translate" for="diagMode">Statistics:</label>
+                    </div>
+                    <div class="input-field col s12 m6 l8">
+                        <h6 class="translate">Sent data:</h6>
+                        <pre id="diagSample" class="language-markup"></pre>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

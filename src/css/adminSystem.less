@@ -1,5 +1,5 @@
 @import "commons";
-//@import "materializeConsts";
+@import "materializeConsts";
 
 #tab-system-main {
   height: 100%;
@@ -7,15 +7,43 @@
 }
 #tabs-system {
   overflow: hidden;
-  height: calc(~"100% - 48px");
+  height: calc(~"100% - "@admin-m-footer-height);
   .page {
     background: #f5f2f0;
-    height: calc(~"100% - 48px")
+    height: calc(~"100% - "@admin-m-footer-height);
+    padding-top: 1rem;
+    padding-left: 1rem;
   }
 }
-
+#tab-system-certs {
+  position: relative;
+  #toast-container {
+    bottom: 20%;
+    left: 50%;
+    top: initial;
+    right: initial;
+  }
+}
 #tab-system-diag {
   display: block;
   height: calc(~"100% - 40px");
   overflow-y: auto;
+}
+
+#diagSample {
+  background: @admin-buttons-background;
+  @media screen  {
+    // medium and up = m
+    @media (min-width : 601px) {
+      //height: calc(~"100% - 4rem");
+    }
+    // large and up = l
+    @media (min-width: 993px) {
+      height: calc(~"100% - 6rem");
+    }
+    // small and down = s
+    @media (max-width: 600px) {
+      //height: calc(~"100% - 4rem");
+    }
+  }
 }

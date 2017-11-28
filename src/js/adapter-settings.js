@@ -1021,7 +1021,7 @@ function getTableResult(tabId, cols) {
  *          <table class="table-values" style="width: 100%;">
  *              <thead>
  *                  <tr>
- *                      <th data-name="_index" style="30px" data-style="width: 100%; text-align: right">Context</th>
+ *                      <th data-name="_index" style="width: 30px" data-style="width: 100%; text-align: right">Context</th>
  *                      <th data-name="regex"     class="translate" style="width: 30%" data-style="text-align: right">Context</th>
  *                      <th data-name="room"      class="translate" data-type="select">Room</th>
  *                      <th data-name="aaa"       class="translate" data-options="1/A;2/B;3/C;4" data-type="select">Room</th>
@@ -1034,10 +1034,11 @@ function getTableResult(tabId, cols) {
  *   </div>
  * <pre><code>
  *
- * @param {string} id name of the html element (or empty).
+ * @param {string} divId name of the html element (or empty).
  * @param {string} values data array
  * @param {function} onChange this function will be called if something changed
  * @param {function} onReady called, when the table is ready (may be to modify some elements of it)
+ * @param {number} maxRaw maximal number of rows
  * @return {object} array with values
  */
 function values2table(divId, values, onChange, onReady, maxRaw) {
@@ -1427,7 +1428,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
  *
  * This function extracts the values from edit table, that was generated with values2table function.
  *
- * @param {string} id name of the html element (or nothing).
+ * @param {string} divId name of the html element (or nothing).
  * @return {object} array with values
  */
 function table2values(divId) {
