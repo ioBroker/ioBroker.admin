@@ -108,8 +108,8 @@ gulp.task('copyAce', function () {
 gulp.task('copy', ['copySrc', 'copyAce']);
 
 gulp.task('watch', function () {
-    gulp.watch(['./www/css/*.less'], ['lessApp']);
-    gulp.watch(['./www/lib/css/iob/*.less'], ['lessApp']);
+    gulp.watch('./src/css/*.less', ['lessApp']);
+    gulp.watch('./src/lib/css/iob/*.less', ['lessApp']);
     gulp.watch(['./src/materialize-css/sass/**/*.scss'], ['sassMaterialize']);
     gulp.watch(['./src/js/*.js'], ['compressApp']);
 });

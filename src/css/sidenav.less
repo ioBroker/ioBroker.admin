@@ -56,7 +56,7 @@
     // Position and style the close button (top right corner)
     .admin-sidemenu-close {
         position:       fixed;
-        left:           calc(@admin-sidemenu-width - 35px);
+        left:           calc(@admin-sidemenu-width ~"- 35px");
         top:            0;
         background:     @admin-sidemenu-background;
         line-height:    .8rem;
@@ -71,7 +71,7 @@
     .choose-tabs-config-button {
         position:       absolute;
         top:            0;
-        left:           calc(@admin-sidemenu-width - 35px - 36px);
+        left:           calc(@admin-sidemenu-width ~"- 35px - 36px");
         border:         0;
         background:     inherit;
         width:          36px;
@@ -98,7 +98,7 @@
     background: @admin-sidemenu-main-background;
 
     .main-toolbar-table {
-        padding-left: 10px;
+        //padding-left: 10px;                // left aligned with the underlying list headers
     }
 
     .admin-sidemenu-header {
@@ -111,9 +111,11 @@
     }
     .admin-sidemenu-body {
 
-        width:      100%;
-        height:     calc(~"100% - " @admin-sidemenu-main-header-height ~" - " @admin-sidemenu-main-footer-height);
+        width:      calc(~"100% - " 2 * @main-frame-distance);
+        //height:     calc(~"100% - " @admin-sidemenu-main-header-height ~" - " @admin-sidemenu-main-footer-height);
+        height:     calc(~"100% - " @admin-sidemenu-main-header-height + @admin-sidemenu-main-footer-height + 2*@main-frame-distance);
         overflow:   hidden;
+        padding:    @main-frame-distance;
     }
     .admin-sidemenu-footer {
         height:     @admin-sidemenu-main-footer-height;

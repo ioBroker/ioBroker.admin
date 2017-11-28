@@ -24,13 +24,15 @@
 @toolbar-background: #fff;
 @td-toolbar-border-size: 1px;
 @td-toolbar-border: @td-toolbar-border-size solid #c0c0c0;
-@toolbar-y-margin: 2px;
+//@toolbar-y-margin: 2px;
+@toolbar-y-margin: 0;
 @toolbar-image-size: 16px;
 @toolbar-outer-hover: 1px solid #d0d0d0;
 //@main-toolbar-height: 30px;
 //@main-toolbar-full-height: 30px + 5px; // 5px margin-bottom
 //@main-toolbar-height: 26px; // incl. 2px border from td
-@main-toolbar-full-height: @toolbar-size + @td-toolbar-border-size * 2 + @toolbar-y-margin * 2 - @tabs-padding-top;
+//@main-toolbar-full-height: @toolbar-size + @td-toolbar-border-size * 2 + @toolbar-y-margin * 2 - @tabs-padding-top;
+@main-toolbar-full-height: @toolbar-size + @td-toolbar-border-size * 2 + @toolbar-y-margin * 2;
 
 
 @list-header-background: #fff;
@@ -384,6 +386,11 @@ table.panel-table>tbody>tr>td {
     border-spacing: @toolbar-button-distance 0;
     position: relative;
     left: -@toolbar-button-distance;
+    //padding-bottom: 0 !important;
+    margin-bottom: @main-frame-distance;
+}
+table.ui-pg-table.main-toolbar-table {
+    margin-bottom: 0 !important;
 }
 
 table.main-toolbar-table > tbody > tr  {
