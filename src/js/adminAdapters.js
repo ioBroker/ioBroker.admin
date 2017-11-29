@@ -233,7 +233,8 @@ function Adapters(main) {
             });
 
             $('#btn_list_adapters').show().button({icons: {primary: 'ui-icon-grip-dotted-horizontal'}, text: false})/*.css({width: 18, height: 18})*/.unbind('click').click(function () {
-                $('#process_running_adapters').show();
+                var $processAdapters = $('#process_running_adapters');
+                $processAdapters.show();
                 that.isList = !that.isList;
                 if (that.isList) {
                     $('#btn_list_adapters').addClass('ui-state-error');
@@ -247,11 +248,11 @@ function Adapters(main) {
                     $(this).attr('title', _('tree'));
                 }
                 that.main.saveConfig('adaptersIsList', that.isList);
-                $('#process_running_adapters').show();
+                $processAdapters.show();
 
                 setTimeout(function () {
                     that.init(true);
-                    $('#process_running_adapters').hide();
+                    $processAdapters.hide();
                 }, 200);
             });
         } else {
@@ -336,7 +337,7 @@ function Adapters(main) {
                 } else {
                     prepareTable();
                 }
-                that.init(true);
+                that._postInit(true);
                 $('#process_running_adapters').hide();
             }, 50);
         });
