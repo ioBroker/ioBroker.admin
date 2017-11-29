@@ -9,6 +9,7 @@ function Instances(main) {
     this.$dialogConfig = $('#dialog-config');
     this.$dialogCron   = $('#dialog-cron');
 
+    this.inited        = false;
     this.main          = main;
     this.list          = [];
     this.hostsText     = null;
@@ -348,9 +349,9 @@ function Instances(main) {
         if (host) {
             that.totalmem = that.totalmem || that.main.objects['system.host.' + that.main.currentHost].native.hardware.totalmem / (1024 * 1024);
             var percent = Math.round((host.val / that.totalmem) * 100);
-
-            if (host.val.toString() !== $('#freeMem').text()) {
-                $('#freeMem').html('<span class="highlight ' + (percent < 10 ? 'high-mem' : '') + '">' + tdp(host.val) + '</span>');
+            var $freeMem = $('#freeMem');
+            if (host.val.toString() !== $freeMem.text()) {
+                $freeMem.html('<span class="highlight ' + (percent < 10 ? 'high-mem' : '') + '">' + tdp(host.val) + '</span>');
                 //$('#freeMemPercent').html('<span class="highlight">(' + percent + '%)</span>');
                 $('#freeMemPercent').html('<span class="highlight">' + percent + '%</span>');
             }
@@ -872,12 +873,12 @@ function Instances(main) {
         });
     };
 
-    this.replaceLinks = function (vars, adapter, instance, elem) {
+    /*this.replaceLinks = function (vars, adapter, instance, elem) {
         if (typeof vars !== 'object') vars = [vars];
         for (var t = 0; t < vars.length; t++) {
             this.replaceLink(vars[t], adapter, instance, elem);
         }
-    };
+    };*/
 
     this._replaceLink = function (link, _var, adapter, instance, callback) {
         // remove %%
@@ -940,14 +941,7 @@ function Instances(main) {
         }.bind(this));
     };
 
-    this.init = function (update) {
-        if (!this.main.objectsLoaded) {
-            setTimeout(function () {
-                that.init(update);
-            }, 250);
-            return;
-        }
-
+    this._postInit = function (update) {
         if (this.main.currentHost && typeof this.$grid !== 'undefined' && (!this.$grid.data('inited') || update)) {
             this.$grid.data('inited', true);
             this.list.sort();
@@ -984,6 +978,75 @@ function Instances(main) {
             calculateTotalRam();
             calculateFreeMem();
         }
+    };
+
+    this.getInstances = function (callback) {
+        this.main.socket.emit('getForeignObjects', 'system.adapter.*', 'state', function (err, res) {
+            for (var id in res) {
+                if (!res.hasOwnProperty(id)) continue;
+                that.main.objects[id] = res[id];
+            }
+            that.main.socket.emit('getForeignStates', 'system.adapter.*',function (err, res) {
+                for (var id in res) {
+                    if (!res.hasOwnProperty(id)) continue;
+                    that.main.states[id] = res[id];
+                }
+
+                that.main.socket.emit('getForeignObjects', 'system.adapter.*', 'instance', function (err, res) {
+                    that.main.instances = [];
+                    for (var id in res) {
+                        if (!res.hasOwnProperty(id)) continue;
+                        var obj = res[id];
+                        that.main.objects[id] = obj;
+
+                        if (obj.type === 'instance') {
+                            that.main.instances.push(id);
+                        }
+                    }
+                    if (callback) callback();
+                });
+
+            });
+        });
+    };
+
+    this.init = function (update) {
+        if (this.inited) {
+            return;
+        }
+        if (!this.main.objectsLoaded) {
+            setTimeout(function () {
+                that.init(update);
+            }, 250);
+            return;
+        }
+
+        this.inited = true;
+        var count = 0;
+
+        count++;
+        this.getInstances(function () {
+            if (!--count) that._postInit(update);
+        });
+        count++;
+        this.main.tabs.hosts.getHosts(function () {
+            if (!--count) that._postInit(update);
+        });
+
+        // subscribe objects and states
+        this.main.subscribeObjects('system.adapter.*');
+        this.main.subscribeStates('system.adapter.*');
+        this.main.subscribeObjects('system.host.*');
+        this.main.subscribeStates('system.host.*');
+    };
+
+    this.destroy = function () {
+        this.inited = false;
+        // subscribe objects and states
+        this.main.unsubscribeObjects('system.adapter.*');
+        this.main.unsubscribeStates('system.host.*');
+        this.main.unsubscribeObjects('system.host.*');
+        this.main.unsubscribeStates('system.adapter.*');
     };
 
     this.stateChange = function (id, state) {
@@ -1046,8 +1109,6 @@ function Instances(main) {
                     if (!obj.common.noConfig) {
                         setTimeout(function () {
                             if (!that.$configFrame.attr('src') && !$('#dialog-license').is(':visible')) {
-                                // if tab2 is not active => activate it
-                                // $('#tabs').tabs('option', 'active', 1);
                                 window.onhashchange('tab-instances');
 
                                 // open configuration dialog
