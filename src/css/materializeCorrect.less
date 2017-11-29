@@ -20,6 +20,7 @@
     position: relative;
     height: 100%;
     z-index: 0;
+    overflow: hidden;
 
     // scrollbar
     &::-webkit-scrollbar-track {
@@ -35,9 +36,10 @@
 
     .user-view {
       background: @admin-sidemenu-user-view-background;
-      // padding: 0 32px 0;
+      padding: 0 32px 0;
       background-image: url(../img/background_small.png);
       background-position: 0;
+      margin: 0;
     }
   }
 }

@@ -731,7 +731,6 @@ function Adapters(main) {
             this.getAdaptersInfo(this.main.currentHost, update, updateRepo, function (repository, installedList) {
                 var obj;
                 var version;
-                // var tmp;
                 var adapter;
 
                 var listInstalled = [];
@@ -779,25 +778,6 @@ function Adapters(main) {
                     return version;
                 }
 
-                // function xxgetVersionString(version, updatable, news, updatableError) {
-                //     //var span = getVersionSpan(version);
-                //     var color = getVersionClass(version);
-                //     var title = color + '\n\r' + (news || '');
-                //     //version = '<table style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
-                //     version = //'<div style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'color: blue;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
-                //
-                //         '<div class="' + color + 'Bg" style="padding-left: ' + lineIndent + '; display: flex; height: 100% !important; width: 100%;">' +
-                //         '<div class="' + color + 'Bg" style="width: 50%; height: 100%;">' + version + '</div>' +
-                //         '<div stype="border: 0; padding: 0; width: 50%;height: 100%;">';
-                //     if (updatable) {    //xxx
-                //         version += '<button class="adapter-update-submit" data-adapter-name="' + adapter + '" ' + (updatableError ? ' disabled title="' + updatableError + '"' : 'title="' + _ ('update') + '"') + '></button>';
-                //         //version = version.replace('class="', 'class="updateReady ');
-                //         $ ('a[href="#tab-adapters"]').addClass ('updateReady');
-                //     }
-                //     version += '</div></div>';
-                //     return version;
-                // }
-
                 that.tree = [];
                 that.data = {};
 
@@ -832,7 +812,6 @@ function Adapters(main) {
                             updatable = true;
                             updatableError = checkDependencies(repository[adapter].dependencies);
                         }
-                        //installed = '<table style="border: 0; border-collapse: collapse;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget"><tr><td style="border: 0; padding: 0; width: 50px" title="' + news + '">' + obj.version + '</td>';
                         // TODO: move style to class
                         installed = '<table style="min-width: 80px; text-align: center; border: 0; border-spacing: 0;' /*+ (news ? 'font-weight: bold;' : '')*/ + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
                             '<tr>';
@@ -848,9 +827,6 @@ function Adapters(main) {
                             }
                         }
                         if (_instances) {
-                            // installed += '<td style="border: 0; padding: 0; width:40px">[<span title="' + _('Installed instances') + '">' + _instances + '</span>';
-                            // if (_enabled) installed += '/<span title="' + _('Active instances') + '" class="true">' + _enabled + '</span>';
-                            // installed += ']</td>';
                             // TODO: move style to class
                             installed += '<td style="border: 0; padding: 0; width: 40px">';
                             if (_enabled !== _instances) {
@@ -880,42 +856,14 @@ function Adapters(main) {
                         installed += '</tr></table>';
                         if (!updatable && that.onlyUpdatable) continue;
                     }
-                    // if (version) {
-                    //     tmp = version.split('.');
-                    //     if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
-                    //         version = '<span class="planned" title="' + _("planned") + '">' + version + '</span>';
-                    //     } else if (tmp[0] === '0' && tmp[1] === '0') {
-                    //         version = '<span class="alpha" title="' + _("alpha") + '">' + version + '</span>';
-                    //     } else if (tmp[0] === '0') {
-                    //         version = '<span class="beta" title="' + _("beta") + '">' + version + '</span>';
-                    //     } else if (version === 'npm error') {
-                    //         version = '<span class="error" title="' + _("Cannot read version from NPM") + '">' + _('npm error') + '</span>';
-                    //     } else {
-                    //         version = '<span class="stable" title="' + _("stable") + '">' + version + '</span>';
-                    //     }
-                    // }
-                    //version = getVersionSpan(version);
-
-                    // version = '<table style="min-width: 80px; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
-                    //     '<tr>' +
-                    //     '<td>' + getVersionSpan(version) + '</td>' +
-                    //     '<td style="border: 0; padding: 0; width: 30px">';
-                    // if (updatable) {    //xxx
-                    //     version += '<button class="adapter-update-submit" data-adapter-name="' + adapter + '" ' + (updatableError ? ' disabled title="' + updatableError + '"' : 'title="' + _ ('update') + '"') + '></button>';
-                    //     //version = version.replace('class="', 'class="updateReady ');
-                    //     $ ('a[href="#tab-adapters"]').addClass ('updateReady');
-                    // }
-                    // version += '</td></tr></table>';
                     version = getVersionString(version, updatable, news, updatableError);
-
 
                     var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
                     var desc  = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
                     desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
                     that.data[adapter] = {
-                        //image:      icon ? '<img src="' + icon + '" width="22px" height="22px" />' : '',
-                        image:      icon ? '<img src="' + icon + '" class="adapter-table-icon" />' : '',
+                        image:      icon ? '<img onerror="this.src=\'info-big.png\';" src="' + icon + '" class="adapter-table-icon" />' : '',
                         icon:       icon || '',
                         name:       adapter,
                         title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),
@@ -994,8 +942,7 @@ function Adapters(main) {
                         desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
                         that.data[adapter] = {
-                            //image:      repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" width="22px" height="22px" />' : '',
-                            image:      repository[adapter].extIcon ? '<img src="' + repository[adapter].extIcon + '" class="adapter-table-icon" />' : '',
+                            image:      repository[adapter].extIcon ? '<img  onerror="this.src=\'info-big.png\';" src="' + repository[adapter].extIcon + '" class="adapter-table-icon" />' : '',
                             icon:       repository[adapter].extIcon,
                             name:       adapter,
                             title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),

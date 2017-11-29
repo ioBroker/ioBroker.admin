@@ -1273,11 +1273,7 @@ $(document).ready(function () {
         for (var e = 0; e < elements.length; e++) {
             lines += elements[e].line;
         }
-        // store user icon
-        var $menu = $('#admin_sidemenu_menu').find('.admin-sidemenu-menu');
-        lines = '<li>' + $menu.find('li:first-child').html() + '</li>' + lines;
-
-        $menu.html(lines);
+        $('#admin_sidemenu_menu').find('.admin-sidemenu-menu').html(lines);
 
         $('.admin-sidemenu-close').click(function () {
             $('#admin_sidemenu_main').toggleClass('admin-sidemenu-closed');
