@@ -864,7 +864,7 @@ function Adapters(main) {
                     desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
                     that.data[adapter] = {
-                        image:      icon ? '<img onerror="this.src=\'info-big.png\';" src="' + icon + '" class="adapter-table-icon" />' : '',
+                        image:      icon ? '<img onerror="this.src=\'img/info-big.png\';" src="' + icon + '" class="adapter-table-icon" />' : '',
                         icon:       icon || '',
                         name:       adapter,
                         title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),
@@ -943,7 +943,7 @@ function Adapters(main) {
                         desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
                         that.data[adapter] = {
-                            image:      repository[adapter].extIcon ? '<img  onerror="this.src=\'info-big.png\';" src="' + repository[adapter].extIcon + '" class="adapter-table-icon" />' : '',
+                            image:      repository[adapter].extIcon ? '<img onerror="this.src=\'img/info-big.png\';" src="' + repository[adapter].extIcon + '" class="adapter-table-icon" />' : '',
                             icon:       repository[adapter].extIcon,
                             name:       adapter,
                             title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),
@@ -1010,7 +1010,7 @@ function Adapters(main) {
 
                         text += '<div class="tile" data-id="' + ad.name + '">';
                         text += '    <div class="title">' + ad.title + '</div>';
-                        text += '    <img class="icon" src="' + ad.icon + '" />';
+                        text += '    <img onerror="this.src=\'img/info-big.png\';" class="icon" src="' + ad.icon + '" />';
                         text += '    <div class="desc">' + ad.desc + '</div>';
                         text += '    <div class="version"><table><tr><td>' + ad.version + (ad.installed ? '</td><td class="installed">' + ad.rawInstalled : '')  + '</td></tr></table></div>';
                         text += '    <div class="buttons">' + ad.install + '</div>';
