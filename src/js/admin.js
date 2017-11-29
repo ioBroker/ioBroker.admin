@@ -784,7 +784,7 @@ $(document).ready(function () {
                     var div = '<div id="' + name + '" data-name="' + buttonName + '" class="tab-custom admin-sidemenu-body-content ' + (isReplace ? 'link-replace' : '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
                         '<iframe class="iframe-in-tab" style="border: 0; solid #FFF; display: block; left: 0; top: 0; width: 100%; height: 100%"' +
                         '></iframe></div>';
-                    $(div).appendTo($('body'));
+                    $(div).hide().appendTo($('body'));
 
                     // TODO: temporary, until other tab will be adapted
                     $('#' + name).find ('.iframe-in-tab').on('load', function () {
@@ -793,11 +793,10 @@ $(document).ready(function () {
                         if (elem && elem.length) elem.append('<link rel="stylesheet" type="text/css" href="../../lib/css/iob/selectID.css"/>');
                     });
                 } else {
-                    // $('#' + name).show().appendTo($('#tabs'));
+                    $('#' + name).hide().appendTo($('body'));
                 }
             } else {
                 $('#' + name).hide().appendTo($('body'));
-                // showTabs += '<option value="' + name + '">' + buttonName + '</option>';
             }
         }
         $('.tab-custom').each(function () {
@@ -1217,9 +1216,12 @@ $(document).ready(function () {
         'tab-objects':          {order: 3, icon: 'view_list'},
         'tab-logs':             {order: 4, icon: 'view_headline'},
         'tab-scenes':           {order: 5, icon: 'subscriptions'},
-        'tab-javascript':       {order: 6},
-        'tab-text2command-0':   {order: 7, icon: 'ac_unit'},
-        'tab-hosts':            {order: 8, icon: 'storage'}
+        'tab-events':           {order: 6, icon: 'flash_on'},
+        'tab-groups':           {order: 6, icon: 'group'},
+        'tab-users':            {order: 7, icon: 'person_outline'},
+        'tab-javascript':       {order: 8},
+        'tab-text2command-0':   {order: 9, icon: 'ac_unit'},
+        'tab-hosts':            {order: 10, icon: 'storage'}
     };
 
     function initSideNav() {
@@ -1260,10 +1262,12 @@ $(document).ready(function () {
         });
 
         elements.sort(function (a, b) {
-            if (!tabsInfo[a] && !tabsInfo[b]) return 0;
-            if (!tabsInfo[a]) return 1;
-            if (!tabsInfo[b]) return -1;
-            return tabsInfo[a].order - tabsInfo[b].order;
+            if (!tabsInfo[a.id] && !tabsInfo[b.id]) return 0;
+            if (!tabsInfo[a.id]) return 1;
+            if (!tabsInfo[b.id]) return -1;
+            if (tabsInfo[a.id].order < tabsInfo[b.id].order) return -1;
+            if (tabsInfo[a.id].order > tabsInfo[b.id].order) return 1;
+            return 0;
         });
 
         for (var e = 0; e < elements.length; e++) {
