@@ -383,6 +383,8 @@ table.events-list-table>tbody>tr>td {
 }
 /** events ends **/
 
+//@import "adminAdapters";
+
 /** adapters tab ********************/
 /**/
 
@@ -697,12 +699,17 @@ table.events-list-table>tbody>tr>td {
     position: relative;
     left: 1px;
     //top: @main-toolbar-full-height + 2px;
-    top: @main-toolbar-full-height;
+    top: 35px; //@main-toolbar-full-height;
 }
 
 .pager-left>table { // first td
     .main-toolbar-table !important;
     background: transparent !important;
+
+    //padding-bottom: 2px !important; //new
+    //margin-bottom: 7px !important;  //new
+    padding: 0 !important;
+    padding-bottom: 2px !important;
 }
 .pager-left>table>tbody>tr>td {
     border: 1px solid transparent;
@@ -724,7 +731,7 @@ div.iob-pager {
     height: @main-toolbar-full-height !important;
     background: transparent !important;
     position: absolute !important;
-    top: -37px;
+    top: -35px;
     left: -1px; //xx
     font-size: 0.75em !important;
     white-space: nowrap;
@@ -745,9 +752,11 @@ div.iob-pager table {
 .pager-center > table {
     background: transparent;
     width: 400px;
-    border-spacing: 2.9px;
+    //border-spacing: 2.9px 0;
+    border-spacing: @toolbar-button-distance 0;
     font-size: 12px;
     margin-left: 4px; //??
+    margin-top: 1px !important;
 
 }
 .pager-center > table > tr {
