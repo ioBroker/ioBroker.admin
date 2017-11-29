@@ -35,7 +35,7 @@
 //@main-toolbar-height: 26px; // incl. 2px border from td
 //@main-toolbar-full-height: @toolbar-size + @td-toolbar-border-size * 2 + @toolbar-y-margin * 2 - @tabs-padding-top;
 @main-toolbar-full-height: @toolbar-size + @td-toolbar-border-size * 2 + @toolbar-y-margin * 2;
-
+@toolbar-btn-clear-size: 18px;
 
 @list-header-background: #fff;
 
@@ -67,24 +67,23 @@
 
 .iob-min-table () {
     .iob-list-font;
-    background: @iob-background !important;
-    white-space: nowrap;
-
-    table-layout: fixed;
-    border-collapse: collapse;
-    border-spacing: 0;
-    padding: 0;
-    margin: 0;
-    overflow:auto;
+    background:         @iob-background !important;
+    white-space:        nowrap;
+    table-layout:       fixed;
+    border-collapse:    collapse;
+    border-spacing:     0;
+    padding:            0;
+    margin:             0;
+    overflow:           auto;
 }
 
 table.iob-list-table>thead>tr>th {
-    background: @list-header-background;
-    color: #000;
-    text-align: left;
-    font-weight: normal;
-    padding-left: @line-indent !important;
-    height: @header-height - 2px;
+    background:     @list-header-background;
+    color:          #000;
+    text-align:     left;
+    font-weight:    normal;
+    padding-left:   @line-indent !important;
+    height:         @header-height - 2px;
     //&:extend(.iob-font-12);
 }
 
@@ -291,12 +290,6 @@ table.iob-list-table>thead>tr>th {
     cursor: text;
 }
 
-.icon-github {
-    background-image: url(../img/github.svg) !important;
-    background-repeat: no-repeat !important;
-    background-position: 5px 5px !important;
-
-}
 .ui-button-icon-only {
     width: 1.8em;
     height: 1.8em;
@@ -320,7 +313,7 @@ table.fancytree-ext-table {
 
 
 .iob-list-icon, .instance-image {
-    width: 18px;
+    width:  18px;
     height: 18px;
 }
 

@@ -541,19 +541,7 @@ $(document).ready(function () {
     }
 
     function initHtmlButtons() {
-        var buttons = '';
-
-        // todo: move these buttons into index.html
-        buttons += '' +
-            '<nav class="main-admin-buttons"><div class="nav-wrapper "><ul class="left">' +
-            '<li><a id="button-wizard"><i class="material-icons">search</i></a></li>' +
-            '<li><a id="button-system" title="' + _('System') + '"><i class="material-icons">build</i></a></li>' +
-            '<li><a id="button-logout" title="' + _('Logout') + '"><i class="material-icons">input</i></a></li>' +
-
-            '<span class="button-version">ioBroker.admin ' + (main.objects['system.adapter.admin'] && main.objects['system.adapter.admin'].common && main.objects['system.adapter.admin'].common.version) + '</span>' +
-            '</div></nav>';
-
-        $('.admin-sidemenu-header').append(buttons);
+        $('.button-version').text('ioBroker.admin ' + (main.objects['system.adapter.admin'] && main.objects['system.adapter.admin'].common && main.objects['system.adapter.admin'].common.version));
 
         $('.choose-tabs-config-button').click(function(event) {
             var $dialog = $ ('#dialog');
@@ -569,12 +557,9 @@ $(document).ready(function () {
                     $('html').unbind('click');
                 });
             }, 100);
-            // TABS
-            // var $e = $(event.target).parent().parent();
             var $e = $(event.target);
             var offs = $e.offset();
-            offs.top  += $e.height() - 2;
-            //offs.left -= 64;
+            offs.top += $e.height() - 2;
 
             var text = '' +
                 '<dialog open style="margin: 0; font-family: Tahoma; font-size: 12px; white-space: nowrap; background: #fff; position: absolute; top: ' + offs.top + 'px; left: ' + offs.left + 'px;">' + // style="overflow: visible; z-index: 999; ">'
@@ -679,7 +664,6 @@ $(document).ready(function () {
         // extract all additional instances
         var text     = '';
         var list     = [];
-        // var showTabs = '';
         var addTabs = [];
 
         allTabs = {};
@@ -835,6 +819,50 @@ $(document).ready(function () {
         }
     }
 
+    main.initHostsList = function (isFirstInit) {
+        // fill the host list (select) on adapter tab
+        var $selHosts = $('#host-adapters');
+        if (isFirstInit && $selHosts.data('inited')) {
+            return
+        }
+
+        $selHosts.data('inited', true);
+
+        main.currentHost = main.currentHost || main.config.currentHost || '';
+
+        var lines = [];
+        for (var i = 0; i < main.tabs.hosts.list.length; i++) {
+            lines.push('<li><a href="#!" data-value="' + main.tabs.hosts.list[i].name + '">' + main.tabs.hosts.list[i].name + '</a></li>');
+        }
+        $selHosts.html(lines);
+
+        var $selBtn = $('#host-adapters-btn').show();
+        $selBtn
+            .text(_('Host:') + ' ' + main.currentHost)
+            .dropdown();
+
+        if (main.tabs.hosts.list.length < 2) {
+            $selBtn.addClass('disabled');
+        } else {
+            $selBtn.removeClass('disabled');
+        }
+
+        // host selector
+        $selHosts.find('a').click(function () {
+            var val = $(this).data('value');
+            var id  = 'system.host.' + val + '.alive';
+            if (!main.states[id] || !main.states[id].val || main.states[id].val === 'null') {
+                main.showMessage(_('Host %s is offline', $(this).val()));
+                return;
+            }
+
+            main.currentHost = val;
+
+            $('#host-adapters-btn').text(_('Host:') + ' ' + main.currentHost);
+            main.saveConfig('currentHost', main.currentHost);
+        });
+    };
+
     // Use the function for this because it must be done after the language was read
     function initAllDialogs() {
         initGridLanguage(main.systemConfig.common.language);
@@ -938,7 +966,6 @@ $(document).ready(function () {
                     }
                 }
                 main.objectsLoaded = true;
-                main.currentHost = main.config.currentHost || '';
 
                 initTabs();
 
@@ -950,6 +977,8 @@ $(document).ready(function () {
 
                 // Show if update available
                 // tabs.hosts.initList();
+
+                main.initHostsList();
 
                 if (typeof callback === 'function') callback();
             }, 0);
@@ -1016,7 +1045,9 @@ $(document).ready(function () {
 
         tabs.objects.objectChange(id, obj);
 
-        if (main.selectId) main.selectId.selectId('object', id, obj);
+        if (main.selectId) {
+            main.selectId.selectId('object', id, obj);
+        }
 
         tabs.enums.objectChange(id, obj);
 
@@ -1033,6 +1064,10 @@ $(document).ready(function () {
 
         if (id === 'system.adapter.discovery.0') {
             main.updateWizard();
+        }
+
+        if (id.match(/^system\.host\.[-\w]+$/)) {
+            main.initHostsList();
         }
 
         //tabs.adapters.objectChange(id, obj);

@@ -34,73 +34,6 @@ function Hosts(main) {
     };
 
     // ----------------------------- Hosts show and Edit ------------------------------------------------
-    this.initList = function (isFirstInit) {
-        // fill the host list (select) on adapter tab
-        var $selHosts = $('#host-adapters');
-        if (isFirstInit && $selHosts.data('inited')) {
-            return
-        }
-
-        $selHosts.data('inited', true);
-
-        var selHosts  = $selHosts[0];
-        var myOpts    = selHosts.options;
-
-        that.main.currentHost = that.main.currentHost || that.main.config.currentHost || '';
-
-        var found;
-        var j;
-        // first remove non-existing hosts
-        for (var i = 0; i < myOpts.length; i++) {
-            found = false;
-            for (j = 0; j < that.list.length; j++) {
-                if (that.list[j] === myOpts[i].value) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) selHosts.remove(i);
-        }
-
-        for (i = 0; i < that.list.length; i++) {
-            found = false;
-            for (j = 0; j < myOpts.length; j++) {
-                if (that.list[i].name === myOpts[j].value) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) $selHosts.append('<option value="' + that.list[i].name + '">' + that.list[i].name + '</option>');
-        }
-
-        if (that.main.currentHost) {
-            $selHosts.val(that.main.currentHost);
-            // that.main.tabs.adapters.init(true);
-            // that.main.tabs.instances.init(true);
-        } else if ($selHosts.val() !== that.main.currentHost) {
-            that.main.currentHost = $selHosts.val();
-            // that.main.tabs.adapters.init(true);
-            // that.main.tabs.instances.init(true);
-        }
-
-        // host selector
-        $selHosts.unbind('change').change(function () {
-            if (!that.main.states['system.host.' + $(this).val() + '.alive'] ||
-                !that.main.states['system.host.' + $(this).val() + '.alive'].val ||
-				 that.main.states['system.host.' + $(this).val() + '.alive'].val === 'null') {
-                that.main.showMessage(_('Host %s is offline', $(this).val()));
-                $(this).val(that.main.currentHost);
-                return;
-            }
-
-            that.main.currentHost = $(this).val();
-
-            that.main.saveConfig('currentHost', that.main.currentHost);
-            // that.main.tabs.adapters.init(true);
-            // that.main.tabs.instances.init(true);
-        });
-    };
-    
     this.initButtons = function (id) {
         var selector = id ? '[data-host-id="' + id + '"]' : '';
 
@@ -272,8 +205,6 @@ function Hosts(main) {
                 that.initButtons();
             }, 2000);
 
-            that.initList(true);
-
             var host = that.main.currentHost;
             if (!host) {
                 // find alive host
@@ -392,7 +323,7 @@ function Hosts(main) {
                             that.addHost(obj);
                         }
                     }
-                    that.initList();
+                    main.initHostsList();
                     if (callback) callback();
                 });
             });
@@ -425,7 +356,7 @@ function Hosts(main) {
 
             this.updateTimer = setTimeout(function () {
                 that.updateTimer = null;
-                that.initList();
+                that._postInit();
             }, 200);
         }
     };
