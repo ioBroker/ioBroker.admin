@@ -48,6 +48,7 @@ function Adapters(main) {
         'service_group':          'img/service.png',
         'third-party_group':      'img/service.png'
     };
+    this.inited = false;
 
     this.isList        = false;
     this.filterVals    = {length: 0};
@@ -664,11 +665,7 @@ function Adapters(main) {
         if (!$.fn.colResizable) return;
         if (this.$grid.is(':visible')) {
             this.$grid.colResizable({liveDrag: true});
-        } /*else {
-            setTimeout(function () {
-                enableColResize();
-            }, 1000);
-        }*/
+        }
     };
 
     function getNews(actualVersion, adapter) {
@@ -723,15 +720,7 @@ function Adapters(main) {
         that.$grid.fancytree('getRootNode').sortChildren(sort, true);
     };
 
-    // ----------------------------- Adapters show and Edit ------------------------------------------------
-    this.init = function (update, updateRepo) {
-        if (!this.main.objectsLoaded) {
-            setTimeout(function () {
-                that.init();
-            }, 250);
-            return;
-        }
-
+    this._postInit = function (update, updateRepo) {
         if (typeof this.$grid !== 'undefined' && (!this.$grid[0]._isInited || update)) {
             this.$grid[0]._isInited = true;
 
@@ -853,9 +842,9 @@ function Adapters(main) {
 
                         // Show information about installed and enabled instances
                         for (var z = 0; z < that.main.instances.length; z++) {
-                            if (main.objects[that.main.instances[z]].common.name === adapter) {
+                            if (that.main.objects[that.main.instances[z]].common.name === adapter) {
                                 _instances++;
-                                if (main.objects[that.main.instances[z]].common.enabled) _enabled++;
+                                if (that.main.objects[that.main.instances[z]].common.enabled) _enabled++;
                             }
                         }
                         if (_instances) {
@@ -938,10 +927,10 @@ function Adapters(main) {
                         updatable:  updatable,
                         bold:       obj.highlight || false,
                         install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit td-button" title="' + _('add instance') + '"></button>' +
-                                 '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit td-button" title="' + _('readme') + '"></button>' +
-                                 ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-upload-submit td-button">' + _('upload') + '</button>' : '') +
-                                 '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit td-button" title="' + _('delete adapter') + '"></button>' +
-                                 ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-update-custom-submit td-button" title="' + _('install specific version') + '"></button>' : ''),
+                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit td-button" title="' + _('readme') + '"></button>' +
+                        ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-upload-submit td-button">' + _('upload') + '</button>' : '') +
+                        '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit td-button" title="' + _('delete adapter') + '"></button>' +
+                        ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-update-custom-submit td-button" title="' + _('install specific version') + '"></button>' : ''),
                         // platform:   obj.platform, actually there is only one platform
                         group:      group,
                         license:    obj.license || '',
@@ -1016,10 +1005,10 @@ function Adapters(main) {
                             bold:       obj.highlight,
                             installed:  '',
                             install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit td-button">' + _('add instance') + '</button>' +
-                                     '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit td-button">' + _('readme') + '</button>' +
-                                     '<div style="width: 22px; display: inline-block;">&nbsp;</div>' +
-                                     '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit td-button">' + _('delete adapter') + '</button>' +
-                                    ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-update-custom-submit td-button" title="' + _('install specific version') + '"></button>' : ''),
+                            '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit td-button">' + _('readme') + '</button>' +
+                            '<div style="width: 22px; display: inline-block;">&nbsp;</div>' +
+                            '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit td-button">' + _('delete adapter') + '</button>' +
+                            ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-update-custom-submit td-button" title="' + _('install specific version') + '"></button>' : ''),
                             // TODO do not show adapters not for this platform
                             // platform:   obj.platform, // actually there is only one platform
                             license:    obj.license || '',
@@ -1122,7 +1111,36 @@ function Adapters(main) {
                 }
                 $('#process_running_adapters').hide();
             });
+        } else {
+            this.enableColResize();
         }
+    };
+
+    // ----------------------------- Adapters show and Edit ------------------------------------------------
+    this.init = function (update, updateRepo) {
+        if (this.inited) {
+            return;
+        }
+
+        if (!this.main.objectsLoaded) {
+            setTimeout(function () {
+                that.init();
+            }, 250);
+            return;
+        }
+        this.inited = true;
+
+        // update info
+        // Required is list of hosts and repository (done in getAdaptersInfo)
+        this.main.subscribeObjects('system.host.*');
+        this.main.tabs.hosts.getHosts(function () {
+            that._postInit(update, updateRepo);
+        });
+    };
+
+    this.destroy = function () {
+        this.inited = false;
+        this.main.unsubscribeObjects('system.host.*');
     };
 
     function showLicenseDialog(adapter, callback) {

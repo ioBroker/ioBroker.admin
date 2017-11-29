@@ -60,15 +60,16 @@
 <body>
 <div id="dialog"></div>
 <div id="_toolbar-button_" class="toolbar-button" style="display: none; visibility: hidden">used to get button size</div>
-<div id="tabs" style="display: none; height: 100%;">
+<!--div id="tabs" style="display: none; height: 100%;">
     <ul id="tabs-ul">
     </ul>
-</div>
+</div-->
 
 <div id="admin_sidemenu_menu" class="admin-sidemenu m">
+    <a class="admin-sidemenu-close"><span><!-- leave span here, it is required for css--></span></a>
+    <a class="choose-tabs-config-button">▽</a>
     <!--div class="admin-sidemenu-logo"><img src="img/logo.png" /></div-->
     <div class="side-nav">
-        <div class="choose-tabs-config-button">▽</div>
         <ul class="admin-sidemenu-menu">
             <li>
                 <div class="user-view">
@@ -90,81 +91,80 @@
     <!-- <table class="panel-table" style="height: 30px; margin-left: 1px; margin-top:2px; margin-bottom: 3px;"  cellspacing="0" cellpadding="0"> -->
     <!-- <table class="main-toolbar-table" cellpadding="0"> -->
     <table class="main-toolbar-table">
-        <!--        <td> -->
-        <!--<td></td>-->
-        <td>
-            <button id="btn_switch_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="change view mode"></button>
-        </td>
-        <td>
-            <button id="btn_refresh_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="update adapter information"></button>
-        </td>
-        <td>
-            <button id="btn_list_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="list"></button>
-        </td>
-        <td>
-            <button id="btn_collapse_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="collapse all"></button>
-        </td>
-        <td>
-            <button id="btn_expand_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="expand all"></button>
-        </td>
+        <tr>
+            <td>
+                <button id="btn_switch_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="change view mode"></button>
+            </td>
+            <td>
+                <button id="btn_refresh_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="update adapter information"></button>
+            </td>
+            <td>
+                <button id="btn_list_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="list"></button>
+            </td>
+            <td>
+                <button id="btn_collapse_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="collapse all"></button>
+            </td>
+            <td>
+                <button id="btn_expand_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="expand all"></button>
+            </td>
 
-        <td class="iob-toolbar-sep"></td>
-        <td>
-            <button id="btn_filter_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="installed adapters"></button>
-        </td>
-        <td>
-            <button id="btn_filter_updates" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="adapter with updates"></button>
-        </td>
-        <td class="iob-toolbar-sep"></td>
-        <td>
-            <button id="btn_filter_custom_url" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="Install from custom URL"></button>
-        </td>
-        <td>
-            <button id="btn_upgrade_all" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="Upgrade all adapters"></button>
-        </td>
-        <td>
-            <button id="btn-adapters-expert-mode" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only "></button>
-        </td>
-        <td class="iob-toolbar-sep"></td>
-        <!--<td style="width:30px"></td>-->
+            <td class="iob-toolbar-sep"></td>
+            <td>
+                <button id="btn_filter_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="installed adapters"></button>
+            </td>
+            <td>
+                <button id="btn_filter_updates" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="adapter with updates"></button>
+            </td>
+            <td class="iob-toolbar-sep"></td>
+            <td>
+                <button id="btn_filter_custom_url" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="Install from custom URL"></button>
+            </td>
+            <td>
+                <button id="btn_upgrade_all" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="Upgrade all adapters"></button>
+            </td>
+            <td>
+                <button id="btn-adapters-expert-mode" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only "></button>
+            </td>
+            <td class="iob-toolbar-sep"></td>
+            <!--<td style="width:30px"></td>-->
 
 
-        <!--            <td>
-                        <span class="" style="padding-left: 10px">
-                                id="host-adapters"></select>
-                        </span>
+            <!--            <td>
+                            <span class="" style="padding-left: 10px">
+                                    id="host-adapters"></select>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="adapters-filter-input" style="padding-left: 10px"><label class="translate" for="adapters-filter"></label>
+                                <input id="adapters-filter" style="width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/>
+                                <button id="adapters-filter-clear" style="width: 18px;height: 18px;border: 0;background: #fff;"></button>
+                            </span>
+                        </td>
+                        -->
+
+            <td>
+                <!-- <table style="border: 1px solid #c0c0c0; /*width: 100%;*/ height:20px; border-spacing: 0px; font-size: 14px;background: #fff; margin-left: 10px;"><tr> -->
+                <table class="panel-input-table"><tr>
+                    <td>
+                        <!--<span style="display: inline-block; padding-left: 120px">-->
+                        <!--<div style="padding-left: 120px">#--><label style="margin-left: 5px; border:0; font-size: 14px;" class="translate" for="host-adapters">Host:</label>
                     </td>
                     <td>
-                        <span class="adapters-filter-input" style="padding-left: 10px"><label class="translate" for="adapters-filter"></label>
-                            <input id="adapters-filter" style="width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/>
-                            <button id="adapters-filter-clear" style="width: 18px;height: 18px;border: 0;background: #fff;"></button>
-                        </span>
+                        <select id="host-adapters" style="border:0; font-size: 14px; padding-top: 1px; margin-top: 1px"></select><!--</div>-->
                     </td>
-                    -->
-
-        <td>
-            <!-- <table style="border: 1px solid #c0c0c0; /*width: 100%;*/ height:20px; border-spacing: 0px; font-size: 14px;background: #fff; margin-left: 10px;"><tr> -->
-            <table class="panel-input-table"><tr>
-                <td>
-                    <!--<span style="display: inline-block; padding-left: 120px">-->
-                    <!--<div style="padding-left: 120px">#--><label style="margin-left: 5px; border:0; font-size: 14px;" class="translate" for="host-adapters">Host:</label>
-                </td>
-                <td>
-                    <select id="host-adapters" style="border:0; font-size: 14px; padding-top: 1px; margin-top: 1px"></select><!--</div>-->
-                </td>
-                </td></tr></table>
-        </td>
-        <td class="iob-toolbar-sep"></td>
-        <td>
-            <!-- <table style="border: 1px solid #c0c0c0; /*width: 100%;*/ height:20px; border-spacing: 0px; font-size: 14px;background: #fff; margin-left: 10px;"><tr><td> -->
-            <table class="panel-input-table"><tr>
-                <td style="width: 100%"><input id="adapters-filter" style="padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/></td>
-                <td><button id="adapters-filter-clear" style="width: 18px;height: 18px;border: 0;background: #fff;"></button></td>
-            </tr></table>
-        </td>
+                </tr></table>
+            </td>
+            <td class="iob-toolbar-sep"></td>
+            <td>
+                <!-- <table style="border: 1px solid #c0c0c0; /*width: 100%;*/ height:20px; border-spacing: 0px; font-size: 14px;background: #fff; margin-left: 10px;"><tr><td> -->
+                <table class="panel-input-table"><tr>
+                    <td style="width: 100%"><input id="adapters-filter" style="padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/></td>
+                    <td><button id="adapters-filter-clear" style="width: 18px;height: 18px;border: 0;background: #fff;"></button></td>
+                </tr></table>
+            </td>
 
 
-        <td style="width: 100%;"></td>
+            <td style="width: 100%;"></td>
         </tr>
     </table>
     <div id="process_running_adapters" class="translate">Processing...</div>
@@ -380,7 +380,7 @@
     </table>
     <!--div id="pager-hosts"></div -->
 </div>
-<div id="tab-log"       class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Log">
+<div id="tab-logs"      class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Log">
     <div id="grid-log" class="ui-jqgrid" style="display: block; height: 100%">
         <!--<div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">-->
 
@@ -1338,7 +1338,7 @@
             <li><a href="#install-custom" class="translate">Custom</a></li>
         </ul>
         <div id="install-github" style="display: inline-block">
-            <div class="translate" style="display: inline-block">Select adapter:</div>
+            <label for="install-github-link" class="translate">Select adapter:</label>
             <select id="install-github-link" style="display: inline-block"></select>
             <br>
             <label for="install-github-debug" class="translate">Debug outputs:</label>
@@ -1358,7 +1358,7 @@
         </div>
     </div>
 </div>
-<div id="log-copy-text"      title="Copy log"     style="display: none; width:100%; height: 100%; background: white; top:0; left:0; position: absolute; z-index:2000"></div>
+<div id="log-copy-text"      title="Copy log"     style="display: none; width: 100%; height: 100%; background: white; top: 0; left: 0; position: absolute; z-index: 2000"></div>
 <div id="dialog-message"     title="Message"      style="display: none">
     <p>
         <span id="dialog-message-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>

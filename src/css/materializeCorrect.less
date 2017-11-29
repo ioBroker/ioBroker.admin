@@ -1,32 +1,43 @@
 @import "commons";
 @import "materializeConsts";
 
-.m .nav-wrapper.footer{
-  padding-top: 1rem;
-  padding-left: 2rem;
-}
-
-.m .admin-dialog-body {
-  height: calc(~"100% - "@admin-m-footer-height);
-  background: @tiles-tile-background;
-}
-
-.m .side-nav {
-  transform: translateX(0px);
-  width: @admin-sidemenu-width;
-  // scrollbar
-  &::-webkit-scrollbar-track {
-    background-color: @admin-sidemenu-background;
-  }
-  &::-webkit-scrollbar {
-    width: 6px;
-    background-color: @admin-sidemenu-background;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: @admin-sidemenu-scrollbar-thumb-color;
+.m {
+  .nav-wrapper.footer{
+    padding-top: 1rem;
+    padding-left: 2rem;
   }
 
-  .user-view {
-    background: @admin-sidemenu-user-view-background;
+  .admin-dialog-body {
+    height: calc(~"100% - "@admin-m-footer-height);
+    background: @tiles-tile-background;
+  }
+
+  .side-nav {
+    transition: transform @admin-sidemenu-transition; // 0.5 second transition effect to slide in the sidenav */
+    transform: translateX(0px);
+    width: @admin-sidemenu-width;
+    padding-bottom: 0;
+    position: relative;
+    height: 100%;
+    z-index: 0;
+
+    // scrollbar
+    &::-webkit-scrollbar-track {
+      background-color: @admin-sidemenu-background;
+    }
+    &::-webkit-scrollbar {
+      width: 6px;
+      background-color: @admin-sidemenu-background;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: @admin-sidemenu-scrollbar-thumb-color;
+    }
+
+    .user-view {
+      background: @admin-sidemenu-user-view-background;
+      // padding: 0 32px 0;
+      background-image: url(../img/background_small.png);
+      background-position: 0;
+    }
   }
 }

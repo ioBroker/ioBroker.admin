@@ -65,6 +65,18 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 
 **Let's encrypt works only from node.js version>=4.5**
 
+## Todo
+- Make subscribes for every page separately
+- Hosts: jqGrid => normal own table
+- Users, Groups, Enums: add icon/image to
+- Users, Groups, Enums: drag&drop by managing of items
+- System Info: show map for coordinates
+- Show adapter config NOT in dialog but like system settings
+- Log: select source log file and download it (drop down menu for that)
+- Adapters/Tile view: Dropdown menu to predefine type (additional "new adapters" and "20 popular adapters sorted"). May be just sort type popular/abc
+- use everywhere material icons
+- Move jQuery UI dialogs to Material dialogs
+
 ## Changelog
 ### 2.0.11 (2017-10-23)
 * (bluefox) Configurable event update disable threshold

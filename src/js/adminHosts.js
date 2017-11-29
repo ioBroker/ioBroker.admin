@@ -2,16 +2,17 @@ function Hosts(main) {
     'use strict';
 
     var that      = this;
-    this.main     =   main;
+    this.main     = main;
     this.list     = [];
     this.$grid    = $('#grid-hosts');
+    this.inited   = false;
 
-    this.prepare = function () {
+    this.prepare  = function () {
         $('#btn-hosts-reload').button({
             icons: {primary: 'ui-icon-refresh'},
             text:  false
         }).css({width: '1.5em', height: '1.5em'}).attr('title', _('Update')).click(function () {
-            that.init(true);
+            that.init();
         });
 
         $('#hosts-filter-clear').button({icons: {primary: 'ui-icon-close'}, text: false}).css({width: '1em', height: '1em'}).click(function () {
@@ -27,28 +28,23 @@ function Hosts(main) {
                 $('#hosts-filter').trigger('change');
             }, 300);
         });
-        if (that.main.config.hostsFilter && that.main.config.hostsFilter[0] != '{') {
+        if (that.main.config.hostsFilter && that.main.config.hostsFilter[0] !== '{') {
             $('#hosts-filter').val(that.main.config.hostsFilter);
         }
     };
 
     // ----------------------------- Hosts show and Edit ------------------------------------------------
-    this.initList = function (isUpdate) {
-
-        if (!that.main.objectsLoaded) {
-            setTimeout(function () {
-                that.initList(isUpdate);
-            }, 250);
-            return;
-        }
-
+    this.initList = function (isFirstInit) {
         // fill the host list (select) on adapter tab
         var $selHosts = $('#host-adapters');
-        var selHosts  = $selHosts[0];
-        var myOpts    = selHosts.options;
-        if (!isUpdate && $selHosts.data('inited')) return;
+        if (isFirstInit && $selHosts.data('inited')) {
+            return
+        }
 
         $selHosts.data('inited', true);
+
+        var selHosts  = $selHosts[0];
+        var myOpts    = selHosts.options;
 
         that.main.currentHost = that.main.currentHost || that.main.config.currentHost || '';
 
@@ -79,14 +75,15 @@ function Hosts(main) {
 
         if (that.main.currentHost) {
             $selHosts.val(that.main.currentHost);
-            that.main.tabs.adapters.init(true);
-            that.main.tabs.instances.init(true);
+            // that.main.tabs.adapters.init(true);
+            // that.main.tabs.instances.init(true);
         } else if ($selHosts.val() !== that.main.currentHost) {
             that.main.currentHost = $selHosts.val();
-            that.main.tabs.adapters.init(true);
-            that.main.tabs.instances.init(true);
+            // that.main.tabs.adapters.init(true);
+            // that.main.tabs.instances.init(true);
         }
 
+        // host selector
         $selHosts.unbind('change').change(function () {
             if (!that.main.states['system.host.' + $(this).val() + '.alive'] ||
                 !that.main.states['system.host.' + $(this).val() + '.alive'].val ||
@@ -99,10 +96,9 @@ function Hosts(main) {
             that.main.currentHost = $(this).val();
 
             that.main.saveConfig('currentHost', that.main.currentHost);
-            that.main.tabs.adapters.init(true);
-            that.main.tabs.instances.init(true);
+            // that.main.tabs.adapters.init(true);
+            // that.main.tabs.instances.init(true);
         });
-        that.init();
     };
     
     this.initButtons = function (id) {
@@ -110,13 +106,13 @@ function Hosts(main) {
 
         $('.host-update-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}}).css({width: 22, height: 18}).unbind('click').on('click', function () {
             that.main.cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
-                if (!exitCode) that.init(true);
+                if (!exitCode) that.init();
             });
         });
 
         $('.host-restart-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click').on('click', function () {
-            main.waitForRestart = true;
-            main.cmdExec($(this).attr('data-host-name'), '_restart');
+            that.main.waitForRestart = true;
+            that.main.cmdExec($(this).attr('data-host-name'), '_restart');
         });
 
         $('.host-update-hint-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click').on('click', function () {
@@ -126,7 +122,7 @@ function Hosts(main) {
                 infoTimeout = null;
             }, 1000);
 
-            main.socket.emit('sendToHost', $(this).attr('data-host-name'), 'getLocationOnDisk', null, function (data) {
+            that.main.socket.emit('sendToHost', $(this).attr('data-host-name'), 'getLocationOnDisk', null, function (data) {
                 if (infoTimeout) clearTimeout(infoTimeout);
                 infoTimeout = null;
                 showUpdateInfo(data);
@@ -134,6 +130,7 @@ function Hosts(main) {
         });
 
     };
+
     function showUpdateInfo (data) {
         if (data) {
             var path = data.path;
@@ -216,8 +213,8 @@ function Hosts(main) {
     }
 
     function showOneHost(index) {
-        var obj   = main.objects[that.list[index].id];
-        var alive = main.states[obj._id + '.alive'] && main.states[obj._id + '.alive'].val && main.states[obj._id + '.alive'].val !== 'null';
+        var obj   = that.main.objects[that.list[index].id];
+        var alive = that.main.states[obj._id + '.alive'] && that.main.states[obj._id + '.alive'].val && that.main.states[obj._id + '.alive'].val !== 'null';
 
         var text = '<tr class="hosts-host " data-host-id="' + obj._id + '">';
         //LED
@@ -263,18 +260,9 @@ function Hosts(main) {
         that.$grid.html(text);
     }
 
-    this.init = function(update, updateRepo, callback) {
-
-        if (!this.main.objectsLoaded) {
-            setTimeout(function () {
-                that.init(update, updateRepo, callback)
-            }, 250);
-            return;
-        }
-
-        if (typeof that.$grid !== 'undefined' && (!that.$grid.data('inited') || update)) {
+    this._postInit = function () {
+        if (typeof that.$grid !== 'undefined') {
             $('a[href="#tab-hosts"]').removeClass('updateReady');
-            that.$grid.data('inited', true);
             showHosts();
             applyFilter($('#hosts-filter').val());
 
@@ -283,6 +271,8 @@ function Hosts(main) {
                 timer = null;
                 that.initButtons();
             }, 2000);
+
+            that.initList(true);
 
             var host = that.main.currentHost;
             if (!host) {
@@ -295,12 +285,12 @@ function Hosts(main) {
                 }
             }
 
-            that.main.tabs.adapters.getAdaptersInfo(host, update, updateRepo, function (repository, installedList) {
+            that.main.tabs.adapters.getAdaptersInfo(host, true, false, function (repository, installedList) {
                 if (!installedList || !installedList.hosts) return;
 
                 for (var id in installedList.hosts) {
                     if (!installedList.hosts.hasOwnProperty(id)) continue;
-                    var obj = main.objects['system.host.' + id];
+                    var obj = that.main.objects['system.host.' + id];
                     var installed = installedList.hosts[id].version;
                     if (installed !== installedList.hosts[id].runningVersion) installed += '(' + _('Running: ') + installedList.hosts[id].runningVersion + ')';
                     if (!installed && obj.common && obj.common.installedVersion) installed = obj.common.installedVersion;
@@ -315,7 +305,7 @@ function Hosts(main) {
                     var installedVersion = obj.common.installedVersion;
                     var availableVersion = obj.common ? (repository && repository[obj.common.type] ? repository[obj.common.type].version : '') : '';
                     if (installedVersion && availableVersion) {
-                        if (!main.upToDate(availableVersion, installedVersion)) {
+                        if (!that.main.upToDate(availableVersion, installedVersion)) {
                             // show button
                             if (that.main.states[id + '.alive'] && that.main.states[id + '.alive'].val && that.main.states[id + '.alive'].val !== 'null') {
                                 $(this).find('.host-update-submit').show();
@@ -335,11 +325,80 @@ function Hosts(main) {
                     timer = null;
                 }
                 that.initButtons();
-                if (callback) callback();
             });
         }
     };
-    
+
+    this.init = function () {
+        if (this.inited) {
+            return;
+        }
+        this.inited = true;
+        this.main.subscribeObjects('system.host.*');
+        this.main.subscribeStates('system.host.*');
+        this.getHosts(function () {
+            that._postInit();
+        });
+    };
+
+    this.destroy = function () {
+        this.inited = false;
+        this.main.unsubscribeObjects('system.host.*');
+        this.main.unsubscribeStates('system.host.*');
+    };
+
+    this.addHost = function (obj) {
+        var addr = null;
+        // Find first non internal IP and use it as identifier
+        if (obj.native.hardware && obj.native.hardware.networkInterfaces) {
+            for (var eth in obj.native.hardware.networkInterfaces) {
+                if (!obj.native.hardware.networkInterfaces.hasOwnProperty(eth)) continue;
+                for (var num = 0; num < obj.native.hardware.networkInterfaces[eth].length; num++) {
+                    if (!obj.native.hardware.networkInterfaces[eth][num].internal) {
+                        addr = obj.native.hardware.networkInterfaces[eth][num].address;
+                        break;
+                    }
+                }
+                if (addr) break;
+            }
+        }
+        if (addr) {
+            this.list.push({name: obj.common.hostname, address: addr,        id: obj._id});
+        } else {
+            this.list.push({name: obj.common.hostname, address: '127.0.0.1', id: obj._id});
+        }
+    };
+
+    this.getHosts = function (callback) {
+        this.main.socket.emit('getForeignObjects', 'system.host.*',  'state', function (err, res) {
+            for (var id in res) {
+                if (!res.hasOwnProperty(id)) continue;
+                that.main.objects[id] = res[id];
+            }
+            that.main.socket.emit('getForeignStates', 'system.host.*',function (err, res) {
+                for (var id in res) {
+                    if (!res.hasOwnProperty(id)) continue;
+                    that.main.states[id] = res[id];
+                }
+                that.main.socket.emit('getForeignObjects', 'system.host.*', 'host', function (err, res) {
+                    that.list = [];
+                    for (var id in res) {
+                        if (!res.hasOwnProperty(id)) continue;
+                        var obj = res[id];
+
+                        that.main.objects[id] = obj;
+
+                        if (obj.type === 'host') {
+                            that.addHost(obj);
+                        }
+                    }
+                    that.initList();
+                    if (callback) callback();
+                });
+            });
+        });
+    };
+
     this.resize = function (width, height) {
         this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
     };
@@ -357,7 +416,7 @@ function Hosts(main) {
             }
 
             if (obj) {
-                if (!found) this.list.push({id: id, address: obj.common.address ? obj.common.address[0]: '', name: obj.common.name});
+                if (!found) this.list.push({id: id, address: obj.common.address ? obj.common.address[0] : '', name: obj.common.name});
             } else {
                 if (found) this.list.splice(i, 1);
             }
@@ -366,11 +425,11 @@ function Hosts(main) {
 
             this.updateTimer = setTimeout(function () {
                 that.updateTimer = null;
-                that.init(true);
-                that.initList(true);
+                that.initList();
             }, 200);
         }
     };
+
     this.stateChange = function (id, state) {
         if (id.match(/^system\.host\..+\.alive$/)) {
             id = id.substring(0, id.length - 6);

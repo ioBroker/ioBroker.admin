@@ -60,6 +60,9 @@ $(document).ready(function () {
         objects:        {},
         states:         {},
         currentHost:    '',
+        currentTab:     null,
+        subscribesStates: {},
+        subscribesObjects: {},
         socket:         io.connect('/', {path: path}),
         systemConfig:   null,
         instances:      null,
@@ -78,7 +81,7 @@ $(document).ready(function () {
                 storage.set('adminConfig', JSON.stringify(main.config));
             }
         },
-        saveTabs: function () {
+        saveTabs:       function () {
             this.socket.emit ('setObject', 'system.config', this.systemConfig, function (err) {
                 if (err) {
                     this.showError (err);
@@ -86,7 +89,7 @@ $(document).ready(function () {
             })
         },
 
-    // Helper methods
+        // Helper methods
         upToDate:       function (_new, old) {
             _new = _new.split('.');
             old = old.split('.');
@@ -110,6 +113,7 @@ $(document).ready(function () {
                 return true;
             }
         },
+
         // Methods
         cmdExec:        function (host, cmd, callback) {
             host = host || main.currentHost;
@@ -200,7 +204,7 @@ $(document).ready(function () {
             }
             $dialogMessage.dialog('open');
         },
-        showError:    function (error) {
+        showError:      function (error) {
             main.showMessage(_(error),  _('Error'), 'alert');
         },
         formatDate:     function (dateObj, justTime) {
@@ -279,8 +283,60 @@ $(document).ready(function () {
 
             return text;
         },
+        initSelectId:   function () {
+            if (main.selectId) return main.selectId;
+            main.selectId = $('#dialog-select-member').selectId('init',  {
+                objects: main.objects,
+                states:  main.states,
+                filter: {type: 'state'},
+                name:   'admin-select-member',
+                texts: {
+                    select:   _('Select'),
+                    cancel:   _('Cancel'),
+                    all:      _('All'),
+                    id:       _('ID'),
+                    name:     _('Name'),
+                    role:     _('Role'),
+                    room:     _('Room'),
+                    value:    _('Value'),
+                    selectid: _('Select ID'),
+                    from:     _('From'),
+                    lc:       _('Last changed'),
+                    ts:       _('Time stamp'),
+                    wait:     _('Processing...'),
+                    ack:      _('Acknowledged')
+                },
+                columns: ['image', 'name', 'role', 'room', 'value']
+            });
+            return main.selectId;
+        },
+        updateWizard:   function () {
+            var $wizard = $('#button-wizard');
+            if (main.objects['system.adapter.discovery.0']) {
+                if (!$wizard.data('inited')) {
+                    $wizard.data('inited', true);
+                    $wizard/*.button({
+                        icons: {primary: ' ui-icon-search'},
+                        text: false
+                    })*/.click(function () {
+                        navigation('tab-instances');
+                        // open configuration dialog
+                        main.tabs.instances.showConfigDialog('system.adapter.discovery.0');
+                    }).attr('title', _('Device discovery'));
+                }
+                $wizard.show();
 
-        _delObject: function (idOrList, callback) {
+                // Show wizard dialog
+                if (!main.systemConfig.common.wizard && main.systemConfig.common.licenseConfirmed) {
+                    $wizard.trigger('click');
+                }
+            } else {
+                $wizard.hide();
+            }
+        },
+
+        // Delete objects
+        _delObject:     function (idOrList, callback) {
             var id;
             if (!Array.isArray(idOrList)) {
                 if (typeof idOrList !== 'string') return callback && callback('invalid idOrList parameter');
@@ -318,9 +374,7 @@ $(document).ready(function () {
             }
             doIt();
         },
-
-
-        _delObject_old: function (idOrList, callback) {
+        /*_delObject_old: function (idOrList, callback) {*
             var id;
             if (typeof idOrList === 'object') {
                 if (!idOrList || !idOrList.length) {
@@ -385,8 +439,8 @@ $(document).ready(function () {
                     }
                 }.bind(this));
             }
-        },
-        _delObjects: function (rootId, isAll, callback) {
+        },*/
+        _delObjects:    function (rootId, isAll, callback) {
             if (!isAll) {
                 this._delObject(rootId, callback);
             } else {
@@ -404,7 +458,6 @@ $(document).ready(function () {
                 });
             }
         },
-
         delObject:      function ($tree, id, callback) {
             var leaf = $tree ? $tree.selectId('getTreeInfo', id) : null;
             if (main.objects[id]) {
@@ -437,59 +490,6 @@ $(document).ready(function () {
                     if (result) main._delObjects(id, true, callback);
                 });
             }
-        },
-        initSelectId: function () {
-            if (main.selectId) return main.selectId;
-            main.selectId = $('#dialog-select-member').selectId('init',  {
-                objects: main.objects,
-                states:  main.states,
-                filter: {type: 'state'},
-                name:   'admin-select-member',
-                texts: {
-                    select:   _('Select'),
-                    cancel:   _('Cancel'),
-                    all:      _('All'),
-                    id:       _('ID'),
-                    name:     _('Name'),
-                    role:     _('Role'),
-                    room:     _('Room'),
-                    value:    _('Value'),
-                    selectid: _('Select ID'),
-                    from:     _('From'),
-                    lc:       _('Last changed'),
-                    ts:       _('Time stamp'),
-                    wait:     _('Processing...'),
-                    ack:      _('Acknowledged')
-                },
-                columns: ['image', 'name', 'role', 'room', 'value']
-            });
-            return main.selectId;
-        },
-        updateWizard: function () {
-            var $wizard = $('#button-wizard');
-            if (main.objects['system.adapter.discovery.0']) {
-                if (!$wizard.data('inited')) {
-                    $wizard.data('inited', true);
-                    $wizard/*.button({
-                        icons: {primary: ' ui-icon-search'},
-                        text: false
-                    })*/.click(function () {
-                        // TABS
-                        // $('#tabs').tabs('option', 'active', 1);
-                        navigation('tab-instances');
-                        // open configuration dialog
-                        main.tabs.instances.showConfigDialog('system.adapter.discovery.0');
-                    }).attr('title', _('Device discovery'));
-                }
-                $wizard.show();
-
-                // Show wizard dialog
-                if (!main.systemConfig.common.wizard && main.systemConfig.common.licenseConfirmed) {
-                    $wizard.trigger('click');
-                }
-            } else {
-                $wizard.hide();
-            }
         }
     };
 
@@ -499,7 +499,6 @@ $(document).ready(function () {
         logs:       new Logs(main),
         states:     new States(main),
         objects:    new Objects(main),
-        //objects1:   new Objects1(main),
         events:     new Events(main),
         hosts:      new Hosts(main),
         users:      new Users(main),
@@ -507,22 +506,21 @@ $(document).ready(function () {
         enums:      new Enums(main)
     };
 
-    main.instances = tabs.instances.list;
-    main.tabs      = tabs;
-    main.systemDialog = new System(main);
+    main.instances     = tabs.instances.list;
+    main.tabs          = tabs;
+    main.systemDialog  = new System(main);
 
-    var cmdCallback =           null;
     var stdout;
-    var activeCmdId =           null;
+    var cmdCallback    = null;
+    var activeCmdId    = null;
+    var $stdout        = $('#stdout');
 
-    var $stdout =               $('#stdout');
+    var $dialogCommand = $('#dialog-command');
+    var $dialogLicense = $('#dialog-license');
+    var $dialogMessage = $('#dialog-message');
+    var $dialogConfirm = $('#dialog-confirm');
 
-    var $dialogCommand =        $('#dialog-command');
-    var $dialogLicense =        $('#dialog-license');
-    var $dialogMessage =        $('#dialog-message');
-    var $dialogConfirm =        $('#dialog-confirm');
-
-    var firstConnect =          true;
+    var firstConnect   = true;
 
     // Read all positions, selected widgets for every view,
     // Selected view, selected menu page,
@@ -576,16 +574,13 @@ $(document).ready(function () {
             var $e = $(event.target);
             var offs = $e.offset();
             offs.top  += $e.height() - 2;
-            offs.left -= 64;
+            //offs.left -= 64;
 
             var text = '' +
                 '<dialog open style="margin: 0; font-family: Tahoma; font-size: 12px; white-space: nowrap; background: #fff; position: absolute; top: ' + offs.top + 'px; left: ' + offs.left + 'px;">' + // style="overflow: visible; z-index: 999; ">'
                 '<div style="overflow: visible; z-index: 999; position: absolute; left:0; top: 0;">' +
                 '<ul style="border: 1px solid #909090; line-height: 24px; padding:8px; margin: 0; list-style: none; float: left; background:#fff; color:#000">';
 
-            //var $lis = $ ('#tabs-ul>li');
-            // TABS
-            // var $lis = $('#tabs-ul').find('>li');
             var $lis = $('#admin_sidemenu_menu');
             for (var tid in allTabs) {
                 var name = allTabs[tid];
@@ -635,25 +630,32 @@ $(document).ready(function () {
         navigation();
     }
 
-    function initHtmlTabs(/* showTabs */) {
+    function initHtmlTabs() {
         // jQuery UI initializations
-        var $tabs = $('#tabs');
-        if (!$tabs.data('inited')) {
-            $tabs.data('inited', true);
+        initSideNav();
 
-            initSideNav();
+        if (!main.tabsInited) {
+            main.tabsInited = true;
+
             initHtmlButtons();
 
             main.socket.emit('authEnabled', function (auth, user) {
                 if (!auth) $('#button-logout').remove();
                 $('#current-user').html(user ? user[0].toUpperCase() + user.substring(1).toLowerCase() : '');
+                var groups = [];
+                for (var i = 0; i < tabs.groups.list.length; i++) {
+                    var group = main.objects[tabs.groups.list[i]];
+                    if (group && group.common && group.common.members && group.common.members.indexOf('system.user.' + user) !== -1) {
+                        groups.push(group.common.name);
+                    }
+                }
+                $('#current-group').html(groups.join(', '));
             });
 
             $('#events_threshold').click(function () {
                 main.socket.emit('eventsThreshold', false);
             });
         } else {
-            initSideNav();
             var $menu = $('#admin_sidemenu_menu');
             var panelSelector = $menu.data('problem-link');
             if (panelSelector) {
@@ -711,9 +713,9 @@ $(document).ready(function () {
 
         // Look for adapter tabs
         for (var a = 0; a < addTabs.length; a++) {
-            var tab = main.objects[addTabs[a]];
-            var name = 'tab-' + tab.common.name;
-            var link = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
+            var tab   = main.objects[addTabs[a]];
+            var name  = 'tab-' + tab.common.name;
+            var link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
             var parts = addTabs[a].split('.');
             var buttonName;
 
@@ -776,14 +778,13 @@ $(document).ready(function () {
                     isReplace = link.indexOf('%') !== -1;
                 }
 
-                //text += '<li><a href="#' + name + '">' + buttonName + '</a><button class="tab-close" data-tab="' + name + '"></button></li>\n';
                 text += '<li><a href="#' + name + '">' + buttonName + '</a></li>\n';
 
                 if (!$('#' + name).length) {
                     var div = '<div id="' + name + '" data-name="' + buttonName + '" class="tab-custom admin-sidemenu-body-content ' + (isReplace ? 'link-replace' : '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
                         '<iframe class="iframe-in-tab" style="border: 0; solid #FFF; display: block; left: 0; top: 0; width: 100%; height: 100%"' +
                         '></iframe></div>';
-                    $(div).appendTo($('#tabs'));
+                    $(div).appendTo($('body'));
 
                     // TODO: temporary, until other tab will be adapted
                     $('#' + name).find ('.iframe-in-tab').on('load', function () {
@@ -792,7 +793,7 @@ $(document).ready(function () {
                         if (elem && elem.length) elem.append('<link rel="stylesheet" type="text/css" href="../../lib/css/iob/selectID.css"/>');
                     });
                 } else {
-                    $('#' + name).show().appendTo($('#tabs'));
+                    // $('#' + name).show().appendTo($('#tabs'));
                 }
             } else {
                 $('#' + name).hide().appendTo($('body'));
@@ -806,8 +807,6 @@ $(document).ready(function () {
         });
 
         if (!main.systemConfig.common.tabs) main.systemConfig.common.tabs = list;
-        // TABS
-        $('#tabs-ul').html(text);
 
         if ($('.link-replace').length) {
             var countLink = 0;
@@ -833,7 +832,7 @@ $(document).ready(function () {
                 });
             });
         } else {
-            initHtmlTabs(/*showTabs*/);
+            initHtmlTabs();
         }
     }
 
@@ -931,36 +930,16 @@ $(document).ready(function () {
                     if (obj.type === 'user')     tabs.users.list.push(id);
                     if (obj.type === 'group')    tabs.groups.list.push(id);
                     if (obj.type === 'adapter')  tabs.adapters.list.push(id);
-                    if (obj.type === 'host') {
-                        var addr = null;
-                        // Find first non internal IP and use it as identifier
-                        if (obj.native.hardware && obj.native.hardware.networkInterfaces) {
-                            for (var eth in obj.native.hardware.networkInterfaces) {
-                                if (!obj.native.hardware.networkInterfaces.hasOwnProperty(eth)) continue;
-                                for (var num = 0; num < obj.native.hardware.networkInterfaces[eth].length; num++) {
-                                    if (!obj.native.hardware.networkInterfaces[eth][num].internal) {
-                                        addr = obj.native.hardware.networkInterfaces[eth][num].address;
-                                        break;
-                                    }
-                                }
-                                if (addr) break;
-                            }
-                        }
-                        if (addr) {
-                            tabs.hosts.list.push({name: obj.common.hostname, address: addr, id: obj._id});
-                        } else {
-                            tabs.hosts.list.push({name: obj.common.hostname, address: '127.0.0.1', id: obj._id});
-                        }
-                    }
+                    if (obj.type === 'host')     tabs.hosts.addHost(obj);
 
                     // convert obj.history into obj.custom
                     if (obj.common && obj.common.history) {
                         obj.common.custom = JSON.parse(JSON.stringify(obj.common.history));
                         delete obj.common.history;
                     }
-                    //treeInsert(id);
                 }
                 main.objectsLoaded = true;
+                main.currentHost = main.config.currentHost || '';
 
                 initTabs();
 
@@ -970,14 +949,8 @@ $(document).ready(function () {
                 // Detect node.js version
                 checkNodeJsVersions(tabs.hosts.list);
 
-                // Detect if some script engine instance installed
-//                var engines = tabs.scripts.fillEngines();
-
-                // Disable scripts tab if no one script engine instance found
-//              if (!engines || !engines.length) $('#tabs').tabs('option', 'disabled', [4]);
-
                 // Show if update available
-                tabs.hosts.initList();
+                // tabs.hosts.initList();
 
                 if (typeof callback === 'function') callback();
             }, 0);
@@ -1115,14 +1088,109 @@ $(document).ready(function () {
         return $adminBody;
     };
 
-    main.selectSideNav = function (tab) {
-        $('.admin-sidemenu-items').not(this).removeClass('admin-sidemenu-active');
-        $(this).addClass('admin-sidemenu-active');
-
-        if (window.location.hash !== '#' + tab.replace(/^tab-/, '')) {
-            window.location.hash = '#' + tab.replace(/^tab-/, '');
+    main.subscribeStates = function (patterns) {
+        if (!patterns) return;
+        if (typeof patterns === 'object') {
+            for (var s = 0; s < patterns.length; s++) {
+                main.subscribesStates[patterns[s]] = main.subscribesStates[patterns[s]] || 0;
+                main.subscribesStates[patterns[s]]++;
+                if (main.subscribesStates[patterns[s]] === 1) {
+                    main.socket.emit('subscribe', patterns[s]);
+                }
+            }
+        } else {
+            main.subscribesStates[patterns] = main.subscribesStates[patterns] || 0;
+            main.subscribesStates[patterns]++;
+            if (main.subscribesStates[patterns] === 1) {
+                main.socket.emit('subscribe', patterns);
+            }
         }
-        var $panel = $('#' + tab);
+    };
+
+    main.unsubscribeStates = function (patterns) {
+        if (!patterns) return;
+        if (typeof patterns === 'object') {
+            for (var s = 0; s < patterns.length; s++) {
+                if (main.subscribesStates[patterns[s]]) {
+                    main.subscribesStates[patterns[s]]--;
+                }
+                if (main.subscribesStates[patterns[s]] === 0) {
+                    main.socket.emit('unsubscribe', patterns[s]);
+                    delete main.subscribesStates[patterns[s]];
+                }
+            }
+        } else {
+            if (main.subscribesStates[patterns]) {
+                main.subscribesStates[patterns]--;
+            }
+            if (main.subscribesStates[patterns] === 0) {
+                main.socket.emit('unsubscribe', patterns);
+                delete main.subscribesStates[patterns];
+            }
+        }
+    };
+
+    main.subscribeObjects = function (patterns) {
+        if (!patterns) return;
+        if (typeof patterns === 'object') {
+            for (var s = 0; s < patterns.length; s++) {
+                main.subscribesObjects[patterns[s]] = main.subscribesObjects[patterns[s]] || 0;
+                main.subscribesObjects[patterns[s]]++;
+                if (main.subscribesObjects[patterns[s]] === 1) {
+                    main.socket.emit('subscribeObjects', patterns[s]);
+                }
+            }
+        } else {
+            main.subscribesObjects[patterns] = main.subscribesObjects[patterns] || 0;
+            main.subscribesObjects[patterns]++;
+            if (main.subscribesObjects[patterns] === 1) {
+                main.socket.emit('subscribeObjects', patterns);
+            }
+        }
+    };
+
+    main.unsubscribeObjects = function (patterns) {
+        if (!patterns) return;
+        if (typeof patterns === 'object') {
+            for (var s = 0; s < patterns.length; s++) {
+                if (main.subscribesObjects[patterns[s]]) {
+                    main.subscribesObjects[patterns[s]]--;
+                }
+                if (main.subscribesObjects[patterns[s]] === 0) {
+                    main.socket.emit('unsubscribeObjects', patterns[s]);
+                    delete main.subscribesObjects[patterns[s]];
+                }
+            }
+        } else {
+            if (main.subscribesObjects[patterns]) {
+                main.subscribesObjects[patterns]--;
+            }
+            if (main.subscribesObjects[patterns] === 0) {
+                main.socket.emit('unsubscribeObjects', patterns);
+                delete main.subscribesObjects[patterns];
+            }
+        }
+    };
+
+    main.selectSideNav = function (tab) {
+        var changed = false;
+        tab = tab.replace(/^tab-/, '');
+        if (tab !== main.currentTab) {
+            if (tabs[tab] && typeof tabs[tab].destroy === 'function') {
+                tabs[tab].destroy();
+            }
+            main.currentTab = tab;
+            changed = true;
+        }
+        var $tab = $('.admin-sidemenu-items[data-tab="tab-' + tab + '"]');
+        // select menu element
+        $('.admin-sidemenu-items').not($tab).removeClass('admin-sidemenu-active');
+        $tab.addClass('admin-sidemenu-active');
+
+        if (window.location.hash !== '#' + tab) {
+            window.location.hash = '#' + tab;
+        }
+        var $panel = $('#tab-' + tab);
         var link;
         if ($panel.length && (link = $panel.data('src'))) {
             if (link.indexOf('%') === -1) {
@@ -1131,52 +1199,15 @@ $(document).ready(function () {
                     $iframe.attr('src', link);
                 }
             } else {
-                $('#admin_sidemenu_menu').data('problem-link', tab);
+                $('#admin_sidemenu_menu').data('problem-link', 'tab-' + tab);
             }
         }
+
         var $adminBody = main.removeNavBody();
         $panel.show().appendTo($adminBody);
 
-        switch (tab) {
-            case 'tab-objects':
-                tabs.objects.init();
-                break;
-
-            case 'tab-hosts':
-                tabs.hosts.init();
-                break;
-
-            case 'tab-states':
-                tabs.states.init();
-                break;
-
-            case 'tab-scripts':
-                break;
-
-            case 'tab-adapters':
-                tabs.hosts.initList();
-                tabs.adapters.enableColResize();
-                break;
-
-            case 'tab-instances':
-                tabs.instances.init();
-                break;
-
-            case 'tab-users':
-                tabs.users.init();
-                break;
-
-            case 'tab-groups':
-                tabs.groups.init();
-                break;
-
-            case 'tab-enums':
-                tabs.enums.init();
-                break;
-
-            case 'tab-log':
-                tabs.logs.init();
-                break;
+        if (changed && tabs[tab] && typeof tabs[tab].init === 'function') {
+            tabs[tab].init();
         }
     };
 
@@ -1184,7 +1215,7 @@ $(document).ready(function () {
         'tab-adapters':         {order: 1, icon: 'store'},
         'tab-instances':        {order: 2, icon: 'subtitles'},
         'tab-objects':          {order: 3, icon: 'view_list'},
-        'tab-log':              {order: 4, icon: 'view_headline'},
+        'tab-logs':             {order: 4, icon: 'view_headline'},
         'tab-scenes':           {order: 5, icon: 'subscriptions'},
         'tab-javascript':       {order: 6},
         'tab-text2command-0':   {order: 7, icon: 'ac_unit'},
@@ -1192,17 +1223,13 @@ $(document).ready(function () {
     };
 
     function initSideNav() {
-        var lines = ''; //logo.png
-        //lines += '<a href="javascript:void(0)" class="admin-sidemenu-close"><span></span></a>';
+        var lines = '';
 
         var elements = [];
         $('.admin-tab').each(function () {
             var id = $(this).attr('id');
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !==-1) {
                 elements.push({
-                    /*line: '<a href="javascript:void(0)" class="admin-sidemenu-items" data-tab="' + id + '">' +
-                        (tabsInfo[id] && tabsInfo[id].icon ? '<i class="fa ' + tabsInfo[id].icon + '"></i>' : '<i class="fa fa-empty">&nbsp;</i>') +
-                        $(this).data('name') + '</a>',*/
                     line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
                             (tabsInfo[id] && tabsInfo[id].icon ? '<i class="material-icons">' + tabsInfo[id].icon + '</i>' : '<i class="icon-empty">&nbsp;</i>') +
                             $(this).data('name') + '</a></li>',
@@ -1224,10 +1251,7 @@ $(document).ready(function () {
                 }
 
                 elements.push({
-                    line: /*'<a href="javascript:void(0)" class="admin-sidemenu-items" data-tab="' + id + '">' +
-                    (icon ? '<i class="fa ' + icon + '"></i>' : '<i class="fa fa-empty">&nbsp;</i>') +
-                    $(this).data('name') + '</a>',*/
-                    '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
+                    line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
                     (icon ? '<i class="material-icons">' + icon + '</i>' : '<i class="icon-empty">&nbsp;</i>') +
                     $(this).data('name') + '</a></li>',
                     id: id
@@ -1245,8 +1269,11 @@ $(document).ready(function () {
         for (var e = 0; e < elements.length; e++) {
             lines += elements[e].line;
         }
+        // store user icon
+        var $menu = $('#admin_sidemenu_menu').find('.admin-sidemenu-menu');
+        lines = '<li>' + $menu.find('li:first-child').html() + '</li>' + lines;
 
-        $('#admin_sidemenu_menu').find('.admin-sidemenu-menu').append(lines);
+        $menu.html(lines);
 
         $('.admin-sidemenu-close').click(function () {
             $('#admin_sidemenu_main').toggleClass('admin-sidemenu-closed');
@@ -1264,37 +1291,36 @@ $(document).ready(function () {
     }
 
     // ---------------------------- Socket.io methods ---------------------------------------------
-    main.socket.on('log', function (message) {
+    main.socket.on('log',               function (message) {
         tabs.logs.add(message);
     });
-    main.socket.on('error', function (error) {
+    main.socket.on('error',             function (error) {
         console.log(error);
     });
-
-    main.socket.on('permissionError', function (err) {
+    main.socket.on('permissionError',   function (err) {
         main.showMessage(_('Has no permission to %s %s %s', err.operation, err.type, (err.id || '')));
     });
-    main.socket.on('stateChange', function (id, obj) {
+    main.socket.on('stateChange',       function (id, obj) {
         setTimeout(stateChange, 0, id, obj);
     });
-    main.socket.on('objectChange', function (id, obj) {
+    main.socket.on('objectChange',      function (id, obj) {
         setTimeout(objectChange, 0, id, obj);
     });
-    main.socket.on('cmdStdout', function (_id, text) {
+    main.socket.on('cmdStdout',         function (_id, text) {
         if (activeCmdId === _id) {
             stdout += '\n' + text;
             $stdout.val(stdout);
             $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
         }
     });
-    main.socket.on('cmdStderr', function (_id, text) {
+    main.socket.on('cmdStderr',         function (_id, text) {
         if (activeCmdId === _id) {
             stdout += '\nERROR: ' + text;
             $stdout.val(stdout);
             $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
         }
     });
-    main.socket.on('cmdExit', function (_id, exitCode) {
+    main.socket.on('cmdExit',           function (_id, exitCode) {
         if (activeCmdId === _id) {
             exitCode = parseInt(exitCode, 10);
             stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
@@ -1311,14 +1337,14 @@ $(document).ready(function () {
             }
         }
     });
-    main.socket.on('eventsThreshold', function (isActive) {
+    main.socket.on('eventsThreshold',   function (isActive) {
         if (isActive) {
             $('#events_threshold').show();
         } else {
             $('#events_threshold').hide();
         }
     });
-    main.socket.on('connect', function () {
+    main.socket.on('connect',           function () {
         $('#connecting').hide();
         if (firstConnect) {
             firstConnect = false;
@@ -1336,6 +1362,15 @@ $(document).ready(function () {
                 // Read system configuration
                 main.socket.emit('getObject', 'system.config', function (errConfig, data) {
                     main.systemConfig = data;
+
+                    // rename log => logs (back compatibility)
+                    if (main.systemConfig && main.systemConfig.common && main.systemConfig.common.tabs) {
+                        var pos = main.systemConfig.common.tabs.indexOf('tab-log');
+                        if (pos !== -1) {
+                            main.systemConfig.common.tabs[pos] = 'tab-logs';
+                        }
+                    }
+
                     main.socket.emit('getObject', 'system.repositories', function (errRepo, repo) {
                         main.systemDialog.systemRepos = repo;
                         main.socket.emit('getObject', 'system.certificates', function (errCerts, certs) {
@@ -1453,7 +1488,7 @@ $(document).ready(function () {
                                                     'tab-adapters',
                                                     'tab-instances',
                                                     'tab-objects',
-                                                    'tab-log',
+                                                    'tab-logs',
                                                     'tab-scenes',
                                                     'tab-javascript',
                                                     'tab-text2command-0'
@@ -1497,22 +1532,21 @@ $(document).ready(function () {
             location.reload();
         }
     });
-    main.socket.on('disconnect', function () {
+    main.socket.on('disconnect',        function () {
         $('#connecting').show();
     });
-    main.socket.on('reconnect', function () {
+    main.socket.on('reconnect',         function () {
         $('#connecting').hide();
         if (main.waitForRestart) {
             location.reload();
         }
     });
-    main.socket.on('repoUpdated', function () {
+    main.socket.on('repoUpdated',       function () {
         setTimeout(function () {
             tabs.adapters.init(true);
         }, 0);
     });
-
-    main.socket.on('reauthenticate', function () {
+    main.socket.on('reauthenticate',    function () {
         location.reload();
     });
 
@@ -1536,6 +1570,7 @@ $(document).ready(function () {
         tabs.groups.resize(x, y);
         $('.iframe-in-tab').height(y - 55);
     }
+
     function navigation() {
         if (window.location.hash) {
             var tab = 'tab-' + window.location.hash.slice(1);
