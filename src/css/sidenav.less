@@ -24,24 +24,26 @@
     }
 
     a {
-        padding: .75rem;
+        padding:    .75rem;
         text-decoration: none;
-        font-size: 1rem;
-        color: @admin-sidemenu-color;
-        display: block;
+        font-size:  1rem;
+        color:      @admin-sidemenu-color;
+        display:    block;
         transition: @admin-sidemenu-transition;
-        z-index: 1;
+        z-index:    1;
     }
     a:hover {
         background: @main-background-color;
         color: @admin-sidemenu-user-view-background;
     }
     li {
-        .admin-sidemenu-active {
-            background: @admin-sidemenu-background-hover;
+        &.admin-sidemenu-active {
+            background: @admin-buttons-color;
+            color:  @admin-buttons-background !important;
         }
-        .admin-sidemenu-active:hover {
-            background: @admin-sidemenu-background-hover;
+        &.admin-sidemenu-active:hover {
+            background: @admin-buttons-color;
+            color: @admin-buttons-background;
         }
         &:hover {
             background: @main-background-color;
