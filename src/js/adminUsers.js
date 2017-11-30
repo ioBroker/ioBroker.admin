@@ -8,9 +8,8 @@ function Users(main) {
     this.main    = main;
     this.userLastSelected = null;
 
-
     this.prepare = function () {
-        that.$grid.jqGrid({
+        /*that.$grid.jqGrid({
             datatype: 'local',
             colNames: ['id', _('name'), _('enabled'), _('groups')],
             colModel: [
@@ -181,42 +180,94 @@ function Users(main) {
         $('#edit-user-passconf').keydown(function (event) {
             if (event.which == 13) saveUser();
         });
-        $("#load_grid-users").show();
+        $("#load_grid-users").show();*/
+    };
+
+    function firstUpper (str) {
+        if (!str) return str;
+        return str[0].toUpperCase() + str.substring(1).toLowerCase();
+    }
+    this._postInit = function () {
+        var text = '';
+        for (var i = 0; i < this.list.length; i++) {
+            var obj = this.main.objects[this.list[i]];
+
+            var userGroups = [];
+
+            var groups = this.main.tabs.groups.list;
+            for (var j = 0; j < groups.length; j++) {
+                var gObj = this.main.objects[groups[j]];
+                if (gObj && gObj.common && gObj.common.members && gObj.common.members.indexOf(this.list[i]) !== -1) {
+                    userGroups.push({id: groups[j], name: gObj.common.name || firstUpper(groups[j].replace(/^system\.group\./, ''))})
+                }
+            }
+            // ID
+            text += '<tr><td>' + this.list[i] + '</td>';
+            // Name
+            text += '<td>' + ((obj.common && obj.common.name) || '') + '</td>';
+            text += '<td><input type="checkbox" class="filled-in" id="user_' + this.list[i] + '" checked="checked" /><label for="user_' + this.list[i] + '">Filled in</label></td>';
+            text += '<td><select multiple><option value="" disabled selected>' + _('Select groups') + '</option>';
+            for (var g = 0; g < userGroups.length; g++) {
+                text += '<option value="' + userGroups[g].id + '">' + userGroups[g].name + '</option>';
+            }
+            text += '</select>';
+            text += '<label></label>';
+        }
+        this.$grid.find('tbody').html(text);
     };
 
     // ----------------------------- Users show and Edit ------------------------------------------------
     this.init = function (update) {
+        if (this.inited && !update) {
+            return;
+        }
         if (!that.main.objectsLoaded) {
             setTimeout(function () {
                 that.init(update);
             }, 500);
             return;
         }
+        var oldInited = this.inited;
+        this.inited = true;
 
-        if (typeof that.$grid != 'undefined' && (update || !that.$grid[0]._isInited)) {
-            that.$grid[0]._isInited = true;
-            that.$grid.jqGrid('clearGridData');
-            for (var i = 0; i < that.list.length; i++) {
-                var obj = that.main.objects[that.list[i]];
-                var select = '<select class="user-groups-edit" multiple="multiple" data-id="' + that.list[i] + '">';
+        if (typeof this.$grid !== 'undefined') {
+            this._postInit();
+            /*this.$grid.jqGrid('clearGridData');
+            for (var i = 0; i < this.list.length; i++) {
+                var obj = this.main.objects[this.list[i]];
+                var select = '<select class="user-groups-edit" multiple="multiple" data-id="' + this.list[i] + '">';
 
-                var groups = that.main.tabs.groups.list;
+                var groups = this.main.tabs.groups.list;
                 for (var j = 0; j < groups.length; j++) {
                     var name = groups[j].substring('system.group.'.length);
                     name = name.substring(0, 1).toUpperCase() + name.substring(1);
                     select += '<option value="' + groups[j] + '"';
-                    if (that.main.objects[groups[j]].common && that.main.objects[groups[j]].common.members && that.main.objects[groups[j]].common.members.indexOf(that.list[i]) != -1) select += ' selected';
+                    if (this.main.objects[groups[j]].common && this.main.objects[groups[j]].common.members && this.main.objects[groups[j]].common.members.indexOf(this.list[i]) !== -1) {
+                        select += ' selected';
+                    }
                     select += '>' + name + '</option>';
                 }
 
-                that.$grid.jqGrid('addRowData', 'user_' + that.list[i].replace(/ /g, '_'), {
+                this.$grid.jqGrid('addRowData', 'user_' + this.list[i].replace(/ /g, '_'), {
                     _id:     obj._id,
                     name:    obj.common ? obj.common.name : '',
-                    enabled: '<input class="user-enabled-edit" type="checkbox" data-id="' + that.list[i] + '" ' + (obj.common && obj.common.enabled ? 'checked' : '') + '/>',
+                    enabled: '<input class="user-enabled-edit" type="checkbox" data-id="' + this.list[i] + '" ' + (obj.common && obj.common.enabled ? 'checked' : '') + '/>',
                     groups:  select
                 });
             }
-            that.$grid.trigger('reloadGrid');
+            this.$grid.trigger('reloadGrid');*/
+        }
+        if (!oldInited) {
+            this.main.subscribeObjects('system.user.*');
+            this.main.subscribeObjects('system.group.*');
+        }
+    };
+
+    this.destroy = function () {
+        if (this.inited) {
+            this.inited = false;
+            this.main.unsubscribeObjects('system.user.*');
+            this.main.unsubscribeObjects('system.group.*');
         }
     };
 
@@ -225,16 +276,14 @@ function Users(main) {
             var obj = that.main.objects[id];
             that.$dialog.dialog('option', 'title', id);
             $('#edit-user-id').val(obj._id);
-            $('#edit-user-name').val(obj.common.name);
-            $('#edit-user-name').prop('disabled', true);
+            $('#edit-user-name').prop('disabled', true).val(obj.common.name);
             $('#edit-user-pass').val('__pass_not_set__');
             $('#edit-user-passconf').val('__pass_not_set__');
             that.$dialog.dialog('open');
         } else {
             that.$dialog.dialog('option', 'title', _('new user'));
             $('#edit-user-id').val('');
-            $('#edit-user-name').val('');
-            $('#edit-user-name').prop('disabled', false);
+            $('#edit-user-name').prop('disabled', false).val('');
             $('#edit-user-pass').val('');
             $('#edit-user-passconf').val('');
             that.$dialog.dialog('open');
@@ -245,7 +294,7 @@ function Users(main) {
         var pass     = $('#edit-user-pass').val();
         var passconf = $('#edit-user-passconf').val();
 
-        if (pass != passconf) {
+        if (pass !== passconf) {
             that.main.showMessage(_('Password and confirmation are not equal!'), '', 'notice');
             return;
         }
@@ -286,10 +335,10 @@ function Users(main) {
     this.objectChange = function (id, obj) {
         if (id.match(/^system\.user\./)) {
             if (obj) {
-                if (this.list.indexOf(id) == -1) this.list.push(id);
+                if (this.list.indexOf(id) === -1) this.list.push(id);
             } else {
                 var j = this.list.indexOf(id);
-                if (j != -1) this.list.splice(j, 1);
+                if (j !== -1) this.list.splice(j, 1);
             }
 
             if (this.timer) {
@@ -304,8 +353,7 @@ function Users(main) {
     };
 
     this.resize = function (width, height) {
-        this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
+        //this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
     };
-
 }
 
