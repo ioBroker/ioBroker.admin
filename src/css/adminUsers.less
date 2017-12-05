@@ -1,0 +1,15 @@
+#grid-users {
+  width: 100%;
+}
+
+@tab-user-header-height: 45px;
+
+.tab-users-header {
+  height: @tab-user-header-height;
+}
+
+.tab-users-body {
+  width: 100%;
+  overflow: auto;
+  height: calc(~"100% - "@tab-user-header-height);
+}

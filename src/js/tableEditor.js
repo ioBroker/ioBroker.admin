@@ -163,11 +163,12 @@ function values2table(divId, values, options) {
             if (name) {
                 var obj = {
                     name:    name,
-                    type:    $(this).data('type') || 'text',
-                    def:     $(this).data('default'),
-                    'class': $(this).attr('class').replace('translate', ''),
-                    style:   $(this).data('style'),
-                    tdstyle: $(this).data('tdstyle')
+                    type:     $(this).data('type') || 'text',
+                    def:      $(this).data('default'),
+                    'class':  $(this).attr('class').replace('translate', ''),
+                    style:    $(this).data('style'),
+                    readOnly: $(this).data('readOnly'),
+                    tdstyle:  $(this).data('tdstyle')
                 };
                 if (obj.type === 'checkbox') {
                     if (obj.def === 'false') obj.def = false;
@@ -284,7 +285,7 @@ function values2table(divId, values, options) {
             var $this = $(this);
             var type = $this.attr('type');
             var name = $this.data('name');
-            var id = $this.data('index');
+            var id   = $this.data('index');
             $this.data('old-value', values[id][name]);
             if (type === 'checkbox') {
                 $this.prop('checked', values[id][name]);

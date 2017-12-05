@@ -339,17 +339,31 @@
     <table id="grid-groups"></table>
     <div id="pager-groups"></div>
 </div>
-<div id="tab-users"     class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Users">
+<div id="tab-users"     class="admin-tab admin-sidemenu-body-content m" style="display: none" data-name="Users">
     <!--<table class="main-toolbar-table">-->
     <!--<tr><td></td></tr>-->
     <!--</table>-->
     <div class="row">
         <a class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
     </div>
+    <div class="row" class="tab-users-body">
+        <table id="grid-users">
+            <thead>
+            <tr>
+                <th data-name="_index"    class="col s1"           data-style="padding-top: 1rem; text-align: right"></th>
+                <th data-name="id"        class="col s2 translate" data-readOnly="true" data-style="text-align: right">id</th>
+                <th data-name="name"      class="col s2 translate">name</th>
+                <th data-name="groups"    class="col s6 translate" data-type="multiselect">groups</th>
+                <th data-buttons="delete" class="col s1"           data-style="padding-top: 0.5rem;"></th>
+            </tr>
+            </thead>
+            <tbody>
 
-    <table id="grid-users"><tbody></tbody></table>
+            </tbody>
+        </table>
     <div id="pager-users"></div>
 </div>
+    </div>
 <div id="tab-enums"     class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Enums">
     <div id="grid-enums" style="width: 100%; height: 100%"><span class="translate">Loading...</span></div>
 </div>

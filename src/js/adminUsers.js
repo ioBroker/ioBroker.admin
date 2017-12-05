@@ -6,7 +6,7 @@ function Users(main) {
     this.$grid   = $('#grid-users');
     this.$dialog = $('#dialog-user');
     this.main    = main;
-    this.userLastSelected = null;
+    // this.userLastSelected = null;
 
     this.prepare = function () {
         /*that.$grid.jqGrid({
