@@ -1617,10 +1617,14 @@ function filterChanged(e) {
                 var cnt = countChildren(key, data);
 
                 if (isCommon && obj.type) {
-                    $firstTD.addClass('fancytree-type-' + obj.type + (data.draggable && data.draggable.indexOf(obj.type) !== -1 ? ' fancytree-type-draggable' : ' fancytree-type-not-draggable'));
+                    $tr.addClass('fancytree-type-' + obj.type + (data.draggable && data.draggable.indexOf(obj.type) !== -1 ? ' fancytree-type-draggable' : ' fancytree-type-not-draggable'));
+                    if (data.draggable && data.draggable.indexOf(obj.type) === -1) {
+                        $tr.attr('data-nodrag', 'true');
+                    }
                 } else {
-                    $firstTD.addClass('fancytree-type-no fancytree-type-not-draggable');
+                    $tr.attr('data-nodrag', 'true');
                 }
+                $tr.attr('data-id', key);
 
                 // Show number of all children as small grey number
                 var $cnt = $firstTD.find('.select-id-cnt');

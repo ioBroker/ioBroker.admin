@@ -6,6 +6,13 @@
     height:   100%;
     transition: width @admin-sidemenu-transition;
   }
+  .tree-table-main  {
+    .tab-accept-item {
+      background: deepskyblue !important;
+      font-weight: bold;
+      color: white;
+    }
+  }
   .tab-enums-list {
     width:    100%;
   }
@@ -41,8 +48,16 @@
     }
   }
   .fancytree-container {
-    .fancytree-type-not-draggable {
+    [data-nodrag="true"] {
       opacity: 0.5;
     }
+  }
+  .fancytree-drag-helper {
+    padding: 4px;
+    background: rgba(80, 80, 80, 0.5);
+    border: 1px solid gray;
+    border-radius: 2px;
+    font-size: larger;
+    font-weight: bold;
   }
 }

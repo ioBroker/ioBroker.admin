@@ -6,7 +6,7 @@
     function nodeExpand() {
         var id = this.id;
         var $table = this.row.parent().parent(); // table > tbody > tr
-        var options = $table.data('data');
+        var options = $table.data('options');
 
         if (options.name) {
             options.expanded = options.expanded || [];
@@ -96,8 +96,8 @@
         });
     }
 
-    function buildList(options) {
-        var table = '<div class="treetablelist-buttons"><button class="treetable-list-btn-ok"></button><button class="treetable-list-btn-cancel"></button></div>';
+    function buildList(options, noButtons) {
+        var table = noButtons ? '' : '<div class="treetablelist-buttons"><button class="treetable-list-btn-ok"></button><button class="treetable-list-btn-cancel"></button></div>';
         table += '<ul class="treetable-list">';
         var rows = options.rows;
         for (var i = 0; i < rows.length; i++) {
@@ -130,14 +130,16 @@
         $dlg.find('.tree-table-main').remove();
         $dlg.prepend($table);
 
-        var $buttons = $($table[0]);
-        var $list    = $($table[1]);
+        var $buttons = $($table).find('.treetablelist-buttons');
+        var $list    = $($table).find('.treetable-list');
 
         $list.sortable({
             cancel: '.treetable-list-folder',
-            axis: 'y'
-        });
+            axis:   'y'
+        }).data('options', options);
+
         var that = this;
+
         $buttons.find('.treetable-list-btn-ok').button({
             icons: {primary: 'ui-icon-check'},
             text: false
@@ -270,7 +272,7 @@
             return 0;
         });
 
-        // find parents and extend memebers
+        // find parents and extend members
         for (var pp = 0; pp < rows.length; pp++) {
             // find parent:
             var parts  = rows[pp].id.split('.');
@@ -416,7 +418,7 @@
         var $treeTable = $($table[1]).find('>table');
         var $buttons   = $($table[0]);
 
-        $treeTable.data('data', options);
+        $treeTable.data('options', options);
 
         $treeTable.treetable({
             expandable:         true,
@@ -435,7 +437,7 @@
             $('.selected').not(this).removeClass('selected');
             $(this).addClass('selected');
             var $table = $(this).parent().parent();
-            var options = $table.data('data');
+            var options = $table.data('options');
             var id = $(this).data('tt-id');
             options.onChange && options.onChange($(this).data('tt-id'), options.oldId);
             options.oldId = id;
@@ -528,7 +530,7 @@
             exIDs.push($(this).data('tt-id'));
         });
         var nameFilter = $table.find('.filter_name').val();
-        var options = $table.data('data');
+        var options = $table.data('options');
         buildTable.call(this, options);
         $table = $(this).find('.tree-table-main');
         for (var e = 0; e < exIDs.length; e++) {
@@ -566,6 +568,15 @@
             }
             return this;
         },
+        expand: function (id) {
+            for (var i = 0; i < this.length; i++) {
+                var $table = $(this[i]).find('.tree-table-main');
+                try {
+                    $table.treetable('expandNode', id);
+                } catch (e) {
+                }
+            }
+        },
         show: function (currentId, filter, onSuccess) {
             if (typeof filter === 'function') {
                 onSuccess = filter;
@@ -600,7 +611,7 @@
                 if ($table.updateTimer) {
                     clearTimeout($table.updateTimer);
                 }
-                var options = $table.data('data');
+                var options = $table.data('options');
                 if (options && options.root && !id.match('^' + options.root.replace(/\./g, '\\.') + '\\.')) continue;
 
                 var elem = this[i];
