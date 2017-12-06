@@ -118,7 +118,7 @@
             var isNotFolder = rows[i].instance === undefined ? 0 : 1;
             table += '<li data-id="' + rows[i].id + '" class="' + (!isNotFolder ? 'treetable-list-folder' : 'treetable-list-item') + '" style="margin-left: ' + (parents * 19) + 'px; width: calc(100% - ' + (parents * 15 + 2 + isNotFolder * 7) + 'px);' +
             (rows[i].id === 'script.js.global' ? 'color: rgb(0, 128, 0);' : '') + '">' +
-            (!isNotFolder ? '<span class="indenter" style="padding-left: 0;"><a href="#">&nbsp;</a></span>' : '') + rows[i].title + '</li>';
+            (!isNotFolder ? '<span class="fancytree-expander"></span>' : '') + '<span class="fancytree-icon"></span>' + rows[i].title + '</li>';
         }
         table += '</ul>';
         var $dlg = $(this);
@@ -152,10 +152,9 @@
                 if ($(this).hasClass('treetable-list-folder')) {
                     currentFolder = id;
                 } else {
-                    if (id.substring(0, currentFolder.length + 1) !== currentFolder + '.') {
-                        console.log('Move ' + id + ' to ' + currentFolder);
-                        var parts = id.split('.');
-                        var name = parts.pop();
+                    var parts = id.split('.');
+                    var name = parts.pop();
+                    if (parts.join('.') !== currentFolder) {
                         tasks.push({oldId: id, newId: currentFolder + '.' + name});
                     }
                 }
@@ -176,13 +175,22 @@
 
     function buildTable(options) {
         var table = '';
+        var buttonTag = typeof Materialize === 'undefined' ? 'button' : 'a';
         if (options.panelButtons) {
             table += '<div class="row tree-table-buttons m">';
             for (var z = 0; z < options.panelButtons.length; z++) {
-                table += '<a class="btn-floating waves-effect waves-light blue btn-custom-' + z + '" title="' + (options.panelButtons[z].title || '') + '"><i class="material-icons">' + (options.panelButtons[z].icon || '') + '</i></a>';
+                table += '<' + buttonTag + ' class="btn-floating waves-effect waves-light blue btn-custom-' + z + '" title="' + (options.panelButtons[z].title || '') + '" ' + (options.panelButtons[z].id ? 'id="' + options.panelButtons[z].id + '"' : '') + '>';
+                if (typeof Materialize !== 'undefined') {
+                    table += '<i class="material-icons">' + (options.panelButtons[z].icon || '') + '</i>';
+                }
+                table += '</' + buttonTag + '>';
             }
             if (options.moveId) {
-                table += '<a class="btn-floating waves-effect waves-light blue treetable-sort" title="' + _('reorder') + '"><i class="material-icons">import_export</i></a>';
+                table += '<' + buttonTag + ' class="btn-floating waves-effect waves-light blue treetable-sort" title="' + _('reorder') + '">';
+                if (typeof Materialize !== 'undefined') {
+                    table += '<i class="material-icons">import_export</i>';
+                }
+                table += '</' + buttonTag + '>';
             }
             table += '</div>';
         }
@@ -207,7 +215,7 @@
             }
         }
         if (options.buttons) {
-            table += '      <th' + (options.widths && options.widths[options.columns.length + 1] ? ' style="width: ' + options.widths[options.columns.length + 1] + '"' : '') + '></th>';
+            table += '      <th' + (options.buttonsWidth ? ' style="width: ' + options.buttonsWidth + '"' : '') + '></th>';
         }
         table += '  </tr>';
         table += '</thead>';
@@ -232,7 +240,8 @@
 
             var obj = {
                 id:     id,
-                parent: null
+                parent: null,
+                _class: 'treetable-' + options.objects[id].type
             };
 
             if (options.objects[id].type === 'channel') {
@@ -270,12 +279,20 @@
             rows[pp].title = title;
             for (var p = 0; p < rows.length; p++) {
                 if (rows[p].id === parent) {
-                    rows[pp].parent = parent; // todo maybe mark parent as folder
+                    rows[pp].parent = parent;
                     rows[p].children = rows[p].children || [];
                     rows[p].children.push(pp);
                     break;
                 }
             }
+
+            if (parts.length === 1) {
+                rows[pp]._class += ' treetable-root'
+            }
+
+        }
+        for (var ppp = 0; ppp < rows.length; ppp++) {
+            rows[ppp].realChildren = rows[ppp].children ? !!rows[ppp].children.length : false;
         }
 
         if (withMembers) {
@@ -283,12 +300,15 @@
                 // extend members
                 if (rows[k].members) {
                     rows[k].children = rows[k].children || [];
-                    for (var mm = 0; mm < rows[k].members.length; mm++) {
+                    var members = Object.assign([], rows[k].members);
+                    members.sort();
+                    for (var mm = 0; mm < members.length; mm++) {
                         obj = {
-                            id: rows[k].members[mm],
-                            parent: rows[k].id
+                            id: members[mm],
+                            parent: rows[k].id,
+                            _class: 'treetable-member'
                         };
-                        rows[k].children.push(rows[k].members[mm]);
+                        rows[k].children.push(members[mm]);
 
                         if (options.objects[obj.id]) {
                             var ccommon = options.objects[obj.id].common;
@@ -309,14 +329,23 @@
             }
         }
 
-
         var instSelect = '';
 
         for (var i = 0; i < rows.length; i++) {
             // title
-            table += '<tr data-tt-id="' + rows[i].id + '"' + (!!rows[i].children ? ' data-tt-branch="true"' : '') + (rows[i].parent ? ' data-tt-parent-id="' + rows[i].parent + '"' : '') + '>';
+            table += '<tr data-tt-id="' + rows[i].id + '"' + (!!rows[i].children ? ' data-tt-branch="true"' : '') + (rows[i].parent ? ' data-tt-parent-id="' + rows[i].parent + '"' : '') + ' class="';
+            if (rows[i]._class) {
+                table += rows[i]._class + ' ';
+            }
+            if (rows[i].children && rows[i].children.length) {
+                table += 'not-empty';
+            } else {
+                table += 'is-empty';
+            }
+
+            table += '">';
             for (var c = 0; c < options.columns.length; c++) {
-                if (options.columns[ch] === 'members') {
+                if (options.columns[c] === 'members') {
                     continue;
                 }
                 var style = '';
@@ -336,11 +365,10 @@
                     table += '<td style="' + style + '">';
                 }
 
+                // edit instance
                 if (options.columns[c] === 'instance') {
-                    // edit instance
-                    table += rows[i].title + '<span class="treetable-counter">' + (rows[i].children && rows[i].children.length ? rows[i].children.length : '') + '</span></td>';
                     if (rows[i].instance !== undefined && instances.length > 1) {
-                        instSelect = '<select>';
+                        instSelect = '<select class="treetable-instance" data-id="' + rows[i].id + '">';
                         for (var ii = 0; ii < instances.length; ii++) {
                             instSelect += '<option value="' + instances[ii] + '" ' + (instances[ii] === rows[i].instance ? 'selected' : '') + '>' + instances[ii] + '</option>';
                         }
@@ -357,10 +385,14 @@
             }
             // add buttons
             if (options.buttons) {
-                table += '<td>';
+                table += '<td class="treetable-buttons" style="' + (options.buttonsStyle || '') + '">';
                 var text = '';
                 for (var jj = 0; jj < options.buttons.length; jj++) {
-                    text += '<a data-id="' + rows[i].id + '" class="select-button-' + jj + ' select-button-custom td-button"  style="margin-right: 3px;" title="' + (options.buttons[jj].title || '') + '"><i class="material-icons">' + (options.buttons[jj].icon || '') + '</i></a>';
+                    text += '<' + buttonTag + ' data-id="' + rows[i].id + '" class="select-button-' + jj + ' select-button-custom td-button"  style="margin-right: 3px;'+ '" data-parent="' + rows[i].parent + '" data-children="' + !!rows[i].realChildren + '" title="' + (options.buttons[jj].title || '') + '">';
+                    if (typeof Materialize !== 'undefined') {
+                        text += '<i class="material-icons">' + (options.buttons[jj].icon || '') + '</i>';
+                    }
+                    text += '</' + buttonTag + '>';
                 }
 
                 table += text + '</td>';
@@ -413,8 +445,10 @@
             for (var b = 0; b < options.buttons.length; b++) {
                 var $btn = $tbody.find('.select-button-' + b).button(options.buttons[b]).click(function () {
                     var cb = $(this).data('callback');
-                    if (cb) cb.call ($(this), $(this).data('id'));
-                }).data ('callback', options.buttons[b].click).attr('title', options.buttons[b].title || '');
+                    if (cb) {
+                        cb.call($(this), $(this).data('id'), $(this).data('children'), $(this).data('parent'));
+                    }
+                }).data('callback', options.buttons[b].click).attr('title', options.buttons[b].title || '');
 
                 if ($btn.length === 0) continue;
                 if (options.buttons[b].width)  $btn.css({width:  options.buttons[b].width});
@@ -429,10 +463,16 @@
 
         if (options.panelButtons) {
             for (var zz = 0; zz < options.panelButtons.length; zz++) {
-                $buttons.find('.btn-custom-' + zz)
-                    //.button(options.panelButtons[zz])
+                var $zz = $buttons.find('.btn-custom-' + zz);
+                $zz
                     .click(options.panelButtons[zz].click)
-                    .attr('title', options.panelButtons[zz].title || '');//.css({width: 24, height: 24});
+                    .attr('title', options.panelButtons[zz].title || '');
+
+                if (typeof Materialize === 'undefined') {
+                    $zz
+                        .button(options.panelButtons[zz])
+                        .css({width: 24, height: 24})
+                }
             }
         }
 
@@ -468,6 +508,14 @@
             .click(function () {
                 buildList.call(that, options);
             });
+
+        if (options.onEdit) {
+            $treeTable.find('.treetable-instance').change(function () {
+                options.onEdit($(this).data('id'), 'instance', $(this).val());
+            });
+        } else {
+            $treeTable.find('.treetable-instance').prop('disabled', true)
+        }
     }
 
     function reInit() {

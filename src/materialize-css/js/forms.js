@@ -3,7 +3,7 @@
 
     // Function to update labels of text fields
     Materialize.updateTextFields = function(formSelector) {
-      var input_selector = 'input[type=text], input[type=password], input[type=email], input[type=url], input[type=tel], input[type=number], input[type=search], textarea';
+      // var input_selector = 'input[type=text], input[type=password], input[type=email], input[type=url], input[type=tel], input[type=number], input[type=search], textarea';
       var $body;
       if (formSelector) {
         $body = $(formSelector);

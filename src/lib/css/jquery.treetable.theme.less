@@ -172,7 +172,7 @@ table.treetable {
     top: 1px;
   }
   .treetable-filter {
-    width: calc(100% - 24px);
+    width: calc(~"100% - 24px");
     padding: 0 5px 0 0;
     font-size: 12px;
     border: 0;
@@ -188,18 +188,50 @@ table.treetable {
     border: 0;
     background: #fff;
   }
-  .branch.collapsed {
-    span.fancytree-expander {
-      background-position: 0 -80px;
+  .branch {
+    &.collapsed {
+      span.fancytree-expander {
+        background-position: 0 -80px;
+      }
+    }
+    &.expanded {
+      span.fancytree-expander {
+        background-position: -32px -80px;
+      }
+    }
+    &.is-empty span.fancytree-expander {
+      opacity: 0;
     }
   }
-  .branch.expanded {
-    span.fancytree-expander {
-      background-position: -32px -80px;
-    }
-  }
+
   .leaf span.fancytree-expander {
     background: none;
+  }
+  .treetable-buttons {
+    text-align: center;
+  }
+  .treetable-enum {
+    font-weight: normal;
+    span.fancytree-icon {
+      background-position: -32px -16px;
+    }
+  }
+  .treetable-enum.treetable-root {
+    font-weight: bold;
+  }
+  .treetable-member {
+    font-style: italic;
+    span.fancytree-icon {
+      background-image: url(fancytree/state.png);
+      background-size: 100%;
+      height: 24px;
+      width: 24px;
+    }
+  }
+  .treetable-channel {
+    span.fancytree-icon {
+      background-position: -32px -16px;
+    }
   }
 }
 .treetable-list {
@@ -222,11 +254,12 @@ table.treetable {
     color: #000080;
     border: 1px solid #e0e0e0;
     background: white;
-    &:before {
-      content: "↓";
-      color: black;
-      font-weight: bold;
-      padding-right: 4px;
+
+    span.fancytree-icon {
+      background-position: -32px -16px;
     }
+  }
+  span.fancytree-expander {
+    background-position: -32px -80px;
   }
 }

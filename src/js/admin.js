@@ -353,7 +353,7 @@ $(document).ready(function () {
                     setTimeout(doIt, 0);
                 } else {
                     var obj = main.objects[id];
-                    main.socket.emit ('delObject', id, function (err) {
+                    main.socket.emit('delObject', id, function (err) {
                         if (err && err !== 'Not exists') {
                             main.showError (err);
                             return callback(err);

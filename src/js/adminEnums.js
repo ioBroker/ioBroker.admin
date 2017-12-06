@@ -313,6 +313,7 @@ function Enums(main) {
         var settings = {
             objects:  main.objects,
             noDialog: true,
+            draggable: ['device', 'channel', 'state'],
             name:     'enum-objects',
             expertModeRegEx: /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin|^script\./,
             texts: {
@@ -352,7 +353,70 @@ function Enums(main) {
 
         selectId('init', settings)
             .selectId('show');
+
+        var $div = $('#tab-enums');
+        $div.find('.fancytree-container>tbody')
+            .sortable({
+                connectWith: '#tab-enums .tab-enums-list .tree-table-main .treetable',
+                items: '.fancytree-type-not-draggable',
+                appendTo: $div,
+                helper: "clone",
+                zIndex: 999990,
+                start: function(){ $div.addClass("dragging") },
+                stop: function(){ $div.removeClass("dragging") }
+            })
+            .disableSelection()
+        ;
     };
+
+    function createNewEnum(isCategory) {
+        var idChanged = false;
+        var $dialog = $('#tab-enums-dialog-new');
+
+        $dialog.find('.tab-enums-dialog-new-title').text(isCategory ? _('Create new category:') : _('Create new enum:'));
+        $dialog.find('#tab-enums-dialog-new-name').val('').unbind('change').bind('change', function () {
+            var $id = $('#tab-enums-dialog-new-id');
+            var id = $id.val();
+            var val = $(this).val();
+            val = val.replace(/[.\s]/g, '_').trim().toLowerCase();
+            if (!id || !idChanged) {
+                $id.val(val);
+                $dialog.find('#tab-enums-dialog-new-preview').val((isCategory ? 'enum' : that.enumEdit) + '.' + (val || '#'));
+                Materialize.updateTextFields('#tab-enums-dialog-new');
+            }
+            if ($id.val() && !$id.val().match(/[.\s]/)) {
+                $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
+                $id.removeClass('wrong');
+            } else {
+                $dialog.find('.tab-enums-dialog-create').addClass('disabled');
+                $id.addClass('wrong');
+            }
+        }).unbind('keyup').bind('keyup', function () {
+            $(this).trigger('change');
+        });
+
+        $dialog.find('#tab-enums-dialog-new-id').val('').unbind('change').bind('change', function () {
+            idChanged = true;
+            var val = $(this).val();
+            $dialog.find('#tab-enums-dialog-new-preview').val((isCategory ? 'enum' : that.enumEdit) + '.' + ($(this).val() || '#'));
+            Materialize.updateTextFields('#tab-enums-dialog-new');
+            if (val && !val.match(/[.\s]/)) {
+                $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
+                $(this).removeClass('wrong');
+            } else {
+                $dialog.find('.tab-enums-dialog-create').addClass('disabled');
+                $(this).addClass('wrong');
+            }
+        }).unbind('keyup').bind('keyup', function () {
+            $(this).trigger('change');
+        });
+        $dialog.find('.tab-enums-dialog-create').addClass('disabled').unbind('click').click(function () {
+            enumAddChild(that.enumEdit, (isCategory ? 'enum' : that.enumEdit) + '.' + $('#tab-enums-dialog-new-id').val(), $('#tab-enums-dialog-new-name').val());
+        });
+        Materialize.updateTextFields('#tab-enums-dialog-new');
+
+        $dialog.modal().modal('open');
+    }
 
     this._postInit = function () {
         if (typeof this.$gridList !== 'undefined') {
@@ -366,17 +430,47 @@ function Enums(main) {
             this.$gridList.treeTable({
                 objects:    that.main.objects,
                 root:       'enum',
-                columns:    ['id', 'name', 'members'],
-                widths:     ['calc(100% - 106px)', '20px', '86px'],
+                columns:    ['id', 'icon', 'name', 'members'],
+                widths:     ['calc(100% - 190px)', '64px', '150px'],
                 name:       'scripts',
+                buttonsWidth: '40px',
                 buttons:    [
                     {
                         text: false,
                         icons: {
                             primary:'ui-icon-trash'
                         },
-                        click: function (id) {
-
+                        click: function (id, children, parent) {
+                            if (that.main.objects[id]) {
+                                if (that.main.objects[id].type === 'enum') {
+                                    if (children) {
+                                        // ask if only object must be deleted or just this one
+                                        that.main.confirmMessage(_('All sub-enums of %s will be deleted too?', id), null, 'help', function (result) {
+                                            // If all
+                                            if (result) {
+                                                that.main._delObjects(id, true);
+                                            } // else do nothing
+                                        });
+                                    } else {
+                                        that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
+                                            // If all
+                                            if (result) that.main._delObjects(id, true);
+                                        });
+                                    }
+                                } else {
+                                    that.main.socket.emit('getObject', parent, function (err, obj) {
+                                        if (obj && obj.common && obj.common.members) {
+                                            var pos = obj.common.members.indexOf(id);
+                                            if (pos !== -1) {
+                                                obj.common.members.splice(pos, 1);
+                                                that.main.socket.emit('setObject', obj._id, obj);
+                                            }
+                                        }
+                                    });
+                                }
+                            } else {
+                                that.main.showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id), null, 'alert');
+                            }
                         },
                         width: 26,
                         height: 20
@@ -384,17 +478,19 @@ function Enums(main) {
                 ],
                 panelButtons: [
                     {
+                        id:   'tab-enums-list-new-enum',
                         title: _('New enum'),
                         icon:   'note_add',
                         click: function () {
-
+                            createNewEnum(false);
                         }
                     },
                     {
+                        id:   'tab-enums-list-new-category',
                         title:   _('New category'),
                         icon:   'library_add',
                         click: function () {
-
+                            createNewEnum(true);
                         }
                     },
                     {
@@ -417,14 +513,26 @@ function Enums(main) {
                     }
                 ],
                 onChange:   function (id, oldId) {
-                    if (id !== oldId || !that.editor) {
-                        //editScript(id);
-                    } else {
-                        // focus again on editor
-                        //that.editor.focus();
+                    if (id !== oldId) {
+                        that.enumEdit = id;
+                        var obj = that.main.objects[id];
+                        if (obj && obj.type === 'enum') {
+                            $('#tab-enums-list-new-enum').removeClass('disabled').attr('title', _('Create new enum, like %s', id + '.newEnum'));
+                            var parts = id.split('.');
+                            if (parts.length === 2) {
+                                $('#tab-enums-list-new-category').removeClass('disabled').attr('title', _('Create new category, like %s', 'enum.newCategory'));
+                            } else {
+                                $('#tab-enums-list-new-category').addClass('disabled');
+                            }
+                        } else {
+                            $('#tab-enums-list-new-enum').addClass('disabled');
+                            $('#tab-enums-list-new-category').addClass('disabled');
+                        }
                     }
                 }
             });//.treeTable('show', currentEnum);
+            $('#tab-enums-list-new-enum').addClass('disabled');
+            $('#tab-enums-list-new-category').addClass('disabled');
             /*
             this.$grid.selectId('init', {
                 objects:  that.main.objects,

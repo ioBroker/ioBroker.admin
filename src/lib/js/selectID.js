@@ -1616,6 +1616,12 @@ function filterChanged(e) {
                 $firstTD.css({'overflow': 'hidden'});
                 var cnt = countChildren(key, data);
 
+                if (isCommon && obj.type) {
+                    $firstTD.addClass('fancytree-type-' + obj.type + (data.draggable && data.draggable.indexOf(obj.type) !== -1 ? ' fancytree-type-draggable' : ' fancytree-type-not-draggable'));
+                } else {
+                    $firstTD.addClass('fancytree-type-no fancytree-type-not-draggable');
+                }
+
                 // Show number of all children as small grey number
                 var $cnt = $firstTD.find('.select-id-cnt');
                 // If node has some children
