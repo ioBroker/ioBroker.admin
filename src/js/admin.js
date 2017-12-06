@@ -833,6 +833,9 @@ $(document).ready(function () {
         var lines = [];
         for (var i = 0; i < main.tabs.hosts.list.length; i++) {
             lines.push('<li><a href="#!" data-value="' + main.tabs.hosts.list[i].name + '">' + main.tabs.hosts.list[i].name + '</a></li>');
+            if (!main.currentHost) {
+                main.currentHost = main.tabs.hosts.list[i].name;
+            }
         }
         $selHosts.html(lines);
 
@@ -966,6 +969,7 @@ $(document).ready(function () {
                     }
                 }
                 main.objectsLoaded = true;
+                main.initHostsList(true);
 
                 initTabs();
 
@@ -978,7 +982,6 @@ $(document).ready(function () {
                 // Show if update available
                 // tabs.hosts.initList();
 
-                main.initHostsList();
 
                 if (typeof callback === 'function') callback();
             }, 0);
@@ -1249,14 +1252,15 @@ $(document).ready(function () {
         'tab-adapters':         {order: 1, icon: 'store'},
         'tab-instances':        {order: 2, icon: 'subtitles'},
         'tab-objects':          {order: 3, icon: 'view_list'},
-        'tab-logs':             {order: 4, icon: 'view_headline'},
-        'tab-scenes':           {order: 5, icon: 'subscriptions'},
-        'tab-events':           {order: 6, icon: 'flash_on'},
-        'tab-groups':           {order: 6, icon: 'group'},
-        'tab-users':            {order: 7, icon: 'person_outline'},
-        'tab-javascript':       {order: 8},
-        'tab-text2command-0':   {order: 9, icon: 'ac_unit'},
-        'tab-hosts':            {order: 10, icon: 'storage'}
+        'tab-enums':            {order: 4, icon: 'art_track'},
+        'tab-logs':             {order: 5, icon: 'view_headline'},
+        'tab-scenes':           {order: 6, icon: 'subscriptions'},
+        'tab-events':           {order: 7, icon: 'flash_on'},
+        'tab-groups':           {order: 8, icon: 'group'},
+        'tab-users':            {order: 9, icon: 'person_outline'},
+        'tab-javascript':       {order: 10},
+        'tab-text2command-0':   {order: 11, icon: 'ac_unit'},
+        'tab-hosts':            {order: 12, icon: 'storage'}
     };
 
     function initSideNav() {

@@ -1011,7 +1011,7 @@ function Instances(main) {
     };
 
     this.init = function (update) {
-        if (this.inited) {
+        if (this.inited && !update) {
             return;
         }
         if (!this.main.objectsLoaded) {
@@ -1020,8 +1020,6 @@ function Instances(main) {
             }, 250);
             return;
         }
-
-        this.inited = true;
         var count = 0;
 
         count++;
@@ -1033,20 +1031,25 @@ function Instances(main) {
             if (!--count) that._postInit(update);
         });
 
-        // subscribe objects and states
-        this.main.subscribeObjects('system.adapter.*');
-        this.main.subscribeStates('system.adapter.*');
-        this.main.subscribeObjects('system.host.*');
-        this.main.subscribeStates('system.host.*');
+        if (!this.inited) {
+            this.inited = true;
+            // subscribe objects and states
+            this.main.subscribeObjects('system.adapter.*');
+            this.main.subscribeStates('system.adapter.*');
+            this.main.subscribeObjects('system.host.*');
+            this.main.subscribeStates('system.host.*');
+        }
     };
 
     this.destroy = function () {
-        this.inited = false;
-        // subscribe objects and states
-        this.main.unsubscribeObjects('system.adapter.*');
-        this.main.unsubscribeStates('system.host.*');
-        this.main.unsubscribeObjects('system.host.*');
-        this.main.unsubscribeStates('system.adapter.*');
+        if (this.inited) {
+            this.inited = false;
+            // subscribe objects and states
+            this.main.unsubscribeObjects('system.adapter.*');
+            this.main.unsubscribeStates('system.host.*');
+            this.main.unsubscribeObjects('system.host.*');
+            this.main.unsubscribeStates('system.adapter.*');
+        }
     };
 
     this.stateChange = function (id, state) {

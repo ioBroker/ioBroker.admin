@@ -2,29 +2,39 @@ function Enums(main) {
     'use strict';
 
     var that               = this;
+    var $grid              = $('#tab-enums');
+
     this.main              = main;
     this.list              = [];
-    this.$grid             = $('#grid-enums');
+    this.$gridList         = $grid.find('.tab-enums-list');
+    this.$grid             = $grid.find('.tab-enums-objects');
     this.$gridMembers      = $('#grid-enum-members');
     this.enumEdit          = null;
     this.updateTimers      = null;
+    this.editMode          = false;
 
     var $dialogEnumMembers = $('#dialog-enum-members');
     var $dialogEnum        = $('#dialog-enum');
     var enumCurrentParent  = '';
     var tasks              = [];
 
+    var selectId = function () {
+        if (!that.$grid || !that.$grid.selectId) return;
+        selectId = that.$grid.selectId.bind(that.$grid);
+        return that.$grid.selectId.apply(that.$grid, arguments);
+    };
+
     function enumRename(oldId, newId, newName, callback) {
         if (tasks.length) {
             var task = tasks.shift();
             if (task.name === 'delObject') {
-                main.socket.emit(task.name, task.id, function () {
+                that.main.socket.emit(task.name, task.id, function () {
                     setTimeout(function () {
                         enumRename(undefined, undefined, undefined, callback);
                     }, 0);
                 });
             } else {
-                main.socket.emit(task.name, task.id, task.obj, function () {
+                that.main.socket.emit(task.name, task.id, task.obj, function () {
                     setTimeout(function () {
                         enumRename(undefined, undefined, undefined, callback);
                     }, 0);
@@ -42,8 +52,8 @@ function Enums(main) {
     }
     function _enumRename(oldId, newId, newName, callback) {
         //Check if this name exists
-        if (oldId !== newId && main.objects[newId]) {
-            main.showMessage(_('Name yet exists!'), '', 'info');
+        if (oldId !== newId && that.main.objects[newId]) {
+            that.main.showMessage(_('Name yet exists!'), '', 'info');
             that.init(true);
             if (callback) callback();
         } else {
@@ -52,15 +62,15 @@ function Enums(main) {
                     tasks.push({name: 'extendObject', id:  oldId, obj: {common: {name: newName}}});
                     if (callback) callback();
                 }
-            } else if (main.objects[oldId] && main.objects[oldId].common && main.objects[oldId].common.nondeletable) {
-                main.showMessage(_('Change of enum\'s id "%s" is not allowed!', oldId), '', 'notice');
+            } else if (that.main.objects[oldId] && that.main.objects[oldId].common && that.main.objects[oldId].common.nondeletable) {
+                that.main.showMessage(_('Change of enum\'s id "%s" is not allowed!', oldId), '', 'notice');
                 that.init(true);
                 if (callback) callback();
             } else {
                 var leaf = that.$grid.selectId('getTreeInfo', oldId);
                 //var leaf = treeFindLeaf(oldId);
                 if (leaf && leaf.children) {
-                    main.socket.emit('getObject', oldId, function (err, obj) {
+                    that.main.socket.emit('getObject', oldId, function (err, obj) {
                         setTimeout(function () {
                             if (obj) {
                                 obj._id = newId;
@@ -83,7 +93,7 @@ function Enums(main) {
                         }, 0);
                     });
                 } else {
-                    main.socket.emit('getObject', oldId, function (err, obj) {
+                    that.main.socket.emit('getObject', oldId, function (err, obj) {
                         if (obj) {
                             setTimeout(function () {
                                 obj._id = newId;
@@ -101,12 +111,12 @@ function Enums(main) {
     }
 
     function enumAddChild(parent, newId, name) {
-        if (main.objects[newId]) {
-            main.showMessage(_('Name yet exists!'), '', 'notice');
+        if (that.main.objects[newId]) {
+            that.main.showMessage(_('Name yet exists!'), '', 'notice');
             return false;
         }
 
-        main.socket.emit('setObject', newId, {
+        that.main.socket.emit('setObject', newId, {
             _id: newId,
             common:   {
                 name: name,
@@ -120,8 +130,8 @@ function Enums(main) {
     function enumMembers(id) {
         that.enumEdit = id;
         $dialogEnumMembers.dialog('option', 'title', id);
-        $('#enum-name-edit').val(main.objects[id].common.name);
-        var members = main.objects[id].common.members || [];
+        $('#enum-name-edit').val(that.main.objects[id].common.name);
+        var members = that.main.objects[id].common.members || [];
         that.$gridMembers.jqGrid('clearGridData');
         // Remove empty entries
         for (var i = members.length - 1; i >= 0; i--) {
@@ -131,8 +141,8 @@ function Enums(main) {
         }
 
         for (i = 0; i < members.length; i++) {
-            if (main.objects[members[i]]) {
-                that.$gridMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {_id: members[i], name: main.objects[members[i]].common.name, type: main.objects[members[i]].type});
+            if (that.main.objects[members[i]]) {
+                that.$gridMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {_id: members[i], name: that.main.objects[members[i]].common.name, type: that.main.objects[members[i]].type});
             } else if (members[i]) {
                 that.$gridMembers.jqGrid('addRowData', 'enum_member_' + members[i].replace(/ /g, '_'), {
                     _id:  members[i],
@@ -147,7 +157,7 @@ function Enums(main) {
     }
 
     function prepareEnumMembers() {
-        that.$gridMembers.jqGrid({
+        /*that.$gridMembers.jqGrid({
             datatype:   'local',
             colNames:   ['id', _('name'), _('type')],
             colModel:   [
@@ -179,12 +189,12 @@ function Enums(main) {
             onClickButton: function () {
                 var _obj = that.$gridMembers.jqGrid('getRowData', that.$gridMembers.jqGrid('getGridParam', 'selrow'));
                 var id = _obj._id;
-                var obj = main.objects[that.enumEdit];
+                var obj = that.main.objects[that.enumEdit];
                 var idx = obj.common.members.indexOf(id);
                 if (idx !== -1) {
                     obj.common.members.splice(idx, 1);
-                    main.objects[that.enumEdit] = obj;
-                    main.socket.emit('setObject', that.enumEdit, obj, function () {
+                    that.main.objects[that.enumEdit] = obj;
+                    that.main.socket.emit('setObject', that.enumEdit, obj, function () {
                         setTimeout(function () {
                             enumMembers(that.enumEdit);
                         }, 0);
@@ -199,10 +209,10 @@ function Enums(main) {
             caption:        '',
             buttonicon:     'ui-icon-plus',
             onClickButton:  function () {
-                var sid = main.initSelectId();
+                var sid = that.main.initSelectId();
 
                 sid.selectId('show', function (newId, oldId) {
-                    var obj = main.objects[that.enumEdit];
+                    var obj = that.main.objects[that.enumEdit];
                     var changed = false;
                     if (Array.isArray(newId)) {
                         for (var id = 0; id < newId.length; id++) {
@@ -218,7 +228,7 @@ function Enums(main) {
                         }
                     }
                     if (changed) {
-                        main.socket.emit('setObject', that.enumEdit, obj, function () {
+                        that.main.socket.emit('setObject', that.enumEdit, obj, function () {
                             setTimeout(function () {
                                 enumMembers(that.enumEdit);
                             }, 0);
@@ -252,13 +262,13 @@ function Enums(main) {
             }
         });
 
-        $dialogEnumMembers.trigger('resize');
+        $dialogEnumMembers.trigger('resize');*/
     }
 
     this.prepare = function () {
         prepareEnumMembers();
 
-        $dialogEnum.dialog({
+        /*$dialogEnum.dialog({
             autoOpen:   false,
             modal:      true,
             width:      600,
@@ -268,18 +278,18 @@ function Enums(main) {
                     text: _('Save'),
                     click: function () {
                         $dialogEnum.dialog('close');
-
-                        var name = $('#enum-name').val().replace(/ /g, '_').toLowerCase();
+                        var val = $('#enum-name').val();
+                        var name = val.replace(/ /g, '_').toLowerCase();
                         if (!name) {
-                            main.showMessage(_('Empty name!'), '', 'notice');
+                            that.main.showMessage(_('Empty name!'), '', 'notice');
                             return;
                         }
-                        if (main.objects[(enumCurrentParent || 'enum') + '.' + name]) {
-                            main.showMessage(_('Name yet exists!'), '', 'notice');
+                        if (that.main.objects[(enumCurrentParent || 'enum') + '.' + name]) {
+                            that.main.showMessage(_('Name yet exists!'), '', 'notice');
                             return;
                         }
 
-                        enumAddChild(enumCurrentParent,  (enumCurrentParent || 'enum') + '.' + name, $('#enum-name').val());
+                        enumAddChild(enumCurrentParent,  (enumCurrentParent || 'enum') + '.' + name, val);
                     }
                 },
                 {
@@ -296,28 +306,129 @@ function Enums(main) {
             t.html(t[0]._original + '.' + $(this).val().replace(/ /, '_').toLowerCase());
         });
 
-        $('#load_grid-enums').show();
+        $('#load_grid-enums').show();*/
     };
 
-    this.init = function (update, expandId) {
-        if (!this.main || !this.main.objectsLoaded) {
-            setTimeout(that.init, 250);
-            return;
-        }
+    this._initObjectTree = function () {
+        var settings = {
+            objects:  main.objects,
+            noDialog: true,
+            name:     'enum-objects',
+            expertModeRegEx: /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin|^script\./,
+            texts: {
+                select:   _('Select'),
+                cancel:   _('Cancel'),
+                all:      _('All'),
+                id:       _('ID'),
+                ID:       _('ID'),
+                name:     _('Name'),
+                role:     _('Role'),
+                room:     _('Room'),
+                'function': _('Function'),
+                value:    _('Value'),
+                type:     _('Type'),
+                selectid: _('Select ID'),
+                from:     _('From'),
+                lc:       _('Last changed'),
+                ts:       _('Time stamp'),
+                wait:     _('Processing...'),
+                ack:      _('Acknowledged'),
+                edit:     _('Edit'),
+                push:     _('Trigger event'),
+                ok:       _('Ok'),
+                with:     _('With'),
+                without:  _('Without'),
+                copyToClipboard: _('Copy to clipboard'),
+                expertMode: _('Toggle expert mode'),
+                refresh:	_('Update'),
+                sort:       _('Sort alphabetically'),
+                button: 'History'
+            },
+            filter: {
+                type: 'state'
+            },
+            columns: ['ID', 'name', 'type', 'role']
+        };
 
-        if (typeof this.$grid !== 'undefined' && (!this.$grid.data('inited') || update)) {
-            this.$grid.data('inited', true);
+        selectId('init', settings)
+            .selectId('show');
+    };
 
-            /*var x = $(window).width();
-            var y = $(window).height();
-            if (x < 720) x = 720;
-            if (y < 480) y = 480;
+    this._postInit = function () {
+        if (typeof this.$gridList !== 'undefined') {
+            if (this.editMode) {
+                this._initObjectTree();
+            } else {
+                selectId('destroy');
+            }
 
-            this.$grid.height(y - 100).width(x - 20);
-*/
+            // extract all enums
+            this.$gridList.treeTable({
+                objects:    that.main.objects,
+                root:       'enum',
+                columns:    ['id', 'name', 'members'],
+                widths:     ['calc(100% - 106px)', '20px', '86px'],
+                name:       'scripts',
+                buttons:    [
+                    {
+                        text: false,
+                        icons: {
+                            primary:'ui-icon-trash'
+                        },
+                        click: function (id) {
+
+                        },
+                        width: 26,
+                        height: 20
+                    }
+                ],
+                panelButtons: [
+                    {
+                        title: _('New enum'),
+                        icon:   'note_add',
+                        click: function () {
+
+                        }
+                    },
+                    {
+                        title:   _('New category'),
+                        icon:   'library_add',
+                        click: function () {
+
+                        }
+                    },
+                    {
+                        id:   'tab-enums-list-edit',
+                        title: _('Edit'),
+                        icon:   'edit',
+                        click: function () {
+                            that.editMode = !that.editMode;
+                            var $tabEnums = $('#tab-enums');
+                            if (that.editMode) {
+                                $(this).removeClass('blue').addClass('red');
+                                $tabEnums.addClass('tab-enums-edit');
+                                that._initObjectTree();
+                            } else {
+                                selectId('destroy');
+                                $(this).removeClass('red').addClass('blue');
+                                $tabEnums.removeClass('tab-enums-edit');
+                            }
+                        }
+                    }
+                ],
+                onChange:   function (id, oldId) {
+                    if (id !== oldId || !that.editor) {
+                        //editScript(id);
+                    } else {
+                        // focus again on editor
+                        //that.editor.focus();
+                    }
+                }
+            });//.treeTable('show', currentEnum);
+            /*
             this.$grid.selectId('init', {
-                objects:  main.objects,
-                states:   main.states,
+                objects:  that.main.objects,
+                states:   that.main.states,
                 noDialog: true,
                 texts:    {
                     select:   _('Select'),
@@ -340,20 +451,18 @@ function Enums(main) {
                     enum:     _('Members')
                 },
                 filter:   {type: 'enum'},
-                //columns:  ['name', 'enum', 'button'],
                 columns:  ['ID', 'name', 'enum', 'button'],
-                //widths:   ['150', '*', '120'],
                 widths:   ['170', '170', '*', '120'],
                 quickEdit: ['name'],
                 quickEditCallback: function (id, attr, newValue, oldValue) {
                     if (newValue !== oldValue) {
-                        main.socket.emit('getObject', id, function (err, _obj) {
+                        that.main.socket.emit('getObject', id, function (err, _obj) {
                             if (err) return that.main.showError(err);
 
                             if (_obj) {
                                 _obj.common[attr] = newValue;
 
-                                main.socket.emit('setObject', _obj._id, _obj, function (err) {
+                                that.main.socket.emit('setObject', _obj._id, _obj, function (err) {
                                     if (err) that.main.showError(err);
                                 });
                             }
@@ -390,7 +499,7 @@ function Enums(main) {
                             do {
                                 idx++;
                                 newId = (enumCurrentParent || 'enum')  + '.' + name + idx;
-                            } while (main.objects[newId]);
+                            } while (that.main.objects[newId]);
 
                             $('#enum-name').val(name + idx);
                             // Store prefix in DOM to show generated ID
@@ -409,10 +518,10 @@ function Enums(main) {
                             primary:'ui-icon-trash'
                         },
                         click: function (id) {
-                            main.delObject(that.$grid, id);
+                            that.main.delObject(that.$grid, id);
                         },
                         match: function (id) {
-                            if (!main.objects[id] || !main.objects[id].common || main.objects[id].common.nondeletable) this.hide();
+                            if (!that.main.objects[id] || !that.main.objects[id].common || that.main.objects[id].common.nondeletable) this.hide();
                         },
                         width: 26,
                         height: 20
@@ -432,18 +541,18 @@ function Enums(main) {
                         height: 20
                     }
                 ],
-                /*editEnd: function (id, newValues) {
-                    var pos = id.lastIndexOf('.');
-                    if (pos !== -1) {
-                        var original = id.substring(0, pos);
-                        // rename all children
-                        enumRename(id, original + '.' + newValues.id.replace(/ /g, '_').toLowerCase(), newValues.name);
-                    }
-                },
-                editStart: function (id, inputs) {
-                    var pos = id.lastIndexOf('.');
-                    if (pos !== -1) inputs.id.val(id.substring(pos + 1));
-                },*/
+                // editEnd: function (id, newValues) {
+                //     var pos = id.lastIndexOf('.');
+                //     if (pos !== -1) {
+                //         var original = id.substring(0, pos);
+                //         // rename all children
+                //         enumRename(id, original + '.' + newValues.id.replace(/ /g, '_').toLowerCase(), newValues.name);
+                //     }
+                // },
+                // editStart: function (id, inputs) {
+                //     var pos = id.lastIndexOf('.');
+                //     if (pos !== -1) inputs.id.val(id.substring(pos + 1));
+                // },
                 panelButtons: [
                     {
                         text: false,
@@ -460,7 +569,7 @@ function Enums(main) {
                             do {
                                 idx++;
                                 newId = (enumCurrentParent || 'enum')  + '.' + name + idx;
-                            } while (main.objects[newId]);
+                            } while (that.main.objects[newId]);
 
                             $('#enum-name').val(name + idx);
                             var t = $('#enum-gen-id');
@@ -470,13 +579,38 @@ function Enums(main) {
                         }
                     }
                 ]
-            }).selectId('show');
+            }).selectId('show');*/
+        }
+    };
+
+    this.init = function (update) {
+        if (this.inited && !update) {
+            return;
+        }
+        if (!this.main || !this.main.objectsLoaded) {
+            setTimeout(function () {
+                that.init(update);
+            }, 250);
+            return;
+        }
+
+        this._postInit();
+
+        if (!this.inited) {
+            this.inited = true;
+            this.main.subscribeObjects('enum.*');
+        }
+    };
+
+    this.destroy = function () {
+        if (this.inited) {
+            this.inited = false;
+            // subscribe objects and states
+            this.main.unsubscribeObjects('enum.*');
         }
     };
 
     this.objectChange = function (id, obj) {
-        if (this.$grid) this.$grid.selectId('object', id, obj);
-
         //Update enums
         if (id.match(/^enum\./)) {
             if (obj) {
@@ -490,14 +624,16 @@ function Enums(main) {
 
             this.updateTimers = setTimeout(function () {
                 that.updateTimers = null;
-                that.init(true);
+                that._postInit();
             }, 200);
         }
+
+        if (this.$grid) selectId('object', id, obj);
     };
 
     this.resize = function (width, height) {
-        if (this.$grid) {
-            this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
-        }
+        // if (this.$grid) {
+        //     this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
+        // }
     }
 }

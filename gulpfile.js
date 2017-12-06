@@ -57,7 +57,15 @@ gulp.task('lessIob', function () {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/lib/css/iob'));
 });
-
+gulp.task('lessTreeTable', function () {
+    return gulp.src(['./src/lib/css/jquery.treetable.theme.less'])
+        .pipe(sourcemaps.init())
+        .pipe(less({
+            paths: [ ]
+        }))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('./www/lib/css'));
+});
 gulp.task('compressApp', function () {
     return gulp.src(['./src/js/*.js', '!./src/js/adapter-settings.js'])
         .pipe(sourcemaps.init())
@@ -80,7 +88,8 @@ gulp.task('compressVendor', function () {
         './src/lib/js/loStorage.js',
         './src/lib/js/translate.js',
         './src/lib/js/jquery.fancytree-all.min.js',
-        './src/lib/js/selectID.js',
+//        './src/lib/js/jquery.treetable.js',
+//        './src/lib/js/selectID.js',
         './src/lib/js/cron/jquery.cron.js',
         './src/lib/js/cron/cron2text.js'
     ])
@@ -115,5 +124,5 @@ gulp.task('watch', function () {
     gulp.watch(['./src/js/*.js'], ['compressApp']);
 });
 
-gulp.task('default', ['lessIob', 'lessApp', 'sassMaterialize', 'compressApp', 'compressVendor', 'compressMaterialize', 'copy']);
+gulp.task('default', ['lessIob', 'lessApp', 'lessTreeTable', 'sassMaterialize', 'compressApp', 'compressVendor', 'compressMaterialize', 'copy']);
 

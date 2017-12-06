@@ -364,23 +364,20 @@ function Objects(main) {
     }
 
     this.stateChange = function (id, state) {
-        //if (this.$grid) this.$grid.selectId('state', id, state);
         if (this.$grid) selectId('state', id, state);
     };
 
     this.objectChange = function (id, obj) {
-        //if (this.$grid) this.$grid.selectId('object', id, obj);
         if (this.$grid) selectId('object', id, obj);
     };
 
     this.reinit = function () {
         this.checkCustoms();
-        //if (this.$grid) this.$grid.selectId('reinit');
         if (this.$grid) selectId('reinit');
     };
 
     this.resize = function (width, height) {
-        //if (this.$grid) this.$grid.height(height - 100).width(width - 20);
+
     };
 
     function _syncEnum(id, enumIds, newArray, cb) {

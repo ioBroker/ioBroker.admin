@@ -267,15 +267,18 @@ function Hosts(main) {
         this.inited = true;
         this.main.subscribeObjects('system.host.*');
         this.main.subscribeStates('system.host.*');
+
         this.getHosts(function () {
             that._postInit();
         });
     };
 
     this.destroy = function () {
-        this.inited = false;
-        this.main.unsubscribeObjects('system.host.*');
-        this.main.unsubscribeStates('system.host.*');
+        if (this.inited) {
+            this.inited = false;
+            this.main.unsubscribeObjects('system.host.*');
+            this.main.unsubscribeStates('system.host.*');
+        }
     };
 
     this.addHost = function (obj) {

@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="lib/css/fancytree/ui.fancytree.min.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/cron/jquery.cron.css"/>
     <link rel="stylesheet" type="text/css" href="lib/css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="lib/css/jquery.treetable.theme.css">
     <link rel="stylesheet" type="text/css" href="css/app.css"/>
 
     <link class="favicon" href="favicon.ico" type="image/x-icon" rel="icon" />
@@ -35,6 +36,8 @@
     <!--script type="text/javascript" src="lib/js/jquery.fancytree-all.min.js"></script-->
     <script type="text/javascript" src="lib/js/vendor.js"></script>
     <script type="text/javascript" src="lib/js/materialize.js"></script>
+    <script type="text/javascript" src="lib/js/jquery.treetable.js"></script>
+    <script type="text/javascript" src="lib/js/selectID.js"></script>
     <!--script type="text/javascript" src="js/listHeader.js"></script-->
 
     <!--script type="text/javascript" src="lib/js/selectID.js"></script>
@@ -363,9 +366,11 @@
         </table>
     <div id="pager-users"></div>
 </div>
-    </div>
 <div id="tab-enums"     class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Enums">
-    <div id="grid-enums" style="width: 100%; height: 100%"><span class="translate">Loading...</span></div>
+    <div class="tab-enums-list"></div>
+    <div class="tab-enums-objects" id="grid-enums">
+        <span class="translate" style="width: calc(100% - 100px); width: calc(100% - 20px); text-align: center">Loading...</span>
+    </div>
 </div>
 <div id="tab-hosts"     class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Hosts">
     <table class="main-toolbar-table">

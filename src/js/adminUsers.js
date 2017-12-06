@@ -6,7 +6,7 @@ function Users(main) {
     this.$grid   = $('#grid-users');
     this.$dialog = $('#dialog-user');
     this.main    = main;
-    // this.userLastSelected = null;
+    this.userLastSelected = null;
 
     this.prepare = function () {
         /*that.$grid.jqGrid({
@@ -227,8 +227,6 @@ function Users(main) {
             }, 500);
             return;
         }
-        var oldInited = this.inited;
-        this.inited = true;
 
         if (typeof this.$grid !== 'undefined') {
             this._postInit();
@@ -257,7 +255,8 @@ function Users(main) {
             }
             this.$grid.trigger('reloadGrid');*/
         }
-        if (!oldInited) {
+        if (!this.inited) {
+            this.inited = true;
             this.main.subscribeObjects('system.user.*');
             this.main.subscribeObjects('system.group.*');
         }
@@ -346,8 +345,7 @@ function Users(main) {
             }
             this.timer = setTimeout(function () {
                 that.timer = null;
-                that.main.tabs.groups.init(true);
-                that.init(true);
+                that._postInit();
             }, 200);
         }
     };

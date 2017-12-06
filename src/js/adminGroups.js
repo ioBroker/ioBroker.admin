@@ -1,12 +1,11 @@
 function Groups(main) {
-    "use strict";
+    'use strict';
 
     var that     = this;
     this.list    = [];
     this.$grid   = $('#grid-groups');
     this.$dialog = $('#dialog-group');
     this.main    = main;
-    this.groupLastSelected = null;
 
     function onFilterChanged() {
         var inputs = $('#gview_grid-groups').find('.main-header-input-table>tbody>tr>td>input');
@@ -106,10 +105,10 @@ function Groups(main) {
         patchPager(this, 'groups');
 
         $('#edit-group-name').keydown(function (event) {
-            if (event.which == 13) $('#edit-group-desc').focus();
+            if (event.which === 13) $('#edit-group-desc').focus();
         });
         $('#edit-group-desc').keydown(function (event) {
-            if (event.which == 13) saveGroup();
+            if (event.which === 13) saveGroup();
         });
         $("#load_grid-groups").show();
         onFilterChanged();
@@ -124,10 +123,10 @@ function Groups(main) {
             'delete'
         ];
         function sortFunction(a, b){
-            var a = operations.indexOf(a);
-            var b = operations.indexOf(b);
-            if (a == -1) a = 1000;
-            if (b == -1) a = 1000;
+            a = operations.indexOf(a);
+            b = operations.indexOf(b);
+            if (a === -1) a = 1000;
+            if (b === -1) a = 1000;
 
             if (a < b) return -1;
 
@@ -139,16 +138,17 @@ function Groups(main) {
         this.main.socket.emit('listPermissions', function (permissions) {
             that.groups = {};
 
-            var text = "";
+            var text = '';
             for (var p in permissions) {
-                if (!permissions[p].type) continue;
+                if (!permissions.hasOwnProperty(p) || !permissions[p] || !permissions[p].type) continue;
                 that.groups[permissions[p].type] = that.groups[permissions[p].type] || [];
-                if (that.groups[permissions[p].type].indexOf(permissions[p].operation) == -1) {
+                if (that.groups[permissions[p].type].indexOf(permissions[p].operation) === -1) {
                     that.groups[permissions[p].type].push(permissions[p].operation);
                 }
             }
 
             for (var g in that.groups) {
+                if (!that.groups.hasOwnProperty(g)) continue;
                 that.groups[g].sort(sortFunction);
 
                 text += '<tr><td colspan="2" style="padding-top: 10px"></td></tr>\n<tr class="ui-widget-header"><td></td><td>' + _(g + ' permissions') + '</td></tr>\n';
@@ -162,17 +162,8 @@ function Groups(main) {
         });
     };
 
-    this.init = function (update) {
-
-        if (!that.main.objectsLoaded) {
-            setTimeout(function () {
-                that.init(update);
-            }, 500);
-            return;
-        }
-
-        if (typeof that.$grid != 'undefined' && (update || !that.$grid[0]._isInited)) {
-            that.$grid[0]._isInited = true;
+    this._postInit = function () {
+        if (typeof that.$grid !== 'undefined') {
             that.$grid.jqGrid('clearGridData');
             for (var i = 0; i < this.list.length; i++) {
                 var obj = that.main.objects[this.list[i]];
@@ -182,7 +173,7 @@ function Groups(main) {
                 for (var j = 0; j < users.length; j++) {
                     var name = users[j].substring('system.user.'.length);
                     select += '<option value="' + users[j] + '"';
-                    if (obj.common && obj.common.members && obj.common.members.indexOf(users[j]) != -1) select += ' selected';
+                    if (obj.common && obj.common.members && obj.common.members.indexOf(users[j]) !== -1) select += ' selected';
                     select += '>' + name + '</option>';
                 }
 
@@ -192,10 +183,40 @@ function Groups(main) {
                     description: obj.common ? obj.common.desc : '',
                     users:       select,
                     buttons:   '<button data-group-id="' + this.list[i] + '" class="group-edit">'     + _('edit')   + '</button>' +
-                                (!obj.common.dontDelete ? ('<button data-group-id="' + this.list[i] + '" class="group-del">' + _('delete') + '</button>')  : '')
+                    (!obj.common.dontDelete ? ('<button data-group-id="' + this.list[i] + '" class="group-del">' + _('delete') + '</button>')  : '')
                 });
             }
             that.$grid.trigger('reloadGrid');
+        }
+    };
+
+    this.init = function (update) {
+        if (this.inited && !update) {
+            return;
+        }
+
+        if (!that.main.objectsLoaded) {
+            setTimeout(function () {
+                that.init(update);
+            }, 500);
+            return;
+        }
+
+        this._postInit();
+
+        if (!this.inited) {
+            this.inited = true;
+            this.main.subscribeObjects('system.user.*');
+            this.main.subscribeObjects('system.group.*');
+        }
+    };
+
+    this.destroy = function () {
+        if (this.inited) {
+            this.inited = false;
+            // subscribe objects and states
+            this.main.unsubscribeObjects('system.user.*');
+            this.main.unsubscribeObjects('system.group.*');
         }
     };
 
@@ -204,22 +225,23 @@ function Groups(main) {
             var obj = that.main.objects[id];
             that.$dialog.dialog('option', 'title', id);
             $('#edit-group-id').val(obj._id);
-            $('#edit-group-name').val(obj.common.name);
-            $('#edit-group-name').prop('disabled', true);
+            $('#edit-group-name').prop('disabled', true).val(obj.common.name);
             $('#edit-group-desc').val(obj.common.desc);
 
             if (!obj.common.acl) obj.common.acl = {};
 
-            if (id == 'system.group.administrator') {
+            if (id === 'system.group.administrator') {
                 obj.common.acl = {};
                 for (var g in that.groups) {
-                    obj.common.acl[g] = {};
-                    for (var i = 0; i < that.groups[g].length; i++) {
-                        obj.common.acl[g][that.groups[g][i]] = true;
+                    if (that.groups.hasOwnProperty(g)) {
+                        obj.common.acl[g] = {};
+                        for (var i = 0; i < that.groups[g].length; i++) {
+                            obj.common.acl[g][that.groups[g][i]] = true;
+                        }
                     }
                 }
             }
-            $('.edit-group-permissions').prop('disabled', (id == 'system.group.administrator')).each(function () {
+            $('.edit-group-permissions').prop('disabled', (id === 'system.group.administrator')).each(function () {
                 var type      = $(this).data('type');
                 var operation = $(this).data('operation');
                 $(this).prop('checked', obj.common.acl[type] ? obj.common.acl[type][operation] : false);
@@ -229,8 +251,7 @@ function Groups(main) {
         } else {
             that.$dialog.dialog('option', 'title', _('new group'));
             $('#edit-group-id').val('');
-            $('#edit-group-name').val('');
-            $('#edit-group-name').prop('disabled', false);
+            $('#edit-group-name').prop('disabled', false).val('');
             $('#edit-group-desc').val('');
             that.$dialog.dialog('open');
         }
@@ -291,7 +312,7 @@ function Groups(main) {
                 var id = $(this).attr('data-group-id');
                 that.main.confirmMessage(_('Are you sure?'), null, 'help', function (result) {
                     if (result) {
-                        that.main.socket.emit('delGroup', id.replace("system.group.", ""), function (err) {
+                        that.main.socket.emit('delGroup', id.replace('system.group.', ''), function (err) {
                             if (err) {
                                 that.main.showMessage(_('Cannot delete group: %s', err), '', 'alert');
                             }
@@ -306,8 +327,8 @@ function Groups(main) {
         userGroups = userGroups || [];
         for (var i = 0; i < this.list.length; i++) {
             // If user has no group, but group has user => delete user from group
-            if (userGroups.indexOf(this.list[i]) == -1 &&
-                that.main.objects[this.list[i]].common.members && that.main.objects[this.list[i]].common.members.indexOf(userId) != -1) {
+            if (userGroups.indexOf(this.list[i]) === -1 &&
+                that.main.objects[this.list[i]].common.members && that.main.objects[this.list[i]].common.members.indexOf(userId) !== -1) {
                 var members = JSON.parse(JSON.stringify(that.main.objects[this.list[i]].common.members));
                 members.splice(members.indexOf(userId), 1);
                 obj = {common: {members: members}};
@@ -320,8 +341,8 @@ function Groups(main) {
                     }
                 });
             }
-            if (userGroups.indexOf(this.list[i]) != -1 &&
-                (!that.main.objects[this.list[i]].common.members || that.main.objects[this.list[i]].common.members.indexOf(userId) == -1)) {
+            if (userGroups.indexOf(this.list[i]) !== -1 &&
+                (!that.main.objects[this.list[i]].common.members || that.main.objects[this.list[i]].common.members.indexOf(userId) === -1)) {
                 that.main.objects[this.list[i]].common.members = that.main.objects[this.list[i]].common.members || [];
                 var _members = JSON.parse(JSON.stringify(that.main.objects[this.list[i]].common.members));
                 _members.push(userId);
@@ -341,7 +362,7 @@ function Groups(main) {
     this.delUser = function (id) {
         for (var i = 0; i < this.list.length; i++) {
             // If user has no group, but group has user => delete user from group
-            if (that.main.objects[this.list[i]].common.members && that.main.objects[this.list[i]].common.members.indexOf(id) != -1) {
+            if (that.main.objects[this.list[i]].common.members && that.main.objects[this.list[i]].common.members.indexOf(id) !== -1) {
                 that.main.objects[this.list[i]].common.members.splice(that.main.objects[this.list[i]].common.members.indexOf(id), 1);
                 that.main.socket.emit('extendObject', this.list[i], {
                     common: {
@@ -355,10 +376,10 @@ function Groups(main) {
     this.objectChange = function (id, obj) {
         if (id.match(/^system\.group\./)) {
             if (obj) {
-                if (this.list.indexOf(id) == -1) this.list.push(id);
+                if (this.list.indexOf(id) === -1) this.list.push(id);
             } else {
                 var j = this.list.indexOf(id);
-                if (j != -1) this.list.splice(j, 1);
+                if (j !== -1) this.list.splice(j, 1);
             }
 
             if (this.updateTimer) {
@@ -366,14 +387,13 @@ function Groups(main) {
             }
             this.updateTimer = setTimeout(function () {
                 that.updateTimer = null;
-                that.main.tabs.users.init(true);
-                that.init(true);
+                that._postInit();
             }, 200);
         }
-    }
+    };
 
     this.resize = function (width, height) {
         this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
-    }
+    };
 }
 

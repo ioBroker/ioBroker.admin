@@ -745,12 +745,13 @@ function filterChanged(e) {
     function findRoomsForObject(data, id, withParentInfo, rooms) {
         rooms = rooms || [];
         for (var i = 0; i < data.roomEnums.length; i++) {
-            if (data.objects[data.roomEnums[i]].common.members.indexOf(id) !== -1 &&
-                rooms.indexOf(data.objects[data.roomEnums[i]].common.name) === -1) {
+            var common = data.objects[data.roomEnums[i]].common;
+            if (common.members && common.members.indexOf(id) !== -1 &&
+                rooms.indexOf(common.name) === -1) {
                 if (!withParentInfo) {
-                    rooms.push(data.objects[data.roomEnums[i]].common.name);
+                    rooms.push(common.name);
                 } else {
-                    rooms.push({name: data.objects[data.roomEnums[i]].common.name, origin: id});
+                    rooms.push({name: common.name, origin: id});
                 }
             }
         }
@@ -765,7 +766,8 @@ function filterChanged(e) {
     function findRoomsForObjectAsIds(data, id, rooms) {
         rooms = rooms || [];
         for (var i = 0; i < data.roomEnums.length; i++) {
-            if (data.objects[data.roomEnums[i]].common.members.indexOf(id) !== -1 &&
+            var common = data.objects[data.roomEnums[i]].common;
+            if (common && common.members && common.members.indexOf(id) !== -1 &&
                 rooms.indexOf(data.roomEnums[i]) === -1) {
                 rooms.push(data.roomEnums[i]);
             }
@@ -776,12 +778,13 @@ function filterChanged(e) {
     function findFunctionsForObject(data, id, withParentInfo, funcs) {
         funcs = funcs || [];
         for (var i = 0; i < data.funcEnums.length; i++) {
-            if (data.objects[data.funcEnums[i]].common.members.indexOf(id) !== -1 &&
-                funcs.indexOf(data.objects[data.funcEnums[i]].common.name) === -1) {
+            var common = data.objects[data.funcEnums[i]].common;
+            if (common && common.members && common.members.indexOf(id) !== -1 &&
+                funcs.indexOf(common.name) === -1) {
                 if (!withParentInfo) {
-                    funcs.push(data.objects[data.funcEnums[i]].common.name);
+                    funcs.push(common.name);
                 } else {
-                    funcs.push({name: data.objects[data.funcEnums[i]].common.name, origin: id});
+                    funcs.push({name: common.name, origin: id});
                 }
             }
         }
@@ -796,7 +799,8 @@ function filterChanged(e) {
     function findFunctionsForObjectAsIds(data, id, funcs) {
         funcs = funcs || [];
         for (var i = 0; i < data.funcEnums.length; i++) {
-            if (data.objects[data.funcEnums[i]].common.members.indexOf(id) !== -1 &&
+            var common = data.objects[data.funcEnums[i]].common;
+            if (common && common.members && common.members.indexOf(id) !== -1 &&
                 funcs.indexOf(data.funcEnums[i]) === -1) {
                 funcs.push(data.funcEnums[i]);
             }
@@ -3187,10 +3191,12 @@ function filterChanged(e) {
         },
         destroy: function () {
             for (var i = 0; i < this.length; i++) {
-                var dlg = this[i];
-                var $dlg = $(dlg);
-                $dlg.data('selectId', null);
-                $('#' + data.instance + '-div')[0].innerHTML('');
+                var $dlg = $(this[i]);
+                var data = $dlg.data('selectId');
+                if (data) {
+                    $dlg.data('selectId', null);
+                    $('#' + data.instance + '-div').remove();
+                }
             }
             return this;
         },

@@ -1,5 +1,5 @@
 function States(main) {
-    "use strict";
+    'use strict';
 
     var that = this;
 

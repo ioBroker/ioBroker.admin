@@ -1050,13 +1050,13 @@ function Adapters(main) {
 
     // ----------------------------- Adapters show and Edit ------------------------------------------------
     this.init = function (update, updateRepo) {
-        if (this.inited) {
+        if (this.inited && !update) {
             return;
         }
 
         if (!this.main.objectsLoaded) {
             setTimeout(function () {
-                that.init();
+                that.init(update, updateRepo);
             }, 250);
             return;
         }
@@ -1064,15 +1064,20 @@ function Adapters(main) {
 
         // update info
         // Required is list of hosts and repository (done in getAdaptersInfo)
-        this.main.subscribeObjects('system.host.*');
+        if (!this.inited) {
+            this.inited = true;
+            this.main.subscribeObjects('system.host.*');
+        }
         this.main.tabs.hosts.getHosts(function () {
             that._postInit(update, updateRepo);
         });
     };
 
     this.destroy = function () {
-        this.inited = false;
-        this.main.unsubscribeObjects('system.host.*');
+        if (this.inited) {
+            this.inited = false;
+            this.main.unsubscribeObjects('system.host.*');
+        }
     };
 
     function showLicenseDialog(adapter, callback) {

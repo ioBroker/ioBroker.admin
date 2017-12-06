@@ -133,6 +133,7 @@ function Logs(main) {                                                           
         this.inited = true;
 
         $logTable.html('');
+
         this.main.socket.emit('sendToHost', this.main.currentHost, 'getLogs', 200, function (lines) {
             setTimeout(function () {
                 var message = {message: '', severity: 'debug', from: '', ts: ''};

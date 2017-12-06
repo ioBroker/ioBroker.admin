@@ -1,0 +1,43 @@
+@import "commons";
+#tab-enums {
+  .tab-enums-list,
+  .tab-enums-objects {
+    display:  inline-block;
+    height:   100%;
+    transition: width @admin-sidemenu-transition;
+  }
+  .tab-enums-list {
+    width:    100%;
+  }
+  .tab-enums-objects {
+    display:  none;
+  }
+  .tab-enums-list {
+    overflow: auto;
+    .tree-table-buttons a {
+      margin-right: 5px;
+    }
+    line-height: 1.5rem;
+  }
+  .tab-enums-objects {
+    overflow: hidden;
+    .main-toolbar-table {
+      height: 41px;
+    }
+    .grid-main-wob-div {
+      height: calc(~"100% - 72px");
+    }
+    table.main-header-table>tbody>tr {
+      height: 27px!important;
+    }
+  }
+
+  &.tab-enums-edit {
+    .tab-enums-list,
+    .tab-enums-objects {
+      transition: width @admin-sidemenu-transition;
+      width:    calc(~"50% - 2px") !important;
+      display:  inline-block;
+    }
+  }
+}
