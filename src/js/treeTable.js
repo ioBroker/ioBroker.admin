@@ -307,6 +307,7 @@
                     for (var mm = 0; mm < members.length; mm++) {
                         obj = {
                             id: members[mm],
+                            title: members[mm],
                             parent: rows[k].id,
                             _class: 'treetable-member'
                         };

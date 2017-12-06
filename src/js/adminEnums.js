@@ -8,14 +8,11 @@ function Enums(main) {
     this.list              = [];
     this.$gridList         = $grid.find('.tab-enums-list');
     this.$grid             = $grid.find('.tab-enums-objects');
-    this.$gridMembers      = $('#grid-enum-members');
+//    this.$gridMembers      = $('#grid-enum-members');
     this.enumEdit          = null;
     this.updateTimers      = null;
     this.editMode          = false;
 
-    var $dialogEnumMembers = $('#dialog-enum-members');
-    var $dialogEnum        = $('#dialog-enum');
-    var enumCurrentParent  = '';
     var tasks              = [];
 
     var selectId = function () {
@@ -50,6 +47,7 @@ function Enums(main) {
             });
         }
     }
+
     function _enumRename(oldId, newId, newName, callback) {
         //Check if this name exists
         if (oldId !== newId && that.main.objects[newId]) {
@@ -265,7 +263,7 @@ function Enums(main) {
     }
 
     this.prepare = function () {
-        prepareEnumMembers();
+        //prepareEnumMembers();
 
         /*$dialogEnum.dialog({
             autoOpen:   false,
@@ -398,7 +396,7 @@ function Enums(main) {
             })
             .disableSelection();*/
         var $tbody = $div.find('.tab-enums-list .tree-table-main.treetable tbody');
-        $tbody.find('tr').droppable({
+        $tbody.find('tr.treetable-enum').droppable({
             accept: '.fancytree-type-draggable',
             over: function (e, ui) {
                 $(this).addClass('tab-accept-item');
