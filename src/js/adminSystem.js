@@ -147,82 +147,8 @@ function System(main) {
         }
     }
 
-    function fileHandler(event) {
-        event.preventDefault();
-        var file = event.dataTransfer ? event.dataTransfer.files[0] : event.target.files[0];
-
-        var $dz = $('#drop-zone');
-        if (file.size > 10000) {
-            // $('#drop-text').html(_('File is too big!'));
-            if (typeof Materialize !== 'undefined') {
-                Materialize.toast($('#tab-system-certs')[0], _('File is too big!'), 3000, 'dropZone-error');
-            }
-            /*$dz.addClass('dropZone-error').animate({opacity: 0}, 1000, function () {
-                $dz.hide().removeClass('dropZone-error').css({opacity: 1});
-                main.showError(_('File is too big!'));
-                $('#drop-text').html(_('Drop the files here'));
-            });*/
-            $dz.hide();
-            return false;
-        }
-        $dz.show();
-        var reader = new FileReader();
-        reader.onload = function (evt) {
-            var text;
-            try {
-                text = atob(evt.target.result.split(',')[1]); // string has form data:;base64,TEXT==
-            } catch(err) {
-                if (typeof Materialize !== 'undefined') {
-                    Materialize.toast($('#tab-system-certs')[0], _('Cannot read file!'), 3000, 'dropZone-error');
-                }
-                //$('#drop-text').html(_('Cannot read file!'));
-                /*$dz.addClass('dropZone-error').animate({opacity: 0}, 1000, function () {
-                    $dz.hide().removeClass('dropZone-error').css({opacity: 1});
-                    main.showError(_('Cannot read file!'));
-                    $('#drop-text').html(_('Drop the files here'));
-                });*/
-                $dz.hide();
-                return;
-            }
-            text = text.replace(/(\r\n|\n|\r)/gm, '');
-            if (text.indexOf('BEGIN RSA PRIVATE KEY') !== -1) {
-                $dz.hide();
-                addCert('private', text);
-            } else if (text.indexOf('BEGIN PRIVATE KEY') !== -1) {
-                $dz.hide();
-                addCert('private', text);
-            } else if (text.indexOf('BEGIN CERTIFICATE') !== -1) {
-                $dz.hide();
-                var m = text.split('-----END CERTIFICATE-----');
-                var count = 0;
-                for (var _m = 0; _m < m.length; _m++) {
-                    if (m[_m].replace(/[\r\n|\r|\n]+/, '').trim()) count++;
-                }
-                if (count > 1) {
-                    addCert('chained', text);
-                }  else {
-                    addCert('public', text);
-                }
-
-
-            } else {
-                //$('#drop-text').html(_('Unknown file format!'));
-                if (typeof Materialize !== 'undefined') {
-                    Materialize.toast($('#tab-system-certs')[0], _('Unknown file format!'), 3000, 'dropZone-error');
-                }
-                $dz.hide();
-                /*$dz.addClass('dropZone-error').animate({opacity: 0}, 1000, function () {
-                    $dz.hide().removeClass('dropZone-error').css({opacity: 1});
-                    main.showError(_('Unknown file format!'));
-                    $('#drop-text').html(_('Drop the files here'));
-                });*/
-            }
-        };
-        reader.readAsDataURL(file);
-    }
-
     // ----------------------------- Certificates show and Edit ------------------------------------------------
-    function initCertsGrid( /* update */) {
+    function initCertsGrid() {
         var $dropZone = $('#tab-system-certs');
         if (that.systemCerts && that.systemCerts.native.certificates) {
             var values = [];
@@ -240,37 +166,47 @@ function System(main) {
             $dropZone.html(_('permissionError'));
         }
 
-        // $gridCerts.trigger('reloadGrid');
-
-        if (typeof(window.FileReader) !== 'undefined' && !$dropZone.data('installed')) {
-            $dropZone.data('installed', true);
-            var $dz = $('#drop-zone');
-            //$('#drop-text').html(_('Drop the files here'));
-            /*if (typeof Materialize !== 'undefined') {
-                Materialize.toast($('#tab-system-certs')[0], _('Drop the files here'), 3000);
-            }*/
-            $dropZone[0].ondragover = function() {
-                $dz.unbind('click');
-                $dz.show();
-                return false;
-            };
-            $dz.click(function () {
-                $dz.hide();
-            });
-
-            $dz[0].ondragleave = function() {
-                $dz.hide();
-                return false;
-            };
-
-            $dz[0].ondrop = fileHandler;
-        }
-
-        $('#drop-file').change(fileHandler);
+        installFileUpload($dropZone, 10000, function (err, text) {
+            if (err) {
+                showMessage(err, 3000, 'dropZone-error');
+            } else {
+                try {
+                    text = atob(text.split(',')[1]); // string has form data:;base64,TEXT==
+                } catch (err) {
+                    showMessage(_('Cannot read file!'));
+                    return;
+                }
+                text = text.replace(/(\r\n|\n|\r)/gm, '');
+                if (text.indexOf('BEGIN RSA PRIVATE KEY') !== -1) {
+                    addCert('private', text);
+                } else if (text.indexOf('BEGIN PRIVATE KEY') !== -1) {
+                    addCert('private', text);
+                } else if (text.indexOf('BEGIN CERTIFICATE') !== -1) {
+                    var m = text.split('-----END CERTIFICATE-----');
+                    var count = 0;
+                    for (var _m = 0; _m < m.length; _m++) {
+                        if (m[_m].replace(/[\r\n]+|\n|\r/, '').trim()) count++;
+                    }
+                    if (count > 1) {
+                        addCert('chained', text);
+                    } else {
+                        addCert('public', text);
+                    }
+                } else {
+                    showMessage(_('Unknown file format!'), 3000, 'dropZone-error');
+                }
+            }
+        });
     }
 
     function updateCertListSelect() {
         // todo
+    }
+
+    function showMessage(text, duration, _class) {
+        if (typeof Materialize !== 'undefined') {
+            Materialize.toast($('#tab-system-certs')[0], text, duration || 3000, _class);
+        }
     }
 
     function initRights() {
@@ -548,12 +484,7 @@ function System(main) {
                             $dialogSystem.find('select').material_select();
                         } else
                         if (id === 'tab-system-certs') {
-                            if (typeof Materialize !== 'undefined') {
-                                Materialize.toast($('#tab-system-certs')[0], _('Drop the files here'), 3000);
-                            }
-                            /*$tabs.find('#drop-zone').show().css({opacity: 1}).animate({opacity: 0}, 2000, function () {
-                                $tabs.find('#drop-zone').hide().css({opacity: 1});
-                            });*/
+                            showMessage(_('Drop the files here'));
                         }
                     }
                 });

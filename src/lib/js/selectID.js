@@ -175,6 +175,7 @@ function filterChanged(e) {
     if ($.fn.selectId) return;
 
     var instance = 0;
+    var ICON_MINIMAL_BASE64_SIZE = 512;
 
     // var lineIndent = '6px';
     // function span (txt) {
@@ -1668,37 +1669,46 @@ function filterChanged(e) {
 
                 if (data.useNameAsId && obj && obj.common && obj.common.name) {
                     $firstTD.find('.fancytree-title').html(obj.common.name);
-                    //$firstTD.find('.fancytree-node').removeClass('ui-state-active');     //xxx
                 }
 
                 function getIcon() {
                     var icon = '';
-                    var alt = '';
+                    var alt  = '';
                     var _id_ = 'system.adapter.' + key;
                     if (data.objects[_id_] && data.objects[_id_].common && data.objects[_id_].common.icon) {
-                        icon = '/adapter/' + data.objects[_id_].common.name + '/' + data.objects[_id_].common.icon;
+                        // if not BASE64
+                        if (data.objects[_id_].common.icon.length < ICON_MINIMAL_BASE64_SIZE) {
+                            icon = '/adapter/' + data.objects[_id_].common.name + '/' + data.objects[_id_].common.icon;
+                        } else {
+                            icon = data.objects[_id_].common.icon;
+                        }
                     } else
                     if (isCommon) {
                         if (obj.common.icon) {
-                            var instance;
-                            if (obj.type === 'instance') {
-                                icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
-                            } else if (node.key.match(/^system\.adapter\./)) {
-                                instance = node.key.split('.', 3);
-                                if (obj.common.icon[0] === '/') {
-                                    instance[2] += obj.common.icon;
+                            if (obj.common.icon.length < ICON_MINIMAL_BASE64_SIZE) {
+                                var instance;
+                                if (obj.type === 'instance') {
+                                    icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
+                                } else if (node.key.match(/^system\.adapter\./)) {
+                                    instance = node.key.split('.', 3);
+                                    if (obj.common.icon[0] === '/') {
+                                        instance[2] += obj.common.icon;
+                                    } else {
+                                        instance[2] += '/' + obj.common.icon;
+                                    }
+                                    icon = '/adapter/' + instance[2];
                                 } else {
-                                    instance[2] += '/' + obj.common.icon;
+                                    instance = key.split('.', 2);
+                                    if (obj.common.icon[0] === '/') {
+                                        instance[0] += obj.common.icon;
+                                    } else {
+                                        instance[0] += '/' + obj.common.icon;
+                                    }
+                                    icon = '/adapter/' + instance[0];
                                 }
-                                icon = '/adapter/' + instance[2];
                             } else {
-                                instance = key.split('.', 2);
-                                if (obj.common.icon[0] === '/') {
-                                    instance[0] += obj.common.icon;
-                                } else {
-                                    instance[0] += '/' + obj.common.icon;
-                                }
-                                icon = '/adapter/' + instance[0];
+                                // base 64 image
+                                icon = obj.common.icon;
                             }
                         } else if (obj.type === 'device') {
                             icon = data.imgPath + 'device.png';
@@ -1716,53 +1726,6 @@ function filterChanged(e) {
                     return ''
                 }
 
-
-                // function getIcon() {
-                //     var icon = '';
-                //     var alt = '';
-                //     var _id_ = 'system.adapter.' + node.key;
-                //     if (data.objects[_id_] && data.objects[_id_].common && data.objects[_id_].common.icon) {
-                //         icon = '/adapter/' + data.objects[_id_].common.name + '/' + data.objects[_id_].common.icon;
-                //     } else
-                //     if (isCommon) {
-                //         if (data.objects[node.key].common.icon) {
-                //             var instance;
-                //             if (data.objects[node.key].type === 'instance') {
-                //                 icon = '/adapter/' + data.objects[node.key].common.name + '/' + data.objects[node.key].common.icon;
-                //             } else if (node.key.match(/^system\.adapter\./)) {
-                //                 instance = node.key.split('.', 3);
-                //                 if (data.objects[node.key].common.icon[0] === '/') {
-                //                     instance[2] += data.objects[node.key].common.icon;
-                //                 } else {
-                //                     instance[2] += '/' + data.objects[node.key].common.icon;
-                //                 }
-                //                 icon = '/adapter/' + instance[2];
-                //             } else {
-                //                 instance = node.key.split('.', 2);
-                //                 if (data.objects[node.key].common.icon[0] === '/') {
-                //                     instance[0] += data.objects[node.key].common.icon;
-                //                 } else {
-                //                     instance[0] += '/' + data.objects[node.key].common.icon;
-                //                 }
-                //                 icon = '/adapter/' + instance[0];
-                //             }
-                //         } else if (data.objects[node.key].type === 'device') {
-                //             icon = data.imgPath + 'device.png';
-                //             alt  = 'device';
-                //         } else if (data.objects[node.key].type === 'channel') {
-                //             icon = data.imgPath + 'channel.png';
-                //             alt  = 'channel';
-                //         } else if (data.objects[node.key].type === 'state') {
-                //             icon = data.imgPath + 'state.png';
-                //             alt  = 'state';
-                //         }
-                //     }
-                //
-                //     if (icon) return '<img class="iob-list-icon" src="' + icon + '" alt="' + alt + '"/>';
-                //     return ''
-                // }
-
-
                 var $elem;
                 var val;
                 for (var c = 0; c < data.columns.length; c++) {
@@ -1777,55 +1740,7 @@ function filterChanged(e) {
                     if (typeof name === 'object') {
                         name = name.name;
                     }
-                    // if (name === 'image') {
-                    //     var icon = '';
-                    //     var alt = '';
-                    //     var _id_ = 'system.adapter.' + node.key;
-                    //     if (data.objects[_id_] && data.objects[_id_].common && data.objects[_id_].common.icon) {
-                    //         icon = '/adapter/' + data.objects[_id_].common.name + '/' + data.objects[_id_].common.icon;
-                    //     } else
-                    //     if (isCommon) {
-                    //         if (data.objects[node.key].common.icon) {
-                    //             var instance;
-                    //             if (data.objects[node.key].type === 'instance') {
-                    //                 icon = '/adapter/' + data.objects[node.key].common.name + '/' + data.objects[node.key].common.icon;
-                    //             } else if (node.key.match(/^system\.adapter\./)) {
-                    //                 instance = node.key.split('.', 3);
-                    //                 if (data.objects[node.key].common.icon[0] === '/') {
-                    //                     instance[2] += data.objects[node.key].common.icon;
-                    //                 } else {
-                    //                     instance[2] += '/' + data.objects[node.key].common.icon;
-                    //                 }
-                    //                 icon = '/adapter/' + instance[2];
-                    //             } else {
-                    //                 instance = node.key.split('.', 2);
-                    //                 if (data.objects[node.key].common.icon[0] === '/') {
-                    //                     instance[0] += data.objects[node.key].common.icon;
-                    //                 } else {
-                    //                     instance[0] += '/' + data.objects[node.key].common.icon;
-                    //                 }
-                    //                 icon = '/adapter/' + instance[0];
-                    //             }
-                    //         } else if (data.objects[node.key].type === 'device') {
-                    //             icon = data.imgPath + 'device.png';
-                    //             alt  = 'device';
-                    //         } else if (data.objects[node.key].type === 'channel') {
-                    //             icon = data.imgPath + 'channel.png';
-                    //             alt  = 'channel';
-                    //         } else if (data.objects[node.key].type === 'state') {
-                    //             icon = data.imgPath + 'state.png';
-                    //             alt  = 'state';
-                    //         }
-                    //     }
-                    //     if (icon) {
-                    //         //$elem.html('<img width="16px" height="16px" src="' + icon + '" alt="' + alt + '"/>');
-                    //         //$elem.html('<img class="iob-list-icon" src="' + icon + '" alt="' + alt + '"/>');
-                    //         $elem.text('');
-                    //     } else {
-                    //         $elem.text('');
-                    //     }
-                    //     //base++;
-                    // } else
+
                     switch (name) {
                         case 'id':
                         case 'ID':
@@ -1833,24 +1748,7 @@ function filterChanged(e) {
                         case 'name':
                             var icon = getIcon ();
                             //$elem = $tdList.eq(base);
-                            var t = isCommon ? (obj.common.name || '') : ''; //).css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '';
-                            //$elem.html('<table style="border-spacing:0;"><tr><td><img width="16px" height="16px" src="' + icon + '" alt="' + alt + '"/></td><td class="objects-name-coll-table-td" style="border:0;"><div style="padding-left: 4px;">' + t + '</div></td></tr></table>');
-                            //$elem.html('<span><span class="objects-name-coll-icon"><img width="16px" height="16px" src="' + icon + '" alt="' + alt + '"/></span><span class="objects-name-coll-title" style="border:0;">' + t + '</span></tr></span>');
-                            //$elem.html('<span><span class="objects-name-coll-icon"><img class="iob-list-icon" src="' + icon + '" alt="' + alt + '"/></span><span class="objects-name-coll-title" style="border:0;">' + t + '</span></tr></span>');
-                            //$elem.html('<span><span class="objects-name-coll-icon">' + icon + '</span><span class="objects-name-coll-title" style="border:0;">' + t + '</span></tr></span>');
-
-                            // $elem.html (//'<span style="padding-left: ' + lineIndent + ';">' +
-                            //     '<div>' +
-                            //     '<div style="padding-left: ' + lineIndent + '; padding-right: 4px;" class="objects-name-coll-icon">' + icon + '</div>' +
-                            //     '<span class="objects-name-coll-title" style="border:0;">' + t + '</span>' +
-                            //     '</div>'
-                            // //'</span>');
-                            // );
-
-                            // $elem.html ('<span style="padding-left: ' + (icon ? lineIndent : 0) + '; height: 100%;">' +
-                            //     (icon ? '<span class="objects-name-coll-icon" style="vertical-align: middle">' + icon + '</span>' : '') +
-                            //     '<span class="objects-name-coll-title" style="border:0;">' + t + '</span>' +
-                            //     '</span>');
+                            var t = isCommon ? (obj.common.name || '') : '';
 
                             $elem.html ('<span style="padding-left: ' + (icon ? lineIndent : 0) + '; height: 100%; width: 100%">' +
                                 (icon ? '<span class="objects-name-coll-icon" style="vertical-align: middle">' + icon + '</span>' : '') +
@@ -1860,28 +1758,18 @@ function filterChanged(e) {
 
                             var $e = $elem.find ('.objects-name-coll-title');
                             if (!t) $e.css ({'vertical-align': 'middle'});
-                            // $e.css ({
-                            //     overflow: 'hidden',
-                            //     'white-space': 'nowrap',
-                            //     'text-overflow': 'ellipsis'
-                            // }).attr ('title', t);
+
                             $e.attr ('title', t);
                             //$elem.text(isCommon ? data.objects[node.key].common.name : '').css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '');
                             if (data.quickEdit /*&& obj*/ && data.quickEdit.indexOf ('name') !== -1) {
                                 $e.data ('old-value', isCommon ? (obj.common.name || ''): '');
                                 $e.click (onQuickEditField).data ('id', node.key).data ('name', 'name').data ('selectId', data).addClass ('select-id-quick-edit');
                             }
-                            //base++;
                             break;
                         case 'type':
-                            //$tdList.eq(base++).text(obj ? obj.type: '');
-                            //$tdList.eq(base++).html('<span style="padding-left: 5px;">' + (obj ? obj.type: '') + '</span>');
                             setText(obj ? obj.type || '' : '');
-                            //base += 1;
                             break;
                         case 'role':
-                            //$elem = $tdList.eq(base);
-                            //val = isCommon ? data.objects[node.key].common.role : '';
                             val = isCommon ? obj.common.role || '' : '';
                             setText(val);
 
@@ -1889,10 +1777,8 @@ function filterChanged(e) {
                                 $elem.data ('old-value', val);
                                 $elem.click (onQuickEditField).data ('id', node.key).data ('name', 'role').data ('selectId', data).addClass ('select-id-quick-edit');
                             }
-                            //base++;
                             break;
                         case 'room':
-                            //$elem = $tdList.eq(base);
                             // Try to find room
                             if (data.roomsColored) {
                                 var room = data.roomsColored[node.key];
@@ -1918,10 +1804,8 @@ function filterChanged(e) {
                                     .data ('selectId', data)
                                     .addClass ('select-id-quick-edit');
                             }
-                            //base++;
                             break;
                         case 'function':
-                            //$elem = $tdList.eq(base);
                             // Try to find function
                             if (data.funcsColored) {
                                 if (!data.funcsColored[node.key]) data.funcsColored[node.key] = findFunctionsForObject (data, node.key, true);
@@ -1946,10 +1830,8 @@ function filterChanged(e) {
                                     .data ('selectId', data)
                                     .addClass ('select-id-quick-edit');
                             }
-                            //base++;
                             break;
                         case 'value':
-                            //$elem = $tdList.eq(base);
                             var common = obj ? obj.common || {} : {};
 
                             var state;
@@ -1967,7 +1849,6 @@ function filterChanged(e) {
                                     };
                                 } else {
                                     state = Object.assign ({}, state);
-                                    //state = JSON.parse(JSON.stringify(state));
                                 }
 
                                 if (common.role === 'value.time') {
@@ -1995,24 +1876,17 @@ function filterChanged(e) {
                                 }
 
                                 $elem.html ('<span class="highlight" style="display: inline-block; width: 100%; padding-left: ' + lineIndent + ';">' + state.val + '</span>')
-                                //$elem.html('<span class="highlight">' + state.val + '</span>')
                                     .attr ('title', fullVal)
                                     .css ({position: 'relative'});
-                                //$elem.find('span').css({color: state.ack ? (state.q ? 'orange' : '') : 'red'});
-                                //$elem = $elem.find ('span');
                                 var $span = $elem.find('span');
                                 $span.css({color: state.ack ? (state.q ? 'orange' : '') : '#c00000'});
-                                //$elem.css ({color: state.ack ? (state.q ? 'orange' : '') : '#cf0000'});
-                                //$elem.attr('style', 'padding-left: 6px !important');
 
-                                //if (!data.noCopyToClipboard && obj && obj.type === 'state' && common.type !== 'file') {
                                 if (obj && obj.type === 'state' && common.type !== 'file') {
                                     addClippyToElement($elem, state.val,
                                         obj &&
                                         obj.type === 'state' &&
                                         (data.expertMode || obj.common.write !== false) ? key : undefined);
                                 }
-
                             } else {
                                 $elem.text ('')
                                     .attr ('title', '')
@@ -2064,7 +1938,6 @@ function filterChanged(e) {
                                 $elem.html ('<a href="' + data.webServer + '/state/' + node.key + '" target="_blank">' + data.webServer + '/state/' + node.key + '</a>')
                                     .attr ('title', data.texts.linkToFile);
                             }
-                            //base++;
 
                             break;
                         case 'button':
@@ -2079,7 +1952,6 @@ function filterChanged(e) {
                                             '<button data-id="' + node.key + '" class="select-button-ok"></button>' +
                                             '<button data-id="' + node.key + '" class="select-button-cancel"></button>';
                                     }
-                                    //style="position: absolute; right: 0; top: 0; z-index: 1;
 
                                     for (var j = 0; j < data.buttons.length; j++) {
                                         text += '<button data-id="' + node.key + '" class="select-button-' + j + ' select-button-custom td-button"></button>';
@@ -2185,7 +2057,6 @@ function filterChanged(e) {
                                         }
                                     }
                                 }
-                                //base++;
                             }
                             break;
                     }
@@ -2230,16 +2101,6 @@ function filterChanged(e) {
                     // Editor was opened (available as data.input)
                     var inputs = {id: _data.input};
 
-                    // for (var c = 0; c < data.columns.length; c++) {
-                    //     var name = data.columns[c];
-                    //     if (typeof name === 'object') name = name.name;
-                    //
-                    //     if (name === 'name') {
-                    //         //$tdList.eq(2 + c).html('<input type="text" id="select_edit_' + name + '" value="' + data.objects[_data.node.key].common[name] + '" style="width: 100%"/>');
-                    //         $tdList.eq(c).html('<input type="text" id="select_edit_' + name + '" value="' + data.objects[_data.node.key].common[name] + '" style="width: 100%"/>');
-                    //         inputs[name] = $dlg.find('#select_edit_' + name);
-                    //     }
-                    // }
                     forEachColumn(data, function(name, c) {
                         if (name === 'name') {
                             //$tdList.eq(2 + c).html('<input type="text" id="select_edit_' + name + '" value="' + data.objects[_data.node.key].common[name] + '" style="width: 100%"/>');
@@ -2275,13 +2136,6 @@ function filterChanged(e) {
                 save: function (event, _data) {
                     var editValues = {id: _data.input.val()};
 
-                    // for (var c = 0; c < data.columns.length; c++) {
-                    //     var name = data.columns[c];
-                    //     if (typeof name === 'object') name = name.name;
-                    //     if (name === 'name') {
-                    //         editValues[name] = $dlg.find('#select_edit_' + name).val();
-                    //     }
-                    // }
                     forEachColumn (data, function(name) {
                         if (name === 'name') {
                             editValues[name] = $dlg.find('#select_edit_' + name).val();
@@ -2370,40 +2224,33 @@ function filterChanged(e) {
             var c   = String.fromCharCode(e.which);
             var cmd = null;
 
-            // if (e.which === 'c' && e.ctrlKey) {
-            //     cmd = 'copy';
-            // }else if (e.which === $.ui.keyCode.UP && e.ctrlKey) {
-            //     cmd = 'moveUp';
-            // } else if (e.which === $.ui.keyCode.DOWN && e.ctrlKey) {
-            //     cmd = 'moveDown';
-            // } else if (e.which === $.ui.keyCode.RIGHT && e.ctrlKey) {
-            //     cmd = 'indent';
-            // } else if (e.which === $.ui.keyCode.LEFT && e.ctrlKey) {
-            //     cmd = 'outdent';
-            // }
-            if (e.ctrlKey) switch (e.which) {
-                case 'c':
-                    cmd = 'copy';
-                    break;
-                case $.ui.keyCode.UP:
-                    cmd = 'moveUp';
-                    break;
-                case $.ui.keyCode.DOWN:
-                    cmd = 'moveDown';
-                    break;
-                case $.ui.keyCode.RIGHT:
-                    cmd = 'indent';
-                    break;
-                case $.ui.keyCode.LEFT:
-                    cmd = 'outdent';
-                    break;
-            } else switch (e.which) {
-                case $.ui.keyCode.DELETE:
-                    cmd = 'delete';
-                    break;
-                case 113: // F2
-                    cmd = 'rename';
-                    break;
+            if (e.ctrlKey) {
+                switch (e.which) {
+                    case 'c':
+                        cmd = 'copy';
+                        break;
+                    case $.ui.keyCode.UP:
+                        cmd = 'moveUp';
+                        break;
+                    case $.ui.keyCode.DOWN:
+                        cmd = 'moveDown';
+                        break;
+                    case $.ui.keyCode.RIGHT:
+                        cmd = 'indent';
+                        break;
+                    case $.ui.keyCode.LEFT:
+                        cmd = 'outdent';
+                        break;
+                }
+            } else {
+                switch (e.which) {
+                    case $.ui.keyCode.DELETE:
+                        cmd = 'delete';
+                        break;
+                    case 113: // F2
+                        cmd = 'rename';
+                        break;
+                }
             }
             if (cmd) {
                 $(this).trigger('nodeCommand', {cmd: cmd});
@@ -2419,11 +2266,6 @@ function filterChanged(e) {
             if (data.filterVals === null) {
                 data.filterVals = {length: 0};
                 var value;
-                // var value = $('#filter_ID_' + data.instance).val().toLowerCase();
-                // if (value) {
-                //     data.filterVals.ID = value;
-                //     data.filterVals.length++;
-                // }
 
                 forEachColumn (data, function(name) {
                     //if (name === 'image') return;
@@ -2436,30 +2278,6 @@ function filterChanged(e) {
                         data.filterVals.length++;
                     }
                 });
-
-                // for (var c = 0; c < data.columns.length; c++) {
-                //     var name = data.columns[c];
-                //     if (typeof name === 'object') name = name.name;
-                //     if (name === 'image') continue;
-                //     if (name === 'role' || name === 'type' || name === 'room' || name === 'function') {
-                //         value = $('#filter_' + name + '_' + data.instance).val();
-                //         // if (value) {
-                //         //     data.filterVals[name] = value;
-                //         //     data.filterVals.length++;
-                //         // }
-                //     } else {
-                //         value = $('#filter_' + name + '_' + data.instance).val();
-                //         if (value) {
-                //             value = value.toLowerCase();
-                //             // data.filterVals[name] = value;
-                //             // data.filterVals.length++;
-                //         }
-                //     }
-                //     if (value) {
-                //         data.filterVals[name] = value;
-                //         data.filterVals.length++;
-                //     }
-                // }
 
                 // if no clear "close" event => store on change
                 if (data.noDialog) storeSettings(data);
@@ -2539,14 +2357,6 @@ function filterChanged(e) {
             if (changeTimer) clearTimeout(changeTimer);
             //changeTimer = setTimeout(function() {
             if (event && event.target) {
-                // var $e = $ (event.target);
-                // var val = $e.val ();
-                // //$e.parent().parent().css({background: val ? '#ffbfb6' : '#ffffff'});
-                // //$e.css({background: val ? '#ffbfb6' : '#ffffff'});
-                // //if (val) $e.addClass('input-not-empty'); else $e.removeClass('input-not-empty');
-                // $e[val ? 'addClass' : 'removeClass'] ('input-not-empty');
-                // $e.parent().parent().find('button').css({'display': val? 'unset' : 'none'});
-                // $e.parent().parent()[val ? 'addClass' : 'removeClass'] ('filter-active');
                 filterChanged(event.target);
             }
 

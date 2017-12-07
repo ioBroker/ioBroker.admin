@@ -8,19 +8,17 @@
   }
   .tree-table-main  {
     .tab-accept-item {
-      background: deepskyblue !important;
+      background: @admin-buttons-color !important;
       font-weight: bold;
       color: white;
     }
-  }
-  .tab-enums-list {
-    width:    100%;
   }
   .tab-enums-objects {
     display:  none;
   }
   .tab-enums-list {
-    overflow: auto;
+    width:    100%;
+    overflow: hidden;
     .tree-table-buttons a {
       margin-right: 5px;
     }
@@ -39,6 +37,27 @@
     }
   }
 
+  // blur non-target components while dragging
+  &.dragging {
+    .tree-table-buttons {
+      opacity: 0.3;
+    }
+    .tab-enums-objects {
+      opacity: 0.3;
+    }
+    .tree-table-main::after {
+      content: "";
+      pointer-events: none;
+      box-sizing: border-box;
+      border: 5px dashed lightblue;
+      border-radius: 1rem;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  }
   &.tab-enums-edit {
     .tab-enums-list,
     .tab-enums-objects {
@@ -59,5 +78,27 @@
     border-radius: 2px;
     font-size: larger;
     font-weight: bold;
+  }
+  .tab-enums-dialog-new-color-icon {
+    float: left;
+    padding-right: 4px;
+  }
+  .tab-enums-dialog-new-icon {
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    margin-left: 2em;
+    overflow: hidden;
+    img {
+      width: 100%;
+    }
+  }
+  .tab-enums-dialog-new-color {
+    width: calc(~"100% - 50px");
+  }
+  .tab-enums-dialog-new-icon-clear,
+  .tab-enums-dialog-new-color-clear {
+    float: right;
+    z-index: 0;
   }
 }

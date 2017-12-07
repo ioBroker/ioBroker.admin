@@ -1,6 +1,8 @@
 (function ($) {
     'use strict';
 
+    var ICON_MINIMAL_BASE64_SIZE = 512;
+
     if ($.fn.treeTable) return;
 
     function nodeExpand() {
@@ -24,7 +26,7 @@
     function nodeCollapse() {
         var id = this.id;
         var $table = this.row.parent().parent(); // table > tbody > tr
-        var options = $table.data('data');
+        var options = $table.data('options');
 
         if (options.name && options.expanded) {
             var pos = options.expanded.indexOf(id);
@@ -175,6 +177,58 @@
         });
     }
 
+    function getIcon(objects, id, imgPath) {
+        var icon     = '';
+        var alt      = '';
+        var obj      = objects[id];
+        var isCommon = obj && obj.common;
+
+        if (isCommon) {
+            if (isCommon.icon) {
+                if (isCommon.icon.length < ICON_MINIMAL_BASE64_SIZE) {
+                    var instance;
+                    if (obj.type === 'instance') {
+                        icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
+                    } else if (id.match(/^system\.adapter\./)) {
+                        instance = node.key.split('.', 3);
+                        if (obj.common.icon[0] === '/') {
+                            instance[2] += obj.common.icon;
+                        } else {
+                            instance[2] += '/' + obj.common.icon;
+                        }
+                        icon = '/adapter/' + instance[2];
+                    } else {
+                        instance = id.split('.', 2);
+                        if (obj.common.icon[0] === '/') {
+                            instance[0] += obj.common.icon;
+                        } else {
+                            instance[0] += '/' + obj.common.icon;
+                        }
+                        icon = '/adapter/' + instance[0];
+                    }
+                } else {
+                    icon = isCommon.icon;
+                }
+                alt = obj.type;
+            } else {
+                imgPath = imgPath || 'lib/css/fancytree/';
+                if (obj.type === 'device') {
+                    icon = imgPath + 'device.png';
+                    alt  = 'device';
+                } else if (obj.type === 'channel') {
+                    icon = imgPath + 'channel.png';
+                    alt  = 'channel';
+                } else if (obj.type === 'state') {
+                    icon = imgPath + 'state.png';
+                    alt  = 'state';
+                }
+            }
+        }
+
+        if (icon) return '<img class="treetable-icon" src="' + icon + '" alt="' + alt + '" />';
+        return '';
+    }
+
     function buildTable(options) {
         var table = '';
         var buttonTag = typeof Materialize === 'undefined' ? 'button' : 'a';
@@ -202,9 +256,19 @@
         table += '  <thead>';
         table += '      <tr class="tree-table-main-header">';
         var withMembers = false;
+        var withIcons   = false;
+        var withColors  = false;
         for (var ch = 0; ch < options.columns.length; ch++) {
-            if (options.columns[ch] === 'members') {
+            if (options.columns[ch] === 'members' ) {
                 withMembers = true;
+                continue;
+            }
+            if (options.columns[ch] === 'icon' ) {
+                withIcons = true;
+                continue;
+            }
+            if (options.columns[ch] === 'color' ) {
+                withColors = true;
                 continue;
             }
             if (options.columns[ch] === 'name') {
@@ -250,6 +314,9 @@
                 obj.folder = true;
             }
             for (var cb = 0; cb < options.columns.length; cb++) {
+                if (options.columns[cb] === 'icon') {
+                    continue;
+                }
                 if (options.columns[cb] === 'instance') {
                     if (options.objects[id].type === 'script') {
                         obj.instance = common ? common.engine.split('.').pop() : 0;
@@ -306,8 +373,8 @@
                     members.sort();
                     for (var mm = 0; mm < members.length; mm++) {
                         obj = {
-                            id: members[mm],
-                            title: members[mm],
+                            id:     members[mm],
+                            title:  members[mm],
                             parent: rows[k].id,
                             _class: 'treetable-member'
                         };
@@ -317,10 +384,11 @@
                             var ccommon = options.objects[obj.id].common;
                             if (ccommon) {
                                 for (var ccb = 0; ccb < options.columns.length; ccb++) {
-                                    if (options.columns[ccb] === 'members' || options.columns[ccb] === 'id') continue;
-                                    var vval = common[options.columns[ccb]];
+                                    var attr = options.columns[ccb];
+                                    if (attr === 'members' || attr === 'id' || attr === 'title' || attr === 'icon') continue;
+                                    var vval = ccommon[options.columns[ccb]];
                                     if (vval !== undefined) {
-                                        obj.name = vval;
+                                        obj[attr] = vval;
                                     }
                                 }
                             }
@@ -348,13 +416,17 @@
 
             table += '">';
             for (var c = 0; c < options.columns.length; c++) {
-                if (options.columns[c] === 'members') {
+                var aattr = options.columns[c];
+                if (aattr === 'members' || aattr === 'icon' || aattr === 'color') {
                     continue;
                 }
                 var style = '';
-                var _class = '';
+                var _class = (options.classes && options.classes[c]) || '';
+                if (!c && withColors && rows[i].color) {
+                    style = 'background: ' + rows[i].color + ';';
+                }
                 if (!c && rows[i].hasOwnProperty('children')) {
-                    _class = 'treetable-folder fancytree-exp-c fancytree-has-children fancytree-ico-cf';
+                    _class += ' treetable-folder fancytree-exp-c fancytree-has-children fancytree-ico-cf';
                     if (rows[i].id === 'script.js.global') {
                         style += ' color: rgb(0, 128, 0);'
                     } else {
@@ -365,11 +437,13 @@
                         table += '<span class="treetable-counter">' + rows[i].children.length + '</span>';
                     }
                 } else {
-                    table += '<td style="' + style + '">';
+                    table += '<td style="' + style + '" class="' + _class + '">';
                 }
-
+                if (!c && withIcons) {
+                    table += getIcon(options.objects, rows[i].id, options.imgPath);
+                }
                 // edit instance
-                if (options.columns[c] === 'instance') {
+                if (aattr === 'instance') {
                     if (rows[i].instance !== undefined && instances.length > 1) {
                         instSelect = '<select class="treetable-instance" data-id="' + rows[i].id + '">';
                         for (var ii = 0; ii < instances.length; ii++) {
@@ -379,10 +453,12 @@
 
                         table += instSelect;
                     } else {
-                        table += (rows[i].instance === undefined ? '' : rows[i].instance);
+                        table += '<span>' + (rows[i].instance === undefined ? '' : rows[i].instance) + '</span>';
                     }
+                } else if (aattr === 'icon') {
+                    table += getIcon(options.objects, rows[i].id, options.imgPath);
                 } else {
-                    table += (rows[i][options.columns[c]] || '');
+                    table += '<span>' + (rows[i][aattr] || '') + '</span>';
                 }
                 table += '</td>';
             }
@@ -391,11 +467,15 @@
                 table += '<td class="treetable-buttons" style="' + (options.buttonsStyle || '') + '">';
                 var text = '';
                 for (var jj = 0; jj < options.buttons.length; jj++) {
-                    text += '<' + buttonTag + ' data-id="' + rows[i].id + '" class="select-button-' + jj + ' select-button-custom td-button"  style="margin-right: 3px;'+ '" data-parent="' + rows[i].parent + '" data-children="' + !!rows[i].realChildren + '" title="' + (options.buttons[jj].title || '') + '">';
-                    if (typeof Materialize !== 'undefined') {
-                        text += '<i class="material-icons">' + (options.buttons[jj].icon || '') + '</i>';
+                    if (options.buttons[jj].match && !options.buttons[jj].match(rows[i].id)) {
+                        text += '<div class="treetable-button-empty">&nbsp;</div>';
+                    } else {
+                        text += '<' + buttonTag + ' data-id="' + rows[i].id + '" class="select-button-' + jj + ' select-button-custom td-button"  style="margin-right: 3px;'+ '" data-parent="' + rows[i].parent + '" data-children="' + !!rows[i].realChildren + '" title="' + (options.buttons[jj].title || '') + '">';
+                        if (typeof Materialize !== 'undefined') {
+                            text += '<i class="material-icons">' + (options.buttons[jj].icon || '') + '</i>';
+                        }
+                        text += '</' + buttonTag + '>';
                     }
-                    text += '</' + buttonTag + '>';
                 }
 
                 table += text + '</td>';
@@ -519,6 +599,9 @@
         } else {
             $treeTable.find('.treetable-instance').prop('disabled', true)
         }
+        if (typeof options.onReady === 'function') {
+            options.onReady($treeTable);
+        }
     }
 
     function reInit() {
@@ -550,6 +633,7 @@
 
     var methods = {
         init: function (options) {
+            options.imgPath = options.imgPath || 'lib/css/fancytree/';
             for (var i = 0; i < this.length; i++) {
                 buildTable.call(this[i], options);
 
@@ -569,11 +653,38 @@
             }
             return this;
         },
+        destroy: function () {
+            for (var i = 0; i < this.length; i++) {
+                var $table = $(this[i]).find('.tree-table-main');
+                if ($table.length && $table.data('options')) {
+                    $table.data('options', null);
+                    $(this[i]).html('');
+                }
+            }
+        },
         expand: function (id) {
             for (var i = 0; i < this.length; i++) {
                 var $table = $(this[i]).find('.tree-table-main');
                 try {
-                    $table.treetable('expandNode', id);
+                    if (id) {
+                        $table.treetable('expandNode', id);
+                    } else {
+                        $table.treetable('expandAll', id);
+                    }
+                } catch (e) {
+                }
+            }
+        },
+        collapse: function (id) {
+            for (var i = 0; i < this.length; i++) {
+                var $table = $(this[i]).find('.tree-table-main');
+                try {
+                    if (id) {
+                        $table.treetable('collapseNode', id);
+                    } else {
+                        $table.treetable('collapseAll');
+                    }
+
                 } catch (e) {
                 }
             }

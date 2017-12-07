@@ -366,6 +366,7 @@
         </table>
     <div id="pager-users"></div>
 </div>
+</div>
 <div id="tab-enums"     class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Enums">
     <div class="tab-enums-list"></div>
     <div class="tab-enums-objects" id="grid-enums">
@@ -389,6 +390,22 @@
                     <i class="material-icons prefix">pageview</i>
                     <label for="tab-enums-dialog-new-preview" class="translate">Preview</label>
                     <input type="text" id="tab-enums-dialog-new-preview" disabled />
+                </div>
+                <div class="row">
+                    <i class="material-icons prefix">file_upload</i>
+                    <div class="btn tab-enums-dialog-new-upload">
+                        <span class="translate">Icon upload</span>
+                    </div>
+                    <div class="tab-enums-dialog-new-icon"></div>
+                    <div class="btn-floating waves-effect waves-light tab-enums-dialog-new-icon-clear translate"><i class="material-icons">delete</i></div>
+                </div>
+                <div class="row file-field tab-enums-dialog-new-colorpicker">
+                    <i class="material-icons prefix tab-enums-dialog-new-color-icon">color_lens</i>
+                    <div class="btn tab-enums-dialog-new-color-btn translate">Color</div>
+                    <div class="file-path-wrapper">
+                        <input type="text" class="tab-enums-dialog-new-color" />
+                        <div class="btn-floating waves-effect waves-light tab-enums-dialog-new-color-clear translate"><i class="material-icons">delete</i></div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1213,10 +1230,7 @@
                     </table>
                 </div>
             </div>
-            <div id="tab-system-certs"  class="dropZone col s12 page">
-                <div id="drop-zone" style="display: none"><div style="padding-top:20%" class="translate" id="drop-text"></div>
-                    <input type="file" id="drop-file" style="display: none">
-                </div>
+            <div id="tab-system-certs" class="dropZone col s12 page">
                 <div class="row">
                     <a class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                     <span class="translate" style="padding-left: 1rem">you can use absolute path to certificate, like '/opt/certs/cert.pem'</span>
@@ -1233,7 +1247,6 @@
                         </thead>
                     </table>
                 </div>
-
             </div>
             <div id="tab-system-letsencrypt" class="col s12 page">
                 <div class="row translate">letsnecrypt_help</div>

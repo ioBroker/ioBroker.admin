@@ -28,7 +28,9 @@ gulp.task('compressMaterialize', function () {
         './src/materialize-css/js/dropdown.js',
         './src/materialize-css/js/toasts.js',
         './src/materialize-css/js/modal.js',
-        './src/materialize-css/js/forms.js'
+        './src/materialize-css/js/forms.js',
+        './src/materialize-css/js/forms.js',
+        './src/colorpicker/js/materialize-colorpicker.js'
     ])
     .pipe(sourcemaps.init())
     .pipe(concat('materialize.js'))
@@ -38,7 +40,7 @@ gulp.task('compressMaterialize', function () {
 });
 
 gulp.task('lessApp', function () {
-    gulp.src(['./src/css/*.less'])
+    gulp.src(['./src/css/*.less', './src/colorpicker/less/*.less'])
         .pipe(sourcemaps.init())
         .pipe(less({
             paths: [ ]
@@ -105,9 +107,17 @@ gulp.task('copySrc', function () {
     return gulp.src([
         './src/**/*.*',
         '!./src/**/*.less',
-        '!./src/js/**/admin*.js'
+        '!./src/js/**/admin*.js',
+        '!./src/materialize-css/**/*',
+        '!./src/colorpicker/**/*'
     ])
     .pipe(gulp.dest('./www'));
+});
+gulp.task('copyColorpicker', function () {
+    return gulp.src([
+        './src/colorpicker/**/*.png'
+    ])
+        .pipe(gulp.dest('./www'));
 });
 gulp.task('copyAce', function () {
     return gulp.src([
@@ -116,7 +126,7 @@ gulp.task('copyAce', function () {
     ],  {base: './src/lib/js/ace-1.2.0/'})
         .pipe(gulp.dest('./www'));
 });
-gulp.task('copy', ['copySrc', 'copyAce']);
+gulp.task('copy', ['copySrc', 'copyAce', 'copyColorpicker']);
 
 gulp.task('watch', function () {
     gulp.watch('./src/css/*.less', ['lessApp']);

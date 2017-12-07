@@ -7,6 +7,7 @@ table.treetable {
   width: 100%;
   font-family: "Segoe UI", Tahoma, Arial, "Courier New", serif;
   font-weight: normal;
+  position: relative;
 
   caption {
     font-size: 0.82rem;
@@ -210,6 +211,9 @@ table.treetable {
   .treetable-buttons {
     text-align: center;
   }
+  .fancytree-icon {
+    margin-right: 5px;
+  }
   .treetable-enum {
     font-weight: normal;
     span.fancytree-icon {
@@ -222,10 +226,11 @@ table.treetable {
   .treetable-member {
     font-style: italic;
     span.fancytree-icon {
-      background-image: url(fancytree/state.png);
+      /*background-image: url(fancytree/state.png);
       background-size: 100%;
       height: 24px;
-      width: 24px;
+      width: 24px;*/
+      display: none;
     }
   }
   .treetable-channel {
@@ -233,6 +238,21 @@ table.treetable {
       background-position: -32px -16px;
     }
   }
+  .treetable-icon {
+    width: 22px;
+    height: auto;
+  }
+  .treetable-center {
+    text-align: center;
+  }
+  .treetable-button-empty {
+    width: 20px;
+    display: inline-block;
+  }
+}
+.tree-table-body {
+  overflow: auto;
+  height: calc(~"100% - 40px");
 }
 .treetable-list {
   padding: 0;
