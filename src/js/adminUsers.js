@@ -2,6 +2,7 @@
 
 function Users(main) {
     var that          = this;
+    this.groups       = [];
     this.list         = [];
     this.$grid        = $('#tab-users');
     this.$dialog      = $('#dialog-user');
@@ -11,7 +12,42 @@ function Users(main) {
     this.currentGroup = '';
     this.currentUser  = '';
 
-    this.userLastSelected = null;
+    this.synchronizeUser = function (userId, userGroups, callback) {
+        var obj;
+        userGroups = userGroups || [];
+        for (var i = 0; i < this.groups.length; i++) {
+            // If user has no group, but group has user => delete user from group
+            if (userGroups.indexOf(this.groups[i]) === -1 &&
+                that.main.objects[this.groups[i]].common.members && that.main.objects[this.groups[i]].common.members.indexOf(userId) !== -1) {
+                var members = JSON.parse(JSON.stringify(that.main.objects[this.groups[i]].common.members));
+                members.splice(members.indexOf(userId), 1);
+                obj = {common: {members: members}};
+                that.main.socket.emit('extendObject', this.groups[i], obj, function (err) {
+                    if (err) {
+                        that.main.showError(err);
+                        if (callback) callback(err);
+                    } else {
+                        if (callback) callback();
+                    }
+                });
+            }
+            if (userGroups.indexOf(this.groups[i]) !== -1 &&
+                (!that.main.objects[this.groups[i]].common.members || that.main.objects[this.groups[i]].common.members.indexOf(userId) === -1)) {
+                that.main.objects[this.groups[i]].common.members = that.main.objects[this.groups[i]].common.members || [];
+                var _members = JSON.parse(JSON.stringify(that.main.objects[this.groups[i]].common.members));
+                _members.push(userId);
+                obj = {common: {members: _members}};
+                that.main.socket.emit('extendObject', this.groups[i], obj, function (err) {
+                    if (err) {
+                        that.main.showError(err);
+                        if (callback) callback(err);
+                    } else {
+                        if (callback) callback();
+                    }
+                });
+            }
+        }
+    };
 
     this.prepare = function () {
         /*that.$grid.jqGrid({
@@ -188,9 +224,59 @@ function Users(main) {
         $("#load_grid-users").show();*/
     };
 
+    function showMessage(text, duration, _class) {
+        if (typeof Materialize !== 'undefined') {
+            Materialize.toast(that.$grid[0], text, duration|| 3000, _class);
+        }
+    }
+
     function firstUpper (str) {
         if (!str) return str;
         return str[0].toUpperCase() + str.substring(1).toLowerCase();
+    }
+
+    function delUserFromGroups(id, callback) {
+        var someDeleted = false;
+        for (var i = 0; i < that.groups.length; i++) {
+            // If user has no group, but group has user => delete user from group
+            if (that.main.objects[that.groups[i]].common.members && that.main.objects[that.groups[i]].common.members.indexOf(id) !== -1) {
+                that.main.objects[that.groups[i]].common.members.splice(that.main.objects[that.groups[i]].common.members.indexOf(id), 1);
+                that.main.socket.emit('extendObject', that.groups[i], {
+                    common: {
+                        members: that.main.objects[that.groups[i]].common.members
+                    }
+                }, function (err) {
+                    if (err) {
+                        showMessage(_('Cannot modify groups: %s', err));
+                    } else {
+                        setTimeout(delUserFromGroups, 0, id);
+                    }
+                });
+                someDeleted = true;
+                return;
+            }
+        }
+        callback && callback();
+    }
+
+    function deleteUser(id) {
+        if (that.main.objects[id] && that.main.objects[id].type === 'user') {
+            if (that.main.objects[id].common && that.main.objects[id].common.dontDelete) {
+                showMessage(_('Object may not be deleted'), 3000, 'dropZone-error');
+            } else {
+                delUserFromGroups(id, function () {
+                    that.main.socket.emit('delObject', id, function (err) {
+                        if (err) {
+                            showMessage(_('User may not be deleted: %s', err), 3000, 'dropZone-error');
+                        } else {
+                            showMessage(_('User deleted'));
+                        }
+                    });
+                });
+            }
+        } else {
+            showMessage(_('Invalid object: %s', id), 3000, 'dropZone-error');
+        }
     }
 
     function createOrEdit(isGroupOrId) {
@@ -420,7 +506,7 @@ function Users(main) {
         this.$gridUsers.treeTable({
             objects:    this.main.objects,
             root:       'system.user',
-            columns:    ['title', 'name', 'groups', 'icon', 'color'],
+            columns:    ['title', 'name', 'enabled', 'groups', 'icon', 'color'],
             widths:     ['calc(100% - 250px)', '250px'],
             //classes:    ['', 'treetable-center'],
             name:       'users',
@@ -432,56 +518,16 @@ function Users(main) {
                         primary:'ui-icon-trash'
                     },
                     click: function (id, children, parent) {
-                        /*if (that.main.objects[id]) {
-                            if (that.main.objects[id].type === 'enum') {
-                                if (children) {
-                                    // ask if only object must be deleted or just this one
-                                    that.main.confirmMessage(_('All sub-enums of %s will be deleted too?', id), null, 'help', function (result) {
-                                        // If all
-                                        if (result) {
-                                            that.main._delObjects(id, true, function (err) {
-                                                if (!err) {
-                                                    showMessage(_('Deleted'));
-                                                } else {
-                                                    showMessage(_('Error: %s', err));
-                                                }
-                                            });
-                                        } // else do nothing
-                                    });
-                                } else {
-                                    that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
-                                        // If all
-                                        if (result) that.main._delObjects(id, true, function (err) {
-                                            if (!err) {
-                                                showMessage(_('Deleted'));
-                                            } else {
-                                                showMessage(_('Error: %s', err));
-                                            }
-                                        });
-                                    });
+                        if (that.main.objects[id] && that.main.objects[id].type === 'user') {
+                            that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
+                                // If all
+                                if (result) {
+                                    deleteUser(id);
                                 }
-                            } else {
-                                that.main.socket.emit('getObject', parent, function (err, obj) {
-                                    if (obj && obj.common && obj.common.members) {
-                                        var pos = obj.common.members.indexOf(id);
-                                        if (pos !== -1) {
-                                            obj.common.members.splice(pos, 1);
-                                            that.main.socket.emit('setObject', obj._id, obj, function (err) {
-                                                if (!err) {
-                                                    showMessage(_('Removed'));
-                                                } else {
-                                                    showMessage(_('Error: %s', err));
-                                                }
-                                            });
-                                        } else {
-                                            showMessage(_('%s is not in the list'));
-                                        }
-                                    }
-                                });
-                            }
+                            });
                         } else {
                             showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id));
-                        }*/
+                        }
                     },
                     match: function (id) {
                         return !(that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.dontDelete);
@@ -525,7 +571,7 @@ function Users(main) {
         this.$gridGroups.treeTable({
             objects:    this.main.objects,
             root:       'system.group',
-            columns:    ['title', 'name', 'members', 'icon', 'color'],
+            columns:    ['title', 'name', 'desc', 'members', 'icon', 'color'],
             widths:     ['calc(100% - 250px)', '250px'],
             //classes:    ['', 'treetable-center'],
             name:       'groups',
@@ -621,11 +667,6 @@ function Users(main) {
                     }
                 }
             ],
-            onChange:   function (id, oldId) {
-                if (id !== oldId) {
-                    that.currentGroup = id;
-                }
-            },
             //onReady:    setupDraggable
         });
     };
@@ -755,11 +796,22 @@ function Users(main) {
                 that.timer = null;
                 that._postInit();
             }, 200);
+        } else
+        if (id.match(/^system\.group\./)) {
+            if (obj) {
+                if (this.groups.indexOf(id) === -1) this.groups.push(id);
+            } else {
+                var i = this.groups.indexOf(id);
+                if (i !== -1) this.groups.splice(j, 1);
+            }
+            if (this.timer) {
+                clearTimeout(this.timer);
+            }
+            this.timer = setTimeout(function () {
+                that.timer = null;
+                that._postInit();
+            }, 200);
         }
-    };
-
-    this.resize = function (width, height) {
-        //this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
     };
 }
 

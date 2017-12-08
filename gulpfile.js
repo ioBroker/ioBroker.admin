@@ -73,7 +73,8 @@ gulp.task('compressApp', function () {
     return gulp.src([
         './src/js/*.js',
         '!./src/js/adapter-settings.js',
-        '!./src/js/adminStates.js'
+        '!./src/js/adminStates.js',
+        '!./src/js/adminGroups.js'
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('app.js'))

@@ -502,7 +502,7 @@ $(document).ready(function () {
         events:     new Events(main),
         hosts:      new Hosts(main),
         users:      new Users(main),
-        groups:     new Groups(main),
+        //groups:     new Groups(main),
         enums:      new Enums(main)
     };
     if (typeof States !== 'undefined') {
@@ -631,8 +631,8 @@ $(document).ready(function () {
                 if (!auth) $('#button-logout').remove();
                 $('#current-user').html(user ? user[0].toUpperCase() + user.substring(1).toLowerCase() : '');
                 var groups = [];
-                for (var i = 0; i < tabs.groups.list.length; i++) {
-                    var group = main.objects[tabs.groups.list[i]];
+                for (var i = 0; i < tabs.users.groups.length; i++) {
+                    var group = main.objects[tabs.users.groups[i]];
                     if (group && group.common && group.common.members && group.common.members.indexOf('system.user.' + user) !== -1) {
                         groups.push(_(group.common.name));
                     }
@@ -961,7 +961,7 @@ $(document).ready(function () {
                     if (obj.type === 'instance') main.instances.push(id);
                     if (obj.type === 'enum')     tabs.enums.list.push(id);
                     if (obj.type === 'user')     tabs.users.list.push(id);
-                    if (obj.type === 'group')    tabs.groups.list.push(id);
+                    if (obj.type === 'group')    tabs.users.groups.push(id);
                     if (obj.type === 'adapter')  tabs.adapters.list.push(id);
                     if (obj.type === 'host')     tabs.hosts.addHost(obj);
 
@@ -1099,9 +1099,6 @@ $(document).ready(function () {
         }
 
         tabs.hosts.objectChange(id, obj);
-
-        // Update groups
-        tabs.groups.objectChange(id, obj);
 
         // Update users
         tabs.users.objectChange(id, obj);
@@ -1312,7 +1309,7 @@ $(document).ready(function () {
         'tab-logs':             {order: 5, icon: 'view_headline'},
         'tab-scenes':           {order: 6, icon: 'subscriptions'},
         'tab-events':           {order: 7, icon: 'flash_on'},
-        'tab-groups':           {order: 8, icon: 'group'},
+        //'tab-groups':           {order: 8, icon: 'group'},
         'tab-users':            {order: 9, icon: 'person_outline'},
         'tab-javascript':       {order: 10},
         'tab-text2command-0':   {order: 11, icon: 'ac_unit'},
@@ -1608,7 +1605,7 @@ $(document).ready(function () {
                                 tabs.adapters.prepare();
                                 tabs.instances.prepare();
                                 tabs.users.prepare();
-                                tabs.groups.prepare();
+                                //tabs.groups.prepare();
                                 tabs.enums.prepare();
                                 tabs.objects.prepareCustoms();
                                 tabs.events.prepare();

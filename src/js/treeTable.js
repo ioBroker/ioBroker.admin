@@ -230,7 +230,7 @@
     }
 
     // https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
-    function invertColor(hex) {
+    /*function invertColor(hex) {
         if (hex.indexOf('#') === 0) {
             hex = hex.slice(1);
         }
@@ -246,7 +246,7 @@
             b = parseInt(hex.slice(4, 6), 16);
         // http://stackoverflow.com/a/3943023/112731
         return (r * 0.299 + g * 0.587 + b * 0.114) <= 186;
-    }
+    }*/
 
     function buildTable(options) {
         var table = '';
@@ -441,17 +441,13 @@
                 }
                 var style = '';
                 var _class = (options.classes && options.classes[c]) || '';
-                var isInvert = false;
-                if (!c && withColors && rows[i].color) {
-                    style = 'background: ' + rows[i].color + ';';
-                    isInvert = invertColor(rows[i].color);
-                }
+
                 if (!c && rows[i].hasOwnProperty('children')) {
                     _class += ' treetable-folder fancytree-exp-c fancytree-has-children fancytree-ico-cf';
                     if (rows[i].id === 'script.js.global') {
-                        style += isInvert ? ' color: rgb(0, 128, 0);' : ' color: rgb(0, 128, 0);'; // green
+                        style += ' color: rgb(0, 128, 0);'; // green
                     } else {
-                        style += isInvert ? ' color: rgb(255, 255, 255);' : ' color: rgb(0, 0, 128);'
+                        style += ' color: rgb(0, 0, 128);'
                     }
                     table += '<td style="' + style + '" class="' + _class + '">';
                     if (rows[i].children && rows[i].children.length) {
@@ -459,6 +455,9 @@
                     }
                 } else {
                     table += '<td style="' + style + '" class="' + _class + '">';
+                }
+                if (!c && withColors && rows[i].color) {
+                    table += '<div style="background: ' + rows[i].color + '" class="treetable-color"></div>';
                 }
                 if (!c && withIcons) {
                     table += getIcon(options.objects, rows[i].id, options.imgPath);
