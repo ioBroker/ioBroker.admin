@@ -117,7 +117,9 @@
                                  // {name: 'field', options: {a1: 'a111_Text', a2: 'a22_Text'}}, options can be a function (id, name), that give back such an object
              quickEditCallback: null, // function (id, attr, newValue, oldValue),
              readyCallback: null // called when objects and states are read from server (only if connCfg is not null). function (err, objects, states)
-     }
+             expandedCallback: null, // called when some node was expanded. function(id, childrenCount, statesCount)
+             collapsedCallback: null, // called when some node was expanded. function(id, childrenCount, statesCount)
+        }
  +  show(currentId, filter, callback) - all arguments are optional if set by "init". Callback is like function (newId, oldId) {}. If multiselect, so the arguments are arrays.
  +  clear() - clear object tree to read and build anew (used only if objects set by "init")
  +  getInfo(id) - get information about ID
@@ -1341,7 +1343,7 @@ function filterChanged(e) {
         ;
 
 
-        function textFiltertext(filterNo, placeholder) {
+        function textFilterText(filterNo, placeholder) {
             if (placeholder === undefined) {
                 placeholder = data.texts[filterNo.toLowerCase()] || '';
             }
@@ -1415,13 +1417,40 @@ function filterChanged(e) {
             return txt;
         }
 
+        function detectStates(node, patterns) {
+            if (node && node.children) {
+                var hasStates = false;
+                var someExpanded = false;
+                for (var c = 0; c < node.children.length; c++) {
+                    if (!node.children[c].expanded) {
+                        if (data.objects[node.children[c].data.id] && data.objects[node.children[c].data.id].type === 'state') {
+                            hasStates = true;
+                            break;
+                        }
+                    } else {
+                        someExpanded = true;
+                    }
+                }
+                if (hasStates) {
+                    patterns.push(node.data.id);
+                } else if (someExpanded) {
+                    for (var cc = 0; cc < node.children.length; cc++) {
+                        if (node.children[cc].expanded) {
+                            detectStates(node.children[cc], patterns);
+                        }
+                    }
+                }
+            }
+        }
+
         text += '        <tbody>';
         text += '            <tr>'; //<td></td>';
 
         forEachColumn(data, function(name) {
             text += '<td>';
-            if (name === 'ID' || name === 'name' || name === 'value' || name === 'enum') {
-                text += textFiltertext(name);
+            // we may not search by value
+            if (name === 'ID' || name === 'name' || name === 'enum') {
+                text += textFilterText(name);
             } else if (name === 'type' || name === 'role' || name === 'room' || name === 'function') {
                 text += textCombobox(name);
             } else if (name === 'button') {
@@ -2078,6 +2107,34 @@ function filterChanged(e) {
                         data.dblclick(node.key);
                     }
                 }
+            },
+            expand: function (event, _data) {
+                if (data.expandedCallback) {
+                    if (_data && _data.node) {
+                        var childrenCount = 0;
+                        var hasStates = false;
+                        var patterns  = [];
+                        if (_data.node.children) {
+                            childrenCount = _data.node.children.length;
+                            detectStates(_data.node, patterns);
+                            if (patterns.length) hasStates = true;
+                        }
+
+                        if (!patterns.length) {
+                            patterns.push(_data.node.key);
+                        }
+
+                        data.expandedCallback(patterns, childrenCount, hasStates);
+                    }
+                }
+            },
+            collapse: function (event, _data) {
+                if (data.collapsedCallback) {
+                    if (_data && _data.node) {
+                        data.collapsedCallback(_data.node.key);
+                    }
+                }
+
             }
         };
 

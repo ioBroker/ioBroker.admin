@@ -269,14 +269,13 @@ function initSocket(server, store) {
 }
 
 function main() {
-    adapter.subscribeForeignStates('*');
+    // adapter.subscribeForeignStates('*');
     adapter.subscribeForeignObjects('*');
 
     adapter.config.defaultUser = adapter.config.defaultUser || 'admin';
     if (!adapter.config.defaultUser.match(/^system\.user\./)) {
         adapter.config.defaultUser = 'system.user.' + adapter.config.defaultUser;
     }
-
 
     if (adapter.config.secure) {
         // Load certificates

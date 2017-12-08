@@ -263,65 +263,14 @@ function Enums(main) {
         });
     }
 
-    function getIcon(objects, id, imgPath) {
-        var icon     = '';
-        var alt      = '';
-        var obj      = objects[id];
-        var isCommon = obj && obj.common;
-
-        if (isCommon) {
-            if (isCommon.icon) {
-                if (isCommon.icon.length < 512) {
-                    var instance;
-                    if (obj.type === 'instance') {
-                        icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
-                    } else if (id.match(/^system\.adapter\./)) {
-                        instance = node.key.split('.', 3);
-                        if (obj.common.icon[0] === '/') {
-                            instance[2] += obj.common.icon;
-                        } else {
-                            instance[2] += '/' + obj.common.icon;
-                        }
-                        icon = '/adapter/' + instance[2];
-                    } else {
-                        instance = id.split('.', 2);
-                        if (obj.common.icon[0] === '/') {
-                            instance[0] += obj.common.icon;
-                        } else {
-                            instance[0] += '/' + obj.common.icon;
-                        }
-                        icon = '/adapter/' + instance[0];
-                    }
-                } else {
-                    icon = isCommon.icon;
-                }
-                alt = obj.type;
-            } else {
-                imgPath = imgPath || 'lib/css/fancytree/';
-                if (obj.type === 'device') {
-                    icon = imgPath + 'device.png';
-                    alt  = 'device';
-                } else if (obj.type === 'channel') {
-                    icon = imgPath + 'channel.png';
-                    alt  = 'channel';
-                } else if (obj.type === 'state') {
-                    icon = imgPath + 'state.png';
-                    alt  = 'state';
-                }
-            }
-        }
-
-        if (icon) return '<img class="treetable-icon" src="' + icon + '" alt="' + alt + '" />';
-        return '';
-    }
-
     function createOrEditEnum(isCategoryOrID) {
         var idChanged = false;
         var $dialog = that.$gridEnum.find('#tab-enums-dialog-new');
-        var nameVal = '';
-        var idVal   = '';
-        var iconVal = '';
         var oldId   = '';
+
+        var nameVal  = '';
+        var idVal    = '';
+        var iconVal  = '';
         var colorVal = '';
 
         installFileUpload($dialog, 50000, function (err, text) {
@@ -333,7 +282,7 @@ function Enums(main) {
                     return;
                 }
                 $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
-                iconVal = text;
+                iconVal   = text;
 
                 $dialog.find('.tab-enums-dialog-new-icon').show().html('<img class="treetable-icon" />');
                 $dialog.find('.tab-enums-dialog-new-icon .treetable-icon').attr('src', text);
@@ -448,7 +397,7 @@ function Enums(main) {
         $dialog.find('#tab-enums-dialog-new-preview').val((isCategoryOrID === true ? 'enum' : that.enumEdit) + '.' + (idVal || '#'));
 
         if (iconVal) {
-            $dialog.find('.tab-enums-dialog-new-icon').show().html(getIcon(that.main.objects, oldId));
+            $dialog.find('.tab-enums-dialog-new-icon').show().html(that.main.getIcon(oldId));
             $dialog.find('.tab-enums-dialog-new-icon-clear').show();
         } else {
             $dialog.find('.tab-enums-dialog-new-icon').hide();
@@ -479,14 +428,6 @@ function Enums(main) {
             }
         });
         $dialog.find('.tab-enums-dialog-new-color-clear').unbind('click').click(function () {
-            if (iconVal) {
-                iconVal = '';
-                $dialog.find('.tab-enums-dialog-new-icon').hide();
-                $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
-                $dialog.find('.tab-enums-dialog-new-color-clear').hide();
-            }
-        });
-        $dialog.find('.tab-enums-dialog-new-color-clear').unbind('click').click(function () {
             if (colorVal) {
                 $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
                 $dialog.find('.tab-enums-dialog-new-color-clear').hide();
@@ -508,8 +449,10 @@ function Enums(main) {
             component: '.btn',
             color: colorVal,
             container: $dialog.find('.tab-enums-dialog-new-colorpicker')
-        }).colorpicker('setValue', colorVal).on('showPicker.colorpicker', function (event){
-            $dialog.find('.tab-enums-dialog-new-colorpicker')[0].scrollIntoView(false);
+        }).colorpicker('setValue', colorVal).on('showPicker.colorpicker', function (/* event */) {
+            //$dialog.find('.tab-enums-dialog-new-colorpicker')[0].scrollIntoView(false);
+            var $modal = $dialog.find('.modal-content');
+            $modal[0].scrollTop = $modal[0].scrollHeight;
         }).on('changeColor.colorpicker', function (event){
             if (Date.now() - time > 100) {
                 colorVal = event.color.toHex();
@@ -561,8 +504,8 @@ function Enums(main) {
                 root:       'enum',
                 columns:    ['title', 'name', 'members', 'icon', 'color'],
                 widths:     ['calc(100% - 250px)', '250px'],
-                classes:    ['', 'treetable-center'],
-                name:       'scripts',
+                //classes:    ['', 'treetable-center'],
+                name:       'enums',
                 buttonsWidth: '40px',
                 buttons:    [
                     {

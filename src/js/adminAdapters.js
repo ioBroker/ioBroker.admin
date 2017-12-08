@@ -1067,6 +1067,7 @@ function Adapters(main) {
         if (!this.inited) {
             this.inited = true;
             this.main.subscribeObjects('system.host.*');
+            this.main.subscribeStates('system.host.*');
         }
         this.main.tabs.hosts.getHosts(function () {
             that._postInit(update, updateRepo);
@@ -1077,6 +1078,7 @@ function Adapters(main) {
         if (this.inited) {
             this.inited = false;
             this.main.unsubscribeObjects('system.host.*');
+            this.main.unsubscribeStates('system.host.*');
         }
     };
 

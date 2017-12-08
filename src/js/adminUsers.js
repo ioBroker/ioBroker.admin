@@ -1,11 +1,16 @@
 'use strict';
 
 function Users(main) {
-    var that     = this;
-    this.list    = [];
-    this.$grid   = $('#grid-users');
-    this.$dialog = $('#dialog-user');
-    this.main    = main;
+    var that          = this;
+    this.list         = [];
+    this.$grid        = $('#tab-users');
+    this.$dialog      = $('#dialog-user');
+    this.$gridUsers   = this.$grid.find('.tab-users-list-users .tab-users-body');
+    this.$gridGroups  = this.$grid.find('.tab-users-list-groups .tab-users-body');
+    this.main         = main;
+    this.currentGroup = '';
+    this.currentUser  = '';
+
     this.userLastSelected = null;
 
     this.prepare = function () {
@@ -187,8 +192,204 @@ function Users(main) {
         if (!str) return str;
         return str[0].toUpperCase() + str.substring(1).toLowerCase();
     }
+
+    function createOrEdit(isGroupOrId) {
+        var idChanged = false;
+        var $dialog = that.$grid.find('#tab-users-dialog-new');
+        var options = {
+            name:  '',
+            icon:  '',
+            color: '',
+            desc:  '',
+            id:    ''
+        };
+        var parent = isGroupOrId === true ? 'system.group' : 'system.user';
+        var oldId = '';
+
+        installFileUpload($dialog, 50000, function (err, text) {
+            if (err) {
+                showMessage(err, 3000, 'dropZone-error');
+            } else {
+                if (!text.match(/^data:image\//)) {
+                    showMessage(_('Unsupported image format'), 3000, 'dropZone-error');
+                    return;
+                }
+                $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
+                options.icon = text;
+
+                $dialog.find('.tab-enums-dialog-new-icon').show().html('<img class="treetable-icon" />');
+                $dialog.find('.tab-enums-dialog-new-icon .treetable-icon').attr('src', text);
+                $dialog.find('.tab-enums-dialog-new-icon-clear').show();
+            }
+        });
+        if (typeof isGroupOrId === 'string') {
+            if (that.main.objects[isGroupOrId] && that.main.objects[isGroupOrId].common) {
+                options.name  = that.main.objects[isGroupOrId].common.name;
+                options.icon  = that.main.objects[isGroupOrId].common.icon;
+                options.color = that.main.objects[isGroupOrId].common.color;
+            }
+            oldId = isGroupOrId;
+            options.id = isGroupOrId;
+        }
+        $dialog.find('.tab-dialog-new-title').text(isGroupOrId === true ? _('Create new group:') : (options.id ? _('Change:') : _('Create new user:')));
+
+        if (options.id) {
+            var parts = options.id.split('.');
+            options.id = parts.pop();
+            parent = parts.join('.');
+        }
+        $dialog.find('#tab-users-dialog-new-name')
+            .val(options.name)
+            .unbind('change')
+            .bind('change', function () {
+                var $id = $('#tab-users-dialog-new-id');
+                var id = $id.val();
+                var val = $(this).val();
+                val = val.replace(/[.\s]/g, '_').trim().toLowerCase();
+                if (!id || !idChanged) {
+                    $id.val(val);
+                    $dialog.find('#tab-users-dialog-new-preview').val(parent + '.' + (val || '#'));
+                    Materialize.updateTextFields('#tab-users-dialog-new');
+                }
+                if ($id.val() && !$id.val().match(/[.\s]/)) {
+                    $dialog.find('.tab-dialog-create').removeClass('disabled');
+                    $id.removeClass('wrong');
+                } else {
+                    $dialog.find('.tab-dialog-create').addClass('disabled');
+                    $id.addClass('wrong');
+                }
+            }).unbind('keyup').bind('keyup', function () {
+            $(this).trigger('change');
+        });
+
+        $dialog.find('#tab-users-dialog-new-id')
+            .val(options.id)
+            .unbind('change')
+            .bind('change', function () {
+                idChanged = true;
+                var val = $(this).val();
+                $dialog.find('#tab-users-dialog-new-preview').val(parent + '.' + ($(this).val() || '#'));
+                Materialize.updateTextFields('#tab-users-dialog-new');
+                if (val && !val.match(/[.\s]/)) {
+                    $dialog.find('.tab-dialog-create').removeClass('disabled');
+                    $(this).removeClass('wrong');
+                } else {
+                    $dialog.find('.tab-dialog-create').addClass('disabled');
+                    $(this).addClass('wrong');
+                }
+            }).unbind('keyup').bind('keyup', function () {
+            $(this).trigger('change');
+        });
+
+        $dialog.find('.tab-dialog-create')
+            .addClass('disabled')
+            .unbind('click')
+            .text(oldId ? _('Change') : _('Create'))
+            .click(function () {
+                options.name = $('#tab-enums-dialog-new-name').val();
+                if (oldId) {
+                    enumRename(
+                        oldId,
+                        that.enumEdit + '.' + $('#tab-enums-dialog-new-id').val(),
+                        options,
+                        function (err) {
+                            if (err) {
+                                showMessage(_('Error: %s', err), 5000, 'dropZone-error');
+                            } else {
+                                showMessage(_('Updated'));
+                            }
+                        });
+                } else {
+                    enumAddChild(
+                        parent,
+                        parent + '.' + $('#tab-enums-dialog-new-id').val(),
+                        options,
+                        function (err) {
+                            if (err) {
+                                showMessage(_('Error: %s', err), 5000, 'dropZone-error');
+                            } else {
+                                showMessage(_('Updated'));
+                            }
+                        });
+                }
+            });
+
+        $dialog.find('#tab-users-dialog-new-preview').val(parent + '.' + (options.id || '#'));
+
+        if (options.icon) {
+            $dialog.find('.tab-dialog-new-icon').show().html(that.main.getIcon(oldId));
+            $dialog.find('.tab-dialog-new-icon-clear').show();
+        } else {
+            $dialog.find('.tab-dialog-new-icon').hide();
+            $dialog.find('.tab-dialog-new-icon-clear').hide();
+        }
+        options.color = options.color || false;
+        if (options.color) {
+            $dialog.find('.tab-dialog-new-color').val(options.color);
+        } else {
+            $dialog.find('.tab-dialog-new-color').val();
+        }
+
+        Materialize.updateTextFields('#tab-users-dialog-new');
+
+        if (typeof Materialize !== 'undefined') {
+            Materialize.toast($dialog[0], _('Drop the icons here'), 3000);
+        }
+
+        $dialog.find('.tab-dialog-new-upload').unbind('click').click(function () {
+            $dialog.find('.drop-file').trigger('click');
+        });
+        $dialog.find('.tab-dialog-new-icon-clear').unbind('click').click(function () {
+            if (options.icon) {
+                options.icon = '';
+                $dialog.find('.tab-dialog-new-icon').hide();
+                $dialog.find('.tab-dialog-create').removeClass('disabled');
+                $dialog.find('.tab-dialog-new-icon-clear').hide();
+            }
+        });
+        $dialog.find('.tab-dialog-new-color-clear').unbind('click').click(function () {
+            if (options.color) {
+                $dialog.find('.tab-dialog-create').removeClass('disabled');
+                $dialog.find('.tab-dialog-new-color-clear').hide();
+                $dialog.find('.tab-dialog-new-colorpicker').colorpicker({
+                    component: '.btn',
+                    color: options.color,
+                    container: $dialog.find('.tab-dialog-new-colorpicker')
+                }).colorpicker('setValue', '');
+                options.color = '';
+            }
+        });
+        var time = Date.now();
+        try {
+            $dialog.find('.tab-dialog-new-colorpicker').colorpicker('destroy');
+        } catch (e) {
+
+        }
+        $dialog.find('.tab-dialog-new-colorpicker').colorpicker({
+            component: '.btn',
+            color: options.color,
+            container: $dialog.find('.tab-dialog-new-colorpicker')
+        }).colorpicker('setValue', options.color).on('showPicker.colorpicker', function (/* event */) {
+            var $modal = $dialog.find('.modal-content');
+            $modal[0].scrollTop = $modal[0].scrollHeight;
+        }).on('changeColor.colorpicker', function (event) {
+            if (Date.now() - time > 100) {
+                options.color = event.color.toHex();
+                $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
+                $dialog.find('.tab-enums-dialog-new-icon-clear').show();
+            }
+        });
+        if (options.color) {
+            $dialog.find('.tab-dialog-new-color-clear').show();
+        } else {
+            $dialog.find('.tab-dialog-new-color-clear').hide();
+        }
+
+        $dialog.modal().modal('open');
+    }
+
     this._postInit = function () {
-        var text = '';
+        /*var text = '';
         for (var i = 0; i < this.list.length; i++) {
             var obj = this.main.objects[this.list[i]];
 
@@ -213,7 +414,220 @@ function Users(main) {
             text += '</select>';
             text += '<label></label>';
         }
-        this.$grid.find('tbody').html(text);
+        this.$grid.find('tbody').html(text);*/
+
+        // extract all groups
+        this.$gridUsers.treeTable({
+            objects:    this.main.objects,
+            root:       'system.user',
+            columns:    ['title', 'name', 'groups', 'icon', 'color'],
+            widths:     ['calc(100% - 250px)', '250px'],
+            //classes:    ['', 'treetable-center'],
+            name:       'users',
+            buttonsWidth: '40px',
+            buttons:    [
+                {
+                    text: false,
+                    icons: {
+                        primary:'ui-icon-trash'
+                    },
+                    click: function (id, children, parent) {
+                        /*if (that.main.objects[id]) {
+                            if (that.main.objects[id].type === 'enum') {
+                                if (children) {
+                                    // ask if only object must be deleted or just this one
+                                    that.main.confirmMessage(_('All sub-enums of %s will be deleted too?', id), null, 'help', function (result) {
+                                        // If all
+                                        if (result) {
+                                            that.main._delObjects(id, true, function (err) {
+                                                if (!err) {
+                                                    showMessage(_('Deleted'));
+                                                } else {
+                                                    showMessage(_('Error: %s', err));
+                                                }
+                                            });
+                                        } // else do nothing
+                                    });
+                                } else {
+                                    that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
+                                        // If all
+                                        if (result) that.main._delObjects(id, true, function (err) {
+                                            if (!err) {
+                                                showMessage(_('Deleted'));
+                                            } else {
+                                                showMessage(_('Error: %s', err));
+                                            }
+                                        });
+                                    });
+                                }
+                            } else {
+                                that.main.socket.emit('getObject', parent, function (err, obj) {
+                                    if (obj && obj.common && obj.common.members) {
+                                        var pos = obj.common.members.indexOf(id);
+                                        if (pos !== -1) {
+                                            obj.common.members.splice(pos, 1);
+                                            that.main.socket.emit('setObject', obj._id, obj, function (err) {
+                                                if (!err) {
+                                                    showMessage(_('Removed'));
+                                                } else {
+                                                    showMessage(_('Error: %s', err));
+                                                }
+                                            });
+                                        } else {
+                                            showMessage(_('%s is not in the list'));
+                                        }
+                                    }
+                                });
+                            }
+                        } else {
+                            showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id));
+                        }*/
+                    },
+                    match: function (id) {
+                        return !(that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.dontDelete);
+                    },
+                    width: 26,
+                    height: 20
+                }, {
+                    text: false,
+                    icons: {
+                        primary:'ui-icon-pencil'
+                    },
+                    match: function (id) {
+                        return !!that.main.objects[id];
+                    },
+                    click: function (id, children, parent) {
+                        createOrEdit(id);
+                    },
+                    width: 26,
+                    height: 20
+                }
+            ],
+            panelButtons: [
+                {
+                    id:   'tab-users-btn-new-user',
+                    title: _('New user'),
+                    icon:   'person_add',
+                    click: function () {
+                        createOrEdit(false);
+                    }
+                }
+            ],
+            onChange:   function (id, oldId) {
+                if (id !== oldId) {
+                    that.currentUser = id;
+                }
+            },
+            //onReady:    setupDraggable
+        });
+        //$('#tab-enums-list-new-enum').addClass('disabled');
+        //$('#tab-enums-list-new-category').addClass('disabled');
+        this.$gridGroups.treeTable({
+            objects:    this.main.objects,
+            root:       'system.group',
+            columns:    ['title', 'name', 'members', 'icon', 'color'],
+            widths:     ['calc(100% - 250px)', '250px'],
+            //classes:    ['', 'treetable-center'],
+            name:       'groups',
+            buttonsWidth: '40px',
+            buttons:    [
+                {
+                    text: false,
+                    icons: {
+                        primary:'ui-icon-trash'
+                    },
+                    click: function (id, children, parent) {
+                        if (that.main.objects[id]) {
+                            /*if (that.main.objects[id].type === 'enum') {
+                                if (children) {
+                                    // ask if only object must be deleted or just this one
+                                    that.main.confirmMessage(_('All sub-enums of %s will be deleted too?', id), null, 'help', function (result) {
+                                        // If all
+                                        if (result) {
+                                            that.main._delObjects(id, true, function (err) {
+                                                if (!err) {
+                                                    showMessage(_('Deleted'));
+                                                } else {
+                                                    showMessage(_('Error: %s', err));
+                                                }
+                                            });
+                                        } // else do nothing
+                                    });
+                                } else {
+                                    that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
+                                        // If all
+                                        if (result) that.main._delObjects(id, true, function (err) {
+                                            if (!err) {
+                                                showMessage(_('Deleted'));
+                                            } else {
+                                                showMessage(_('Error: %s', err));
+                                            }
+                                        });
+                                    });
+                                }
+                            } else {
+                                that.main.socket.emit('getObject', parent, function (err, obj) {
+                                    if (obj && obj.common && obj.common.members) {
+                                        var pos = obj.common.members.indexOf(id);
+                                        if (pos !== -1) {
+                                            obj.common.members.splice(pos, 1);
+                                            that.main.socket.emit('setObject', obj._id, obj, function (err) {
+                                                if (!err) {
+                                                    showMessage(_('Removed'));
+                                                } else {
+                                                    showMessage(_('Error: %s', err));
+                                                }
+                                            });
+                                        } else {
+                                            showMessage(_('%s is not in the list'));
+                                        }
+                                    }
+                                });
+                            }
+                            */
+                        } else {
+                            showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id));
+                        }
+                    },
+                    match: function (id, parent) {
+                        if (!parent && that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.dontDelete) return false;
+                        // you may not delete admin from administrators
+                        return !(parent === 'system.group.administrator' && id === 'system.user.admin');
+                    },
+                    width: 26,
+                    height: 20
+                }, {
+                    text: false,
+                    icons: {
+                        primary:'ui-icon-pencil'
+                    },
+                    match: function (id) {
+                        return that.main.objects[id] && that.main.objects[id].type === 'group';
+                    },
+                    click: function (id, children, parent) {
+                        createOrEdit(id);
+                    },
+                    width: 26,
+                    height: 20
+                }
+            ],
+            panelButtons: [
+                {
+                    id:   'tab-users-btn-new-group',
+                    title: _('New enum'),
+                    icon:   'group_add',
+                    click: function () {
+                        createOrEdit(true);
+                    }
+                }
+            ],
+            onChange:   function (id, oldId) {
+                if (id !== oldId) {
+                    that.currentGroup = id;
+                }
+            },
+            //onReady:    setupDraggable
+        });
     };
 
     // ----------------------------- Users show and Edit ------------------------------------------------
@@ -221,14 +635,8 @@ function Users(main) {
         if (this.inited && !update) {
             return;
         }
-        if (!that.main.objectsLoaded) {
-            setTimeout(function () {
-                that.init(update);
-            }, 500);
-            return;
-        }
 
-        if (typeof this.$grid !== 'undefined') {
+        if (typeof this.$gridUsers !== 'undefined') {
             this._postInit();
             /*this.$grid.jqGrid('clearGridData');
             for (var i = 0; i < this.list.length; i++) {

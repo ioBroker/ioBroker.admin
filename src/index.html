@@ -76,7 +76,7 @@
         <div class="user-view">
             <a><i class="large material-icons">account_circle</i></a>
             <a><span class="white-text name" id="current-user"></span></a>
-            <a><span class="white-text email" id="current-group">Group</span></a>
+            <a><span class="white-text email" id="current-group"></span></a>
         </div>
         <ul class="admin-sidemenu-menu"></ul>
     </div>
@@ -258,30 +258,10 @@
 <div id="tab-objects"   class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Objects">
     <div id="grid-objects" class="grid-main-div"><span class="translate" style="width: calc(100% - 100px); width: calc(100% - 20px); text-align: center">Loading...</span></div>
 </div>
-<div id="tab-states"    class="admin-tab admin-sidemenu-body-content" data-name="States" style="display: none">
-    <!--<table><tr><td>-->
-    <!--</td></tr></table>-->
-
-    <!--<table class="main-toolbar-table">-->
-    <!--<tr><td></td></tr>-->
-    <!--</table>-->
-
-
-    <!--<table class="main-toolbar-table">-->
-    <!--<tr>-->
-    <!--<td>-->
-    <!--<button id="event-pause" class="panel-button"></button>-->
-    <!--</td>-->
-    <!--<td>-->
-    <!--<button id="event-clear" style="font-size: 14px; font-weight: normal;"></button>-->
-    <!--</td>-->
-    <!--<td style="width: 90%"></td>-->
-    <!--</tr>-->
-    <!--</table>-->
-
+<!--div id="tab-states"    class="admin-tab admin-sidemenu-body-content" data-name="States" style="display: none">
     <table id="grid-states"></table>
     <div id="pager-states"></div>
-</div>
+</div-->
 <div id="tab-events"    class="admin-tab admin-sidemenu-body-content" data-name="Events" style="display: none">
     <div id="grid-events" class="ui-jqgrid" style="height: 100%; display: block;">
         <table class="main-toolbar-table">
@@ -342,30 +322,57 @@
     <table id="grid-groups"></table>
     <div id="pager-groups"></div>
 </div>
-<div id="tab-users"     class="admin-tab admin-sidemenu-body-content m" style="display: none" data-name="Users">
-    <!--<table class="main-toolbar-table">-->
-    <!--<tr><td></td></tr>-->
-    <!--</table>-->
-    <div class="row">
-        <a class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+<div id="tab-users"     class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Users">
+    <div class="tab-users-list-groups">
+        <div class="tab-users-header m"><i class="material-icons prefix">group</i><span class="translate">Groups</span></div>
+        <div class="tab-users-body"></div>
     </div>
-    <div class="row" class="tab-users-body">
-        <table id="grid-users">
-            <thead>
-            <tr>
-                <th data-name="_index"    class="col s1"           data-style="padding-top: 1rem; text-align: right"></th>
-                <th data-name="id"        class="col s2 translate" data-readOnly="true" data-style="text-align: right">id</th>
-                <th data-name="name"      class="col s2 translate">name</th>
-                <th data-name="groups"    class="col s6 translate" data-type="multiselect">groups</th>
-                <th data-buttons="delete" class="col s1"           data-style="padding-top: 0.5rem;"></th>
-            </tr>
-            </thead>
-            <tbody>
-
-            </tbody>
-        </table>
-    <div id="pager-users"></div>
-</div>
+    <div class="tab-users-list-users">
+        <div class="row tab-users-header m"><i class="material-icons prefix">person</i><span class="translate">Users</span></div>
+        <div class="row tab-users-body"></div>
+    </div>
+    <div class="tab-dialogs m">
+        <div id="tab-users-dialog-new" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h5 class="translate tab-dialog-new-title"></h5>
+                <div class="row input-field">
+                    <i class="material-icons prefix">text_fields</i>
+                    <label for="tab-users-dialog-new-name" class="translate">Name</label>
+                    <input id="tab-users-dialog-new-name" autofocus type="text" />
+                </div>
+                <div class="row input-field">
+                    <i class="material-icons prefix">local_offer</i>
+                    <label for="tab-users-dialog-new-id" class="translate">ID</label>
+                    <input type="text" id="tab-users-dialog-new-id" />
+                </div>
+                <div class="row input-field">
+                    <i class="material-icons prefix">pageview</i>
+                    <label for="tab-users-dialog-new-preview" class="translate">Preview</label>
+                    <input type="text" id="tab-users-dialog-new-preview" disabled />
+                </div>
+                <div class="row">
+                    <i class="material-icons prefix">file_upload</i>
+                    <div class="btn tab-dialog-new-upload">
+                        <span class="translate">Icon upload</span>
+                    </div>
+                    <div class="tab-dialog-new-icon"></div>
+                    <div class="btn-floating waves-effect waves-light tab-dialog-new-icon-clear"><i class="material-icons">delete</i></div>
+                </div>
+                <div class="row file-field tab-dialog-new-colorpicker">
+                    <i class="material-icons prefix tab-dialog-new-color-icon">color_lens</i>
+                    <div class="btn tab-dialog-new-color-btn translate">Color</div>
+                    <div class="file-path-wrapper">
+                        <input type="text" class="tab-dialog-new-color" />
+                        <div class="btn-floating waves-effect waves-light tab-dialog-new-color-clear"><i class="material-icons">delete</i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="modal-action modal-close waves-effect waves-green btn-flat translate tab-dialog-create">Create</a>
+                <a class="modal-action modal-close waves-effect waves-green gray btn-flat translate">Cancel</a>
+            </div>
+        </div>
+    </div>
 </div>
 <div id="tab-enums"     class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Enums">
     <div class="tab-enums-list"></div>
@@ -397,14 +404,14 @@
                         <span class="translate">Icon upload</span>
                     </div>
                     <div class="tab-enums-dialog-new-icon"></div>
-                    <div class="btn-floating waves-effect waves-light tab-enums-dialog-new-icon-clear translate"><i class="material-icons">delete</i></div>
+                    <div class="btn-floating waves-effect waves-light tab-enums-dialog-new-icon-clear"><i class="material-icons">delete</i></div>
                 </div>
                 <div class="row file-field tab-enums-dialog-new-colorpicker">
                     <i class="material-icons prefix tab-enums-dialog-new-color-icon">color_lens</i>
                     <div class="btn tab-enums-dialog-new-color-btn translate">Color</div>
                     <div class="file-path-wrapper">
                         <input type="text" class="tab-enums-dialog-new-color" />
-                        <div class="btn-floating waves-effect waves-light tab-enums-dialog-new-color-clear translate"><i class="material-icons">delete</i></div>
+                        <div class="btn-floating waves-effect waves-light tab-enums-dialog-new-color-clear"><i class="material-icons">delete</i></div>
                     </div>
                 </div>
             </div>
@@ -1233,7 +1240,7 @@
             <div id="tab-system-certs" class="dropZone col s12 page">
                 <div class="row">
                     <a class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                    <span class="translate" style="padding-left: 1rem">you can use absolute path to certificate, like '/opt/certs/cert.pem'</span>
+                    <span class="translate" style="padding-left: 1rem">cert_path_note</span>
                 </div>
                 <div class="row">
                     <table id="grid-certs" class="table-values">

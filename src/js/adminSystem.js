@@ -287,6 +287,19 @@ function System(main) {
         return old !== JSON.stringify(acl);
     }
 
+    function requestInfo(callback) {
+        that.main.socket.emit('getObject', 'system.repositories', function (errRepo, repo) {
+            that.systemRepos = repo;
+            that.main.socket.emit('getObject', 'system.certificates', function (errCerts, certs) {
+                that.systemCerts = certs;
+                that.main.socket.emit('getObject', 'system.config', function (errConfig, config) {
+                    that.main.systemConfig = config;
+                    callback(errRepo || errCerts || errConfig);
+                });
+            });
+        });
+    }
+
     this.init = function () {
         var buttons = [
             {
@@ -412,105 +425,113 @@ function System(main) {
                 icons: {primary: 'ui-icon-gear'},
                 text: false
             })*/.click(function () {
-                var $system_activeRepo = $('#system_activeRepo');
-                $system_activeRepo.html('');
-                if (that.systemRepos && that.systemRepos.native.repositories) {
-                    for (var repo in that.systemRepos.native.repositories) {
-                        $system_activeRepo.append('<option value="' + repo + '">' + repo + '</option>');
+                // request all info anew
+                requestInfo(function (error) {
+                    if (error) {
+                        console.error(error);
+                        showMessage(error, 3000, 'dropZone-error');
+                        return;
                     }
-                } else {
-                    $('#tab-system-repo').html(_('permissionError'));
-                }
-
-                $('#diagMode')
-                    .val(main.systemConfig.common.diag)
-                    .change(function () {
-                    main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
-                        $('#diagSample').html(JSON.stringify(obj, null, 2));
-                    });
-                })
-                    .trigger('change');
-
-                // collect all history instances
-                var $system_defaultHistory = $('#system_defaultHistory');
-                $system_defaultHistory.html('<option value=""></option>');
-                for (var id = 0; id < main.instances.length; id++) {
-                    if (main.objects[main.instances[id]].common.type === 'storage') {
-                        $system_defaultHistory.append('<option value="' + main.instances[id].substring('system.adapter.'.length) + '">' + main.instances[id].substring('system.adapter.'.length) + '</option>');
-                    }
-                }
-
-                $('.system-settings.value').each(function () {
-                    var $this = $(this);
-                    var id = $this.attr('id');
-                    if (!id) return;
-                    id = id.substring('system_'.length);
-
-                    if ($this.attr('type') === 'checkbox') {
-                        $this.prop('checked', main.systemConfig.common[id]);
+                    var $system_activeRepo = $('#system_activeRepo');
+                    $system_activeRepo.html('');
+                    if (that.systemRepos && that.systemRepos.native.repositories) {
+                        for (var repo in that.systemRepos.native.repositories) {
+                            $system_activeRepo.append('<option value="' + repo + '">' + repo + '</option>');
+                        }
                     } else {
-                        if (id === 'isFloatComma') {
-                            $this.val(main.systemConfig.common[id] ? 'true' : 'false');
-                        } else {
-                            $this.val(main.systemConfig.common[id]);
+                        $('#tab-system-repo').html(_('permissionError'));
+                    }
+
+                    $('#diagMode')
+                        .val(main.systemConfig.common.diag)
+                        .change(function () {
+                            main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
+                                $('#diagSample').html(JSON.stringify(obj, null, 2));
+                            });
+                        })
+                        .trigger('change');
+
+                    // collect all history instances
+                    var $system_defaultHistory = $('#system_defaultHistory');
+                    $system_defaultHistory.html('<option value=""></option>');
+                    for (var id = 0; id < main.instances.length; id++) {
+                        if (main.objects[main.instances[id]].common.type === 'storage') {
+                            $system_defaultHistory.append('<option value="' + main.instances[id].substring('system.adapter.'.length) + '">' + main.instances[id].substring('system.adapter.'.length) + '</option>');
                         }
                     }
-                });
 
-                if (!that.systemCerts.native.letsEncrypt) {
-                    that.systemCerts.native.letsEncrypt = {
-                        path: 'letsencrypt'
-                    };
-                }
-                
-                $('.system-le-settings.value').each(function () {
-                    var $this = $(this);
-                    var id = $this.data('name');
-                    if (that.systemCerts && that.systemCerts.native.letsEncrypt) {
+                    $('.system-settings.value').each(function () {
+                        var $this = $(this);
+                        var id = $this.attr('id');
+                        if (!id) return;
+                        id = id.substring('system_'.length);
+
                         if ($this.attr('type') === 'checkbox') {
-                            $this.prop('checked', that.systemCerts.native.letsEncrypt[id]);
+                            $this.prop('checked', main.systemConfig.common[id]);
                         } else {
-                            $this.val(that.systemCerts.native.letsEncrypt[id]);
+                            if (id === 'isFloatComma') {
+                                $this.val(main.systemConfig.common[id] ? 'true' : 'false');
+                            } else {
+                                $this.val(main.systemConfig.common[id]);
+                            }
                         }
+                    });
+
+                    if (!that.systemCerts.native.letsEncrypt) {
+                        that.systemCerts.native.letsEncrypt = {
+                            path: 'letsencrypt'
+                        };
+                    }
+
+                    $('.system-le-settings.value').each(function () {
+                        var $this = $(this);
+                        var id = $this.data('name');
+                        if (that.systemCerts && that.systemCerts.native.letsEncrypt) {
+                            if ($this.attr('type') === 'checkbox') {
+                                $this.prop('checked', that.systemCerts.native.letsEncrypt[id]);
+                            } else {
+                                $this.val(that.systemCerts.native.letsEncrypt[id]);
+                            }
+                        }
+                    });
+
+                    var $tabs = $('#tabs-system');
+                    $tabs.find('.tabs').mtabs({
+                        onShow: function (tab)  {
+                            var id = tab.attr('id');
+                            if ((id === 'tab-system-letsencrypt' || id === 'tab-system-main' || id === 'tab-system-acl') && typeof Materialize !== 'undefined') {
+                                Materialize.updateTextFields('#' + id);
+                                $dialogSystem.find('select').material_select();
+                            } else
+                            if (id === 'tab-system-certs') {
+                                showMessage(_('Drop the files here'));
+                            }
+                        }
+                    });
+
+                    // $dialogSystem.dialog('open');
+
+                    var $adminBody = $('.admin-sidemenu-body');
+                    var $currentTab = $adminBody.find('.admin-sidemenu-body-content');
+                    $currentTab.hide().appendTo('body');
+                    $dialogSystem.show().appendTo('.admin-sidemenu-body');
+                    $dialogSystem.data('current', $currentTab);
+                    if (!$dialogSystem.find('.dialog-system-buttons').length) {
+                        var $div = $('<nav class="dialog-system-buttons nav-wrapper footer"></nav>');
+                        for (var b = 0; b < buttons.length; b++) {
+                            $div.append($('<a class="' + (buttons[b]._class || '') + '">' + buttons[b].text + '</a>').click(buttons[b].click));
+                        }
+                        $dialogSystem.append($div);
+                    }
+
+                    initRepoGrid();
+                    initRights();
+                    initCertsGrid();
+
+                    if (typeof Materialize !== 'undefined') {
+                        $tabs.mtabs('select_tab', 'tab-system-main');
                     }
                 });
-
-                var $tabs = $('#tabs-system');
-                $tabs.find('.tabs').mtabs({
-                    onShow: function (tab)  {
-                        var id = tab.attr('id');
-                        if ((id === 'tab-system-letsencrypt' || id === 'tab-system-main' || id === 'tab-system-acl') && typeof Materialize !== 'undefined') {
-                            Materialize.updateTextFields('#' + id);
-                            $dialogSystem.find('select').material_select();
-                        } else
-                        if (id === 'tab-system-certs') {
-                            showMessage(_('Drop the files here'));
-                        }
-                    }
-                });
-
-                // $dialogSystem.dialog('open');
-
-                var $adminBody = $('.admin-sidemenu-body');
-                var $currentTab = $adminBody.find('.admin-sidemenu-body-content');
-                $currentTab.hide().appendTo('body');
-                $dialogSystem.show().appendTo('.admin-sidemenu-body');
-                $dialogSystem.data('current', $currentTab);
-                if (!$dialogSystem.find('.dialog-system-buttons').length) {
-                    var $div = $('<nav class="dialog-system-buttons nav-wrapper footer"></nav>');
-                    for (var b = 0; b < buttons.length; b++) {
-                        $div.append($('<a class="' + (buttons[b]._class || '') + '">' + buttons[b].text + '</a>').click(buttons[b].click));
-                    }
-                    $dialogSystem.append($div);
-                }
-
-                initRepoGrid();
-                initRights();
-                initCertsGrid();
-
-                if (typeof Materialize !== 'undefined') {
-                    $tabs.mtabs('select_tab', 'tab-system-main');
-                }
             });
         } else {
             $('#button-system').hide();

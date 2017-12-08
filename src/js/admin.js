@@ -497,7 +497,7 @@ $(document).ready(function () {
         adapters:   new Adapters(main),
         instances:  new Instances(main),
         logs:       new Logs(main),
-        states:     new States(main),
+        states:     null,
         objects:    new Objects(main),
         events:     new Events(main),
         hosts:      new Hosts(main),
@@ -505,6 +505,9 @@ $(document).ready(function () {
         groups:     new Groups(main),
         enums:      new Enums(main)
     };
+    if (typeof States !== 'undefined') {
+        tabs.states = new States(main);
+    }
 
     main.instances     = tabs.instances.list;
     main.tabs          = tabs;
@@ -580,7 +583,7 @@ $(document).ready(function () {
                 var id = 'chk-' + tid;
                 text += '' +
                     '<li><input ' + (found ? 'checked' : 'unchecked') + ' style="vertical-align: middle;" class="chk-tab" type="checkbox" id="' + id + '" />' +
-                    '<label style="padding-left: 4px;" for="' + id + '">' + name + '</label></id>';
+                    '<label style="padding-left: 4px;" for="' + id + '">' + _(name) + '</label></id>';
             }
             text += '' +
                 '</ul>' +
@@ -631,7 +634,7 @@ $(document).ready(function () {
                 for (var i = 0; i < tabs.groups.list.length; i++) {
                     var group = main.objects[tabs.groups.list[i]];
                     if (group && group.common && group.common.members && group.common.members.indexOf('system.user.' + user) !== -1) {
-                        groups.push(group.common.name);
+                        groups.push(_(group.common.name));
                     }
                 }
                 $('#current-group').html(groups.join(', '));
@@ -690,9 +693,9 @@ $(document).ready(function () {
         // Build the standard tabs together
         $('.admin-tab').each(function () {
             var $this = $(this);
-            var id = $this.attr('id'), name = $this.data('name');
+            var id = $this.attr('id');
             list.push(id);
-            allTabs[id] = name;
+            allTabs[id] = $this.data('name');
         });
 
         // Look for adapter tabs
@@ -736,7 +739,7 @@ $(document).ready(function () {
             // }
 
             if (!tab.common.adminTab.singleton) {
-                if (link.indexOf('?') !==-1) {
+                if (link.indexOf('?') !== -1) {
                     link += '&instance=' + parts[3];
                 } else {
                     link += '?instance=' + parts[3];
@@ -990,7 +993,7 @@ $(document).ready(function () {
     // ----------------------------- States show and Edit ------------------------------------------------
 
     function getStates(callback) {
-        tabs.states.clear();
+        if (tabs.states) tabs.states.clear();
         main.socket.emit('getStates', function (err, res) {
             main.states = res;
             if (typeof callback === 'function') {
@@ -1007,18 +1010,18 @@ $(document).ready(function () {
         if (id && id.match(/\.messagebox$/)) {
             main.addEventMessage(id, state);
         } else {
-            tabs.states.stateChange(id, state);
+            if (tabs.states) tabs.states.stateChange(id, state);
             tabs.objects.stateChange(id, state);
-            //tabs.objects1.stateChange(id, state);
             tabs.hosts.stateChange(id, state);
 
-            if (main.selectId) main.selectId.selectId('state', id, state);
-        }
+            // Update alive and connected of main.instances
+            tabs.instances.stateChange(id, state);
+            tabs.adapters.stateChange(id, state);
 
-        // Update alive and connected of main.instances
-        tabs.instances.stateChange(id, state);
-        tabs.objects.stateChangeHistory(id, state);
-        tabs.adapters.stateChange(id, state);
+            if (main.selectId) {
+                main.selectId.selectId('state', id, state);
+            }
+        }
     }
 
     function objectChange(id, obj) {
@@ -1213,8 +1216,8 @@ $(document).ready(function () {
         var changed = false;
         tab = tab.replace(/^tab-/, '');
         if (tab !== main.currentTab) {
-            if (tabs[tab] && typeof tabs[tab].destroy === 'function') {
-                tabs[tab].destroy();
+            if (tabs[main.currentTab] && typeof tabs[main.currentTab].destroy === 'function') {
+                tabs[main.currentTab].destroy();
             }
             main.currentTab = tab;
             changed = true;
@@ -1248,6 +1251,59 @@ $(document).ready(function () {
         }
     };
 
+    // static, just used from many places
+    main.getIcon = function(id, imgPath, objects) {
+        var icon     = '';
+        var alt      = '';
+        var obj      = (objects || main.objects)[id];
+        var isCommon = obj && obj.common;
+
+        if (isCommon) {
+            if (isCommon.icon) {
+                if (isCommon.icon.length < 512) {
+                    var instance;
+                    if (obj.type === 'instance') {
+                        icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
+                    } else if (id.match(/^system\.adapter\./)) {
+                        instance = node.key.split('.', 3);
+                        if (obj.common.icon[0] === '/') {
+                            instance[2] += obj.common.icon;
+                        } else {
+                            instance[2] += '/' + obj.common.icon;
+                        }
+                        icon = '/adapter/' + instance[2];
+                    } else {
+                        instance = id.split('.', 2);
+                        if (obj.common.icon[0] === '/') {
+                            instance[0] += obj.common.icon;
+                        } else {
+                            instance[0] += '/' + obj.common.icon;
+                        }
+                        icon = '/adapter/' + instance[0];
+                    }
+                } else {
+                    icon = isCommon.icon;
+                }
+                alt = obj.type;
+            } else {
+                imgPath = imgPath || 'lib/css/fancytree/';
+                if (obj.type === 'device') {
+                    icon = imgPath + 'device.png';
+                    alt  = 'device';
+                } else if (obj.type === 'channel') {
+                    icon = imgPath + 'channel.png';
+                    alt  = 'channel';
+                } else if (obj.type === 'state') {
+                    icon = imgPath + 'state.png';
+                    alt  = 'state';
+                }
+            }
+        }
+
+        if (icon) return '<img class="treetable-icon" src="' + icon + '" alt="' + alt + '" />';
+        return '';
+    };
+
     var tabsInfo = {
         'tab-adapters':         {order: 1, icon: 'store'},
         'tab-instances':        {order: 2, icon: 'subtitles'},
@@ -1273,7 +1329,7 @@ $(document).ready(function () {
                 elements.push({
                     line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
                             (tabsInfo[id] && tabsInfo[id].icon ? '<i class="material-icons">' + tabsInfo[id].icon + '</i>' : '<i class="icon-empty">&nbsp;</i>') +
-                            $(this).data('name') + '</a></li>',
+                            _($(this).data('name')) + '</a></li>',
                     id: id
                 });
             }
@@ -1548,7 +1604,7 @@ $(document).ready(function () {
                                 initAllDialogs();
                                 tabs.hosts.prepare();
                                 tabs.objects.prepare();
-                                tabs.states.prepare();
+                                if (tabs.states) tabs.states.prepare();
                                 tabs.adapters.prepare();
                                 tabs.instances.prepare();
                                 tabs.users.prepare();
@@ -1598,15 +1654,12 @@ $(document).ready(function () {
         if (y < 480) {
             y = 480;
         }
-        tabs.events.resize(x, y);
-        tabs.states.resize(x, y);
-        tabs.enums.resize(x, y);
-        tabs.adapters.resize(x, y);
-        tabs.instances.resize(x, y);
-        tabs.objects.resize(x, y);
-        tabs.hosts.resize(x, y);
-        tabs.users.resize(x, y);
-        tabs.groups.resize(x, y);
+        for (var tab in tabs.events) {
+            if (tabs.events.hasOwnProperty(tab) && tabs[tab] && tabs[tab].resize) {
+                tabs[tab].resize(x, y);
+            }
+        }
+
         $('.iframe-in-tab').height(y - 55);
     }
 
@@ -1622,10 +1675,9 @@ $(document).ready(function () {
             $item.trigger('click');
 
             var func;
-            if ((func = tabs[tab.substr(4)])) {
-                if (func.onSelected) {
-					func.onSelected();
-				}
+            if ((func = tabs[tab.substr(4)]) && func.resize) {
+                func.onSelected && func.onSelected();
+
                 setTimeout(function () {
                    var x = $(window).width();
                    var y = $(window).height();

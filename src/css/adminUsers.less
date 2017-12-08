@@ -1,4 +1,4 @@
-#grid-users {
+/*#grid-users {
   width: 100%;
 }
 
@@ -12,4 +12,26 @@
   width: 100%;
   overflow: auto;
   height: calc(~"100% - "@tab-user-header-height);
+}*/
+@tab-user-title-height: 2rem;
+
+#tab-users {
+  .tab-users-list-groups,
+  .tab-users-list-users {
+    width: calc(~"50% - 2px");
+    display: inline-block;
+    height: 100%;
+    .tab-users-header {
+      height: @tab-user-title-height;
+      display: block;
+      span {
+        font-size: 1.2rem;
+        padding-left: 1rem;
+      }
+    }
+    .tab-users-body {
+      height: calc(~"100% - "@tab-user-title-height);
+      display: block;
+    }
+  }
 }

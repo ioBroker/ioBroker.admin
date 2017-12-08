@@ -229,6 +229,25 @@
         return '';
     }
 
+    // https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
+    function invertColor(hex) {
+        if (hex.indexOf('#') === 0) {
+            hex = hex.slice(1);
+        }
+        // convert 3-digit hex to 6-digits.
+        if (hex.length === 3) {
+            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+        }
+        if (hex.length !== 6) {
+            return false;
+        }
+        var r = parseInt(hex.slice(0, 2), 16),
+            g = parseInt(hex.slice(2, 4), 16),
+            b = parseInt(hex.slice(4, 6), 16);
+        // http://stackoverflow.com/a/3943023/112731
+        return (r * 0.299 + g * 0.587 + b * 0.114) <= 186;
+    }
+
     function buildTable(options) {
         var table = '';
         var buttonTag = typeof Materialize === 'undefined' ? 'button' : 'a';
@@ -422,15 +441,17 @@
                 }
                 var style = '';
                 var _class = (options.classes && options.classes[c]) || '';
+                var isInvert = false;
                 if (!c && withColors && rows[i].color) {
                     style = 'background: ' + rows[i].color + ';';
+                    isInvert = invertColor(rows[i].color);
                 }
                 if (!c && rows[i].hasOwnProperty('children')) {
                     _class += ' treetable-folder fancytree-exp-c fancytree-has-children fancytree-ico-cf';
                     if (rows[i].id === 'script.js.global') {
-                        style += ' color: rgb(0, 128, 0);'
+                        style += isInvert ? ' color: rgb(0, 128, 0);' : ' color: rgb(0, 128, 0);'; // green
                     } else {
-                        style += ' color: rgb(0, 0, 128);'
+                        style += isInvert ? ' color: rgb(255, 255, 255);' : ' color: rgb(0, 0, 128);'
                     }
                     table += '<td style="' + style + '" class="' + _class + '">';
                     if (rows[i].children && rows[i].children.length) {
@@ -467,7 +488,7 @@
                 table += '<td class="treetable-buttons" style="' + (options.buttonsStyle || '') + '">';
                 var text = '';
                 for (var jj = 0; jj < options.buttons.length; jj++) {
-                    if (options.buttons[jj].match && !options.buttons[jj].match(rows[i].id)) {
+                    if (options.buttons[jj].match && !options.buttons[jj].match(rows[i].id, rows[i].parent)) {
                         text += '<div class="treetable-button-empty">&nbsp;</div>';
                     } else {
                         text += '<' + buttonTag + ' data-id="' + rows[i].id + '" class="select-button-' + jj + ' select-button-custom td-button"  style="margin-right: 3px;'+ '" data-parent="' + rows[i].parent + '" data-children="' + !!rows[i].realChildren + '" title="' + (options.buttons[jj].title || '') + '">';
@@ -536,11 +557,11 @@
                 if ($btn.length === 0) continue;
                 if (options.buttons[b].width)  $btn.css({width:  options.buttons[b].width});
                 if (options.buttons[b].height) $btn.css({height: options.buttons[b].height});
-                if (options.buttons[b].match) {
+                /*if (options.buttons[b].match) {
                     $btn.each(function () {
                         options.buttons[b].match.call($(this), $(this).data('id'));
                     });
-                }
+                }*/
             }
         }
 

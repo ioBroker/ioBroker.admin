@@ -5,6 +5,7 @@ function Objects(main) {
     this.$dialog        = $('#dialog-object');
     this.$dialogCustoms = $('#dialog-customs');
     this.$grid          = $('#grid-objects');
+    this.subscribes     = {};
 
     this.main = main;
     this.customEnabled  = null;
@@ -365,6 +366,7 @@ function Objects(main) {
 
     this.stateChange = function (id, state) {
         if (this.$grid) selectId('state', id, state);
+        this.stateChangeHistory(id, state);
     };
 
     this.objectChange = function (id, obj) {
@@ -374,10 +376,6 @@ function Objects(main) {
     this.reinit = function () {
         this.checkCustoms();
         if (this.$grid) selectId('reinit');
-    };
-
-    this.resize = function (width, height) {
-
     };
 
     function _syncEnum(id, enumIds, newArray, cb) {
@@ -446,16 +444,133 @@ function Objects(main) {
         });
     }
 
+    function requestStates(pattern) {
+        console.log('Subscribe: ' + pattern);
+        that.main.subscribeStates(pattern);
+        that.main.socket.emit('getForeignStates', pattern, function (err, states) {
+            if (states) {
+                for (var _id in states) {
+                    console.log('Update ' + _id);
+                    if (states.hasOwnProperty(_id) && (!that.main.states[_id] || that.main.states[_id].ts !== states[_id].ts)) {
+                        that.main.states[_id] = states[_id];
+                        that.stateChange(_id, states[_id]); // may be call main.stateChange
+                    }
+                }
+            } else if (err) {
+                console.error('requestStates error: ' + err);
+            }
+        });
+    }
+
+    function subscribe(ids) {
+        if (typeof ids === 'string') {
+            ids = [ids];
+        }
+        for (var i = 0; i < ids.length; i++) {
+            console.log('Expanded: ' + ids[i]);
+            if (that.subscribes[ids[i]]) {
+                that.subscribes[ids[i]]++;
+                return;
+            }
+            for (var pattern in that.subscribes) {
+                if (that.subscribes.hasOwnProperty(pattern) && ids[i].substring(0, pattern.length) + '.' === pattern + '.') {
+                    that.subscribes[pattern]++;
+                    return;
+                }
+            }
+
+            that.subscribes[ids[i]] = 1;
+            var obj = that.main.objects[ids[i]];
+            if (obj && obj.type === 'state') {
+                requestStates(ids[i]);
+            } else {
+                requestStates(ids[i] + '.*');
+            }
+        }
+    }
+    function unsubscribe(id) {
+        console.log('Collapsed: ' + id);
+        if (!that.subscribes[id]) {
+            for (var pattern in that.subscribes) {
+                if (that.subscribes.hasOwnProperty(pattern) && pattern.substring(0, id.length) + '.' === id + '.') {
+                    that.subscribes[pattern]--;
+                    if (!that.subscribes[pattern]) {
+                        var obj = that.main.objects[pattern];
+                        if (obj && obj.type === 'state') {
+                            that.main.unsubscribeStates(pattern);
+                            console.log('Unsubscribe: ' + pattern);
+                        } else {
+                            that.main.unsubscribeStates(pattern + '.*');
+                            console.log('Unsubscribe: ' + pattern + '.*');
+                        }
+
+                        delete that.subscribes[pattern]; // may be that.subscribes[id] = undefined; for speed up
+                    }
+                }
+            }
+        } else {
+            that.subscribes[id]--;
+            if (!that.subscribes[id]) {
+                var _obj = that.main.objects[id];
+                if (_obj && _obj.type === 'state') {
+                    console.log('Unsubscribe: ' + id);
+                    that.main.unsubscribeStates(id);
+                } else {
+                    console.log('Unsubscribe: ' + id + '.*');
+                    that.main.unsubscribeStates(id + '.*');
+                }
+
+                delete that.subscribes[id]; // may be that.subscribes[id] = undefined; for speed up
+            }
+        }
+    }
+
+    function unsubscribeAll() {
+        for (var pattern in that.subscribes) {
+            if (that.subscribes.hasOwnProperty(pattern)) {
+                var obj = that.main.objects[pattern];
+                if (obj && that.main.objects[pattern].type === 'state') {
+                    that.main.unsubscribeStates(pattern);
+                    console.log('Unsubscribe: ' + pattern);
+                } else {
+                    that.main.unsubscribeStates(pattern + '.*');
+                    console.log('Unsubscribe: ' + pattern + '.*');
+                }
+            }
+        }
+    }
+
+    function subscribeAll() {
+        for (var pattern in that.subscribes) {
+            if (that.subscribes.hasOwnProperty(pattern)) {
+                var obj = that.main.objects[pattern];
+                if (obj && that.main.objects[pattern].type === 'state') {
+                    requestStates(pattern);
+                } else {
+                    requestStates(pattern + '.*');
+                }
+            }
+        }
+    }
+
     this.init = function (update) {
-        if (!main.objectsLoaded) {
-            setTimeout(function () {
-                that.init();
-            }, 250);
+        if (this.inited && !update) {
             return;
         }
+        if (update) {
+            unsubscribeAll();
+            this.subscribes = {};
+        }
 
-        if (typeof this.$grid !== 'undefined' && (!this.$grid[0]._isInited || update)) {
-            this.$grid[0]._isInited = true;
+        // may be it can be deleted
+        /*if (!main.objectsLoaded) {
+            setTimeout(function () {
+                that.init(update);
+            }, 250);
+            return;
+        }*/
+
+        if (typeof this.$grid !== 'undefined') {
             if (this.customEnabled === null) this.checkCustoms();
 
             // var x = $(window).width();
@@ -504,7 +619,16 @@ function Objects(main) {
                 },
                 //columns: ['image', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
                 columns: ['ID', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
-                //columns: ['id', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
+                expandedCallback: function (id, childrenCount, hasStates) {
+                    // register this in subscription
+                    if (hasStates) {
+                        subscribe(id);
+                    }
+                },
+                collapsedCallback: function (id, childrenCount, hasStates) {
+                    // unregister this in subscription
+                    unsubscribe(id);
+                },
                 buttons: [
                     {
                         text: false,
@@ -745,6 +869,21 @@ function Objects(main) {
 
             selectId('init', settings)
                 .selectId('show');
+        }
+
+        if (!this.inited) {
+            this.inited = true;
+            this.main.subscribeObjects('*');
+            // resubscribe all
+            subscribeAll();
+        }
+    };
+
+    this.destroy = function () {
+        if (this.inited) {
+            that.main.unsubscribeObjects('*');
+            this.inited = false;
+            unsubscribeAll();
         }
     };
 

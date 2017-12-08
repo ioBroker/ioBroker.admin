@@ -70,7 +70,11 @@ gulp.task('lessTreeTable', function () {
         .pipe(gulp.dest('./www/lib/css'));
 });
 gulp.task('compressApp', function () {
-    return gulp.src(['./src/js/*.js', '!./src/js/adapter-settings.js'])
+    return gulp.src([
+        './src/js/*.js',
+        '!./src/js/adapter-settings.js',
+        '!./src/js/adminStates.js'
+    ])
         .pipe(sourcemaps.init())
         .pipe(concat('app.js'))
         .pipe(uglify())
