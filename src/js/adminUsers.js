@@ -9,45 +9,58 @@ function Users(main) {
     this.$gridUsers   = this.$grid.find('.tab-users-list-users .tab-users-body');
     this.$gridGroups  = this.$grid.find('.tab-users-list-groups .tab-users-body');
     this.main         = main;
-    this.currentGroup = '';
-    this.currentUser  = '';
 
-    this.synchronizeUser = function (userId, userGroups, callback) {
+    function synchronizeUser(userId, userGroups, callback) {
         var obj;
         userGroups = userGroups || [];
-        for (var i = 0; i < this.groups.length; i++) {
+        for (var i = 0; i < that.groups.length; i++) {
             // If user has no group, but group has user => delete user from group
-            if (userGroups.indexOf(this.groups[i]) === -1 &&
-                that.main.objects[this.groups[i]].common.members && that.main.objects[this.groups[i]].common.members.indexOf(userId) !== -1) {
-                var members = JSON.parse(JSON.stringify(that.main.objects[this.groups[i]].common.members));
-                members.splice(members.indexOf(userId), 1);
+            var members = that.main.objects[that.groups[i]] && that.main.objects[that.groups[i]].common && that.main.objects[that.groups[i]].common.members;
+            var pos;
+            if (userGroups.indexOf(that.groups[i]) === -1 && members && (pos = members.indexOf(userId)) !== -1) {
+                members.splice(pos, 1);
                 obj = {common: {members: members}};
-                that.main.socket.emit('extendObject', this.groups[i], obj, function (err) {
+                that.main.socket.emit('extendObject', that.groups[i], obj, function (err) {
                     if (err) {
-                        that.main.showError(err);
+                        showMessageInDialog(err, 5000);
                         if (callback) callback(err);
                     } else {
-                        if (callback) callback();
+                        setTimeout(synchronizeUser, 0, userId, userGroups, callback);
                     }
                 });
+                return;
             }
-            if (userGroups.indexOf(this.groups[i]) !== -1 &&
-                (!that.main.objects[this.groups[i]].common.members || that.main.objects[this.groups[i]].common.members.indexOf(userId) === -1)) {
-                that.main.objects[this.groups[i]].common.members = that.main.objects[this.groups[i]].common.members || [];
-                var _members = JSON.parse(JSON.stringify(that.main.objects[this.groups[i]].common.members));
-                _members.push(userId);
-                obj = {common: {members: _members}};
-                that.main.socket.emit('extendObject', this.groups[i], obj, function (err) {
+            if (userGroups.indexOf(that.groups[i]) !== -1 &&
+                (!members || members.indexOf(userId) === -1)) {
+                members = members || [];
+                members.push(userId);
+                that.main.objects[that.groups[i]].common.members = members;
+                obj = {common: {members: members}};
+                that.main.socket.emit('extendObject', that.groups[i], obj, function (err) {
                     if (err) {
-                        that.main.showError(err);
+                        showMessageInDialog(err, 5000);
                         if (callback) callback(err);
                     } else {
-                        if (callback) callback();
+                        setTimeout(synchronizeUser, 0, userId, userGroups, callback);
                     }
                 });
+                return;
             }
         }
-    };
+        if (callback) callback();
+    }
+
+    function getUserGroups(userId) {
+        var userGroups = [];
+        for (var i = 0; i < that.groups.length; i++) {
+            if (userGroups.indexOf(that.groups[i]) === -1 &&
+                that.main.objects[that.groups[i]].common.members &&
+                that.main.objects[that.groups[i]].common.members.indexOf(userId) !== -1) {
+                userGroups.push(that.groups[i]);
+            }
+        }
+        return userGroups;
+    }
 
     this.prepare = function () {
         /*that.$grid.jqGrid({
@@ -226,10 +239,14 @@ function Users(main) {
 
     function showMessage(text, duration, _class) {
         if (typeof Materialize !== 'undefined') {
-            Materialize.toast(that.$grid[0], text, duration|| 3000, _class);
+            Materialize.toast(that.$grid[0], text, duration || 3000, _class);
         }
     }
-
+    function showMessageInDialog(text, duration, _class) {
+        if (typeof Materialize !== 'undefined') {
+            Materialize.toast(that.$grid.find('#tab-users-dialog-new')[0], text, duration || 3000, _class);
+        }
+    }
     function firstUpper (str) {
         if (!str) return str;
         return str[0].toUpperCase() + str.substring(1).toLowerCase();
@@ -279,6 +296,236 @@ function Users(main) {
         }
     }
 
+    function updateGroup(event, oldId, options) {
+        if ((oldId === 'system.group.administrator' && options.id !== 'administrator')) {
+            event.stopPropagation();
+            showMessageInDialog(_('Cannot change name of "%s"', 'administrator'), 3000, 'dropZone-error');
+            return;
+        }
+        if ((oldId === 'system.group.user' && options.id !== 'user')) {
+            event.stopPropagation();
+            showMessageInDialog(_('Cannot change name of "%s"', 'user'), 3000, 'dropZone-error');
+            return;
+        }
+        if (!options.id) {
+            event.stopPropagation();
+            showMessageInDialog(_('ID may not be empty'), 3000, 'dropZone-error');
+            return;
+        }
+        if (oldId) {
+
+            var obj = {common: options/*{desc: desc, acl: acl}*/};
+
+            // If ID changed
+            if ('system.group.' + options.id !== oldId) {
+                if (that.main.objects['system.group.' + options.id]) {
+                    event.stopPropagation();
+                    showMessageInDialog(_('ID yet exists'), 3000, 'dropZone-error');
+                    return;
+                }
+                that.main.socket.emit('getObject', oldId, function (err, oldObj) {
+                    if (err) {
+                        showMessage(_('Cannot change group: ') + err, 3000, 'dropZone-error');
+                    } else {
+                        var id = options.id;
+                        oldObj.common.name  = options.name;
+                        oldObj.common.color = options.color;
+                        oldObj.common.icon  = options.icon;
+                        oldObj.common.desc  = options.desc;
+                        delete options.id;
+                        that.main.socket.emit('delObject', oldId, function (err) {
+                            if (err) {
+                                showMessage(_('Cannot rename group: ') + err, 3000, 'dropZone-error');
+                                event.stopPropagation();
+                            } else {
+                                that.main.socket.emit('setObject', id, oldObj, function (err) {
+                                    if (err) {
+                                        showMessage(_('Cannot change group: ') + err, 3000, 'dropZone-error');
+                                    } else {
+                                        showMessage(_('Updated'));
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                delete options.id;
+                that.main.socket.emit('extendObject', oldId, {common: options}, function (err, res) {
+                    if (err) {
+                        showMessage(_('Cannot change group: ') + err, 3000, 'dropZone-error');
+                    } else {
+                        showMessage(_('Updated'));
+                    }
+                });
+            }
+        } else {
+            if (!options.id) {
+                event.stopPropagation();
+                showMessageInDialog(_('ID may not be empty'), 3000, 'dropZone-error');
+                return;
+            }
+            that.main.socket.emit('addGroup', options.id, options.desc, null /* acl */, function (err, obj) {
+                if (err) {
+                    showMessage(_('Cannot create group: ') + err, 3000, 'dropZone-error');
+                } else {
+                    that.main.socket.emit('extendObject', obj._id, {common: options}, function (err) {
+                        if (err) {
+                            showMessage(_('Cannot add group: ') + err, 3000, 'dropZone-error');
+                        } else {
+                            showMessage(_('Created'));
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    function updateUser(event, oldId, options) {
+        var password    = $('#tab-users-dialog-new-password').val();
+        var passwordRep = $('#tab-users-dialog-new-password-repeat').val();
+
+        if (password !== '__pass_not_set__' && password !== passwordRep) {
+            event.stopPropagation();
+            showMessageInDialog(_('Password and confirmation are not equal!'), 3000, 'dropZone-error');
+            return;
+        }
+        if (!password) {
+            event.stopPropagation();
+            showMessageInDialog(_('Password cannot be empty!'), 3000, 'dropZone-error');
+            return;
+        }
+        if ((oldId === 'system.user.admin' && options.id !== 'admin')) {
+            event.stopPropagation();
+            showMessageInDialog(_('Cannot change name of "%s"', 'admin'), 3000, 'dropZone-error');
+            return;
+        }
+        if (!options.id) {
+            event.stopPropagation();
+            showMessageInDialog(_('ID may not be empty'), 3000, 'dropZone-error');
+            return;
+        }
+        if (oldId) {
+            // If ID changed
+            if ('system.user.' + options.id !== oldId) {
+                if (that.main.objects['system.user.' + options.id]) {
+                    event.stopPropagation();
+                    showMessageInDialog(_('ID yet exists'), 3000, 'dropZone-error');
+                    return;
+                }
+                that.main.socket.emit('getObject', oldId, function (err, oldObj) {
+                    if (err) {
+                        showMessage(_('Cannot change user: ') + err, 3000, 'dropZone-error');
+                    } else {
+                        var id = 'system.user.' + options.id;
+                        oldObj.common.name  = options.name;
+                        oldObj.common.color = options.color;
+                        oldObj.common.icon  = options.icon;
+                        oldObj.common.desc  = options.desc;
+                        delete options.id;
+                        var userGroups = getUserGroups(oldId);
+                        that.main.socket.emit('delObject', oldId, function (err) {
+                            if (err) {
+                                showMessage(_('Cannot rename user: ') + err, 3000, 'dropZone-error');
+                            } else {
+                                // delete user from all groups
+                                synchronizeUser(oldId, [], function () {
+                                    that.main.socket.emit('setObject', id, oldObj, function (err) {
+                                        if (err) {
+                                            showMessage(_('Cannot change group: ') + err, 3000, 'dropZone-error');
+                                        } else {
+                                            // place new user in old groups
+                                            synchronizeUser(id, userGroups, function () {
+                                                if (password !== '__pass_not_set__') {
+                                                    that.main.socket.emit('changePassword', id, password, function (err) {
+                                                        if (err) {
+                                                            showMessage(_('Cannot set password: ') + _(err), 3000, 'dropZone-error');
+                                                        } else {
+                                                            showMessage(_('Updated'));
+                                                        }
+                                                    });
+                                                } else {
+                                                    showMessage(_('Updated'));
+                                                }
+                                            });
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                delete options.id;
+                if (password !== '__pass_not_set__') {
+                    that.main.socket.emit('changePassword', id, password, function (err) {
+                        if (err) {
+                            showMessage(_('Cannot set password: ') + _(err), 3000, 'dropZone-error');
+                        } else {
+                            that.main.socket.emit('extendObject', oldId, {common: options}, function (err, res) {
+                                if (err) {
+                                    showMessage(_('Cannot change group: ') + err, 3000, 'dropZone-error');
+                                } else {
+                                    showMessage(_('Updated'));
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    that.main.socket.emit('extendObject', oldId, {common: options}, function (err, res) {
+                        if (err) {
+                            showMessage(_('Cannot change group: ') + err, 3000, 'dropZone-error');
+                        } else {
+                            showMessage(_('Updated'));
+                        }
+                    });
+                }
+            }
+        } else {
+            var obj = {
+                _id:    options.id,
+                common: options,
+                type:   'user',
+                native: {}
+            };
+            delete options.id;
+            that.main.socket.emit('setObject', obj._id, {common: options}, function (err) {
+                if (err) {
+                    showMessage(_('Cannot add user: ') + err, 3000, 'dropZone-error');
+                } else {
+                    if (password !== '__pass_not_set__') {
+                        that.main.socket.emit('changePassword', obj._id, password, function (err) {
+                            if (err) {
+                                showMessage(_('Cannot set password: ') + _(err), 3000, 'dropZone-error');
+                            } else {
+                                that.main.socket.emit('extendObject', oldId, {common: options}, function (err, res) {
+                                    if (err) {
+                                        showMessage(_('Cannot set password: ') + err, 3000, 'dropZone-error');
+                                    } else {
+                                        showMessage(_('Created'));
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        showMessage(_('Created'));
+                    }
+                }
+            });
+        }
+    }
+
+    function checkValidId($dialog) {
+        var $id = $('#tab-users-dialog-new-id');
+        var id = $id.val();
+        if (id && !id.match(/[.\s]/)) {
+            $dialog.find('.tab-dialog-create').removeClass('disabled');
+            $id.removeClass('wrong');
+        } else {
+            $dialog.find('.tab-dialog-create').addClass('disabled');
+            $id.addClass('wrong');
+        }
+    }
     function createOrEdit(isGroupOrId) {
         var idChanged = false;
         var $dialog = that.$grid.find('#tab-users-dialog-new');
@@ -289,8 +536,9 @@ function Users(main) {
             desc:  '',
             id:    ''
         };
-        var parent = isGroupOrId === true ? 'system.group' : 'system.user';
-        var oldId = '';
+        var parent   = isGroupOrId === true ? 'system.group' : 'system.user';
+        var oldId    = '';
+        var isGroup  = isGroupOrId === true;
 
         installFileUpload($dialog, 50000, function (err, text) {
             if (err) {
@@ -300,12 +548,12 @@ function Users(main) {
                     showMessage(_('Unsupported image format'), 3000, 'dropZone-error');
                     return;
                 }
-                $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
+                checkValidId($dialog);
                 options.icon = text;
 
-                $dialog.find('.tab-enums-dialog-new-icon').show().html('<img class="treetable-icon" />');
-                $dialog.find('.tab-enums-dialog-new-icon .treetable-icon').attr('src', text);
-                $dialog.find('.tab-enums-dialog-new-icon-clear').show();
+                $dialog.find('.tab-dialog-new-icon').show().html('<img class="treetable-icon" />');
+                $dialog.find('.tab-dialog-new-icon .treetable-icon').attr('src', text);
+                $dialog.find('.tab-dialog-new-icon-clear').show();
             }
         });
         if (typeof isGroupOrId === 'string') {
@@ -313,6 +561,7 @@ function Users(main) {
                 options.name  = that.main.objects[isGroupOrId].common.name;
                 options.icon  = that.main.objects[isGroupOrId].common.icon;
                 options.color = that.main.objects[isGroupOrId].common.color;
+                isGroup = that.main.objects[isGroupOrId].type === 'group';
             }
             oldId = isGroupOrId;
             options.id = isGroupOrId;
@@ -332,18 +581,24 @@ function Users(main) {
                 var id = $id.val();
                 var val = $(this).val();
                 val = val.replace(/[.\s]/g, '_').trim().toLowerCase();
-                if (!id || !idChanged) {
+                if ((!id || !idChanged) &&
+                    ((isGroup  && id !== 'administrator' && id !== 'user') ||
+                     (!isGroup && id !== 'admin')))
+                {
                     $id.val(val);
                     $dialog.find('#tab-users-dialog-new-preview').val(parent + '.' + (val || '#'));
                     Materialize.updateTextFields('#tab-users-dialog-new');
                 }
-                if ($id.val() && !$id.val().match(/[.\s]/)) {
-                    $dialog.find('.tab-dialog-create').removeClass('disabled');
-                    $id.removeClass('wrong');
-                } else {
-                    $dialog.find('.tab-dialog-create').addClass('disabled');
-                    $id.addClass('wrong');
-                }
+                checkValidId($dialog);
+            }).unbind('keyup').bind('keyup', function () {
+            $(this).trigger('change');
+        });
+
+        $dialog.find('#tab-users-dialog-new-desc')
+            .val(options.desc)
+            .unbind('change')
+            .bind('change', function () {
+                checkValidId($dialog);
             }).unbind('keyup').bind('keyup', function () {
             $(this).trigger('change');
         });
@@ -353,16 +608,9 @@ function Users(main) {
             .unbind('change')
             .bind('change', function () {
                 idChanged = true;
-                var val = $(this).val();
                 $dialog.find('#tab-users-dialog-new-preview').val(parent + '.' + ($(this).val() || '#'));
                 Materialize.updateTextFields('#tab-users-dialog-new');
-                if (val && !val.match(/[.\s]/)) {
-                    $dialog.find('.tab-dialog-create').removeClass('disabled');
-                    $(this).removeClass('wrong');
-                } else {
-                    $dialog.find('.tab-dialog-create').addClass('disabled');
-                    $(this).addClass('wrong');
-                }
+                checkValidId($dialog);
             }).unbind('keyup').bind('keyup', function () {
             $(this).trigger('change');
         });
@@ -371,32 +619,14 @@ function Users(main) {
             .addClass('disabled')
             .unbind('click')
             .text(oldId ? _('Change') : _('Create'))
-            .click(function () {
-                options.name = $('#tab-enums-dialog-new-name').val();
-                if (oldId) {
-                    enumRename(
-                        oldId,
-                        that.enumEdit + '.' + $('#tab-enums-dialog-new-id').val(),
-                        options,
-                        function (err) {
-                            if (err) {
-                                showMessage(_('Error: %s', err), 5000, 'dropZone-error');
-                            } else {
-                                showMessage(_('Updated'));
-                            }
-                        });
+            .click(function (event) {
+                options.name = $('#tab-users-dialog-new-name').val();
+                options.id   = $('#tab-users-dialog-new-id').val();
+                // if change Group
+                if (isGroup) {
+                    updateGroup(event, oldId, options);
                 } else {
-                    enumAddChild(
-                        parent,
-                        parent + '.' + $('#tab-enums-dialog-new-id').val(),
-                        options,
-                        function (err) {
-                            if (err) {
-                                showMessage(_('Error: %s', err), 5000, 'dropZone-error');
-                            } else {
-                                showMessage(_('Updated'));
-                            }
-                        });
+                    updateUser(event, oldId, options);
                 }
             });
 
@@ -416,11 +646,7 @@ function Users(main) {
             $dialog.find('.tab-dialog-new-color').val();
         }
 
-        Materialize.updateTextFields('#tab-users-dialog-new');
-
-        if (typeof Materialize !== 'undefined') {
-            Materialize.toast($dialog[0], _('Drop the icons here'), 3000);
-        }
+        showMessageInDialog(_('Drop the icons here'));
 
         $dialog.find('.tab-dialog-new-upload').unbind('click').click(function () {
             $dialog.find('.drop-file').trigger('click');
@@ -429,18 +655,18 @@ function Users(main) {
             if (options.icon) {
                 options.icon = '';
                 $dialog.find('.tab-dialog-new-icon').hide();
-                $dialog.find('.tab-dialog-create').removeClass('disabled');
                 $dialog.find('.tab-dialog-new-icon-clear').hide();
+                checkValidId($dialog);
             }
         });
         $dialog.find('.tab-dialog-new-color-clear').unbind('click').click(function () {
             if (options.color) {
-                $dialog.find('.tab-dialog-create').removeClass('disabled');
+                checkValidId($dialog);
                 $dialog.find('.tab-dialog-new-color-clear').hide();
                 $dialog.find('.tab-dialog-new-colorpicker').colorpicker({
-                    component: '.btn',
-                    color: options.color,
-                    container: $dialog.find('.tab-dialog-new-colorpicker')
+                    component:  '.btn',
+                    color:      options.color,
+                    container:  $dialog.find('.tab-dialog-new-colorpicker')
                 }).colorpicker('setValue', '');
                 options.color = '';
             }
@@ -461,16 +687,39 @@ function Users(main) {
         }).on('changeColor.colorpicker', function (event) {
             if (Date.now() - time > 100) {
                 options.color = event.color.toHex();
-                $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
-                $dialog.find('.tab-enums-dialog-new-icon-clear').show();
+                checkValidId($dialog);
+                $dialog.find('.tab-users-dialog-new-icon-clear').show();
             }
+        });
+        $dialog.find('#tab-users-dialog-new-password').unbind('change').change(function () {
+            checkValidId($dialog);
+        });
+        $dialog.find('#tab-users-dialog-new-password-repeat').unbind('change').change(function () {
+            checkValidId($dialog);
         });
         if (options.color) {
             $dialog.find('.tab-dialog-new-color-clear').show();
         } else {
             $dialog.find('.tab-dialog-new-color-clear').hide();
         }
-
+        if (isGroup) {
+            $dialog.find('.tab-users-dialog-new-password').hide();
+            if (oldId === 'system.group.administrator' || oldId === 'system.group.user') {
+                $dialog.find('#tab-users-dialog-new-id').prop('disabled', true);
+            } else {
+                $dialog.find('#tab-users-dialog-new-id').prop('disabled', false);
+            }
+        } else {
+            $dialog.find('.tab-users-dialog-new-password').show();
+            $dialog.find('#tab-users-dialog-new-password').val('__pass_not_set__');
+            $dialog.find('#tab-users-dialog-new-password-repeat').val('__pass_not_set__');
+            if (oldId === 'system.user.admin') {
+                $dialog.find('#tab-users-dialog-new-id').prop('disabled', true);
+            } else {
+                $dialog.find('#tab-users-dialog-new-id').prop('disabled', false);
+            }
+        }
+        Materialize.updateTextFields('#tab-users-dialog-new');
         $dialog.modal().modal('open');
     }
 
