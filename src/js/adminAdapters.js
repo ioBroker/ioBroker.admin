@@ -55,6 +55,7 @@ function Adapters(main) {
     this.onlyInstalled = false;
     this.onlyUpdatable = false;
     this.currentFilter = '';
+    this.currentType   = '';
     this.isCollapsed   = {};
     this.isTiles       = true;
 
@@ -101,6 +102,7 @@ function Adapters(main) {
     function prepareTable() {
         that.$grid.show();
         that.$tiles.html('').hide();
+        $('#tab-adapters').find('#main-toolbar-table-types-btn').hide();
 
         if (!that.$grid.data('inited')) {
             that.$grid.data('inited', true);
@@ -277,6 +279,7 @@ function Adapters(main) {
     function prepareTiles() {
         that.$grid.hide();
         that.$tiles.show();
+        $('#tab-adapters').find('#main-toolbar-table-types-btn').show();
         $('#btn_list_adapters').hide();
         $('#btn_collapse_adapters').hide();
         $('#btn_expand_adapters').hide();
@@ -304,9 +307,16 @@ function Adapters(main) {
     }
 
     function filterTiles() {
+        // filter
+        console.log($(this).data('type'));
         if (that.currentFilter) {
             that.$tiles.find('.tile').each(function () {
                 var $this = $(this);
+                if (that.currentType && !$this.hasClass('class-' + that.currentType)) {
+                    $this.hide();
+                    return;
+                }
+
                 if (customFilter({key: $this.data('id')})) {
                     $this.show();
                 } else {
@@ -314,7 +324,13 @@ function Adapters(main) {
                 }
             });
         } else {
-            that.$tiles.find('.tile').show();
+            if (!that.currentType) {
+                that.$tiles.find('.tile').show();
+            } else {
+                that.$tiles.find('.tile').hide();
+                that.$tiles.find('.class-' + that.currentType).show();
+
+            }
         }
     }
 
@@ -493,6 +509,7 @@ function Adapters(main) {
         that.onlyInstalled = that.main.config.adaptersOnlyInstalled || false;
         that.onlyUpdatable = that.main.config.adaptersOnlyUpdatable || false;
         that.currentFilter = that.main.config.adaptersCurrentFilter || '';
+        that.currentType   = that.main.config.adaptersCurrentType   || '';
         that.isCollapsed   = that.main.config.adaptersIsCollapsed ? JSON.parse(that.main.config.adaptersIsCollapsed) : {};
         if (that.currentFilter) {
             $('#adapters-filter').addClass('input-not-empty').val(that.currentFilter);
@@ -988,11 +1005,14 @@ function Adapters(main) {
 
                 if (that.isTiles) {
                     var text = '';
+                    var types = [];
                     for (var a in that.data) {
                         if (!that.data.hasOwnProperty(a)) continue;
                         var ad = that.data[a];
-
-                        text += '<div class="tile" data-id="' + ad.name + '">';
+                        if (types.indexOf(ad.group) === -1) {
+                            types.push(ad.group);
+                        }
+                        text += '<div class="tile class-' + ad.group + '" data-id="' + ad.name + '">';
                         text += '    <div class="title">' + ad.title + '</div>';
                         text += '    <img onerror="this.src=\'img/info-big.png\';" class="icon" src="' + ad.icon + '" />';
                         text += '    <div class="desc">' + ad.desc + '</div>';
@@ -1007,6 +1027,24 @@ function Adapters(main) {
                             that.initButtons(b);
                         }
                     }
+
+                    var tTypes = '<li class="main-toolbar-table-types-item" data-type=""><a href="#!" >' + _('all') + '</a></li>\n';
+                    for (var g = 0; g < types.length; g++) {
+                        tTypes += '<li class="main-toolbar-table-types-item" data-type="' + types[g] + '"><a href="#!" >' + _(types[g]) + '</a></li>\n';
+                    }
+                    var $types = $('#main-toolbar-table-types');
+                    $types.html(tTypes);
+                    $types.find('.main-toolbar-table-types-item').click(function () {
+                        that.currentType = $(this).data('type') || '';
+                        filterTiles();
+                        $('#main-toolbar-table-types-btn').html(_(that.currentType || 'all'));
+                        that.main.saveConfig('adaptersCurrentType', that.currentType);
+                    });
+                    $('#main-toolbar-table-types-btn').html(_(that.currentType || 'all')).dropdown({
+                        constrainWidth: false, // Does not change width of dropdown to that of the activator
+                        hover: true, // Activate on hover
+                        gutter: 0
+                    });
                 } else {
                     that.$grid.fancytree('getTree').reload(that.tree);
                     $('#grid-adapters').find('.fancytree-icon').each(function () {

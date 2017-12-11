@@ -109,7 +109,7 @@
     <!-- <table class="main-toolbar-table" cellpadding="0"> -->
     <div class="main-toolbar-table">
         <div class="m" style="display: inline-block">
-            <div class="col s3 m1">
+            <div class="col s3 m1 main-toolbar-table-types-tools">
                 <a class="btn-floating btn-small translateT" title="change view mode"           id="btn_switch_adapters"  ><i class="material-icons">view_module</i></a>
                 <span class="iob-toolbar-sep">&nbsp;</span>
                 <a class="btn-floating btn-small translateT" title="update adapter information" id="btn_refresh_adapters" ><i class="material-icons">refresh</i></a>
@@ -122,6 +122,19 @@
                 <a class="btn-floating btn-small translateT" title="Install from custom URL"    id="btn_filter_custom_url"><i class="icon-github"></i></a>
                 <a class="btn-floating btn-small translateT" title="_Toggle expert mode"        id="btn_adapters_expert_mode"><i class="material-icons">assignment_ind</i></a>
                 <a class="btn-floating btn-small translateT" title="Upgrade all adapters"       id="btn_upgrade_all"      ><i class="material-icons">flag</i></a>
+            </div>
+
+            <div class="col s3 m1 main-toolbar-table-types-tools">
+                <a id="main-toolbar-table-types-btn" class='dropdown-button btn' href='#' data-activates='main-toolbar-table-types'></a>
+                <!-- Dropdown Structure -->
+                <ul id='main-toolbar-table-types' class='dropdown-content'>
+                    <li><a href="#!">one</a></li>
+                    <li><a href="#!">two</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#!">three</a></li>
+                    <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
+                    <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
+                </ul>
             </div>
         </div>
 

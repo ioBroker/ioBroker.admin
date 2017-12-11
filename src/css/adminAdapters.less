@@ -2,49 +2,65 @@
 @import "../lib/css/iob/common";
 @import "commons";
 
-#tab-adapters .main-toolbar-table {
-    left: -2px;
-    a.btn-small {
-        line-height: @admin-small-buttons-size;
-        height: @admin-small-buttons-size;
-        width: @admin-small-buttons-size;
-        i {
-            margin-left: -0.5px;
-            font-size: 1.1rem;
+#tab-adapters {
+    .main-toolbar-table {
+        left: -2px;
+        a.btn-small {
             line-height: @admin-small-buttons-size;
+            height: @admin-small-buttons-size;
+            width: @admin-small-buttons-size;
+            i {
+                margin-left: -0.5px;
+                font-size: 1.1rem;
+                line-height: @admin-small-buttons-size;
+            }
         }
-    }
 
-    .adapters-filter-input {
-         display: inline-table;
-         padding-left: 6px;
-         background: @toolbar-background;
-         border: 1px solid @list-header-background;
-         margin-left: 20px;
-         font-size: 14px;
-         //    display: inline-block; padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;
-    }
-    .adapters-filter-clear {
-        display:    inline-block;
-        width:      @toolbar-btn-clear-size;
-        height:     @toolbar-btn-clear-size;
-        border:     0;
-        background: #fff;
-    }
+        .adapters-filter-input {
+            display: inline-table;
+            padding-left: 6px;
+            background: @toolbar-background;
+            border: 1px solid @list-header-background;
+            margin-left: 20px;
+            font-size: 14px;
+            //    display: inline-block; padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;
+        }
+        .adapters-filter-clear {
+            display: inline-block;
+            width: @toolbar-btn-clear-size;
+            height: @toolbar-btn-clear-size;
+            border: 0;
+            background: #fff;
+        }
 
-    .icon-github {
-        width:               @admin-small-buttons-size;
-        height:              @admin-small-buttons-size;
-        background-image:    url(../img/github.svg);
-        background-repeat:   no-repeat;
-        background-position: 8px 8px;
+        .icon-github {
+            width: @admin-small-buttons-size;
+            height: @admin-small-buttons-size;
+            background-image: url(../img/github.svg);
+            background-repeat: no-repeat;
+            background-position: 8px 8px;
+        }
+
+        .adapters-filter-input {
+            display: inline-table;
+            padding-left: 6px;
+            background: @toolbar-background;
+            border: 1px solid @list-header-background;
+            margin-left: 20px;
+            font-size: 14px;
+        }
+
+        .main-toolbar-table-types-tools {
+            display: inline-block;
+            .dropdown-button {
+                height: @toolbar-size + 4px;
+                line-height: @toolbar-size + 4px;
+            }
+        }
     }
 }
 
-
-
-#grid-adapters,
-.adapters-list-table {
+#grid-adapters, .adapters-list-table {
     width: 100%;
     border-collapse: collapse;
     padding:0;
@@ -55,58 +71,58 @@
     font-family: @iob-font;
 }
 
-#grid-adapters .fancytree-title {
-    padding-left: @line-indent !important;
-    display: inline-flex;
-    align-items: center;
+#grid-adapters{
+    .fancytree-title {
+        padding-left: @line-indent !important;
+        display: inline-flex;
+        align-items: center;
+    }
+    &>thead>tr {
+        height:22px !important;
+        background-color: @list-header-background;
+        line-height: 20px;
+    }
+    &s>thead>tr>th {
+        background-color: @list-header-background;
+        color: #000;
+        text-align: left;
+        font-weight: normal;
+        font-size: @list-font-size;
+        padding-left: @line-indent;
+        vertical-align: middle;
+    }
+    &>tbody>tr>td {
+        padding:0;
+        border:0;
+        margin:0;
+        text-align: left;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    &>tbody>tr>td {
+        padding:0;
+        border:0;
+        margin:0;
+        text-align: left;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    &>tbody>tr>td>span, &>tbody>tr>td>div {
+        padding:0;
+        border:0;
+    }
+    &>thead>tr {
+        cursor: default;
+    }
+    .adapter-table-icon {
+        width: 18px;
+        height: 18px;
+    }
+    .fancytree-title {
+        padding-left: @line-indent !important;
+        display: inline-flex;
+        align-items: center;
+    }
 }
 
-//#grid-adapters {
-//    .adapters-list-table;
-//
-//    //thead>tr {
-//    //    height:22px !important;
-//    //    background-color: @list-header-background;
-//    //    line-height: 20px;
-//    //}
-//}
-
-#grid-adapters>thead>tr {
-    height:22px !important;
-    background-color: @list-header-background;
-    line-height: 20px;
-}
-
-
-#grid-adapters>thead>tr>th {
-    background-color: @list-header-background;
-    color: #000;
-    text-align: left;
-    font-weight: normal;
-    font-size: @list-font-size;
-    padding-left: @line-indent;
-    vertical-align: middle;
-}
-
-#grid-adapters>tbody>tr>td {
-    padding:0;
-    border:0;
-    margin:0;
-    text-align: left;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-#grid-adapters>tbody>tr>td>span,
-#grid-adapters>tbody>tr>td>div {
-    padding:0;
-    border:0;
-}
-#grid-adapters>thead>tr {
-    cursor: default;
-}
-#grid-adapters .adapter-table-icon {
-    width: 18px;
-    height: 18px;
-}
 
