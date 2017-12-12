@@ -247,6 +247,29 @@ function Users(main) {
             Materialize.toast(that.$grid.find('#tab-users-dialog-new')[0], text, duration || 3000, _class);
         }
     }
+
+    var operations = [
+        'list',
+        'read',
+        'write',
+        'create',
+        'delete',
+        'http',
+        'sendto'
+    ];
+    function sortFunction(a, b) {
+        a = operations.indexOf(a);
+        b = operations.indexOf(b);
+        if (a === -1) a = 1000;
+        if (b === -1) a = 1000;
+
+        if (a < b) return -1;
+
+        if (a > b) return 1;
+
+        return 0
+    }
+
     function firstUpper (str) {
         if (!str) return str;
         return str[0].toUpperCase() + str.substring(1).toLowerCase();
@@ -495,6 +518,7 @@ function Users(main) {
                 type:   'user',
                 native: {}
             };
+            options.enabled = true;
             delete options.id;
             that.main.socket.emit('setObject', obj._id, obj, function (err) {
                 if (err) {
@@ -575,7 +599,7 @@ function Users(main) {
             oldId = isGroupOrId;
             options.id = isGroupOrId;
         }
-        $dialog.find('.tab-dialog-new-title').text(isGroupOrId === true ? _('Create new group:') : (options.id ? _('Change:') : _('Create new user:')));
+        $dialog.find('.tab-dialog-new-title').text(isGroupOrId === true ? _('Create new group') : (options.id ? _('Change:') : _('Create new user')));
 
         if (options.id) {
             var parts = options.id.split('.');
@@ -740,6 +764,70 @@ function Users(main) {
                 $dialog.find('#tab-users-dialog-new-id').prop('disabled', false);
             }
         }
+        if (isGroup) {
+            that.main.socket.emit('listPermissions', function (permissions) {
+                that.aclGroups = {};
+
+                var text = '';
+
+                var ops = [];
+                for (var p in permissions) {
+                    if (!permissions.hasOwnProperty(p) || !permissions[p] || !permissions[p].type) continue;
+                    that.aclGroups[permissions[p].type] = that.aclGroups[permissions[p].type] || [];
+                    if (that.aclGroups[permissions[p].type].indexOf(permissions[p].operation) === -1) {
+                        that.aclGroups[permissions[p].type].push(permissions[p].operation);
+                    }
+                    if (ops.indexOf(permissions[p].operation) === -1) {
+                        ops.push(permissions[p].operation);
+                    }
+                }
+
+                var table = '<table><tr>';
+                table += '</tr>';
+                for (var g in that.aclGroups) {
+                    if (!that.aclGroups.hasOwnProperty(g)) continue;
+                    //that.aclGroups[g].sort(sortFunction);
+                    table += '<tr class="group-titles"><td colspan="' + ops.length + '">' + _(g + ' permissions') + '</td></tr>';
+                    table += '<tr class="group-sub-titles">';
+                    for (var pp = 0; pp < ops.length; pp++) {
+                        if (that.aclGroups[g].indexOf(ops[pp]) !== -1) {
+                            table += '<td>' + ops[pp] + '</td>';
+                        } else {
+                            table += '<td></td>';
+                        }
+                    }
+                    table += '</tr>';
+                    table += '<tr>';
+                    for (var t = 0; t < ops.length; t++) {
+                        if (that.aclGroups[g].indexOf(ops[t]) !== -1) {
+                            var id = 'acl_' + g + '_' + t;
+                            table += '<td><input id="' + id + '" data-type="' + g + '" data-operation="' + ops[t] + '" class="edit-group-permissions filled-in"  type="checkbox" checked="checked" /><label for="' + id + '"></label></td>';
+                        } else {
+                            table += '<td></td>';
+                        }
+                    }
+                    table += '</tr>';
+
+                    /*text += '<tr><td colspan="2" style="padding-top: 10px"></td></tr>\n<tr class="ui-widget-header"><td></td><td>' + _(g + ' permissions') + '</td></tr>\n';
+                    for (var i = 0; i < that.aclGroups[g].length; i++) {
+                        text += '<tr><td>' + _(that.aclGroups[g][i] + ' operation') + '</td>' +
+                            '<td><input data-type="' + g + '" data-operation="' + that.aclGroups[g][i] + '" class="edit-group-permissions" type="checkbox"></td>' +
+                            '</tr>';
+                    }*/
+                }
+                table += '</table>';
+                $dialog.find('#tab-users-dialog-new-rights').html(table);
+            });
+            $dialog.find('ul.tabs .tab-dialog-new-tabs').show();
+        } else {
+            $dialog.find('ul.tabs .tab-dialog-new-tabs').each(function () {
+                if ($(this).find('a[href="#tab-users-dialog-new-rights"]').length) {
+                    $(this).hide();
+                }
+            });
+        }
+        $dialog.find('ul.tabs').mtabs();
+
         Materialize.updateTextFields('#tab-users-dialog-new');
         $dialog.modal().modal('open');
     }

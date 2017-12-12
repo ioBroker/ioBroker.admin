@@ -308,7 +308,6 @@ function Adapters(main) {
 
     function filterTiles() {
         // filter
-        console.log($(this).data('type'));
         if (that.currentFilter) {
             that.$tiles.find('.tile').each(function () {
                 var $this = $(this);
@@ -378,6 +377,7 @@ function Adapters(main) {
             $('#process_running_adapters').show();
             that.onlyUpdatable = !that.onlyUpdatable;
             onOnlyUpdatableChanged();
+
             that.main.saveConfig('adaptersOnlyUpdatable', that.onlyUpdatable);
 
             setTimeout(function () {
@@ -723,8 +723,7 @@ function Adapters(main) {
     };
 
     this._postInit = function (update, updateRepo) {
-        if (typeof this.$grid !== 'undefined' && (!this.$grid[0]._isInited || update)) {
-            this.$grid[0]._isInited = true;
+        if (typeof this.$grid !== 'undefined') {
 
             $('#process_running_adapters').show();
 
@@ -1003,6 +1002,7 @@ function Adapters(main) {
                     }
                 }
 
+                // build tiles
                 if (that.isTiles) {
                     var text = '';
                     var types = [];
@@ -1045,7 +1045,9 @@ function Adapters(main) {
                         // hover: true, // Activate on hover
                         gutter: 0
                     });
+                    filterTiles();
                 } else {
+                    // build tree
                     that.$grid.fancytree('getTree').reload(that.tree);
                     $('#grid-adapters').find('.fancytree-icon').each(function () {
                         if ($(this).attr('src')) {
@@ -1098,7 +1100,6 @@ function Adapters(main) {
             }, 250);
             return;
         }
-        this.inited = true;
 
         // update info
         // Required is list of hosts and repository (done in getAdaptersInfo)

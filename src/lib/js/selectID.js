@@ -420,6 +420,10 @@ function filterChanged(e) {
 
         for (var id in objects) {
             if (!objects.hasOwnProperty(id)) continue;
+            if (!id) {
+                console.error('Invalid empty ID found! Please fix it');
+                continue;
+            }
             if (isRoom) {
                 if (objects[id].type === 'enum' && data.regexEnumRooms.test(id) && data.roomEnums.indexOf(id) === -1) data.roomEnums.push(id);
                 if (objects[id].enums) {
@@ -746,6 +750,9 @@ function filterChanged(e) {
     }
 
     function findRoomsForObject(data, id, withParentInfo, rooms) {
+        if (!id) {
+            return [];
+        }
         rooms = rooms || [];
         for (var i = 0; i < data.roomEnums.length; i++) {
             var common = data.objects[data.roomEnums[i]].common;
@@ -767,6 +774,9 @@ function filterChanged(e) {
     }
 
     function findRoomsForObjectAsIds(data, id, rooms) {
+        if (!id) {
+            return [];
+        }
         rooms = rooms || [];
         for (var i = 0; i < data.roomEnums.length; i++) {
             var common = data.objects[data.roomEnums[i]].common;
@@ -779,6 +789,9 @@ function filterChanged(e) {
     }
 
     function findFunctionsForObject(data, id, withParentInfo, funcs) {
+        if (!id) {
+            return [];
+        }
         funcs = funcs || [];
         for (var i = 0; i < data.funcEnums.length; i++) {
             var common = data.objects[data.funcEnums[i]].common;
@@ -800,6 +813,9 @@ function filterChanged(e) {
     }
 
     function findFunctionsForObjectAsIds(data, id, funcs) {
+        if (!id) {
+            return [];
+        }
         funcs = funcs || [];
         for (var i = 0; i < data.funcEnums.length; i++) {
             var common = data.objects[data.funcEnums[i]].common;

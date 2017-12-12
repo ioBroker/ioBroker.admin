@@ -122,7 +122,7 @@ function Groups(main) {
             'create',
             'delete'
         ];
-        function sortFunction(a, b){
+        function sortFunction(a, b) {
             a = operations.indexOf(a);
             b = operations.indexOf(b);
             if (a === -1) a = 1000;

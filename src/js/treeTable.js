@@ -477,7 +477,7 @@
                     table += '<div style="background: ' + rows[i].color + '" class="treetable-color"></div>';
                 }
                 if (!c && options.icons) {
-                    table += getIcon(options.objects, rows[i].id, options.imgPath);
+                    table += getIcon(options.objects, rows[i].id, options.imgPath) || '<div class="treetable-icon-empty">&nbsp;</div>';
                 }
                 if (aattr === 'enabled') {
                     table += '<input data-attr="' + aattr + '" data-id="' + rows[i].id + '" class="treetable-input" type="checkbox" ' + (rows[i][aattr] ? 'checked' : '') + ' ' + (options.readOnly && options.readOnly[c] !== false ? 'disabled' : '') + '>';
