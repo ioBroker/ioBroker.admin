@@ -2,8 +2,8 @@ function System(main) {
     'use strict';
     var that = this;
     var $dialogSystem = $('#dialog-system');
-    var $gridCerts    = $('#grid-certs');
-    var editingCerts  = [];
+    this.main = main;
+
 
     this.systemRepos  = null;
     this.systemCerts  = null;
@@ -222,8 +222,8 @@ function System(main) {
 
         // fill groups
         text = '';
-        for (u = 0; u < main.tabs.groups.list.length; u++) {
-            text += '<option value="' + main.tabs.groups.list[u] + '">' + (main.objects[main.tabs.groups.list[u]].common.name || main.tabs.groups.list[u]) + '</option>';
+        for (u = 0; u < main.tabs.users.groups.length; u++) {
+            text += '<option value="' + main.tabs.users.groups[u] + '">' + (main.objects[main.tabs.users.groups[u]].common.name || main.tabs.users.groups[u]) + '</option>';
         }
         $('#tab-system-acl-group').html(text).val(acl.ownerGroup || 'system.group.administrator');
 

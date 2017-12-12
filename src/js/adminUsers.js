@@ -410,14 +410,15 @@ function Users(main) {
             if ('system.user.' + options.id !== oldId) {
                 if (that.main.objects['system.user.' + options.id]) {
                     event.stopPropagation();
-                    showMessageInDialog(_('ID yet exists'), 3000, 'dropZone-error');
+                    showMessageInDialog(_('User yet exists'), 3000, 'dropZone-error');
                     return;
                 }
                 that.main.socket.emit('getObject', oldId, function (err, oldObj) {
                     if (err) {
                         showMessage(_('Cannot change user: ') + err, 3000, 'dropZone-error');
                     } else {
-                        var id = 'system.user.' + options.id;
+                        var shortId = options.id;
+                        var id = 'system.user.' + shortId;
                         oldObj.common.name  = options.name;
                         oldObj.common.color = options.color;
                         oldObj.common.icon  = options.icon;
@@ -437,7 +438,7 @@ function Users(main) {
                                             // place new user in old groups
                                             synchronizeUser(id, userGroups, function () {
                                                 if (password !== '__pass_not_set__') {
-                                                    that.main.socket.emit('changePassword', id, password, function (err) {
+                                                    that.main.socket.emit('changePassword', shortId, password, function (err) {
                                                         if (err) {
                                                             showMessage(_('Cannot set password: ') + _(err), 3000, 'dropZone-error');
                                                         } else {
@@ -458,7 +459,7 @@ function Users(main) {
             } else {
                 delete options.id;
                 if (password !== '__pass_not_set__') {
-                    that.main.socket.emit('changePassword', id, password, function (err) {
+                    that.main.socket.emit('changePassword', oldId.replace('system.user.', ''), password, function (err) {
                         if (err) {
                             showMessage(_('Cannot set password: ') + _(err), 3000, 'dropZone-error');
                         } else {
@@ -482,19 +483,25 @@ function Users(main) {
                 }
             }
         } else {
+            if (that.main.objects['system.user.' + options.id]) {
+                event.stopPropagation();
+                showMessageInDialog(_('User yet exists'), 3000, 'dropZone-error');
+                return;
+            }
+            var idShort = options.id;
             var obj = {
-                _id:    options.id,
+                _id:    'system.user.' + idShort,
                 common: options,
                 type:   'user',
                 native: {}
             };
             delete options.id;
-            that.main.socket.emit('setObject', obj._id, {common: options}, function (err) {
+            that.main.socket.emit('setObject', obj._id, obj, function (err) {
                 if (err) {
                     showMessage(_('Cannot add user: ') + err, 3000, 'dropZone-error');
                 } else {
                     if (password !== '__pass_not_set__') {
-                        that.main.socket.emit('changePassword', obj._id, password, function (err) {
+                        that.main.socket.emit('changePassword', idShort, password, function (err) {
                             if (err) {
                                 showMessage(_('Cannot set password: ') + _(err), 3000, 'dropZone-error');
                             } else {
@@ -539,6 +546,7 @@ function Users(main) {
         var parent   = isGroupOrId === true ? 'system.group' : 'system.user';
         var oldId    = '';
         var isGroup  = isGroupOrId === true;
+        var prevId;
 
         installFileUpload($dialog, 50000, function (err, text) {
             if (err) {
@@ -561,6 +569,7 @@ function Users(main) {
                 options.name  = that.main.objects[isGroupOrId].common.name;
                 options.icon  = that.main.objects[isGroupOrId].common.icon;
                 options.color = that.main.objects[isGroupOrId].common.color;
+                options.desc  = that.main.objects[isGroupOrId].common.desc;
                 isGroup = that.main.objects[isGroupOrId].type === 'group';
             }
             oldId = isGroupOrId;
@@ -586,6 +595,7 @@ function Users(main) {
                      (!isGroup && id !== 'admin')))
                 {
                     $id.val(val);
+                    prevId = val;
                     $dialog.find('#tab-users-dialog-new-preview').val(parent + '.' + (val || '#'));
                     Materialize.updateTextFields('#tab-users-dialog-new');
                 }
@@ -603,14 +613,19 @@ function Users(main) {
             $(this).trigger('change');
         });
 
+        prevId = options.id;
         $dialog.find('#tab-users-dialog-new-id')
             .val(options.id)
             .unbind('change')
             .bind('change', function () {
-                idChanged = true;
-                $dialog.find('#tab-users-dialog-new-preview').val(parent + '.' + ($(this).val() || '#'));
-                Materialize.updateTextFields('#tab-users-dialog-new');
-                checkValidId($dialog);
+                var val = $(this).val();
+                if (prevId !== val) {
+                    idChanged = true;
+                    prevId    = val;
+                    $dialog.find('#tab-users-dialog-new-preview').val(parent + '.' + (val || '#'));
+                    Materialize.updateTextFields('#tab-users-dialog-new');
+                    checkValidId($dialog);
+                }
             }).unbind('keyup').bind('keyup', function () {
             $(this).trigger('change');
         });
@@ -620,8 +635,9 @@ function Users(main) {
             .unbind('click')
             .text(oldId ? _('Change') : _('Create'))
             .click(function (event) {
-                options.name = $('#tab-users-dialog-new-name').val();
-                options.id   = $('#tab-users-dialog-new-id').val();
+                options.name = $dialog.find('#tab-users-dialog-new-name').val();
+                options.id   = $dialog.find('#tab-users-dialog-new-id').val();
+                options.desc = $dialog.find('#tab-users-dialog-new-desc').val();
                 // if change Group
                 if (isGroup) {
                     updateGroup(event, oldId, options);
@@ -711,8 +727,13 @@ function Users(main) {
             }
         } else {
             $dialog.find('.tab-users-dialog-new-password').show();
-            $dialog.find('#tab-users-dialog-new-password').val('__pass_not_set__');
-            $dialog.find('#tab-users-dialog-new-password-repeat').val('__pass_not_set__');
+            if (oldId) {
+                $dialog.find('#tab-users-dialog-new-password').val('__pass_not_set__');
+                $dialog.find('#tab-users-dialog-new-password-repeat').val('__pass_not_set__');
+            } else {
+                $dialog.find('#tab-users-dialog-new-password').val('');
+                $dialog.find('#tab-users-dialog-new-password-repeat').val('');
+            }
             if (oldId === 'system.user.admin') {
                 $dialog.find('#tab-users-dialog-new-id').prop('disabled', true);
             } else {
@@ -755,9 +776,13 @@ function Users(main) {
         this.$gridUsers.treeTable({
             objects:    this.main.objects,
             root:       'system.user',
-            columns:    ['title', 'name', 'enabled', 'groups', 'icon', 'color'],
-            widths:     ['calc(100% - 250px)', '250px'],
-            //classes:    ['', 'treetable-center'],
+            columns:    ['title', 'name', 'desc', 'enabled', 'groups'],
+            icons:      true,
+            colors:     true,
+            groups:     this.groups,
+            readOnly:   [true, true, true, false, false],
+            widths:     ['calc(100% - 390px)', '150px', '250px', '40px'],
+            classes:    ['', '', '', 'treetable-center'],
             name:       'users',
             buttonsWidth: '40px',
             buttons:    [
@@ -766,7 +791,7 @@ function Users(main) {
                     icons: {
                         primary:'ui-icon-trash'
                     },
-                    click: function (id, children, parent) {
+                    click: function (id /* , children, parent*/) {
                         if (that.main.objects[id] && that.main.objects[id].type === 'user') {
                             that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
                                 // If all
@@ -809,18 +834,38 @@ function Users(main) {
                 }
             ],
             onChange:   function (id, oldId) {
-                if (id !== oldId) {
+                if (!attr && id !== oldId) {
                     that.currentUser = id;
                 }
             },
-            //onReady:    setupDraggable
+            onEdit: function (id, attr, value) {
+                if (attr === 'enabled') {
+                    if (id === 'system.user.admin') {
+                        showMessage(_('Cannot disable admin!'), 3000, 'dropZone-error');
+                        return false;
+                    }
+                    that.main.socket.emit('extendObject', id, {common: {enabled: value}}, function (err) {
+                        if (err) {
+                            showMessage(_('Cannot modify user!') + err, 3000, 'dropZone-error');
+                        } else {
+                            showMessage(_('Updated'));
+                        }
+                    });
+                }
+            },
+            onReady:    function () {
+                //setupDraggable
+            }
         });
         //$('#tab-enums-list-new-enum').addClass('disabled');
         //$('#tab-enums-list-new-category').addClass('disabled');
         this.$gridGroups.treeTable({
             objects:    this.main.objects,
             root:       'system.group',
-            columns:    ['title', 'name', 'desc', 'members', 'icon', 'color'],
+            columns:    ['title', 'name', 'desc'],
+            icons:      true,
+            colors:     true,
+            members:    true,
             widths:     ['calc(100% - 250px)', '250px'],
             //classes:    ['', 'treetable-center'],
             name:       'groups',

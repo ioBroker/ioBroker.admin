@@ -35,6 +35,43 @@
     }
   }
 
+  position: relative;
+
+  // copied from materialize
+  #toast-container {
+    max-width: 86%;
+    top: 10%;
+    right: 7%;
+    display: block;
+    position: fixed;
+    z-index: 10000;
+    box-sizing: inherit;
+    .toast {
+      border-radius: 2px;
+      //top: 35px;
+      width: auto;
+      margin-top: 10px;
+      position: relative;
+      max-width: 100%;
+      height: auto;
+      min-height: 48px;
+      line-height: 1.5em;
+      word-break: break-all;
+      background-color: #323232;
+      padding: 10px 25px;
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: default;
+      top: 0;
+      opacity: 1;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    }
+  }
+
   .tab-dialog-new-color-icon {
     float: left;
     padding-right: 4px;

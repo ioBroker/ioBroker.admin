@@ -177,7 +177,7 @@
         });
     }
 
-    function getIcon(objects, id, imgPath) {
+    function getIcon(objects, id, imgPath, addClass) {
         var icon     = '';
         var alt      = '';
         var obj      = objects[id];
@@ -225,8 +225,11 @@
             }
         }
 
-        if (icon) return '<img class="treetable-icon" src="' + icon + '" alt="' + alt + '" />';
-        return '';
+        if (icon) {
+            return '<img class="' + (addClass !== undefined ? addClass : 'treetable-icon') + '" src="' + icon + '" alt="' + alt + '" />';
+        } else {
+            return '';
+        }
     }
 
     // https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
@@ -247,6 +250,19 @@
         // http://stackoverflow.com/a/3943023/112731
         return (r * 0.299 + g * 0.587 + b * 0.114) <= 186;
     }*/
+    function getUsersGroups(objects, groups) {
+        var usersGroups = {};
+        for (var g = 0; g < groups.length; g++) {
+            if (objects[groups[g]] && objects[groups[g]].common && objects[groups[g]].common.members) {
+                var users = objects[groups[g]].common.members;
+                for (var u = 0; u < users.length; u++) {
+                    usersGroups[users[u]] = usersGroups[users[u]] || [];
+                    usersGroups[users[u]].push({id: groups[g], name: objects[groups[g]].common.name || id.replace('system.group.', '')});
+                }
+            }
+        }
+        return usersGroups;
+    }
 
     function buildTable(options) {
         var table = '';
@@ -274,22 +290,8 @@
         table += '<div class="row tree-table-body"><table class="tree-table-main">';
         table += '  <thead>';
         table += '      <tr class="tree-table-main-header">';
-        var withMembers = false;
-        var withIcons   = false;
-        var withColors  = false;
+        var withColors  = !!options.colors;
         for (var ch = 0; ch < options.columns.length; ch++) {
-            if (options.columns[ch] === 'members' ) {
-                withMembers = true;
-                continue;
-            }
-            if (options.columns[ch] === 'icon' ) {
-                withIcons = true;
-                continue;
-            }
-            if (options.columns[ch] === 'color' ) {
-                withColors = true;
-                continue;
-            }
             if (options.columns[ch] === 'name') {
                 table += '      <th' + (options.widths && options.widths[ch] ? ' class="treetable-th-name" style="width: ' + options.widths[ch] + '"' : '') + '>';
                 table += '          <input placeholder="' + _('name') + '" class="filter_name treetable-filter" />';
@@ -333,9 +335,6 @@
                 obj.folder = true;
             }
             for (var cb = 0; cb < options.columns.length; cb++) {
-                if (options.columns[cb] === 'icon') {
-                    continue;
-                }
                 if (options.columns[cb] === 'instance') {
                     if (options.objects[id].type === 'script') {
                         obj.instance = common ? common.engine.split('.').pop() : 0;
@@ -346,6 +345,12 @@
                         obj[options.columns[cb]] = val;
                     }
                 }
+            }
+            if (options.members) {
+                obj.members = common.members;
+            }
+            if (options.colors) {
+                obj.color = common.color;
             }
 
             rows.push(obj);
@@ -383,7 +388,15 @@
             rows[ppp].realChildren = rows[ppp].children ? !!rows[ppp].children.length : false;
         }
 
-        if (withMembers) {
+        if (options.groups) {
+            var users = getUsersGroups(options.objects, options.groups);
+
+            for (var g = rows.length - 1; g >= 0; g--) {
+                rows[g].groups = users[rows[g].id] || [];
+            }
+        }
+
+        if (options.members) {
             for (var k = rows.length - 1; k >= 0; k--) {
                 // extend members
                 if (rows[k].members) {
@@ -409,6 +422,9 @@
                                     if (vval !== undefined) {
                                         obj[attr] = vval;
                                     }
+                                }
+                                if (options.colors) {
+                                    obj.color = common.color;
                                 }
                             }
                         }
@@ -436,11 +452,12 @@
             table += '">';
             for (var c = 0; c < options.columns.length; c++) {
                 var aattr = options.columns[c];
-                if (aattr === 'members' || aattr === 'icon' || aattr === 'color') {
-                    continue;
-                }
                 var style = '';
                 var _class = (options.classes && options.classes[c]) || '';
+
+                if (aattr === 'groups') {
+                    _class += ' m';
+                }
 
                 if (!c && rows[i].hasOwnProperty('children')) {
                     _class += ' treetable-folder fancytree-exp-c fancytree-has-children fancytree-ico-cf';
@@ -456,12 +473,21 @@
                 } else {
                     table += '<td style="' + style + '" class="' + _class + '">';
                 }
-                if (!c && withColors && rows[i].color) {
+                if (!c && options.colors && rows[i].color) {
                     table += '<div style="background: ' + rows[i].color + '" class="treetable-color"></div>';
                 }
-                if (!c && withIcons) {
+                if (!c && options.icons) {
                     table += getIcon(options.objects, rows[i].id, options.imgPath);
                 }
+                if (aattr === 'enabled') {
+                    table += '<input data-attr="' + aattr + '" data-id="' + rows[i].id + '" class="treetable-input" type="checkbox" ' + (rows[i][aattr] ? 'checked' : '') + ' ' + (options.readOnly && options.readOnly[c] !== false ? 'disabled' : '') + '>';
+                } else
+                if (aattr === 'groups') {
+                    for (var gg = 0; gg < rows[i].groups.length; gg++) {
+                        var gId = rows[i].groups[gg].id;
+                        table += '<div class="chip">' + getIcon(options.objects, gId, null, '') + rows[i].groups[gg].name + '</div>'; //<i class="close material-icons" data-group="' + rows[i].groups[gg].id + '" data-user="' + rows[i].id + '">close</i></div>';
+                    }
+                } else
                 // edit instance
                 if (aattr === 'instance') {
                     if (rows[i].instance !== undefined && instances.length > 1) {
@@ -534,7 +560,7 @@
 
         var $tbody = $treeTable.find('tbody');
 
-        $tbody.on('mousedown', 'tr', function() {
+        $tbody.on('click', 'tr', function() {
             $('.selected').not(this).removeClass('selected');
             $(this).addClass('selected');
             var $table = $(this).parent().parent();
@@ -615,6 +641,25 @@
         if (options.onEdit) {
             $treeTable.find('.treetable-instance').change(function () {
                 options.onEdit($(this).data('id'), 'instance', $(this).val());
+            });
+
+            $treeTable.find('.treetable-input').change(function (e) {
+                e.stopPropagation();
+                var val;
+                if ($(this).attr('type') === 'checkbox') {
+                    val = $(this).prop('checked');
+                } else {
+                    val = $(this).val();
+                }
+                var id = $(this).data('id');
+                if (options.onEdit) {
+                    if (options.onEdit(id, $(this).data('attr'), val) === false) {
+                        // todo support more types
+                        $(this).prop('checked', true);
+                    }
+                }
+            }).keyup(function () {
+                $(this).trigger('change');
             });
         } else {
             $treeTable.find('.treetable-instance').prop('disabled', true)

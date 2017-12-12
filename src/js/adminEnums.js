@@ -502,7 +502,10 @@ function Enums(main) {
             this.$gridList.treeTable({
                 objects:    this.main.objects,
                 root:       'enum',
-                columns:    ['title', 'name', 'members', 'icon', 'color'],
+                columns:    ['title', 'name'],
+                members:    true,
+                colors:     true,
+                icons:      true,
                 widths:     ['calc(100% - 250px)', '250px'],
                 //classes:    ['', 'treetable-center'],
                 name:       'enums',

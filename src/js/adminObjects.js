@@ -911,8 +911,8 @@ function Objects(main) {
 
         // fill groups
         text = '';
-        for (u = 0; u < that.main.tabs.groups.list.length; u++) {
-            text += '<option value="' + that.main.tabs.groups.list[u] + '">' + (that.main.objects[that.main.tabs.groups.list[u]].common.name || that.main.tabs.groups.list[u]) + '</option>';
+        for (u = 0; u < that.main.tabs.users.groups.length; u++) {
+            text += '<option value="' + that.main.tabs.users.groups[u] + '">' + (that.main.objects[that.main.tabs.users.groups[u]].common.name || that.main.tabs.users.groups[u]) + '</option>';
         }
         $('#object-tab-acl-group').html(text);
         that.load(obj);

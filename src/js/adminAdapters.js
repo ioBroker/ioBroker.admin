@@ -1042,7 +1042,7 @@ function Adapters(main) {
                     });
                     $('#main-toolbar-table-types-btn').html(_(that.currentType || 'all')).dropdown({
                         constrainWidth: false, // Does not change width of dropdown to that of the activator
-                        hover: true, // Activate on hover
+                        // hover: true, // Activate on hover
                         gutter: 0
                     });
                 } else {

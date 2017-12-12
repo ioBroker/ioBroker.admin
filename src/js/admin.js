@@ -871,7 +871,10 @@ $(document).ready(function () {
 
     // Use the function for this because it must be done after the language was read
     function initAllDialogs() {
-        initGridLanguage(main.systemConfig.common.language);
+        // todo delete it because jqgrid does not used any more
+        if (typeof initGridLanguage === 'function') {
+            initGridLanguage(main.systemConfig.common.language);
+        }
 
         $dialogCommand.dialog({
             autoOpen:      false,
