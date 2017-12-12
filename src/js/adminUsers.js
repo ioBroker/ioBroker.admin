@@ -827,6 +827,7 @@ function Users(main) {
             });
         }
         $dialog.find('ul.tabs').mtabs();
+        $dialog.find('ul.tabs').mtabs('select_tab', 'tab-users-dialog-new-main');
 
         Materialize.updateTextFields('#tab-users-dialog-new');
         $dialog.modal().modal('open');
