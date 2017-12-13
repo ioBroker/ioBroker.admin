@@ -1,6 +1,6 @@
-'use strict';
-
 function Users(main) {
+    'use strict';
+
     var that          = this;
     this.groups       = [];
     this.list         = [];
@@ -248,32 +248,10 @@ function Users(main) {
         }
     }
 
-    var operations = [
-        'list',
-        'read',
-        'write',
-        'create',
-        'delete',
-        'http',
-        'sendto'
-    ];
-    function sortFunction(a, b) {
-        a = operations.indexOf(a);
-        b = operations.indexOf(b);
-        if (a === -1) a = 1000;
-        if (b === -1) a = 1000;
-
-        if (a < b) return -1;
-
-        if (a > b) return 1;
-
-        return 0
-    }
-
-    function firstUpper (str) {
+    /*function firstUpper (str) {
         if (!str) return str;
         return str[0].toUpperCase() + str.substring(1).toLowerCase();
-    }
+    }*/
 
     function delUserFromGroups(id, callback) {
         var someDeleted = false;
@@ -557,6 +535,7 @@ function Users(main) {
             $id.addClass('wrong');
         }
     }
+
     function createOrEdit(isGroupOrId) {
         var idChanged = false;
         var $dialog = that.$grid.find('#tab-users-dialog-new');
@@ -565,11 +544,12 @@ function Users(main) {
             icon:  '',
             color: '',
             desc:  '',
-            id:    ''
+            id:    '',
+            acl:   {}
         };
-        var parent   = isGroupOrId === true ? 'system.group' : 'system.user';
-        var oldId    = '';
-        var isGroup  = isGroupOrId === true;
+        var parent  = isGroupOrId === true ? 'system.group' : 'system.user';
+        var oldId   = '';
+        var isGroup = isGroupOrId === true;
         var prevId;
 
         installFileUpload($dialog, 50000, function (err, text) {
@@ -595,6 +575,9 @@ function Users(main) {
                 options.color = that.main.objects[isGroupOrId].common.color;
                 options.desc  = that.main.objects[isGroupOrId].common.desc;
                 isGroup = that.main.objects[isGroupOrId].type === 'group';
+                if (isGroup) {
+                    options.acl = that.main.objects[isGroupOrId].acl;
+                }
             }
             oldId = isGroupOrId;
             options.id = isGroupOrId;
@@ -765,6 +748,7 @@ function Users(main) {
             }
         }
         if (isGroup) {
+            // Fill the rights
             that.main.socket.emit('listPermissions', function (permissions) {
                 that.aclGroups = {};
 
@@ -817,6 +801,22 @@ function Users(main) {
                 }
                 table += '</table>';
                 $dialog.find('#tab-users-dialog-new-rights').html(table);
+
+
+                // Fill the checkboxes
+                if (!obj.common.acl) obj.common.acl = {};
+
+                if (id === 'system.group.administrator') {
+                    obj.common.acl = {};
+                    for (var g in that.aclGroups) {
+                        if (that.groups.hasOwnProperty(g)) {
+                            obj.common.acl[g] = {};
+                            for (var i = 0; i < that.groups[g].length; i++) {
+                                obj.common.acl[g][that.groups[g][i]] = true;
+                            }
+                        }
+                    }
+                }
             });
             $dialog.find('ul.tabs .tab-dialog-new-tabs').show();
         } else {
@@ -1101,67 +1101,6 @@ function Users(main) {
             this.main.unsubscribeObjects('system.group.*');
         }
     };
-
-    function editUser(id) {
-        if (id) {
-            var obj = that.main.objects[id];
-            that.$dialog.dialog('option', 'title', id);
-            $('#edit-user-id').val(obj._id);
-            $('#edit-user-name').prop('disabled', true).val(obj.common.name);
-            $('#edit-user-pass').val('__pass_not_set__');
-            $('#edit-user-passconf').val('__pass_not_set__');
-            that.$dialog.dialog('open');
-        } else {
-            that.$dialog.dialog('option', 'title', _('new user'));
-            $('#edit-user-id').val('');
-            $('#edit-user-name').prop('disabled', false).val('');
-            $('#edit-user-pass').val('');
-            $('#edit-user-passconf').val('');
-            that.$dialog.dialog('open');
-        }
-    }
-
-    function saveUser() {
-        var pass     = $('#edit-user-pass').val();
-        var passconf = $('#edit-user-passconf').val();
-
-        if (pass !== passconf) {
-            that.main.showMessage(_('Password and confirmation are not equal!'), '', 'notice');
-            return;
-        }
-        if (!pass) {
-            that.main.showMessage(_('Password cannot be empty!'), '', 'notice');
-            return;
-        }
-        var id   = $('#edit-user-id').val();
-        var user = $('#edit-user-name').val();
-
-        if (!id) {
-            that.main.socket.emit('addUser', user, pass, function (err) {
-                if (err) {
-                    that.main.showMessage(_('Cannot create user: ') + _(err), '', 'alert');
-                } else {
-                    that.$dialog.dialog('close');
-                    setTimeout(function () {
-                        that.init(true);
-                    }, 0);
-                }
-            });
-        } else {
-            // If password changed
-            if (pass !== '__pass_not_set__') {
-                that.main.socket.emit('changePassword', user, pass, function (err) {
-                    if (err) {
-                        that.main.showMessage(_('Cannot set password: ') + _(err), '', 'alert');
-                    } else {
-                        that.$dialog.dialog('close');
-                    }
-                });
-            } else {
-                that.$dialog.dialog('close');
-            }
-        }
-    }
 
     this.objectChange = function (id, obj) {
         if (id.match(/^system\.user\./)) {
