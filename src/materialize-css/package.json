@@ -1,27 +1,50 @@
 {
-  "_from": "materialize-css@^0.100.2",
-  "_id": "materialize-css@0.100.2",
-  "_inBundle": false,
-  "_integrity": "sha512-Bf4YeoJCIdk4dlpnmVX+DIOJBbqOKwfBPD+tT5bxwXNFMLk649CGbldqtnctkkfMp+fGgSAsdYu9lo1ZolZqgA==",
+  "_args": [
+    [
+      {
+        "raw": "materialize-css@1.0.0-alpha.2",
+        "scope": null,
+        "escapedName": "materialize-css",
+        "name": "materialize-css",
+        "rawSpec": "1.0.0-alpha.2",
+        "spec": "1.0.0-alpha.2",
+        "type": "version"
+      },
+      "C:\\pWork\\node_modules\\ioBroker.admin"
+    ]
+  ],
+  "_from": "materialize-css@1.0.0-alpha.2",
+  "_id": "materialize-css@1.0.0-alpha.2",
+  "_inCache": true,
   "_location": "/materialize-css",
+  "_nodeVersion": "8.2.1",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/materialize-css-1.0.0-alpha.2.tgz_1512081701823_0.5051921033300459"
+  },
+  "_npmUser": {
+    "name": "materialize",
+    "email": "materializeframework@gmail.com"
+  },
+  "_npmVersion": "5.3.0",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
-    "registry": true,
-    "raw": "materialize-css@^0.100.2",
-    "name": "materialize-css",
+    "raw": "materialize-css@1.0.0-alpha.2",
+    "scope": null,
     "escapedName": "materialize-css",
-    "rawSpec": "^0.100.2",
-    "saveSpec": null,
-    "fetchSpec": "^0.100.2"
+    "name": "materialize-css",
+    "rawSpec": "1.0.0-alpha.2",
+    "spec": "1.0.0-alpha.2",
+    "type": "version"
   },
   "_requiredBy": [
     "#DEV:/",
     "#USER"
   ],
-  "_resolved": "https://registry.npmjs.org/materialize-css/-/materialize-css-0.100.2.tgz",
-  "_shasum": "9ca32b24904c9a04491fc7d0a2e9402e7b1dae07",
-  "_spec": "materialize-css@^0.100.2",
+  "_resolved": "https://registry.npmjs.org/materialize-css/-/materialize-css-1.0.0-alpha.2.tgz",
+  "_shasum": "b5efa89f474ad982b36816fe012dfe28aa2ff473",
+  "_shrinkwrap": null,
+  "_spec": "materialize-css@1.0.0-alpha.2",
   "_where": "C:\\pWork\\node_modules\\ioBroker.admin",
   "author": {
     "name": "Alvin Wang, Alan Chang"
@@ -29,12 +52,7 @@
   "bugs": {
     "url": "https://github.com/Dogfalo/materialize/issues"
   },
-  "bundleDependencies": false,
-  "dependencies": {
-    "hammerjs": "^2.0.8",
-    "jquery": "^3.0.0 || ^2.1.4"
-  },
-  "deprecated": false,
+  "dependencies": {},
   "description": "Builds Materialize distribution packages",
   "devDependencies": {
     "autoprefixer": "^7.1.1",
@@ -47,7 +65,6 @@
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-compress": "^1.4.1",
     "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jade": "^1.0.0",
     "grunt-contrib-jasmine": "^1.1.0",
     "grunt-contrib-uglify": "^3.0.1",
@@ -60,9 +77,16 @@
     "grunt-text-replace": "^0.4.0",
     "jasmine": "^2.6.0",
     "jasmine-jquery": "^2.1.1",
+    "jquery": "^3.2.1",
     "node-archiver": "^0.3.0",
     "node-sass": "^4.5.2",
     "phantomjs-prebuilt": "^2.1.14"
+  },
+  "directories": {},
+  "dist": {
+    "integrity": "sha512-rZLSrD4NEORyHXVwAuQqtSiNzzMI9QhjXnzxgORmy5LH7JrwlYx6iVnrU7GQWobWJlaXBl9OEryDF3EUpwTkcA==",
+    "shasum": "b5efa89f474ad982b36816fe012dfe28aa2ff473",
+    "tarball": "https://registry.npmjs.org/materialize-css/-/materialize-css-1.0.0-alpha.2.tgz"
   },
   "engine": "node >= 6",
   "files": [
@@ -73,18 +97,29 @@
     "Gruntfile.js",
     "LICENSE"
   ],
+  "gitHead": "f4e8f7be7b69bad23ae960fe24d2957025fde3aa",
   "homepage": "http://materializecss.com/",
   "license": "MIT",
   "main": "dist/js/materialize.js",
+  "maintainers": [
+    {
+      "name": "materialize",
+      "email": "materializeframework@gmail.com"
+    }
+  ],
   "name": "materialize-css",
+  "optionalDependencies": {},
+  "readme": "<p align=\"center\">\r\n  <a href=\"http://materializecss.com/\">\r\n    <img src=\"http://materializecss.com/res/materialize.svg\" width=\"150\">\r\n  </a>\r\n\r\n  <h3 align=\"center\">MaterializeCSS</h3>\r\n\r\n  <p align=\"center\">\r\n    Materialize, a CSS Framework based on material design.\r\n    <br>\r\n    <a href=\"http://materializecss.com/\"><strong>-- Browse the docs --</strong></a>\r\n    <br>\r\n    <br>\r\n    <a href=\"https://travis-ci.org/Dogfalo/materialize\">\r\n      <img src=\"https://travis-ci.org/Dogfalo/materialize.svg?branch=master\" alt=\"Travis CI badge\">\r\n    </a>\r\n    <a href=\"https://badge.fury.io/js/materialize-css\">\r\n      <img src=\"https://badge.fury.io/js/materialize-css.svg\" alt=\"npm version badge\">\r\n    </a>\r\n    <a href=\"https://cdnjs.com/libraries/materialize\">\r\n      <img src=\"https://img.shields.io/cdnjs/v/materialize.svg\" alt=\"CDNJS version badge\">\r\n    </a>\r\n    <a href=\"https://david-dm.org/Dogfalo/materialize\">\r\n      <img src=\"https://david-dm.org/Dogfalo/materialize/status.svg\" alt=\"dependencies Status badge\">\r\n      </a>\r\n    <a href=\"https://david-dm.org/Dogfalo/materialize#info=devDependencies\">\r\n      <img src=\"https://david-dm.org/Dogfalo/materialize/dev-status.svg\" alt=\"devDependency Status badge\">\r\n    </a>\r\n    <a href=\"https://gitter.im/Dogfalo/materialize\">\r\n      <img src=\"https://badges.gitter.im/Join%20Chat.svg\" alt=\"Gitter badge\">\r\n    </a>\r\n</p>\r\n\r\n## Table of Contents\r\n- [Quickstart](#quickstart)\r\n- [Documentation](#documentation)\r\n- [Supported Browsers](#supported-browsers)\r\n- [Changelog](#changelog)\r\n- [Testing](#testing)\r\n- [Contributing](#contributing)\r\n- [Copyright and license](#copyright-and-license)\r\n\r\n## Quickstart:\r\nRead the [getting started guide](http://materializecss.com/getting-started.html) for more information on how to use materialize.\r\n\r\n- [Download the latest release](https://github.com/Dogfalo/materialize/releases/latest) of materialize directly from GitHub.\r\n- Clone the repo: `git clone https://github.com/Dogfalo/materialize.git`\r\n- Include the files via [cdnjs](https://cdnjs.com/libraries/materialize). More [here](http://materializecss.com/getting-started.html).\r\n- Install with [npm](https://www.npmjs.com): `npm install materialize-css`\r\n- Install with [Bower](https://bower.io): `bower install materialize`\r\n- Install with [Atmosphere](https://atmospherejs.com): `meteor add materialize:materialize`\r\n\r\n## Documentation\r\nThe documentation can be found at <http://materializecss.com>. To run the documentation locally on your machine, you need [Node.js](https://nodejs.org/en/) installed on your computer.\r\n\r\n### Running documentation locally\r\nRun these commands to set up the documentation:\r\n\r\n```bash\r\ngit clone https://github.com/Dogfalo/materialize\r\ncd materialize\r\nnpm install\r\n```\r\n\r\nThen run `grunt monitor` to compile the documentation. When it finishes, open a new browser window and navigate to `localhost:8000`. We use [BrowserSync](https://www.browsersync.io/) to display the documentation.\r\n\r\n### Documentation for previous releases\r\nPrevious releases and their documentation are available for [download](https://github.com/Dogfalo/materialize/releases).\r\n\r\n## Supported Browsers:\r\nMaterialize is compatible with:\r\n\r\n- Chrome 35+\r\n- Firefox 31+\r\n- Safari 9+\r\n- Opera\r\n- Edge\r\n- IE 11+\r\n\r\n## Changelog\r\nFor changelogs, check out [the Releases section of materialize](https://github.com/Dogfalo/materialize/releases) or the [CHANGELOG.md](CHANGELOG.md).\r\n\r\n## Testing\r\nWe use Jasmine as our testing framework and we're trying to write a robust test suite for our components. If you want to help, [here's a starting guide on how to write tests in Jasmine](CONTRIBUTING.md#jasmine-testing-guide).\r\n\r\n## Contributing\r\nCheck out the [CONTRIBUTING document](CONTRIBUTING.md) in the root of the repository to learn how you can contribute. You can also browse the [help-wanted](https://github.com/Dogfalo/materialize/labels/help-wanted) tag in our issue tracker to find things to do.\r\n\r\n## Copyright and license\r\nCode copyright 2017 Materialize. Code released under the MIT license.\r\n",
+  "readmeFilename": "README.md",
   "repository": {
     "type": "git",
     "url": "git://github.com/Dogfalo/materialize.git"
   },
   "sass": "sass/materialize.scss",
   "scripts": {
+    "dev": "grunt monitor",
     "test": "grunt travis --verbose"
   },
   "style": "dist/css/materialize.css",
-  "version": "0.100.2"
+  "version": "1.0.0-alpha.2"
 }

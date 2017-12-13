@@ -266,19 +266,22 @@
 
     function buildTable(options) {
         var table = '';
-        var buttonTag = typeof Materialize === 'undefined' ? 'button' : 'a';
+        // detect materialize
+        var buttonTag = window.M && window.M.toast ? 'a' : 'button';
         if (options.panelButtons) {
             table += '<div class="row tree-table-buttons m">';
             for (var z = 0; z < options.panelButtons.length; z++) {
                 table += '<' + buttonTag + ' class="btn-floating waves-effect waves-light blue btn-custom-' + z + '" title="' + (options.panelButtons[z].title || '') + '" ' + (options.panelButtons[z].id ? 'id="' + options.panelButtons[z].id + '"' : '') + '>';
-                if (typeof Materialize !== 'undefined') {
+                // detect materialize
+                if (window.M && window.M.toast) {
                     table += '<i class="material-icons">' + (options.panelButtons[z].icon || '') + '</i>';
                 }
                 table += '</' + buttonTag + '>';
             }
             if (options.moveId) {
                 table += '<' + buttonTag + ' class="btn-floating waves-effect waves-light blue treetable-sort" title="' + _('reorder') + '">';
-                if (typeof Materialize !== 'undefined') {
+                // detect materialize
+                if (window.M && window.M.toast) {
                     table += '<i class="material-icons">import_export</i>';
                 }
                 table += '</' + buttonTag + '>';
@@ -517,7 +520,8 @@
                         text += '<div class="treetable-button-empty">&nbsp;</div>';
                     } else {
                         text += '<' + buttonTag + ' data-id="' + rows[i].id + '" class="select-button-' + jj + ' select-button-custom td-button"  style="margin-right: 3px;'+ '" data-parent="' + rows[i].parent + '" data-children="' + !!rows[i].realChildren + '" title="' + (options.buttons[jj].title || '') + '">';
-                        if (typeof Materialize !== 'undefined') {
+                        // detect materialize
+                        if (window.M && window.M.toast) {
                             text += '<i class="material-icons">' + (options.buttons[jj].icon || '') + '</i>';
                         }
                         text += '</' + buttonTag + '>';
@@ -597,7 +601,8 @@
                     .click(options.panelButtons[zz].click)
                     .attr('title', options.panelButtons[zz].title || '');
 
-                if (typeof Materialize === 'undefined') {
+                // detect materialize
+                if (!window.M || !window.M.toast) {
                     $zz
                         .button(options.panelButtons[zz])
                         .css({width: 24, height: 24})

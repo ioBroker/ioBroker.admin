@@ -1,7 +1,7 @@
-(function($, Vel) {
+(function($, anim) {
   'use strict';
 
-  var _defaults = {
+  let _defaults = {
     opacity: 0.5,
     inDuration: 250,
     outDuration: 250,
@@ -13,36 +13,27 @@
   };
 
 
-    var init = function ($els, options) {
-        var arr = [];
-        $els.each(function() {
-            arr.push(new Modal($(this), options));
-        });
-        return arr;
-    };
   /**
    * @class
    *
    */
-  function Modal ($el, options) {
+  class Modal {
     /**
      * Construct Modal instance and set up overlay
      * @constructor
-     * @param {jQuery} $el
+     * @param {Element} el
      * @param {Object} options
      */
-    this._constructor = function ($el, options) {
+    constructor(el, options) {
 
       // If exists, destroy and reinitialize
-      if (!!$el[0].M_Modal) {
-        $el[0].M_Modal.destroy();
+      if (!!el.M_Modal) {
+        el.M_Modal.destroy();
       }
 
-      /**
-       * The jQuery element
-       * @type {jQuery}
-       */
-      this.$el = $el;
+      this.el = el;
+      this.$el = $(el);
+      this.el.M_Modal = this;
 
       /**
        * Options for the modal
@@ -64,125 +55,126 @@
        */
       this.isOpen = false;
 
-      this.$el[0].M_Modal = this;
-      this.id = $el.attr('id');
-      this.openingTrigger = undefined;
+      this.id = this.$el.attr('id');
+      this._openingTrigger = undefined;
       this.$overlay = $('<div class="modal-overlay"></div>');
 
       Modal._increment++;
       Modal._count++;
       this.$overlay[0].style.zIndex = 1000 + Modal._increment * 2;
-      this.$el[0].style.zIndex = 1000 + Modal._increment * 2 + 1;
-      this.setupEventHandlers();
-    };
+      this.el.style.zIndex = 1000 + Modal._increment * 2 + 1;
+      this._setupEventHandlers();
+    }
 
-    this.defaults = function () {
+    static get defaults() {
       return _defaults;
-    };
+    }
+
+    static init($els, options) {
+      let arr = [];
+      $els.each(function() {
+        arr.push(new Modal(this, options));
+      });
+      return arr;
+    }
 
     /**
      * Get Instance
      */
-    this.getInstance = function () {
-      return this;
-    };
+    static getInstance(el) {
+      let domElem = !!el.jquery ? el[0] : el;
+      return domElem.M_Modal;
+    }
 
     /**
      * Teardown component
      */
-    this.destroy = function () {
-      this.removeEventHandlers();
-      this.$el[0].removeAttribute('style');
-      if (!!this.$overlay[0].parentNode) {
-        this.$overlay[0].parentNode.removeChild(this.$overlay[0]);
-      }
-      this.$el[0].M_Modal = undefined;
+    destroy() {
       Modal._count--;
-    };
+      this._removeEventHandlers();
+      this.el.removeAttribute('style');
+      this.$overlay.remove();
+      this.el.M_Modal = undefined;
+    }
 
     /**
      * Setup Event Handlers
      */
-    this.setupEventHandlers = function () {
-      this.handleOverlayClickBound = this.handleOverlayClick.bind(this);
-      this.handleModalCloseClickBound = this.handleModalCloseClick.bind(this);
+    _setupEventHandlers() {
+      this._handleOverlayClickBound = this._handleOverlayClick.bind(this);
+      this._handleModalCloseClickBound = this._handleModalCloseClick.bind(this);
 
       if (Modal._count === 1) {
-        document.body.addEventListener('click', this.handleTriggerClick);
+        document.body.addEventListener('click', this._handleTriggerClick);
       }
-      this.$overlay[0].addEventListener('click', this.handleOverlayClickBound);
-      this.$el[0].addEventListener('click', this.handleModalCloseClickBound);
-    };
+      this.$overlay[0].addEventListener('click', this._handleOverlayClickBound);
+      this.el.addEventListener('click', this._handleModalCloseClickBound);
+    }
 
     /**
      * Remove Event Handlers
      */
-    this.removeEventHandlers = function () {
+    _removeEventHandlers() {
       if (Modal._count === 0) {
-        document.body.removeEventListener('click', this.handleTriggerClick);
+        document.body.removeEventListener('click', this._handleTriggerClick);
       }
-      this.$overlay[0].removeEventListener('click', this.handleOverlayClickBound);
-      this.$el[0].removeEventListener('click', this.handleModalCloseClickBound);
-    };
+      this.$overlay[0].removeEventListener('click', this._handleOverlayClickBound);
+      this.el.removeEventListener('click', this._handleModalCloseClickBound);
+    }
 
     /**
      * Handle Trigger Click
      * @param {Event} e
      */
-    this.handleTriggerClick = function (e) {
-      var $trigger =  $(e.target).closest('.modal-trigger');
-      if (e.target && $trigger.length) {
-        var modalId = $trigger[0].getAttribute('href');
-        if (modalId) {
-          modalId = modalId.slice(1);
-        } else {
-          modalId = $trigger[0].getAttribute('data-target');
-        }
-        var modalInstance = document.getElementById(modalId).M_Modal;
+    _handleTriggerClick(e) {
+      let $trigger =  $(e.target).closest('.modal-trigger');
+      if ($trigger.length) {
+        let modalId = M.getIdFromTrigger($trigger[0]);
+        let modalInstance = document.getElementById(modalId).M_Modal;
         if (modalInstance) {
           modalInstance.open($trigger);
         }
         e.preventDefault();
       }
-    };
+    }
 
     /**
      * Handle Overlay Click
      */
-    this.handleOverlayClick = function () {
+    _handleOverlayClick() {
       if (this.options.dismissible) {
         this.close();
       }
-    };
+    }
 
     /**
      * Handle Modal Close Click
      * @param {Event} e
      */
-    this.handleModalCloseClick = function (e) {
-      var $closeTrigger =  $(e.target).closest('.modal-close');
-      if (e.target && $closeTrigger.length) {
+    _handleModalCloseClick(e) {
+      let $closeTrigger = $(e.target).closest('.modal-close');
+      if ($closeTrigger.length) {
         this.close();
       }
-    };
+    }
 
     /**
      * Handle Keydown
      * @param {Event} e
      */
-    this.handleKeydown = function (e) {
+    _handleKeydown(e) {
       // ESC key
       if (e.keyCode === 27 && this.options.dismissible) {
         this.close();
       }
-    };
+    }
 
     /**
      * Animate in modal
      */
-    this.animateIn = function () {
+    _animateIn() {
       // Set initial styles
-      $.extend(this.$el[0].style, {
+      $.extend(this.el.style, {
         display: 'block',
         opacity: 0
       });
@@ -192,141 +184,147 @@
       });
 
       // Animate overlay
-      Vel(
-        this.$overlay[0],
-        {opacity: this.options.opacity},
-        {duration: this.options.inDuration, queue: false, ease: 'easeOutCubic'}
-      );
-
+      anim({
+        targets: this.$overlay[0],
+        opacity: this.options.opacity,
+        duration: this.options.inDuration,
+        easing: 'easeOutQuad'
+      });
 
       // Define modal animation options
-      var enterVelocityOptions = {
+      let enterAnimOptions = {
+        targets: this.el,
         duration: this.options.inDuration,
-        queue: false,
-        ease: 'easeOutCubic',
+        easing: 'easeOutCubic',
         // Handle modal ready callback
-        complete: function () {
-          if (typeof this.options.ready === 'function') {
-            this.options.ready.call(this, this.$el, this.openingTrigger);
+        complete: () => {
+          if (typeof(this.options.ready) === 'function') {
+            this.options.ready.call(this, this.el, this._openingTrigger);
           }
-        }.bind(this)
+        }
       };
 
       // Bottom sheet animation
-      if (this.$el[0].classList.contains('bottom-sheet')) {
-        Vel(
-          this.$el[0],
-          {bottom: 0, opacity: 1},
-          enterVelocityOptions);
+      if (this.el.classList.contains('bottom-sheet')) {
+        $.extend(enterAnimOptions, {
+          bottom: 0,
+          opacity: 1
+        });
+        anim(enterAnimOptions);
 
       // Normal modal animation
       } else {
-        Vel.hook(this.$el[0], 'scaleX', 0.7);
-        this.$el[0].style.top = this.options.startingTop;
-        Vel(
-          this.$el[0],
-          {top: this.options.endingTop, opacity: 1, scaleX: 1},
-          enterVelocityOptions
-        );
+        $.extend(enterAnimOptions, {
+          top: [this.options.startingTop, this.options.endingTop],
+          opacity: 1,
+          scaleX: [.8, 1],
+          scaleY: [.8, 1]
+        });
+        anim(enterAnimOptions);
       }
-    };
+    }
 
     /**
      * Animate out modal
      */
-    this.animateOut = function () {
+    _animateOut() {
       // Animate overlay
-      Vel(
-        this.$overlay[0],
-        { opacity: 0},
-        {duration: this.options.outDuration, queue: false, ease: 'easeOutQuart'}
-      );
+      anim({
+        targets: this.$overlay[0],
+        opacity: 0,
+        duration: this.options.outDuration,
+        easing: 'easeOutQuart'
+      });
 
       // Define modal animation options
-      var exitVelocityOptions = {
+      let exitAnimOptions = {
+        targets: this.el,
         duration: this.options.outDuration,
-        queue: false,
-        ease: 'easeOutCubic',
+        easing: 'easeOutCubic',
         // Handle modal ready callback
-        complete: function () {
-          this.$el[0].style.display = 'none';
+        complete: () => {
+          this.el.style.display = 'none';
           // Call complete callback
           if (typeof(this.options.complete) === 'function') {
-            this.options.complete.call(this, this.$el);
+            this.options.complete.call(this, this.el);
           }
-          this.$overlay[0].parentNode.removeChild(this.$overlay[0]);
-        }.bind(this)
+          this.$overlay.remove();
+        }
       };
 
       // Bottom sheet animation
-      if (this.$el[0].classList.contains('bottom-sheet')) {
-        Vel(
-          this.$el[0],
-          {bottom: '-100%', opacity: 0},
-          exitVelocityOptions
-        );
+      if (this.el.classList.contains('bottom-sheet')) {
+        $.extend(exitAnimOptions, {
+          bottom: '-100%',
+          opacity: 0
+        });
+        anim(exitAnimOptions);
 
       // Normal modal animation
       } else {
-        Vel(
-          this.$el[0],
-          {top: this.options.startingTop, opacity: 0, scaleX: 0.7},
-          exitVelocityOptions
-        );
+        $.extend(exitAnimOptions, {
+          top: [this.options.endingTop, this.options.startingTop],
+          opacity: 0,
+          scaleX: 0.8,
+          scaleY: 0.8
+        });
+        anim(exitAnimOptions);
       }
-    };
+    }
 
-    this._constructor($el, options);
-  }
+
     /**
      * Open Modal
-     * @param {jQuery} [$trigger]
+     * @param {cash} [$trigger]
      */
-    Modal.prototype.open = function ($trigger) {
-        if (this.isOpen) {
-            return;
-        }
+    open($trigger) {
+      if (this.isOpen) {
+        return;
+      }
 
-        this.isOpen = true;
-        var body = document.body;
-        body.style.overflow = 'hidden';
-        this.$el[0].classList.add('open');
-        body.appendChild(this.$overlay[0]);
+      this.isOpen = true;
+      let body = document.body;
+      body.style.overflow = 'hidden';
+      this.el.classList.add('open');
+      body.appendChild(this.$overlay[0]);
 
-        // Set opening trigger, undefined indicates modal was opened by javascript
-        this.openingTrigger = !!$trigger ? $trigger : undefined;
+      // Set opening trigger, undefined indicates modal was opened by javascript
+      this._openingTrigger = !!$trigger ? $trigger[0] : undefined;
 
+      if (this.options.dismissible) {
+        this._handleKeydownBound = this._handleKeydown.bind(this);
+        document.addEventListener('keydown', this._handleKeydownBound);
+      }
 
-        if (this.options.dismissible) {
-            this.handleKeydownBound = this.handleKeydown.bind(this);
-            document.addEventListener('keydown', this.handleKeydownBound);
-        }
-
-        this.animateIn();
-
-        return this;
-    };
+      anim.remove(this.el);
+      anim.remove(this.$overlay[0]);
+      this._animateIn();
+      return this;
+    }
 
     /**
      * Close Modal
      */
-    Modal.prototype.close = function () {
-        if (!this.isOpen) {
-            return;
-        }
+    close() {
+      if (!this.isOpen) {
+        return;
+      }
 
-        this.isOpen = false;
-        this.$el[0].classList.remove('open');
-        document.body.style.overflow = '';
+      this.isOpen = false;
+      this.el.classList.remove('open');
+      document.body.style.overflow = '';
 
-        if (this.options.dismissible) {
-            document.removeEventListener('keydown', this.handleKeydownBound);
-        }
+      if (this.options.dismissible) {
+        document.removeEventListener('keydown', this._handleKeydownBound);
+      }
 
-        this.animateOut();
+      anim.remove(this.el);
+      anim.remove(this.$overlay[0]);
+      this._animateOut();
+      return this;
+    }
+  }
 
-        return this;
-    };
   /**
    * @static
    * @memberof Modal
@@ -339,31 +337,10 @@
    */
   Modal._count = 0;
 
-  Materialize.Modal = Modal;
+  M.Modal = Modal;
 
-  $.fn.modal = function(methodOrOptions) {
-    // Call plugin method if valid method name is passed in
-    if (Modal.prototype[methodOrOptions]) {
-      // Getter methods
-      if (methodOrOptions.slice(0,3) === 'get') {
-        return this.first()[0].M_Modal[methodOrOptions]();
+  if (M.jQueryLoaded) {
+    M.initializeJqueryWrapper(Modal, 'modal', 'M_Modal');
+  }
 
-      // Void methods
-      } else {
-        return this.each(function() {
-          this.M_Modal[methodOrOptions]();
-        });
-      }
-
-    // Initialize plugin if options or no argument is passed in
-    } else if ( typeof methodOrOptions === 'object' || ! methodOrOptions ) {
-      init(this, arguments[0]);
-      return this;
-
-    // Return error if an unrecognized  method name is passed in
-    } else {
-      $.error('Method ' + methodOrOptions + ' does not exist on jQuery.modal');
-    }
-  };
-
-})(jQuery, Materialize.Vel);
+})(cash, anime);

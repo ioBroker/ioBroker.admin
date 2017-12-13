@@ -4,10 +4,6 @@ module.exports = function(grunt) {
 
   // configure the tasks
   var config = {
-    //  Copy
-    copy: {
-      dist: { cwd: 'fonts', src: [ '**' ], dest: 'dist/fonts', expand: true },
-    },
 
     //  Jasmine
     jasmine: {
@@ -155,12 +151,8 @@ module.exports = function(grunt) {
       dist: {
         // the files to concatenate
         src: [
-          "js/initial.js",
-          "js/jquery.easing.1.4.js",
-          "js/animation.js",
-          "js/velocity.min.js",
-          "js/hammer.min.js",
-          "js/jquery.hammer.js",
+          "js/cash.js",
+          "js/anime.min.js",
           "js/global.js",
           "js/collapsible.js",
           "js/dropdown.js",
@@ -171,22 +163,22 @@ module.exports = function(grunt) {
           "js/tooltip.js",
           "js/waves.js",
           "js/toasts.js",
-          "js/sideNav.js",
+          "js/sidenav.js",
           "js/scrollspy.js",
+          "js/autocomplete.js",
           "js/forms.js",
           "js/slider.js",
           "js/cards.js",
           "js/chips.js",
           "js/pushpin.js",
           "js/buttons.js",
-          "js/transitions.js",
-          "js/scrollFire.js",
-          "js/date_picker/picker.js",
-          "js/date_picker/picker.date.js",
-          "js/date_picker/picker.time.js",
-          "js/character_counter.js",
+          "js/datepicker.js",
+          "js/timepicker.js",
+          "js/characterCounter.js",
           "js/carousel.js",
           "js/tapTarget.js",
+          "js/select.js",
+          "js/range.js",
         ],
         // the location of the resulting JS file
         dest: 'temp/js/materialize.js'
@@ -198,12 +190,8 @@ module.exports = function(grunt) {
           sourceMapStyle: 'link'
         },
         src: [
-          "js/initial.js",
-          "js/jquery.easing.1.4.js",
-          "js/animation.js",
-          "js/velocity.min.js",
-          "js/hammer.min.js",
-          "js/jquery.hammer.js",
+          "js/cash.js",
+          "js/anime.min.js",
           "js/global.js",
           "js/collapsible.js",
           "js/dropdown.js",
@@ -214,22 +202,22 @@ module.exports = function(grunt) {
           "js/tooltip.js",
           "js/waves.js",
           "js/toasts.js",
-          "js/sideNav.js",
+          "js/sidenav.js",
           "js/scrollspy.js",
+          "js/autocomplete.js",
           "js/forms.js",
           "js/slider.js",
           "js/cards.js",
           "js/chips.js",
           "js/pushpin.js",
           "js/buttons.js",
-          "js/transitions.js",
-          "js/scrollFire.js",
-          "js/date_picker/picker.js",
-          "js/date_picker/picker.date.js",
-          "js/date_picker/picker.time.js",
-          "js/character_counter.js",
+          "js/datepicker.js",
+          "js/timepicker.js",
+          "js/characterCounter.js",
           "js/carousel.js",
           "js/tapTarget.js",
+          "js/select.js",
+          "js/range.js",
         ],
         // the location of the resulting JS file
         dest: 'temp/js/materialize_concat.js'
@@ -252,7 +240,7 @@ module.exports = function(grunt) {
       },
       bin: {
         files: {
-          'bin/materialize.js': ['temp/js/materialize.js']
+          'bin/materialize.min.js': ['bin/materialize.js']
         }
       },
       extras: {
@@ -282,16 +270,10 @@ module.exports = function(grunt) {
           level: 6
         },
         files:[
-          {expand: true, cwd: 'fonts/', src: ['**/*'], dest: 'materialize-src/fonts/'},
           {expand: true, cwd: 'sass/', src: ['materialize.scss'], dest: 'materialize-src/sass/'},
           {expand: true, cwd: 'sass/', src: ['components/**/*'], dest: 'materialize-src/sass/'},
           {expand: true, cwd: 'js/', src: [
-            "initial.js",
-            "jquery.easing.1.4.js",
-            "animation.js",
-            "velocity.min.js",
-            "hammer.min.js",
-            "jquery.hammer.js",
+            "anime.min.js",
             "global.js",
             "collapsible.js",
             "dropdown.js",
@@ -302,22 +284,22 @@ module.exports = function(grunt) {
             "tooltip.js",
             "waves.js",
             "toasts.js",
-            "sideNav.js",
+            "sidenav.js",
             "scrollspy.js",
+            "autocomplete.js",
             "forms.js",
             "slider.js",
             "cards.js",
             "chips.js",
             "pushpin.js",
             "buttons.js",
-            "transitions.js",
-            "scrollFire.js",
-            "date_picker/picker.js",
-            "date_picker/picker.date.js",
-            "date_picker/picker.time.js",
-            "character_counter.js",
+            "datepicker.js",
+            "timepicker.js",
+            "characterCounter.js",
             "carousel.js",
             "tapTarget.js",
+            "select.js",
+            "range.js",
           ], dest: 'materialize-src/js/'},
           {expand: true, cwd: 'dist/js/', src: ['**/*'], dest: 'materialize-src/js/bin/'},
           {expand: true, cwd: './', src: ['LICENSE', 'README.md'], dest: 'materialize-src/'}
@@ -389,7 +371,6 @@ module.exports = function(grunt) {
           "media-css.html": "jade/media-css.jade",
           "table.html": "jade/table.jade",
           "helpers.html": "jade/helpers.jade",
-          "forms.html": "jade/forms.jade",
           "buttons.html": "jade/buttons.jade",
           "navbar.html": "jade/navbar.jade",
           "cards.html": "jade/cards.jade",
@@ -397,19 +378,17 @@ module.exports = function(grunt) {
           "collections.html": "jade/collections.jade",
           "badges.html": "jade/badges.jade",
           "footer.html": "jade/footer.jade",
-          "dialogs.html": "jade/dialogs.jade",
           "modals.html": "jade/modals.jade",
           "dropdown.html": "jade/dropdown.jade",
           "tabs.html": "jade/tabs.jade",
-          "side-nav.html": "jade/sideNav.jade",
+          "toasts.html": "jade/toasts.jade",
+          "tooltips.html": "jade/tooltips.jade",
+          "sidenav.html": "jade/sidenav.jade",
           "pushpin.html": "jade/pushpin.jade",
           "waves.html": "jade/waves.jade",
           "media.html": "jade/media.jade",
           "collapsible.html": "jade/collapsible.jade",
-          "chips.html": "jade/chips.jade",
-          "scrollfire.html": "jade/scrollFire.jade",
           "scrollspy.html": "jade/scrollspy.jade",
-          "transitions.html": "jade/transitions.jade",
           "fullscreen-slider-demo.html": "jade/fullscreen-slider-demo.jade",
           "pagination.html": "jade/pagination.jade",
           "breadcrumbs.html": "jade/breadcrumbs.jade",
@@ -420,7 +399,16 @@ module.exports = function(grunt) {
           "css-transitions.html": "jade/css-transitions.jade",
           "themes.html": "jade/themes.jade",
           "404.html": "jade/404.jade",
-
+          "autocomplete.html": "jade/autocomplete.jade",
+          "checkboxes.html": "jade/checkboxes.jade",
+          "chips.html": "jade/chips.jade",
+          "pickers.html": "jade/pickers.jade",
+          "radio-buttons.html": "jade/radio-buttons.jade",
+          "range.html": "jade/range.jade",
+          "select.html": "jade/select.jade",
+          "switches.html": "jade/switches.jade",
+          "text-inputs.html": "jade/text-inputs.jade",
+          "support-us.html": "jade/support-us.jade"
         }
       }
     },
@@ -585,7 +573,7 @@ module.exports = function(grunt) {
     // Removes console logs
     removelogging: {
       source: {
-        src: ["js/**/*.js", "!js/velocity.min.js"],
+        src: ["js/**/*.js", "!js/anime.min.js"],
         options: {
           // see below for options. this is optional.
         }
@@ -598,7 +586,6 @@ module.exports = function(grunt) {
   // load the tasks
   // grunt.loadNpmTasks('grunt-gitinfo');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -621,7 +608,6 @@ module.exports = function(grunt) {
   grunt.registerTask(
     'release',[
       'lint',
-      'copy',
       'sass:expanded',
       'sass:min',
       'postcss:expanded',

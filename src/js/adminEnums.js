@@ -50,7 +50,7 @@ function Enums(main) {
     function _enumRename(oldId, newId, newCommon, callback) {
         //Check if this name exists
         if (oldId !== newId && that.main.objects[newId]) {
-            that.main.showMessage(_('Name yet exists!'), '', 'info');
+            showMessage(_('Name yet exists!'), true);
             that.init(true);
             if (callback) callback();
         } else {
@@ -60,7 +60,7 @@ function Enums(main) {
                 }
                 if (callback) callback();
             } else if (that.main.objects[oldId] && that.main.objects[oldId].common && that.main.objects[oldId].common.nondeletable) {
-                that.main.showMessage(_('Change of enum\'s id "%s" is not allowed!', oldId), '', 'notice');
+                showMessage(_('Change of enum\'s id "%s" is not allowed!', oldId), true);
                 that.init(true);
                 if (callback) callback();
             } else {
@@ -111,7 +111,7 @@ function Enums(main) {
 
     function enumAddChild(parent, newId, common, callback) {
         if (that.main.objects[newId]) {
-            that.main.showMessage(_('Name yet exists!'), '', 'notice');
+            showMessage(_('Name yet exists!'), true);
             return false;
         }
 
@@ -132,10 +132,42 @@ function Enums(main) {
 
     };
 
-    function showMessage(text, duration, _class) {
-        if (typeof Materialize !== 'undefined') {
-            Materialize.toast(that.$gridEnum.find('.tree-table-buttons')[0], text, duration|| 3000, _class);
-        }
+    function showMessage(text, isError, duration) {
+        that.main.showToast(that.$gridEnum.find('.tree-table-buttons'), text, null, duration, isError);
+    }
+
+    function setupDraggable() {
+        that.$gridEnum.find('.fancytree-container>tbody')
+            .sortable({
+                connectWith:    '#tab-enums .tab-enums-list .tree-table-main.treetable',
+                items:          '.fancytree-type-draggable',
+                appendTo:       that.$gridEnum,
+                helper:         function (e, $target) {
+                    return $('<div class="fancytree-drag-helper">' + $target.find('.fancytree-title').text() + '</div>');
+                },
+                zIndex:         999990,
+                revert:         false,
+                scroll:         false,
+                start:          function (e, ui) {
+                    var $prev = ui.item.prev();
+                    // place this item back where it was
+                    ui.item.data('prev', $prev);
+                    that.$gridEnum.addClass('dragging');
+                },
+                stop:           function (e, ui) {
+                    that.$gridEnum.removeClass('dragging');
+                },
+                update: function (event, ui) {
+                    // place this item back where it was
+                    var $prev = ui.item.data('prev');
+                    if (!$prev || !$prev.length) {
+                        $(this).prepend($prev);
+                    } else {
+                        $($prev).after(ui.item);
+                    }
+                }
+            })
+            .disableSelection();
     }
 
     this._initObjectTree = function () {
@@ -185,42 +217,12 @@ function Enums(main) {
 
         var $treeTable = this.$gridEnum.find('.tab-enums-list .tree-table-main.treetable');
 
-        this.$gridEnum.find('.fancytree-container>tbody')
-            .sortable({
-                connectWith:    '#tab-enums .tab-enums-list .tree-table-main.treetable',
-                items:          '.fancytree-type-draggable',
-                appendTo:       this.$gridEnum,
-                helper:         function (e, $target) {
-                    return $('<div class="fancytree-drag-helper">' + $target.find('.fancytree-title').text() + '</div>');
-                },
-                zIndex:         999990,
-                revert:         false,
-                scroll:         false,
-                start:          function (e, ui) {
-                    var $prev = ui.item.prev();
-                    // place this item back where it was
-                    ui.item.data('prev', $prev);
-                    that.$gridEnum.addClass('dragging');
-                },
-                stop:           function (e, ui) {
-                    that.$gridEnum.removeClass('dragging');
-                },
-                update: function (event, ui) {
-                    // place this item back where it was
-                    var $prev = ui.item.data('prev');
-                    if (!$prev || !$prev.length) {
-                        $(this).prepend($prev);
-                    } else {
-                        $($prev).after(ui.item);
-                    }
-                }
-            })
-            .disableSelection();
+        setupDraggable();
 
-        setupDraggable($treeTable);
+        setupDroppable($treeTable);
     };
 
-    function setupDraggable($treetable) {
+    function setupDroppable($treetable) {
         if (!that.editMode) return;
 
         $treetable.find('tbody>tr.treetable-enum').droppable({
@@ -251,7 +253,7 @@ function Enums(main) {
                                 if (!err) {
                                     showMessage(_('%s added to %s', id, obj._id));
                                 } else {
-                                    showMessage(_('Error: %s', err));
+                                    showMessage(_('Error: %s', err), true);
                                 }
                             });
                         } else {
@@ -275,10 +277,10 @@ function Enums(main) {
 
         installFileUpload($dialog, 50000, function (err, text) {
             if (err) {
-                showMessage(err, 3000, 'dropZone-error');
+                showMessage(err, true);
             } else {
                 if (!text.match(/^data:image\//)) {
-                    showMessage(_('Unsupported image format'), 3000, 'dropZone-error');
+                    showMessage(_('Unsupported image format'), true);
                     return;
                 }
                 $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
@@ -322,7 +324,10 @@ function Enums(main) {
                 if (!id || !idChanged) {
                     $id.val(val);
                     $dialog.find('#tab-enums-dialog-new-preview').val((isCategoryOrID === true ? 'enum' : that.enumEdit) + '.' + (val || '#'));
-                    Materialize.updateTextFields('#tab-enums-dialog-new');
+                    // detect materialize
+                    if (window.M && window.M.toast) {
+                        M.updateTextFields('#tab-enums-dialog-new');
+                    }
                 }
                 if ($id.val() && !$id.val().match(/[.\s]/)) {
                     $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
@@ -342,7 +347,9 @@ function Enums(main) {
                 idChanged = true;
                 var val = $(this).val();
                 $dialog.find('#tab-enums-dialog-new-preview').val((isCategoryOrID === true ? 'enum' : that.enumEdit) + '.' + ($(this).val() || '#'));
-                Materialize.updateTextFields('#tab-enums-dialog-new');
+                if (window.M && window.M.toast) {
+                    M.updateTextFields('#tab-enums-dialog-new');
+                }
                 if (val && !val.match(/[.\s]/)) {
                     $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
                     $(this).removeClass('wrong');
@@ -370,7 +377,7 @@ function Enums(main) {
                         },
                         function (err) {
                         if (err) {
-                            showMessage(_('Error: %s', err), 5000, 'dropZone-error');
+                            showMessage(_('Error: %s', err), true);
                         } else {
                             showMessage(_('Updated'));
                         }
@@ -386,7 +393,7 @@ function Enums(main) {
                         },
                         function (err) {
                         if (err) {
-                            showMessage(_('Error: %s', err), 5000, 'dropZone-error');
+                            showMessage(_('Error: %s', err), true, 5000);
                         } else {
                             showMessage(_('Updated'));
                         }
@@ -410,10 +417,11 @@ function Enums(main) {
             $dialog.find('.tab-enums-dialog-new-color').val();
         }
 
-        Materialize.updateTextFields('#tab-enums-dialog-new');
+        // Detect materialize
+        if (window.M && window.M.toast) {
+            M.updateTextFields('#tab-enums-dialog-new');
 
-        if (typeof Materialize !== 'undefined') {
-            Materialize.toast($dialog[0], _('Drop the icons here'), 3000);
+            that.main.showToast($dialog, _('Drop the icons here'));
         }
 
         $dialog.find('.tab-enums-dialog-new-upload').unbind('click').click(function () {
@@ -528,7 +536,7 @@ function Enums(main) {
                                                     if (!err) {
                                                         showMessage(_('Deleted'));
                                                     } else {
-                                                        showMessage(_('Error: %s', err));
+                                                        showMessage(_('Error: %s', err), true);
                                                     }
                                                 });
                                             } // else do nothing
@@ -540,7 +548,7 @@ function Enums(main) {
                                                 if (!err) {
                                                     showMessage(_('Deleted'));
                                                 } else {
-                                                    showMessage(_('Error: %s', err));
+                                                    showMessage(_('Error: %s', err), true);
                                                 }
                                             });
                                         });
@@ -555,7 +563,7 @@ function Enums(main) {
                                                     if (!err) {
                                                         showMessage(_('Removed'));
                                                     } else {
-                                                        showMessage(_('Error: %s', err));
+                                                        showMessage(_('Error: %s', err), true);
                                                     }
                                                 });
                                             } else {
@@ -629,7 +637,7 @@ function Enums(main) {
                         }
                     }
                 },
-                onReady:    setupDraggable
+                onReady:    setupDroppable
             });//.treeTable('show', currentEnum);
             $('#tab-enums-list-new-enum').addClass('disabled');
             $('#tab-enums-list-new-category').addClass('disabled');

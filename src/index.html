@@ -88,7 +88,7 @@
                     <li><a id="button-system" title="' + _('System') + '"><i class="material-icons">build</i></a></li>
                     <li><a id="button-logout" title="' + _('Logout') + '"><i class="material-icons">input</i></a></li>
                     <li>
-                        <a class="dropdown-button btn" style="display: none" data-activates="host-adapters" id="host-adapters-btn">Host:</a>
+                        <a class="dropdown-button btn" style="display: none" data-target="host-adapters" id="host-adapters-btn">Host:</a>
                         <ul id='host-adapters' class='dropdown-content'></ul>
                         <!--select id="host-adapters" style="border:0; font-size: 14px; padding-top: 1px; margin-top: 1px"></select-->
                     </li>
@@ -123,7 +123,7 @@
             </div>
 
             <div class="col s3 m1 main-toolbar-table-types-tools">
-                <a id="main-toolbar-table-types-btn" class='dropdown-button btn' href='#' data-activates='main-toolbar-table-types'></a>
+                <a id="main-toolbar-table-types-btn" class='dropdown-button btn' href='#' data-target='main-toolbar-table-types'></a>
                 <!-- Dropdown Structure -->
                 <ul id='main-toolbar-table-types' class='dropdown-content'>
                     <li><a href="#!">one</a></li>
@@ -814,7 +814,7 @@
     <div id="script-editor">Test!</div>
     <input type="hidden" id="edit-script-id">
 </div>
-<div id="dialog-user" style="display: none">
+<!--div id="dialog-user" style="display: none">
     <table>
         <tr>
             <td><label class="translate" for="edit-user-name">name</label></td>
@@ -845,10 +845,10 @@
     <table id="edit-group-table"></table>
     <br/>
     <input type="hidden" id="edit-group-id">
-</div>
-<div id="dialog-select-member" style="display: none">
-    <!--div id="tree-select-member" style="width:100%; height:100%"></div-->
-</div>
+</div-->
+<!--div id="dialog-select-member" style="display: none">
+
+</div-->
 <div id="dialog-customs" style="display: none">
     <div id="tabs-customs">
         <ul>
@@ -1347,12 +1347,12 @@
                                     <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-obj-every-write">write</label></td>
                                 </tr>
                                 <tr>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-owner-read"/><label for="tab-system-acl-obj-owner-read"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-owner-write"/><label for="tab-system-acl-obj-owner-write"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-group-read"/><label for="tab-system-acl-obj-group-read"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-group-write"/><label for="tab-system-acl-obj-group-write"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-every-read"/><label for="tab-system-acl-obj-every-read"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-every-write"/><label for="tab-system-acl-obj-every-write"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-owner-read"/> <span for="tab-system-acl-obj-owner-read"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-owner-write"/><span for="tab-system-acl-obj-owner-write"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-group-read"/> <span for="tab-system-acl-obj-group-read"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-group-write"/><span for="tab-system-acl-obj-group-write"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-every-read"/> <span for="tab-system-acl-obj-every-read"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-obj-every-write"/><span for="tab-system-acl-obj-every-write"></span></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -1374,12 +1374,12 @@
                                     <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-state-every-write">write</label></td>
                                 </tr>
                                 <tr>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-owner-read"/><label for="tab-system-acl-state-owner-read"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-owner-write"/><label for="tab-system-acl-state-owner-write"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-group-read"/><label for="tab-system-acl-state-group-read"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-group-write"/><label for="tab-system-acl-state-group-write"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-every-read"/><label for="tab-system-acl-state-every-read"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-every-write"/><label for="tab-system-acl-state-every-write"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-owner-read"/><span for="tab-system-acl-state-owner-read"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-owner-write"/><span for="tab-system-acl-state-owner-write"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-group-read"/><span for="tab-system-acl-state-group-read"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-group-write"/><span for="tab-system-acl-state-group-write"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-every-read"/><span for="tab-system-acl-state-every-read"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-state-every-write"/><span for="tab-system-acl-state-every-write"></span></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -1401,12 +1401,12 @@
                                     <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center"><label class="translate" for="tab-system-acl-file-every-write">write</label></td>
                                 </tr>
                                 <tr>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-owner-read"/><label for="tab-system-acl-file-owner-read"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-owner-write"/><label for="tab-system-acl-file-owner-write"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-group-read"/><label for="tab-system-acl-file-group-read"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-group-write"/><label for="tab-system-acl-file-group-write"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-every-read"/><label for="tab-system-acl-file-every-read"></label></td>
-                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-every-write"/><label for="tab-system-acl-file-every-write"></label></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-owner-read"/><span for="tab-system-acl-file-owner-read"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-owner-write"/><span for="tab-system-acl-file-owner-write"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-group-read"/><span for="tab-system-acl-file-group-read"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-group-write"/><span for="tab-system-acl-file-group-write"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-every-read"/><span for="tab-system-acl-file-every-read"></span></td>
+                                    <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" class="filled-in" id="tab-system-acl-file-every-write"/><span for="tab-system-acl-file-every-write"></span></td>
                                 </tr>
                                 </tbody></table>
                         </div>

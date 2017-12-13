@@ -1,16 +1,16 @@
 'use strict';
 
-var less        = require('gulp-less');
-var sass        = require('gulp-sass');
-var gulp        = require('gulp');
-var uglify      = require('gulp-uglify');
-var concat      = require('gulp-concat');
-var sourcemaps  = require('gulp-sourcemaps');
-var materialize = require.resolve('materialize-css');
-// var addsrc      = require('gulp-add-src');
-var cleanCSS    = require('gulp-clean-css');
-var pkg         = require('./package.json');
-var iopackage   = require('./io-package.json');
+const less        = require('gulp-less');
+const sass        = require('gulp-sass');
+const gulp        = require('gulp');
+const uglify      = require('gulp-uglify');
+const concat      = require('gulp-concat');
+const sourcemaps  = require('gulp-sourcemaps');
+const materialize = require.resolve('materialize-css');
+const cleanCSS    = require('gulp-clean-css');
+const pkg         = require('./package.json');
+const iopackage   = require('./io-package.json');
+const babel       = require('gulp-babel');
 
 function lang2data(lang) {
     var str = '{\n';
@@ -28,29 +28,33 @@ function lang2data(lang) {
 
 function readWordJs() {
     var fs = require('fs');
-    var words = fs.readFileSync('./src/js/words.js').toString();
-    var lines = words.split(/\r\n|\r|\n/g);
-    var i = 0;
-    while (!lines[i].match(/^systemDictionary = {/)) {
-        i++;
-    }
-    lines.splice(0, i);
+    try {
+        var words = fs.readFileSync('./src/js/words.js').toString();
+        var lines = words.split(/\r\n|\r|\n/g);
+        var i = 0;
+        while (!lines[i].match(/^systemDictionary = {/)) {
+            i++;
+        }
+        lines.splice(0, i);
 
-    // remove last empty lines
-    i = lines.length - 1;
-    while (!lines[i]) {
-        i--;
-    }
-    if (i < lines.length - 1) {
-        lines.splice(i + 1);
-    }
+        // remove last empty lines
+        i = lines.length - 1;
+        while (!lines[i]) {
+            i--;
+        }
+        if (i < lines.length - 1) {
+            lines.splice(i + 1);
+        }
 
-    lines[0] = lines[0].replace('systemDictionary = ', '');
-    lines[lines.length - 1] = lines[lines.length - 1].trim().replace(/};$/, '}');
-    words = lines.join('\n');
-    var resultFunc = new Function('return ' + words + ';');
+        lines[0] = lines[0].replace('systemDictionary = ', '');
+        lines[lines.length - 1] = lines[lines.length - 1].trim().replace(/};$/, '}');
+        words = lines.join('\n');
+        var resultFunc = new Function('return ' + words + ';');
 
-    return resultFunc();
+        return resultFunc();
+    } catch (e) {
+        return null;
+    }
 }
 function padRight(text, totalLength) {
     return text + (text.length < totalLength ? new Array(totalLength - text.length).join(' ') : '');
@@ -81,6 +85,8 @@ function writeWordJs(data) {
     fs.writeFileSync('./src/js/words.js', text);
 }
 
+const EMPTY = '------XXXXXXXXX------';
+
 gulp.task('words2languages', function (done) {
     var fs = require('fs');
 
@@ -93,28 +99,38 @@ gulp.task('words2languages', function (done) {
         'fr': {}
     };
     var data = readWordJs();
-    for (var word in data) {
-        if (data.hasOwnProperty(word)) {
-            for (var lang in data[word]) {
-                if (data[word].hasOwnProperty(lang)) {
-                    langs[lang][word] = data[word][lang];
+    if (data) {
+        for (var word in data) {
+            if (data.hasOwnProperty(word)) {
+                for (var lang in data[word]) {
+                    if (data[word].hasOwnProperty(lang)) {
+                        langs[lang][word] = data[word][lang];
+                        //  pre-fill all other languages
+                        for (var j in langs) {
+                            if (langs.hasOwnProperty(j)) {
+                                langs[j][word] = langs[j][word] || EMPTY;
+                            }
+                        }
+                    }
                 }
             }
         }
-    }
 
-    for (var l in langs) {
-        var keys = Object.keys(langs[l]);
-        keys.sort();
-        var obj = {};
-        for (var k = 0; k < keys.length; k++) {
-            obj[keys[k]] = langs[l][keys[k]];
-        }
-        if (!fs.existsSync('./src/i18n/' + l)) {
-            fs.mkdirSync('./src/i18n/' + l);
-        }
+        for (var l in langs) {
+            var keys = Object.keys(langs[l]);
+            keys.sort();
+            var obj = {};
+            for (var k = 0; k < keys.length; k++) {
+                obj[keys[k]] = langs[l][keys[k]];
+            }
+            if (!fs.existsSync('./src/i18n/' + l)) {
+                fs.mkdirSync('./src/i18n/' + l);
+            }
 
-        fs.writeFileSync('./src/i18n/' + l + '/translations.json', lang2data(obj));
+            fs.writeFileSync('./src/i18n/' + l + '/translations.json', lang2data(obj));
+        }
+    } else {
+        console.error('Cannot read or parse words.js');
     }
     done();
 });
@@ -150,7 +166,9 @@ gulp.task('languages2words', function (done) {
         for (var word in words) {
             if (words.hasOwnProperty(word)) {
                 bigOne[word] = bigOne[word] || {};
-                bigOne[word][lang] = words[word];
+                if (words[word] !== EMPTY) {
+                    bigOne[word][lang] = words[word];
+                }
             }
         }
     }
@@ -158,22 +176,25 @@ gulp.task('languages2words', function (done) {
     var aWords = readWordJs();
 
     var temporaryIgnore = ['pt', 'fr', 'nl'];
-    // Merge words together
-    for (var w in aWords) {
-        if (aWords.hasOwnProperty(w)) {
-            if (!bigOne[w]) {
-                console.warn('Take from actual words.js: ' + w);
-                bigOne[w] = aWords[w]
-            }
-            dirs.forEach(function (lang) {
-                if (temporaryIgnore.indexOf(lang) !== -1) return;
-                if (!bigOne[w][lang]) {
-                    console.warn('Missing "' + lang + '": ' + w);
+    if (aWords) {
+        // Merge words together
+        for (var w in aWords) {
+            if (aWords.hasOwnProperty(w)) {
+                if (!bigOne[w]) {
+                    console.warn('Take from actual words.js: ' + w);
+                    bigOne[w] = aWords[w]
                 }
-            });
+                dirs.forEach(function (lang) {
+                    if (temporaryIgnore.indexOf(lang) !== -1) return;
+                    if (!bigOne[w][lang]) {
+                        console.warn('Missing "' + lang + '": ' + w);
+                    }
+                });
+            }
         }
+
     }
-    //
+
     writeWordJs(bigOne);
     done();
 });
@@ -232,19 +253,29 @@ gulp.task('sassMaterialize', function () {
 });
 gulp.task('compressMaterialize', function () {
     return gulp.src([
-        './src/materialize-css/js/velocity.min.js',
+        './src/materialize-css/js/anime.min.js',
+        './src/materialize-css/js/cash.js',
         './src/materialize-css/js/global.js',
         './src/materialize-css/js/tabs.js',
         './src/materialize-css/js/dropdown.js',
         './src/materialize-css/js/toasts.js',
         './src/materialize-css/js/modal.js',
+        './src/materialize-css/js/select.js',
         './src/materialize-css/js/forms.js',
         './src/materialize-css/js/forms.js',
         './src/colorpicker/js/materialize-colorpicker.js'
     ])
     .pipe(sourcemaps.init())
     .pipe(concat('materialize.js'))
-    .pipe(uglify())
+    .pipe(babel({
+        plugins: [
+            'transform-es2015-arrow-functions',
+            'transform-es2015-block-scoping',
+            'transform-es2015-classes',
+            'transform-es2015-template-literals'
+        ]
+    }))
+    //.pipe(uglify())
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./www/lib/js'));
 });

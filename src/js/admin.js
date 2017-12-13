@@ -207,6 +207,24 @@ $(document).ready(function () {
         showError:      function (error) {
             main.showMessage(_(error),  _('Error'), 'alert');
         },
+        showToast:      function (parent, message, icon, duration, isError, classes) {
+            if (parent && parent instanceof jQuery) {
+                parent = parent[0];
+            }
+            classes = classes || [];
+
+            if (typeof classes === 'string') {
+                classes = [classes];
+            }
+            isError && classes.push('dropZone-error');
+
+            M.toast({
+                parentSelector: parent || $('body')[0],
+                html:           message + (icon ? '<i class="material-icons">' + icon + '</i>' : ''),
+                displayLength:  duration || 3000,
+                classes:        classes
+            });
+        },
         formatDate:     function (dateObj, justTime) {
             //return dateObj.getFullYear() + '-' +
             //    ("0" + (dateObj.getMonth() + 1).toString(10)).slice(-2) + '-' +
@@ -283,7 +301,7 @@ $(document).ready(function () {
 
             return text;
         },
-        initSelectId:   function () {
+        /*initSelectId:   function () {
             if (main.selectId) return main.selectId;
             main.selectId = $('#dialog-select-member').selectId('init',  {
                 objects: main.objects,
@@ -309,7 +327,7 @@ $(document).ready(function () {
                 columns: ['image', 'name', 'role', 'room', 'value']
             });
             return main.selectId;
-        },
+        },*/
         updateWizard:   function () {
             var $wizard = $('#button-wizard');
             if (main.objects['system.adapter.discovery.0']) {
@@ -1328,7 +1346,7 @@ $(document).ready(function () {
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !==-1) {
                 elements.push({
                     line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
-                            (tabsInfo[id] && tabsInfo[id].icon ? '<i class="material-icons">' + tabsInfo[id].icon + '</i>' : '<i class="icon-empty">&nbsp;</i>') +
+                            (tabsInfo[id] && tabsInfo[id].icon ? '<i class="material-icons">' + tabsInfo[id].icon + '</i>' : '<div class="icon-empty">&nbsp;</div>') +
                             _($(this).data('name')) + '</a></li>',
                     id: id
                 });
@@ -1349,7 +1367,7 @@ $(document).ready(function () {
 
                 elements.push({
                     line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
-                    (icon ? '<i class="material-icons">' + icon + '</i>' : '<i class="icon-empty">&nbsp;</i>') +
+                    (icon ? '<i class="material-icons">' + icon + '</i>' : '<div class="icon-empty">&nbsp;</div>') +
                     $(this).data('name') + '</a></li>',
                     id: id
                 });

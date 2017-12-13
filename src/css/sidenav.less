@@ -64,7 +64,9 @@
         margin: 0 0.5rem 0 0 !important;
     }
     a .icon-empty {
-        width: 0.9rem;
+        width: 24px;
+        display: inline-block;
+        margin-left: 8px;
     }
     // Position and style the close button (top right corner)
     .admin-sidemenu-close {
@@ -162,6 +164,11 @@
 
     .admin-sidemenu-items {
         cursor: pointer;
+        padding-bottom:  0.5rem;;
+        padding-top:  0.5rem;;
+        a {
+            color: @admin-sidemenu-main-items-color;
+        }
     }
 
     // scrollbar

@@ -2,23 +2,90 @@ Changelog
 =======
 Bolded styling surrounded by emojis indicates a breaking change.
 
-## v0.100.2 (August 26, 2017)
-- Modal no longer errors on IE 11
-- Fixes for Webpack and CommonJS loading of Materialize
-- Select displays properly inside Datepicker
-- Fix year display bug in date picker where year would change even when no new date had been selecteed
-- Fix for badge alignment in collapsible
-- Fix bug with multiple select where it would show an incorrect selection initially
+## 1.0.0-alpha.2 (November 30th)
+- Chips
+  - Fixed and standardized chips callback parameters
+
+- Datepicker
+  - Fixed date format option
+  - Scrollbar no longer unecessarily appears when using datepicker
+  - Fixed bug where using month and year selectors didn't change date
+
+- Dropdown
+  - Removed automatic focus highlight on open
+
+- Textarea
+  - Fixed error where text was cut off on Firefox
+
+- Tabs
+  - Fixed error with pure JavaScript initialization
+  - Fixed error where a tab with no content would break tabs
+
+- Timepicker
+  - Fixed error with twelveHour options
+
+- Replaced velocity.js with anime.js
+
+## 1.0.0-alpha.1 (November 10th)
+- Dropdown
+  - rewritten with classes
+  - Plugin is initialized on `.dropdown-content` instead of `.dropdown-button`
+  - Renamed classes `.dropdown-button` to `.dropdown-trigger`
+  - Renamed option `belowOrigin` to `coverTrigger`
+  - Added callbacks onOpenStart, onOpenEnd, onCloseStart, onCloseEnd
+  - Removed HTML attribute options
+  - Removed stopPropagation option
+  - Reworked animation
+
+- Select
+  - rewritten with classes
+  - Plugin renamed from 'material_select' to 'select'
+  - The select will no longer copy the class attribute on each <option> el to the <img> for the icon in the generated select.
+
+- Tabs
+  - rewritten with classes
+  - added duration option
+  - now requires plugin initialization
+  - tabs 'select_tab' method renamed to 'select'
+
+- Chips
+  - rewritten with classes
+  - changed events to callbacks
+  - Added limit chips option
+
+- Autocomplete
+  - rewritten with classes
+  - Added updateData method
+  - Added sortFunction option
+
+- Feature Discovery
+  - rewritten with classes
+  - Plugin renamed from 'tapTarget' to 'featureDiscovery'
+
+- Forms
+  - Added new helper text element
+  - Moved validation messages 'data-error' and 'data-success' to Helper Text
+
+- Pickatime
+  - Renamed to Timepicker
+  - Now opens on enter or click instead of focus
+  - Added open animation
+  - Reworked and simplified Timepicker HTML structure
+  - Renamed internal classes to reflect Timpicker namechange and structure rework
+
+- Floating Action Button
+  - Converted to plugin
+  - Added direction option
+  - Added toolbar transition option
 
 
-## v0.100.1 (July 21, 2017)
+## v0.100.1 (July 21st)
 - Fixed bug where modal triggers could not contain child elements
 - Fixed bug with right alignment option for dropdown
 - Allow select native browser validation error messages
 - Added fix for validation messages being mispositioned when input is empty
 
-
-## v0.100.0 (July 19, 2017)
+## v0.100.0 (July 19th)
 - :sparkles: **Rewrote Modal Plugin** :sparkles:
   - Modal open no longer initializes plugin
   - Fixed bug where modal open did not use initialized options
@@ -43,8 +110,7 @@ Bolded styling surrounded by emojis indicates a breaking change.
 - Added close on select option for date picker
 - Browser errors now show up on radio buttons and checkboxes
 
-
-## v0.99.0 (June 22, 2017)
+## v0.99.0 (June 22th)
 - Added support for jQuery 3
 - Fixed dynamic textarea resize bug
 - Added support for custom active elements in scrollspy
@@ -53,8 +119,7 @@ Bolded styling surrounded by emojis indicates a breaking change.
 - Added callbacks to side nav
 - Updated styling for switches
 
-
-## v0.98.2 (April 14, 2017)
+## v0.98.2 (April 14th)
 - :no_good: **Autocomplete: renamed and moved options to `autocompleteOptions`** :no_good:
 - Fixed collapsible preselect bug
 - Fixed dropdown event bubbling bug
@@ -64,9 +129,9 @@ Bolded styling surrounded by emojis indicates a breaking change.
 - Fixed grid offset bug
 
 
-## v0.98.1 (March 21, 2017)
+## v0.98.1 (March 21st)
 - Fixed various select bugs on mobile devices
-- Fixed small sideNav overlay bugs
+- Fixed small sidenav overlay bugs
 - Fixed carousel resizing bug
 - Fixed materialbox callback bug
 - Range slider supports keyboard navigation
@@ -75,7 +140,7 @@ Bolded styling surrounded by emojis indicates a breaking change.
 - Added Feature Discovery component
 
 
-## v0.98.0 (January 25, 2017)
+## v0.98.0 (January 25th)
 - :no_good: **Standardized plugin option naming to camelcase (please check your plugin calls to make sure all the options are camelcase)** :no_good:
 - Added FABs in image cards
 - Added swipeable tabs
@@ -199,7 +264,7 @@ Bolded styling surrounded by emojis indicates a breaking change.
 - Responsive Video tag added
 - Custom File Input Button added
 - Modals has a fixed footer option
-- SideNav implementation changed (needs 2 UL menus)
+- Sidenav implementation changed (needs 2 UL menus)
 - Slider Responsive Fixes
 
 
