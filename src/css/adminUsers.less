@@ -23,6 +23,42 @@
 
   position: relative;
 
+  .users-drag-helper {
+    padding: 4px;
+    background: rgba(80, 80, 80, 0.5);
+    border: 1px solid gray;
+    border-radius: 2px;
+    font-size: larger;
+    font-weight: bold;
+  }
+  .tree-table-main  {
+    .tab-accept-item {
+      background: @admin-buttons-color !important;
+      font-weight: bold;
+      color: white;
+    }
+  }
+  // blur non-target components while dragging
+  &.dragging {
+    .tree-table-buttons,
+    .tab-users-header,
+    .tab-users-list-users .tab-users-body
+    {
+      opacity: 0.3;
+    }
+    .tab-users-list-groups .tree-table-main::after {
+      content: "";
+      pointer-events: none;
+      box-sizing: border-box;
+      border: 5px dashed lightblue;
+      border-radius: 1rem;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  }
   // copied from materialize
   #toast-container {
     max-width: 86%;

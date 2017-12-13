@@ -132,7 +132,11 @@ function Enums(main) {
 
     };
 
-    function showMessage(text, isError, duration) {
+    function showMessage(text, duration, isError) {
+        if (typeof duration === 'boolean') {
+            isError = duration;
+            duration = 3000;
+        }
         that.main.showToast(that.$gridEnum.find('.tree-table-buttons'), text, null, duration, isError);
     }
 
@@ -161,7 +165,7 @@ function Enums(main) {
                     // place this item back where it was
                     var $prev = ui.item.data('prev');
                     if (!$prev || !$prev.length) {
-                        $(this).prepend($prev);
+                        $(this).prepend(ui.item);
                     } else {
                         $($prev).after(ui.item);
                     }

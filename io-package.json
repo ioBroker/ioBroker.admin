@@ -81,6 +81,7 @@
         "logTransporter":           true,
         "stopBeforeUpdate":         true,
         "wwwDontUpload":            true,
+        "nogit":                    true,
         "welcomeScreenPro":         {"link": "admin/index.html",  "name": "Admin", "img": "admin/img/gear.png", "color": "pink", "order": 5, "localLink": true},
         "localLink":                "%protocol%://%ip%:%port%"
     },

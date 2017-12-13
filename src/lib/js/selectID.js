@@ -5,7 +5,7 @@
 /*
  MIT, Copyright 2014-2017 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
 
- version: 1.0.7 (2017.11.20)
+ version: 1.0.8 (2017.12.13)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -177,7 +177,7 @@ function filterChanged(e) {
     if ($.fn.selectId) return;
 
     var instance = 0;
-    var ICON_MINIMAL_BASE64_SIZE = 512;
+    var ICON_MINIMAL_BASE64_SIZE = 312;
 
     // var lineIndent = '6px';
     // function span (txt) {

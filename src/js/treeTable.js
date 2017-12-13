@@ -1,7 +1,7 @@
 (function ($) {
     'use strict';
 
-    var ICON_MINIMAL_BASE64_SIZE = 512;
+    var ICON_MINIMAL_BASE64_SIZE = 312;
 
     if ($.fn.treeTable) return;
 
@@ -293,7 +293,6 @@
         table += '<div class="row tree-table-body"><table class="tree-table-main">';
         table += '  <thead>';
         table += '      <tr class="tree-table-main-header">';
-        var withColors  = !!options.colors;
         for (var ch = 0; ch < options.columns.length; ch++) {
             if (options.columns[ch] === 'name') {
                 table += '      <th' + (options.widths && options.widths[ch] ? ' class="treetable-th-name" style="width: ' + options.widths[ch] + '"' : '') + '>';
@@ -445,6 +444,9 @@
             table += '<tr data-tt-id="' + rows[i].id + '"' + (!!rows[i].children ? ' data-tt-branch="true"' : '') + (rows[i].parent ? ' data-tt-parent-id="' + rows[i].parent + '"' : '') + ' class="';
             if (rows[i]._class) {
                 table += rows[i]._class + ' ';
+            }
+            if (options.draggable) {
+                table += options.draggable + ' ';
             }
             if (rows[i].children && rows[i].children.length) {
                 table += 'not-empty';
