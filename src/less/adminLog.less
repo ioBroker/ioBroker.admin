@@ -1,0 +1,55 @@
+@import "../lib/css/iob/common";
+
+/** log tab *****************/
+/**/
+.log-column-1-header {
+  width: 100px;
+}
+.log-column-2-header {
+  width: 170px;
+}
+.log-column-3-header {
+  width: 62px;
+}
+.log-column-4-header {
+}
+
+.log-severity-debug {
+  color: #808080;
+}
+.log-severity-info {
+  color: black;
+  /*background-color: #0ca3d2;*/
+}
+.log-severity-warn {
+  color: #ce9900;
+}
+.log-severity-error {
+  color: red;
+}
+
+table#log-outer {
+  .iob-min-table;
+  text-align: left;
+  margin-top: @header-table-distance - 3px !important;
+  margin-left: 1px;
+  &>thead>tr>th {
+    .th-0;
+  }
+}
+#log-table>tr {
+  height: 24px;
+  &:nth-child(even){
+    /*background: #efefef;*/
+    background-color: @even-bg-color;
+  }
+  &>td {
+    text-align: left !important;
+    padding-left: @line-indent !important;
+    border: @td-border;
+    &:first-child {
+      color: #0000a0;
+    }
+  }
+}
+/**/

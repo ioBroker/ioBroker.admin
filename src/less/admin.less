@@ -9,7 +9,7 @@ body {
     .iob-font;
 }
 
-/* fallback */
+/* Load material icons */
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
@@ -48,31 +48,6 @@ table#events {
     border-radius: 0;
 }
 
-#edit-object-common,
-#edit-object-native {
-    font-size: 12px;
-    width: 100%;
-    height: 240px;
-    padding:0;
-    margin:0;
-    border: 1px solid grey;
-    outline: none;
-    box-shadow: none;
-    resize:none;
-}
-
-#view-object-full {
-    font-size: 12px;
-    width: 100%;
-    height: 200px;
-    padding:0;
-    margin:0;
-    border: 1px solid grey;
-    outline: none;
-    box-shadow: none;
-    resize:none;
-}
-
 #process_running_adapters {
     position: absolute;
     top: 50%;
@@ -89,61 +64,50 @@ table#events {
     border-radius: 5px
 }
 
-/** log tab *****************/
-/**/
-.log-column-1-header {
-    width: 100px;
-}
-.log-column-2-header {
-    width: 170px;
-}
-.log-column-3-header {
-    width: 62px;
-}
-.log-column-4-header {
+// loader
+// Here is where the magic happens
+
+@offset: 187;
+@duration: 1.4s;
+
+.spinner {
+    animation: rotator @duration linear infinite;
 }
 
-.log-severity-debug {
-    color: #808080;
-}
-.log-severity-info {
-    color: black;
-    /*background-color: #0ca3d2;*/
-}
-.log-severity-warn {
-    color: #ce9900;
-}
-.log-severity-error {
-    color: red;
+@keyframes rotator {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(270deg); }
 }
 
-#log-table tr:nth-child(even){
-    /*background: #efefef;*/
-    background-color: @even-bg-color;
+.path {
+    stroke-dasharray: @offset;
+    stroke-dashoffset: 0;
+    transform-origin: center;
+    animation:
+    dash @duration ease-in-out infinite,
+    colors (@duration*4) ease-in-out infinite;
 }
 
+@keyframes colors {
+    0% { stroke: #4285F4; }
+    25% { stroke: #DE3E35; }
+    50% { stroke: #F7C223; }
+    75% { stroke: #1B9A59; }
+    100% { stroke: #4285F4; }
+}
 
-table#log-outer {
-    .iob-min-table;
-    text-align: left;
-    margin-top: @header-table-distance - 3px !important;
-    margin-left: 1px;
+@keyframes dash {
+    0% { stroke-dashoffset: @offset; }
+    50% {
+        stroke-dashoffset: @offset/4;
+        transform: rotate(135deg);
+    }
+    100% {
+        stroke-dashoffset: @offset;
+        transform: rotate(450deg);
+    }
 }
-#log-outer>thead>tr>th {
-    .th-0;
-}
-#log-table>tr {
-    height: 24px;
-}
-#log-table>tr>td {
-    text-align: left !important;
-    padding-left: @line-indent !important;
-    border: @td-border;
-}
-#log-table>tr>td:first-child {
-    color: #0000a0;
-}
-/**/
+
 
 /** instances tab *****************/
 /**/
@@ -323,12 +287,6 @@ thead#grid-instances-head {
 
 /** events tab ******************/
 /**/
-
-.th-0 {
-    height: 0 !important;
-    padding: 0;
-    border: 0;
-}
 
 #event-outer {
     border-collapse: collapse;

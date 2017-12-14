@@ -702,6 +702,7 @@ function Users(main) {
                 connectWith:    '#tab-users .tab-users-list-groups .treetable',
                 items:          '.users-type-draggable',
                 appendTo:       that.$gridUsers,
+                refreshPositions: true,
                 helper:         function (e, $target) {
                     return $('<div class="users-drag-helper">' + $target.find('.treetable-icon-empty+span').text() + '</div>');
                 },
@@ -731,16 +732,32 @@ function Users(main) {
     }
 
     function setupDroppable() {
-        that.$gridGroups.find('tbody>tr.treetable-group').droppable({
+        var $table = that.$gridGroups.find('tbody>tr.treetable-group');
+        if ($table.droppable('instance')) {
+            $table.droppable('destroy');
+        }
+        $table.droppable({
             accept: '.users-type-draggable',
             over: function (e, ui) {
                 $(this).addClass('tab-accept-item');
-                if ($(this).hasClass('not-empty')) {
-                    that.$gridGroups.treeTable('expand', $(this).data('tt-id'));
+                if ($(this).hasClass('not-empty') && !$(this).hasClass('expanded')) {
+                    var id = $(this).data('tt-id');
+                    var timer;
+                    if ((timer = $(this).data('timer'))) {
+                        clearTimeout(timer);
+                    }
+                    $(this).data('timer', setTimeout(function () {
+                        that.$gridGroups.treeTable('expand', id);
+                    }, 1000));
                 }
             },
             out: function (e, ui) {
                 $(this).removeClass('tab-accept-item');
+                var timer;
+                if ((timer = $(this).data('timer'))) {
+                    clearTimeout(timer);
+                    $(this).data('timer', null);
+                }
             },
             tolerance: 'pointer',
             drop: function (e, ui) {

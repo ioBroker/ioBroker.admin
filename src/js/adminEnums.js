@@ -146,6 +146,7 @@ function Enums(main) {
                 connectWith:    '#tab-enums .tab-enums-list .tree-table-main.treetable',
                 items:          '.fancytree-type-draggable',
                 appendTo:       that.$gridEnum,
+                refreshPositions: true,
                 helper:         function (e, $target) {
                     return $('<div class="fancytree-drag-helper">' + $target.find('.fancytree-title').text() + '</div>');
                 },
@@ -233,12 +234,24 @@ function Enums(main) {
             accept: '.fancytree-type-draggable',
             over: function (e, ui) {
                 $(this).addClass('tab-accept-item');
-                if ($(this).hasClass('not-empty')) {
-                    that.$gridList.treeTable('expand', $(this).data('tt-id'));
+                if ($(this).hasClass('not-empty') && !$(this).hasClass('expanded')) {
+                    var id = $(this).data('tt-id');
+                    var timer;
+                    if ((timer = $(this).data('timer'))) {
+                        clearTimeout(timer);
+                    }
+                    $(this).data('timer', setTimeout(function () {
+                        that.$gridList.treeTable('expand', $(this).data('tt-id'));
+                    }, 1000));
                 }
             },
             out: function (e, ui) {
                 $(this).removeClass('tab-accept-item');
+                var timer;
+                if ((timer = $(this).data('timer'))) {
+                    clearTimeout(timer);
+                    $(this).data('timer', null);
+                }
             },
             tolerance: 'pointer',
             drop: function (e, ui) {
@@ -489,6 +502,7 @@ function Enums(main) {
             $editButton.removeClass('blue').addClass('red');
             that.$gridEnum.addClass('tab-enums-edit');
             that._initObjectTree();
+            showMessage(_('You can drag&drop the devices, channels and states to enums'));
         } else {
             selectId('destroy');
             try {

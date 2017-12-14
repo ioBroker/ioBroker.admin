@@ -21,7 +21,7 @@ function translateWord(text, lang, dictionary) {
             }
         }
     } else if (typeof text === 'string' && !text.match(/_tooltip$/)) {
-        console.log('"' + text + '": {"en": "' + text + '", "de": "' + text + '", "ru": "' + text + '"},');
+        console.log('"' + text + '": {"en": "' + text + '", "de": "' + text + '", "ru": "' + text + '", "pt": "' + text + '", "nl": "' + text + '", "fr": "' + text + '"},');
     } else if (typeof text !== 'string') {
         console.warn('Trying to translate non-text:' + text);
     }

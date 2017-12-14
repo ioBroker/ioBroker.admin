@@ -281,7 +281,7 @@ gulp.task('compressMaterialize', function () {
 });
 
 gulp.task('lessApp', function () {
-    gulp.src(['./src/css/*.less', './src/colorpicker/less/*.less'])
+    gulp.src(['./src/less/*.less', './src/colorpicker/less/*.less', '!./src/less/adapter.less'])
         .pipe(sourcemaps.init())
         .pipe(less({
             paths: [ ]
@@ -292,6 +292,17 @@ gulp.task('lessApp', function () {
         .pipe(gulp.dest('./www/css'));
 });
 
+gulp.task('lessConfig', function () {
+    gulp.src(['./src/less/adapter.less'])
+        .pipe(sourcemaps.init())
+        .pipe(less({
+            paths: [ ]
+        }))
+        .pipe(concat('adapter.css'))
+        .pipe(cleanCSS({compatibility: 'ie8'}))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('./www/css'));
+});
 gulp.task('lessIob', function () {
     return gulp.src(['./src/lib/css/iob/*.less'])
         .pipe(sourcemaps.init())
@@ -328,17 +339,15 @@ gulp.task('compressVendor', function () {
     return gulp.src([
         './src/lib/js/jquery-1.11.2.min.js',
         './src/lib/js/jquery-ui.min.js',
-//        './src/lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js',
-//        './src/lib/js/jqGrid/grid.locale-all.js',
         './src/lib/js/colResizable-1.6.min.js',
-        './src/lib/js/jquery.multiselect-1.13.min.js',
+//        './src/lib/js/jquery.multiselect-1.13.min.js',
         './src/lib/js/semver.min.js',
         './src/lib/js/ace-1.2.0/ace.js',
         './src/lib/js/loStorage.js',
         './src/lib/js/translate.js',
         './src/lib/js/jquery.fancytree-all.min.js',
-//        './src/lib/js/jquery.treetable.js',
-//        './src/lib/js/selectID.js',
+        './src/lib/js/jquery.treetable.js',
+        './src/lib/js/selectID.js',
         './src/lib/js/cron/jquery.cron.js',
         './src/lib/js/cron/cron2text.js'
     ])
@@ -381,5 +390,5 @@ gulp.task('watch', function () {
     gulp.watch(['./src/js/*.js'], ['compressApp']);
 });
 
-gulp.task('default', ['lessIob', 'lessApp', 'lessTreeTable', 'sassMaterialize', 'compressApp', 'compressVendor', 'compressMaterialize', 'copy']);
+gulp.task('default', ['lessIob', 'lessApp', 'lessTreeTable', 'lessConfig', 'sassMaterialize', 'compressApp', 'compressVendor', 'compressMaterialize', 'copy']);
 
