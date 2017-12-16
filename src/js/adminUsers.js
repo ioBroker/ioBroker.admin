@@ -81,10 +81,24 @@ function Users(main) {
         that.main.showToast(that.$grid.find('#tab-users-dialog-new'), text, null, duration, isError);
     }
 
-    /*function firstUpper (str) {
+    function firstUpper (str) {
         if (!str) return str;
         return str[0].toUpperCase() + str.substring(1).toLowerCase();
-    }*/
+    }
+
+    function getUsersGroups(objects, groups) {
+        var usersGroups = {};
+        for (var g = 0; g < groups.length; g++) {
+            if (objects[groups[g]] && objects[groups[g]].common && objects[groups[g]].common.members) {
+                var users = objects[groups[g]].common.members;
+                for (var u = 0; u < users.length; u++) {
+                    usersGroups[users[u]] = usersGroups[users[u]] || [];
+                    usersGroups[users[u]].push({id: groups[g], name: objects[groups[g]].common.name || id.replace('system.group.', '')});
+                }
+            }
+        }
+        return usersGroups;
+    }
 
     function delUserFromGroups(id, callback) {
         var someDeleted = false;
@@ -697,7 +711,7 @@ function Users(main) {
     }
 
     function setupDraggable() {
-        that.$gridUsers.find('table.treetable tbody')
+        that.$gridUsers.find('ul')//table.treetable tbody')
             .sortable({
                 connectWith:    '#tab-users .tab-users-list-groups .treetable',
                 items:          '.users-type-draggable',
@@ -787,10 +801,140 @@ function Users(main) {
             }
         });
     }
+    // https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
+    function invertColor(hex) {
+        if (hex.indexOf('#') === 0) {
+            hex = hex.slice(1);
+        }
+        // convert 3-digit hex to 6-digits.
+        if (hex.length === 3) {
+            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+        }
+        if (hex.length !== 6) {
+            return false;
+        }
+        var r = parseInt(hex.slice(0, 2), 16),
+            g = parseInt(hex.slice(2, 4), 16),
+            b = parseInt(hex.slice(4, 6), 16);
+        // http://stackoverflow.com/a/3943023/112731
+        return (r * 0.299 + g * 0.587 + b * 0.114) <= 186;
+    }
+
+    function buildList() {
+        var text = '<div class="tree-table-buttons m">' +
+            '<a class="btn-floating waves-effect waves-light blue btn-custom-0" title="' + _('New user') + '" id="tab-users-btn-new-user">' +
+            '<i class="material-icons">person_add</i></a></div>';
+
+       text += '<ul class="row collection">';
+        var users = getUsersGroups(that.main.objects, that.groups);
+        for (var u = 0; u < that.list.length; u++) {
+            var name;
+            var common;
+            if (that.main.objects[that.list[u]] && that.main.objects[that.list[u]].common) {
+                common = that.main.objects[that.list[u]].common
+            } else {
+                common = {};
+            }
+            if (common.name) {
+                name = common.name;
+            } else {
+                name = firstUpper(that.list[u].replace(/^system\.user\./));
+            }
+            var tGroups = '';
+            if (users[that.list[u]]) {
+                var groups = users[that.list[u]];
+                for (var gg = 0; gg < groups.length; gg++) {
+                    var gId = groups[gg].id;
+                    tGroups += '<div class="chip">' + that.main.getIcon(gId) + groups[gg].name + '<i class="close material-icons tab-users-remove-group" data-group="' + gId + '" data-user="' + that.list[u] + '">close</i></div>';
+                }
+            }
+            var style = '';
+            var inverted = false;
+            if (common.color) {
+                style = 'background: ' + common.color  + '; ';
+                if (invertColor(common.color)) {
+                    inverted = true;
+                    style += 'color: white;';
+                }
+            }
+
+
+            text += '<li class="collection-item avatar users-type-draggable ' + (inverted ? 'inverted' : '') + '" data-tt-id="' + that.list[u] + '" style="' + style + '">';
+            // text += '   <img src="images/yuna.jpg" alt="" class="circle">';
+            text += '   ' + (that.main.getIcon(that.list[u], null, null, 'circle') || '<img class="circle" src="img/account_circle.png"/>');
+            text += '   <span class="title">' + name + '</span>';
+            text += '   <p>' + that.list[u] + ((common.desc ? ' (' + common.desc + ')' : '') || '') + (tGroups ? tGroups + '<br>' : '') + '</p>';
+            text += '   <a class="secondary-content ' + (!common.dontDelete ? 'tab-users-enabled-user' : 'disabled') + '" data-user="' + that.list[u] + '"><i class="material-icons">' + (common.enabled ? 'check_box' : 'check_box_outline_blank') + '</i></a>';
+            text += '   <a class="edit-content" data-user="' + that.list[u] + '"><i class="material-icons">edit</i></a>';
+            text += '   <a class="delete-content' + (common.dontDelete ? ' disabled' : '') + '" data-user="' + that.list[u] + '"><i class="material-icons">delete</i></a>';
+            text += '</li>';
+        }
+        text += '</ul>';
+        that.$gridUsers.html(text);
+        that.$gridUsers.find('#tab-users-btn-new-user').click(function () {
+            createOrEdit(false);
+        });
+        that.$gridUsers.find('.tab-users-enabled-user').click(function () {
+            var id = $(this).data('user');
+            if (id === 'system.user.admin') {
+                showMessage(_('Cannot disable admin!'), true);
+                return false;
+            }
+            var $this = $(this);
+            var enabled = that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.enabled;
+            enabled = !enabled;
+            that.main.socket.emit('extendObject', id, {common: {enabled: enabled}}, function (err) {
+                if (err) {
+                    showMessage(_('Cannot modify user!') + err, true);
+                } else {
+                    showMessage(_('Updated'));
+                    $this.find('i').text(enabled ? 'check_box' : 'check_box_outline_blank');
+                }
+            });
+        });
+        that.$gridUsers.find('.delete-content').click(function () {
+            var id = $(this).data('user');
+            if (that.main.objects[id] && that.main.objects[id].type === 'user') {
+                that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
+                    // If all
+                    if (result) {
+                        deleteUser(id);
+                    }
+                });
+            } else {
+                showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id), true);
+            }
+        });
+        that.$gridUsers.find('.edit-content').click(function () {
+            createOrEdit($(this).data('user'));
+        });
+        that.$gridUsers.find('.tab-users-remove-group').click(function () {
+            var id = $(this).data('user');
+            var gId = $(this).data('group');
+            // delete user from group
+            that.main.socket.emit('getObject', gId, function (err, obj) {
+                if (obj && obj.common && obj.common.members) {
+                    var pos = obj.common.members.indexOf(id);
+                    if (pos !== -1) {
+                        obj.common.members.splice(pos, 1);
+                        that.main.socket.emit('setObject', obj._id, obj, function (err) {
+                            if (!err) {
+                                showMessage(_('Removed'));
+                            } else {
+                                showMessage(_('Error: %s', err), true);
+                            }
+                        });
+                    } else {
+                        showMessage(_('%s is not in the list'), true);
+                    }
+                }
+            });
+        });
+    }
 
     this._postInit = function () {
         // extract all groups
-        this.$gridUsers.treeTable({
+        /*this.$gridUsers.treeTable({
             objects:    this.main.objects,
             root:       'system.user',
             columns:    ['title', 'name', 'desc', 'enabled', 'groups'],
@@ -809,7 +953,7 @@ function Users(main) {
                     icons: {
                         primary:'ui-icon-trash'
                     },
-                    click: function (id /* , children, parent*/) {
+                    click: function (id ) { // , children, parent
                         if (that.main.objects[id] && that.main.objects[id].type === 'user') {
                             that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
                                 // If all
@@ -867,7 +1011,9 @@ function Users(main) {
                 }
             },
             onReady:    setupDraggable
-        });
+        });*/
+        buildList();
+        setupDraggable();
 
         this.$gridGroups.treeTable({
             objects:    this.main.objects,

@@ -20,6 +20,39 @@
       display: block;
     }
   }
+  .tab-users-list-users {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    .tab-users-body {
+      overflow: auto;
+      .edit-content,
+      .delete-content {
+        position: absolute;
+        bottom: 16px;
+        float: right;
+        color: @admin-buttons-color;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .edit-content {
+        right: 48px;
+      }
+      .delete-content {
+        right: 16px;
+      }
+      .secondary-content {
+        cursor: pointer;
+        color: @admin-buttons-color;
+      }
+      .edit-content.disabled,
+      .delete-content.disabled,
+      .secondary-content.disabled {
+          color: darkgray;
+          cursor: inherit;
+      }
+    }
+  }
 
   position: relative;
 

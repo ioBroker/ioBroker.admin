@@ -61,6 +61,7 @@ $(document).ready(function () {
         states:         {},
         currentHost:    '',
         currentTab:     null,
+        currentUser:    '',
         subscribesStates: {},
         subscribesObjects: {},
         socket:         io.connect('/', {path: path}),
@@ -350,6 +351,42 @@ $(document).ready(function () {
                 }
             } else {
                 $wizard.hide();
+            }
+        },
+        getUser:        function () {
+            if (!main.currentUser) {
+                main.socket.emit('authEnabled', function (auth, user) {
+                    main.currentUser = 'system.user.' + user;
+                    if (!auth) {
+                        $('#button-logout').remove();
+                    } else {
+                        main._lastTimer = (new Date()).getTime();
+                        monitor();
+                    }
+                });
+            } else if (main.objects[main.currentUser]) {
+                var obj = main.objects[main.currentUser];
+                var name = '';
+                if (!obj || !obj.common || !obj.common.name) {
+                    name = main.currentUser.replace(/^system\.user\./);
+                    name = name[0].toUpperCase() + name.substring(1).toLowerCase();
+                } else {
+                    name = obj.common.name;
+                }
+                if (obj && obj.common && obj.common.icon) {
+                    var objs = {};
+                    objs[main.currentUser] = obj;
+                    $('#current-user-icon').html(main.getIcon(main.currentUser, null, objs));
+                }
+                $('#current-user').html(name);
+                var groups = [];
+                for (var i = 0; i < tabs.users.groups.length; i++) {
+                    var group = main.objects[tabs.users.groups[i]];
+                    if (group && group.common && group.common.members && group.common.members.indexOf(main.currentUser) !== -1) {
+                        groups.push(_(group.common.name));
+                    }
+                }
+                $('#current-group').html(groups.join(', '));
             }
         },
 
@@ -644,19 +681,6 @@ $(document).ready(function () {
             main.tabsInited = true;
 
             initHtmlButtons();
-
-            main.socket.emit('authEnabled', function (auth, user) {
-                if (!auth) $('#button-logout').remove();
-                $('#current-user').html(user ? user[0].toUpperCase() + user.substring(1).toLowerCase() : '');
-                var groups = [];
-                for (var i = 0; i < tabs.users.groups.length; i++) {
-                    var group = main.objects[tabs.users.groups[i]];
-                    if (group && group.common && group.common.members && group.common.members.indexOf('system.user.' + user) !== -1) {
-                        groups.push(_(group.common.name));
-                    }
-                }
-                $('#current-group').html(groups.join(', '));
-            });
 
             $('#events_threshold').click(function () {
                 main.socket.emit('eventsThreshold', false);
@@ -1005,7 +1029,7 @@ $(document).ready(function () {
 
                 // Show if update available
                 // tabs.hosts.initList();
-
+                main.getUser();
 
                 if (typeof callback === 'function') callback();
             }, 0);
@@ -1123,6 +1147,11 @@ $(document).ready(function () {
 
         // Update users
         tabs.users.objectChange(id, obj);
+
+        // update user in side menu
+        if (id === main.currentUser) {
+            main.getUser();
+        }
     }
 
     function monitor() {
@@ -1270,7 +1299,7 @@ $(document).ready(function () {
     };
 
     // static, just used from many places
-    main.getIcon = function(id, imgPath, objects) {
+    main.getIcon = function(id, imgPath, objects, classes) {
         var icon     = '';
         var alt      = '';
         var obj      = (objects || main.objects)[id];
@@ -1278,7 +1307,7 @@ $(document).ready(function () {
 
         if (isCommon) {
             if (isCommon.icon) {
-                if (isCommon.icon.length < 512) {
+                if (!isCommon.icon.match(/^data:image\//)) {
                     var instance;
                     if (obj.type === 'instance') {
                         icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
@@ -1318,7 +1347,7 @@ $(document).ready(function () {
             }
         }
 
-        if (icon) return '<img class="treetable-icon" src="' + icon + '" alt="' + alt + '" />';
+        if (icon) return '<img class="' + (classes || 'treetable-icon') + '" src="' + icon + '" alt="' + alt + '" />';
         return '';
     };
 
@@ -1462,14 +1491,8 @@ $(document).ready(function () {
         if (firstConnect) {
             firstConnect = false;
 
-            main.socket.emit('authEnabled', function (auth, user) {
-                if (!auth) $('#button-logout').remove();
-                $('#current-user').html(user ? user[0].toUpperCase() + user.substring(1).toLowerCase() : '');
-                if (auth) {
-                    main._lastTimer = (new Date()).getTime();
-                    monitor();
-                }
-            });
+            main.getUser();
+
             main.socket.emit('getUserPermissions', function (err, acl) {
                 main.acl = acl;
                 // Read system configuration

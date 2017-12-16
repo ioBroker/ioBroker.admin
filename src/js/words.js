@@ -3,6 +3,7 @@
 'use strict';
 
 systemDictionary = {
+    "%s added to %s": {                              "en": "%s added to %s",                                  "de": "%s wurde zu %s hinzugefügt",                      "ru": "%s добавлен в %s",                                "pt": "%s adicionado a %s",                              "nl": "%s toegevoegd aan %s",                            "fr": "%s ajouté à %s"},
     "%s processes": {                                "en": "%s processes",                                    "de": "%s Prozesse",                                     "ru": "%s процессов"},
     "Access control": {                              "en": "Access control",                                  "de": "Zugriffskontrolle",                               "ru": "Права доступа"},
     "Access control list": {                         "en": "Access control list",                             "de": "Access control list",                             "ru": "Права доступа"},

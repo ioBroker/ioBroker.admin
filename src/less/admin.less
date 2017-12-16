@@ -108,116 +108,6 @@ table#events {
     }
 }
 
-
-/** instances tab *****************/
-/**/
-
-.instance-odd, .hosts-odd {
-    /*background-color: #c1c1c1;*/
-    height: 2em;
-}
-.instance-even, .hosts-even {
-    background-color: @even-bg-color;
-    height: 2em;
-}
-
-//#grid-instances>tr:nth-child(2n) {
-//    background-color: @even-bg-color;
-//    height: 2em;
-//}
-
-.instance-table {
-    .new-iob-list-table;
-    font-size: 0.9em;
-}
-table.instance-table>tbody>tr {
-    height: 27px !important;
-    border: 0;
-}
-table.instance-table>tbody>tr>td {
-    padding: 0;
-}
-.instance-table th, .instance-table td, .hosts-table tr, .hosts-table td{
-    border: @td-border;
-}
-.instance-table>tbody>tr>td>b {
-    font-weight: normal;
-    color: #008;
-}
-.instance-table th, .objects-th {
-    padding-left: @line-indent;
-}
-
-.instance-table tr, .instance-table td, .hosts-table tr, .hosts-table td {
-    border: @td-border;
-    padding-left: 0;
-
-}
-
-.instance-state-hover {
-    border: 1px solid #66b6d6;
-    border-radius: 0.3em;
-    padding: 0.5em;
-    shadow-box: 1em 1em;
-    position: absolute;
-    z-index: 100;
-    background-color: rgba(145, 220, 255, 0.95);
-}
-
-.instance-schedule-button {
-    font-size: 10px !important;
-    width: 16px;
-    height: 16px;
-    float: right;
-    padding: 0;
-
-}
-.instance-schedule-button span {
-    padding: 0 !important;
-}
-
-
-
-/*
-tr.instance-adapter>td>button>span.ui-icon-pause {    ///xxx
-    //background: #88f !important;
-    background-color: rgba(0, 255, 0, 0.1) !important;
-}
-tr.instance-adapter>td>button>span.ui-icon-play {
-    //background: #8ff !important;
-    background-color: rgba(255, 0, 0, 0.1) !important;
-}
-*/
-.instance-empty {
-    width: 2.6em;
-    height: 2.6em;
-}
-button.instance-settings, button.instance-reload, button.instance-del, button.instance-web, button.instance-stop-run, button.instance-empty {
-    width: 2em;
-    height: 2em;
-    display: inline-block;
-}
-button.instance-stop-run {
-    background-color: lightgreen;
-}
-
-.instance-image {
-    /*height: 16px !important;*/
-    margin: 0.3em;
-    /*width: 16px !important;*/
-}
-
-thead#grid-instances-head {
-    line-height: 1.6em;
-    &:extend(.iob-font);
-}
-
-thead#grid-instances-head {
-    .grid-objects-head;
-}
-/** instances end **/
-
-
 /** hosts tab **********************/
 /**/
 
@@ -263,7 +153,12 @@ thead#grid-instances-head {
     background-color: #bababa;
 }
 
-
+// admin icon
+.user-view #current-user-icon img {
+    height: 96px;
+    width: auto;
+    border-radius: 96px;
+}
 /****/
 // zerlegen...
 //thead#grid-instances-head {
