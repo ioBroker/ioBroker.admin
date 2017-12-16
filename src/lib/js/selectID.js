@@ -732,6 +732,7 @@ function filterChanged(e) {
 
     function syncHeader($dlg) {
         var data = $dlg.data('selectId');
+        if (!data) return;
         var $header = $('#selectID_header_' + data.instance);
         var thDest = $header.find('>tbody>tr>td');	//if table headers are specified in its semantically correct tag, are obtained
         var thSrc = data.$tree.find('>tbody>tr>td');
@@ -914,6 +915,7 @@ function filterChanged(e) {
         if (data.noColumnResize || !$.fn.colResizable) return;
 
         var data = $dlg.data('selectId');
+        if (!data) return;
         if (data.$tree.is(':visible')) {
             data.$tree.colResizable({
                 liveDrag:       true,
@@ -1202,6 +1204,7 @@ function filterChanged(e) {
             $dlg.css({height: 'calc(100% - 110px)', width: '100%'});
         }
         var data = $dlg.data('selectId');
+        if (!data) return;
         if (data.columns && data.columns[0] !== 'ID') {
             data.columns.unshift('ID');
             if (data.widths) data.widths.unshift('200px');

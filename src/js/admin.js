@@ -137,76 +137,54 @@ $(document).ready(function () {
             });
         },
         confirmMessage: function (message, title, icon, buttons, callback) {
+            // if standard buttons
             if (typeof buttons === 'function') {
                 callback = buttons;
-                $dialogConfirm.dialog('option', 'buttons', [
-                    {
-                        text: _('Ok'),
-                        click: function () {
-                            var cb = $(this).data('callback');
-                            $(this).dialog('close');
-                            if (cb) cb(true);
-                        }
-                    },
-                    {
-                        text: _('Cancel'),
-                        click: function () {
-                            var cb = $(this).data('callback');
-                            $(this).dialog('close');
-                            if (cb) cb(false);
-                        }
-                    }
-
-                ]);
+                $dialogConfirm.find('.modal-footer').html(
+                    '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">Cancel</a>' +
+                    '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">Ok</a>');
+                $dialogConfirm.find('.modal-footer .modal-action').click(function () {
+                    var cb = $dialogConfirm.data('callback');
+                    cb && cb($(this).data('result'));
+                });
             } else if (typeof buttons === 'object') {
+                var tButtons = '';
                 for (var b = 0; b < buttons.length; b++) {
-                    buttons[b] = {
-                        text: buttons[b],
-                        id: 'dialog-confirm-button-' + b,
-                        click: function (e) {
-                            var id = parseInt(e.currentTarget.id.substring('dialog-confirm-button-'.length), 10);
-                            var cb = $(this).data('callback');
-                            $(this).dialog('close');
-                            if (cb) cb(id);
-                        }
-                    }
+                    tButtons += '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-id="' + b + '">' + buttons[b] + '</a>';
                 }
-                $dialogConfirm.dialog('option', 'buttons', buttons);
+                $dialogConfirm.find('.modal-footer').html(tButtons);
+                $dialogConfirm.find('.modal-footer .modal-action').click(function () {
+                    var cb = $dialogConfirm.data('callback');
+                    cb && cb($(this).data('id'));
+                });
             }
 
-            $dialogConfirm.dialog('option', 'title', title || _('Message'));
-            $('#dialog-confirm-text').html(message);
+            $dialogConfirm.find('.dialog-title').text(title || _('Question'));
             if (icon) {
-                $('#dialog-confirm-icon')
+                $dialogConfirm.find('.dialog-icon')
                     .show()
-                    .attr('class', '')
-                    .addClass('ui-icon ui-icon-' + icon);
+                    .html(icon);
             } else {
-                $('#dialog-confirm-icon').hide();
+                $dialogConfirm.find('.dialog-icon').hide();
             }
+            $dialogConfirm.find('.dialog-text').html(message);
             $dialogConfirm.data('callback', callback);
-            $dialogConfirm.dialog('open');
+            $dialogConfirm.modal('open');
         },
-        showMessage:    function (message, title, icon, width) {
-            $dialogMessage.dialog('option', 'title', title || _('Message'));
-            $('#dialog-message-text').html(message);
+        showMessage:    function (message, title, icon) {
+            $dialogMessage.find('.dialog-title').text(title || _('Message'));
             if (icon) {
-                $('#dialog-message-icon')
+                $dialogMessage.find('.dialog-icon')
                     .show()
-                    .attr('class', '')
-                    .addClass('ui-icon ui-icon-' + icon);
+                    .html(icon);
             } else {
-                $('#dialog-message-icon').hide();
+                $dialogMessage.find('.dialog-icon').hide();
             }
-            if (width) {
-                $dialogMessage.dialog('option', 'width', width);
-            } else {
-                $dialogMessage.dialog('option', 'width', 450);
-            }
-            $dialogMessage.dialog('open');
+            $dialogMessage.find('.dialog-text').html(message);
+            $dialogMessage.modal('open');
         },
         showError:      function (error) {
-            main.showMessage(_(error),  _('Error'), 'alert');
+            main.showMessage(_(error),  _('Error'), 'error_outline');
         },
         showToast:      function (parent, message, icon, duration, isError, classes) {
             if (parent && parent instanceof jQuery) {
@@ -377,6 +355,8 @@ $(document).ready(function () {
                     var objs = {};
                     objs[main.currentUser] = obj;
                     $('#current-user-icon').html(main.getIcon(main.currentUser, null, objs));
+                } else {
+                    $('#current-user-icon').html('<i class="large material-icons">account_circle</i>');
                 }
                 $('#current-user').html(name);
                 var groups = [];
@@ -403,8 +383,8 @@ $(document).ready(function () {
                     return callback && setTimeout(callback, 0, null, id);
                 }
                 id = idOrList.pop();
-                if (main.objects[id] && main.objects[id].common && main.objects[id].common['object-non-deletable']) {
-                    main.showMessage (_ ('Cannot delete "%s" because not allowed', id), '', 'notice');
+                if (main.objects[id] && main.objects[id].common && (main.objects[id].common['object-non-deletable'] || main.objects[id].common.dontDelete)) {
+                    main.showMessage (_ ('Cannot delete "%s" because not allowed', id), '', 'notifications');
                     setTimeout(doIt, 0);
                 } else {
                     var obj = main.objects[id];
@@ -518,7 +498,7 @@ $(document).ready(function () {
             if (main.objects[id]) {
                 if (leaf && leaf.children) {
                     // ask if only object must be deleted or just this one
-                    main.confirmMessage(_('Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?', id), null, 'help', [_('_All'), _('Only one'), _('Cancel')], function (result) {
+                    main.confirmMessage(_('Do you want to delete just <span style="color: blue">one object</span> or <span style="color: red">all</span> children of %s too?', id), null, 'help_outline', [_('_All'), _('Only one'), _('Cancel')], function (result) {
                         // If all
                         if (result === 0) {
                             main._delObjects(id, true, callback);
@@ -529,18 +509,18 @@ $(document).ready(function () {
                         } // else do nothing
                     });
                 } else {
-                    main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
+                    main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help_outline', function (result) {
                         // If all
                         if (result) main._delObjects(id, true, callback);
                     });
                 }
             } else if (leaf && leaf.children) {
-                main.confirmMessage(_('Are you sure to delete all children of %s?', id), null, 'help', function (result) {
+                main.confirmMessage(_('Are you sure to delete all children of %s?', id), null, 'help_outline', function (result) {
                     // If all
                     if (result) main._delObjects(id, true, callback);
                 });
             } else {
-                main.showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id), null, 'help', function (result) {
+                main.showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id), _('Error'), 'help_outline', function (result) {
                     // If all
                     if (result) main._delObjects(id, true, callback);
                 });
@@ -661,9 +641,7 @@ $(document).ready(function () {
 
         main.updateWizard();
 
-        $('#button-logout').button({
-            text: false
-        }).click(function () {
+        $('#button-logout').click(function () {
             window.location.href = '/logout/';
         });
 
@@ -933,7 +911,7 @@ $(document).ready(function () {
             }
         });
 
-        $dialogMessage.dialog({
+        /*$dialogMessage.dialog({
             autoOpen: false,
             modal:    true,
             buttons: [
@@ -944,9 +922,10 @@ $(document).ready(function () {
                     }
                 }
             ]
-        });
-
-        $dialogConfirm.dialog({
+        });*/
+        $dialogMessage.modal();
+        $dialogConfirm.modal();
+        /*$dialogConfirm.dialog({
             autoOpen: false,
             modal:    true,
             width:    450,
@@ -970,7 +949,7 @@ $(document).ready(function () {
                 }
 
             ]
-        });
+        });*/
     }
 
     tabs.logs.prepare();
@@ -982,7 +961,7 @@ $(document).ready(function () {
                 if (result && result['Node.js']) {
                     var major = parseInt(result['Node.js'].split('.').shift().replace('v', ''), 10);
                     if (major !== 4 && major !== 6 && major !== 8) {
-                        main.showMessage(_('This version of node.js "%s" on "%s" is deprecated. Please install node.js 6, 8 or newer', result['Node.js'], hosts[index].name), _('Suggestion'), 'alert', 700);
+                        main.showMessage(_('This version of node.js "%s" on "%s" is deprecated. Please install node.js 6, 8 or newer', result['Node.js'], hosts[index].name), _('Suggestion'), 'error_outline');
                     }
                 }
                 setTimeout(function () {

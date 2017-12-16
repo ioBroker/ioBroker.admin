@@ -64,7 +64,8 @@ function Hosts(main) {
 
     };
 
-    function showUpdateInfo (data) {
+    function showUpdateInfo(data) {
+        var $dialog = $('#dialog-host-update');
         if (data) {
             var path = data.path;
             path = path.replace(/\\/g, '/');
@@ -74,37 +75,20 @@ function Hosts(main) {
 
             if (data.platform === 'linux' || data.platform === 'darwin' || data.platform === 'freebsd' || data.platform === 'lin') {
                 // linux
-                $('#dialog-host-update-instructions').val('cd ' + parts.join('/') + '\nsudo iobroker stop\nsudo iobroker update\nsudo iobroker upgrade self\nsudo iobroker start')
+                $dialog.find('#dialog-host-update-instructions').val('cd ' + parts.join('/') + '\nsudo iobroker stop\nsudo iobroker update\nsudo iobroker upgrade self\nsudo iobroker start')
             } else {
                 // windows
-                $('#dialog-host-update-instructions').val('cd ' + parts.join('\\') + '\niobroker stop\niobroker update\niobroker upgrade self\niobroker start')
+                $dialog.find('#dialog-host-update-instructions').val('cd ' + parts.join('\\') + '\niobroker stop\niobroker update\niobroker upgrade self\niobroker start')
             }
         } else {
-            $('#dialog-host-update-instructions').val('cd /opt/iobroker\nsudo iobroker stop\nsudo iobroker update\nsudo iobroker upgrade self\nsudo iobroker start')
+            $dialog.find('#dialog-host-update-instructions').val('cd /opt/iobroker\nsudo iobroker stop\nsudo iobroker update\nsudo iobroker upgrade self\nsudo iobroker start')
         }
-        var $dialog = $('#dialog-host-update');
+
         if (!$dialog.data('inited')) {
             $dialog.data('inited', true);
-            $dialog.dialog({
-                autoOpen:   false,
-                modal:      true,
-                resizable:  false,
-                width:      600,
-                height:     350,
-                open: function (event, ui) {
-                    $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
-                },
-                buttons: [
-                    {
-                        text: _('Ok'),
-                        click: function () {
-                            $dialog.dialog('close');
-                        }
-                    }
-                ]
-            });
+            $dialog.modal();
         }
-        $dialog.dialog('open');
+        $dialog.modal('open');
     }
 
     function applyFilter(filter) {
@@ -331,10 +315,6 @@ function Hosts(main) {
                 });
             });
         });
-    };
-
-    this.resize = function (width, height) {
-        this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
     };
 
     this.objectChange = function (id, obj) {

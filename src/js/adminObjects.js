@@ -71,7 +71,7 @@ function Objects(main) {
                     try {
                         _obj = JSON.parse(that.editor.getValue());
                     } catch (e) {
-                        that.main.showMessage(e, _('Parse error'), 'alert');
+                        that.main.showMessage(e, _('Parse error'), 'error_outline');
                         $('#object-tabs').tabs({active: 4});
                         return false;
                     }
@@ -659,6 +659,11 @@ function Objects(main) {
                                 });
                             }
                         },
+                        match: function (id) {
+                            if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.dontDelete) {
+                                this.hide();
+                            }
+                        },
                         width: 26,
                         height: 20
                     },
@@ -859,7 +864,7 @@ function Objects(main) {
                         if (ids && ids.length) {
                             that.openCustomsDlg(ids);
                         } else {
-                            that.main.showMessage(_('No states selected!'), '', 'info');
+                            that.main.showMessage(_('No states selected!'), '', 'info_outline');
                         }
                     }
                 }
@@ -945,7 +950,7 @@ function Objects(main) {
         }).click(function () {
             var part  = $(this).data('part');
             var field = $(this).data('attr');
-            that.main.confirmMessage(_('Are you sure?'), _('Delete attribute'), 'alert', function (result) {
+            that.main.confirmMessage(_('Are you sure?'), _('Delete attribute'), 'error_outline', function (result) {
                 if (result) {
                     var _obj  = that.saveFromTabs();
                     delete _obj[part][field];
@@ -998,8 +1003,8 @@ function Objects(main) {
             } else {
                 obj = JSON.parse(obj);
             }
-        } catch (e) {
-            that.main.showMessage(_('Cannot parse.'), 'Error in ' + e, 'alert');
+        } catch (err) {
+            that.main.showMessage(_('Cannot parse.'), _('Error in %s', err), 'error_outline');
             return false;
         }
 
@@ -1011,12 +1016,12 @@ function Objects(main) {
         obj.type =        $('#edit-object-type').val();
         var err = saveObjectFields('object-tab-common-table', obj.common);
         if (err) {
-            that.main.showMessage(_('Cannot parse.'), 'Error in ' + err, 'alert');
+            that.main.showMessage(_('Cannot parse.'), _('Error in %s', err), 'error_outline');
             return false;
         }
         err = saveObjectFields('object-tab-native-table', obj.native);
         if (err) {
-            that.main.showMessage(_('Cannot parse.'), 'Error in ' + err, 'alert');
+            that.main.showMessage(_('Cannot parse.'), _('Error in %s', err), 'error_outline');
             return false;
         }
         obj.acl.object = 0;
@@ -1049,7 +1054,7 @@ function Objects(main) {
             obj = JSON.parse(that.editor.getValue());
             //obj = JSON.parse($('#view-object-raw').val());
         } catch (e) {
-            that.main.showMessage(e, _('Parse error'), 'alert');
+            that.main.showMessage(e, _('Parse error'), 'error_outline');
             $('#object-tabs').tabs({active: 4});
             return false;
         }
@@ -1623,7 +1628,7 @@ function Objects(main) {
 
             that.main.socket.emit('setObject', id, this.main.objects[id], function (err) {
                 if (err) {
-                    that.main.showMessage(_(err));
+                    that.main.showMessage(_(err), _('Error'), 'error_outline');
                 } else {
                     setTimeout(function () {
                         that.setCustoms(ids, callback);
@@ -1734,7 +1739,7 @@ function Objects(main) {
                     text: _('Cancel'),
                     click: function () {
                         if (!$('#customs-button-save').is(':disabled')) {
-                            that.main.confirmMessage(_('Are you sure? Changes are not saved.'), _('Question'), 'alert', function (result) {
+                            that.main.confirmMessage(_('Are you sure? Changes are not saved.'), _('Question'), 'error_outline', function (result) {
                                 if (result) {
                                     // disable iframe
                                     that.loadHistoryChart();

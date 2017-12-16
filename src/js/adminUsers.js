@@ -746,7 +746,7 @@ function Users(main) {
     }
 
     function setupDroppable() {
-        var $table = that.$gridGroups.find('tbody>tr.treetable-group');
+        var $table = that.$gridGroups.find('ul>li')
         if ($table.droppable('instance')) {
             $table.droppable('destroy');
         }
@@ -820,12 +820,14 @@ function Users(main) {
         return (r * 0.299 + g * 0.587 + b * 0.114) <= 186;
     }
 
-    function buildList() {
+    function buildUserList() {
+        that.list.sort();
+        that.groups.sort();
         var text = '<div class="tree-table-buttons m">' +
             '<a class="btn-floating waves-effect waves-light blue btn-custom-0" title="' + _('New user') + '" id="tab-users-btn-new-user">' +
             '<i class="material-icons">person_add</i></a></div>';
 
-       text += '<ul class="row collection">';
+       text += '<ul class="collection">';
         var users = getUsersGroups(that.main.objects, that.groups);
         for (var u = 0; u < that.list.length; u++) {
             var name;
@@ -932,6 +934,103 @@ function Users(main) {
         });
     }
 
+    function buildGroupsList() {
+        var text = '<div class="tree-table-buttons m">' +
+            '<a class="btn-floating waves-effect waves-light blue btn-custom-0" title="' + _('New group') + '" id="tab-users-btn-new-group">' +
+            '<i class="material-icons">group_add</i></a></div>';
+
+        text += '<ul class="collection">';
+        for (var u = 0; u < that.list.length; u++) {
+            var name;
+            var common;
+            if (that.main.objects[that.groups[u]] && that.main.objects[that.groups[u]].common) {
+                common = that.main.objects[that.groups[u]].common
+            } else {
+                common = {};
+            }
+            if (common.name) {
+                name = common.name;
+            } else {
+                name = firstUpper(that.groups[u].replace(/^system\.group\./));
+            }
+            var tUsers = '';
+            if (common.members && common.members.length) {
+                var users = common.members;
+                for (var gg = 0; gg < users.length; gg++) {
+                    var uId = users[gg];
+                    var uName;
+                    if (that.main.objects[uId] && that.main.objects[uId].common && that.main.objects[uId].common.name) {
+                        uName = that.main.objects[uId].common.name;
+                    } else {
+                        uName = firstUpper(uId.replace(/^system\.user\./));
+                    }
+                    tUsers += '<div class="chip">' + that.main.getIcon(uId) + uName + '<i class="close material-icons tab-users-remove-user" data-group="' + that.groups[u] + '" data-user="' + uId + '">close</i></div>';
+                }
+            }
+            var style = '';
+            var inverted = false;
+            if (common.color) {
+                style = 'background: ' + common.color  + '; ';
+                if (invertColor(common.color)) {
+                    inverted = true;
+                    style += 'color: white;';
+                }
+            }
+
+            text += '<li class="collection-item avatar ' + (inverted ? 'inverted' : '') + '" data-tt-id="' + that.groups[u] + '" style="' + style + '">';
+            // text += '   <img src="images/yuna.jpg" alt="" class="circle">';
+            text += '   ' + (that.main.getIcon(that.groups[u], null, null, 'circle') || '<img class="circle" src="img/group.png"/>');
+            text += '   <span class="title">' + name + '</span>';
+            text += '   <p>' + that.groups[u] + ((common.desc ? ' (' + common.desc + ')' : '') || '') + (tUsers ? tUsers + '<br>' : '') + '</p>';
+            text += '   <a class="edit-content" data-group="' + that.groups[u] + '"><i class="material-icons">edit</i></a>';
+            text += '   <a class="delete-content' + (common.dontDelete ? ' disabled' : '') + '" data-group="' + that.groups[u] + '"><i class="material-icons">delete</i></a>';
+            text += '</li>';
+        }
+        text += '</ul>';
+        that.$gridGroups.html(text);
+        that.$gridGroups.find('#tab-users-btn-new-group').click(function () {
+            createOrEdit(true);
+        });
+        that.$gridGroups.find('.delete-content').click(function () {
+            var id = $(this).data('group');
+            if (that.main.objects[id] && that.main.objects[id].type === 'user') {
+                that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
+                    // If all
+                    if (result) {
+                        deleteUser(id);
+                    }
+                });
+            } else {
+                showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id), true);
+            }
+        });
+        that.$gridGroups.find('.edit-content').click(function () {
+            createOrEdit($(this).data('group'));
+        });
+        that.$gridGroups.find('.tab-users-remove-user').click(function () {
+            var id = $(this).data('user');
+            var gId = $(this).data('group');
+            // delete user from group
+            that.main.socket.emit('getObject', gId, function (err, obj) {
+                if (obj && obj.common && obj.common.members) {
+                    var pos = obj.common.members.indexOf(id);
+                    if (pos !== -1) {
+                        obj.common.members.splice(pos, 1);
+                        that.main.socket.emit('setObject', obj._id, obj, function (err) {
+                            if (!err) {
+                                showMessage(_('Removed'));
+                            } else {
+                                showMessage(_('Error: %s', err), true);
+                            }
+                        });
+                    } else {
+                        showMessage(_('%s is not in the list'), true);
+                    }
+                }
+            });
+        });
+    }
+
     this._postInit = function () {
         // extract all groups
         /*this.$gridUsers.treeTable({
@@ -1012,10 +1111,10 @@ function Users(main) {
             },
             onReady:    setupDraggable
         });*/
-        buildList();
+        buildUserList();
         setupDraggable();
 
-        this.$gridGroups.treeTable({
+        /*this.$gridGroups.treeTable({
             objects:    this.main.objects,
             root:       'system.group',
             columns:    ['title', 'name', 'desc'],
@@ -1118,7 +1217,9 @@ function Users(main) {
                 }
             ],
             onReady:    setupDroppable
-        });
+        });*/
+        buildGroupsList();
+        setupDroppable();
     };
 
     // ----------------------------- Users show and Edit ------------------------------------------------

@@ -85,8 +85,8 @@
             <div class="nav-wrapper ">
                 <ul class="left">
                     <li><a id="button-wizard"><i class="material-icons">search</i></a></li>
-                    <li><a id="button-system" title="' + _('System') + '"><i class="material-icons">build</i></a></li>
-                    <li><a id="button-logout" title="' + _('Logout') + '"><i class="material-icons">input</i></a></li>
+                    <li><a id="button-system" class="translateT" title="System"><i class="material-icons">build</i></a></li>
+                    <li><a id="button-logout" class="translateT" title="Logout"><i class="material-icons">input</i></a></li>
                     <li>
                         <a class="dropdown-button btn" style="display: none" data-target="host-adapters" id="host-adapters-btn">Host:</a>
                         <ul id='host-adapters' class='dropdown-content'></ul>
@@ -94,6 +94,7 @@
                     </li>
                 </ul>
                 <span class="button-version"></span>
+                <span class="button-icon"><img src="img/no-image.png"/></span>
             </div>
         </nav>
 
@@ -330,16 +331,16 @@
     <table id="grid-groups"></table>
     <div id="pager-groups"></div>
 </div-->
-<div id="tab-users"     class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Users">
+<div id="tab-users"     class="admin-tab admin-sidemenu-body-content m" style="display: none" data-name="Users">
     <div class="tab-users-list-groups">
-        <div class="tab-users-header m"><i class="material-icons prefix">group</i><span class="translate">Groups</span></div>
+        <div class="tab-users-header"><i class="material-icons prefix">group</i><span class="translate">Groups</span></div>
         <div class="tab-users-body"></div>
     </div>
     <div class="tab-users-list-users">
-        <div class="row tab-users-header m"><i class="material-icons prefix">person</i><span class="translate">Users</span></div>
-        <div class="row tab-users-body m"></div>
+        <div class="tab-users-header"><i class="material-icons prefix">person</i><span class="translate">Users</span></div>
+        <div class="tab-users-body"></div>
     </div>
-    <div class="tab-dialogs m">
+    <div class="tab-dialogs">
         <div id="tab-users-dialog-new" class="modal modal-fixed-footer">
             <div class="modal-content">
                 <h5 class="translate tab-dialog-new-title"></h5>
@@ -899,7 +900,6 @@
             <option value="en">English</option>
             <option value="de">Deutsch</option>
             <option value="ru">русский</option>
-            <option value="ru">русский</option>
             <option value="pt">Portugues</option>
             <option value="nl">Nederlands</option>
             <option value="fr">français</option>
@@ -938,6 +938,9 @@
                                     <option value="en">English</option>
                                     <option value="de">Deutsch</option>
                                     <option value="ru">русский</option>
+                                    <option value="pt">Portugues</option>
+                                    <option value="nl">Nederlands</option>
+                                    <option value="fr">français</option>
                                 </select>
                                 <label class="translate" for="system_language">System language:</label>
                             </div>
@@ -1473,27 +1476,43 @@
     </div>
 </div>
 <div id="log-copy-text"      title="Copy log"     style="display: none; width: 100%; height: 100%; background: white; top: 0; left: 0; position: absolute; z-index: 2000"></div>
-<div id="dialog-message"     title="Message"      style="display: none">
-    <p>
-        <span id="dialog-message-icon" class="ui-icon ui-icon-circle-check" style="float:left; margin:0 7px 50px 0;"></span>
-        <span id="dialog-message-text"></span>
-    </p>
-</div>
-<div id="dialog-confirm"     title="Question"     style="display: none">
-    <p>
-        <span id="dialog-confirm-icon" class="ui-icon ui-icon-circle-check" style="float: left; margin:0 7px 50px 0;"></span>
-        <span id="dialog-confirm-text"></span>
-    </p>
-</div>
-<div id="dialog-host-update" title="Instructions" style="display: none">
-    <p><span class="translate">update-part1</span></p>
-    <p class="translate">You can check changelog here</p>
-    <textarea readonly id="dialog-host-update-instructions" style="width: 100%; height: 100px; resize: none;"></textarea>
-</div>
 <div id="dialog-cron"   style="display: none">
     <div id="div-cron"></div>
 </div>
 <ul id="instances-menu" style="position: absolute; display: none; width: 150px; z-index: 1" data-visible="false"></ul>
 <ul id="adapters-menu"  style="position: absolute; display: none; width: 80px; z-index: 1; border: 1px solid #605e5e;" data-visible="false"></ul>
+
+<div class="materialize-dialogs m">
+    <div id="dialog-message" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="dialog-title"></h4>
+            <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>
+        </div>
+    </div>
+    <div id="dialog-confirm" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="dialog-title"></h4>
+            <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>
+        </div>
+        <div class="modal-footer">
+        </div>
+    </div>
+    <div id="dialog-host-update" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="dialog-title translate">Instructions</h4>
+            <p>
+                <span class="translate">update-part1</span><br>
+                <label class="dialog-text translate" for="dialog-host-update-instructions">You can check changelog here</label>
+                <textarea readonly id="dialog-host-update-instructions"></textarea>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>

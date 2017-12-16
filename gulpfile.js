@@ -12,18 +12,26 @@ const pkg         = require('./package.json');
 const iopackage   = require('./io-package.json');
 const babel       = require('gulp-babel');
 
-function lang2data(lang) {
-    var str = '{\n';
+function lang2data(lang, isFlat) {
+    var str = isFlat ? '' : '{\n';
     var count = 0;
     for (var w in lang) {
         if (lang.hasOwnProperty(w)) {
             count++;
-            var key = '  "' + w.replace(/"/g, '\\"') + '": ';
-            str += padRight(key, 42) +  '"' + lang[w].replace(/"/g, '\\"') + '",\n';
+            if (isFlat) {
+                str += (lang[w] === '------XXXXXXXXX------' ? (isFlat[w] || w) : lang[w]) + '\n';
+            } else {
+                var key = '  "' + w.replace(/"/g, '\\"') + '": ';
+                str += padRight(key, 42) +  '"' + lang[w].replace(/"/g, '\\"') + '",\n';
+            }
         }
     }
-    if (!count) return '{\n}';
-    return str.substring(0, str.length - 2) + '\n}';
+    if (!count) return isFlat ? '' : '{\n}';
+    if (isFlat) {
+        return str;
+    } else {
+        return str.substring(0, str.length - 2) + '\n}';
+    }
 }
 
 function readWordJs() {
@@ -135,6 +143,128 @@ gulp.task('words2languages', function (done) {
     done();
 });
 
+gulp.task('words2languagesFlat', function (done) {
+    var fs = require('fs');
+
+    var langs =  {
+        'en': {},
+        'de': {},
+        'ru': {},
+        'pt': {},
+        'nl': {},
+        'fr': {}
+    };
+    var data = readWordJs();
+    if (data) {
+        for (var word in data) {
+            if (data.hasOwnProperty(word)) {
+                for (var lang in data[word]) {
+                    if (data[word].hasOwnProperty(lang)) {
+                        langs[lang][word] = data[word][lang];
+                        //  pre-fill all other languages
+                        for (var j in langs) {
+                            if (langs.hasOwnProperty(j)) {
+                                langs[j][word] = langs[j][word] || EMPTY;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        var keys = Object.keys(langs.en);
+        keys.sort();
+        for (var l in langs) {
+            var obj = {};
+            for (var k = 0; k < keys.length; k++) {
+                obj[keys[k]] = langs[l][keys[k]];
+            }
+            langs[l] = obj;
+        }
+        for (var ll in langs) {
+            if (!fs.existsSync('./src/i18n/' + ll)) {
+                fs.mkdirSync('./src/i18n/' + ll);
+            }
+
+            fs.writeFileSync('./src/i18n/' + ll + '/flat.txt', lang2data(langs[ll], langs.en));
+        }
+        fs.writeFileSync('./src/i18n/flat.txt', keys.join('\n'));
+    } else {
+        console.error('Cannot read or parse words.js');
+    }
+    done();
+});
+gulp.task('languagesFlat2words', function (done) {
+    var fs = require('fs');
+    var dirs = fs.readdirSync('./src/i18n/');
+    var langs = {};
+    var bigOne = {};
+    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr'];
+    dirs.sort(function (a, b) {
+        var posA = order.indexOf(a);
+        var posB = order.indexOf(b);
+        if (posA === -1 && posB === -1) {
+            if (a > b) return 1;
+            if (a < b) return -1;
+            return 0;
+        } else if (posA === -1) {
+            return -1;
+        } else if (posB === -1) {
+            return 1;
+        } else {
+            if (posA > posB) return 1;
+            if (posA < posB) return -1;
+            return 0;
+        }
+    });
+    var keys = fs.readFileSync('./src/i18n/flat.txt').toString().split('\n');
+
+    for (var l = 0; l < dirs.length; l++) {
+        if (dirs[l] === 'flat.txt') continue;
+        var lang = dirs[l];
+        var values = fs.readFileSync('./src/i18n/' + lang + '/flat.txt').toString().split('\n');
+        langs[lang] = {};
+        keys.forEach(function (word, i) {
+             langs[lang][word] = values[i];
+        });
+
+        var words = langs[lang];
+        for (var word in words) {
+            if (words.hasOwnProperty(word)) {
+                bigOne[word] = bigOne[word] || {};
+                if (words[word] !== EMPTY) {
+                    bigOne[word][lang] = words[word];
+                }
+            }
+        }
+    }
+    // read actual words.js
+    var aWords = readWordJs();
+
+    var temporaryIgnore = ['pt', 'fr', 'nl', 'flat.txt'];
+    if (aWords) {
+        // Merge words together
+        for (var w in aWords) {
+            if (aWords.hasOwnProperty(w)) {
+                if (!bigOne[w]) {
+                    console.warn('Take from actual words.js: ' + w);
+                    bigOne[w] = aWords[w]
+                }
+                dirs.forEach(function (lang) {
+                    if (temporaryIgnore.indexOf(lang) !== -1) return;
+                    if (!bigOne[w][lang]) {
+                        console.warn('Missing "' + lang + '": ' + w);
+                    }
+                });
+            }
+        }
+
+    }
+
+    writeWordJs(bigOne);
+    done();
+});
+
+
 gulp.task('languages2words', function (done) {
     var fs = require('fs');
     var dirs = fs.readdirSync('./src/i18n/');
@@ -159,6 +289,7 @@ gulp.task('languages2words', function (done) {
         }
     });
     for (var l = 0; l < dirs.length; l++) {
+        if (dirs[l] === 'flat.txt') continue;
         var lang = dirs[l];
         langs[lang] = fs.readFileSync('./src/i18n/' + lang + '/translations.json').toString();
         langs[lang] = JSON.parse(langs[lang]);

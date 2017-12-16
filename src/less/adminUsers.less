@@ -53,6 +53,36 @@
       }
     }
   }
+  .tab-users-list-groups {
+    .tab-users-body {
+      overflow: auto;
+      .edit-content,
+      .delete-content {
+        position: absolute;
+        bottom: 16px;
+        float: right;
+        color: @admin-buttons-color;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .edit-content {
+        right: 48px;
+      }
+      .delete-content {
+        right: 16px;
+      }
+      .secondary-content {
+        cursor: pointer;
+        color: @admin-buttons-color;
+      }
+      .edit-content.disabled,
+      .delete-content.disabled,
+      .secondary-content.disabled {
+          color: darkgray;
+          cursor: inherit;
+      }
+    }
+  }
 
   position: relative;
 
@@ -64,10 +94,9 @@
     font-size: larger;
     font-weight: bold;
   }
-  .tree-table-main  {
+  .tab-users-body  {
     .tab-accept-item {
       background: @admin-buttons-color !important;
-      font-weight: bold;
       color: white;
     }
   }
@@ -79,7 +108,7 @@
     {
       opacity: 0.3;
     }
-    .tab-users-list-groups .tree-table-main::after {
+    .tab-users-list-groups .tab-users-body>ul::after {
       content: "";
       pointer-events: none;
       box-sizing: border-box;

@@ -252,7 +252,15 @@ table.events-list-table>tbody>tr>td {
         color:      @admin-sidemenu-color;
         position:   absolute;
         top:        0;
+        right:      4rem;
+    }
+    .button-icon {
+        position:   absolute;
+        top:        1rem;
         right:      1rem;
+        img {
+            width: 32px;
+        }
     }
     .button-current-user {
         padding-left: 1rem;
@@ -616,3 +624,21 @@ table#grid-groups {
 //    .iob-font-12 !important;
 //    font-size: 12px !important;
 //}
+// modals
+.dialog-icon {
+    float: right;
+}
+.dialog-text {
+    font-size: 1.2rem;
+}
+#dialog-host-update {
+    p {
+        font-size: 1rem;
+    }
+    textarea {
+        font-family: monospace;
+        width: 100%;
+        height: 7rem;
+        resize: none;
+    }
+}
