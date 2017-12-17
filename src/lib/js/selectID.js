@@ -1451,7 +1451,7 @@ function filterChanged(e) {
                     }
                 }
                 if (hasStates) {
-                    patterns.push(node.data.id);
+                    patterns.push(node.data.id || node.key);
                 } else if (someExpanded) {
                     for (var cc = 0; cc < node.children.length; cc++) {
                         if (node.children[cc].expanded) {

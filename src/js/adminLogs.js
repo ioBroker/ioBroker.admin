@@ -3,7 +3,7 @@ function Logs(main) {                                                           
     var that                  = this;
     this.main                 = main;
     this.logLimit             = 2000; //const
-
+    this.$table               = $('#tab-logs');
     this.logLinesCount        = 0;
     this.logLinesStart        = 0;
 
@@ -20,21 +20,21 @@ function Logs(main) {                                                           
     var hdr;
 
     this.prepare = function () {
-        $logOuter = $('#log-outer');
-        $logTable = $('#log-table');
-        $logPause = $('#log-pause');
+        $logOuter = this.$table.find('#log-outer');
+        $logTable = this.$table.find('#log-table');
+        $logPause = this.$table.find('#log-pause');
 
-        hdr = IobListHeader('log-outer-header', {list: $logOuter, colWidthOffset: 1, prefix: 'log-filter'});
+        hdr = new IobListHeader('log-outer-header', {list: $logOuter, colWidthOffset: 1, prefix: 'log-filter'});
         hdr.doFilter = that.filter;
 
         hdr.add('combobox', 'from', 'host');
         hdr.add('text', 'Time');
         hdr.add('combobox', '', 'severity', [
-            { val: "", name: 'debug' },
-            { val: "silly", name: 'silly' },
-            { val: "info", name: 'info' },
-            { val: "warn", name: 'warn' },
-            { val: "error", name: 'error' }
+            {val: '',       name: 'debug'},
+            {val: 'silly',  name: 'silly'},
+            {val: 'info',   name: 'info'},
+            {val: 'warn',   name: 'warn'},
+            {val: 'error',  name: 'error'}
         ]).$filter.attr('title', _('severity'));
         hdr.add('edit', 'Message', 'message');
 

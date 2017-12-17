@@ -72,8 +72,8 @@ $(document).ready(function () {
         tabs:           null,
         selectId:       null,
         config:         {},
-        addEventMessage: function (id, state, rowData) {
-            tabs.events.addEventMessage(id, state, rowData);
+        addEventMessage: function (id, stateOrObj, isMessage, isState) {
+            tabs.events.addEventMessage(id, stateOrObj, isMessage, isState);
         },
         saveConfig:     function (attr, value) {
             if (attr) main.config[attr] = value;
@@ -222,7 +222,7 @@ $(document).ready(function () {
                 }
             }
             // if less 2000.01.01 00:00:00
-            if (text !=='object') dateObj = dateObj < 946681200000 ? new Date(dateObj * 1000) : new Date(dateObj);
+            if (text !== 'object') dateObj = dateObj < 946681200000 ? new Date(dateObj * 1000) : new Date(dateObj);
 
             var v;
             if (!justTime) {
@@ -547,6 +547,7 @@ $(document).ready(function () {
     main.instances     = tabs.instances.list;
     main.tabs          = tabs;
     main.systemDialog  = new System(main);
+    main.customsDialog = new Customs(main);
 
     var stdout;
     var cmdCallback    = null;
@@ -1001,7 +1002,7 @@ $(document).ready(function () {
                 initTabs();
 
                 // If customs enabled
-                tabs.objects.checkCustoms();
+                main.customsDialog.check();
 
                 // Detect node.js version
                 checkNodeJsVersions(tabs.hosts.list);
@@ -1031,20 +1032,24 @@ $(document).ready(function () {
     function stateChange(id, state) {
         id = id ? id.replace(/ /g, '_') : '';
 
-        if (id && id.match(/\.messagebox$/)) {
-            main.addEventMessage(id, state);
-        } else {
-            if (tabs.states) tabs.states.stateChange(id, state);
+        if (!id || !id.match(/\.messagebox$/)) {
+            if (tabs.states) {
+                tabs.states.stateChange(id, state);
+            }
             tabs.objects.stateChange(id, state);
             tabs.hosts.stateChange(id, state);
 
             // Update alive and connected of main.instances
             tabs.instances.stateChange(id, state);
             tabs.adapters.stateChange(id, state);
+            main.customsDialog.stateChange(id, state);
 
             if (main.selectId) {
                 main.selectId.selectId('state', id, state);
             }
+            main.addEventMessage(id, state, false, true);
+        } else {
+            main.addEventMessage(id, state, true, true);
         }
     }
 
@@ -1071,7 +1076,7 @@ $(document).ready(function () {
         }
 
         // update to event table
-        main.addEventMessage(id, null, null, obj);
+        main.addEventMessage(id, obj, false, false);
 
         tabs.objects.objectChange(id, obj);
 
@@ -1238,6 +1243,27 @@ $(document).ready(function () {
         }
     };
 
+    main.showBuildInWindow = function ($dialog, dialogObj) {
+        var $adminBody = $('.admin-sidemenu-body');
+        var $currentTab = $adminBody.find('.admin-sidemenu-body-content');
+        $currentTab.hide().appendTo('body');
+        $dialog.show().appendTo('.admin-sidemenu-body');
+        $adminBody.data('current', $currentTab);
+        $adminBody.data('dialog', dialogObj);
+    };
+
+    main.hideBuildInWindow = function () {
+        var $adminBody = main.removeNavBody();
+        var $currentTab = $adminBody.data('current');
+        var dialogObj = $adminBody.data('dialog');
+        if (dialogObj && typeof dialogObj.destroy === 'function') {
+            dialogObj.destroy();
+        }
+        $adminBody.data('current', null);
+        $adminBody.data('dialog', null);
+        $currentTab.show().appendTo($adminBody);
+    };
+
     main.selectSideNav = function (tab) {
         var changed = false;
         tab = tab.replace(/^tab-/, '');
@@ -1271,6 +1297,13 @@ $(document).ready(function () {
 
         var $adminBody = main.removeNavBody();
         $panel.show().appendTo($adminBody);
+
+        var dialogObj = $adminBody.data('dialog');
+        if (dialogObj && typeof dialogObj.destroy === 'function') {
+            dialogObj.destroy();
+            $adminBody.data('dialog', null);
+            $adminBody.data('current', null);
+        }
 
         if (changed && tabs[tab] && typeof tabs[tab].init === 'function') {
             tabs[tab].init();
@@ -1630,7 +1663,6 @@ $(document).ready(function () {
                                 tabs.users.prepare();
                                 //tabs.groups.prepare();
                                 tabs.enums.prepare();
-                                tabs.objects.prepareCustoms();
                                 tabs.events.prepare();
                                 main.systemDialog.prepare();
                                 // TABS

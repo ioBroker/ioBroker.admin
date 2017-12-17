@@ -1,7 +1,7 @@
 
 var addAll2FilterCombobox = false;
 
-function IobListHeader (header, options) {
+function IobListHeader(header, options) {
     if (!(this instanceof IobListHeader)) return new IobListHeader(header, options);
 
     if (options === undefined) options = {};
@@ -181,7 +181,7 @@ function IobListHeader (header, options) {
         $id.change(function (event) {
             if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
             elem.selectedVal = $id.val();
-            eventFilterTimeout = setTimeout(self.doFilter, what!=='combobox' ? 400 : 0);
+            eventFilterTimeout = setTimeout(self.doFilter, what !== 'combobox' ? 400 : 0);
             filterChanged($id);
             //elem.$filter.parent().parent()[elem.selectedVal ? 'addClass' : 'removeClass'] ('filter-active');
         }).keyup(function (event) {
@@ -236,12 +236,13 @@ function patchPager (parent, view) {
     // mainToolbar.addClass('main-toolbar-table').css({'font-size': '12px'});
     // mainToolbar.find('tr').first().css({height: '23px'});
 
-    mainToolbar.find ('td').css ({padding: 0});
+    mainToolbar.find('td').css({padding: 0});
 
     var syncHeader = function (cnt) {
         var header = $('#tab-' + view).find('table.main-header-table>thead>tr>th');
         var x, trs, tds, len=0;
-        if (!(trs=parent.$grid[0].children) || !trs.length || !(trs=trs[0].children) || !(tds = trs[0].children) ) return;
+        if (!(trs = parent.$grid[0].children) || !trs.length || !(trs = trs[0].children) || !(tds = trs[0].children)) return;
+
         function doIt() {
             var offs = parent.$grid.selectID_Offset;
             $ (tds).each (function (i, o) {

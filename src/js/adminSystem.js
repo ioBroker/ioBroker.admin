@@ -396,11 +396,7 @@ function System(main) {
                                     if (languageChanged) {
                                         window.location.reload();
                                     } else {
-                                        var $currentTab = $dialogSystem.data('current');
-                                        $dialogSystem.data('current', null);
-                                        var $adminBody = main.removeNavBody();
-                                        $currentTab.show().appendTo($adminBody);
-                                        // $dialogSystem.dialog('close');
+                                        that.main.hideBuildInWindow();
                                         if (activeRepoChanged) {
                                             setTimeout(function () {
                                                 main.tabs.adapters.init(true);
@@ -518,12 +514,8 @@ function System(main) {
                         }
                     });
 
-                    var $adminBody = $('.admin-sidemenu-body');
-                    var $currentTab = $adminBody.find('.admin-sidemenu-body-content');
-                    $currentTab.hide().appendTo('body');
-                    $dialogSystem.show().appendTo('.admin-sidemenu-body');
+                    that.main.showBuildInWindow($dialogSystem, that);
 
-                    $dialogSystem.data('current', $currentTab);
                     if (!$dialogSystem.find('.dialog-system-buttons').length) {
                         var $div = $('<nav class="dialog-system-buttons nav-wrapper footer"></nav>');
                         for (var b = 0; b < buttons.length; b++) {

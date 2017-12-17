@@ -288,24 +288,14 @@
                 <td style="width: 90%"></td>
             </tr>
         </table>
-
-
         <table style="width: 100%; border-collapse: collapse;" class="main-header-table">
             <thead>
-            <!--<tr id="events-table-tr" class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">-->
-            <!--<tr id="events-table-tr" class="" style="height: 24px;">-->
-            <tr id="events-table-tr">
-            </tr>
+                <tr id="events-table-tr"></tr>
             </thead>
         </table>
-        <!--<div id="grid-events-inner" style="height: calc(100% - 54px); width: 100%; overflow-y: scroll;">-->
         <div id="grid-events-inner">
-            <!--<table id="event-outer" style="width: 100%; border-collapse: collapse; margin-top: -1px"-->
-            <!--class="ui-widget ui-state-default ui-corner-bottom iob-list-table events-list-table">-->
-            <!--<table id="event-outer" style="" class="ui-widget ui-state-default ui-corner-bottom iob-list-table events-list-table">-->
             <table id="event-outer" class="iob-list-table events-list-table">
                 <colgroup>
-
                     <col width="10%"/>
                     <col width="30%"/>
                     <col width="10%"/>
@@ -315,9 +305,8 @@
                     <col width="10%"/>
                 </colgroup>
                 <thead>
-                <tr style="visibility: hidden; height: 0 !important; background: #f00; "><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr>
+                    <tr style="visibility: hidden; height: 0 !important; background: #f00; "><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr>
                 </thead>
-
 
                 <tbody id="event-table">
 
@@ -850,44 +839,6 @@
 <!--div id="dialog-select-member" style="display: none">
 
 </div-->
-<div id="dialog-customs" style="display: none">
-    <div id="tabs-customs">
-        <ul>
-            <li><a href="#tab-customs-settings" class="translate">Settings</a></li>
-            <li><a href="#tab-customs-table" class="translate">Table</a></li>
-            <li><a href="#tab-customs-chart" class="translate">Chart</a></li>
-        </ul>
-        <div id="tab-customs-settings" style="height: calc(100% - 65px);">
-            <div id="customs-tabs" style="width: 100%"></div>
-            <div style="display: none" id="customs-templates"></div>
-        </div>
-        <div id="tab-customs-table" style="height: calc(100% - 65px); overflow-y: scroll">
-            <div><label class="translate" for="history-table-instance">Show values of instance</label><select id="history-table-instance"></select><button id="history-table-instance-refresh"></button></div>
-            <table id="grid-history" style="width: 100%; max-height: calc(100% - 30px)">
-                <thead>
-                <col width="160" valign="top">
-                <col width="60"  valign="top">
-                <col width="80"  valign="top">
-                <col width="140" valign="top">
-                <col width="140" valign="top">
-                <tr>
-                    <th class="translate ui-state-default">val</th>
-                    <th class="translate ui-state-default">ack</th>
-                    <th class="translate ui-state-default">from</th>
-                    <th class="translate ui-state-default">ts</th>
-                    <th class="translate ui-state-default">lc</th>
-                </tr>
-                </thead>
-                <tbody id="grid-history-body">
-                </tbody>
-            </table>
-        </div>
-        <div id="tab-customs-chart" style="height: calc(100% - 65px)">
-            <div><label class="translate" for="history-chart-instance">Show values of instance</label><select id="history-chart-instance"></select><button id="history-chart-instance-refresh"></button></div>
-            <iframe id="iframe-history-chart" style="border: 0; overflow: hidden; height: calc(100% - 120px); width: calc(100% - 30px)"></iframe>
-        </div>
-    </div>
-</div>
 <div id="dialog-command" title="command execution" class="translateT" style="display: none">
     <textarea style="font-family: courier, monospace; font-size: 11px; resize: none" id="stdout" disabled="disabled" cols="120" rows="30"></textarea>
 </div>
@@ -1448,6 +1399,50 @@
         </div>
     </div>
 </div>
+
+<div id="dialog-customs" style="display: none" class="m">
+    <div id="tabs-customs">
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs">
+                    <li class="tab col s2"><a href="#tab-customs-settings"  class="translate active">Settings</a></li>
+                    <li class="tab col s2"><a href="#tab-customs-table"     class="translate">Table</a></li>
+                    <li class="tab col s2"><a href="#tab-customs-chart"     class="translate">Chart</a></li>
+                </ul>
+            </div>
+            <div id="tab-customs-settings" class="col s12 page">
+                <div id="customs-tabs" style="width: 100%"></div>
+                <div style="display: none" id="customs-templates"></div>
+            </div>
+            <div id="tab-customs-table" style="height: calc(100% - 65px); overflow-y: scroll">
+                <div><label class="translate" for="history-table-instance">Show values of instance</label><select id="history-table-instance"></select><button id="history-table-instance-refresh"></button></div>
+                <table id="grid-history" style="width: 100%; max-height: calc(100% - 30px)">
+                    <thead>
+                    <col width="160" valign="top">
+                    <col width="60"  valign="top">
+                    <col width="80"  valign="top">
+                    <col width="140" valign="top">
+                    <col width="140" valign="top">
+                    <tr>
+                        <th class="translate ui-state-default">val</th>
+                        <th class="translate ui-state-default">ack</th>
+                        <th class="translate ui-state-default">from</th>
+                        <th class="translate ui-state-default">ts</th>
+                        <th class="translate ui-state-default">lc</th>
+                    </tr>
+                    </thead>
+                    <tbody id="grid-history-body">
+                    </tbody>
+                </table>
+            </div>
+            <div id="tab-customs-chart" style="height: calc(100% - 65px)">
+                <div><label class="translate" for="history-chart-instance">Show values of instance</label><select id="history-chart-instance"></select><button id="history-chart-instance-refresh"></button></div>
+                <iframe id="iframe-history-chart" style="border: 0; overflow: hidden; height: calc(100% - 120px); width: calc(100% - 30px)"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="dialog-install-url" class="translateT" title="Install from custom URL" style="display: none">
     <div id="install-tabs">
         <ul>
