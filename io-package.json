@@ -40,10 +40,13 @@
             }
         },
         "desc": {
-            "en":                   "Opens a webserver for the ioBroker admin UI",
-            "de":                   "Stellt Webserver für 'ioBroker Admin UI' zur Verfügung",
-            "ru":                   "Запускает веб сервер с 'ioBroker admin UI' для удобной настройки через веб интерфейс"
-        },
+            "en":                   "The configuration of ioBroker via Web-Interface",
+            "de":                   "Die Konfiguration von ioBroker über das Web-Interface",
+            "ru":                   "Конфигурация ioBroker через веб-интерфейс",
+            "pt":                   "A configuração do ioBroker via Interface Web",
+            "fr":                   "La configuration de ioBroker via Web-Interface",
+            "nl":                   "De configuratie van ioBroker via de webinterface"
+       },
         "docs": {
             "en": "docs/en/admin.md",
             "ru": "docs/ru/admin.md",
