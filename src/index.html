@@ -61,11 +61,6 @@
 <body>
 <div id="dialog"></div>
 <div id="_toolbar-button_" class="toolbar-button" style="display: none; visibility: hidden">used to get button size</div>
-<!--div id="tabs" style="display: none; height: 100%;">
-    <ul id="tabs-ul">
-    </ul>
-</div-->
-
 <div id="admin_sidemenu_menu" class="admin-sidemenu m">
     <a class="admin-sidemenu-close"><span><!-- leave span here, it is required for css--></span></a>
     <a class="choose-tabs-config-button">▽</a>
@@ -90,7 +85,6 @@
                     <li>
                         <a class="dropdown-button btn" style="display: none" data-target="host-adapters" id="host-adapters-btn">Host:</a>
                         <ul id='host-adapters' class='dropdown-content'></ul>
-                        <!--select id="host-adapters" style="border:0; font-size: 14px; padding-top: 1px; margin-top: 1px"></select-->
                     </li>
                 </ul>
                 <span class="button-version"></span>
@@ -103,9 +97,6 @@
     <div class="admin-sidemenu-footer"></div>
 </div>
 <div id="tab-adapters"  class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Adapters">
-    <!--<table class="panel-table" style="margin-bottom: 4px; !important" cellspacing="0" cellpadding="0">-->
-    <!-- <table class="panel-table" style="height: 30px; margin-left: 1px; margin-top:2px; margin-bottom: 3px;"  cellspacing="0" cellpadding="0"> -->
-    <!-- <table class="main-toolbar-table" cellpadding="0"> -->
     <div class="main-toolbar-table">
         <div class="m" style="display: inline-block">
             <div class="col s3 m1 main-toolbar-table-types-tools">
@@ -140,55 +131,7 @@
         <input id="adapters-filter" class="adapters-filter-input translateP" placeholder="Filter" />
         <button id="adapters-filter-clear" class="adapters-filter-clear"></button>
     </div>
-    <!--table class="main-toolbar-table">
-        <tbody><tr>
-            <td>
-                <button id="btn_switch_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="change view mode"></button>
-            </td>
-            <td>
-                <button id="btn_refresh_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="update adapter information"></button>
-            </td>
-            <td>
-                <button id="btn_list_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="list"></button>
-            </td>
-            <td>
-                <button id="btn_collapse_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="collapse all"></button>
-            </td>
-            <td>
-                <button id="btn_expand_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="expand all"></button>
-            </td>
-
-            <td class="iob-toolbar-sep"></td>
-            <td>
-                <button id="btn_filter_adapters" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="installed adapters"></button>
-            </td>
-            <td>
-                <button id="btn_filter_updates" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="adapter with updates"></button>
-            </td>
-            <td class="iob-toolbar-sep"></td>
-            <td>
-                <button id="btn_filter_custom_url" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="Install from custom URL"></button>
-            </td>
-            <td>
-                <button id="btn_upgrade_all" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only translateT" title="Upgrade all adapters"></button>
-            </td>
-            <td>
-                <button id="btn_adapters_expert_mode" class="panel-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only "></button>
-            </td>
-            <td class="iob-toolbar-sep"></td>
-            <td>
-                <table class="panel-input-table"><tr>
-                    <td style="width: 100%"><input id="adapters-filter" style="padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/></td>
-                    <td><button id="adapters-filter-clear" style="width: 18px;height: 18px;border: 0;background: #fff;"></button></td>
-                </tr></table>
-            </td>
-
-
-            <td style="width: 100%;"></td>
-        </tr></tbody>
-    </table-->
     <div id="process_running_adapters" class="translate">Processing...</div>
-    <!--<div style="width:100%;height:400px;overflow-y: auto" id="grid-adapters-div">-->
     <div class="grid-main-div" style="width: 100%; overflow-y: auto" id="grid-adapters-div">
         <table id="grid-adapters" class="iob-list-font" style="margin-left: 1px; width: calc(100% - 2px); table-layout: fixed;">
             <colgroup>
@@ -221,7 +164,6 @@
     </div>
 </div>
 <div id="tab-instances" class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Instances">
-    <!--<table style="width: 100%; height: 30px; padding-left: 6px; padding-top: 4px; padding-buttom: 5px;"> -->
     <table class="main-toolbar-table">
         <tr>
             <td>
@@ -237,13 +179,6 @@
                 </tr></table>
 
             </td>
-            <!--
-                <td style="padding-left: 100px"><label class="translate" style="display: inline-block" for="instances-filter">Filter:</label></td>
-                <td><input style="display: inline-block; width: 100px; margin-right: 3px" id="instances-filter"></td>
-            <td>
-                <button style="display: inline-block" id="instances-filter-clear"></button>
-            </td>
-            -->
             <td style="width: 100%"></td>
             <td class="ram-info-td">
                 <span class="translate">RAM total usage:</span> <span id="totalRam" class="ram-font-weight"></span>
@@ -256,8 +191,6 @@
             </td>
         </tr>
     </table>
-    <!--table id="grid-instances"></table>
-    <div id="pager-instances"></div-->
     <div class="grid-main-div" style="width: 100%; height: calc(100% - 30px); overflow: auto; margin-left:1px; width:calc(100% - 2px)">
         <table class="instance-table" style="width: 100%;">
             <thead id="grid-instances-head">
@@ -267,13 +200,11 @@
         </table>
     </div>
 </div>
+
 <div id="tab-objects"   class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Objects">
     <div id="grid-objects" class="grid-main-div"><span class="translate" style="width: calc(100% - 100px); width: calc(100% - 20px); text-align: center">Loading...</span></div>
 </div>
-<!--div id="tab-states"    class="admin-tab admin-sidemenu-body-content" data-name="States" style="display: none">
-    <table id="grid-states"></table>
-    <div id="pager-states"></div>
-</div-->
+
 <div id="tab-events"    class="admin-tab admin-sidemenu-body-content" data-name="Events" style="display: none">
     <div id="grid-events" class="ui-jqgrid" style="height: 100%; display: block;">
         <table class="main-toolbar-table">
@@ -316,10 +247,7 @@
         </div>
     </div>
 </div>
-<!--div id="tab-groups"    class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Groups">
-    <table id="grid-groups"></table>
-    <div id="pager-groups"></div>
-</div-->
+
 <div id="tab-users"     class="admin-tab admin-sidemenu-body-content m" style="display: none" data-name="Users">
     <div class="tab-users-list-groups">
         <div class="tab-users-header"><i class="material-icons prefix">group</i><span class="translate">Groups</span></div>
@@ -482,30 +410,6 @@
 </div>
 <div id="tab-logs"      class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Log">
     <div id="grid-log" class="ui-jqgrid" style="display: block; height: 100%">
-        <!--<div class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">-->
-
-        <!--<table style="padding: 0; margin: 0; border-spacing: 0"-->
-        <!--class="ui-jqgrid-titlebar ui-jqgrid-caption ui-widget-header ui-corner-top ui-helper-clearfix">-->
-        <!--<tr>-->
-        <!--<td width="100%"><span class="ui-jqgrid-title translate">Log</span></td>-->
-        <!--<td id="log-size" style="width: 100px; font-size: 10px; font-weight: normal"></td>-->
-        <!--<td>-->
-        <!--<button id="log-pause" class="translateT" title="Pause output"></button>-->
-        <!--</td>-->
-        <!--<td>-->
-        <!--<button id="log-refresh" class="translateT" title="Refresh log"></button>-->
-        <!--</td>-->
-        <!--<td>-->
-        <!--<button id="log-copy" class="translateT" title="Copy log"></button>-->
-        <!--</td>-->
-        <!--<td>-->
-        <!--<button id="log-clear" class="translateT" title="Clear log"></button>-->
-        <!--</td>-->
-        <!--<td>-->
-        <!--<button id="log-clear-on-disk" class="translateT" title="Clear on disk permanent"></button>-->
-        <!--</td>-->
-        <!--</tr>-->
-        <!--</table>-->
         <table class="main-toolbar-table">
             <tr>
 
@@ -515,42 +419,15 @@
                 <td><button id="log-clear"         class="panel-button translateT" title="Clear log"></button></td>
                 <td><button id="log-clear-on-disk" class="panel-button translateT" title="Clear on disk permanent"></button></td>
                 <td id="log-size" style="text-align: right; white-space: nowrap; font-size: 0.75em; font-weight: normal"></td>
-                <!--<td style="width: 90% !important"></td>-->
-                <!--<td>-->
-                <!--<button id="event-pause" class="panel-button"></button>-->
-                <!--</td>-->
-                <!--<td>-->
-                <!--<button id="event-clear" style="font-size: 14px; font-weight: normal;"></button>-->
-                <!--</td>-->
-                <!--<td style="width: 90%"></td>-->
             </tr>
         </table>
 
-        <!--</div>-->
-        <!--<table style="width: 100%; border-collapse: collapse;" class="main-header-table">-->
         <table id="log-outer-header" class="main-header-table" style="width: 100%; border-collapse: collapse;">
-            <!--class="ui-widget ui-state-default ui-corner-bottom">-->
-
             <thead>
             <tr></tr>
-            <!--
-                    <tr class="ui-jqgrid-labels ui-jqgrid-view ui-jqgrid-htable">
-                        <th class="log-column-1-header ui-state-default ui-th-column ui-th-ltr" style="text-align: right"><select id="log-filter-host"></select></th>
-                        <th class="log-column-2-header ui-state-default ui-th-column ui-th-ltr translate">ts</th>
-                        <th class="log-column-3-header ui-state-default ui-th-column ui-th-ltr"><select id="log-filter-severity">
-                            <option value=""      class="translate">debug</option>
-                            <option value="silly" class="translate">silly</option>
-                            <option value="info"  class="translate">info</option>
-                            <option value="warn"  class="translate">warn</option>
-                            <option value="error" class="translate">error</option>
-                        </select></th>
-                        <th class="log-column-4-header ui-state-default ui-th-column ui-th-ltr" style="text-align: left"><span class="translate" style="padding-right: 10px;padding-left: 5px">message</span><input id="log-filter-message" type="text" size="10"/><button id="log-filter-message-clear">x</button></th>
-                    </tr>
-            -->
             </thead>
         </table>
 
-        <!--<div id="grid-log-inner" style="width: 100%; overflow-y: scroll; height: calc(100% - 60px);">-->
         <div id="grid-log-inner" class="grid-main-wh-div" style="width: 100%; overflow-y: scroll;">
             <table id="log-outer" style="width: calc(100% - 3px); border-collapse: collapse; margin-top: -1px"
                    class="ui-widget ui-state-default ui-corner-bottom">
@@ -562,7 +439,6 @@
                 </colgroup>
 
                 <thead>
-                <!--<tr style="visibility: hidden; height: 0 !important; background: #f00; "><td></td><td></td><td></td><td></td></tr>-->
                 <tr style="visibility: hidden; height: 0 !important; background: #f00; "><th></th><th></th><th></th><th></th></tr>
                 </thead>
                 <tbody id="log-table">
@@ -1400,7 +1276,7 @@
     </div>
 </div>
 
-<div id="dialog-customs" style="display: none" class="m">
+<div id="dialog-customs" style="display: none" class="">
     <div id="tabs-customs">
         <div class="row">
             <div class="col s12">

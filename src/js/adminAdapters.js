@@ -822,7 +822,8 @@ function Adapters(main) {
 
                         // Show information about installed and enabled instances
                         for (var z = 0; z < that.main.instances.length; z++) {
-                            if (that.main.objects[that.main.instances[z]].common.name === adapter) {
+                            if (that.main.objects[that.main.instances[z]] &&
+                                that.main.objects[that.main.instances[z]].common.name === adapter) {
                                 _instances++;
                                 if (that.main.objects[that.main.instances[z]].common.enabled) _enabled++;
                             }

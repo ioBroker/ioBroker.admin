@@ -29,7 +29,67 @@ function Events(main) {
     var hdr;
 
     this.prepare = function () {
+        var $eventOuter = this.$tab.find('#event-outer');
+        $header = this.$tab.find('#events-table-tr');
 
+        hdr = new IobListHeader($header, {list: $eventOuter, colWidthOffset: 1, prefix: 'event-filter'});
+        hdr.doFilter = filterEvents;
+
+        hdr.add('combobox', 'type');
+        hdr.add('edit', 'id', 'ID');
+        //hdr.add('edit', 'val', 'Value');
+        hdr.add('edit', 'val', 'value');
+        hdr.add('combobox', 'ack', 'ack', [
+            {val: '',       name: 'all'},
+            {val: 'true',   name: 'ack'},
+            {val: 'false',  name: 'not ack'}
+        ]);
+        hdr.add('combobox', 'from', 'from');
+        hdr.add('text', 'ts');
+        hdr.add('text', 'lc');
+
+        Object.defineProperty(hdr, 'getValues', {
+            value: function () {
+                hdr.ID.selectedVal = hdr.ID.selectedVal.toLocaleLowerCase();
+                if (hdr.ack.selectedVal === 'true')  hdr.ack.selectedVal = true;
+                if (hdr.ack.selectedVal === 'false') hdr.ack.selectedVal = false;
+            },
+            enumerateble: false
+        });
+
+        // $($header[0].children).each(function(i, o){
+        //     $(o).resize(function() {
+        // });
+        // });
+        var $eventPause = this.$tab.find('#event-pause');
+        $eventPause
+            .button({icons:{primary: 'ui-icon-pause'}, text: false})
+            .attr('title', _('Pause output'))
+            .click(function () {
+                that.pause();
+            });
+
+        this.eventPauseCounterSpan = $eventPause.find('.ui-button-text');
+
+        // bind "clear events" button
+        var $eventClear = this.$tab.find('#event-clear');
+        $eventClear.button({
+            icons: {
+                primary: 'ui-icon-close'
+            },
+            text: false
+        })
+            .attr('title', _('clear'))
+            .unbind('click').click(function () {
+                eventsLinesCount = 0;
+                eventsLinesStart = 0;
+                $('#event-table').html('');
+            })
+            .prepend(_('Clear list'))
+            .attr('style', 'width: 100% !important; padding-left: 20px !important; font-size: 12px; vertical-align: middle; padding-top: 3px !important; padding-right: 5px !important; color:#000')
+            .find('span').css({left: '10px'})
+        ;
+        this.eventPauseCounterSpan.css({'padding-top': 1, 'padding-bottom': 0});
     };
 
     this.init = function () {
@@ -40,70 +100,6 @@ function Events(main) {
 
         if (this.inited) {
             return;
-        }
-        var $eventOuter = this.$tab.find('#event-outer');
-        if (!$eventOuter.data('inited')) {
-            $eventOuter.data('inited', true);
-            $header = this.$tab.find('#events-table-tr');
-
-            hdr = new IobListHeader($header, {list: $eventOuter, colWidthOffset: 1, prefix: 'event-filter'});
-            hdr.doFilter = filterEvents;
-
-            hdr.add('combobox', 'type');
-            hdr.add('edit', 'id', 'ID');
-            //hdr.add('edit', 'val', 'Value');
-            hdr.add('edit', 'val', 'value');
-            hdr.add('combobox', 'ack', 'ack', [
-                {val: '',       name: 'all'},
-                {val: 'true',   name: 'ack'},
-                {val: 'false',  name: 'not ack'}
-            ]);
-            hdr.add('combobox', 'from', 'from');
-            hdr.add('text', 'ts');
-            hdr.add('text', 'lc');
-
-            Object.defineProperty(hdr, 'getValues', {
-                value: function () {
-                    hdr.ID.selectedVal = hdr.ID.selectedVal.toLocaleLowerCase();
-                    if (hdr.ack.selectedVal === 'true')  hdr.ack.selectedVal = true;
-                    if (hdr.ack.selectedVal === 'false') hdr.ack.selectedVal = false;
-                },
-                enumerateble: false
-            });
-
-            // $($header[0].children).each(function(i, o){
-            //     $(o).resize(function() {
-            // });
-            // });
-            var $eventPause = this.$tab.find('#event-pause');
-            $eventPause
-                .button({icons:{primary: 'ui-icon-pause'}, text: false})
-                .attr('title', _('Pause output'))
-                .click(function () {
-                    that.pause();
-                });
-
-            this.eventPauseCounterSpan = $eventPause.find('.ui-button-text');
-
-            // bind "clear events" button
-            var $eventClear = this.$tab.find('#event-clear');
-            $eventClear.button({
-                icons: {
-                    primary: 'ui-icon-close'
-                },
-                text: false
-            })
-                .attr('title', _('clear'))
-                .unbind('click').click(function () {
-                    eventsLinesCount = 0;
-                    eventsLinesStart = 0;
-                    $('#event-table').html('');
-                })
-                .prepend(_('Clear list'))
-                .attr('style', 'width: 100% !important; padding-left: 20px !important; font-size: 12px; vertical-align: middle; padding-top: 3px !important; padding-right: 5px !important; color:#000')
-                .find('span').css({left: '10px'})
-            ;
-            this.eventPauseCounterSpan.css({'padding-top': 1, 'padding-bottom': 0});
         }
 
         this.inited = true;
@@ -131,11 +127,11 @@ function Events(main) {
         var from = '';
         var ts;
         var lc;
-        if (hdr.getValues) hdr.getValues();
+        if (hdr) {
+            if (hdr.getValues) hdr.getValues();
 
-
-
-        hdr.type.checkAddOption(type);
+            hdr.type.checkAddOption(type);
+        }
 
         if (!this.eventPauseMode) {
             if (eventsLinesCount >= that.eventLimit) {

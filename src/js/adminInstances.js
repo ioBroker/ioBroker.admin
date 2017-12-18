@@ -993,7 +993,7 @@ function Instances(main) {
                 }
 
                 that.main.socket.emit('getForeignObjects', 'system.adapter.*', 'instance', function (err, res) {
-                    that.main.instances = [];
+                    that.main.instances.splice(0, that.main.instances.length); // because of pointer in admin.main
                     for (var id in res) {
                         if (!res.hasOwnProperty(id)) continue;
                         var obj = res[id];

@@ -141,8 +141,8 @@ $(document).ready(function () {
             if (typeof buttons === 'function') {
                 callback = buttons;
                 $dialogConfirm.find('.modal-footer').html(
-                    '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">Cancel</a>' +
-                    '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">Ok</a>');
+                    '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">' + _('Cancel') + '</a>' +
+                    '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">' + _('Ok') + '</a>');
                 $dialogConfirm.find('.modal-footer .modal-action').click(function () {
                     var cb = $dialogConfirm.data('callback');
                     cb && cb($(this).data('result'));
@@ -1715,9 +1715,10 @@ $(document).ready(function () {
         $('.iframe-in-tab').height(y - 55);
     }
 
-    function navigation() {
+    function navigation(_tab) {
+        if (typeof _tab !== 'string') _tab = null;
         if (window.location.hash) {
-            var tab = 'tab-' + window.location.hash.slice(1);
+            var tab = 'tab-' + (_tab || window.location.hash.slice(1));
 
             var $item = $('.admin-sidemenu-items[data-tab="' + tab + '"]');
             if (!$item.length) {
