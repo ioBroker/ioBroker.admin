@@ -187,17 +187,20 @@ function Events(main) {
         }
 
         var visible = true;
-        if (hdr.type.selectedVal && hdr.type.selectedVal !== type) {
-            visible = false;
-        } else if (hdr.ID.selectedVal && id.toLocaleLowerCase().indexOf(hdr.ID.selectedVal) === -1) {
-            visible = false;
-        } else if (hdr.value.selectedVal !== '' && value !== null && value !== undefined && value.indexOf(hdr.value.selectedVal) === -1) {
-            visible = false;
-        } else if (hdr.ack.selectedVal !== '' && hdr.ack.selectedVal !== ack) {
-            visible = false;
-        } else if (hdr.from.selectedVal && hdr.from.selectedVal !== from) {
-            visible = false;
+        if (hdr) {
+            if (hdr.type.selectedVal && hdr.type.selectedVal !== type) {
+                visible = false;
+            } else if (hdr.ID.selectedVal && id.toLocaleLowerCase().indexOf(hdr.ID.selectedVal) === -1) {
+                visible = false;
+            } else if (hdr.value.selectedVal !== '' && value !== null && value !== undefined && value.indexOf(hdr.value.selectedVal) === -1) {
+                visible = false;
+            } else if (hdr.ack.selectedVal !== '' && hdr.ack.selectedVal !== ack) {
+                visible = false;
+            } else if (hdr.from.selectedVal && hdr.from.selectedVal !== from) {
+                visible = false;
+            }
         }
+
 
         var text = '<tr id="event_' + (eventsLinesStart + eventsLinesCount) + '" class="event-line event-type-' + type + ' event-from-' + from.replace('.', '-') + ' event-ack-' + ack + '" style="' + (visible ? '' : 'display:none') + '">';
         text += '<td>' + type  + '</td>';
@@ -229,14 +232,14 @@ function Events(main) {
         } else {
             this.$table.prepend(text);
             if (!widthSet && window.location.hash === '#events') {
-                hdr.syncHeader();
+                hdr && hdr.syncHeader();
                 widthSet = true;
             }
         }
     };
 
     this.onSelected = function () {
-        hdr.syncHeader();
+        hdr && hdr.syncHeader();
     };
 
     function filterEvents() {

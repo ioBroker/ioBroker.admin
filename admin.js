@@ -95,8 +95,9 @@ adapter.on('message', function (obj) {
 });
 
 adapter.on('unload', function (callback) {
-    if (adapter.requireLog) {
-        adapter.requireLog(false);
+    if (socket) {
+        // unsubscribe all
+        socket.unsubscribeAll();
     }
 
     try {
@@ -266,11 +267,12 @@ function patchRepos(callback) {
 }
 function initSocket(server, store) {
     socket = new SocketIO(server, adapter.config, adapter, objects, states, store);
+    socket.subscribe(null, 'objectChange', '*');
 }
 
 function main() {
     // adapter.subscribeForeignStates('*');
-    adapter.subscribeForeignObjects('*');
+    //adapter.subscribeForeignObjects('*');
 
     adapter.config.defaultUser = adapter.config.defaultUser || 'admin';
     if (!adapter.config.defaultUser.match(/^system\.user\./)) {

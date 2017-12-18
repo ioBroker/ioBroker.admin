@@ -1,7 +1,30 @@
 @import "commons";
+@import "../lib/css/iob/common";
 @tab-user-title-height: 2rem;
+  /** log tab *******************************/
 
 #tab-users {
+ .log-pause-button-active {
+      font-size: 14px;
+      width: 100% !important;
+      text-align: center;
+      padding: 0 !important;
+      margin: 0 !important;
+      padding-right: @line-indent !important;
+      padding-left: @line-indent !important;
+  }
+  .log-pause-button-active:focus {
+      background: @toolbar-background !important;
+  }
+
+  .log-pause-button-active>span {
+      padding:0 !important;
+      width: 100%;
+      font-weight: normal;
+      font-size: 14px;
+  }
+  /** log end **/
+
   .tab-users-list-groups,
   .tab-users-list-users {
     width: calc(~"50% - 2px");

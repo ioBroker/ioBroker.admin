@@ -171,7 +171,7 @@ function Logs(main) {                                                           
                 logFilterHost     = hdr.host.val();
                 logFilterMessage  = hdr.message.val();
                 logFilterSeverity = hdr.severity.val();
-                that.main.socket.emit('requireLog', true);
+                that.main.subscribeLogs(true);
             }, 0);
         });
     };
@@ -179,7 +179,7 @@ function Logs(main) {                                                           
     this.destroy = function () {
         if (this.inited) {
             this.inited = false;
-            that.main.socket.emit('requireLog', false);
+            this.main.subscribeLogs(false);
         }
     };
 

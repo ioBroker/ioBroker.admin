@@ -64,6 +64,7 @@ $(document).ready(function () {
         currentUser:    '',
         subscribesStates: {},
         subscribesObjects: {},
+        subscribesLogs: 0,
         socket:         io.connect('/', {path: path}),
         systemConfig:   null,
         instances:      null,
@@ -141,15 +142,15 @@ $(document).ready(function () {
             if (typeof buttons === 'function') {
                 callback = buttons;
                 $dialogConfirm.find('.modal-footer').html(
-                    '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">' + _('Cancel') + '</a>' +
-                    '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">' + _('Ok') + '</a>');
+                    '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">' + _('Ok') + '</a>' +
+                    '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">' + _('Cancel') + '</a>');
                 $dialogConfirm.find('.modal-footer .modal-action').click(function () {
                     var cb = $dialogConfirm.data('callback');
                     cb && cb($(this).data('result'));
                 });
             } else if (typeof buttons === 'object') {
                 var tButtons = '';
-                for (var b = 0; b < buttons.length; b++) {
+                for (var b = buttons.length - 1; b >= 0; b--) {
                     tButtons += '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-id="' + b + '">' + buttons[b] + '</a>';
                 }
                 $dialogConfirm.find('.modal-footer').html(tButtons);
@@ -1159,6 +1160,25 @@ $(document).ready(function () {
         return $adminBody;
     };
 
+    main.resubscribeStates = function () {
+        for (var pattern in main.subscribesStates) {
+            if (main.subscribesStates.hasOwnProperty(pattern) && main.subscribesStates[pattern]) {
+                main.socket.emit('subscribe', pattern);
+            }
+        }
+    };
+    main.resubscribeObjects = function () {
+        for (var pattern in main.subscribesObjects) {
+            if (main.subscribesObjects.hasOwnProperty(pattern) && main.subscribesObjects[pattern]) {
+                main.socket.emit('subscribeObjects', pattern);
+            }
+        }
+    };
+    main.resubscribeLogs = function () {
+        if (main.subscribesLogs) {
+            main.socket.emit('requireLog', true);
+        }
+    };
     main.subscribeStates = function (patterns) {
         if (!patterns) return;
         if (typeof patterns === 'object') {
@@ -1241,6 +1261,22 @@ $(document).ready(function () {
                 delete main.subscribesObjects[patterns];
             }
         }
+    };
+
+    main.subscribeLogs = function (isSubscribe) {
+        if (isSubscribe) {
+            main.subscribesLogs++;
+            if (main.subscribesLogs === 1) {
+                main.socket.emit('requireLog', true);
+            }
+        } else {
+            main.subscribesLogs--;
+            if (main.subscribesLogs <= 0) {
+                main.subscribesLogs = 0;
+                main.socket.emit('requireLog', false);
+            }
+        }
+
     };
 
     main.showBuildInWindow = function ($dialog, dialogObj) {
@@ -1674,6 +1710,10 @@ $(document).ready(function () {
                     });
                 });
             });
+        } else {
+            main.resubscribeStates();
+            main.resubscribeObjects();
+            main.resubscribeLogs();
         }
         if (main.waitForRestart) {
             location.reload();

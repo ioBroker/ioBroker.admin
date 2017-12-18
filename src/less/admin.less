@@ -33,13 +33,6 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-#event-clear {
-    .iob-font;
-}
-
-table#events {
-    font-size: 12px;
-}
 
 #tabs {
     padding: 0;
@@ -65,29 +58,8 @@ table#events {
 }
 
 // loader
-// Here is where the magic happens
-
 @offset: 187;
 @duration: 1.4s;
-
-.spinner {
-    animation: rotator @duration linear infinite;
-}
-
-@keyframes rotator {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(270deg); }
-}
-
-.path {
-    stroke-dasharray: @offset;
-    stroke-dashoffset: 0;
-    transform-origin: center;
-    animation:
-    dash @duration ease-in-out infinite,
-    colors (@duration*4) ease-in-out infinite;
-}
-
 @keyframes colors {
     0% { stroke: #4285F4; }
     25% { stroke: #DE3E35; }
@@ -107,19 +79,40 @@ table#events {
         transform: rotate(450deg);
     }
 }
-
-/** hosts tab **********************/
-/**/
-
-.hosts-table {
-    .new-iob-list-table;
-    font-size: 0.9em;
+@keyframes rotator {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(270deg); }
 }
-.hosts-table td{
-    padding-left: @line-indent;
+#connecting {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background: rgba(0,0,0,0.3);
+    z-index: 20000;
+
+    .connecting-div {
+        left: 40%;
+        top: 40%;
+        width: 20%;
+        height: 20%;
+        position: absolute;
+
+        .spinner {
+            animation: rotator @duration linear infinite;
+        }
+
+        .path {
+            stroke-dasharray: @offset;
+            stroke-dashoffset: 0;
+            transform-origin: center;
+            animation:
+            dash @duration ease-in-out infinite,
+            colors (@duration*4) ease-in-out infinite;
+        }
+    }
 }
-
-
 
 /* -------------------------- LEDS ------------------------------------ */
 
@@ -160,83 +153,7 @@ table#events {
     border-radius: 96px;
 }
 /****/
-// zerlegen...
-//thead#grid-instances-head {
-//    line-height: 1.6em;
-//    &:extend(.iob-font);
-//}
-//
-//thead#grid-instances-head {
-//    .grid-objects-head;
-//}
-//.grid-objects-head,
-//.grid-objects-head tr.ui-widget-header th {
-//    line-height: 1.6em !important;
-//    background-color: #e0e0e0;
-//    text-align: left;
-//    color: #000;
-//    font-size: @list-font-size !important;
-//}
-//
 
-
-/** events tab ******************/
-/**/
-
-#event-outer {
-    border-collapse: collapse;
-}
-#event-outer>thead>tr, #event-outer>thead>tr>th  {
-    .th-0;
-}
-
-#events_threshold {
-    position: fixed;
-    top: 8px;
-    left: calc(~'100% - 300px');
-    height: 18px;
-    background: #ff9999;
-    color: white;
-    border: 1px solid;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 14px;
-    font-family: Arial;
-    width: 150px;
-    padding-top: 4px;
-    cursor: pointer;
-}
-
-.events-list-table {
-    border:0;
-    overflow: auto;
-    font-size: @list-font-size !important;
-    font-weight: normal !important;
-    color: #000 !important;
-
-    width: calc(~'100% - 1px');
-    margin-left:1px; /* for mouse over rahmen */
-    background: #efefef !important;
-}
-
-table.events-list-table > tbody > tr {
-    height: 25px;
-}
-
-table.events-list-table>tbody>tr>td {
-    padding: 0;
-    margin: 0;
-    padding-left: 5px;
-    border: @td-border;
-}
-#grid-events-inner {
-    height: calc(~'100% - 60px');
-    width: 100%;
-    overflow-y: scroll;
-}
-/** events ends **/
-
-//@import "adminAdapters";
 .main-admin-buttons {
     border-spacing: @toolbar-button-full-distance;
     width: auto;
@@ -276,21 +193,6 @@ table.events-list-table>tbody>tr>td {
     }
 }
 
-
-//#tabs-ul {
-//    .iob-font;
-//    overflow: hidden;
-//    font-size: 14px !important;
-//    height: @tabs-height;
-//    background: #5f5d5d;
-//    font-weight: normal !important;
-//    left: -3px;
-//    width: calc(~'100% - 3px');
-//    position: relative;
-//    display: flex;
-//}
-
-//#tabs-system>ul,
 .tabs-ul,
 #tabs-ul {
     .iob-font;
@@ -306,18 +208,7 @@ table.events-list-table>tbody>tr>td {
     padding: 0 !important;
 }
 
-//#tabs-ul>li {
-///*    border: 0;
-//    padding:0;
-//    margin:0;*/
-//
-//    //top: -3px;
-//    //height: calc(~'100% + 2px') !important;
-//    //height: @tabs-height - 3px;
-//}
-
 .choose-tabs-config-button,
-    //#tabs-system>ul>li,
 .tabs-ul-li,
 #tabs-ul>li  {
     border: 0;
@@ -441,31 +332,6 @@ table.events-list-table>tbody>tr>td {
 }
 .grid-table-classes(length(@grid-tables));
 
-
-/** log tab *******************************/
-/**/
-.log-pause-button-active {
-    font-size: 14px;
-    width: 100% !important;
-    text-align: center;
-    padding: 0 !important;
-    margin: 0 !important;
-    padding-right: @line-indent !important;
-    padding-left: @line-indent !important;
-}
-.log-pause-button-active:focus {
-    background: @toolbar-background !important;
-}
-
-.log-pause-button-active>span {
-    padding:0 !important;
-    width: 100%;
-    font-weight: normal;
-    font-size: 14px;
-}
-/** log end **/
-
-
 .admin-tab { // äußerster div eines Tabs
     height: calc(~'100% - 47px');
 }
@@ -479,129 +345,6 @@ table.events-list-table>tbody>tr>td {
     height: calc(~'100% - '@grid-offset - @main-toolbar-full-height);
 }
 
-#gbox_grid-groups,
-#gbox_grid-users,
-#gbox_grid-states {
-    //height: calc(~'100% - 36px');
-    height: calc(~'100% - 40px');
-    position: relative;
-    left: 1px;
-    //top: @main-toolbar-full-height + 2px;
-    top: 35px; //@main-toolbar-full-height;
-}
-
-.pager-left>table { // first td
-    .main-toolbar-table !important;
-    background: transparent !important;
-
-    //padding-bottom: 2px !important; //new
-    //margin-bottom: 7px !important;  //new
-    padding: 0 !important;
-    padding-bottom: 2px !important;
-}
-.pager-left>table>tbody>tr>td {
-    border: 1px solid transparent;
-    cursor: pointer;
-}
-.pager-left>table>tbody>tr>td>div {
-    .toolbar-button;
-    width: 22px !important;
-    height: 22px !important;  //xxx
-    background: @toolbar-background;
-}
-.pager-left>table>tbody>tr>td>div>span {
-    width: @toolbar-image-size;
-    height: @toolbar-image-size;
-    margin: (@toolbar-size - 2 - @toolbar-image-size) / 2 !important;
-}
-
-div.iob-pager {
-    height: @main-toolbar-full-height !important;
-    background: transparent !important;
-    position: absolute !important;
-    top: -35px;
-    left: -1px; //xx
-    font-size: 0.75em !important;
-    white-space: nowrap;
-    overflow: hidden;
-    border: 0 !important;
-    padding: 0;
-    .iob-list-font;
-}
-
-div.iob-pager table {
-}
-
-.pager-center {
-    width: auto;
-    text-align: left;
-}
-
-.pager-center > table {
-    background: transparent;
-    width: 400px;
-    //border-spacing: 2.9px 0;
-    border-spacing: @toolbar-button-distance 0;
-    font-size: 12px;
-    margin-left: 4px; //??
-    margin-top: 1px !important;
-
-}
-.pager-center > table > tr {
-    height: @toolbar-size + 2px;
-}
-.pager-center > table > tbody > tr > td {
-    height: @toolbar-size;
-    width: @toolbar-size;
-    padding: 0;
-    background: @toolbar-background;
-    border: 1px solid @iob-background !important;
-    position: relative;
-    top: -1px;
-    outline: @td-toolbar-border;
-    outline-offset: -2px;
-}
-.pager-center > table > tbody > tr > td:hover {
-    border: @toolbar-outer-hover !important;
-}
-
-.pager-center > table > tbody > tr > td > span {
-    width: @toolbar-image-size;
-    height: @toolbar-image-size;
-    margin: 4px !important;
-    padding: 0;
-}
-.pager-center>table>tbody>tr>td:nth-child(3), .pager-center>table>tbody>tr>td:nth-child(5) {
-    display:none;
-}
-.pager-center>table>tbody>tr>td:nth-child(4) {
-    padding-left: 5px !important;
-    padding-top: 3px !important;
-    width: auto;
-}
-.pager-center>table>tbody>tr>td:nth-child(8)>select {
-    border:0;
-    font-size: 12px;
-    width: auto;
-    height: 100%;
-}
-.pager-center>table>tbody>tr>td>input {
-    padding-left: 6px;
-    border: 1px solid #e6e6e6;
-    font-size: 0.75em;
-    width: auto;
-    height: 18px !important;
-    background: #fffafa;
-    position: relative;
-    top: -1px;
-}
-
-.pager-right {
-    font-size: 0.75em;
-    position:relative;
-    top: 2px;
-}
-
 #grid-instances-head>tr {
     height: @header-height;
 }
@@ -610,20 +353,11 @@ div.iob-pager table {
     height: @header-height;
 }
 
-table#grid-states,
-table#grid-groups {
-    //width: calc(~'100% - 100px');
-    width: unset !important;   // otherwise there is a horizontal scrollbar at the bottom, for whatever the reason is!
-}
-
 #iob-body .ui-button-text-only, #iob-body .ui-button-text {
     //padding: .4em 1em;
     .iob-font-12;
 }
-//#iob-boby, #iob-body input, #iob-body select, input, select {
-//    .iob-font-12 !important;
-//    font-size: 12px !important;
-//}
+
 // modals
 .dialog-icon {
     float: right;

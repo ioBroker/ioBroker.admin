@@ -12,6 +12,12 @@ const pkg         = require('./package.json');
 const iopackage   = require('./io-package.json');
 const babel       = require('gulp-babel');
 
+gulp.task('1_words', ['wwwLanguages2words', 'adminLanguages2words']);
+gulp.task('2_css', ['lessIob', 'lessApp', 'lessTreeTable', 'lessConfig', 'sassMaterialize']);
+gulp.task('3_js', ['compressApp', 'compressVendor', 'compressMaterialize']);
+gulp.task('4_static', ['copySrc', 'copyAce', 'copyColorpicker']);
+
+
 /* How to work with language scripts
 --------------------------------------------------------
     you can use for edit this tool https://github.com/ldittmar81/ioBroker-i18n-editor
@@ -593,16 +599,8 @@ gulp.task('watch', function () {
 });
 
 gulp.task('default', [
-    'wwwLanguages2words',
-    'adminLanguages2words',
-    'lessIob',
-    'lessApp',
-    'lessTreeTable',
-    'lessConfig',
-    'sassMaterialize',
-    'compressApp',
-    'compressVendor',
-    'compressMaterialize',
-    'copy'
-]);
+    '1_words',
+    '2_css',
+    '3_js',
+    '4_static']);
 
