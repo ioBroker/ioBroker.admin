@@ -43,7 +43,7 @@ function lang2data(lang, isFlat) {
                 str += (lang[w] === '' ? (isFlat[w] || w) : lang[w]) + '\n';
             } else {
                 var key = '  "' + w.replace(/"/g, '\\"') + '": ';
-                str += padRight(key, 42) +  '"' + lang[w].replace(/"/g, '\\"') + '",\n';
+                str += /*padRight(*/key/*, 42)*/ +  '"' + lang[w].replace(/"/g, '\\"') + '",\n';
             }
         }
     }
@@ -135,7 +135,8 @@ function words2languages(src) {
         'ru': {},
         'pt': {},
         'nl': {},
-        'fr': {}
+        'fr': {},
+        'it': {}
     };
     var data = readWordJs(src);
     if (data) {
@@ -183,7 +184,8 @@ function words2languagesFlat(src) {
         'ru': {},
         'pt': {},
         'nl': {},
-        'fr': {}
+        'fr': {},
+        'it': {}
     };
     var data = readWordJs(src);
     if (data) {
@@ -231,7 +233,7 @@ function languagesFlat2words(src) {
     var dirs = fs.readdirSync(src + 'i18n/');
     var langs = {};
     var bigOne = {};
-    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr'];
+    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it'];
     dirs.sort(function (a, b) {
         var posA = order.indexOf(a);
         var posB = order.indexOf(b);
@@ -300,7 +302,7 @@ function languages2words(src) {
     var dirs = fs.readdirSync(src + 'i18n/');
     var langs = {};
     var bigOne = {};
-    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr'];
+    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it'];
     dirs.sort(function (a, b) {
         var posA = order.indexOf(a);
         var posB = order.indexOf(b);
@@ -590,5 +592,17 @@ gulp.task('watch', function () {
     gulp.watch(['./src/js/*.js'], ['compressApp']);
 });
 
-gulp.task('default', ['lessIob', 'lessApp', 'lessTreeTable', 'lessConfig', 'sassMaterialize', 'compressApp', 'compressVendor', 'compressMaterialize', 'copy']);
+gulp.task('default', [
+    'wwwLanguages2words',
+    'adminLanguages2words',
+    'lessIob',
+    'lessApp',
+    'lessTreeTable',
+    'lessConfig',
+    'sassMaterialize',
+    'compressApp',
+    'compressVendor',
+    'compressMaterialize',
+    'copy'
+]);
 
