@@ -40,7 +40,7 @@ function lang2data(lang, isFlat) {
         if (lang.hasOwnProperty(w)) {
             count++;
             if (isFlat) {
-                str += (lang[w] === '------XXXXXXXXX------' ? (isFlat[w] || w) : lang[w]) + '\n';
+                str += (lang[w] === '' ? (isFlat[w] || w) : lang[w]) + '\n';
             } else {
                 var key = '  "' + w.replace(/"/g, '\\"') + '": ';
                 str += padRight(key, 42) +  '"' + lang[w].replace(/"/g, '\\"') + '",\n';
@@ -124,7 +124,7 @@ function writeWordJs(data, src) {
     }
 }
 
-const EMPTY = '------XXXXXXXXX------';
+const EMPTY = '';
 
 function words2languages(src) {
     var fs = require('fs');
@@ -319,7 +319,7 @@ function languages2words(src) {
         }
     });
     for (var l = 0; l < dirs.length; l++) {
-        if (dirs[l] === 'flat.txt') continue;
+        if (dirs[l] === 'flat.txt' || dirs[l] === '.i18n-editor-metadata') continue;
         var lang = dirs[l];
         langs[lang] = fs.readFileSync(src + 'i18n/' + lang + '/translations.json').toString();
         langs[lang] = JSON.parse(langs[lang]);
