@@ -1,3 +1,4 @@
 node_modules
 .idea
 www
+.i18n-editor-metadata
