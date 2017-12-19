@@ -1,0 +1,47 @@
+<div id="tab-instances" class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Instances">
+    <table class="main-toolbar-table">
+        <tr>
+            <td>
+                <button id="btn-instances-reload"></button>
+            </td>
+            <td>
+                <button id="btn-instances-expert-mode"></button>
+            </td>
+            <td>
+                <table class="panel-input-table"><tr>
+                    <td style="width: 100%"><input id="instances-filter" style="padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/></td>
+                    <td><button id="instances-filter-clear" style="width: 18px;height: 18px;border: 0;background: #fff;"></button></td>
+                </tr></table>
+
+            </td>
+            <td style="width: 100%"></td>
+            <td class="ram-info-td">
+                <span class="translate">RAM total usage:</span> <span id="totalRam" class="ram-font-weight"></span>
+                <span class="translate">MB</span> <span class="free-mem-label">/</span>
+                <span class="translate free-mem-label">Free RAM:</span>
+                <span id="freeMemPercent" class="ram-font-weight"></span><span>=</span><span id="freeMem" class="ram-font-weight"></span>
+                <span class="translate free-mem-label">MB</span>
+                [
+                <span class="translate">Host</span>: <span id="currentHost" class="ram-font-weight"></span> - <span id="running_processes"></span>]
+            </td>
+        </tr>
+    </table>
+    <div class="grid-main-div" style="width: 100%; height: calc(100% - 30px); overflow: auto; margin-left:1px; width:calc(100% - 2px)">
+        <table class="instance-table" style="width: 100%;">
+            <thead id="grid-instances-head">
+            </thead>
+            <tbody id="grid-instances">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<ul id="instances-menu" style="display: none;" data-visible="false"></ul>
+
+<div id="dialog-cron"   style="display: none">
+    <div id="div-cron"></div>
+</div>
+
+<div id="dialog-config" title="adater configuration" style="display: none; overflow:hidden">
+    <iframe style="border:0 solid #FFF; display:block; left:0; top:0; width: 100%; height: 100%" id="config-iframe" name="config-iframe"></iframe>
+</div>

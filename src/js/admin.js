@@ -1284,20 +1284,28 @@ $(document).ready(function () {
         var $currentTab = $adminBody.find('.admin-sidemenu-body-content');
         $currentTab.hide().appendTo('body');
         $dialog.show().appendTo('.admin-sidemenu-body');
-        $adminBody.data('current', $currentTab);
-        $adminBody.data('dialog', dialogObj);
+        $adminBody.data('$currentTab', $currentTab);
+        $adminBody.data('dialogObj',   dialogObj);
+        $adminBody.data('$dialog',     $dialog);
+        return $adminBody;
     };
 
-    main.hideBuildInWindow = function () {
-        var $adminBody = main.removeNavBody();
-        var $currentTab = $adminBody.data('current');
-        var dialogObj = $adminBody.data('dialog');
+    main.hideBuildInWindow = function ($showPanel) {
+        var $adminBody  = main.removeNavBody();
+        var $currentTab = $adminBody.data('$currentTab');
+        var dialogObj   = $adminBody.data('dialogObj');
+        var $dialog     = $adminBody.data('$dialog');
+
+        $dialog && $dialog.hide();
         if (dialogObj && typeof dialogObj.destroy === 'function') {
             dialogObj.destroy();
         }
-        $adminBody.data('current', null);
-        $adminBody.data('dialog', null);
-        $currentTab.show().appendTo($adminBody);
+        $adminBody.data('$currentTab', null);
+        $adminBody.data('dialogObj', null);
+        $adminBody.data('$dialog', null);
+        if ($showPanel) $currentTab = $showPanel;
+        $currentTab && $currentTab.show().appendTo($adminBody);
+        return $adminBody;
     };
 
     main.selectSideNav = function (tab) {
@@ -1331,15 +1339,7 @@ $(document).ready(function () {
             }
         }
 
-        var $adminBody = main.removeNavBody();
-        $panel.show().appendTo($adminBody);
-
-        var dialogObj = $adminBody.data('dialog');
-        if (dialogObj && typeof dialogObj.destroy === 'function') {
-            dialogObj.destroy();
-            $adminBody.data('dialog', null);
-            $adminBody.data('current', null);
-        }
+        main.hideBuildInWindow($panel);
 
         if (changed && tabs[tab] && typeof tabs[tab].init === 'function') {
             tabs[tab].init();

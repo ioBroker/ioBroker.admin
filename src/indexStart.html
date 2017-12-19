@@ -1,0 +1,149 @@
+<html>
+<head>
+    <title>ioBroker.admin</title>
+    <link rel="stylesheet" type="text/css" href="lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="lib/css/themes/jquery-ui/redmond/jquery-ui.structure.min.css"/>
+    <link rel="stylesheet" type="text/css" href="lib/css/themes/jquery-ui/redmond/jquery-ui.theme.min.css"/>
+    <!--link rel="stylesheet" type="text/css" href="css/admin.css"/>
+    <link rel="stylesheet" type="text/css" href="css/tiles.css"/>
+    <link rel="stylesheet" type="text/css" href="css/sidenav.css"/-->
+    <!--link rel="stylesheet" type="text/css" href="lib/css/jqGrid/ui.jqgrid-4.5.4.css"/-->
+    <!--link rel="stylesheet" type="text/css" href="lib/css/jquery.multiselect-1.13.css"/-->
+    <link rel="stylesheet" type="text/css" href="lib/css/fancytree/ui.fancytree.min.css"/>
+    <link rel="stylesheet" type="text/css" href="lib/css/cron/jquery.cron.css"/>
+    <link rel="stylesheet" type="text/css" href="lib/css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="lib/css/jquery.treetable.theme.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css"/>
+
+    <link class="favicon" href="favicon.ico" type="image/x-icon" rel="icon" />
+    <link class="favicon" href="favicon.ico" type="image/x-icon" rel="shortcut icon" />
+    <link class="favicon" href="favicon.ico" type="image/x-icon" />
+
+    <!--script type="text/javascript" src="lib/js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="lib/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="lib/js/colResizable-1.6.min.js"></script>
+    <script type="text/javascript" src="lib/js/jquery.multiselect-1.13.min.js"></script>
+    <script type="text/javascript" src="lib/js/semver.min.js"></script>
+    <script type="text/javascript" src="lib/js/ace-1.2.0/ace.js"></script>
+    <script type="text/javascript" src="lib/js/loStorage.js"></script>
+    <script type="text/javascript" src="lib/js/translate.js"></script>
+    <script type="text/javascript" src="js/words.js"></script><!--this file must be after translate.js -->
+    <!--script type="text/javascript" src="js/license.js"></script-->
+    <script type="text/javascript" src="./socket.io/socket.io.js"></script>
+
+    <!--script type="text/javascript" src="lib/js/jquery.fancytree-all.min.js"></script-->
+    <script type="text/javascript" src="lib/js/vendor.js"></script>
+    <script type="text/javascript" src="lib/js/materialize.js"></script>
+    <!--script type="text/javascript" src="lib/js/jquery.treetable.js"></script-->
+    <!--script type="text/javascript" src="lib/js/selectID.js"></script-->
+    <!--script type="text/javascript" src="js/listHeader.js"></script-->
+
+    <!--script type="text/javascript" src="lib/js/selectID.js"></script>
+    <script type="text/javascript" src="lib/js/cron/jquery.cron.js"></script>
+    <script type="text/javascript" src="lib/js/cron/cron2text.js"></script-->
+
+    <!--script type="text/javascript" src="js/adminAdapters.js"></script>
+    <script type="text/javascript" src="js/adminInstances.js"></script>
+    <script type="text/javascript" src="js/adminEnums.js"></script>
+    <script type="text/javascript" src="js/adminEvents.js"></script>
+    <script type="text/javascript" src="js/adminHosts.js"></script>
+    <script type="text/javascript" src="js/adminInstances.js"></script>
+    <script type="text/javascript" src="js/adminLogs.js"></script>
+    <script type="text/javascript" src="js/adminObjects.js"></script>
+    <script type="text/javascript" src="js/adminStates.js"></script>
+    <script type="text/javascript" src="js/adminUsers.js"></script>
+    <script type="text/javascript" src="js/adminGroups.js"></script>
+    <script type="text/javascript" src="js/adminSystem.js"></script>
+    <script type="text/javascript" src="js/admin.js"></script-->
+    <script type="text/javascript" src="js/app.js"></script>
+</head>
+<body>
+<div id="_toolbar-button_" class="toolbar-button" style="display: none; visibility: hidden">used to get button size</div>
+
+<div id="admin_sidemenu_menu" class="admin-sidemenu m">
+    <a class="admin-sidemenu-close"><span><!-- leave span here, it is required for css--></span></a>
+    <a class="choose-tabs-config-button">▽</a>
+    <div class="side-nav">
+        <div class="user-view">
+            <a id="current-user-icon"><i class="large material-icons">account_circle</i></a>
+            <a><span class="white-text name" id="current-user"></span></a>
+            <a><span class="white-text email" id="current-group"></span></a>
+        </div>
+        <ul class="admin-sidemenu-menu"></ul>
+    </div>
+</div>
+<div id="admin_sidemenu_main">
+    <div class="admin-sidemenu-header m">
+        <nav class="main-admin-buttons">
+            <div class="nav-wrapper ">
+                <ul class="left">
+                    <li><a id="button-wizard"><i class="material-icons">search</i></a></li>
+                    <li><a id="button-system" class="translateT" title="System"><i class="material-icons">build</i></a></li>
+                    <li><a id="button-logout" class="translateT" title="Logout"><i class="material-icons">input</i></a></li>
+                    <li>
+                        <a class="dropdown-button btn" style="display: none" data-target="host-adapters" id="host-adapters-btn">Host:</a>
+                        <ul id='host-adapters' class='dropdown-content'></ul>
+                    </li>
+                </ul>
+                <span class="button-version"></span>
+                <span class="button-icon"><img src="img/no-image.png"/></span>
+            </div>
+        </nav>
+
+    </div>
+    <div class="admin-sidemenu-body"></div>
+    <div class="admin-sidemenu-footer"></div>
+</div>
+
+<div id="dialog-command" title="command execution" class="translateT" style="display: none">
+    <textarea style="font-family: courier, monospace; font-size: 11px; resize: none" id="stdout" disabled="disabled" cols="120" rows="30"></textarea>
+</div>
+<div id="dialog-license" title="license agreement" class="translateT" style="display: none; z-index: 102">
+    <table><tr><td id="license_language_label"><label class="translate" for="license_language">Select language</label></td>
+        <td><select id="license_language">
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="ru">русский</option>
+            <option value="pt">Portugues</option>
+            <option value="nl">Nederlands</option>
+            <option value="fr">français</option>
+            <option value="it">Italiano</option>
+        </select></td></tr>
+    </table>
+    <input id="license_diag" type="checkbox"/><span class="translate" id="license_checkbox" style="color:red">license_checkbox</span>
+    <h3 id="license_terms" class="translate">License terms</h3>
+    <div id="license_text" style="width: 100%"></div>
+</div>
+
+<!-- Loading indicator -->
+<div id="connecting">
+    <div class="connecting-div">
+        <svg class="spinner" width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+            <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+        </svg>
+    </div>
+</div>
+
+<!-- Indicator about too many events -->
+<div id="events_threshold" class="translate translateT"  style="display: none" title="Click do activate events again, or just wait one minute">Too many events</div>
+
+<div class="materialize-dialogs m">
+    <div id="dialog-message" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="dialog-title"></h4>
+            <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>
+        </div>
+    </div>
+    <div id="dialog-confirm" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="dialog-title"></h4>
+            <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>
+        </div>
+        <div class="modal-footer">
+        </div>
+    </div>
+</div>
+<!-- body and html will be closed in indexEnd.html -->

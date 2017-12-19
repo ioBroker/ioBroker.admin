@@ -1,0 +1,47 @@
+<div id="dialog-customs" style="display: none" class="m">
+    <div id="tabs-customs">
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs">
+                    <li class="tab col s2 tab-settings"><a href="#tab-customs-settings"  class="translate active">Settings</a></li>
+                    <li class="tab col s2 tab-table"><a href="#tab-customs-table"     class="translate">Table</a></li>
+                    <li class="tab col s2 tab-chart"><a href="#tab-customs-chart"     class="translate">Chart</a></li>
+                </ul>
+            </div>
+            <div id="tab-customs-settings" class="col s12 page">
+                <h6 class="title"></h6>
+                <ul class="collapsible" id="customs-tabs"></ul>
+                <div style="display: none" id="customs-templates"></div>
+            </div>
+            <div id="tab-customs-table" class="col s12 page">
+                <div><label class="translate" for="history-table-instance">Show values of instance</label><select id="history-table-instance"></select><button id="history-table-instance-refresh"></button></div>
+                <table id="grid-history" style="width: 100%; max-height: calc(100% - 30px)">
+                    <thead>
+                    <col width="160" valign="top">
+                    <col width="60"  valign="top">
+                    <col width="80"  valign="top">
+                    <col width="140" valign="top">
+                    <col width="140" valign="top">
+                    <tr>
+                        <th class="translate ui-state-default">val</th>
+                        <th class="translate ui-state-default">ack</th>
+                        <th class="translate ui-state-default">from</th>
+                        <th class="translate ui-state-default">ts</th>
+                        <th class="translate ui-state-default">lc</th>
+                    </tr>
+                    </thead>
+                    <tbody id="grid-history-body">
+                    </tbody>
+                </table>
+            </div>
+            <div id="tab-customs-chart" class="col s12 page">
+                <div><label class="translate" for="history-chart-instance">Show values of instance</label><select id="history-chart-instance"></select><button id="history-chart-instance-refresh"></button></div>
+                <iframe id="iframe-history-chart" style="border: 0; overflow: hidden; height: calc(100% - 120px); width: calc(100% - 30px)"></iframe>
+            </div>
+        </div>
+    </div>
+    <nav class="dialog-system-buttons nav-wrapper footer">
+        <a class="btn btn-active translate btn-save">Save</a>
+        <a class="btn translate btn-cancel">Cancel</a>
+    </nav>
+</div>

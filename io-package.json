@@ -5,10 +5,13 @@
         "version": "3.0.5",
         "news": {
             "3.0.5": {
-                "en": "gui redesigned",
-                "de": "Benutzeroberfläche neu gestaltet",
-                "ru": "Новый стиль",
-                "pt": "Interface de usuário feito novo"
+                "en": "GUI was redesigned",
+                "de": "GUI wurde neu gestaltet",
+                "ru": "Графический интерфейс был обновлён",
+                "pt": "GUI foi redesenhado",
+                "nl": "GUI is opnieuw ontworpen",
+                "fr": "L'interface graphique a été repensée",
+                "it": "La GUI è stata ridisegnata"
             },
             "2.0.11": {
                 "en": "Configurable event update disable threshold",
@@ -19,7 +22,7 @@
             "2.0.10": {
                 "en": "added use of delete-key in the objects view.",
                 "de": "Verwendung der Entfernen-Taste in der Objekte-Ansicht hinzugefügt",
-		"ru": "добавлено использование ключа delete в представлении объектов",
+		        "ru": "добавлено использование ключа delete в представлении объектов",
                 "pt": "Usagem da tecla de deletar na vista de objetos"
             },
             "2.0.9": {
@@ -30,7 +33,7 @@
             "2.0.8": {
                 "en": "fix quickEdit: number with boolean value",
                 "de": "behoben: quickEdit, number mit übergebenem boolean Wert",
-		"ru": "Исправлено: возможность ввода булевых значений в состояниях",
+		        "ru": "Исправлено: возможность ввода булевых значений в состояниях",
                 "pt": "fix quickEdit: número com valor booleano"
             },
             "2.0.7": {
@@ -52,7 +55,8 @@
             "ru":   "Конфигурация ioBroker через веб-интерфейс",
             "pt":   "A configuração do ioBroker via Web-Interface",
             "fr":   "La configuration de ioBroker via Web-Interface",
-            "nl":   "De configuratie van ioBroker via de webinterface"
+            "nl":   "De configuratie van ioBroker via de webinterface",
+            "it": "La configurazione di ioBroker tramite interfaccia Web"
        },
         "docs": {
             "en": "docs/en/admin.md",

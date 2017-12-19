@@ -415,7 +415,7 @@
   "Tajikistan": "Tajikistan",
   "Temperature units:": "Temperature units:",
   "Thailand": "Thailand",
-  "This version of node.js \"%s\" on \"%s\" is deprecated. Please install node.js 6, 8 or newer": "ioBroker supports the LTS versions 4, 6 and 8 of Node.js. Please update your version (\"%s\") on host \"%s\" to one of the supported versions. We recommend to use Node.js 6.",
+  "This version of node.js \"%s\" on \"%s\" is deprecated. Please install node.js 6, 8 or newer": "ioBroker supports the LTS versions 4, 6 and 8 of node.js. Please update your version (\"%s\") on host \"%s\" to one of the supported versions. We recommend to use node.js 6.",
   "Time": "Time",
   "Time stamp": "Time stamp",
   "Toggle expert mode": "Toggle expert mode",

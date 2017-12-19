@@ -1,0 +1,61 @@
+@import "commons";
+@import "materializeConsts";
+
+#tabs-customs {
+  overflow: hidden;
+  height: calc(~"100% - "@admin-m-footer-height);
+  td {
+    padding: 0 5px;
+  }
+  h6 {
+    background: @main-active-color;
+    color: white;
+    letter-spacing: .5px;
+    padding: 0.5rem;
+    .name {
+      font-style: italic;
+    }
+  }
+  .collapsible-header {
+    font-size: 1.2rem;
+    position: relative;
+    .activated {
+      letter-spacing: .5px;
+      text-decoration: none;
+      text-transform: uppercase;
+      color: #2196f3;
+      position: absolute;
+      right: 4rem;
+      top: 1rem;
+    }
+  }
+  .collapsible-body {
+    background: whitesmoke;
+  }
+  .page {
+    background: #f5f2f0;
+    height: calc(~"100% - "@admin-m-footer-height - 16);
+    padding-top: 1rem;
+    padding-left: 1rem;
+    overflow: auto;
+  }
+
+  #customs-tabs {
+    width: 100%;
+    .collapsible-header img {
+      width: 2rem;
+      height: 2rem;
+      font-size: 1.6rem;
+      display: inline-block;
+      text-align: center;
+      margin-right: 1rem;
+    }
+    .col {
+      position: relative;
+      .select-wrapper + label {
+        top: 100%;
+      }
+    }
+  }
+}
+

@@ -1,0 +1,199 @@
+<div id="tab-objects"   class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Objects">
+    <div id="grid-objects" class="grid-main-div"><span class="translate" style="width: calc(100% - 100px); width: calc(100% - 20px); text-align: center">Loading...</span></div>
+</div>
+
+<div id="dialog-object" style="display: none">
+    <table>
+        <tr>
+            <td><label class="translate" for="edit-object-id">ID</label></td>
+            <td><input size="60" id="edit-object-id" readonly style="opacity: 0.7"></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><label class="translate" for="edit-object-name">name</label></td>
+            <td><input size="60" id="edit-object-name"></td>
+            <td><label class="translate" for="edit-object-type">type</label></td>
+            <td>
+                <select id="edit-object-type" disabled="disabled">
+                    <option>device</option>
+                    <option>channel</option>
+                    <option>state</option>
+                    <option>enum</option>
+                    <option>host</option>
+                    <option>adapter</option>
+                    <option>instance</option>
+                    <option>meta</option>
+                    <option>config</option>
+                    <option>path</option>
+                    <option>file</option>
+                    <option>script</option>
+                    <option>group</option>
+                    <option>user</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <div id="object-tabs" style="width:100%; height: calc(100% - 70px)">
+        <ul>
+            <li><a href="#object-tab-common" class="translate">common</a></li>
+            <li><a href="#object-tab-native" class="translate">native</a></li>
+            <li><a href="#object-tab-acl" class="translate">Access control</a></li>
+            <li><a href="#object-tab-rest" class="translate">rest</a></li>
+            <li><a href="#object-tab-raw" class="translate">raw</a></li>
+        </ul>
+        <div id="object-tab-common" style="width: calc(100% - 15px); height: calc(100% - 50px); overflow: auto">
+            <button id="object-tab-new-common"></button>
+            <table style="width: 100%">
+                <thead>
+                <tr>
+                    <th class="translate ui-widget-header" style="width: 100px">Name</th>
+                    <th class="translate ui-widget-header" style="width: 100%">Value</th>
+                    <th class="translate ui-widget-header" style="width: 25px"></th>
+                </tr>
+                </thead>
+                <tbody id="object-tab-common-table">
+
+                </tbody>
+            </table>
+        </div>
+        <div id="object-tab-native" style="width: calc(100% - 15px); height: calc(100% - 50px); overflow: auto">
+            <button id="object-tab-new-native" class="translateB">New</button>
+            <table style="width: 100%">
+                <thead>
+                <tr>
+                    <th class="translate ui-widget-header" style="width: 100px">Name</th>
+                    <th class="translate ui-widget-header" style="width: 100%">Value</th>
+                    <th class="translate ui-widget-header" style="width: 25px"></th>
+                </tr>
+                </thead>
+                <tbody id="object-tab-native-table">
+
+                </tbody>
+            </table>
+        </div>
+        <div id="object-tab-acl" style="width: calc(100% - 15px); height: calc(100% - 50px); overflow: auto">
+            <table id="object-tab-acl-table" style="width: 100%">
+                <tr><td><label class="translate" for="object-tab-acl-owner">Owner user</label></td><td><select id="object-tab-acl-owner"></select></td></tr>
+                <tr><td><label class="translate" for="object-tab-acl-group">Owner group</label></td><td><select id="object-tab-acl-group"></select></td></tr>
+                <tr><td><label class="translate">Object rights</label></td><td>
+                    <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                        <tr>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td></tr>
+                        <tr>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">read</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">write</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">read</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">write</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">read</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">write</td>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-obj-owner-read"  /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-obj-owner-write" /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-obj-group-read"  /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-obj-group-write" /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-obj-every-read"  /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-obj-every-write" /></td>
+                        </tr>
+                    </table>
+                </td></tr>
+                <tr id="object-tab-acl-state"><td class="translate">States rights</td><td>
+                    <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                        <tr>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Owner</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Group</td>
+                            <td colspan="2" style="border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">Everyone</td>
+                        </tr>
+                        <tr>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">read</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">write</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">read</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">write</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">read</td>
+                            <td style="border-right: 1px solid black; border-left: 1px solid black; text-align: center" class="translate">write</td>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-state-owner-read"  /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-state-owner-write" /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-state-group-read"  /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-state-group-write" /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-state-every-read"  /></td>
+                            <td style="border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: center"><input type="checkbox" id="object-tab-acl-state-every-write" /></td>
+                        </tr>
+                    </table>
+                </td></tr>
+            </table>
+        </div>
+        <div id="object-tab-rest" style="width: calc(100% - 15px); height: calc(100% - 50px); overflow: auto">
+            <textarea id="view-object-rest" readonly style="width:100%; height: 100%"></textarea>
+        </div>
+        <div id="object-tab-raw" style="width: calc(100% - 15px); height: calc(100% - 50px); overflow: auto">
+            <div id="view-object-raw" style="width: 100%; height: 100%">Test!</div>
+            <!--textarea id="view-object-raw" style="width:100%; height: 100%"></textarea-->
+        </div>
+    </div>
+    <!--table style="width: 100%">
+        <tr>
+            <td style="width: 50%">
+                <span class="translate">common</span><br/>
+                <textarea id="edit-object-common"></textarea>
+            </td>
+            <td style="width: 50%">
+                <span class="translate">native</span><br/>
+                <textarea id="edit-object-native"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%" colspan="2">
+                <span class="translate">rest</span><br/>
+                <textarea id="view-object-full" readonly></textarea>
+            </td>
+        </tr>
+    </table-->
+</div>
+
+<div id="dialog-new-field" class="translateT" title="Add new field" style="display: none">
+    <table style="width: 100%">
+        <tr>
+            <td><label for="object-tab-new-name" class="translate">Name</label></td>
+            <td><input id="object-tab-new-name" type="text" style="width: 100%"/></td>
+        </tr>
+    </table>
+</div>
+<div id="dialog-new-object" class="translateT" title="Add new object: " style="display: none">
+    <table>
+        <tr>
+            <td><label for="object-tab-new-object-parent" class="translate">Parent</label></td>
+            <td><input id="object-tab-new-object-parent" type="text" size="40" readonly style="background: lightgrey"/></td>
+        </tr>
+        <tr>
+            <td><label for="object-tab-new-object-name" class="translate">Name</label></td>
+            <td><input id="object-tab-new-object-name" type="text" size="40"/></td>
+        </tr>
+        <tr>
+            <td><label for="object-tab-new-object-type" class="translate">Type</label></td>
+            <td><select id="object-tab-new-object-type">
+                <option value="state"   class="translate">State</option>
+                <option value="channel" class="translate">Channel</option>
+                <option value="device"  class="translate">Device</option>
+            </select></td>
+        </tr>
+        <tr id="object-tabe-new-object-tr">
+            <td><label for="object-tab-new-state-type" class="translate">State&nbsp;type</label></td>
+            <td><select id="object-tab-new-state-type">
+                <option value="boolean" class="translate">boolean</option>
+                <option value="switch"  class="translate">switch</option>
+                <option value="string"  class="translate">string</option>
+                <option value="number"  class="translate">number</option>
+                <option value="enum"    class="translate">multi</option>
+                <option value="array"   class="translate">array</option>
+                <option value="object"  class="translate">object</option>
+                <option value="mixed"   class="translate">mixed</option>
+            </select></td>
+        </tr>
+    </table>
+</div>
+

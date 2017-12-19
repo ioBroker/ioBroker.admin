@@ -1,0 +1,51 @@
+<div id="tab-hosts"     class="admin-tab admin-sidemenu-body-content" style="display: none" data-name="Hosts">
+    <table class="main-toolbar-table">
+        <tr>
+            <td><button id="btn-hosts-reload"></button></td>
+            <td class="iob-toolbar-sep"></td>
+            <td>
+                <table class="panel-input-table"><tr>
+                    <td style="width: 100%"><input id="hosts-filter" style="padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/></td>
+                    <td><button id="hosts-filter-clear" style="display: inline-block; width: 18px;height: 18px;border: 0;background: #fff;"></button></td>
+                </tr></table>
+            </td>
+            <td style="width: 100%"></td>
+        </tr>
+    </table>
+
+    <table class="hosts-table iob-list-table" style="width: 100%; margin-left: 1px">
+        <thead id="grid-hosts-head">
+        <tr>
+            <th class="translate ui-widget-header" style="width: 40px"></th>
+            <th class="translate ui-widget-header">name</th>
+            <th class="translate ui-widget-header">type</th>
+            <th class="translate ui-widget-header">title</th>
+            <th class="translate ui-widget-header">platform</th>
+            <th class="translate ui-widget-header">os</th>
+            <th class="translate ui-widget-header">available</th>
+            <th class="translate ui-widget-header">installed</th>
+            <th class="translate ui-widget-header">events</th>
+        </tr>
+        </thead>
+        <tbody id="grid-hosts">
+        </tbody>
+    </table>
+    <!--div id="pager-hosts"></div -->
+</div>
+
+
+<div class="materialize-dialogs m">
+    <div id="dialog-host-update" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="dialog-title translate">Instructions</h4>
+            <p>
+                <span class="translate">update-part1</span><br>
+                <label class="dialog-text translate" for="dialog-host-update-instructions">You can check changelog here</label>
+                <textarea readonly id="dialog-host-update-instructions"></textarea>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>
+        </div>
+    </div>
+</div>

@@ -41,7 +41,7 @@ function Customs(main) {
 
             this.historyTimeout = setTimeout(function () {
                 that.historyTimeout = null;
-                that.loadHistoryTable($('#history-table-instance').data('id'), true);
+                that.loadHistoryTable(that.$dialog.find('#history-table-instance').data('id'), true);
             }, 5000);
         }
     };
@@ -51,9 +51,53 @@ function Customs(main) {
         $customTabs.html('');
         var wordDifferent = _('__different__');
         this.defaults = {};
-
         var collapsed = this.main.config['object-customs-collapsed'];
         collapsed = collapsed ? collapsed.split(',') : [];
+
+                var commons = {};
+        // calculate common settings
+        for (var i = 0; i < instances.length; i++) {
+            var inst = instances[i].replace('system.adapter.', '');
+            commons[inst] = {};
+            for (var id = 0; id < ids.length; id++) {
+                var custom = main.objects[ids[id]].common.custom;
+                // convert old structure
+                // TODO: remove some day (08.2016)
+                if (custom && custom.enabled !== undefined) {
+                    custom = main.objects[ids[id]].common.custom = custom.enabled ? {'history.0': custom} : {};
+                }
+                var sett = custom ? custom[inst] : null;
+
+                if (sett) {
+                    for (var _attr in sett) {
+                        if (!sett.hasOwnProperty(_attr)) continue;
+                        if (commons[inst][_attr] === undefined) {
+                            commons[inst][_attr] = sett[_attr];
+                        } else if (commons[inst][_attr] !== sett[_attr]) {
+                            commons[inst][_attr] = '__different__';
+                        }
+                    }
+                } else {
+                    var a = inst.split('.')[0];
+                    var _default = null;
+                    // Try to get default values
+                    if (typeof that.defaults[a] === 'function') {
+                        _default = that.defaults[a](that.main.objects[ids[id]], that.main.objects['system.adapter.' + inst]);
+                    } else {
+                        _default = this.defaults[a];
+                    }
+
+                    for (var attr in _default) {
+                        if (!_default.hasOwnProperty(attr)) continue;
+                        if (commons[inst][attr] === undefined) {
+                            commons[inst][attr] = _default[attr];
+                        } else if (commons[inst][attr] !== _default[attr]) {
+                            commons[inst][attr] = '__different__';
+                        }
+                    }
+                }
+            }
+        }
 
         // add all tabs to div
         for (var j = 0; j < instances.length; j++) {
@@ -62,17 +106,18 @@ function Customs(main) {
             var adapter  = parts[2];
             var instance = parts[3];
             var data = adapter + '.' + instance;
-            var hidden = (collapsed.indexOf(data) !== -1);
-            var img = this.main.objects['system.adapter.' + adapter].common.icon;
+             var img = this.main.objects['system.adapter.' + adapter].common.icon;
             img = '/adapter/' + adapter + '/' +img;
-            var tab = '<div class="customs-row-title ui-widget-header ' +
-                (hidden ? 'customs-row-title-collapsed' : 'customs-row-title-expanded') +
-                '" data-adapter="' + data + '"><img class="customs-row-title-icon" width="20" src="' + img + '" /><span class="customs-row-title-settings">' + _('Settings for %s', '') + '</span>' + data +
-               // '<input type="checkbox" data-field="enabled" data-default="false">' +
-                '</div>' +
-                '<div class="customs-settings" style="' + (hidden ? 'display: none' : '') + '; overflow-x: hidden">' +
-                $('script[data-template-name="' + adapter + '"]').html() +
-                '</div>';
+            var tab =
+                '<li data-adapter="' + data + '" class="' + (collapsed.indexOf(data) === -1 ? 'active' : '') + '">' +
+                '   <div class="collapsible-header">' +
+                '       <img src="' + img + '" />' + _('Settings for %s', data) +
+                '       <span class="activated" data-adapter="' + data + '" style="' + (!commons[data] || commons[data] === false ? 'display: none' : '') + '">' + _('active') + '</span>' +
+                '   </div>' +
+                '   <div class="customs-settings collapsible-body">' +
+                        $('script[data-template-name="' + adapter + '"]').html() +
+                '   </div>' +
+                '</li>';
 
             var $tab = $(tab);
             this.defaults[adapter] = {};
@@ -103,55 +148,12 @@ function Customs(main) {
             $customTabs.append($tab);
         }
 
-        var commons = {};
-        // calculate common settings
-        for (var i = 0; i < instances.length; i++) {
-            var inst = instances[i].replace('system.adapter.', '');
-            commons[inst] = {};
-            for (var id = 0; id < ids.length; id++) {
-                var custom = main.objects[ids[id]].common.custom;
-                // convert old structure
-                // TODO: remove some day (08.2016)
-                if (custom && custom.enabled !== undefined) {
-                    custom = main.objects[ids[id]].common.custom = custom.enabled ? {'history.0': custom} : {};
-                }
-                var sett = custom ? custom[inst] : null;
-
-                if (sett) {
-                    for (var _attr in sett) {
-                        if (commons[inst][_attr] === undefined) {
-                            commons[inst][_attr] = sett[_attr];
-                        } else if (commons[inst][_attr] != sett[_attr]) {
-                            commons[inst][_attr] = '__different__';
-                        }
-                    }
-                } else {
-                    var a = inst.split('.')[0];
-                    var _default = null;
-                    // Try to get default values
-                    if (that.defaults[a]) {
-                        _default = that.defaults[a](that.main.objects[ids[id]], that.main.objects['system.adapter.' + inst]);
-                    } else {
-                        _default = this.defaults[a];
-                    }
-
-                    for (var attr in _default) {
-                        if (commons[inst][attr] === undefined) {
-                            commons[inst][attr] = _default[attr];
-                        } else if (commons[inst][attr] != _default[attr]) {
-                            commons[inst][attr] = '__different__';
-                        }
-                    }
-                }
-            }
-        }
-
         // set values
         $customTabs.find('input, select').each(function() {
             var $this    = $(this);
-            var instance = $this.attr('data-instance');
+            var instance = $this.data('instance');
             var adapter  = instance.split('.')[0];
-            var attr     = $this.attr('data-field');
+            var attr     = $this.data('field');
 
             if (commons[instance][attr] !== undefined) {
                 if ($this.attr('type') === 'checkbox') {
@@ -197,39 +199,66 @@ function Customs(main) {
 
             if ($this.attr('type') === 'checkbox') {
                 $this.change(function () {
-                    $('#customs-button-save').button('enable');
+                    that.$dialog.find('.dialog-system-buttons .btn-save').removeClass('disabled');
+                    if ($(this).data('field') === 'enabled') {
+                        var instance = $this.data('instance');
+                        var $headerActive = $customTabs.find('.activated[data-adapter="' + instance + '"]');
+                        if ($(this).prop('checked')) {
+                            $headerActive.show();
+                        } else {
+                            $headerActive.hide();
+                        }
+                    }
                 });
             } else {
                 $this.change(function () {
-                    $('#customs-button-save').button('enable');
+                    that.$dialog.find('.dialog-system-buttons .btn-save').removeClass('disabled');
                 }).keyup(function () {
                     $(this).trigger('change');
                 });
             }
         });
 
-        $('.customs-row-title').click(function () {
-            var $form = $(this).next();
-            var _collapsed = that.main.config['object-customs-collapsed'];
-            _collapsed = _collapsed ? _collapsed.split(',') : [];
-
-            var id = $(this).data('adapter');
-            var pos = _collapsed.indexOf(id);
-            if ($form.is(':visible')) {
-                if (pos === -1) _collapsed.push(id);
-                $form.hide();
-                $(this).removeClass('customs-row-title-expanded').addClass('customs-row-title-collapsed');
-            } else {
-                if (pos !== -1) _collapsed.splice(pos, 1);
-                $form.show();
-                $(this).removeClass('customs-row-title-collapsed').addClass('customs-row-title-expanded');
-            }
-            that.main.saveConfig('object-customs-collapsed', _collapsed.join(','));
-            that.resizeHistory();
-        });
         this.showCustomsData(ids.length > 1 ? null : ids[0]);
-        this.$dialog.find('#customs-button-save').button('disable');
+        this.$dialog.find('.dialog-system-buttons .btn-save').addClass('disabled');
         translateAll();
+        var $collapsible = that.$dialog.find('.collapsible');
+        $collapsible.collapsible({
+            onOpenEnd: function (el) {
+                // store settings
+                var _collapsed = that.main.config['object-customs-collapsed'];
+                _collapsed = _collapsed ? _collapsed.split(',') : [];
+                var id = $(el).data('adapter');
+                var pos = _collapsed.indexOf(id);
+                if (pos !== -1) _collapsed.splice(pos, 1);
+                that.main.saveConfig('object-customs-collapsed', _collapsed.join(','));
+            },
+            onCloseEnd: function (el) {
+                // store settings
+                var _collapsed = that.main.config['object-customs-collapsed'];
+                _collapsed = _collapsed ? _collapsed.split(',') : [];
+                var id = $(el).data('adapter');
+                var pos = _collapsed.indexOf(id);
+                if (pos === -1) _collapsed.push(id);
+                that.main.saveConfig('object-customs-collapsed', _collapsed.join(','));
+            }
+        });
+        that.$dialog.find('input[type="checkbox"]+span').unbind('click').click(function () {
+            var $input = $(this).prev();//.addClass('filled-in');
+            if (!$input.prop('disabled')) {
+                $input.prop('checked', !$input.prop('checked')).trigger('change');
+            }
+        });
+        that.$dialog.find('select').select();
+
+/*
+        $collapsible.find('li').each(function (i) {
+            var id = $(this).data('adapter');
+            if (collapsed.indexOf(id) === -1) {
+                $collapsible.collapsible('open', i);
+            }
+        });*/
+
         this.resizeHistory();
     };
 
@@ -306,30 +335,9 @@ function Customs(main) {
 
         var port  = 0;
         var chart = false;
+        $tabs.find('.tabs').mtabs('select', 'tab-customs-settings');
         if (id) {
-            this.$dialogCustoms.dialog('option', 'height', 600);
-            this.$dialogCustoms.dialog('open');
             $tabs.data('id', id);
-
-            if (!$tabs.data('inited')) {
-                $tabs.data('inited', true);
-                $tabs.tabs({
-                    activate: function (event, ui) {
-                        switch (ui.newPanel.selector) {
-                            case '#tab-customs-table':
-                                that.loadHistoryChart();
-                                break;
-
-                            case '#tab-customs-chart':
-                                that.loadHistoryChart($tabs.data('id'));
-                                break;
-                        }
-                    }
-                });
-            } else {
-                $tabs.tabs('option', 'enabled', [1, 2]);
-                $tabs.tabs({active: 0});
-            }
 
             // Check if chart enabled and set
             for (var i = 0; i < main.instances.length; i++) {
@@ -345,11 +353,17 @@ function Customs(main) {
                 if (chart === 'flot' && port) break;
             }
             that.loadHistoryTable(id);
-            $tabs.tabs('option', 'disabled', (port && chart && that.currentCustoms) ? [] : [2]);
+
+            $tabs.find('.tabs .tab-table').removeClass('disabled');
+
+            if (port && chart && that.currentCustoms) {
+                $tabs.find('.tabs .tab-chart').removeClass('disabled');
+            } else {
+                $tabs.find('.tabs .tab-chart').addClass('disabled');
+            }
         } else {
-            $tabs.tabs({active: 0});
-            $tabs.tabs('option', 'disabled', [1, 2]);
-            this.$dialogCustoms.dialog('open');
+            $tabs.find('.tabs .tab-table').addClass('disabled');
+            $tabs.find('.tabs .tab-chart').addClass('disabled');
         }
     };
 
@@ -359,19 +373,19 @@ function Customs(main) {
                 Accept: 'text/html'
             },
             cache: true,
-            url:   '/adapter/' + adapter + '/custom.html',
+            url:   '/adapter/' + adapter + '/custom_m.html',
             success: function (_data) {
                 callback(null, _data);
             },
             error: function (jqXHR) {
-                // todo: TODO: remove some day (08.2016)
+                // todo: remove some days 2017.12.19
                 $.ajax({
                     headers: {
                         Accept: 'text/html'
                     },
                     cache: true,
-                    url:   '/adapter/' + adapter + '/storage.html',
-                    success: function(_data) {
+                    url:   '/adapter/' + adapter + '/custom.html',
+                    success: function (_data) {
                         callback(null, _data);
                     },
                     error: function (jqXHR) {
@@ -386,7 +400,7 @@ function Customs(main) {
     this.setCustoms = function (ids, callback) {
         var id = ids.pop();
         if (id) {
-            this.$dialog.dialog('option', 'title', _('Adapter settings for %s states', ids.length));
+            this.$dialog.find('#tab-customs-settings .title').html(_('Adapter settings for %s states', ids.length));
 
             that.main.socket.emit('setObject', id, this.main.objects[id], function (err) {
                 if (err) {
@@ -412,222 +426,86 @@ function Customs(main) {
         }, 1000));
     };
 
-    this.prepareCustoms = function () {
-        /*$(document).on('click', '.customs', function () {
-            that.openCustomsDlg($(this).attr('data-id'));
-        });*/
-        var buttons = [
-            {
-                id: 'customs-button-save',
-                text: _('Save'),
-                click: function () {
-                    var $tabs = that.$dialog.find('#customs-tabs');
-                    var ids = $tabs.data('ids');
+    function onButtonSave(e) {
+        e.stopPropagation();
+        e.preventDefault();
 
-                    // do not update charts
-                    that.currentCustoms = null;
-                    var wordDifferent = _('__different__');
 
-                    // collect default values
-                    var $inputs = $tabs.find('input, select');
+        var $tabs = that.$dialog.find('#customs-tabs');
+        var ids = $tabs.data('ids');
 
-                    //that.historyIds = ids;
-                    $inputs.each(function () {
-                        var instance = $(this).data('instance');
-                        var field    = $(this).data('field');
-                        if (!field) return;
+        // do not update charts
+        that.currentCustoms = null;
+        var wordDifferent = _('__different__');
 
-                        var val;
-                        if ($(this).attr('type') === 'checkbox') {
-                            if (this.indeterminate) return;
-                            val = $(this).prop('checked');
-                        } else {
-                            val = $(this).val();
-                        }
-                        // if not changed
-                        if (val === wordDifferent) return;
+        // collect default values
+        var $inputs = $tabs.find('input, select');
 
-                        if (val === 'false') val = false;
-                        if (val === 'true')  val = true;
-                        if (val == parseFloat(val).toString()) {
-                            val = parseFloat(val);
-                        }
+        //that.historyIds = ids;
+        $inputs.each(function () {
+            var instance = $(this).data('instance');
+            var field    = $(this).data('field');
+            if (!field) return;
 
-                        for (var i = 0; i < ids.length; i++) {
-                            var custom = that.main.objects[ids[i]].common.custom;
-                            custom = that.main.objects[ids[i]].common.custom = custom || {};
+            var val;
+            if ($(this).attr('type') === 'checkbox') {
+                if (this.indeterminate) return;
+                val = $(this).prop('checked');
+            } else {
+                val = $(this).val();
+            }
+            // if not changed
+            if (val === wordDifferent) return;
 
-                            if (custom[instance] === undefined) {
-                                var adapter = instance.split('.')[0];
-                                var _default;
-                                // Try to get default values
-                                if (that.defaults[adapter]) {
-                                    _default = that.defaults[adapter](that.main.objects[ids[i]], that.main.objects['system.adapter.' + instance]);
-                                } else {
-                                    _default = that.defaults[adapter];
-                                }
-                                custom[instance] = _default || {};
-                            }
-                            custom[instance][field] = val;
-                        }
-                    });
+            if (val === 'false') val = false;
+            if (val === 'true')  val = true;
+            var f = parseFloat(val);
+            // replace trailing 0 and prefix +
+            if (val.toString().replace(/^\+/, '').replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/,'$1') === f.toString()) {
+                val = f;
+            }
 
-                    for (var i = 0; i < ids.length; i++) {
-                        var found = false;
-                        var custom_ = main.objects[ids[i]].common.custom;
-                        for (var inst in custom_) {
-                            if (!custom_.hasOwnProperty(inst)) continue;
-                            if (!custom_.enabled) {
-                                delete custom_[inst];
-                            } else {
-                                found = true;
-                            }
-                        }
-                        if (!found) {
-                            main.objects[ids[i]].common.custom = null;
-                        }
-                    }
+            for (var i = 0; i < ids.length; i++) {
+                var custom = that.main.objects[ids[i]].common.custom;
+                custom = that.main.objects[ids[i]].common.custom = custom || {};
 
-                    that.setCustoms(ids, function () {
-                        // disable iframe
-                        that.loadHistoryChart();
-                        that.$dialogCustoms.dialog('close');
-                    });
-                }
-            },
-            {
-                text: _('Cancel'),
-                click: function () {
-                    if (!that.$dialog.find('#customs-button-save').is(':disabled')) {
-                        that.main.confirmMessage(_('Are you sure? Changes are not saved.'), _('Question'), 'error_outline', function (result) {
-                            if (result) {
-                                // disable iframe
-                                that.loadHistoryChart();
-                                that.$dialogCustoms.dialog('close');
-                            }
-                        });
+                if (custom[instance] === undefined) {
+                    var adapter = instance.split('.')[0];
+                    var _default;
+                    // Try to get default values
+                    if (typeof that.defaults[adapter] === 'function') {
+                        _default = that.defaults[adapter](that.main.objects[ids[i]], that.main.objects['system.adapter.' + instance]);
                     } else {
-                        // disable iframe
-                        that.loadHistoryChart();
-                        that.$dialogCustoms.dialog('close');
+                        _default = that.defaults[adapter];
                     }
+                    custom[instance] = _default || {};
+                }
+                custom[instance][field] = val;
+            }
+        });
+
+        for (var i = 0; i < ids.length; i++) {
+            var found = false;
+            var custom_ = that.main.objects[ids[i]].common.custom;
+            for (var inst in custom_) {
+                if (!custom_.hasOwnProperty(inst)) continue;
+                if (!custom_[inst].enabled) {
+                    delete custom_[inst];
+                } else {
+                    found = true;
                 }
             }
-        ];
-        /*this.$dialogCustoms.dialog({
-            autoOpen:      false,
-            modal:         true,
-            width:         830,
-            height:        575,
-            closeOnEscape: false,
-            buttons: [
-                {
-                    id: 'customs-button-save',
-                    text: _('Save'),
-                    click: function () {
-                        var $tabs = $('#customs-tabs');
-                        var ids = $tabs.data('ids');
-
-                        // do not update charts
-                        that.currentCustoms = null;
-                        var wordDifferent = _('__different__');
-
-                        // collect default values
-                        var $inputs = $tabs.find('input, select');
-
-                        //that.historyIds = ids;
-                        $inputs.each(function () {
-                            var instance = $(this).data('instance');
-                            var field    = $(this).data('field');
-                            if (!field) return;
-
-                            var val;
-                            if ($(this).attr('type') === 'checkbox') {
-                                if (this.indeterminate) return;
-                                val = $(this).prop('checked');
-                            } else {
-                                val = $(this).val();
-                            }
-                            // if not changed
-                            if (val == wordDifferent) return;
-
-                            if (val === 'false') val = false;
-                            if (val === 'true')  val = true;
-                            if (val == parseFloat(val).toString()) val = parseFloat(val);
-
-                            for (var i = 0; i < ids.length; i++) {
-                                var custom = that.main.objects[ids[i]].common.custom;
-                                custom = that.main.objects[ids[i]].common.custom = custom || {};
-
-                                if (custom[instance] === undefined) {
-                                    var adapter = instance.split('.')[0];
-                                    var _default;
-                                    // Try to get default values
-                                    if (that.defaults[adapter]) {
-                                        _default = that.defaults[adapter](that.main.objects[ids[i]], that.main.objects['system.adapter.' + instance]);
-                                    } else {
-                                        _default = that.defaults[adapter];
-                                    }
-                                    custom[instance] = _default || {};
-                                }
-                                custom[instance][field] = val;
-                            }
-                        });
-
-                        for (var i = 0; i < ids.length; i++) {
-                            var found = false;
-                            for (var inst in main.objects[ids[i]].common.custom) {
-                                if (!main.objects[ids[i]].common.custom[inst].enabled) {
-                                    delete main.objects[ids[i]].common.custom[inst];
-                                } else {
-                                    found = true;
-                                }
-                            }
-                            if (!found) main.objects[ids[i]].common.custom = null;
-                        }
-
-                        that.setCustoms(ids, function () {
-                            // disable iframe
-                            that.loadHistoryChart();
-                            that.$dialogCustoms.dialog('close');
-                        });
-                    }
-                },
-                {
-                    text: _('Cancel'),
-                    click: function () {
-                        if (!$('#customs-button-save').is(':disabled')) {
-                            that.main.confirmMessage(_('Are you sure? Changes are not saved.'), _('Question'), 'error_outline', function (result) {
-                                if (result) {
-                                    // disable iframe
-                                    that.loadHistoryChart();
-                                    that.$dialogCustoms.dialog('close');
-                                }
-                            });
-                        } else {
-                            // disable iframe
-                            that.loadHistoryChart();
-                            that.$dialogCustoms.dialog('close');
-                        }
-                    }
-                }
-            ],
-            open: function (event, ui) {
-                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
-            },
-            close: function () {
-                if (that.historyTimeout) {
-                    clearTimeout(that.historyTimeout);
-                    that.historyTimeout = null;
-                }
-                that.currentCustoms = null;
-                $('#iframe-history-chart').attr('src', '');
-            },
-            resize: function () {
-                that.resizeHistory();
+            if (!found) {
+                that.main.objects[ids[i]].common.custom = null;
             }
-        });*/
-    };
+        }
+
+        that.setCustoms(ids, function () {
+            // disable iframe
+            that.loadHistoryChart();
+            that.main.hideBuildInWindow();
+        });
+    }
 
     this.init = function (ids) {
         if (this.inited) {
@@ -699,10 +577,10 @@ function Customs(main) {
         }
 
         var title;
-        var $historyTableInstance    = $('#history-table-instance');
-        var $historyChartInstance    = $('#history-chart-instance');
-        var $historyTableInstanceBtn = $('#history-table-instance-refresh');
-        var $historyChartInstanceBtn = $('#history-chart-instance-refresh');
+        var $historyTableInstance    = this.$dialog.find('#history-table-instance');
+        var $historyChartInstance    = this.$dialog.find('#history-chart-instance');
+        var $historyTableInstanceBtn = this.$dialog.find('#history-table-instance-refresh');
+        var $historyChartInstanceBtn = this.$dialog.find('#history-chart-instance-refresh');
 
         if (ids.length === 1) {
             title = _('Storage of %s', ids[0]);
@@ -749,7 +627,7 @@ function Customs(main) {
                     .data('id', ids[0])
                     .show()
                     .unbind('click').bind('click', function () {
-                        $('#grid-history-body').html('');
+                        that.$dialog.find('#grid-history-body').html('');
                         that.loadHistoryTable($(this).data('id'));
                     });
                 $historyChartInstanceBtn
@@ -780,12 +658,51 @@ function Customs(main) {
             title = _('Storage of %s states', ids.length);
             this.currentCustoms = null;
         }
+
+        this.$dialog.find('#tab-customs-settings .title').html(title);
+
+        var $tabs = this.$dialog.find('#tabs-customs');
+        $tabs.find('.tabs').mtabs({
+            onShow: function (tab)  {
+                if (!tab) return;
+                var id = $(tab).attr('id');
+                switch (id) {
+                    case 'tab-customs-table':
+                        that.loadHistoryChart();
+                        break;
+
+                    case 'tab-customs-chart':
+                        that.loadHistoryChart($tabs.data('id'));
+                        break;
+                }
+            }
+        });
         this.$dialog.find('#customs-tabs').data('ids', ids);
         this.main.showBuildInWindow(this.$dialog, this);
+
+        that.$dialog.find('.dialog-system-buttons .btn-save').unbind('click').click(onButtonSave);
+        that.$dialog.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            if (!that.$dialog.find('.dialog-system-buttons .btn-save').hasClass('disabled')) {
+                that.main.confirmMessage(_('Are you sure? Changes are not saved.'), _('Question'), 'error_outline', function (result) {
+                    if (result) {
+                        // disable iframe
+                        that.loadHistoryChart();
+                        that.main.hideBuildInWindow();
+                    }
+                });
+            } else {
+                // disable iframe
+                that.loadHistoryChart();
+                that.main.hideBuildInWindow();
+            }
+        });
     };
 
     this.destroy = function () {
         if (this.inited) {
+            that.$dialog.find('.collapsible').collapsible('destroy');
             this.inited = false;
             if (this.currentCustoms) {
                 that.main.unsubscribeStates(this.currentCustoms);

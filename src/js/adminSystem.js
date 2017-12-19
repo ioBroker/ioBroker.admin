@@ -142,10 +142,7 @@ function System(main) {
             }
         }
         if (isFound) $system_activeRepo.val(selectedRepo);
-        // Detect materialize
-        if (window.M && window.M.toast) {
-            $system_activeRepo.select();
-        }
+        $system_activeRepo.select();
     }
 
     // ----------------------------- Certificates show and Edit ------------------------------------------------
@@ -307,127 +304,108 @@ function System(main) {
         });
     }
 
-    this.init = function () {
-        var buttons = [
-            {
-                text: _('Save'),
-                _class: 'btn btn-active',
-                click: function () {
-                    var common = main.systemConfig.common;
-                    var languageChanged   = false;
-                    var activeRepoChanged = false;
+    function onButtonSave() {
+        var common = main.systemConfig.common;
+        var languageChanged   = false;
+        var activeRepoChanged = false;
 
-                    finishEditingRights();
+        finishEditingRights();
 
-                    $dialogSystem.find('.system-settings.value').each(function () {
-                        var $this = $(this);
-                        var id = $this.attr('id');
-                        if (!id) return;
-                        id = id.substring('system_'.length);
+        $dialogSystem.find('.system-settings.value').each(function () {
+            var $this = $(this);
+            var id = $this.attr('id');
+            if (!id) return;
+            id = id.substring('system_'.length);
 
-                        if ($this.attr('type') === 'checkbox') {
-                            common[id] = $this.prop('checked');
-                        } else {
-                            if (id === 'language'   && common.language   !== $this.val()) languageChanged   = true;
-                            if (id === 'activeRepo' && common.activeRepo !== $this.val()) activeRepoChanged = true;
-                            common[id] = $this.val();
-                            if (id === 'isFloatComma') {
-                                common[id] = (common[id] === 'true' || common[id] === true);
-                            }
-                        }
-                    });
-
-                    // Fill the repositories list
-                    var links = {};
-                    if (that.systemRepos) {
-                        for (var r in that.systemRepos.native.repositories) {
-                            if (that.systemRepos.native.repositories.hasOwnProperty(r) && typeof that.systemRepos.native.repositories[r] === 'object' && that.systemRepos.native.repositories[r].json) {
-                                links[that.systemRepos.native.repositories[r].link] = that.systemRepos.native.repositories[r].json;
-                            }
-                        }
-                        that.systemRepos.native.repositories = {};
-                    }
-
-                    var data = table2values('tab-system-repo');
-                    if (that.systemRepos) {
-                        var first = null;
-                        for (var i = 0; i < data.length; i++) {
-                            that.systemRepos.native.repositories[data[i].name] = {link: data[i].link, json: null};
-                            if (links[data[i].link]) that.systemRepos.native.repositories[data[i].name].json = links[data[i].link];
-                            if (!first) first = data[i].name;
-                        }
-                        // Check if the active repository still exist in the list
-                        if (!first) {
-                            if (common.activeRepo) {
-                                activeRepoChanged = true;
-                                common.activeRepo = '';
-                            }
-                        } else if (!that.systemRepos.native.repositories[common.activeRepo]) {
-                            activeRepoChanged = true;
-                            common.activeRepo = first;
-                        }
-                    }
-                    common.diag = $dialogSystem.find('#diagMode').val();
-
-                    if (that.systemCerts) {
-                        // Fill the certificates list
-                        that.systemCerts.native.certificates = {};
-                        data = table2values('tab-system-certs');
-                        for (var j = 0; j < data.length; j++) {
-                            that.systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
-                        }
-
-                        $dialogSystem.find('.system-le-settings.value').each(function () {
-                            var $this = $(this);
-                            var id = $this.data('name');
-
-                            if ($this.attr('type') === 'checkbox') {
-                                that.systemCerts.native.letsEncrypt[id] = $this.prop('checked');
-                            } else {
-                                that.systemCerts.native.letsEncrypt[id] = $this.val();
-                            }
-                        });
-                    }
-
-                    main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
-                        if (!err) {
-                            main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function () {
-                                main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function () {
-                                    if (languageChanged) {
-                                        window.location.reload();
-                                    } else {
-                                        that.main.hideBuildInWindow();
-                                        if (activeRepoChanged) {
-                                            setTimeout(function () {
-                                                main.tabs.adapters.init(true);
-                                            }, 0);
-                                        }
-                                    }
-                                });
-                            });
-                        } else {
-                            main.showError(err);
-                        }
-                    });
-                }
-            },
-            {
-                text: _('Cancel'),
-                _class: 'btn',
-                click: function () {
-                    //$dialogSystem.dialog('close');
-                    var $currentTab = $dialogSystem.data('current');
-                    $dialogSystem.data('current', null);
-                    var $adminBody = main.removeNavBody();
-                    $currentTab.show().appendTo($adminBody);
+            if ($this.attr('type') === 'checkbox') {
+                common[id] = $this.prop('checked');
+            } else {
+                if (id === 'language'   && common.language   !== $this.val()) languageChanged   = true;
+                if (id === 'activeRepo' && common.activeRepo !== $this.val()) activeRepoChanged = true;
+                common[id] = $this.val();
+                if (id === 'isFloatComma') {
+                    common[id] = (common[id] === 'true' || common[id] === true);
                 }
             }
-        ];
+        });
+
+        // Fill the repositories list
+        var links = {};
+        if (that.systemRepos) {
+            for (var r in that.systemRepos.native.repositories) {
+                if (that.systemRepos.native.repositories.hasOwnProperty(r) && typeof that.systemRepos.native.repositories[r] === 'object' && that.systemRepos.native.repositories[r].json) {
+                    links[that.systemRepos.native.repositories[r].link] = that.systemRepos.native.repositories[r].json;
+                }
+            }
+            that.systemRepos.native.repositories = {};
+        }
+
+        var data = table2values('tab-system-repo');
+        if (that.systemRepos) {
+            var first = null;
+            for (var i = 0; i < data.length; i++) {
+                that.systemRepos.native.repositories[data[i].name] = {link: data[i].link, json: null};
+                if (links[data[i].link]) that.systemRepos.native.repositories[data[i].name].json = links[data[i].link];
+                if (!first) first = data[i].name;
+            }
+            // Check if the active repository still exist in the list
+            if (!first) {
+                if (common.activeRepo) {
+                    activeRepoChanged = true;
+                    common.activeRepo = '';
+                }
+            } else if (!that.systemRepos.native.repositories[common.activeRepo]) {
+                activeRepoChanged = true;
+                common.activeRepo = first;
+            }
+        }
+        common.diag = $dialogSystem.find('#diagMode').val();
+
+        if (that.systemCerts) {
+            // Fill the certificates list
+            that.systemCerts.native.certificates = {};
+            data = table2values('tab-system-certs');
+            for (var j = 0; j < data.length; j++) {
+                that.systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
+            }
+
+            $dialogSystem.find('.system-le-settings.value').each(function () {
+                var $this = $(this);
+                var id = $this.data('name');
+
+                if ($this.attr('type') === 'checkbox') {
+                    that.systemCerts.native.letsEncrypt[id] = $this.prop('checked');
+                } else {
+                    that.systemCerts.native.letsEncrypt[id] = $this.val();
+                }
+            });
+        }
+
+        main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
+            if (!err) {
+                main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function () {
+                    main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function () {
+                        if (languageChanged) {
+                            window.location.reload();
+                        } else {
+                            that.main.hideBuildInWindow();
+                            if (activeRepoChanged) {
+                                setTimeout(function () {
+                                    main.tabs.adapters.init(true);
+                                }, 0);
+                            }
+                        }
+                    });
+                });
+            } else {
+                main.showError(err);
+            }
+        });
+    }
+
+    this.init = function () {
         if (!main.systemConfig.error) {
-            $('#button-system')/*.button({
-                icons: {primary: 'ui-icon-gear'},
-                text: false
-            })*/.click(function () {
+            $('#button-system').click(function () {
                 // request all info anew
                 requestInfo(function (error) {
                     if (error) {
@@ -516,13 +494,10 @@ function System(main) {
 
                     that.main.showBuildInWindow($dialogSystem, that);
 
-                    if (!$dialogSystem.find('.dialog-system-buttons').length) {
-                        var $div = $('<nav class="dialog-system-buttons nav-wrapper footer"></nav>');
-                        for (var b = 0; b < buttons.length; b++) {
-                            $div.append($('<a class="' + (buttons[b]._class || '') + '">' + buttons[b].text + '</a>').click(buttons[b].click));
-                        }
-                        $dialogSystem.append($div);
-                    }
+                    $dialogSystem.find('.dialog-system-buttons .btn-save').unbind('click').click(onButtonSave);
+                    $dialogSystem.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function () {
+                        that.main.hideBuildInWindow();
+                    });
 
                     initRepoGrid();
                     initRights();

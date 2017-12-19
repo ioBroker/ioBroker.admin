@@ -1,8 +1,29 @@
-
-@import "../lib/css/iob/common";
 @import "commons";
 
 #tab-adapters {
+
+    .process-adapters {
+        position: absolute;
+        top: 45%;
+        left: 45%;
+        width: 10%;
+        height: 10%;
+        z-index: 2;
+
+        .spinner {
+            animation: rotator @duration linear infinite;
+        }
+
+        .path {
+            stroke-dasharray: @offset;
+            stroke-dashoffset: 0;
+            transform-origin: center;
+            stroke: #4285F4;
+            animation:
+                    dash @duration ease-in-out infinite;
+                    //colors (@duration*4) ease-in-out infinite;
+        }
+    }
     .main-toolbar-table {
         left: -2px;
         a.btn-small {
@@ -57,6 +78,40 @@
                 line-height: @toolbar-size + 4px;
             }
         }
+    }
+
+    .plannedBg, .planned {
+        background-color: rgba(255, 0, 0, 0.1);
+    }
+    .planned {
+        /*background-color: rgba(255,0,0,0.1);*/
+        width: 100%;
+        display: block;
+    }
+
+    .alphaBg, .alpha {
+        background-color: rgba(255, 127, 0, 0.1);
+    }
+
+    .alpha {
+        width: 100%;
+        display: block;
+    }
+
+    .betaBg, .beta {
+        background-color: rgba(255,255,0,0.1);
+    }
+    .beta {
+        width: 100%;
+        display: block;
+    }
+
+    .stableBg, .stable {
+        background-color: rgba(0,255,0,0.1);
+    }
+    .stable {
+        width: 100%;
+        display: block;
     }
 }
 

@@ -940,7 +940,7 @@ function Users(main) {
             '<i class="material-icons">group_add</i></a></div>';
 
         text += '<ul class="collection">';
-        for (var u = 0; u < that.list.length; u++) {
+        for (var u = 0; u < that.groups.length; u++) {
             var name;
             var common;
             if (that.main.objects[that.groups[u]] && that.main.objects[that.groups[u]].common) {
