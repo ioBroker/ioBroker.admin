@@ -1001,7 +1001,7 @@ function Adapters(main) {
                         }
                         text += '<div class="tile class-' + ad.group + '" data-id="' + ad.name + '">';
                         text += '    <div class="title">' + ad.title + '</div>';
-                        if (that.currentOrder === 'popular') {
+                        if (that.currentOrder === 'popular' && ad.stat) {
                             text += '    <div class="stat">' + ad.stat + '</div>';
                         }
                         text += '    <img onerror="this.src=\'img/info-big.png\';" class="icon" src="' + ad.icon + '" />';
