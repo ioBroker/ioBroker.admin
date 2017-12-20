@@ -14,29 +14,49 @@
                 <div style="display: none" id="customs-templates"></div>
             </div>
             <div id="tab-customs-table" class="col s12 page">
-                <div><label class="translate" for="history-table-instance">Show values of instance</label><select id="history-table-instance"></select><button id="history-table-instance-refresh"></button></div>
-                <table id="grid-history" style="width: 100%; max-height: calc(100% - 30px)">
-                    <thead>
-                    <col width="160" valign="top">
-                    <col width="60"  valign="top">
-                    <col width="80"  valign="top">
-                    <col width="140" valign="top">
-                    <col width="140" valign="top">
-                    <tr>
-                        <th class="translate ui-state-default">val</th>
-                        <th class="translate ui-state-default">ack</th>
-                        <th class="translate ui-state-default">from</th>
-                        <th class="translate ui-state-default">ts</th>
-                        <th class="translate ui-state-default">lc</th>
-                    </tr>
-                    </thead>
-                    <tbody id="grid-history-body">
-                    </tbody>
-                </table>
+                <div class="row header">
+                    <div class="col s12 m6 l6">
+                        <h6 class="title"></h6>
+                    </div>
+                    <div class="col s6 m4 l5">
+                        <select class="select-instance" id="history-table-instance"></select>
+                        <label class="translate" for="history-table-instance">Show values of instance</label>
+                    </div>
+                    <div class="col s6 m2 l1">
+                        <a class="btn-floating btn-large waves-effect waves-light blue refresh"><i class="material-icons">refresh</i></a>
+                    </div>
+                </div>
+                <div class="row body">
+                    <table id="grid-history" class="col s12 m12 l8">
+                        <thead>
+                            <tr>
+                                <th class="translate col s3">val</th>
+                                <th class="translate col s1">ack</th>
+                                <th class="translate col s2">from</th>
+                                <th class="translate col s3">ts</th>
+                                <th class="translate col s3">lc</th>
+                            </tr>
+                        </thead>
+                        <tbody id="grid-history-body"></tbody>
+                    </table>
+                </div>
             </div>
             <div id="tab-customs-chart" class="col s12 page">
-                <div><label class="translate" for="history-chart-instance">Show values of instance</label><select id="history-chart-instance"></select><button id="history-chart-instance-refresh"></button></div>
-                <iframe id="iframe-history-chart" style="border: 0; overflow: hidden; height: calc(100% - 120px); width: calc(100% - 30px)"></iframe>
+                <div class="row header">
+                    <div class="col s12 m6 l6">
+                        <h6 class="title"></h6>
+                    </div>
+                    <div class="col s6 m4 l5">
+                        <select class="select-instance"></select>
+                        <label class="translate">Show values of instance</label>
+                    </div>
+                    <div class="col s6 m2 l1">
+                        <a class="btn-floating btn-large waves-effect waves-light blue refresh"><i class="material-icons">refresh</i></a>
+                    </div>
+                </div>
+                <div class="row body">
+                    <iframe id="iframe-history-chart"></iframe>
+                </div>
             </div>
         </div>
     </div>

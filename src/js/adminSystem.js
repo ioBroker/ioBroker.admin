@@ -388,7 +388,7 @@ function System(main) {
                         if (languageChanged) {
                             window.location.reload();
                         } else {
-                            that.main.hideBuildInWindow();
+                            that.main.navHideConfigDialog();
                             if (activeRepoChanged) {
                                 setTimeout(function () {
                                     main.tabs.adapters.init(true);
@@ -492,11 +492,11 @@ function System(main) {
                         }
                     });
 
-                    that.main.showBuildInWindow($dialogSystem, that);
+                    that.main.navShowConfigDialog($dialogSystem, that);
 
                     $dialogSystem.find('.dialog-system-buttons .btn-save').unbind('click').click(onButtonSave);
                     $dialogSystem.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function () {
-                        that.main.hideBuildInWindow();
+                        that.main.navHideConfigDialog();
                     });
 
                     initRepoGrid();

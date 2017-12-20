@@ -23,10 +23,11 @@
       letter-spacing: .5px;
       text-decoration: none;
       text-transform: uppercase;
-      color: #2196f3;
+      color: @main-active-color;
       position: absolute;
       right: 4rem;
       top: 1rem;
+      transition: opacity 1s;
     }
   }
   .collapsible-body {
@@ -54,6 +55,41 @@
       position: relative;
       .select-wrapper + label {
         top: 100%;
+      }
+    }
+  }
+  #tab-customs-chart, #tab-customs-table {
+    .row {
+      position: relative;
+      &.body {
+        overflow: auto;
+        width: 100%;
+        height: calc(~"100% - "@admin-toolbar-height);
+      }
+    }
+    .select-wrapper + label {
+      top: -10px;
+    }
+    // materialize bug
+    .select-wrapper select {
+      display: none !important;
+    }
+  }
+  #tab-customs-chart {
+    iframe {
+      border: 0;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+  }
+  #tab-customs-table {
+    #grid-history {
+      thead tr, thead th {
+        background: @admin-table-header-background;
+      }
+      tr:nth-child(even) {
+        background: @admin-table-row-even-background;
       }
     }
   }

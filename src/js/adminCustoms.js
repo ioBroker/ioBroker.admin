@@ -1,6 +1,7 @@
 function Customs(main) {
     'use strict';
 
+    var STR_DIFFERENT   = '__different__';
     var that            = this;
     this.main           = main;
     this.$dialog        = $('#dialog-customs');
@@ -41,7 +42,7 @@ function Customs(main) {
 
             this.historyTimeout = setTimeout(function () {
                 that.historyTimeout = null;
-                that.loadHistoryTable(that.$dialog.find('#history-table-instance').data('id'), true);
+                that.loadHistoryTable(that.$dialog.find('#tab-customs-table .select-instance').data('id'), true);
             }, 5000);
         }
     };
@@ -49,7 +50,7 @@ function Customs(main) {
     this.initCustomsTabs = function (ids, instances) {
         var $customTabs = this.$dialog.find('#customs-tabs');
         $customTabs.html('');
-        var wordDifferent = _('__different__');
+        var wordDifferent = _(STR_DIFFERENT);
         this.defaults = {};
         var collapsed = this.main.config['object-customs-collapsed'];
         collapsed = collapsed ? collapsed.split(',') : [];
@@ -74,7 +75,7 @@ function Customs(main) {
                         if (commons[inst][_attr] === undefined) {
                             commons[inst][_attr] = sett[_attr];
                         } else if (commons[inst][_attr] !== sett[_attr]) {
-                            commons[inst][_attr] = '__different__';
+                            commons[inst][_attr] = STR_DIFFERENT;
                         }
                     }
                 } else {
@@ -92,7 +93,7 @@ function Customs(main) {
                         if (commons[inst][attr] === undefined) {
                             commons[inst][attr] = _default[attr];
                         } else if (commons[inst][attr] !== _default[attr]) {
-                            commons[inst][attr] = '__different__';
+                            commons[inst][attr] = STR_DIFFERENT;
                         }
                     }
                 }
@@ -112,7 +113,7 @@ function Customs(main) {
                 '<li data-adapter="' + data + '" class="' + (collapsed.indexOf(data) === -1 ? 'active' : '') + '">' +
                 '   <div class="collapsible-header">' +
                 '       <img src="' + img + '" />' + _('Settings for %s', data) +
-                '       <span class="activated" data-adapter="' + data + '" style="' + (!commons[data] || commons[data] === false ? 'display: none' : '') + '">' + _('active') + '</span>' +
+                '       <span class="activated" data-adapter="' + data + '" style="opacity: ' + (commons[data] && (commons[data].enabled === true || commons[data].enabled === STR_DIFFERENT) ? '1' : '0') + '">' + _('active') + '</span>' +
                 '   </div>' +
                 '   <div class="customs-settings collapsible-body">' +
                         $('script[data-template-name="' + adapter + '"]').html() +
@@ -157,7 +158,7 @@ function Customs(main) {
 
             if (commons[instance][attr] !== undefined) {
                 if ($this.attr('type') === 'checkbox') {
-                    if (commons[instance][attr] === '__different__') {
+                    if (commons[instance][attr] === STR_DIFFERENT) {
                         /*$('<select data-field="' + attr + '" data-instance="' + instance + '">\n' +
                          '   <option value="' + wordDifferent + '" selected>' + wordDifferent + '</option>\n' +
                          '   <option value="false">' + _('false') + '</option>\n' +
@@ -169,7 +170,7 @@ function Customs(main) {
                         $this.prop('checked', commons[instance][attr]);
                     }
                 } else {
-                    if (commons[instance][attr] === '__different__') {
+                    if (commons[instance][attr] === STR_DIFFERENT) {
                         if ($this.attr('type') === 'number') {
                             $this.attr('type', 'text');
                         }
@@ -204,9 +205,9 @@ function Customs(main) {
                         var instance = $this.data('instance');
                         var $headerActive = $customTabs.find('.activated[data-adapter="' + instance + '"]');
                         if ($(this).prop('checked')) {
-                            $headerActive.show();
+                            $headerActive.css('opacity', 1);
                         } else {
-                            $headerActive.hide();
+                            $headerActive.css('opacity', 0);
                         }
                     }
                 });
@@ -249,15 +250,7 @@ function Customs(main) {
                 $input.prop('checked', !$input.prop('checked')).trigger('change');
             }
         });
-        that.$dialog.find('select').select();
-
-/*
-        $collapsible.find('li').each(function (i) {
-            var id = $(this).data('adapter');
-            if (collapsed.indexOf(id) === -1) {
-                $collapsible.collapsible('open', i);
-            }
-        });*/
+        $customTabs.find('select').select();
 
         this.resizeHistory();
     };
@@ -272,7 +265,7 @@ function Customs(main) {
             end:        end,
             count:      50,
             aggregate: 'none',
-            instance:   this.$dialog.find('#history-table-instance').val(),
+            instance:   this.$dialog.find('#tab-customs-table .select-instance').val(),
             from:       true,
             ack:        true,
             q:          true
@@ -280,24 +273,30 @@ function Customs(main) {
             setTimeout(function () {
                 if (!err) {
                     var text = '';
+                    var $table = that.$dialog.find('#tab-customs-table');
+                    var th = $table.find('thead tr th');
+                    var classes = [];
+                    th.each(function (i) {
+                        classes[i] = $(this).attr('class').replace('translate', '').trim();
+                    });
                     if (res && res.length) {
                         for (var i = res.length - 1; i >= 0; i--) {
-                            text += '<tr class="grid-history-' + ((i % 2) ? 'odd' : 'even') + '">' +
-                                '<td>' + res[i].val  + '</td>' +
-                                '<td>' + res[i].ack  + '</td>' +
-                                '<td>' + (res[i].from || '').replace('system.adapter.', '').replace('system.', '') + '</td>' +
-                                '<td>' + main.formatDate(res[i].ts) + '</td>' +
-                                '<td>' + main.formatDate(res[i].lc) + '</td>' +
+                            text += '<tr>' +
+                                '   <td class="' + classes[0] + '">' + res[i].val  + '</td>' +
+                                '   <td class="' + classes[1] + '">' + res[i].ack  + '</td>' +
+                                '   <td class="' + classes[2] + '">' + (res[i].from || '').replace('system.adapter.', '').replace('system.', '') + '</td>' +
+                                '   <td class="' + classes[3] + '">' + main.formatDate(res[i].ts) + '</td>' +
+                                '   <td class="' + classes[4] + '">' + main.formatDate(res[i].lc) + '</td>' +
                                 '</tr>\n'
                         }
                     } else {
                         text = '<tr><td colspan="5" style="text-align: center">' + _('No data') + '</td></tr>'
                     }
-                    that.$dialog.find('#grid-history-body').html(text)
+                    $table.find('#grid-history-body').html(text)
                         .data('odd', true);
                 } else {
                     console.error(err);
-                    that.$dialog.find('#grid-history-body').html('<tr><td colspan="5" style="text-align: center" class="error">' + err + '</td></tr>');
+                    $table.find('#grid-history-body').html('<tr><td colspan="5" style="text-align: center" class="error">' + err + '</td></tr>');
                 }
             }, 0);
         });
@@ -323,8 +322,17 @@ function Customs(main) {
             }
             var $chart = this.$dialog.find('#iframe-history-chart');
 
+            var linkTemplate = 'http{isSecure}://{hostname}:{port}/{chart}/index.html?range=1440&zoom=true&axeX=lines&axeY=inside&hoverDetail=true&aggregate=onchange&chartType=step&live=30&instance={instance}&l%5B0%5D%5Bid%5D={id}&l%5B0%5D%5Boffset%5D=0&l%5B0%5D%5Baggregate%5D=minmax&l%5B0%5D%5Bcolor%5D=%231868a8&l%5B0%5D%5Bthickness%5D=1&l%5B0%5D%5Bshadowsize%5D=1&l%5B0%5D%5Bsmoothing%5D=0&l%5B0%5D%5BafterComma%5D=0&l%5B0%5D%5BignoreNull%5D=false&aggregateType=step&aggregateSpan=300&relativeEnd=now&timeType=relative&noBorder=noborder&bg=rgba(0%2C0%2C0%2C0)&timeFormat=%25H%3A%25M&useComma={comma}&noedit=false&animation=0';
+            linkTemplate = linkTemplate.replace('{isSecure}', (isSecure ? 's' : ''));
+            linkTemplate = linkTemplate.replace('{hostname}', location.hostname);
+            linkTemplate = linkTemplate.replace('{port}', port);
+            linkTemplate = linkTemplate.replace('{chart}', chart);
+            linkTemplate = linkTemplate.replace('{instance}', that.$dialog.find('#tab-customs-chart .select-instance').val());
+            linkTemplate = linkTemplate.replace('{id}', encodeURI(id));
+            linkTemplate = linkTemplate.replace('{comma}', that.main.systemConfig && that.main.systemConfig.common && that.main.systemConfig.isFloatComma);
+
             // find out
-            $chart.attr('src', 'http' + (isSecure ? 's' : '') + '://' + location.hostname + ':' + port + '/' + chart + '/index.html?range=1440&zoom=true&axeX=lines&axeY=inside&_ids=' + encodeURI(id) + '&width=' + ($chart.width() - 50) + '&hoverDetail=true&height=' + ($chart.height() - 50) + '&aggregate=onchange&chartType=step&live=30&instance=' + $('#history-chart-instance').val());
+            $chart.attr('src', linkTemplate);//'http' + (isSecure ? 's' : '') + '://' + location.hostname + ':' + port + '/' + chart + '/index.html?range=1440&zoom=true&axeX=lines&axeY=inside&_ids=' + encodeURI(id) + '&width=' + ($chart.width() - 50) + '&hoverDetail=true&height=' + ($chart.height() - 50) + '&aggregate=onchange&chartType=step&live=30&instance=' + that.$dialog.find('#tab-customs-chart .select-instance').val());
         } else {
             this.$dialog.find('#iframe-history-chart').attr('src', '');
         }
@@ -436,7 +444,7 @@ function Customs(main) {
 
         // do not update charts
         that.currentCustoms = null;
-        var wordDifferent = _('__different__');
+        var wordDifferent = _(STR_DIFFERENT);
 
         // collect default values
         var $inputs = $tabs.find('input, select');
@@ -501,11 +509,17 @@ function Customs(main) {
         }
 
         that.setCustoms(ids, function () {
+            that.$dialog.find('.dialog-system-buttons .btn-save').addClass('disabled');
             // disable iframe
             that.loadHistoryChart();
-            that.main.hideBuildInWindow();
+            that.main.navHideConfigDialog();
         });
     }
+
+    // return true if all data are stored
+    this.allStored = function () {
+        return that.$dialog.find('.dialog-system-buttons .btn-save').hasClass('disabled');
+    };
 
     this.init = function (ids) {
         if (this.inited) {
@@ -577,10 +591,10 @@ function Customs(main) {
         }
 
         var title;
-        var $historyTableInstance    = this.$dialog.find('#history-table-instance');
-        var $historyChartInstance    = this.$dialog.find('#history-chart-instance');
-        var $historyTableInstanceBtn = this.$dialog.find('#history-table-instance-refresh');
-        var $historyChartInstanceBtn = this.$dialog.find('#history-chart-instance-refresh');
+        var $historyTableInstance    = this.$dialog.find('#tab-customs-table .select-instance');
+        var $historyChartInstance    = this.$dialog.find('#tab-customs-chart .select-instance');
+        var $historyTableInstanceBtn = this.$dialog.find('#tab-customs-table .refresh');
+        var $historyChartInstanceBtn = this.$dialog.find('#tab-customs-chart .refresh');
 
         if (ids.length === 1) {
             title = _('Storage of %s', ids[0]);
@@ -619,11 +633,6 @@ function Customs(main) {
                     $historyChartInstance.val(this.main.config['object-history-chart'])
                 }
                 $historyTableInstanceBtn
-                    .button({
-                        icons: {primary: 'ui-icon-refresh'},
-                        text: false
-                    })
-                    .css({width: 18, height: 18, 'margin-left': 5})
                     .data('id', ids[0])
                     .show()
                     .unbind('click').bind('click', function () {
@@ -631,11 +640,6 @@ function Customs(main) {
                         that.loadHistoryTable($(this).data('id'));
                     });
                 $historyChartInstanceBtn
-                    .button({
-                        icons: {primary: 'ui-icon-refresh'},
-                        text: false
-                    })
-                    .css({width: 18, height: 18, 'margin-left': 5})
                     .data('id', ids[0])
                     .show()
                     .unbind('click').bind('click', function () {
@@ -650,6 +654,8 @@ function Customs(main) {
             if (this.currentCustoms) {
                 that.main.subscribeStates(this.currentCustoms);
             }
+            this.$dialog.find('#tab-customs-table .title').html(_('Values of %s', ids[0]));
+            this.$dialog.find('#tab-customs-chart .title').html(_('Chart for %s', ids[0]));
         } else {
             $historyTableInstance.hide();
             $historyChartInstance.hide();
@@ -668,17 +674,19 @@ function Customs(main) {
                 var id = $(tab).attr('id');
                 switch (id) {
                     case 'tab-customs-table':
+                        that.$dialog.find('#tab-customs-table .select-instance').select();
                         that.loadHistoryChart();
                         break;
 
                     case 'tab-customs-chart':
+                        that.$dialog.find('#tab-customs-chart .select-instance').select();
                         that.loadHistoryChart($tabs.data('id'));
                         break;
                 }
             }
         });
         this.$dialog.find('#customs-tabs').data('ids', ids);
-        this.main.showBuildInWindow(this.$dialog, this);
+        this.main.navShowConfigDialog(this.$dialog, this);
 
         that.$dialog.find('.dialog-system-buttons .btn-save').unbind('click').click(onButtonSave);
         that.$dialog.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function (e) {
@@ -689,13 +697,13 @@ function Customs(main) {
                     if (result) {
                         // disable iframe
                         that.loadHistoryChart();
-                        that.main.hideBuildInWindow();
+                        that.main.navHideConfigDialog();
                     }
                 });
             } else {
                 // disable iframe
                 that.loadHistoryChart();
-                that.main.hideBuildInWindow();
+                that.main.navHideConfigDialog();
             }
         });
     };

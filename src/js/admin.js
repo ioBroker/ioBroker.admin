@@ -1154,12 +1154,7 @@ $(document).ready(function () {
         }, 10000);
     }
 
-    main.removeNavBody = function () {
-        var $adminBody = $('.admin-sidemenu-body');
-        $adminBody.find('.admin-sidemenu-body-content').hide().appendTo('body');
-        return $adminBody;
-    };
-
+    // ---------------------------- Subscribes ---------------------------------------------
     main.resubscribeStates = function () {
         for (var pattern in main.subscribesStates) {
             if (main.subscribesStates.hasOwnProperty(pattern) && main.subscribesStates[pattern]) {
@@ -1167,6 +1162,7 @@ $(document).ready(function () {
             }
         }
     };
+
     main.resubscribeObjects = function () {
         for (var pattern in main.subscribesObjects) {
             if (main.subscribesObjects.hasOwnProperty(pattern) && main.subscribesObjects[pattern]) {
@@ -1174,11 +1170,13 @@ $(document).ready(function () {
             }
         }
     };
+
     main.resubscribeLogs = function () {
         if (main.subscribesLogs) {
             main.socket.emit('requireLog', true);
         }
     };
+
     main.subscribeStates = function (patterns) {
         if (!patterns) return;
         if (typeof patterns === 'object') {
@@ -1279,7 +1277,8 @@ $(document).ready(function () {
 
     };
 
-    main.showBuildInWindow = function ($dialog, dialogObj) {
+    // ---------------------------- Navigation ---------------------------------------------
+    main.navShowConfigDialog = function ($dialog, dialogObj) {
         var $adminBody = $('.admin-sidemenu-body');
         var $currentTab = $adminBody.find('.admin-sidemenu-body-content');
         $currentTab.hide().appendTo('body');
@@ -1290,60 +1289,103 @@ $(document).ready(function () {
         return $adminBody;
     };
 
-    main.hideBuildInWindow = function ($showPanel) {
-        var $adminBody  = main.removeNavBody();
-        var $currentTab = $adminBody.data('$currentTab');
-        var dialogObj   = $adminBody.data('dialogObj');
-        var $dialog     = $adminBody.data('$dialog');
+    main.navCheckConfigDialog = function ($adminBody, callback) {
+        if (typeof $adminBody === 'function') {
+            callback = $adminBody;
+            $adminBody = null;
+        }
 
-        $dialog && $dialog.hide();
+        $adminBody = $adminBody || $('.admin-sidemenu-body');
+        var dialogObj  = $adminBody.data('dialogObj');
+        if (dialogObj && typeof dialogObj.allStored === 'function') {
+            if (dialogObj.allStored() === false) {
+                main.confirmMessage(_('Some data are not stored. Discard?'), _('Save configuration'), null, function (result) {
+                    callback(!result, $adminBody);
+                });
+                return;
+            }
+        }
+        callback(false, $adminBody);
+    };
+
+    main.navHideConfigDialog = function ($showPanel, callback) {
+        var $adminBody = $('.admin-sidemenu-body');
+        var dialogObj  = $adminBody.data('dialogObj');
         if (dialogObj && typeof dialogObj.destroy === 'function') {
             dialogObj.destroy();
         }
-        $adminBody.data('$currentTab', null);
-        $adminBody.data('dialogObj', null);
-        $adminBody.data('$dialog', null);
+
+
+
+        var $currentTab = $adminBody.data('$currentTab');
+        var $dialog     = $adminBody.data('$dialog');
+
+        $dialog && $dialog.hide();
+
+        $currentTab && $adminBody.data('$currentTab', null);
+        dialogObj   && $adminBody.data('dialogObj', null);
+        $dialog     && $adminBody.data('$dialog', null);
         if ($showPanel) $currentTab = $showPanel;
-        $currentTab && $currentTab.show().appendTo($adminBody);
-        return $adminBody;
+
+        if (!$currentTab.parent().hasClass('admin-sidemenu-body')) {
+            $adminBody.find('.admin-sidemenu-body-content').hide().appendTo('body');
+            $currentTab && $currentTab.show().appendTo($adminBody);
+        }
+
+        callback && callback(null, $adminBody);
     };
 
-    main.selectSideNav = function (tab) {
+    /*main.navHideConfigDialogWithCheck = function ($showPanel, callback) {
+        var $adminBody = $('.admin-sidemenu-body');
+        main.navCheckConfigDialog($adminBody, function (isOk, $adminBody) {
+            if (isOk) {
+                main.navHideConfigDialog($showPanel, callback);
+            } else {
+                callback && callback('data must be stored');
+            }
+        });
+    };*/
+
+    main.navSelectTab = function (tab) {
         var changed = false;
         tab = tab.replace(/^tab-/, '');
-        if (tab !== main.currentTab) {
-            if (tabs[main.currentTab] && typeof tabs[main.currentTab].destroy === 'function') {
-                tabs[main.currentTab].destroy();
-            }
-            main.currentTab = tab;
-            changed = true;
-        }
-        var $tab = $('.admin-sidemenu-items[data-tab="tab-' + tab + '"]');
-        // select menu element
-        $('.admin-sidemenu-items').not($tab).removeClass('admin-sidemenu-active');
-        $tab.addClass('admin-sidemenu-active');
-
-        if (window.location.hash !== '#' + tab) {
-            window.location.hash = '#' + tab;
-        }
-        var $panel = $('#tab-' + tab);
-        var link;
-        if ($panel.length && (link = $panel.data('src'))) {
-            if (link.indexOf('%') === -1) {
-                var $iframe = $panel.find('>iframe');
-                if ($iframe.length && !$iframe.attr('src')) {
-                    $iframe.attr('src', link);
+        main.navCheckConfigDialog(function (err) {
+            if (!err) {
+                if (tab !== main.currentTab) {
+                    if (tabs[main.currentTab] && typeof tabs[main.currentTab].destroy === 'function') {
+                        tabs[main.currentTab].destroy();
+                    }
+                    main.currentTab = tab;
+                    changed = true;
                 }
-            } else {
-                $('#admin_sidemenu_menu').data('problem-link', 'tab-' + tab);
+                var $tab = $('.admin-sidemenu-items[data-tab="tab-' + tab + '"]');
+                // select menu element
+                $('.admin-sidemenu-items').not($tab).removeClass('admin-sidemenu-active');
+                $tab.addClass('admin-sidemenu-active');
+
+                if (window.location.hash !== '#' + tab) {
+                    window.location.hash = '#' + tab;
+                }
+                var $panel = $('#tab-' + tab);
+                var link;
+                if ($panel.length && (link = $panel.data('src'))) {
+                    if (link.indexOf('%') === -1) {
+                        var $iframe = $panel.find('>iframe');
+                        if ($iframe.length && !$iframe.attr('src')) {
+                            $iframe.attr('src', link);
+                        }
+                    } else {
+                        $('#admin_sidemenu_menu').data('problem-link', 'tab-' + tab);
+                    }
+                }
+
+                main.navHideConfigDialog($panel, function () {
+                    if (changed && tabs[tab] && typeof tabs[tab].init === 'function') {
+                        tabs[tab].init();
+                    }
+                });
             }
-        }
-
-        main.hideBuildInWindow($panel);
-
-        if (changed && tabs[tab] && typeof tabs[tab].init === 'function') {
-            tabs[tab].init();
-        }
+        });
     };
 
     // static, just used from many places
@@ -1399,17 +1441,51 @@ $(document).ready(function () {
         return '';
     };
 
+    // "on hash changed" handler
+    function navigation(_tab) {
+        if (typeof _tab !== 'string') _tab = null;
+        if (window.location.hash) {
+            var tab = 'tab-' + (_tab || window.location.hash.slice(1));
+
+            var $item = $('.admin-sidemenu-items[data-tab="' + tab + '"]');
+            if (!$item.length) {
+                $item = $('.admin-sidemenu-items[data-tab="tab-adapters"]');
+            }
+
+            $item.trigger('click');
+
+            var func;
+            if ((func = tabs[tab.substr(4)]) && func.resize) {
+                func.onSelected && func.onSelected();
+
+                setTimeout(function () {
+                    var x = $(window).width();
+                    var y = $(window).height();
+                    if (x < 720) {
+                        x = 720;
+                    }
+                    if (y < 480) {
+                        y = 480;
+                    }
+                    func.resize(x,y);
+                }, 10);
+            }
+        } else {
+            tabs.hosts.init();
+            $('.admin-sidemenu-items[data-tab="tab-adapters"]').trigger('click');
+        }
+    }
+
     var tabsInfo = {
-        'tab-adapters':         {order: 1, icon: 'store'},
-        'tab-instances':        {order: 2, icon: 'subtitles'},
-        'tab-objects':          {order: 3, icon: 'view_list'},
-        'tab-enums':            {order: 4, icon: 'art_track'},
-        'tab-logs':             {order: 5, icon: 'view_headline'},
-        'tab-scenes':           {order: 6, icon: 'subscriptions'},
-        'tab-events':           {order: 7, icon: 'flash_on'},
-        //'tab-groups':           {order: 8, icon: 'group'},
-        'tab-users':            {order: 9, icon: 'person_outline'},
-        'tab-javascript':       {order: 10},
+        'tab-adapters':         {order: 1,  icon: 'store'},
+        'tab-instances':        {order: 2,  icon: 'subtitles'},
+        'tab-objects':          {order: 3,  icon: 'view_list'},
+        'tab-enums':            {order: 4,  icon: 'art_track'},
+        'tab-logs':             {order: 5,  icon: 'view_headline'},
+        'tab-scenes':           {order: 6,  icon: 'subscriptions'},
+        'tab-events':           {order: 7,  icon: 'flash_on'},
+        'tab-users':            {order: 9,  icon: 'person_outline'},
+        'tab-javascript':       {order: 10, icon: 'code'},
         'tab-text2command-0':   {order: 11, icon: 'ac_unit'},
         'tab-hosts':            {order: 12, icon: 'storage'}
     };
@@ -1465,7 +1541,7 @@ $(document).ready(function () {
         }
         $('#admin_sidemenu_menu').find('.admin-sidemenu-menu').html(lines);
 
-        $('.admin-sidemenu-close').click(function () {
+        $('.admin-sidemenu-close').unbind('click').click(function () {
             $('#admin_sidemenu_main').toggleClass('admin-sidemenu-closed');
             $('#admin_sidemenu_menu').toggleClass('admin-sidemenu-closed');
 
@@ -1475,8 +1551,8 @@ $(document).ready(function () {
             }, 400);
         });
 
-        $('.admin-sidemenu-items').click(function () {
-            main.selectSideNav($(this).data('tab'));
+        $('.admin-sidemenu-items').unbind('click').click(function () {
+            main.navSelectTab($(this).data('tab'));
         });
     }
 
@@ -1753,40 +1829,6 @@ $(document).ready(function () {
         }
 
         $('.iframe-in-tab').height(y - 55);
-    }
-
-    function navigation(_tab) {
-        if (typeof _tab !== 'string') _tab = null;
-        if (window.location.hash) {
-            var tab = 'tab-' + (_tab || window.location.hash.slice(1));
-
-            var $item = $('.admin-sidemenu-items[data-tab="' + tab + '"]');
-            if (!$item.length) {
-                $item = $('.admin-sidemenu-items[data-tab="tab-adapters"]');
-            }
-
-            $item.trigger('click');
-
-            var func;
-            if ((func = tabs[tab.substr(4)]) && func.resize) {
-                func.onSelected && func.onSelected();
-
-                setTimeout(function () {
-                   var x = $(window).width();
-                   var y = $(window).height();
-                   if (x < 720) {
-                       x = 720;
-                   }
-                   if (y < 480) {
-                       y = 480;
-                   }
-                   func.resize(x,y);
-               }, 10);
-            }
-        } else {
-            tabs.hosts.init();
-            $('.admin-sidemenu-items[data-tab="tab-adapters"]').trigger('click');
-        }
     }
 
     $(window).resize(resizeGrids);
