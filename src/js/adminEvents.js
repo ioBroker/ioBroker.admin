@@ -166,7 +166,7 @@ function Events(main) {
                 stateOrObj.from = stateOrObj.from.replace('system.adapter.', '');
                 stateOrObj.from = stateOrObj.from.replace('system.', '');
 
-                hdr.from.checkAddOption (stateOrObj.from, function (o) {
+                hdr && hdr.from.checkAddOption(stateOrObj.from, function (o) {
                     return {val: o.replace(/\./g, '-'), name: o};
                 });
 

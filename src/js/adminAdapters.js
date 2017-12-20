@@ -65,24 +65,6 @@ function Adapters(main) {
         occ:          'schedule'
     };
 
-    // function getVersionSpan(version) {
-    //     if (version) {
-    //         var tmp = version.split ('.');
-    //         if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
-    //             version = '<span class="planned" title="' + _ ("planned") + '">' + version + '</span>';
-    //         } else if (tmp[0] === '0' && tmp[1] === '0') {
-    //             version = '<span class="alpha" title="' + _ ("alpha") + '">' + version + '</span>';
-    //         } else if (tmp[0] === '0') {
-    //             version = '<span class="beta" title="' + _ ("beta") + '">' + version + '</span>';
-    //         } else if (version === 'npm error') {
-    //             version = '<span class="error" title="' + _ ("Cannot read version from NPM") + '">' + _ ('npm error') + '</span>';
-    //         } else {
-    //             version = '<span class="stable" title="' + _ ("stable") + '">' + version + '</span>';
-    //         }
-    //     }
-    //     return version;
-    // }
-
     function getVersionClass(version) {
         if (version) {
             var tmp = version.split ('.');
@@ -135,8 +117,6 @@ function Adapters(main) {
                         $tdList.eq(0).find('img').remove();
                         $tdList.eq(0).find('span.fancytree-title').attr('style', 'padding-left: 0px !important');
 
-                        //$(node.tr).addClass('ui-state-highlight');
-
                         // Calculate total count of adapter and count of installed adapter
                         for (var c = 0; c < that.tree.length; c++) {
                             if (that.tree[c].key === node.key) {
@@ -150,14 +130,7 @@ function Adapters(main) {
                                 var title;
                                 //if (!that.onlyInstalled && !that.onlyUpdatable) {
                                 title = '[<span title="' + _('Installed from group') + '">' + installed + '</span> / <span title="' + _('Total count in group') + '">' + that.tree[c].children.length + '</span>]';
-                                //$tdList.eq(1).html(ellipsis('<b>'+installed + '</b> ' + _('of') + '<b> ' + that.tree[c].children.length + '</b> ' + _('Adapters from this Group installed')));
                                 $tdList.eq(1).html(ellipsis('<span class="dark-green">' + installed + '</span> ' + _('of') + '<span class="dark-blue"> ' + that.tree[c].children.length + '</span> ' + _('Adapters from this Group installed')));
-                                // } else {
-                                //     title = '<span title="' + _('Installed from group') + '">' + installed + '</span>';
-                                //     $tdList.eq(1).html(ellipsis('<b>'+installed + '</b> ' + _('Installed from group')));
-                                // }
-
-                                //$tdList.eq(4).html(title).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
                                 break;
                             }
                         }
@@ -165,7 +138,6 @@ function Adapters(main) {
                     }
 
                     $tdList.eq(0).css({'overflow': 'hidden', 'white-space': 'nowrap'});
-                    //$tdList.eq(1).html(that.data[node.key].desc).css({'overflow': 'hidden', "white-space": "nowrap", position: 'relative', 'font-weight': that.data[node.key].bold ? 'bold' : null});
 
                     function setHtml(no, html) {
                         return $tdList.eq(no).html(ellipsis(html));
@@ -181,11 +153,6 @@ function Adapters(main) {
 
                     setHtml(2, obj.keywords).attr('title', obj.keywords);
 
-                    // $tdList.eq(3).html(obj.installed).css({'padding-left': '10px', 'overflow': 'hidden', "white-space": "nowrap"});
-                    // $tdList.eq(4).html(obj.version).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap", position: 'relative'});
-                    // $tdList.eq(5).html(obj.platform).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
-                    // $tdList.eq(6).html(obj.license).css({'text-align': 'center', 'overflow': 'hidden', "white-space": "nowrap"});
-                    // $tdList.eq(7).html(obj.install).css({'text-align': 'center'});
                     $tdList.eq(3).html(obj.installed);
                     $tdList.eq(4).html(obj.version); //.css({ position: 'relative'});
 
@@ -512,6 +479,7 @@ function Adapters(main) {
         that.onlyUpdatable = that.main.config.adaptersOnlyUpdatable || false;
         that.currentFilter = that.main.config.adaptersCurrentFilter || '';
         that.currentType   = that.main.config.adaptersCurrentType   || '';
+        that.currentOrder  = that.main.config.adaptersCurrentOrder  || '';
         that.isCollapsed   = that.main.config.adaptersIsCollapsed ? JSON.parse(that.main.config.adaptersIsCollapsed) : {};
         if (that.currentFilter) {
             that.$tab.find('#adapters-filter').addClass('input-not-empty').val(that.currentFilter);
@@ -869,6 +837,7 @@ function Adapters(main) {
                     that.data[adapter] = {
                         image:      icon ? '<img onerror="this.src=\'img/info-big.png\';" src="' + icon + '" class="adapter-table-icon" />' : '',
                         icon:       icon || '',
+                        stat:        repository[adapter] ? repository[adapter].stat : 0,
                         name:       adapter,
                         title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),
                         desc:       desc,
@@ -936,8 +905,8 @@ function Adapters(main) {
                         version = '';
                         if (installedList && installedList[adapter]) continue;
 
-                        if (repository[adapter] && repository[adapter].version) {
-                            version = repository[adapter].version;
+                        if (repository[adapter] && obj.version) {
+                            version = obj.version;
                             version = getVersionString(version);
                         }
 
@@ -946,8 +915,9 @@ function Adapters(main) {
                         desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
                         that.data[adapter] = {
-                            image:      repository[adapter].extIcon ? '<img onerror="this.src=\'img/info-big.png\';" src="' + repository[adapter].extIcon + '" class="adapter-table-icon" />' : '',
-                            icon:       repository[adapter].extIcon,
+                            image:      obj.extIcon ? '<img onerror="this.src=\'img/info-big.png\';" src="' + obj.extIcon + '" class="adapter-table-icon" />' : '',
+                            icon:       obj.extIcon,
+                            stat:       obj.stat,
                             name:       adapter,
                             title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),
                             desc:       desc,
@@ -991,18 +961,32 @@ function Adapters(main) {
                             }
                             that.tree[igroup].children.push({
                                 title:    that.data[adapter].title || adapter,
-                                icon:     repository[adapter].extIcon,
+                                icon:     obj.extIcon,
                                 desc:     showUploadProgress(group),
                                 key:      adapter
                             });
                         } else {
                             that.tree.push({
-                                icon:     repository[adapter].extIcon,
+                                icon:     obj.extIcon,
                                 title:    that.data[adapter].title || adapter,
                                 key:      adapter
                             });
                         }
                     }
+                }
+
+                if (that.currentOrder === 'popular') {
+                    var akeys = Object.keys(that.data);
+                    akeys.sort(function (a, b) {
+                        if (that.data[a].stat > that.data[b].stat) return -1;
+                        if (that.data[a].stat < that.data[b].stat) return 1;
+                        return 0;
+                    });
+                    var newData = {};
+                    for (var u = 0; u < akeys.length; u++) {
+                        newData[akeys[u]] = that.data[akeys[u]];
+                    }
+                    that.data = newData;
                 }
 
                 // build tiles
@@ -1017,6 +1001,9 @@ function Adapters(main) {
                         }
                         text += '<div class="tile class-' + ad.group + '" data-id="' + ad.name + '">';
                         text += '    <div class="title">' + ad.title + '</div>';
+                        if (that.currentOrder === 'popular') {
+                            text += '    <div class="stat">' + ad.stat + '</div>';
+                        }
                         text += '    <img onerror="this.src=\'img/info-big.png\';" class="icon" src="' + ad.icon + '" />';
                         text += '    <div class="desc">' + ad.desc + '</div>';
                         text += '    <div class="version"><table><tr><td>' + ad.version + (ad.installed ? '</td><td class="installed">' + ad.rawInstalled : '')  + '</td></tr></table></div>';
@@ -1048,6 +1035,21 @@ function Adapters(main) {
                         // hover: true, // Activate on hover
                         gutter: 0
                     });
+
+                    $types = $('#main-toolbar-table-order');
+                    $types.find('.main-toolbar-table-order-item').click(function () {
+                        that.currentOrder = $(this).data('type') || '';
+                        //filterTiles();
+                        that.$tab.find('#main-toolbar-table-order-btn').html(_(that.currentOrder || 'a-z'));
+                        that.main.saveConfig('adaptersCurrentOrder', that.currentOrder);
+                        that._postInit();
+                    });
+                    that.$tab.find('#main-toolbar-table-order-btn').html(_(that.currentOrder || 'a-z')).dropdown({
+                        constrainWidth: false, // Does not change width of dropdown to that of the activator
+                        // hover: true, // Activate on hover
+                        gutter: 0
+                    });
+
                     filterTiles();
                 } else {
                     // build tree
