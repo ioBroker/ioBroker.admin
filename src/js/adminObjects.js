@@ -862,7 +862,7 @@ function Objects(main) {
                             if (that.main.objects[_ids[i]] && that.main.objects[_ids[i]].type === 'state') ids.push(_ids[i]);
                         }
                         if (ids && ids.length) {
-                            that.openCustomsDlg(ids);
+                            that.main.customsDialog.init(ids);
                         } else {
                             that.main.showMessage(_('No states selected!'), '', 'info_outline');
                         }
