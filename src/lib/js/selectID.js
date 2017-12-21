@@ -983,34 +983,34 @@ function filterChanged(e) {
         var attr    = $this.data('name');
         var data    = $this.data('selectId');
         var type    = $this.data('type');
-        var clippy  = $this.parent().hasClass('clippy');
-        var editDialog = $this.parent().hasClass('edit-dialog');
+        var $parent = $(event.currentTarget).parent();
+        // actually $parent === $thisParent, but I dont know
+        var $thisParent = $this.parent();
+        var clippy  = $thisParent.hasClass('clippy');
+        var editDialog = $thisParent.hasClass('edit-dialog');
         var options = $this.data('options');
         var oldVal  = $this.data('old-value');
         var states  = null;
-        var $parent = $(event.currentTarget).parent();
         //var activeNode = $(this).fancytree('getTree').getActiveNode();
 
         if (clippy)  {
-            $this.parent().removeClass('clippy');
-            $this.parent().find('.clippy-button').remove(); // delete clippy buttons because they overlay the edit field
+            $thisParent.removeClass('clippy');
+            $thisParent.find('.clippy-button').remove(); // delete clippy buttons because they overlay the edit field
         }
         if (editDialog) {
-            $this.parent().removeClass('edit-dialog');
-            $this.parent().find('.edit-dialog-button').remove(); // delete edit buttons because they overlay the edit field
+            $thisParent.removeClass('edit-dialog');
+            $thisParent.find('.edit-dialog-button').remove(); // delete edit buttons because they overlay the edit field
         }
-
+        $thisParent.css({overflow: 'visible'});
         $this.unbind('click').removeClass('select-id-quick-edit').css('position', 'relative');
-
-        //var css = 'cursor: pointer; position: absolute;width: 16px; height: 16px; top: 2px; border-radius: 6px; z-index: 3; background-color: lightgray';
-        var css = 'cursor: pointer; position: absolute; width: 16px; height: 16px; top: 4px; border-radius: 0px; vertical-align: middle; z-index: 3;';
 
         type = type === 'boolean' ? 'checkbox' : 'text';
         var text;
+        var editType = type;
 
-        switch(attr) {
+        switch (attr) {
             case 'value':
-                states = getStates (data, id);
+                states = getStates(data, id);
                 if (states) {
                     text = '<select style="width: calc(100% - 50px); z-index: 2">';
                     for (var s in states) {
@@ -1018,6 +1018,7 @@ function filterChanged(e) {
                         text += '<option value="' + s + '">' + states[s] + '</option>';
                     }
                     text += '</select>';
+                    editType = 'select';
                 }
                 break;
             case 'room':
@@ -1027,6 +1028,7 @@ function filterChanged(e) {
                     text += '<option value="' + data.roomEnums[ee] + '" ' + (states.indexOf (data.roomEnums[ee]) !== -1 ? 'selected' : '') + '>' + data.objects[data.roomEnums[ee]].common.name + '</option>';
                 }
                 text += '</select>';
+                editType = 'select';
                 break;
             case 'function':
                 states = findFunctionsForObjectAsIds (data, id) || [];
@@ -1035,10 +1037,11 @@ function filterChanged(e) {
                     text += '<option value="' + data.funcEnums[e] + '" ' + (states.indexOf (data.funcEnums[e]) !== -1 ? 'selected' : '') + '>' + data.objects[data.funcEnums[e]].common.name + '</option>';
                 }
                 text += '</select>';
+                editType = 'select';
                 break;
             default: if (options) {
                 if (typeof options === 'function') {
-                    states = options (id, attr);
+                    states = options(id, attr);
                 } else {
                     states = options;
                 }
@@ -1050,20 +1053,20 @@ function filterChanged(e) {
                         }
                     }
                     text += '</select>';
+                    editType = 'select';
                 } else if (states === false) {
                     return;
                 }
             }
         }
 
-        //text = text || '<input style="' + (type !== 'checkbox' ? 'width: 100%; height: 24px; border-spacing:0;border:0;padding:0;margin:0;padding-left:4px;' : '') + ' z-index: 2" type="' + type + '"/>';
         text = text || '<input style="z-index: 2" type="' + type + '"' + (type !== 'checkbox' ? 'class="objects-inline-edit"' : '') + '/>';
 
         var timeout = null;
 
         $this.html(text +
-            '<div class="ui-icon ui-icon-check        select-id-quick-edit-ok"     style="' + css + '; right: 22px"></div>' +
-            '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '" style="' + css + '; right: 2px"></div>');
+            '<div class="select-id-quick-edit-buttons ' + editType + '"><div class="ui-icon ui-icon-check select-id-quick-edit-ok"></div>' +
+            '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '"></div></div>');
 
         var oldLeftPadding = $this.css('padding-left');
         var oldWidth = $this.css('width');
@@ -1072,12 +1075,8 @@ function filterChanged(e) {
 
         var $input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
 
-        if ($input.width() > $this.width() - 34) {
-            var x = Math.max($input.width() - ($this.width() - 34), 34);
-            $input.css({'padding-right': x});
-        }
-
         if (attr === 'room' || attr === 'function') {
+            editType = 'select';
             $input.multiselect({
                 autoOpen: true,
                 close: function () {
@@ -1085,6 +1084,7 @@ function filterChanged(e) {
                 }
             });
         } else if (attr === 'role')  {
+            editType = 'select';
             $input.autocomplete({
                 minLength: 0,
                 source: data.roles
@@ -1093,14 +1093,21 @@ function filterChanged(e) {
             });
         }
 
+        if (editType === 'select') {
+            if ($input.width() > $this.width() - 34) {
+                var x = Math.max($input.width() - ($this.width() - 34), 34);
+                $input.css({'padding-right': x});
+            }
+        }
         function editDone(ot) {
             if (ot === undefined) ot = $this.data('old-value') || '';
             if (clippy) {
-                $this.parent().addClass('clippy');
+                $thisParent.addClass('clippy');
             }
             if (editDialog) {
-                $this.parent().addClass('edit-dialog');
+                $thisParent.addClass('edit-dialog');
             }
+            $thisParent.css({overflow: 'hidden'});
             $this.css({'padding-left': oldLeftPadding});
             if (!oldWidth) {
                 $this.removeAttr('width');
@@ -1170,7 +1177,7 @@ function filterChanged(e) {
         }
 
         setTimeout(function () {
-            $input.focus().select();
+            $input.focus();//.select();
         }, 100);
     }
 
@@ -1631,7 +1638,7 @@ function filterChanged(e) {
                     }
                 }
             },
-            select: function(event, data) {
+            select: function (event, data) {
                 var _data = $dlg.data('selectId');
                 var newIds = [];
                 var selectedNodes = data.tree.getSelectedNodes();

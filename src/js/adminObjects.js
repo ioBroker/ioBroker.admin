@@ -24,7 +24,9 @@ function Objects(main) {
             buttons: [
                 {
                     text: _('Save'),
-                    click: that.save
+                    click: function () {
+                        that.save();
+                    }
                 },
                 {
                     text: _('Cancel'),
@@ -1095,7 +1097,6 @@ function Objects(main) {
                     }
                 });
             });
-
 
             this.$dialog.dialog('close');
         }

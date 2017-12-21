@@ -465,6 +465,7 @@ gulp.task('compressMaterialize', function () {
         './src/materialize-css/js/select.js',
         './src/materialize-css/js/forms.js',
         './src/materialize-css/js/collapsible.js',
+        './src/materialize-css/js/datepicker.js',
         './src/colorpicker/js/materialize-colorpicker.js'
     ])
     .pipe(sourcemaps.init())
@@ -552,14 +553,14 @@ gulp.task('compressVendor', function () {
         './src/lib/js/jquery-1.11.2.min.js',
         './src/lib/js/jquery-ui.min.js',
         './src/lib/js/colResizable-1.6.min.js',
-//        './src/lib/js/jquery.multiselect-1.13.min.js',
+        './src/lib/js/jquery.multiselect-1.13.min.js',
         './src/lib/js/semver.min.js',
         './src/lib/js/ace-1.2.0/ace.js',
         './src/lib/js/loStorage.js',
         './src/lib/js/translate.js',
         './src/lib/js/jquery.fancytree-all.min.js',
         './src/lib/js/jquery.treetable.js',
-        './src/lib/js/selectID.js',
+      //  './src/lib/js/selectID.js',
         './src/lib/js/cron/jquery.cron.js',
         './src/lib/js/cron/cron2text.js'
     ])

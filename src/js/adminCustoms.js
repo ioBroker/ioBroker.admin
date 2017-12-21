@@ -274,7 +274,7 @@ function Customs(main) {
                 if (!err) {
                     var text = '';
                     var $table = that.$dialog.find('#tab-customs-table');
-                    var th = $table.find('thead tr th');
+                    var th = $table.find('.body thead tr th');
                     var classes = [];
                     th.each(function (i) {
                         classes[i] = $(this).attr('class').replace('translate', '').trim();
@@ -425,19 +425,22 @@ function Customs(main) {
     };
 
     this.resizeHistory = function () {
+        // resize only if chart is visible
         var $iFrame = this.$dialog.find('#iframe-history-chart');
-        var timeout = $iFrame.data('timeout');
-        if (timeout) clearTimeout(timeout);
+        if ($iFrame.attr('src')) {
+            var timeout = $iFrame.data('timeout');
+            if (timeout) clearTimeout(timeout);
 
-        $iFrame.data('timeout', setTimeout(function () {
-            that.loadHistoryChart(that.$dialog.find('#tabs-customs').data('id'));
-        }, 1000));
+            $iFrame.data('timeout', setTimeout(function () {
+                that.$dialog.find('#iframe-history-chart').data('timeout', null);
+                that.loadHistoryChart(that.$dialog.find('#tabs-customs').data('id')); // reinit iframe
+            }, 1000));
+        }
     };
 
     function onButtonSave(e) {
         e.stopPropagation();
         e.preventDefault();
-
 
         var $tabs = that.$dialog.find('#customs-tabs');
         var ids = $tabs.data('ids');
@@ -511,7 +514,7 @@ function Customs(main) {
         that.setCustoms(ids, function () {
             that.$dialog.find('.dialog-system-buttons .btn-save').addClass('disabled');
             // disable iframe
-            that.loadHistoryChart();
+            that.loadHistoryChart(); // disable iframe
             that.main.navHideConfigDialog();
         });
     }
@@ -623,7 +626,7 @@ function Customs(main) {
                     .unbind('change')
                     .bind('change', function () {
                         that.main.saveConfig('object-history-chart', $historyChartInstance.val());
-                        that.loadHistoryChart($(this).data('id'));
+                        that.loadHistoryChart($(this).data('id')); // reinit iframe
                     });
 
                 if (this.main.config['object-history-table'] !== undefined) {
@@ -643,8 +646,77 @@ function Customs(main) {
                     .data('id', ids[0])
                     .show()
                     .unbind('click').bind('click', function () {
-                        that.loadHistoryChart($(this).data('id'));
+                        that.loadHistoryChart($(this).data('id')); // reinit iframe
                     });
+
+                var yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                var i18n = {
+                    today: _('Today'),
+                    clear: _('Clear'),
+                    done: _('Ok'),
+                    months        : [_('January'),_('February'),_('March'),_('April'),_('May'),_('June'),_('July'),_('August'),_('September'),_('October'),_('November'),_('December')],
+                    monthsShort   : [_('Jan'),_('Feb'),_('Mar'),_('Apr'),_('May'),_('Jun'),_('Jul'),_('Aug'),_('Sep'),_('Oct'),_('Nov'),_('Dec')],
+                    weekdaysShort : [_('Sun'),_('Mon'),_('Tue'),_('Wed'),_('Thu'),_('Fri'),_('Sat')],
+                    weekdays      : [_('Sunday'),_('Monday'),_('Tuesday'),_('Wednesday'),_('Thursday'),_('Friday'),_('Saturday')],
+                    weekdaysAbbrev : ['S','M','T','W','T','F','S']
+                };
+                for (var n = 0; n < i18n.weekdaysAbbrev.length; n++) {
+                    i18n.weekdaysAbbrev[n] = i18n.weekdaysShort[n][0];
+                }
+                var $tableDateFrom = this.$dialog.find('#tab-customs-table .datepicker.date-from');
+                var $tableDateTo   = this.$dialog.find('#tab-customs-table .datepicker.date-to');
+                var $chartDateFrom = this.$dialog.find('#tab-customs-chart .datepicker.date-from');
+                var $chartDateTo   = this.$dialog.find('#tab-customs-chart .datepicker.date-to');
+                $tableDateFrom.datepicker({
+                    defaultDate: yesterday,
+                    showDaysInNextAndPreviousMonths: true,
+                    minYear: 2014,
+                    maxYear: 2032,
+                    i18n: i18n,
+                    setDefaultDate: true,
+                    firstDay: 1,
+                    onSelect: function (ui, date) {
+                        $(ui).datepicker('close');
+                    }
+                });
+                $chartDateFrom.datepicker({
+                    defaultDate: yesterday,
+                    showDaysInNextAndPreviousMonths: true,
+                    minYear: 2014,
+                    maxYear: 2032,
+                    i18n: i18n,
+                    setDefaultDate: true,
+                    firstDay: 1,
+                    onSelect: function (ui, date) {
+                        $chartDateFrom.datepicker('close');
+                    }
+                });
+
+                $tableDateTo.datepicker({
+                    defaultDate: new Date(),
+                    showDaysInNextAndPreviousMonths: true,
+                    minYear: 2014,
+                    maxYear: 2032,
+                    i18n: i18n,
+                    setDefaultDate: true,
+                    firstDay: 1,
+                    onSelect: function (ui, date) {
+                        $tableDateTo.datepicker('close');
+                    }
+                });
+                $chartDateTo.datepicker({
+                    defaultDate: new Date(),
+                    showDaysInNextAndPreviousMonths: true,
+                    minYear: 2014,
+                    maxYear: 2032,
+                    i18n: i18n,
+                    setDefaultDate: true,
+                    firstDay: 1,
+                    onSelect: function (ui, date) {
+                        $chartDateTo.datepicker('close');
+                    }
+                });
             } else {
                 $historyTableInstance.hide();
                 $historyChartInstance.hide();
@@ -673,14 +745,18 @@ function Customs(main) {
                 if (!tab) return;
                 var id = $(tab).attr('id');
                 switch (id) {
+                    case 'tab-customs-settings':
+                        that.loadHistoryChart(); // disable iframe
+                        break;
+
                     case 'tab-customs-table':
                         that.$dialog.find('#tab-customs-table .select-instance').select();
-                        that.loadHistoryChart();
+                        that.loadHistoryChart(); // disable iframe
                         break;
 
                     case 'tab-customs-chart':
                         that.$dialog.find('#tab-customs-chart .select-instance').select();
-                        that.loadHistoryChart($tabs.data('id'));
+                        that.loadHistoryChart($tabs.data('id')); // init iframe
                         break;
                 }
             }
@@ -710,8 +786,10 @@ function Customs(main) {
 
     this.destroy = function () {
         if (this.inited) {
-            that.$dialog.find('.collapsible').collapsible('destroy');
+            this.$dialog.find('.collapsible').collapsible('destroy');
             this.inited = false;
+            // disable iframe
+            this.loadHistoryChart();
             if (this.currentCustoms) {
                 that.main.unsubscribeStates(this.currentCustoms);
             }

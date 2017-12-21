@@ -91,25 +91,34 @@ table.objects-list-table td {
 
 /** inline edit **/
 /**/
-.select-id-quick-edit-ok,
-.select-id-quick-edit-cancel {
-    right: 22px;
-    cursor: pointer;
+.select-id-quick-edit-buttons {
     position: absolute;
-    width: 16px;
-    height: 16px;
-    top: 4px;
-    border-radius: 0;
-    vertical-align: middle;
     z-index: 3;
+    top: 2px;
+    right: 5px;
+    &.text {
+        top: 23px;
+        .select-id-quick-edit-ok,
+        .select-id-quick-edit-cancel {
+            border: 1px solid gray;
+            background-color: white;
+        }
+    }
+    .select-id-quick-edit-ok,
+    .select-id-quick-edit-cancel {
+        cursor: pointer;
+        width: 16px;
+        height: 16px;
+        border-radius: 0;
+        display: inline-block;
+    }
 }
-.select-id-quick-edit-cancel {
-    right: 6px;
-}
-select ~ .select-id-quick-edit-ok,        // only if type = combobx
+
+
+/*select ~ .select-id-quick-edit-ok,        // only if type = combobx
 select ~ .select-id-quick-edit-cancel {   // only if type = combobx
     top:1px;
-}
+}*/
 
 @quick-edit-padding: 4px;
 .objects-inline-edit {
