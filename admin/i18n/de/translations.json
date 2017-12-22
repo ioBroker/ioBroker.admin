@@ -15,7 +15,7 @@
   "Public certificate:": "Öffentliches Zertifikat:",
   "Run as:": "Laufen als:",
   "Secure(HTTPS):": "Verschlüsselung(HTTPS):",
-  "Set certificates or load it first in the system settings (right top).": "Setze Zertifikate oder installiere sie erst in den Systemeinstellungen (oben rechts).",
+  "Set certificates or load it first in the system settings (right top).": "Setze Zertifikate oder installiere diese erst in den Systemeinstellungen (oben rechts).",
   "Use Lets Encrypt certificates:": "Let's Encrypt Zertifikate benutzen:",
   "Use this instance for automatic update:": "Benutze diese Instanz für automatische Updates:",
   "every 12 hours": "alle 12 Stunden",
