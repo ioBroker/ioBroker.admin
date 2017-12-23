@@ -61,6 +61,7 @@ $(document).ready(function () {
         states:         {},
         currentHost:    '',
         currentTab:     null,
+        currentDialog:  null,
         currentUser:    '',
         subscribesStates: {},
         subscribesObjects: {},
@@ -71,6 +72,7 @@ $(document).ready(function () {
         objectsLoaded:  false,
         waitForRestart: false,
         tabs:           null,
+        dialogs:        {},
         selectId:       null,
         config:         {},
         addEventMessage: function (id, stateOrObj, isMessage, isState) {
@@ -317,7 +319,8 @@ $(document).ready(function () {
                         icons: {primary: ' ui-icon-search'},
                         text: false
                     })*/.click(function () {
-                        navigation('tab-instances');
+                        main.navigate({tab: 'instances'});
+
                         // open configuration dialog
                         main.tabs.instances.showConfigDialog('system.adapter.discovery.0');
                     }).attr('title', _('Device discovery'));
@@ -547,8 +550,10 @@ $(document).ready(function () {
 
     main.instances     = tabs.instances.list;
     main.tabs          = tabs;
-    main.systemDialog  = new System(main);
-    main.customsDialog = new Customs(main);
+    main.dialogs       = {
+        system: new System(main),
+        customs: new Customs(main)
+    };
 
     var stdout;
     var cmdCallback    = null;
@@ -647,10 +652,10 @@ $(document).ready(function () {
             window.location.href = '/logout/';
         });
 
-        main.systemDialog.init();
-
-        window.onhashchange = navigation;
-        navigation();
+        window.onhashchange = function () {
+            main.navigateDo();
+        };
+        main.navigateDo();
     }
 
     function initHtmlTabs() {
@@ -790,7 +795,7 @@ $(document).ready(function () {
                 text += '<li><a href="#' + name + '">' + buttonName + '</a></li>\n';
 
                 if (!$('#' + name).length) {
-                    var div = '<div id="' + name + '" data-name="' + buttonName + '" class="tab-custom admin-sidemenu-body-content ' + (isReplace ? 'link-replace' : '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
+                    var div = '<div id="' + name + '" data-name="' + buttonName + '" class="tab-custom ' + (isReplace ? 'link-replace' : '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
                         '<iframe class="iframe-in-tab" style="border: 0; solid #FFF; display: block; left: 0; top: 0; width: 100%; height: 100%"' +
                         '></iframe></div>';
                     $(div).hide().appendTo($('body'));
@@ -1001,9 +1006,11 @@ $(document).ready(function () {
                 main.initHostsList(true);
 
                 initTabs();
+                // hide or show system button
+                main.dialogs.system.prepare();
 
                 // If customs enabled
-                main.customsDialog.check();
+                main.dialogs.customs.check();
 
                 // Detect node.js version
                 checkNodeJsVersions(tabs.hosts.list);
@@ -1043,7 +1050,7 @@ $(document).ready(function () {
             // Update alive and connected of main.instances
             tabs.instances.stateChange(id, state);
             tabs.adapters.stateChange(id, state);
-            main.customsDialog.stateChange(id, state);
+            main.dialogs.customs.stateChange(id, state);
 
             if (main.selectId) {
                 main.selectId.selectId('state', id, state);
@@ -1278,112 +1285,140 @@ $(document).ready(function () {
     };
 
     // ---------------------------- Navigation ---------------------------------------------
-    main.navShowConfigDialog = function ($dialog, dialogObj) {
-        var $adminBody = $('.admin-sidemenu-body');
-        var $currentTab = $adminBody.find('.admin-sidemenu-body-content');
-        $currentTab.hide().appendTo('body');
-        $dialog.show().appendTo('.admin-sidemenu-body');
-        $adminBody.data('$currentTab', $currentTab);
-        $adminBody.data('dialogObj',   dialogObj);
-        $adminBody.data('$dialog',     $dialog);
-        return $adminBody;
-    };
-
-    main.navCheckConfigDialog = function ($adminBody, callback) {
-        if (typeof $adminBody === 'function') {
-            callback = $adminBody;
-            $adminBody = null;
-        }
-
-        $adminBody = $adminBody || $('.admin-sidemenu-body');
-        var dialogObj  = $adminBody.data('dialogObj');
-        if (dialogObj && typeof dialogObj.allStored === 'function') {
-            if (dialogObj.allStored() === false) {
+    main.navigateCheckDialog = function (callback) {
+        if (main.currentDialog && main.dialogs[main.currentDialog] && typeof main.dialogs[main.currentDialog].allStored === 'function') {
+            if (main.dialogs[main.currentDialog].allStored() === false) {
                 main.confirmMessage(_('Some data are not stored. Discard?'), _('Save configuration'), null, function (result) {
-                    callback(!result, $adminBody);
+                    callback(!result);
                 });
                 return;
             }
         }
-        callback(false, $adminBody);
+        callback(false);
     };
 
-    main.navHideConfigDialog = function ($showPanel, callback) {
-        var $adminBody = $('.admin-sidemenu-body');
-        var dialogObj  = $adminBody.data('dialogObj');
-        if (dialogObj && typeof dialogObj.destroy === 'function') {
-            dialogObj.destroy();
+    main.navigate = function (options) {
+        if (!options) {
+            options = {};
+        }
+        if (typeof options === 'string') {
+            options = {
+                tab:    options,
+                dialog: '',
+                params: ''
+            };
         }
 
-
-
-        var $currentTab = $adminBody.data('$currentTab');
-        var $dialog     = $adminBody.data('$dialog');
-
-        $dialog && $dialog.hide();
-
-        $currentTab && $adminBody.data('$currentTab', null);
-        dialogObj   && $adminBody.data('dialogObj', null);
-        $dialog     && $adminBody.data('$dialog', null);
-        if ($showPanel) $currentTab = $showPanel;
-
-        if (!$currentTab.parent().hasClass('admin-sidemenu-body')) {
-            $adminBody.find('.admin-sidemenu-body-content').hide().appendTo('body');
-            $currentTab && $currentTab.show().appendTo($adminBody);
+        // get actual tab
+        if (!options.tab) {
+            var parts   = window.location.hash.split('/');
+            options.tab = parts[0].replace(/^#/, '').replace(/^tab-/, '');
         }
 
-        callback && callback(null, $adminBody);
+        window.location.hash = '#tab-' + options.tab + (options.dialog ? '/' + options.dialog + (options.params ? '/' + options.params : '') : '');
     };
 
-    /*main.navHideConfigDialogWithCheck = function ($showPanel, callback) {
-        var $adminBody = $('.admin-sidemenu-body');
-        main.navCheckConfigDialog($adminBody, function (isOk, $adminBody) {
-            if (isOk) {
-                main.navHideConfigDialog($showPanel, callback);
-            } else {
-                callback && callback('data must be stored');
-            }
-        });
-    };*/
-
-    main.navSelectTab = function (tab) {
-        var changed = false;
-        tab = tab.replace(/^tab-/, '');
-        main.navCheckConfigDialog(function (err) {
+    // Router
+    main.navigateDo = function () {
+        // ignore if hash not changed
+        if (window.location.hash === main.currentHash) {
+            return;
+        }
+        // if config dialog opened and has some unsaved data
+        main.navigateCheckDialog(function (err) {
             if (!err) {
-                if (tab !== main.currentTab) {
+                main.currentHash = window.location.hash;
+                // hash has following structure => #tabName/dialogName/ids
+                var parts  = main.currentHash.split('/');
+                var tab    = parts[0].replace(/^#/, '').replace(/^tab-/, '');
+                var dialog = parts[1];
+                var params = parts[2];
+
+                // set default page
+                if (!tab || !tabs[tab]) {
+                    tab = 'adapters';
+                }
+                var $adminBody = $('.admin-sidemenu-body');
+                var $actualTab = $adminBody.find('.admin-sidemenu-body-content');
+                var $panel     = $('#tab-' + tab);
+
+                // if tab was changed
+                if (main.currentTab !== tab) {
+                    // destroy actual tab
                     if (tabs[main.currentTab] && typeof tabs[main.currentTab].destroy === 'function') {
                         tabs[main.currentTab].destroy();
                     }
                     main.currentTab = tab;
-                    changed = true;
+
+                    $actualTab.hide().appendTo('body');
+                    if (!dialog) {
+                        $panel.addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
+                        $actualTab = $panel;
+                    }
+
+                    // init new tab
+                    if (tabs[tab] && typeof tabs[tab].init === 'function') {
+                        tabs[tab].init();
+                    }
+
+                    var link;
+                    // if iframe like node-red
+                    if ($panel.length && (link = $panel.data('src'))) {
+                        if (link.indexOf('%') === -1) {
+                            var $iframe = $panel.find('>iframe');
+                            if ($iframe.length && !$iframe.attr('src')) {
+                                $iframe.attr('src', link);
+                            }
+                        } else {
+                            $('#admin_sidemenu_menu').data('problem-link', 'tab-' + tab);
+                        }
+                    }
+
+                    // trigger resize
+                    var func;
+                    if ((func = tabs[tab.substr(4)]) && func.resize) {
+                        func.onSelected && func.onSelected();
+
+                        setTimeout(function () {
+                            var x = $(window).width();
+                            var y = $(window).height();
+                            if (x < 720) {
+                                x = 720;
+                            }
+                            if (y < 480) {
+                                y = 480;
+                            }
+                            func.resize(x,y);
+                        }, 10);
+                    }
                 }
-                var $tab = $('.admin-sidemenu-items[data-tab="tab-' + tab + '"]');
+
                 // select menu element
+                var  $tab = $('.admin-sidemenu-items[data-tab="tab-' + tab + '"]');
                 $('.admin-sidemenu-items').not($tab).removeClass('admin-sidemenu-active');
                 $tab.addClass('admin-sidemenu-active');
 
-                if (window.location.hash !== '#' + tab) {
-                    window.location.hash = '#' + tab;
-                }
-                var $panel = $('#tab-' + tab);
-                var link;
-                if ($panel.length && (link = $panel.data('src'))) {
-                    if (link.indexOf('%') === -1) {
-                        var $iframe = $panel.find('>iframe');
-                        if ($iframe.length && !$iframe.attr('src')) {
-                            $iframe.attr('src', link);
+                // if some dialog opened or must be shown
+                if (main.currentDialog !== dialog) {
+                    // destroy it
+                    if (main.dialogs[main.currentDialog] && typeof main.dialogs[main.currentDialog].destroy === 'function') {
+                        main.dialogs[main.currentDialog].destroy();
+                    }
+                    main.currentDialog = dialog;
+                    if (dialog && main.dialogs[dialog]) {
+                        if (typeof main.dialogs[dialog].init === 'function') {
+                            main.dialogs[dialog].init(params ? params.split(',') : undefined);
                         }
-                    } else {
-                        $('#admin_sidemenu_menu').data('problem-link', 'tab-' + tab);
+                        $actualTab.hide().appendTo('body');
+                        $('#dialog-' + dialog).addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
+                    } else if ($actualTab.attr('id') !== $panel.attr('id')) {
+                        $actualTab.hide().appendTo('body');
+                        $panel.addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
                     }
                 }
-
-                main.navHideConfigDialog($panel, function () {
-                    if (changed && tabs[tab] && typeof tabs[tab].init === 'function') {
-                        tabs[tab].init();
-                    }
-                });
+            } else {
+                // restore hash link
+                window.location.hash = main.currentHash || '';
             }
         });
     };
@@ -1441,41 +1476,6 @@ $(document).ready(function () {
         return '';
     };
 
-    // "on hash changed" handler
-    function navigation(_tab) {
-        if (typeof _tab !== 'string') _tab = null;
-        if (window.location.hash) {
-            var tab = 'tab-' + (_tab || window.location.hash.slice(1));
-
-            var $item = $('.admin-sidemenu-items[data-tab="' + tab + '"]');
-            if (!$item.length) {
-                $item = $('.admin-sidemenu-items[data-tab="tab-adapters"]');
-            }
-
-            $item.trigger('click');
-
-            var func;
-            if ((func = tabs[tab.substr(4)]) && func.resize) {
-                func.onSelected && func.onSelected();
-
-                setTimeout(function () {
-                    var x = $(window).width();
-                    var y = $(window).height();
-                    if (x < 720) {
-                        x = 720;
-                    }
-                    if (y < 480) {
-                        y = 480;
-                    }
-                    func.resize(x,y);
-                }, 10);
-            }
-        } else {
-            tabs.hosts.init();
-            $('.admin-sidemenu-items[data-tab="tab-adapters"]').trigger('click');
-        }
-    }
-
     var tabsInfo = {
         'tab-adapters':         {order: 1,  icon: 'store'},
         'tab-instances':        {order: 2,  icon: 'subtitles'},
@@ -1487,7 +1487,7 @@ $(document).ready(function () {
         'tab-users':            {order: 9,  icon: 'person_outline'},
         'tab-javascript':       {order: 10, icon: 'code'},
         'tab-text2command-0':   {order: 11, icon: 'ac_unit'},
-        'tab-hosts':            {order: 12, icon: 'storage'}
+        'tab-node-red-0':       {order: 12, icon: 'storage'}
     };
 
     function initSideNav() {
@@ -1552,7 +1552,7 @@ $(document).ready(function () {
         });
 
         $('.admin-sidemenu-items').unbind('click').click(function () {
-            main.navSelectTab($(this).data('tab'));
+            window.location.hash = '#' + $(this).data('tab');
         });
     }
 
@@ -1632,10 +1632,10 @@ $(document).ready(function () {
                     }
 
                     main.socket.emit('getObject', 'system.repositories', function (errRepo, repo) {
-                        main.systemDialog.systemRepos = repo;
+                        main.dialogs.system.systemRepos = repo;
                         main.socket.emit('getObject', 'system.certificates', function (errCerts, certs) {
                             setTimeout(function () {
-                                main.systemDialog.systemCerts = certs;
+                                main.dialogs.system.systemCerts = certs;
                                 if (errConfig === 'permissionError') {
                                     main.systemConfig = {common: {language: systemLang}, error: 'permissionError'};
                                 } else {
@@ -1776,7 +1776,6 @@ $(document).ready(function () {
                                 //tabs.groups.prepare();
                                 tabs.enums.prepare();
                                 tabs.events.prepare();
-                                main.systemDialog.prepare();
                                 // TABS
                                 // resizeGrids();
 

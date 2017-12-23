@@ -372,9 +372,9 @@ function Objects(main) {
     };
 
     this.reinit = function () {
-        this.main.customsDialog.check();
+        this.main.dialogs.customs.check();
         if (this.$grid) {
-                selectId('reinit');
+            selectId('reinit');
         }
     };
 
@@ -571,8 +571,8 @@ function Objects(main) {
         }*/
 
         if (typeof this.$grid !== 'undefined') {
-            if (this.main.customsDialog.customEnabled === null) {
-                this.main.customsDialog.check();
+            if (this.main.dialogs.customs.customEnabled === null) {
+                this.main.dialogs.customs.check();
             }
 
             // var x = $(window).width();
@@ -587,7 +587,7 @@ function Objects(main) {
                 states:   this.main.states,
                 noDialog: true,
                 name:     'admin-objects',
-                useHistory: this.main.customsDialog.customEnabled,
+                useHistory: this.main.dialogs.customs.customEnabled,
                 showButtonsForNotExistingObjects: true,
                 expertModeRegEx: /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin|^script\./,
                 texts: {
@@ -675,13 +675,14 @@ function Objects(main) {
                             primary: 'ui-icon-gear'
                         },
                         click: function (id) {
-                            that.main.customsDialog.init(id);
+                            that.main.dialogs.customs.ids = null;
+                            that.main.navigate({dialog: 'customs', params: id});
                         },
                         width:  26,
                         height: 20,
                         match: function (id) {
                             // Show special button only if one of supported adapters is enabled
-                            if (that.main.objects[id] && that.main.customsDialog.customEnabled && !id.match(/\.messagebox$/) && that.main.objects[id].type === 'state') {
+                            if (that.main.objects[id] && that.main.dialogs.customs.customEnabled && !id.match(/\.messagebox$/) && that.main.objects[id].type === 'state') {
                                 // Check if some custom settings enabled
                                 var enabled = false;
                                 if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.custom) {
@@ -853,7 +854,7 @@ function Objects(main) {
                 $('#dialog-new-object').dialog('option', 'title', _('Add new object: %s', id));
             });
 
-            if (this.main.customsDialog.customEnabled) {
+            if (this.main.dialogs.customs.customEnabled) {
                 settings.customButtonFilter = {
                     icons:    {primary: 'ui-icon-gear'},
                     text:     false,
@@ -864,7 +865,14 @@ function Objects(main) {
                             if (that.main.objects[_ids[i]] && that.main.objects[_ids[i]].type === 'state') ids.push(_ids[i]);
                         }
                         if (ids && ids.length) {
-                            that.main.customsDialog.init(ids);
+                            that.main.dialogs.customs.init(ids);
+                            if (ids.length < 10) {
+                                that.main.dialogs.customs.ids = null;
+                                that.main.navigate({dialog: 'customs', params: ids.join(',')});
+                            } else {
+                                that.main.dialogs.customs.ids = ids;
+                                that.main.navigate({dialog: 'customs'});
+                            }
                         } else {
                             that.main.showMessage(_('No states selected!'), '', 'info_outline');
                         }

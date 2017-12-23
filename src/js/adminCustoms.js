@@ -515,7 +515,7 @@ function Customs(main) {
             that.$dialog.find('.dialog-system-buttons .btn-save').addClass('disabled');
             // disable iframe
             that.loadHistoryChart(); // disable iframe
-            that.main.navHideConfigDialog();
+            that.main.navigate();
         });
     }
 
@@ -532,6 +532,11 @@ function Customs(main) {
 
         if (typeof ids !== 'object') {
             ids = [ids];
+        }
+        // if the list of IDs is too long, it was saved into this.ids
+        if (!ids || !ids.length) {
+            ids = this.ids;
+            this.ids = undefined;
         }
         var instances = [];
 
@@ -762,8 +767,6 @@ function Customs(main) {
             }
         });
         this.$dialog.find('#customs-tabs').data('ids', ids);
-        this.main.navShowConfigDialog(this.$dialog, this);
-
         that.$dialog.find('.dialog-system-buttons .btn-save').unbind('click').click(onButtonSave);
         that.$dialog.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function (e) {
             e.stopPropagation();
@@ -773,13 +776,13 @@ function Customs(main) {
                     if (result) {
                         // disable iframe
                         that.loadHistoryChart();
-                        that.main.navHideConfigDialog();
+                        that.main.navigate();
                     }
                 });
             } else {
                 // disable iframe
                 that.loadHistoryChart();
-                that.main.navHideConfigDialog();
+                that.main.navigate();
             }
         });
     };
