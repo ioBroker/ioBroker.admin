@@ -588,12 +588,12 @@ $(document).ready(function () {
     function initHtmlButtons() {
         $('.button-version').text('ioBroker.admin ' + (main.objects['system.adapter.admin'] && main.objects['system.adapter.admin'].common && main.objects['system.adapter.admin'].common.version));
 
-        $('.choose-tabs-config-button').click(function(event) {
-            var $dialog = $ ('#dialog');
+        $('.choose-tabs-config-button').unbind('click').click(function(event) {
+            var $dialog = $('#admin_sidemenu_dialog');
             var html = $dialog.html();
             if (html) {
                 $dialog.html('');
-                $('html').unbind("click");
+                $('html').unbind('click');
                 return;
             }
             setTimeout(function () {

@@ -375,58 +375,55 @@ function Adapters(main) {
                         text += '<option value="https://github.com/' + user[1] + '/ioBroker.' + order[o] + '/tarball/master ' + order[o] + '">' + order[o] + '</option>';
                     }
                 }
-                that.$tab.find('#install-github-link').html(text).val(that.main.config.adaptersGithub || '');
+                that.$installDialog.find('#install-github-link').html(text).val(that.main.config.adaptersGithub || '');
 
-                that.$tab.find('#install-tabs').tabs('option', 'active', that.main.config.adaptersInstallTab || 0);
+                that.$installDialog.modal();
 
-                that.$installDialog.dialog({
-                    autoOpen:   true,
-                    modal:      true,
-                    width:      650,
-                    height:     240,
-                    open:       function (event) {
-                        $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
-                    },
-                    buttons:    [
-                        {
-                            id: 'dialog-install-url-button',
-                            text: _('Install'),
-                            click: function () {
-                                var isCustom = !!that.$installDialog.find('#install-tabs').tabs('option', 'active');
+                that.$installDialog.find('.btn-install').unbind('click').click(function () {
+                    var isCustom = !that.$installDialog.find('a[href="#tabs-install-github"]').hasClass('active');//!!that.$installDialog.find('#tabs-install').tabs('option', 'active');
+                    var url;
+                    var debug;
+                    var adapter;
+                    if (isCustom) {
+                        url     = that.$installDialog.find('#install-url-link').val();
+                        debug   = that.$installDialog.find('#install-url-debug').prop('checked') ? ' --debug' : '';
+                        adapter = '';
+                    } else {
+                        var parts = that.$installDialog.find('#install-github-link').val().split(' ');
+                        url     = parts[0];
+                        debug   = that.$installDialog.find('#install-github-debug').prop('checked') ? ' --debug' : '';
+                        adapter = ' ' + parts[1];
+                    }
 
-                                that.$installDialog.dialog('close');
-                                var url;
-                                var debug;
-                                var adapter;
-                                if (isCustom) {
-                                    url = that.$installDialog.find('#install-url-link').val();
-                                    debug = that.$installDialog.find('#install-url-debug').prop('checked') ? ' --debug' : '';
-                                    adapter = '';
-                                } else {
-                                    var parts = that.$installDialog.find('#install-github-link').val().split(' ');
-                                    url = parts[0];
-                                    debug = that.$installDialog.find('#install-github-debug').prop('checked') ? ' --debug' : '';
-                                    adapter = ' ' + parts[1];
-                                }
+                    if (!url) {
+                        that.main.showError(_('Invalid link'));
+                        return;
+                    }
 
-                                if (!url) {
-                                    that.main.showError(_('Invalid link'));
-                                    return;
-                                }
-
-                                that.main.cmdExec(null, 'url "' + url + '"' + adapter + debug, function (exitCode) {
-                                    if (!exitCode) that.init(true, true);
-                                });
-                            }
-                        },
-                        {
-                            text: _('Cancel'),
-                            click: function () {
-                                that.$installDialog.dialog('close');
-                            }
+                    that.main.cmdExec(null, 'url "' + url + '"' + adapter + debug, function (exitCode) {
+                        if (!exitCode) {
+                            that.init(true, true);
                         }
-                    ]
+                    });
                 });
+                that.$installDialog.find('#install-github-link').select();
+                // workaround for materialize checkbox problem
+                that.$installDialog.find('input[type="checkbox"]+span').unbind('click').click(function () {
+                    var $input = $(this).prev();
+                    if (!$input.prop('disabled')) {
+                        $input.prop('checked', !$input.prop('checked')).trigger('change');
+                    }
+                });
+                that.$installDialog.modal('open');
+                that.$installDialog.find('.tabs').mtabs({
+                    nShow: function (tab)  {
+                        if (!tab) return;
+                        that.main.saveConfig('adaptersInstallTab', $(tab).attr('id'));
+                    }
+                });
+                if (that.main.config.adaptersInstallTab) {
+                    that.$installDialog.find('.tabs').mtabs('select', that.main.config.adaptersInstallTab);
+                }
             });
 
         that.$tab.find('#btn_upgrade_all').unbind('click').click(function () {
@@ -450,18 +447,6 @@ function Adapters(main) {
             that.$tab.find('#btn_adapters_expert_mode').addClass('red lighten-3');
         }
 
-        that.$installDialog.find('#install-tabs').tabs({
-            activate: function (event, ui) {
-                switch (ui.newPanel.selector) {
-                    case '#install-github':
-                        that.main.saveConfig('adaptersInstallTab', 0);
-                        break;
-                    case '#install-custom':
-                        that.main.saveConfig('adaptersInstallTab', 1);
-                        break;
-                }
-            }
-        });
         // save last selected adapter
         that.$installDialog.find('#install-github-link').change(function () {
             that.main.saveConfig('adaptersGithub', $(this).val());
@@ -721,7 +706,10 @@ function Adapters(main) {
                 // List of adapters for repository
                 for (adapter in repository) {
                     if (!repository.hasOwnProperty(adapter)) continue;
-                    that.urls[adapter] = repository[adapter].meta;
+                    // it is not possible to install this adapter from git
+                    if (!repository[adapter].nogit) {
+                        that.urls[adapter] = repository[adapter].meta;
+                    }
                     obj = repository[adapter];
                     if (!obj || obj.controller) continue;
                     version = '';

@@ -67,30 +67,51 @@
     </div>
 </div>
 
-<div id="dialog-install-url" class="translateT" title="Install from custom URL" style="display: none">
-    <div id="install-tabs">
-        <ul>
-            <li><a href="#install-github" class="translate">From github</a></li>
-            <li><a href="#install-custom" class="translate">Custom</a></li>
-        </ul>
-        <div id="install-github" style="display: inline-block">
-            <label for="install-github-link" class="translate">Select adapter:</label>
-            <select id="install-github-link" style="display: inline-block"></select>
-            <br>
-            <label for="install-github-debug" class="translate">Debug outputs:</label>
-            <input id="install-github-debug" type="checkbox" />
+<div class="materialize-dialogs m">
+    <div id="dialog-install-url" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <div id="tabs-install" class="row">
+                <div class="col s12">
+                    <ul class="tabs">
+                        <li class="tab col s3"><a href="#tabs-install-github" class="translate">From github</a></li>
+                        <li class="tab col s3"><a href="#tabs-install-custom" class="translate">Custom</a></li>
+                    </ul>
+                </div>
+                <div id="tabs-install-github"  class="col s12 page">
+                    <h6 class="translate">Install adapter from github</h6>
+                    <div class="row">
+                        <div class="col s12 m8 l8 with-select">
+                            <select id="install-github-link"></select>
+                            <label for="install-github-link" class="translate">Select adapter:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12 m4 l4">
+                            <input id="install-github-debug" type="checkbox" class="filled-in" />
+                            <span for="install-github-debug" class="translate">Debug outputs:</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="tabs-install-custom" class="col s12 page">
+                    <h6 class="translate">Install adapter from URL</h6>
+                    <div class="row">
+                        <div class="col s12 m8 l8 with-select-2">
+                            <input id="install-url-link" type="text" style="width: 100%"/>
+                            <label for="install-url-link" class="translate">URL or file path:</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12 m8 l8">
+                            <input id="install-url-debug" type="checkbox" class="filled-in" />
+                            <span for="install-url-debug" class="translate">Debug outputs:</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div id="install-custom">
-            <table style="width: 100%">
-                <tr>
-                    <td><label for="install-url-link" class="translate">URL or file path:</label></td>
-                    <td><input id="install-url-link" type="text" style="width: 100%"/></td>
-                </tr>
-                <tr>
-                    <td><label for="install-url-debug" class="translate">Debug outputs:</label></td>
-                    <td><input id="install-url-debug" type="checkbox" /></td>
-                </tr>
-            </table>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn-flat translate btn-install">Install</a>
+            <a class="modal-action modal-close waves-effect waves-green btn-flat translate btn-cancel">Cancel</a>
         </div>
     </div>
 </div>
