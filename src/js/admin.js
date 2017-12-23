@@ -918,45 +918,8 @@ $(document).ready(function () {
             }
         });
 
-        /*$dialogMessage.dialog({
-            autoOpen: false,
-            modal:    true,
-            buttons: [
-                {
-                    text: _('Ok'),
-                    click: function () {
-                        $(this).dialog("close");
-                    }
-                }
-            ]
-        });*/
         $dialogMessage.modal();
         $dialogConfirm.modal();
-        /*$dialogConfirm.dialog({
-            autoOpen: false,
-            modal:    true,
-            width:    450,
-            height:   200,
-            buttons: [
-                {
-                    text: _('Ok'),
-                    click: function () {
-                        var cb = $(this).data('callback');
-                        $(this).dialog('close');
-                        if (cb) cb(true);
-                    }
-                },
-                {
-                    text: _('Cancel'),
-                    click: function () {
-                        var cb = $(this).data('callback');
-                        $(this).dialog('close');
-                        if (cb) cb(false);
-                    }
-                }
-
-            ]
-        });*/
     }
 
     tabs.logs.prepare();
@@ -1477,17 +1440,25 @@ $(document).ready(function () {
     };
 
     var tabsInfo = {
-        'tab-adapters':         {order: 1,  icon: 'store'},
-        'tab-instances':        {order: 2,  icon: 'subtitles'},
-        'tab-objects':          {order: 3,  icon: 'view_list'},
-        'tab-enums':            {order: 4,  icon: 'art_track'},
-        'tab-logs':             {order: 5,  icon: 'view_headline'},
-        'tab-scenes':           {order: 6,  icon: 'subscriptions'},
-        'tab-events':           {order: 7,  icon: 'flash_on'},
-        'tab-users':            {order: 9,  icon: 'person_outline'},
-        'tab-javascript':       {order: 10, icon: 'code'},
-        'tab-text2command-0':   {order: 11, icon: 'ac_unit'},
-        'tab-node-red-0':       {order: 12, icon: 'storage'}
+        'tab-adapters':         {order: 1,   icon: 'store'},
+        'tab-instances':        {order: 2,   icon: 'subtitles'},
+        'tab-objects':          {order: 3,   icon: 'view_list'},
+        'tab-enums':            {order: 4,   icon: 'art_track'},
+        'tab-logs':             {order: 5,   icon: 'view_headline'},
+        'tab-scenes':           {order: 6,   icon: 'subscriptions'},
+        'tab-events':           {order: 7,   icon: 'flash_on'},
+        'tab-users':            {order: 9,   icon: 'person_outline'},
+        'tab-javascript':       {order: 10,  icon: 'code'},
+        'tab-text2command-0':   {order: 11,  icon: 'ac_unit'},
+        'tab-text2command-1':   {order: 11,  icon: 'ac_unit'},
+        'tab-text2command-2':   {order: 11,  icon: 'ac_unit'},
+        'tab-node-red-0':       {order: 20,  icon: 'device_hub'},
+        'tab-node-red-1':       {order: 21,  icon: 'device_hub'},
+        'tab-node-red-2':       {order: 22,  icon: 'device_hub'},
+        'tab-hosts':            {order: 100, icon: 'storage'},
+        'tab-fullcalendar-0':   {order: 30, icon: 'perm_contact_calendar'},
+        'tab-fullcalendar-1':   {order: 31, icon: 'perm_contact_calendar'},
+        'tab-fullcalendar-2':   {order: 32, icon: 'perm_contact_calendar'}
     };
 
     function initSideNav() {
