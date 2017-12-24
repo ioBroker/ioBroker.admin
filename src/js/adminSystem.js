@@ -388,7 +388,7 @@ function System(main) {
                         if (languageChanged) {
                             window.location.reload();
                         } else {
-                            that.main.navHideConfigDialog();
+                            that.main.navigate();
                             if (activeRepoChanged) {
                                 setTimeout(function () {
                                     main.tabs.adapters.init(true);
@@ -404,114 +404,122 @@ function System(main) {
     }
 
     this.init = function () {
-        if (!main.systemConfig.error) {
-            $('#button-system').click(function () {
-                // request all info anew
-                requestInfo(function (error) {
-                    if (error) {
-                        console.error(error);
-                        showMessage(error, true);
-                        return;
-                    }
-                    var $system_activeRepo = $dialogSystem.find('#system_activeRepo');
-                    $system_activeRepo.html('');
-                    if (that.systemRepos && that.systemRepos.native.repositories) {
-                        for (var repo in that.systemRepos.native.repositories) {
-                            $system_activeRepo.append('<option value="' + repo + '">' + repo + '</option>');
-                        }
+        if (this.inited) {
+            return;
+        }
+        this.inited = true;
+        // request all info anew
+        requestInfo(function (error) {
+            if (error) {
+                console.error(error);
+                showMessage(error, true);
+                return;
+            }
+            var $system_activeRepo = $dialogSystem.find('#system_activeRepo');
+            $system_activeRepo.html('');
+            if (that.systemRepos && that.systemRepos.native.repositories) {
+                for (var repo in that.systemRepos.native.repositories) {
+                    $system_activeRepo.append('<option value="' + repo + '">' + repo + '</option>');
+                }
+            } else {
+                $dialogSystem.find('#tab-system-repo').html(_('permissionError'));
+            }
+
+            $dialogSystem.find('#diagMode')
+                .val(main.systemConfig.common.diag)
+                .change(function () {
+                    main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
+                        $dialogSystem.find('#diagSample').html(JSON.stringify(obj, null, 2));
+                    });
+                })
+                .trigger('change');
+
+            // collect all history instances
+            var $system_defaultHistory = $dialogSystem.find('#system_defaultHistory');
+            $system_defaultHistory.html('<option value=""></option>');
+            for (var id = 0; id < main.instances.length; id++) {
+                if (main.objects[main.instances[id]].common.type === 'storage') {
+                    $system_defaultHistory.append('<option value="' + main.instances[id].substring('system.adapter.'.length) + '">' + main.instances[id].substring('system.adapter.'.length) + '</option>');
+                }
+            }
+
+            $dialogSystem.find('.system-settings.value').each(function () {
+                var $this = $(this);
+                var id = $this.attr('id');
+                if (!id) return;
+                id = id.substring('system_'.length);
+
+                if ($this.attr('type') === 'checkbox') {
+                    $this.prop('checked', main.systemConfig.common[id]);
+                } else {
+                    if (id === 'isFloatComma') {
+                        $this.val(main.systemConfig.common[id] ? 'true' : 'false');
                     } else {
-                        $dialogSystem.find('#tab-system-repo').html(_('permissionError'));
+                        $this.val(main.systemConfig.common[id]);
                     }
-
-                    $dialogSystem.find('#diagMode')
-                        .val(main.systemConfig.common.diag)
-                        .change(function () {
-                            main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
-                                $dialogSystem.find('#diagSample').html(JSON.stringify(obj, null, 2));
-                            });
-                        })
-                        .trigger('change');
-
-                    // collect all history instances
-                    var $system_defaultHistory = $dialogSystem.find('#system_defaultHistory');
-                    $system_defaultHistory.html('<option value=""></option>');
-                    for (var id = 0; id < main.instances.length; id++) {
-                        if (main.objects[main.instances[id]].common.type === 'storage') {
-                            $system_defaultHistory.append('<option value="' + main.instances[id].substring('system.adapter.'.length) + '">' + main.instances[id].substring('system.adapter.'.length) + '</option>');
-                        }
-                    }
-
-                    $dialogSystem.find('.system-settings.value').each(function () {
-                        var $this = $(this);
-                        var id = $this.attr('id');
-                        if (!id) return;
-                        id = id.substring('system_'.length);
-
-                        if ($this.attr('type') === 'checkbox') {
-                            $this.prop('checked', main.systemConfig.common[id]);
-                        } else {
-                            if (id === 'isFloatComma') {
-                                $this.val(main.systemConfig.common[id] ? 'true' : 'false');
-                            } else {
-                                $this.val(main.systemConfig.common[id]);
-                            }
-                        }
-                    });
-
-                    if (!that.systemCerts.native.letsEncrypt) {
-                        that.systemCerts.native.letsEncrypt = {
-                            path: 'letsencrypt'
-                        };
-                    }
-
-                    $dialogSystem.find('.system-le-settings.value').each(function () {
-                        var $this = $(this);
-                        var id = $this.data('name');
-                        if (that.systemCerts && that.systemCerts.native.letsEncrypt) {
-                            if ($this.attr('type') === 'checkbox') {
-                                $this.prop('checked', that.systemCerts.native.letsEncrypt[id]);
-                            } else {
-                                $this.val(that.systemCerts.native.letsEncrypt[id]);
-                            }
-                        }
-                    });
-
-                    var $tabs = $dialogSystem.find('#tabs-system');
-                    $tabs.find('.tabs').mtabs({
-                        onShow: function (tab)  {
-                            if (!tab) return;
-                            var id = $(tab).attr('id');
-                            // Detect materialize
-                            if ((id === 'tab-system-letsencrypt' || id === 'tab-system-main' || id === 'tab-system-acl') && window.M && window.M.toast) {
-                                M.updateTextFields('#' + id);
-                                $dialogSystem.find('select').select();
-                            } else
-                            if (id === 'tab-system-certs') {
-                                showMessage(_('Drop the files here'));
-                            }
-                        }
-                    });
-
-                    that.main.navShowConfigDialog($dialogSystem, that);
-
-                    $dialogSystem.find('.dialog-system-buttons .btn-save').unbind('click').click(onButtonSave);
-                    $dialogSystem.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function () {
-                        that.main.navHideConfigDialog();
-                    });
-
-                    initRepoGrid();
-                    initRights();
-                    initCertsGrid();
-
-                    $tabs.find('.tabs').mtabs('select', 'tab-system-main');
-                });
+                }
             });
-        } else {
-            $('#button-system').hide();
+
+            if (!that.systemCerts.native.letsEncrypt) {
+                that.systemCerts.native.letsEncrypt = {
+                    path: 'letsencrypt'
+                };
+            }
+
+            $dialogSystem.find('.system-le-settings.value').each(function () {
+                var $this = $(this);
+                var id = $this.data('name');
+                if (that.systemCerts && that.systemCerts.native.letsEncrypt) {
+                    if ($this.attr('type') === 'checkbox') {
+                        $this.prop('checked', that.systemCerts.native.letsEncrypt[id]);
+                    } else {
+                        $this.val(that.systemCerts.native.letsEncrypt[id]);
+                    }
+                }
+            });
+
+            var $tabs = $dialogSystem.find('#tabs-system');
+            $tabs.find('.tabs').mtabs({
+                onShow: function (tab)  {
+                    if (!tab) return;
+                    var id = $(tab).attr('id');
+                    // Detect materialize
+                    if ((id === 'tab-system-letsencrypt' || id === 'tab-system-main' || id === 'tab-system-acl') && window.M && window.M.toast) {
+                        M.updateTextFields('#' + id);
+                        $dialogSystem.find('select').select();
+                    } else
+                    if (id === 'tab-system-certs') {
+                        showMessage(_('Drop the files here'));
+                    }
+                }
+            });
+
+            $dialogSystem.find('.dialog-system-buttons .btn-save').unbind('click').click(onButtonSave);
+            $dialogSystem.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function () {
+                that.main.navigate();
+            });
+
+            initRepoGrid();
+            initRights();
+            initCertsGrid();
+
+            $tabs.find('.tabs').mtabs('select', 'tab-system-main');
+        });
+    };
+
+    this.destroy = function () {
+        if (this.inited) {
+            this.inited = false;
         }
     };
 
     this.prepare = function () {
-
+        if (!main.systemConfig.error) {
+            $('#button-system').unbind('click').click(function () {
+                that.main.navigate({dialog: 'system'});
+            });
+        } else {
+            $('#button-system').hide();
+        }
     };
 }
