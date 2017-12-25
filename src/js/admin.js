@@ -1298,12 +1298,15 @@ $(document).ready(function () {
                 var params = parts[2];
 
                 // set default page
-                if (!tab || !tabs[tab]) {
+                if (!tab) {
                     tab = 'adapters';
                 }
                 var $adminBody = $('.admin-sidemenu-body');
                 var $actualTab = $adminBody.find('.admin-sidemenu-body-content');
                 var $panel     = $('#tab-' + tab);
+                if (!$panel.length) {
+                     tab = 'adapters';
+                }
 
                 // if tab was changed
                 if (main.currentTab !== tab) {
