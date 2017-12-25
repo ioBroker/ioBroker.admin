@@ -335,3 +335,84 @@ body {
         resize: none;
     }
 }
+
+// License dialog
+#dialog-license {
+    h5 {
+        background: @main-background-color;
+        color:      @admin-buttons-background;
+        padding:    0.5rem;
+    }
+
+    #license_checkbox {
+        color: #ff636e;
+    }
+
+    #license_text {
+        width: 100%;
+        height: calc(~"100% - 230px");
+        overflow: auto;
+    }
+    input[type="checkbox"].filled-in:not(:checked) + span:not(.lever):after {
+        -webkit-animation: colorBlink 3s ease-out infinite;
+        -moz-animation: colorBlink 3s ease-out infinite;
+        -o-animation: colorBlink 3s ease-out infinite;
+        animation: colorBlink 3s ease-out infinite;
+    }
+}
+@-webkit-keyframes colorBlink {
+    0% {
+        border-color: #5a5a5a;
+    }
+    50% {
+        border-color: #ff636e;
+    }
+    100% {
+        border-color: #5a5a5a;
+    }
+}
+
+@-moz-keyframes colorBlink {
+    0% {
+        border-color: #5a5a5a;
+    }
+    50% {
+        border-color: #ff636e;
+    }
+    100% {
+        border-color: #5a5a5a;
+    }
+}
+
+@-o-keyframes colorBlink {
+    0% {
+        border-color: #5a5a5a;
+    }
+    50% {
+        border-color: #ff636e;
+    }
+    100% {
+        border-color: #5a5a5a;
+    }
+}
+
+@keyframes colorBlink {
+    0% {
+        border-color: #5a5a5a;
+    }
+    50% {
+        border-color: #ff636e;
+    }
+    100% {
+        border-color: #5a5a5a;
+    }
+}
+
+.modal-overlay {
+        background: gray;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }

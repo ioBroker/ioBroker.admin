@@ -1626,16 +1626,12 @@ $(document).ready(function () {
                                             if (language !=='en' && language !=='de' && language !=='ru') language = 'en';
 
                                             $('#license_text').html(license[language] || license.en);
-                                            $('#license_language_label').html(translateWord('Select language', language));
 
                                             $('#license_checkbox')
                                                 .show()
-                                                .html(translateWord('license_checkbox', language));
+                                                .prop('checked', false);
 
-                                            $('#license_agree').find('.ui-button-text').html(translateWord('agree', language));
-                                            $('#license_non_agree').find('.ui-button-text').html(translateWord('not agree', language));
-                                            $('#license_terms').html(translateWord('License terms', language));
-
+                                            // on language change
                                             $('#license_language')
                                                 .data('licenseConfirmed', false)
                                                 .val(language)
@@ -1645,61 +1641,55 @@ $(document).ready(function () {
                                                     $('#license_language_label').html(translateWord('Select language', language));
                                                     $('#license_text').html(license[language] || license.en);
                                                     $('#license_checkbox').html(translateWord('license_checkbox', language));
-                                                    $('#license_agree').find('.ui-button-text').html(translateWord('agree', language));
-                                                    $('#license_non_agree').find('.ui-button-text').html(translateWord('not agree', language));
+                                                    $('#license_agree').html(translateWord('agree', language));
+                                                    $('#license_non_agree').html(translateWord('not agree', language));
                                                     $('#license_terms').html(translateWord('License terms', language));
-                                                    $dialogLicense.dialog('option', 'title', translateWord('license agreement', language));
+                                                    $('#license_agreement_label').html(translateWord('license agreement', language));
                                                 });
 
                                             $('#license_diag').change(function () {
                                                 if ($(this).prop('checked')) {
-                                                    $('#license_agree').button('enable');
+                                                    $('#license_agree').removeClass('disabled');
                                                 } else {
-                                                    $('#license_agree').button('disable');
+                                                    $('#license_agree').addClass('disabled');
                                                 }
                                             });
-                                            $dialogLicense.css({'z-index': 200});
-                                            $dialogLicense.dialog({
-                                                autoOpen: true,
-                                                modal: true,
-                                                width: 600,
-                                                height: 400,
-                                                title: translateWord('license agreement', language),
-                                                buttons: [
-                                                    {
-                                                        text: translateWord('agree', language),
-                                                        click: function () {
-                                                            $('#license_language').data('licenseConfirmed', true);
 
-                                                            main.socket.emit('extendObject', 'system.config', {
-                                                                common: {
-                                                                    licenseConfirmed: true,
-                                                                    language: language
-                                                                }
-                                                            }, function () {
-                                                                $dialogLicense.dialog('close');
-                                                                $('#license_language').hide();
-                                                            });
-                                                        },
-                                                        id: 'license_agree'
-                                                    },
-                                                    {
-                                                        text: translateWord('not agree', language),
-                                                        click: function () {
-                                                            location.reload();
-                                                        },
-                                                        id: 'license_non_agree'
-                                                    }
-                                                ],
-                                                beforeClose: function (/* event, ui */) {
-                                                    return $('#license_language').data('licenseConfirmed');
-                                                },
-                                                open: function (event) {
-                                                    $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
-                                                    $(event.target).parent().find('.ui-dialog-titlebar-close').hide();
-                                                    $('#license_checkbox').prop('checked', false);
-                                                    $('#license_agree').button('disable');
+                                            // workaround for materialize checkbox problem
+                                            $dialogLicense.find('input[type="checkbox"]+span').unbind('click').click(function () {
+                                                var $input = $(this).prev();
+                                                if (!$input.prop('disabled')) {
+                                                    $input.prop('checked', !$input.prop('checked')).trigger('change');
                                                 }
+                                            });
+
+                                            $dialogLicense.modal({
+                                                dismissible: false,
+                                                complete: function () {
+                                                    $('#license_text').html('');
+                                                    location.reload();
+                                                }
+                                            }).modal('open');
+
+                                            $('#license_agree').addClass('disabled').unbind('click').click(function (e) {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+
+                                                main.socket.emit('getObject', 'system.config', function (err, obj) {
+                                                    if (err || !obj) {
+                                                        main.showError(_('Cannot confirm: ' + err));
+                                                        return;
+                                                    }
+                                                    obj.common = obj.common || {};
+                                                    obj.common.licenseConfirmed = true;
+                                                    obj.common.language = language;
+                                                    main.socket.emit('setObject', 'system.config', obj, function (err) {
+                                                        if (err) {
+                                                            main.showError(err);
+                                                        }
+                                                        $dialogLicense.modal('close');
+                                                    });
+                                                });
                                             });
                                         }
                                     } else {

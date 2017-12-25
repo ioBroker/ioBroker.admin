@@ -100,22 +100,6 @@
 <div id="dialog-command" title="command execution" class="translateT" style="display: none">
     <textarea style="font-family: courier, monospace; font-size: 11px; resize: none" id="stdout" disabled="disabled" cols="120" rows="30"></textarea>
 </div>
-<div id="dialog-license" title="license agreement" class="translateT" style="display: none; z-index: 102">
-    <table><tr><td id="license_language_label"><label class="translate" for="license_language">Select language</label></td>
-        <td><select id="license_language">
-            <option value="en">English</option>
-            <option value="de">Deutsch</option>
-            <option value="ru">русский</option>
-            <option value="pt">Portugues</option>
-            <option value="nl">Nederlands</option>
-            <option value="fr">français</option>
-            <option value="it">Italiano</option>
-        </select></td></tr>
-    </table>
-    <input id="license_diag" type="checkbox"/><span class="translate" id="license_checkbox" style="color:red">license_checkbox</span>
-    <h3 id="license_terms" class="translate">License terms</h3>
-    <div id="license_text" style="width: 100%"></div>
-</div>
 
 <!-- Loading indicator -->
 <div id="connecting">
@@ -145,6 +129,41 @@
             <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>
         </div>
         <div class="modal-footer">
+        </div>
+    </div>
+    <div id="dialog-license"  class="modal modal-fixed-footer">
+        <div class="modal-content">
+             <div class="col s12 m6 l3">
+                <h5 class="translate" id="license_agreement_label">license agreement</h5>
+             </div>
+            <div class="row">
+                <div class="col s12 m6 l3">
+                    <select id="license_language">
+                        <option value="en">English</option>
+                        <option value="de">Deutsch</option>
+                        <option value="ru">русский</option>
+                        <option value="pt">Portugues</option>
+                        <option value="nl">Nederlands</option>
+                        <option value="fr">français</option>
+                        <option value="it">Italiano</option>
+                    </select>
+                    <label class="translate" for="license_language" id="license_language_label">Select language</label>
+                </div>
+                <div class="col s12 m6 l9">
+                    <input id="license_diag" class="filled-in" type="checkbox"/>
+                    <span class="translate" id="license_checkbox" for="license_diag">license_checkbox</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <h6 id="license_terms" class="translate">License terms</h6>
+                    <div id="license_text"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a id="license_agree" class="modal-action modal-close waves-effect waves-green btn-flat translate">agree</a>
+            <a id="license_non_agree" class="modal-action modal-close waves-effect waves-green btn-flat btn-gray translate">not agree</a>
         </div>
     </div>
 </div>
