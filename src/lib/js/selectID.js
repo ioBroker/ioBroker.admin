@@ -756,7 +756,7 @@ function filterChanged(e) {
         }
         rooms = rooms || [];
         for (var i = 0; i < data.roomEnums.length; i++) {
-            var common = data.objects[data.roomEnums[i]].common;
+            var common = data.objects[data.roomEnums[i]] && data.objects[data.roomEnums[i]].common;
             if (common.members && common.members.indexOf(id) !== -1 &&
                 rooms.indexOf(common.name) === -1) {
                 if (!withParentInfo) {
@@ -780,7 +780,7 @@ function filterChanged(e) {
         }
         rooms = rooms || [];
         for (var i = 0; i < data.roomEnums.length; i++) {
-            var common = data.objects[data.roomEnums[i]].common;
+            var common = data.objects[data.roomEnums[i]] && data.objects[data.roomEnums[i]].common;
             if (common && common.members && common.members.indexOf(id) !== -1 &&
                 rooms.indexOf(data.roomEnums[i]) === -1) {
                 rooms.push(data.roomEnums[i]);
@@ -795,7 +795,7 @@ function filterChanged(e) {
         }
         funcs = funcs || [];
         for (var i = 0; i < data.funcEnums.length; i++) {
-            var common = data.objects[data.funcEnums[i]].common;
+            var common = data.objects[data.funcEnums[i]] && data.objects[data.funcEnums[i]].common;
             if (common && common.members && common.members.indexOf(id) !== -1 &&
                 funcs.indexOf(common.name) === -1) {
                 if (!withParentInfo) {
@@ -819,7 +819,7 @@ function filterChanged(e) {
         }
         funcs = funcs || [];
         for (var i = 0; i < data.funcEnums.length; i++) {
-            var common = data.objects[data.funcEnums[i]].common;
+            var common = data.objects[data.funcEnums[i]] && data.objects[data.funcEnums[i]].common;
             if (common && common.members && common.members.indexOf(id) !== -1 &&
                 funcs.indexOf(data.funcEnums[i]) === -1) {
                 funcs.push(data.funcEnums[i]);
@@ -1295,14 +1295,18 @@ function filterChanged(e) {
             switch (kind) {
                 case 'room':
                     for (i = 0; i < data.roomEnums.length; i++) {
-                        ret.push(data.objects[data.roomEnums[i]].common.name);
+                        if (data.objects[data.roomEnums[i]]) {
+                            ret.push(data.objects[data.roomEnums[i]].common.name);
+                        }
                     }
                     // if (data.rooms) delete data.rooms;
                     // if (data.roomsColored) delete data.roomsColored;
                     return ret;
                 case 'function':
                     for (i = 0; i < data.funcEnums.length; i++) {
-                        ret.push(data.objects[data.funcEnums[i]].common.name);
+                        if (data.objects[data.funcEnums[i]]) {
+                            ret.push(data.objects[data.funcEnums[i]].common.name);
+                        }
                     }
                     // if (data.funcs) delete data.funcs;
                     // if (data.funcsColored) delete data.funcsColored;
