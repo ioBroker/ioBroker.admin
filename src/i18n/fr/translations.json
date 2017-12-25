@@ -12,6 +12,7 @@
   "Adapter settings for %s states": "Paramètres de l'adaptateur pour les états% s",
   "Adapters": "Adaptateurs",
   "Adapters from this Group installed": "Les adaptateurs de ce groupe sont installés",
+  "Add": "Ajouter",
   "Add Objecttree from JSON File": "Ajouter des objets-arborescence à partir du fichier JSON",
   "Add certificate from file": "Ajouter un certificat à partir du fichier",
   "Add member": "Ajouter un membre",

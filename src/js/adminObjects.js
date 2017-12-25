@@ -55,7 +55,7 @@ function Objects(main) {
             return false;
         });
 
-        $("#load_grid-objects").show();
+        $('#load_grid-objects').show();
 
         $('#object-tabs').tabs({
             activate: function (event, ui) {
@@ -79,6 +79,22 @@ function Objects(main) {
                 return true;
             }
         });
+
+        $('#object-tab-new-common').button({
+            label: _('New'),
+            icons: {primary: 'ui-icon-plus'}
+        }).click(function () {
+            $('#object-tab-new-name').data('type', 'common');
+            $('#dialog-new-field').dialog('open');
+        });
+
+        $('#object-tab-new-native').button({
+            icons: {primary: 'ui-icon-plus'}
+        }).click(function () {
+            $('#object-tab-new-name').data('type', 'native');
+            $('#dialog-new-field').dialog('open');
+        });
+
 
         if (!that.editor) {
             that.editor = ace.edit('view-object-raw');
@@ -130,7 +146,114 @@ function Objects(main) {
             }
         });
 
-        $('#dialog-new-object').dialog( {
+        // Init "new object" dialog
+        var $dialogNewObject = $('#dialog-new-object');
+        $dialogNewObject.modal();
+
+        $dialogNewObject.find('.btn-add').unbind('click').click(function () {
+            var name  = $dialogNewObject.find('#object-tab-new-object-name').val();
+            var id    = name.trim();
+            var parent = $dialogNewObject.find('#object-tab-new-object-parent').val();
+            id = parent ? parent + '.' + id : id;
+
+            var type  = $dialogNewObject.find('#object-tab-new-object-type').val();
+            var stype = $dialogNewObject.find('#object-tab-new-state-type').val();
+            id = id.replace(/\s/g, '_');
+
+            if (that.main.objects[id]) {
+                that.main.showError(_('Object "%s" yet exists!', id));
+                return;
+            }
+
+            var obj;
+            // = name.split('.').pop();
+            if (type === 'state') {
+                obj = {
+                    _id:   id,
+                    type: 'state',
+                    common: {
+                        name: name,
+                        role: '',
+                        type: stype,
+                        read: true,
+                        write: true,
+                        desc: _('Manually created')
+                    },
+                    native: {}
+                };
+                if (stype === 'boolean') {
+                    obj.common.def = false;
+                } else if (stype === 'switch') {
+                    obj.common.type   = 'boolean';
+                    obj.common.def    = false;
+                    obj.common.states = 'false:no;true:yes';
+                } else if (stype === 'string') {
+                    obj.common.def = '';
+                } else if (stype === 'number') {
+                    obj.common.min  = 0;
+                    obj.common.max  = 100;
+                    obj.common.def  = 0;
+                    obj.common.unit = '%';
+                } else if (stype === 'enum') {
+                    obj.common.type   = 'number';
+                    obj.common.min    = 0;
+                    obj.common.max    = 5;
+                    obj.common.def    = 0;
+                    obj.common.states = '0:zero;1:one;2:two;3:three;4:four;5:five';
+                }
+            } else if (type === 'channel') {
+                obj = {
+                    _id:   id,
+                    type: 'channel',
+                    common: {
+                        name: name,
+                        role: '',
+                        icon: '',
+                        desc: _('Manually created')
+                    },
+                    native: {}
+                };
+            } else {
+                obj = {
+                    _id:   id,
+                    type: 'device',
+                    common: {
+                        name: name,
+                        role: '',
+                        icon: '',
+                        desc: _('Manually created')
+                    },
+                    native: {}
+                };
+            }
+
+            that.main.socket.emit('setObject', id, obj, function (err) {
+                if (err) {
+                    that.main.showError(err);
+                    return;
+                }
+                setTimeout(function () {
+                    that.edit(id, function (_obj) {
+                        if (_obj.type === 'state') {
+                            // create state
+                            that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
+                        }
+                    });
+                }, 1000);
+            });
+        });
+        $dialogNewObject.find('#object-tab-new-object-type').select();
+        $dialogNewObject.find('#object-tab-new-state-type').select();
+        $dialogNewObject.find('#object-tab-new-object-name').keyup(function () {
+            $(this).trigger('change');
+        }).change(function () {
+            var parent = $dialogNewObject.find('#object-tab-new-object-parent').val();
+            var id     = $dialogNewObject.find('#object-tab-new-object-name').val();
+            id = parent ? parent + '.' + id : id;
+
+            $dialogNewObject.find('.title').html(_('Add new object: %s', id));
+        });
+        /*$('#dialog-new-object').dialog( {
             autoOpen:   false,
             modal:      true,
             width:      520,
@@ -140,96 +263,7 @@ function Objects(main) {
                     id: 'dialog-object-tab-new',
                     text: _('Ok'),
                     click: function () {
-                        var name  = $('#object-tab-new-object-name').val();
-                        var id    = name.trim();
-                        var parent = $('#object-tab-new-object-parent').val();
-                        id = parent ? parent + '.' + id : id;
 
-                        var type  = $('#object-tab-new-object-type').val();
-                        var stype = $('#object-tab-new-state-type').val();
-                        id = id.replace(/\s/g, '_');
-
-                        if (that.main.objects[id]) {
-                            that.main.showError(_('Object "%s" yet exists!', id));
-                            return;
-                        }
-
-                        var obj;
-                        // = name.split('.').pop();
-                        if (type === 'state') {
-                            obj = {
-                                _id:   id,
-                                type: 'state',
-                                common: {
-                                    name: name,
-                                    role: '',
-                                    type: stype,
-                                    read: true,
-                                    write: true,
-                                    desc: _('Manually created')
-                                },
-                                native: {}
-                            };
-                            if (stype === 'boolean') {
-                                obj.common.def = false;
-                            } else if (stype === 'switch') {
-                                obj.common.type   = 'boolean';
-                                obj.common.def    = false;
-                                obj.common.states = 'false:no;true:yes';
-                            } else if (stype === 'string') {
-                                obj.common.def = '';
-                            } else if (stype === 'number') {
-                                obj.common.min  = 0;
-                                obj.common.max  = 100;
-                                obj.common.def  = 0;
-                                obj.common.unit = '%';
-                            } else if (stype === 'enum') {
-                                obj.common.type   = 'number';
-                                obj.common.min    = 0;
-                                obj.common.max    = 5;
-                                obj.common.def    = 0;
-                                obj.common.states = '0:zero;1:one;2:two;3:three;4:four;5:five';
-                            }
-                        } else if (type === 'channel') {
-                            obj = {
-                                _id:   id,
-                                type: 'channel',
-                                common: {
-                                    name: name,
-                                    role: '',
-                                    icon: '',
-                                    desc: _('Manually created')
-                                },
-                                native: {}
-                            };
-                        } else {
-                            obj = {
-                                _id:   id,
-                                type: 'device',
-                                common: {
-                                    name: name,
-                                    role: '',
-                                    icon: '',
-                                    desc: _('Manually created')
-                                },
-                                native: {}
-                            };
-                        }
-
-                        that.main.socket.emit('setObject', id, obj, function (err) {
-                            if (err) {
-                                that.main.showError(err);
-                                return;
-                            }
-                            setTimeout(function () {
-                                that.edit(id, function (_obj) {
-                                    if (_obj.type === 'state') {
-                                        // create state
-                                        that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
-                                    }
-                                });
-                            }, 1000);
-                        });
 
                         $('#dialog-new-object').dialog('close');
                     }
@@ -245,43 +279,29 @@ function Objects(main) {
             open: function (event, ui) {
                 $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
             }
-        });
+        });*/
 
-        $('#object-tab-new-object-type').change(function () {
+        $dialogNewObject.find('#object-tab-new-object-type').change(function () {
             if ($(this).val() === 'state') {
-                $('#object-tabe-new-object-tr').show();
+                $dialogNewObject.find('.object-tabe-new-object-tr').show();
             } else {
-                $('#object-tabe-new-object-tr').hide();
+                $dialogNewObject.find('.object-tab-new-object-tr').hide();
             }
         });
 
-        $('#object-tab-new-name').keydown(function (e) {
+        $dialogNewObject.find('.btn-add').keydown(function (e) {
             if (e.keyCode === 13) {
                 setTimeout(function () {
                     $('#dialog-object-tab-new').trigger('click');
                 }, 100);
             }
         });
-
-        $('#object-tab-new-common').button({
-            label: _('New'),
-            icons: {primary: 'ui-icon-plus'}
-        }).click(function () {
-            $('#object-tab-new-name').data('type', 'common');
-            $('#dialog-new-field').dialog('open');
-        });
-
-        $('#object-tab-new-native').button({
-            icons: {primary: 'ui-icon-plus'}
-        }).click(function () {
-            $('#object-tab-new-name').data('type', 'native');
-            $('#dialog-new-field').dialog('open');
-        });
     };
 
     function loadObjectFields(htmlId, object, part, objectType) {
         var text = '';
         for (var attr in object) {
+            if (!object.hasOwnProperty(attr)) continue;
             text += '<tr><td>' + attr + '</td><td>';
             if (objectType === 'state' && part === 'common' && attr === 'type') {
                 text += '<select class="object-tab-edit-string" data-attr="' + attr + '">' +
@@ -733,9 +753,10 @@ function Objects(main) {
                                 $('#object-tab-new-object-type').val('state');
                             }
 
-                            $('#dialog-new-object')
-                                .dialog('open')
-                                .dialog('option', 'title', _('Add new object: %s', (id ? id + '.' : '') + _('newObject')));
+                            var $dialog = $('#dialog-new-object');
+                            $dialog.modal('open');
+                            $dialog.find('h6').html(_('Add new object: %s', (id ? id + '.' : '') + _('newObject')));
+                            $dialog.find('#object-tab-new-object-name').focus();
                         }
                     },
                     {
@@ -843,16 +864,6 @@ function Objects(main) {
                     }
                 }
             };
-
-            $('#object-tab-new-object-name').keyup(function () {
-                $(this).trigger('change');
-            }).change(function () {
-                var parent = $('#object-tab-new-object-parent').val();
-                var id = $('#object-tab-new-object-name').val();
-                id = parent ? parent + '.' + id : id;
-
-                $('#dialog-new-object').dialog('option', 'title', _('Add new object: %s', id));
-            });
 
             if (this.main.dialogs.customs.customEnabled) {
                 settings.customButtonFilter = {

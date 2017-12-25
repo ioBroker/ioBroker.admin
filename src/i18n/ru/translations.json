@@ -12,6 +12,7 @@
   "Adapter settings for %s states": "Настройки адаптера для состояний% s",
   "Adapters": "Драйвера",
   "Adapters from this Group installed": "драйверов из этой группы установлено",
+  "Add": "Добавить",
   "Add Objecttree from JSON File": "Добавить дерево объектов из JSON файла",
   "Add certificate from file": "Добавить сертификат из файла",
   "Add member": "Добавить участника",

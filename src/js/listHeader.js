@@ -18,7 +18,9 @@ function IobListHeader(header, options) {
     this.setList = function (_list) {
         var $tds;
         if (typeof _list === 'string') {
-            if (_list[0] !== '#') _list = '#' + _list;
+            if (_list[0] !== '#') {
+                _list = '#' + _list;
+            }
             $tds = $(_list)
         } else {
             $tds = _list;
@@ -31,7 +33,9 @@ function IobListHeader(header, options) {
         }
         $listTds = $tds;
     };
-    if (options.list) this.setList(options.list);
+    if (options.list) {
+        this.setList(options.list);
+    }
 
     this.syncHeader = function () {
         if (typeof $listTds !== 'object') return;
