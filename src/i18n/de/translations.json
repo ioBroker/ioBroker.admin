@@ -562,7 +562,7 @@
   "desc": "Beschreibung",
   "description": "Beschreibung",
   "device": "Gerät",
-  "diag-note": "Wir haben hart daran gearbeitet, dieses Projekt auf die Beine zu stellen. Als Gegenleistung bitten wir Sie, uns die Nutzungs-Statistik zu senden.<br>Es werden keine privaten Informationen zu ioBroker.org gesendet. Jedes Mal wenn die Adapterliste aktualisiert wird, wird auch die anonymisierte Statistik verschickt.<br>Vielen Dank!",
+  "diag-note": "Wir haben hart daran gearbeitet, dieses Projekt auf die Beine zu stellen. Als Gegenleistung bitten wir Sie, uns die Nutzungs-Statistik zu senden.<br>Es werden keine privaten Informationen zu ioBroker.net gesendet. Jedes Mal wenn die Adapterliste aktualisiert wird, wird auch die anonymisierte Statistik verschickt.<br>Vielen Dank!",
   "edit": "ändern",
   "edit enum": "Aufzählung ändern",
   "edit file": "Datei editieren",

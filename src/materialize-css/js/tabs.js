@@ -125,8 +125,8 @@
       this._setTabsAndTabWidth();
 
       if (this.tabWidth !== 0 && this.tabsWidth !== 0) {
-        this._indicator.style.left = this._calcLeftPos(this.$activeTabLink) + 'px';
-        this._indicator.style.right = this._calcRightPos(this.$activeTabLink) + 'px';
+        // this._indicator.style.left = this._calcLeftPos(this.$activeTabLink) + 'px';
+        // this._indicator.style.right = this._calcRightPos(this.$activeTabLink) + 'px';
       }
     }
 
@@ -206,8 +206,18 @@
      * Generate elements for tab indicator.
      */
     _createIndicator() {
-      let indicator = document.createElement('li');
-      indicator.classList.add('indicator');
+      // iob
+      return;
+      // iob
+      let indicator;
+      indicator = document.getElementsByClassName('indicator');
+      if (indicator.length) {
+        indicator = indicator[0];
+      } else {
+        indicator = document.createElement('li');
+        indicator.classList.add('indicator');
+      }
+      // end iob
 
       this.el.appendChild(indicator);
       this._indicator = indicator;
@@ -361,6 +371,8 @@
      * @param {Number} prevIndex
      */
     _animateIndicator(prevIndex) {
+      // iob
+      return;
       let leftDelay = 0,
           rightDelay = 0;
 
@@ -395,7 +407,7 @@
      */
     select(tabId) {
       let tab = this.$tabLinks.filter('[href="#' + tabId + '"]');
-      if (tab.length) {4
+      if (tab.length) {
         tab.trigger('click');
       }
     }
