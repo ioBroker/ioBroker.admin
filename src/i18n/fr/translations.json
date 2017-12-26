@@ -563,7 +563,7 @@
   "desc": "desc",
   "description": "la description",
   "device": "dispositif",
-  "diag-note": "Nous avons travaillé dur pour créer ce projet. En tant qu'équivalent, nous attendons de vous des statistiques sur l'utilisation. <br> Aucune information privée ne sera envoyée à ioBroker.org. Chaque fois que vous appuyez sur Mettre à jour la liste des adaptateurs, les statistiques anonymisées seront envoyées. <br> Merci!",
+  "diag-note": "Nous avons travaillé dur pour créer ce projet. En tant qu'équivalent, nous attendons de vous des statistiques sur l'utilisation. <br> Aucune information privée ne sera envoyée à ioBroker.net. Chaque fois que vous appuyez sur Mettre à jour la liste des adaptateurs, les statistiques anonymisées seront envoyées. <br> Merci!",
   "edit": "modifier",
   "edit enum": "éditer enum",
   "edit file": "modifier le fichier",

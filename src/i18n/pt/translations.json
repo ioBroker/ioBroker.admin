@@ -563,7 +563,7 @@
   "desc": "descrição",
   "description": "descrição",
   "device": "aparelho",
-  "diag-note": "Trabalhamos duro para criar este projeto. Em troca, pedimos que nos envie as estatísticas de uso. <br> Nenhuma informação privada será enviada para ioBroker.org. Cada vez que a lista do adaptador é atualizada, as estatísticas anônimas também serão enviadas. <br>Obrigado!",
+  "diag-note": "Trabalhamos duro para criar este projeto. Em troca, pedimos que nos envie as estatísticas de uso. <br> Nenhuma informação privada será enviada para ioBroker.net. Cada vez que a lista do adaptador é atualizada, as estatísticas anônimas também serão enviadas. <br>Obrigado!",
   "edit": "editar",
   "edit enum": "editar enumeração",
   "edit file": "editar arquivo",

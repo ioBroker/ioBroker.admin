@@ -4,7 +4,6 @@ function System(main) {
     var $dialogSystem = $('#dialog-system');
     this.main = main;
 
-
     this.systemRepos  = null;
     this.systemCerts  = null;
 
@@ -119,6 +118,7 @@ function System(main) {
 
             values2table('tab-system-repo', values, {
                 onChange: function (attr /* , index */) {
+                    $dialogSystem.find('.btn-save').removeClass('disabled');
                     if (!attr || attr === 'name') {
                         updateRepoListSelect();
                     }
@@ -159,7 +159,11 @@ function System(main) {
                     certificate: cert2string(that.systemCerts.native.certificates[cert])
                 });
             }
-            values2table('tab-system-certs', values);
+            values2table('tab-system-certs', values, {
+                onChange: function (attr /* , index */) {
+                    $dialogSystem.find('.btn-save').removeClass('disabled');
+                }
+            });
         } else {
             $dropZone.html(_('permissionError'));
         }
@@ -385,6 +389,7 @@ function System(main) {
             if (!err) {
                 main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function () {
                     main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function () {
+                        $dialogSystem.find('.btn-save').addClass('disabled');
                         if (languageChanged) {
                             window.location.reload();
                         } else {
