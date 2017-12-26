@@ -73,6 +73,7 @@ function Users(main) {
         }
         that.main.showToast(that.$grid, text, null, duration, isError);
     }
+
     function showMessageInDialog(text, duration, isError) {
         if (typeof duration === 'boolean') {
             isError = duration;
@@ -548,7 +549,6 @@ function Users(main) {
         }
 
         showMessageInDialog(_('Drop the icons here'));
-
         $dialog.find('.tab-dialog-new-upload').unbind('click').click(function () {
             $dialog.find('.drop-file').trigger('click');
         });
@@ -746,7 +746,7 @@ function Users(main) {
     }
 
     function setupDroppable() {
-        var $table = that.$gridGroups.find('ul>li')
+        var $table = that.$gridGroups.find('ul>li');
         if ($table.droppable('instance')) {
             $table.droppable('destroy');
         }
@@ -837,6 +837,10 @@ function Users(main) {
             } else {
                 common = {};
             }
+            if (that.list[u] === 'system.user.admin') {
+                common.enabled = true;
+            }
+
             if (common.name) {
                 name = common.name;
             } else {
@@ -860,9 +864,7 @@ function Users(main) {
                 }
             }
 
-
             text += '<li class="collection-item avatar users-type-draggable ' + (inverted ? 'inverted' : '') + '" data-tt-id="' + that.list[u] + '" style="' + style + '">';
-            // text += '   <img src="images/yuna.jpg" alt="" class="circle">';
             text += '   ' + (that.main.getIcon(that.list[u], null, null, 'circle') || '<img class="circle" src="img/account_circle.png"/>');
             text += '   <span class="title">' + name + '</span>';
             text += '   <p>' + that.list[u] + ((common.desc ? ' (' + common.desc + ')' : '') || '') + (tGroups ? tGroups + '<br>' : '') + '</p>';
@@ -1033,191 +1035,8 @@ function Users(main) {
 
     this._postInit = function () {
         // extract all groups
-        /*this.$gridUsers.treeTable({
-            objects:    this.main.objects,
-            root:       'system.user',
-            columns:    ['title', 'name', 'desc', 'enabled', 'groups'],
-            icons:      true,
-            colors:     true,
-            groups:     this.groups,
-            readOnly:   [true, true, true, false, false],
-            widths:     ['calc(100% - 390px)', '150px', '250px', '40px'],
-            classes:    ['', '', '', 'treetable-center'],
-            draggable:  'users-type-draggable',
-            name:       'users',
-            buttonsWidth: '40px',
-            buttons:    [
-                {
-                    text: false,
-                    icons: {
-                        primary:'ui-icon-trash'
-                    },
-                    click: function (id ) { // , children, parent
-                        if (that.main.objects[id] && that.main.objects[id].type === 'user') {
-                            that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
-                                // If all
-                                if (result) {
-                                    deleteUser(id);
-                                }
-                            });
-                        } else {
-                            showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id), true);
-                        }
-                    },
-                    match: function (id) {
-                        return !(that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.dontDelete);
-                    },
-                    width: 26,
-                    height: 20
-                }, {
-                    text: false,
-                    icons: {
-                        primary:'ui-icon-pencil'
-                    },
-                    match: function (id) {
-                        return !!that.main.objects[id];
-                    },
-                    click: function (id, children, parent) {
-                        createOrEdit(id);
-                    },
-                    width: 26,
-                    height: 20
-                }
-            ],
-            panelButtons: [
-                {
-                    id:   'tab-users-btn-new-user',
-                    title: _('New user'),
-                    icon:   'person_add',
-                    click: function () {
-                        createOrEdit(false);
-                    }
-                }
-            ],
-            onEdit: function (id, attr, value) {
-                if (attr === 'enabled') {
-                    if (id === 'system.user.admin') {
-                        showMessage(_('Cannot disable admin!'), true);
-                        return false;
-                    }
-                    that.main.socket.emit('extendObject', id, {common: {enabled: value}}, function (err) {
-                        if (err) {
-                            showMessage(_('Cannot modify user!') + err, true);
-                        } else {
-                            showMessage(_('Updated'));
-                        }
-                    });
-                }
-            },
-            onReady:    setupDraggable
-        });*/
         buildUserList();
         setupDraggable();
-
-        /*this.$gridGroups.treeTable({
-            objects:    this.main.objects,
-            root:       'system.group',
-            columns:    ['title', 'name', 'desc'],
-            icons:      true,
-            colors:     true,
-            members:    true,
-            widths:     ['calc(100% - 250px)', '250px'],
-            //classes:    ['', 'treetable-center'],
-            name:       'groups',
-            buttonsWidth: '40px',
-            buttons:    [
-                {
-                    text: false,
-                    icons: {
-                        primary:'ui-icon-trash'
-                    },
-                    click: function (id, children, parent) {
-                        if (that.main.objects[id]) {
-                            if (that.main.objects[id].type === 'group') {
-                                if (children) {
-                                    // ask if only object must be deleted or just this one
-                                    that.main.confirmMessage(_('All sub-enums of %s will be deleted too?', id), null, 'help', function (result) {
-                                        // If all
-                                        if (result) {
-                                            that.main._delObjects(id, true, function (err) {
-                                                if (!err) {
-                                                    showMessage(_('Deleted'));
-                                                } else {
-                                                    showMessage(_('Error: %s', err));
-                                                }
-                                            });
-                                        } // else do nothing
-                                    });
-                                } else {
-                                    that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
-                                        // If all
-                                        if (result) that.main._delObjects(id, true, function (err) {
-                                            if (!err) {
-                                                showMessage(_('Deleted'));
-                                            } else {
-                                                showMessage(_('Error: %s', err));
-                                            }
-                                        });
-                                    });
-                                }
-                            } else {
-                                // delete user
-                                that.main.socket.emit('getObject', parent, function (err, obj) {
-                                    if (obj && obj.common && obj.common.members) {
-                                        var pos = obj.common.members.indexOf(id);
-                                        if (pos !== -1) {
-                                            obj.common.members.splice(pos, 1);
-                                            that.main.socket.emit('setObject', obj._id, obj, function (err) {
-                                                if (!err) {
-                                                    showMessage(_('Removed'));
-                                                } else {
-                                                    showMessage(_('Error: %s', err), true);
-                                                }
-                                            });
-                                        } else {
-                                            showMessage(_('%s is not in the list'), true);
-                                        }
-                                    }
-                                });
-                            }
-                        } else {
-                            showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id), true);
-                        }
-                    },
-                    match: function (id, parent) {
-                        if (!parent && that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.dontDelete) return false;
-                        // you may not delete admin from administrators
-                        return !(parent === 'system.group.administrator' && id === 'system.user.admin');
-                    },
-                    width: 26,
-                    height: 20
-                }, {
-                    text: false,
-                    icons: {
-                        primary:'ui-icon-pencil'
-                    },
-                    match: function (id) {
-                        return that.main.objects[id] && that.main.objects[id].type === 'group';
-                    },
-                    click: function (id, children, parent) {
-                        createOrEdit(id);
-                    },
-                    width: 26,
-                    height: 20
-                }
-            ],
-            panelButtons: [
-                {
-                    id:   'tab-users-btn-new-group',
-                    title: _('New enum'),
-                    icon:   'group_add',
-                    click: function () {
-                        createOrEdit(true);
-                    }
-                }
-            ],
-            onReady:    setupDroppable
-        });*/
         buildGroupsList();
         setupDroppable();
     };

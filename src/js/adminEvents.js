@@ -57,10 +57,6 @@ function Events(main) {
             enumerateble: false
         });
 
-        // $($header[0].children).each(function(i, o){
-        //     $(o).resize(function() {
-        // });
-        // });
         var $eventPause = this.$tab.find('#event-pause');
         $eventPause
             .button({icons:{primary: 'ui-icon-pause'}, text: false})

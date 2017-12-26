@@ -29,7 +29,7 @@ function preInit () {
     systemDictionary.save =           {"en": "Save",           "fr": "Sauvegarder",                     "nl": "Opslaan",             "es": "Salvar",                      "pt": "Salve ",                 "it": "Salvare",                     "de": "Speichern",                "ru": "Сохранить"};
     systemDictionary.saveclose =      {"en": "Save and close", "fr": "Sauver et fermer",                "nl": "Opslaan en afsluiten","es": "Guardar y cerrar",            "pt": "Salvar e fechar",         "it": "Salva e chiudi",              "de": "Speichern und schließen",  "ru": "Сохранить и выйти"};
     systemDictionary.none =           {"en": "none",           "fr": "aucun",                           "nl": "geen",                "es": "ninguna",                     "pt": "Nenhum",                  "it": "nessuna",                     "de": "keins",                    "ru": ""};
-	systemDictionary.nonerooms =      {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "ru": ""};
+    systemDictionary.nonerooms =      {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "ru": ""};
     systemDictionary.nonefunctions =  {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "ru": ""};
     systemDictionary.all =            {"en": "all",            "fr": "tout",                            "nl": "alle",                "es": "todas",                       "pt": "todos",                   "it": "tutti",                       "de": "alle",                     "ru": "все"};
     systemDictionary['Device list'] = {"en": "Device list",    "fr": "Liste des périphériques",         "nl": "Lijst met apparaten", "es": "Lista de dispositivos",       "pt": "Lista de dispositivos",   "it": "Elenco dispositivi",          "de": "Geräteliste",              "ru": "Список устройств"};
@@ -43,16 +43,16 @@ function preInit () {
     systemDictionary.Message =        {"en": "Message",        "fr": "Message",                         "nl": "Bericht",             "es": "Mensaje",                     "pt": "Mensagem",                "it": "Messaggio",                   "de": "Mitteilung",               "ru": "Сообщение"};
     systemDictionary.close =          {"en": "Close",          "fr": "Fermer",                          "nl": "Dichtbij",            "es": "Cerca",                       "pt": "Fechar",                  "it": "Vicino",                      "de": "Schließen",                "ru": "Закрыть"};
     systemDictionary.htooltip =       {"en": "Click for help", "fr": "Cliquez pour obtenir de l'aide",  "nl": "Klik voor hulp",      "es": "Haz clic para obtener ayuda", "pt": "Clique para ajuda",       "it": "Fai clic per chiedere aiuto", "de": "Anklicken",                "ru": "Перейти по ссылке"};
-	systemDictionary.maxTableRaw =    {
-		"en": "Maximum number of allowed raws",
-		"de": "Maximale Anzahl von erlaubten Tabellenzeilen",
-		"ru": "Достигнуто максимальное число строк",
+    systemDictionary.maxTableRaw =    {
+        "en": "Maximum number of allowed raws",
+        "de": "Maximale Anzahl von erlaubten Tabellenzeilen",
+        "ru": "Достигнуто максимальное число строк",
         "it": "Numero massimo di raw consentiti",
         "fr": "Nombre maximum de raw autorisés",
         "nl": "Maximumaantal toegestane raws",
         "pt": "Número máximo de raias permitidas",
         "es": "Número máximo de raws permitidos"
-	};
+    };
     systemDictionary.maxTableRawInfo = {"en": "Warning",       "de": "Warnung",                  "ru": "Внимание", "pt": "Atenção",  "nl": "Waarschuwing", "fr": "Attention", "it": "avvertimento", "es": "Advertencia"};
     systemDictionary["Main settings"] = {
         "en": "Main settings",

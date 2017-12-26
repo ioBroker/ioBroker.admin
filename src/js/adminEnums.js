@@ -711,10 +711,4 @@ function Enums(main) {
 
         if (this.$grid) selectId('object', id, obj);
     };
-
-    this.resize = function (width, height) {
-        // if (this.$grid) {
-        //     this.$grid.setGridHeight(height - 150).setGridWidth(width - 20);
-        // }
-    }
 }

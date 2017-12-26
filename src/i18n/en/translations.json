@@ -329,6 +329,7 @@
   "Not exists": "Does not exist",
   "Note:": "Note:",
   "Object \"<b>%s</b>\" does not exists. Update the page.": "Object \"<b>%s</b>\" does not exist. Update the page.",
+  "Object may not be deleted": "Object may not be deleted",
   "Object rights": "Object rights",
   "Objects": "Objects",
   "Ok": "Ok",

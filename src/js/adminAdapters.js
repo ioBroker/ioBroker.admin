@@ -618,11 +618,6 @@ function Adapters(main) {
         }
     };
 
-    this.resize = function (width, height) {
-        // TABS
-        // $('#grid-adapters-div').height($(window).height() - $('#tabs .ui-tabs-nav').height() - 50);
-    };
-
     this.enableColResize = function () {
         if (!$.fn.colResizable) return;
         if (this.$grid.is(':visible')) {

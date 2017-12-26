@@ -88,7 +88,9 @@
      */
     destroy() {
       this._removeEventHandlers();
-      this._indicator.parentNode.removeChild(this._indicator);
+
+      // iob
+      if (this._indicator) this._indicator.parentNode.removeChild(this._indicator);
 
       if (this.options.swipeable) {
         this._teardownSwipeableTabs();

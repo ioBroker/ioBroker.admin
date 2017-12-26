@@ -455,6 +455,7 @@ gulp.task('sassMaterialize', function () {
         .pipe(gulp.dest('./www/lib/css'));
 
 });
+
 gulp.task('compressMaterialize', function () {
     return gulp.src([
         './src/materialize-css/js/anime.min.js',
@@ -502,7 +503,10 @@ gulp.task('lessApp', function () {
 });
 
 gulp.task('lessConfig', function () {
-    gulp.src(['./src/less/adapter.less'])
+    gulp.src([
+        './src/less/adapter.less',
+        './src/less/materializeCorrect.less'
+    ])
         .pipe(sourcemaps.init())
         .pipe(less({
             paths: [ ]
@@ -512,6 +516,7 @@ gulp.task('lessConfig', function () {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/css'));
 });
+
 gulp.task('lessIob', function () {
     return gulp.src(['./src/lib/css/iob/*.less'])
         .pipe(sourcemaps.init())
@@ -521,6 +526,7 @@ gulp.task('lessIob', function () {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/lib/css/iob'));
 });
+
 gulp.task('lessTreeTable', function () {
     return gulp.src(['./src/lib/css/jquery.treetable.theme.less'])
         .pipe(sourcemaps.init())
@@ -530,6 +536,7 @@ gulp.task('lessTreeTable', function () {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/lib/css'));
 });
+
 gulp.task('compressApp', function () {
     return gulp.src([
         './src/js/*.js',
@@ -541,6 +548,7 @@ gulp.task('compressApp', function () {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/js'));
 });
+
 gulp.task('compressHtml', function () {
     return gulp.src([
         './src/indexStart.html',

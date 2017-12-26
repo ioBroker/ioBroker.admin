@@ -114,10 +114,6 @@ function Logs(main) {                                                           
         }
     }
 
-    this.resize = function (width, height) {
-        //width = width;
-    };
-
     // -------------------------------- Logs ------------------------------------------------------------
     this.init = function () {
         if (this.inited) {
