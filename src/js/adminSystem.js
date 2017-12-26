@@ -486,6 +486,14 @@ function System(main) {
                     // Detect materialize
                     if ((id === 'tab-system-letsencrypt' || id === 'tab-system-main' || id === 'tab-system-acl') && window.M && window.M.toast) {
                         M.updateTextFields('#' + id);
+                        $dialogSystem.find('optgroup').each(function () {
+                            if (!$(this).data('lang')) {
+                                var label = $(this).attr('label');
+                                $(this).data('lang', label);
+                                $(this).attr('label', _(label));
+                            }
+                        });
+
                         $dialogSystem.find('select').select();
                     } else
                     if (id === 'tab-system-certs') {
@@ -503,6 +511,13 @@ function System(main) {
             initRights();
             initCertsGrid();
 
+            $dialogSystem.find('.value').change(function () {
+                $dialogSystem.find('.btn-save').removeClass('disabled');
+            }).keyup(function () {
+                $(this).trigger('change');
+            });
+
+            $dialogSystem.find('.btn-save').addClass('disabled');
             $tabs.find('.tabs').mtabs('select', 'tab-system-main');
         });
     };
@@ -511,6 +526,10 @@ function System(main) {
         if (this.inited) {
             this.inited = false;
         }
+    };
+
+    this.allStored = function () {
+        return $dialogSystem.find('.btn-save').hasClass('disabled');
     };
 
     this.prepare = function () {
