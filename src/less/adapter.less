@@ -108,3 +108,48 @@ h4 {
 .admin-icon {
     width: 11px;
 }
+// Materialize settings
+.m {
+    .logo-le {
+        width: 200px;
+    }
+    .logo {
+        padding: 0.5rem;
+        width: 64px;
+    }
+    .col {
+        position: relative;
+        .select-wrapper + label {
+            top: 100%;
+        }
+    }
+    .tooltip {
+        position: absolute;
+        top: 0;
+        right: -1rem;
+    }
+    .tooltip + [type="number"],
+    .tooltip + [type="text"]{
+        top: 1rem;
+        right: -1rem;
+    }
+    .disabled[type="checkbox"] + span {
+        opacity: 0.5;
+    }
+    .page {
+        height: calc(~"100% - 70px");
+        overflow: auto;
+    }
+}
+#toast-container {
+    bottom: 20%;
+    left: 50%;
+    top: initial;
+    right: initial;
+    position: absolute;
+    background: gray;
+    color: white;
+    padding: 1rem;
+    border-radius: 3px;
+    font-size: larger;
+}

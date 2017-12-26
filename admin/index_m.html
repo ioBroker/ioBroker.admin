@@ -1,0 +1,309 @@
+<html>
+<head>
+<!--link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/-->
+<link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+<link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
+
+<script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
+<!--script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script-->
+<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+
+<script type="text/javascript" src="../../js/translate.js"></script>
+<script type="text/javascript" src="../../lib/js/materialize.js"></script>
+<script type="text/javascript" src="../../js/adapter-settings.js"></script>
+<script type="text/javascript" src="words.js"></script>
+
+<style>
+    .number {
+        width: 70px
+    }
+</style>
+<script type="text/javascript">
+
+    var oldBind;
+    var oldSecure;
+    var oldPort;
+
+    function showHideSettings() {
+        var $secure = $('#secure');
+        var $auth   = $('#auth');
+        if ($secure.prop('checked')) {
+            $('.col-certPublic').show();
+            $('.col-certPrivate').show();
+            $('.col-certChained').show();
+            $('.le-settings').removeClass('disabled');
+            $auth.removeClass('disabled');
+            if ($('#leEnabled').prop('checked')) {
+                $('.le-sub-settings').show();
+                if ($('#leUpdate').prop('checked')) {
+                    $('.le-sub-settings-update').show();
+                } else {
+                    $('.le-sub-settings-update').hide();
+                }
+            } else {
+                $('.le-sub-settings').hide();
+            }
+
+        } else {
+            $('.col-certPublic').hide();
+            $('.col-certPrivate').hide();
+            $('.col-certChained').hide();
+            if ($auth.prop('checked')) {
+                showToast(_('Please activate secure communication'));
+                $auth.prop('checked', false);
+            }
+            $auth.addClass('disabled');
+            $('.le-settings').addClass('disabled');
+        }
+        if ($auth.prop('checked')) {
+            $secure.prop('checked', true);
+            $('.col-defaultUser').val('admin');
+            $('.defaultUser').hide();
+            $('.col-ttl').show();
+        } else {
+            $('.defaultUser').show();
+            $('.col-ttl').hide();
+        }
+    }
+
+    // the function loadSettings has to exist ...
+    function load(settings, onChange) {
+        if (!settings) return;
+
+        if (!settings.thresholdValue) {
+            settings.thresholdValue = 200;
+        }
+
+        getIPs(function (ips) {
+            for (var i = 0; i < ips.length; i++) {
+                $('#bind').append('<option value="' + ips[i].address + '">' + ips[i].name + '</option>');
+            }
+            $('#bind.value').val(settings.bind).select();
+        });
+
+        oldBind   = settings.bind;
+        oldSecure = settings.secure;
+        oldPort   = settings.port;
+
+        if (settings.autoUpdate  === undefined) settings.autoUpdate = 24;
+        if (!settings.lePort)                   settings.lePort     = 80;
+
+        $('.value').each(function () {
+            var key = $(this).attr('id');
+            var $value = $('#' + key + '.value');
+            if ($value.attr('type') === 'checkbox') {
+                $value.prop('checked', settings[key]).change(function() {
+                    showHideSettings();
+                    onChange();
+                });
+            } else {
+                $value.val(settings[key]).change(onChange).keyup(function() {
+                    onChange();
+                    // Chack that only numbers entered
+                    if ($(this).hasClass('number')) {
+                        var val = $(this).val();
+                        if (val) {
+                            var newVal = '';
+                            for (var i = 0; i < val.length; i++) {
+                                if (val[i] >= '0' && val[i] <= '9') {
+                                    newVal += val[i];
+                                }
+                            }
+
+                            if (val != newVal) {
+                                $(this).val(newVal);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        onChange(false);
+
+        fillSelectCertificates('#certPublic',  'public',  settings.certPublic);
+        fillSelectCertificates('#certPrivate', 'private', settings.certPrivate);
+        fillSelectCertificates('#certChained', 'chained', settings.certChained);
+        fillUsers('#defaultUser', settings.defaultUser);
+
+        showHideSettings();
+
+        $('#auth').change(function () {
+            if ($(this).prop('checked')) {
+                $('#secure').prop('checked', true);
+                showHideSettings();
+            }
+        });
+    }
+
+    function save(callback) {
+        var obj = {};
+        $('.value').each(function () {
+            var $this = $(this);
+            if ($this.attr('type') === 'checkbox') {
+                obj[$this.attr('id')] = $this.prop('checked');
+            } else {
+                obj[$this.attr('id')] = $this.val();
+            }
+        });
+
+        if ($('#secure').prop('checked') && (!$('#certPrivate').val() || !$('#certPublic').val())) {
+            showMessage(_('Set certificates or load it first in the system settings (right top).'));
+            return;
+        }
+        var isRedirect = false;
+        var isHttp = false;
+        if (oldBind !== obj.bind) {
+            isRedirect = true;
+        }
+        if (oldSecure !== obj.secure) {
+            isHttp = true;
+        }
+        if (oldPort !== obj.port) {
+            isRedirect = true;
+        }
+        var href = '';
+        if (isRedirect || isHttp) {
+            href = obj.secure ? 'https://' : 'http://';
+
+            href += (obj.bind !== '0.0.0.0') ? obj.bind : document.location.hostname;
+            href += ':' + obj.port;
+        }
+
+        callback(obj, null, href);
+    }
+</script>
+</head>
+<body>
+<!-- you have to put your config page in a div with id adapter-container -->
+<div class="m adapter-container">
+    <div class="row">
+        <div class="col s12">
+            <ul class="tabs">
+                <li class="tab col s2"><a href="#tab-main"  class="translate active">Main settings</a></li>
+                <li class="tab col s2 le-settings"><a href="#tab-le"    class="translate">Let's Encrypt SSL</a></li>
+            </ul>
+        </div>
+        <div id="tab-main" class="col s12 page">
+            <div class="row">
+                <div class="col s12 m4 l2">
+                    <img src="admin.png" class="logo">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m8 l5">
+                    <select class="value" id="bind"></select>
+                    <label class="translate" for="bind">IP:</label>
+                </div>
+                <div class="col s12 m4 l1">
+                    <input class="value number" id="port" size="5" maxlength="5" type="number"/>
+                    <label class="translate" for="port">Port:</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m3">
+                    <input class="value" id="secure" type="checkbox" />
+                    <label class="translate" for="secure">Secure(HTTPS):</label>
+                </div>
+                <div class="col s12 m3 col-certPublic">
+                    <select id="certPublic" class="value"></select>
+                    <label class="translate" for="certPublic">Public certificate:</label>
+                </div>
+                <div class="col s12 m3 col-certPrivate">
+                    <select id="certPrivate" class="value"></select>
+                    <label class="translate" for="certPrivate">Private certificate:</label>
+                </div>
+                <div class="col s12 m3 col-certChained">
+                    <select id="certChained" class="value"></select>
+                    <label class="translate" for="certChained">Chained certificate:</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m3">
+                    <input class="value" id="auth" type="checkbox" />
+                    <label class="translate" for="auth">Authentication:</label>
+                </div>
+                <div class="col s12 m3 col-defaultUser">
+                    <select class="value" id="defaultUser"></select>
+                    <label class="translate" for="defaultUser">Run as:</label>
+                </div>
+                <div class="col s12 m3 col-ttl">
+                    <input class="value" id="ttl" />
+                    <label class="translate" for="ttl">Login timeout(sec):</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m3">
+                    <select  class="value" id="autoUpdate">
+                        <option value="0" class="translate">manually</option>
+                        <option value="12" class="translate">every 12 hours</option>
+                        <option value="24" class="translate">every day</option>
+                        <option value="48" class="translate">every 2 days</option>
+                        <option value="72" class="translate">every 3 days</option>
+                        <option value="168" class="translate">every week</option>
+                        <option value="336" class="translate">every 2 weeks</option>
+                        <option value="720" class="translate">monthly</option>
+                    </select>
+                    <label class="translate" for="autoUpdate">Auto update:</label>
+                </div>
+                <div class="col s12 m3">
+                    <input class="value" id="thresholdValue" type="number" min="50"/>
+                    <label class="translate" for="thresholdValue">Events threshold value:</label>
+                </div>
+            </div>
+        </div>
+        <div id="tab-le" class="col s12 page">
+            <div class="row">
+                <div class="col s12">
+                    <img src="../../img/le.png" class="logo-le">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s11">
+                    <input class="value" id="leEnabled" type="checkbox" data-link="lets-encrypt-certificates"/>
+                    <label for="leEnabled" class="translate">Use Lets Encrypt certificates:</label>
+                </div>
+            </div>
+            <div class="row le-sub-settings">
+                <div class="col s11">
+                    <input class="value" id="leUpdate" type="checkbox" data-link="lets-encrypt-certificates"/>
+                    <label for="leUpdate" class="translate">Use this instance for automatic update:</label>
+                </div>
+            </div>
+            <div class="row le-sub-settings le-sub-settings-update">
+                <div class="col s11 m4 l2">
+                    <input class="value number" id="lePort" type="number" size="5" maxlength="5" data-link="lets-encrypt-certificates"/>
+                    <label for="lePort" class="translate">Port to check the domain:</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--table>
+        <tr><td><label class="translate" for="auth">Authentication:</label></td><td class="admin-icon"></td><td><input class="value" id="auth" type="checkbox" /></td><td class="admin-text"></td></tr>
+        <tr id="_ttl"><td><label class="translate" for="ttl">Login timeout(sec):</label></td><td class="admin-icon"></td><td><input class="value" id="ttl" /></td><td class="admin-tooltip"></td></tr>
+        <tr><td><label class="translate" for="cache">Cache:</label></td><td class="admin-icon"></td><td><input  class="value" id="cache" type="checkbox" /></td><td class="admin-tooltip"></td></tr>
+        <tr class="defaultUser"><td><label class="translate" for="defaultUser">Run as:</label></td><td class="admin-icon"></td><td><select class="value" id="defaultUser"></select></td><td class="admin-tooltip"></td></tr>
+        <tr><td><label class="translate" for="autoUpdate">Auto update:</label></td><td class="admin-icon"></td><td>
+            <select  class="value" id="autoUpdate">
+                <option value="0" class="translate">manually</option>
+                <option value="12" class="translate">every 12 hours</option>
+                <option value="24" class="translate">every day</option>
+                <option value="48" class="translate">every 2 days</option>
+                <option value="72" class="translate">every 3 days</option>
+                <option value="168" class="translate">every week</option>
+                <option value="336" class="translate">every 2 weeks</option>
+                <option value="720" class="translate">monthly</option>
+            </select>
+            </td>
+            <td class="admin-tooltip"></td>
+        </tr>
+        <tr><td><label class="translate" for="thresholdValue">Events threshold value:</label></td><td class="admin-icon"></td><td><input class="value" id="thresholdValue" type="number" min="50"/></td><td class="admin-tooltip"></td></tr>
+        <tr><td colspan="2">&nbsp;</td></tr>
+        <tr class="le-settings"><td colspan="2"><h3 class="translate">Let's Encrypt settings</h3></tr>
+        <tr class="le-settings"><td><label for="leEnabled" class="translate">Use Lets Encrypt certificates:</label></td><td class="admin-icon"></td><td><input class="value" id="leEnabled" type="checkbox" /></td><td class="admin-tooltip" data-link="lets-encrypt-certificates"></td></tr>
+        <tr class="le-settings le-sub-settings"><td><label for="leUpdate" class="translate">Use this instance for automatic update:</label></td><td class="admin-icon"></td><td><input class="value" id="leUpdate" type="checkbox" /></td><td class="admin-tooltip" data-link="lets-encrypt-certificates"></td></tr>
+        <tr class="le-settings le-sub-settings le-sub-settings-update"><td><label for="lePort" class="translate">Port to check the domain:</label></td><td class="admin-icon"></td><td><input class="value number" id="lePort" type="number" size="5" maxlength="5" /></td><td class="admin-tooltip" data-link="lets-encrypt-certificates"></td></tr>
+    </table-->
+</div>
+</body>
+</html>

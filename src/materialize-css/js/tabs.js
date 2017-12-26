@@ -337,7 +337,9 @@
      * @param {cash} el
      */
     _calcRightPos(el) {
-      return Math.ceil(this.tabsWidth - el.position().left - el[0].getBoundingClientRect().width);
+      //return Math.ceil(this.tabsWidth - el.position().left - el[0].getBoundingClientRect().width);
+        // iob
+        return Math.ceil(this.tabsWidth - el.offset().left - el[0].getBoundingClientRect().width);
     }
 
     /**
@@ -345,7 +347,9 @@
      * @param {cash} el
      */
     _calcLeftPos(el) {
-      return Math.floor(el.position().left);
+      //return Math.floor(el.position().left);
+        // iob
+      return Math.floor(el.offset().left);
     }
 
     updateTabIndicator() {

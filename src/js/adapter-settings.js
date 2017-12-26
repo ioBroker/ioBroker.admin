@@ -15,10 +15,11 @@ var systemConfig;
 var certs    = [];
 var adapter  = '';
 var onChangeSupported = false;
+var isMaterialize = false;
 
 function preInit () {
     'use strict';
-        var tmp = window.location.pathname.split('/');
+    var tmp = window.location.pathname.split('/');
     adapter = tmp[tmp.length - 2];
     var id = 'system.adapter.' + adapter + '.' + instance;
 
@@ -41,7 +42,7 @@ function preInit () {
     systemDictionary.cancel =         {"en": "Cancel",         "fr": "Annuler",                         "nl": "Annuleer",            "es": "Cancelar",                    "pt": "Cancelar",                "it": "Annulla",                     "de": "Abbrechen",                "ru": "Отмена"};
     systemDictionary.Message =        {"en": "Message",        "fr": "Message",                         "nl": "Bericht",             "es": "Mensaje",                     "pt": "Mensagem",                "it": "Messaggio",                   "de": "Mitteilung",               "ru": "Сообщение"};
     systemDictionary.close =          {"en": "Close",          "fr": "Fermer",                          "nl": "Dichtbij",            "es": "Cerca",                       "pt": "Fechar",                  "it": "Vicino",                      "de": "Schließen",                "ru": "Закрыть"};
-    systemDictionary.htooltip =       {"en": "Click for help", "fr": "Cliquez pour obtenir de l'aide",  "nl": "Klik voor hulp",      "es": "Haz clic para obtener ayuda", "pt": "Clique para ajuda",       "it": "Fai clic per chiedere aiuto", "de": "Anclicken",                "ru": "Перейти по ссылке"};
+    systemDictionary.htooltip =       {"en": "Click for help", "fr": "Cliquez pour obtenir de l'aide",  "nl": "Klik voor hulp",      "es": "Haz clic para obtener ayuda", "pt": "Clique para ajuda",       "it": "Fai clic per chiedere aiuto", "de": "Anklicken",                "ru": "Перейти по ссылке"};
 	systemDictionary.maxTableRaw =    {
 		"en": "Maximum number of allowed raws",
 		"de": "Maximale Anzahl von erlaubten Tabellenzeilen",
@@ -53,7 +54,37 @@ function preInit () {
         "es": "Número máximo de raws permitidos"
 	};
     systemDictionary.maxTableRawInfo = {"en": "Warning",       "de": "Warnung",                  "ru": "Внимание", "pt": "Atenção",  "nl": "Waarschuwing", "fr": "Attention", "it": "avvertimento", "es": "Advertencia"};
+    systemDictionary["Main settings"] = {
+        "en": "Main settings",
+        "de": "Haupteinstellungen",
+        "ru": "Основные настройки",
+        "pt": "Configurações principais",
+        "nl": "Belangrijkste instellingen",
+        "fr": "Réglages principaux",
+        "it": "Impostazioni principali",
+        "es": "Ajustes principales"
+      };
 
+    systemDictionary["Let's Encrypt SSL"] = {
+        "en": "Let's Encrypt Certificates",
+        "de": "Let's Encrypt Zertifikate",
+        "ru": "Let's Encrypt Сертификаты",
+        "pt": "Let's Encrypt Certificados",
+        "nl": "Let's Encrypt certificaten",
+        "fr": "Let's Encrypt Certificats",
+        "it": "Let's Encrypt certificati",
+        "es": "Let's Encrypt Certificados"
+      };
+    systemDictionary["Please activate secure communication"] = {
+        "en": "Please activate secure communication",
+        "de": "Bitte sichere Kommunikation aktivieren",
+        "ru": "Включите безопасную связь",
+        "pt": "Active a comunicação segura",
+        "nl": "Activeer alstublieft beveiligde communicatie",
+        "fr": "Veuillez activer la communication sécurisée",
+        "it": "Si prega di attivare la comunicazione sicura",
+        "es": "Por favor active la comunicación segura"
+      };
     //socket.on('connection', function () {
         loadSystemConfig(function () {
             if (typeof translateAll === 'function') translateAll();
@@ -233,6 +264,10 @@ function preInit () {
                     alert('Please implement save function in your admin/index.html');
                 } else {
                     load(res.native, onChange);
+                    // init selects
+                    if (isMaterialize) {
+                        $('select').select();
+                    }
                 }
                 if (typeof callback === 'function') {
                     callback();
@@ -250,206 +285,379 @@ function preInit () {
 $(document).ready(function () {
     'use strict';
 
-    // load materialze
-    var cssLink    = document.createElement('link');
-    cssLink.href   = '../../lib/css/materialize.css';
-    cssLink.type   = 'text/css';
-    cssLink.rel    = 'stylesheet';
-    cssLink.media  = 'screen,print';
-    document.getElementsByTagName('head')[0].appendChild(cssLink);
+    if (window.location.pathname.indexOf('/index_m.html') === -1) {
+        // load materialize
+        var cssLink    = document.createElement('link');
+        cssLink.href   = '../../lib/css/materialize.css';
+        cssLink.type   = 'text/css';
+        cssLink.rel    = 'stylesheet';
+        cssLink.media  = 'screen,print';
+        document.getElementsByTagName('head')[0].appendChild(cssLink);
 
-    // load materialze.js
-    var jsLink     = document.createElement('script');
-    jsLink.onload  = preInit;
-    jsLink.src     = '../../lib/js/materialize.js';
-    document.head.appendChild(jsLink);
+        // load materialize.js
+        var jsLink     = document.createElement('script');
+        jsLink.onload  = preInit;
+        jsLink.src     = '../../lib/js/materialize.js';
+        document.head.appendChild(jsLink);
+    } else {
+        isMaterialize = true;
+        preInit();
+    }
 });
 
 function prepareTooltips() {
-    $('.admin-icon').each(function () {
-        var id = $(this).data('id');
-        if (!id) {
-            var $prev = $(this).prev();
-            var $input = $prev.find('input');
-            if (!$input.length) $input = $prev.find('select');
-            if (!$input.length) $input = $prev.find('textarea');
+    if (isMaterialize) {
+        // init tabs
+        $('.tabs').mtabs();
 
-            if (!$input.length) {
-                $prev = $prev.parent();
-                $input = $prev.find('input');
-                if (!$input.length) $input = $prev.find('select');
-                if (!$input.length) $input = $prev.find('textarea');
-            }
-            if ($input.length) id = $input.attr('id');
-        }
+        $('.value').each(function () {
+            var $this = $(this);
 
-        if (!id) return;
+            // replace all labels after checkboxes to span (bug in materialize)
+            if ($this.attr('type') === 'checkbox') {
+                $this.addClass('filled-in');
 
-        var tooltip = '';
-        if (systemDictionary['tooltip_' + id]) {
-            tooltip = systemDictionary['tooltip_' + id][systemLang] || systemDictionary['tooltip_' + id].en;
-        }
-
-        var icon = '';
-        var link = $(this).data('link');
-        if (link) {
-            if (link === true) {
-                if (common.readme) {
-                    link = common.readme + '#' + id;
-                } else {
-                    link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + id;
+                var $label = $this.next();
+                if ($label.prop('tagName') === 'LABEL') {
+                    $label.replaceWith('<span style="' + ($label.attr('style') || '') + '" class="' +  ($label.attr('class') || '') + '">' + $label.html() +'</span>')
+                    $label = $this.next();
                 }
+
+                $label.unbind('click').click(function () {
+                    var $input = $(this).prev();
+                    if (!$input.prop('disabled')) {
+                        $input.prop('checked', !$input.prop('checked')).trigger('change');
+                    }
+                });
             }
-            if (!link.match('^https?:\/\/')) {
-                if (common.readme) {
-                    link = common.readme + '#' + link;
-                } else {
-                    link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + link;
-                }
+
+            var id = $this.data('id');
+            var tooltip = '';
+            if (systemDictionary['tooltip_' + id]) {
+                tooltip = systemDictionary['tooltip_' + id][systemLang] || systemDictionary['tooltip_' + id].en;
             }
-            icon += '<a class="admin-tooltip-link" target="config_help" href="' + link + '" title="' + (tooltip || systemDictionary.htooltip[systemLang]) + '"><img class="admin-tooltip-icon" src="../../img/info.png" /></a>';
-        } else if (tooltip) {
-            icon += '<img class="admin-tooltip-icon" title="' + tooltip + '" src="../../img/info.png"/>';
-        }
 
-        if (icon) {
-            $(this).html(icon);
-        }
-    });
-    $('.admin-text').each(function () {
-        var id = $(this).data('id');
-        if (!id) {
-            var $prev = $(this).prev();
-            var $input = $prev.find('input');
-            if (!$input.length) $input = $prev.find('select');
-            if (!$input.length) $input = $prev.find('textarea');
-            if (!$input.length) {
-                $prev = $prev.parent();
-                $input = $prev.find('input');
-                if (!$input.length) $input = $prev.find('select');
-                if (!$input.length) $input = $prev.find('textarea');
-            }
-            if ($input.length) id = $input.attr('id');
-        }
-
-        if (!id) return;
-
-        // check if translation for this exist
-        if (systemDictionary['info_' + id]) {
-            $(this).html('<span class="admin-tooltip-text">' + (systemDictionary['info_' + id][systemLang] || systemDictionary['info_' + id].en) + '</span>');
-        }
-    });
-}
-
-function showMessage(message, title, icon, width) {
-    var $dialogMessage = $('#dialog-message-settings');
-    if (!$dialogMessage.length) {
-        $('body').append('<div id="dialog-message-settings" title="Message" style="display: none">\n' +
-            '<p>' +
-            '<span id="dialog-message-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
-            '<span id="dialog-message-text-settings"></span>\n' +
-            '</p>\n' +
-            '</div>');
-        $dialogMessage = $('#dialog-message-settings');
-        $dialogMessage.dialog({
-            autoOpen: false,
-            modal:    true,
-            buttons: [
-                {
-                    text: _('Ok'),
-                    click: function () {
-                        $(this).dialog('close');
+            var link = $this.data('link');
+            if (link) {
+                if (link === true) {
+                    if (common.readme) {
+                        link = common.readme + '#' + id;
+                    } else {
+                        link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + id;
                     }
                 }
-            ]
+                if (!link.match('^https?:\/\/')) {
+                    if (common.readme) {
+                        link = common.readme + '#' + link;
+                    } else {
+                        link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + link;
+                    }
+                }
+            }
+
+            if (link) {
+                $('<a class="tooltip" href="' + link + '" title="' + (tooltip || systemDictionary.htooltip[systemLang]) + '" target="_blank"><i class="material-icons tooltip">live_help</i></a>').insertBefore($this);
+            } else if (tooltip) {
+                $('<i class="material-icons tooltip" title="' + tooltip + '">help_outline</i>').insertBefore($this);
+            }
+        });
+    } else {
+        $('.admin-icon').each(function () {
+            var id = $(this).data('id');
+            if (!id) {
+                var $prev = $(this).prev();
+                var $input = $prev.find('input');
+                if (!$input.length) $input = $prev.find('select');
+                if (!$input.length) $input = $prev.find('textarea');
+
+                if (!$input.length) {
+                    $prev = $prev.parent();
+                    $input = $prev.find('input');
+                    if (!$input.length) $input = $prev.find('select');
+                    if (!$input.length) $input = $prev.find('textarea');
+                }
+                if ($input.length) id = $input.attr('id');
+            }
+
+            if (!id) return;
+
+            var tooltip = '';
+            if (systemDictionary['tooltip_' + id]) {
+                tooltip = systemDictionary['tooltip_' + id][systemLang] || systemDictionary['tooltip_' + id].en;
+            }
+
+            var icon = '';
+            var link = $(this).data('link');
+            if (link) {
+                if (link === true) {
+                    if (common.readme) {
+                        link = common.readme + '#' + id;
+                    } else {
+                        link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + id;
+                    }
+                }
+                if (!link.match('^https?:\/\/')) {
+                    if (common.readme) {
+                        link = common.readme + '#' + link;
+                    } else {
+                        link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + link;
+                    }
+                }
+                icon += '<a class="admin-tooltip-link" target="config_help" href="' + link + '" title="' + (tooltip || systemDictionary.htooltip[systemLang]) + '"><img class="admin-tooltip-icon" src="../../img/info.png" /></a>';
+            } else if (tooltip) {
+                icon += '<img class="admin-tooltip-icon" title="' + tooltip + '" src="../../img/info.png"/>';
+            }
+
+            if (icon) {
+                $(this).html(icon);
+            }
+        });
+        $('.admin-text').each(function () {
+            var id = $(this).data('id');
+            if (!id) {
+                var $prev = $(this).prev();
+                var $input = $prev.find('input');
+                if (!$input.length) $input = $prev.find('select');
+                if (!$input.length) $input = $prev.find('textarea');
+                if (!$input.length) {
+                    $prev = $prev.parent();
+                    $input = $prev.find('input');
+                    if (!$input.length) $input = $prev.find('select');
+                    if (!$input.length) $input = $prev.find('textarea');
+                }
+                if ($input.length) id = $input.attr('id');
+            }
+
+            if (!id) return;
+
+            // check if translation for this exist
+            if (systemDictionary['info_' + id]) {
+                $(this).html('<span class="admin-tooltip-text">' + (systemDictionary['info_' + id][systemLang] || systemDictionary['info_' + id].en) + '</span>');
+            }
         });
     }
-    $dialogMessage.dialog('option', 'width', width + 500);
+}
 
-    if (typeof _ !== 'undefined') {
-        $dialogMessage.dialog('option', 'title', title || _('Message'));
+function showMessage(message, title, icon) {
+    var $dialogMessage;
+    if (isMaterialize) {
+        // noinspection JSJQueryEfficiency
+        $dialogMessage = $('#dialog-message');
+        if (!$dialogMessage.length) {
+            $('body').append(
+                '<div id="dialog-message" class="modal modal-fixed-footer">' +
+                '    <div class="modal-content">' +
+                '        <h4 class="dialog-title"></h4>' +
+                '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
+                '    </div>' +
+                '    <div class="modal-footer">' +
+                '        <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>' +
+                '    </div>' +
+                '</div>');
+            $dialogMessage = $('#dialog-message');
+        }
+        if (icon) {
+            $dialogMessage.find('.dialog-icon')
+                .show()
+                .html(icon);
+        } else {
+            $dialogMessage.find('.dialog-icon').hide();
+        }
+        $dialogMessage.find('.dialog-text').html(message);
+        $dialogMessage.modal('open');
     } else {
-        $dialogMessage.dialog('option', 'title', title || 'Message');
+        // noinspection JSJQueryEfficiency
+        $dialogMessage = $('#dialog-message-settings');
+        if (!$dialogMessage.length) {
+            $('body').append('<div id="dialog-message-settings" title="Message" style="display: none">\n' +
+                '<p>' +
+                '<span id="dialog-message-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
+                '<span id="dialog-message-text-settings"></span>\n' +
+                '</p>\n' +
+                '</div>');
+            $dialogMessage = $('#dialog-message-settings');
+            $dialogMessage.dialog({
+                autoOpen: false,
+                modal:    true,
+                buttons: [
+                    {
+                        text: _('Ok'),
+                        click: function () {
+                            $(this).dialog('close');
+                        }
+                    }
+                ]
+            });
+        }
+        $dialogMessage.dialog('option', 'width', width + 500);
+
+        if (typeof _ !== 'undefined') {
+            $dialogMessage.dialog('option', 'title', title || _('Message'));
+        } else {
+            $dialogMessage.dialog('option', 'title', title || 'Message');
+        }
+        $('#dialog-message-text-settings').html(message);
+        if (icon) {
+            $('#dialog-message-icon-settings')
+                .show()
+                .attr('class', '')
+                .addClass('ui-icon ui-icon-' + icon);
+        } else {
+            $('#dialog-message-icon-settings').hide();
+        }
+        $dialogMessage.dialog('open');
     }
-    $('#dialog-message-text-settings').html(message);
-    if (icon) {
-        $('#dialog-message-icon-settings')
-            .show()
-            .attr('class', '')
-            .addClass('ui-icon ui-icon-' + icon);
-    } else {
-        $('#dialog-message-icon-settings').hide();
-    }
-    $dialogMessage.dialog('open');
 }
 
 function confirmMessage(message, title, icon, buttons, callback) {
-    var $dialogConfirm =        $('#dialog-confirm-settings');
-    if (!$dialogConfirm.length) {
-        $('body').append('<div id="dialog-confirm-settings" title="Message" style="display: none">\n' +
-            '<p>' +
-            '<span id="dialog-confirm-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
-            '<span id="dialog-confirm-text-settings"></span>\n' +
-            '</p>\n' +
-            '</div>');
-        $dialogConfirm = $('#dialog-confirm-settings');
-        $dialogConfirm.dialog({
-            autoOpen: false,
-            modal:    true
-        });
-    }
-    if (typeof buttons === 'function') {
-        callback = buttons;
-        $dialogConfirm.dialog('option', 'buttons', [
-            {
-                text: _('Ok'),
-                click: function () {
-                    var cb = $(this).data('callback');
-                    $(this).data('callback', null);
-                    $(this).dialog('close');
-                    if (cb) cb(true);
-                }
-            },
-            {
-                text: _('Cancel'),
-                click: function () {
-                    var cb = $(this).data('callback');
-                    $(this).data('callback', null);
-                    $(this).dialog('close');
-                    if (cb) cb(false);
-                }
-            }
-
-        ]);
-    } else if (typeof buttons === 'object') {
-        for (var b = 0; b < buttons.length; b++) {
-            buttons[b] = {
-                text: buttons[b],
-                id: 'dialog-confirm-button-' + b,
-                click: function (e) {
-                    var id = parseInt(e.currentTarget.id.substring('dialog-confirm-button-'.length), 10);
-                    var cb = $(this).data('callback');
-					$(this).data('callback', null);
-                    $(this).dialog('close');
-                    if (cb) cb(id);
-                }
-            }
+    var $dialogConfirm;
+    if (isMaterialize){
+        // noinspection JSJQueryEfficiency
+        $dialogConfirm = $('#dialog-confirm');
+        if (!$dialogConfirm.length) {
+            $('body').append(
+                '<div id="dialog-confirm" class="modal modal-fixed-footer">' +
+                '    <div class="modal-content">' +
+                '        <h4 class="dialog-title"></h4>' +
+                '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
+                '    </div>' +
+                '    <div class="modal-footer">' +
+                '    </div>' +
+                '</div>'
+            );
+            $dialogConfirm = $('#dialog-confirm');
         }
-        $dialogConfirm.dialog('option', 'buttons', buttons);
-    }
+        if (typeof buttons === 'function') {
+            callback = buttons;
+            $dialogConfirm.find('.modal-footer').html(
+                '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">' + _('Ok') + '</a>' +
+                '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">' + _('Cancel') + '</a>');
+            $dialogConfirm.find('.modal-footer .modal-action').click(function () {
+                var cb = $dialogConfirm.data('callback');
+                cb && cb($(this).data('result'));
+            });
+        } else if (typeof buttons === 'object') {
+            var tButtons = '';
+            for (var b = buttons.length - 1; b >= 0; b--) {
+                tButtons += '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-id="' + b + '">' + buttons[b] + '</a>';
+            }
+            $dialogConfirm.find('.modal-footer').html(tButtons);
+            $dialogConfirm.find('.modal-footer .modal-action').click(function () {
+                var cb = $dialogConfirm.data('callback');
+                cb && cb($(this).data('id'));
+            });
+        }
 
-    $dialogConfirm.dialog('option', 'title', title || _('Message'));
-    $('#dialog-confirm-text-settings').html(message);
-    if (icon) {
-        $('#dialog-confirm-icon-settings')
-            .show()
-            .attr('class', '')
-            .addClass('ui-icon ui-icon-' + icon);
+        $dialogConfirm.find('.dialog-title').text(title || _('Question'));
+        if (icon) {
+            $dialogConfirm.find('.dialog-icon')
+                .show()
+                .html(icon);
+        } else {
+            $dialogConfirm.find('.dialog-icon').hide();
+        }
+        $dialogConfirm.find('.dialog-text').html(message);
+        $dialogConfirm.data('callback', callback);
+        $dialogConfirm.modal('open');
     } else {
-        $('#dialog-confirm-icon-settings').hide();
+        // noinspection JSJQueryEfficiency
+        $dialogConfirm = $('#dialog-confirm-settings');
+        if (!$dialogConfirm.length) {
+            $('body').append('<div id="dialog-confirm-settings" title="Message" style="display: none">\n' +
+                '<p>' +
+                '<span id="dialog-confirm-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
+                '<span id="dialog-confirm-text-settings"></span>\n' +
+                '</p>\n' +
+                '</div>');
+            $dialogConfirm = $('#dialog-confirm-settings');
+            $dialogConfirm.dialog({
+                autoOpen: false,
+                modal:    true
+            });
+        }
+        if (typeof buttons === 'function') {
+            callback = buttons;
+            $dialogConfirm.dialog('option', 'buttons', [
+                {
+                    text: _('Ok'),
+                    click: function () {
+                        var cb = $(this).data('callback');
+                        $(this).data('callback', null);
+                        $(this).dialog('close');
+                        if (cb) cb(true);
+                    }
+                },
+                {
+                    text: _('Cancel'),
+                    click: function () {
+                        var cb = $(this).data('callback');
+                        $(this).data('callback', null);
+                        $(this).dialog('close');
+                        if (cb) cb(false);
+                    }
+                }
+
+            ]);
+        } else if (typeof buttons === 'object') {
+            for (var bb = 0; bb < buttons.length; bb++) {
+                buttons[bb] = {
+                    text: buttons[bb],
+                    id: 'dialog-confirm-button-' + bb,
+                    click: function (e) {
+                        var id = parseInt(e.currentTarget.id.substring('dialog-confirm-button-'.length), 10);
+                        var cb = $(this).data('callback');
+                        $(this).data('callback', null);
+                        $(this).dialog('close');
+                        if (cb) cb(id);
+                    }
+                }
+            }
+            $dialogConfirm.dialog('option', 'buttons', buttons);
+        }
+
+        $dialogConfirm.dialog('option', 'title', title || _('Message'));
+        $('#dialog-confirm-text-settings').html(message);
+        if (icon) {
+            $('#dialog-confirm-icon-settings')
+                .show()
+                .attr('class', '')
+                .addClass('ui-icon ui-icon-' + icon);
+        } else {
+            $('#dialog-confirm-icon-settings').hide();
+        }
+        $dialogConfirm.data('callback', callback);
+        $dialogConfirm.dialog('open');
     }
-    $dialogConfirm.data('callback', callback);
-    $dialogConfirm.dialog('open');
+}
+
+function showError(error) {
+    showMessage(_(error),  _('Error'), 'error_outline');
+}
+
+function showToast(parent, message, icon, duration, isError, classes) {
+    if (typeof parent === 'string') {
+        classes = isError;
+        isError = duration;
+        icon    = message;
+        message = parent;
+        parent  = null;
+    }
+    if (parent && parent instanceof jQuery) {
+        parent = parent[0];
+    }
+    classes = classes || [];
+
+    if (typeof classes === 'string') {
+        classes = [classes];
+    }
+    isError && classes.push('dropZone-error');
+
+    M.toast({
+        parentSelector: parent || $('body')[0],
+        html:           message + (icon ? '<i class="material-icons">' + icon + '</i>' : ''),
+        displayLength:  duration || 3000,
+        classes:        classes
+    });
 }
 
 function getObject(id, callback) {
@@ -522,6 +730,9 @@ function fillUsers(elemId, current, callback) {
             text += '<option value="' + u + '" ' + ((current === u) ? 'selected' : '') + ' >' + users[u].common.name[0].toUpperCase() + users[u].common.name.substring(1)  + '</option>\n';
         }
         $(elemId).html(text);
+        if (isMaterialize) {
+            $(elemId).select();
+        }
     });
 }
 
@@ -566,7 +777,9 @@ function fillSelectIPs(id, actualAddr, noIPv4, noIPv6, callback) {
         }
 
         $(id).html(str);
-        if (typeof callback === 'function') callback();
+        if (typeof callback === 'function') {
+            callback();
+        }
     });
 }
 
