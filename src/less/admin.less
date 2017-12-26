@@ -408,10 +408,77 @@ body {
 }
 
 .modal-overlay {
-        background: gray;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
+    background: gray;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+// Command dialog
+#dialog-command {
+    .title {
+        background: @main-background-color;
+        color:      @admin-buttons-background;
+        padding:    0.5rem;
     }
+    textarea {
+        background: #e9e9e9;
+        font-family: courier, monospace;
+        font-size: 11px;
+        resize: none;
+        width: 100%;
+        height: calc(~"100% - 210px");
+    }
+    .progress-dont-close {
+        float: left;
+        padding-left: 1rem;
+        padding-top: 1rem;
+        /*&.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }*/
+    }
+    .switch {
+        text-align: right;
+    }
+    .command {
+        font-style: italic;
+    }
+    .btn {
+        margin-right: 1.5rem;
+    }
+    .progress-text {
+        font-size: 14px;
+        &.error {
+            color: #ff636e;
+        }
+    }
+}
+.button-command {
+    right: 12rem;
+    position: absolute;
+    top: 0;
+    cursor: pointer;
+    &.error::after {
+        content: "";
+        background: #ff636e;
+        position: absolute;
+        opacity: 0.5;
+        top:    1.4rem;
+        bottom: 1.4rem;
+        left:   0;
+        right:  0;
+    }
+    &.in-progress {
+        animation-name: in-progress;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+    }
+}
+@keyframes in-progress {
+    0%   {opacity: 1;}
+    50%  {opacity: 0.3;}
+    100% {opacity: 1;}
+}

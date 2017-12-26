@@ -46,7 +46,6 @@ var adapterRedirect = function (redirect, timeout) { // used in adapter settings
     }
 };
 
-
 (function ($) {
 $(document).ready(function () {
     var path = location.pathname + 'socket.io';
@@ -122,10 +121,34 @@ $(document).ready(function () {
         cmdExec:        function (host, cmd, callback) {
             host = host || main.currentHost;
             $stdout.val('');
-            $dialogCommand.dialog('open');
+
+            $dialogCommand.modal('open');
+
             stdout = '$ ./iobroker ' + cmd;
+            $dialogCommand.data('finished', false).find('.btn').html(_('In background'));
+            $dialogCommand.find('.command').html(stdout);
+            $dialogCommand.find('.progress-dont-close').removeClass('disabled');
+            $('#admin_sidemenu_main').find('.button-command').removeClass('error').addClass('in-progress');
+            $dialogCommand.data('max', null);
+            $dialogCommand.data('error', '');
+            $dialogCommandProgress.addClass('indeterminate').removeClass('determinate');
+
+            if (cmd.match(/^upload /)) {
+                $dialogCommand.find('.progress-text').html(_('Upload started...')).removeClass('error');
+            } else if (cmd.match(/^del [-_\w\d]+\.[\d]+$/)) {
+                $dialogCommand.find('.progress-text').html(_('Removing of instance...')).removeClass('error');
+            } else if (cmd.match(/^del /)) {
+                $dialogCommand.find('.progress-text').html(_('Removing of adapter...')).removeClass('error');
+            } else if (cmd.match(/^url /)) {
+                $dialogCommand.find('.progress-text').html(_('Install or update from URL...')).removeClass('error');
+            }  else if (cmd.match(/^add /)) {
+                $dialogCommand.find('.progress-text').html(_('Add instance...')).removeClass('error');
+            } else{
+                $dialogCommand.find('.progress-text').html(_('Started...')).removeClass('error');
+            }
+
             $stdout.val(stdout);
-            // genereate the unique id to coordinate the outputs
+            // generate the unique id to coordinate the outputs
             activeCmdId = Math.floor(Math.random() * 0xFFFFFFE) + 1;
             cmdCallback = callback;
             main.socket.emit('cmdExec', host, activeCmdId, cmd, function (err) {
@@ -567,6 +590,7 @@ $(document).ready(function () {
     var $dialogLicense = $('#dialog-license');
     var $dialogMessage = $('#dialog-message');
     var $dialogConfirm = $('#dialog-confirm');
+    var $dialogCommandProgress = $dialogCommand.find('.progress div');
 
     var firstConnect   = true;
 
@@ -906,23 +930,49 @@ $(document).ready(function () {
             initGridLanguage(main.systemConfig.common.language);
         }
 
-        $dialogCommand.dialog({
-            autoOpen:      false,
-            modal:         true,
-            width:         920,
-            height:        480,
-            closeOnEscape: false,
-            open: function (event, ui) {
-                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
-                $('#stdout').width($(this).width() - 10).height($(this).height() - 20);
-            },
-            resize: function (event, ui) {
-                $('#stdout').width($(this).width() - 10).height($(this).height() - 20);
+        $dialogCommand.modal({
+            dismissible: false
+        });
+        $dialogMessage.modal();
+        $dialogConfirm.modal({
+            dismissible: false
+        });
+
+        $dialogCommand.find('.progress-show-more').change(function () {
+            var val = $(this).prop('checked');
+            main.saveConfig('progressMore', val);
+            if (val) {
+                $dialogCommand.find('.textarea').show();
+            } else {
+                $dialogCommand.find('.textarea').hide();
+            }
+        });
+        if (main.config.progressClose === undefined) {
+            main.config.progressClose = true;
+        }
+        $dialogCommand.find('.progress-dont-close input').change(function () {
+            main.saveConfig('progressClose', $(this).prop('checked'));
+        });
+        // workaround for materialize checkbox problem
+        $dialogCommand.find('input[type="checkbox"]+span').unbind('click').click(function () {
+            var $input = $(this).prev();
+            if (!$input.prop('disabled')) {
+                $input.prop('checked', !$input.prop('checked')).trigger('change');
+            }
+        });
+        $dialogCommand.find('.progress-dont-close input').prop('checked', main.config.progressClose);
+        $dialogCommand.find('.progress-show-more').prop('checked', !!main.config.progressMore).trigger('change');
+        $dialogCommand.find('.btn').click(function () {
+            if ($dialogCommand.data('finished')) {
+                $('#admin_sidemenu_main').find('.button-command').hide();
+            } else {
+                $('#admin_sidemenu_main').find('.button-command').show();
             }
         });
 
-        $dialogMessage.modal();
-        $dialogConfirm.modal();
+        $('#admin_sidemenu_main').find('.button-command').click(function () {
+            $dialogCommand.modal('open');
+        });
     }
 
     function checkNodeJsVersions(hosts, index) {
@@ -1554,6 +1604,34 @@ $(document).ready(function () {
     });
     main.socket.on('cmdStdout',         function (_id, text) {
         if (activeCmdId === _id) {
+            var m = text.match(/^upload \[(\d+)]/);
+            if (m) {
+                if ($dialogCommand.data('max') === null) {
+                    $dialogCommand.data('max', parseInt(m[1], 10));
+                    $dialogCommandProgress.removeClass('indeterminate').addClass('determinate');
+                }
+                var max = $dialogCommand.data('max');
+                var value = parseInt(m[1], 10);
+                $dialogCommandProgress.css('width', (100 - Math.round((value / max) * 100)) + '%');
+            } else {
+                m = text.match(/^got [-_:\/\\.\w\d]+\/admin$/);
+                if (m) {
+                    // upload of admin
+                    $dialogCommand.find('.progress-text').html(_('Upload admin started'));
+                    $dialogCommand.data('max', null);
+                } else {
+                    // got ..../www
+                    m = text.match(/^got [-_:\/\\.\w\d]+\/www$/);
+                    if (m) {
+                        // upload of www
+                        $dialogCommand.find('.progress-text').html(_('Upload www started'));
+                        $dialogCommand.data('max', null);
+                    } else {
+
+                    }
+                }
+            }
+
             stdout += '\n' + text;
             $stdout.val(stdout);
             $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
@@ -1561,6 +1639,9 @@ $(document).ready(function () {
     });
     main.socket.on('cmdStderr',         function (_id, text) {
         if (activeCmdId === _id) {
+            if (!$dialogCommand.data('error')) {
+                $dialogCommand.data('error', text);
+            }
             stdout += '\nERROR: ' + text;
             $stdout.val(stdout);
             $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
@@ -1568,14 +1649,42 @@ $(document).ready(function () {
     });
     main.socket.on('cmdExit',           function (_id, exitCode) {
         if (activeCmdId === _id) {
+
             exitCode = parseInt(exitCode, 10);
             stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
             $stdout.val(stdout);
             $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+
+            $dialogCommand.find('.progress-dont-close').addClass('disabled');
+            $dialogCommandProgress.removeClass('indeterminate').css({'width': '100%'});
+            $dialogCommand.find('.btn').html(_('Close'));
+            $dialogCommand.data('finished', true);
+            $dialogCommand.data('max', true);
+            var $backButton = $('#admin_sidemenu_main').find('.button-command');
+            $backButton.removeClass('in-progress');
+
             if (!exitCode) {
-                setTimeout(function () {
-                    $dialogCommand.dialog('close');
-                }, 1500);
+                $dialogCommand.find('.progress-text').html(_('Success!'));
+                $backButton.hide();
+                if ($dialogCommand.find('.progress-dont-close input').prop('checked')) {
+                    setTimeout(function () {
+                        $dialogCommand.modal('close');
+                    }, 1500);
+                }
+            } else {
+                var error = $dialogCommand.data('error');
+                if (error) {
+                    var m = error.match(/error: (.*)$/);
+                    if (m) {
+                        error = m[1];
+                    }
+
+                    $dialogCommand.find('.progress-text').html(_('Done with error: %s', _(error))).addClass('error');
+                } else {
+                    $dialogCommand.find('.progress-text').html(_('Done with error')).addClass('error');
+                }
+                $backButton.addClass('error');
+                $backButton.show();
             }
             if (cmdCallback) {
                 cmdCallback(exitCode);

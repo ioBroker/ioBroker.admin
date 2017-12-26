@@ -27,8 +27,8 @@ function Logs(main) {                                                           
         hdr = new IobListHeader('log-outer-header', {list: $logOuter, colWidthOffset: 1, prefix: 'log-filter'});
         hdr.doFilter = that.filter;
 
-        hdr.add('combobox', _('from'), 'host');
-        hdr.add('text', _('Time'));
+        hdr.add('combobox', 'from', 'host');
+        hdr.add('text', 'Time');
         hdr.add('combobox', '', 'severity', [
             {val: '',       name: 'debug'},
             {val: 'silly',  name: 'silly'},
@@ -36,7 +36,7 @@ function Logs(main) {                                                           
             {val: 'warn',   name: 'warn'},
             {val: 'error',  name: 'error'}
         ]).$filter.attr('title', _('severity'));
-        hdr.add('edit', _('Message'), 'message');
+        hdr.add('edit', 'Message', 'message');
 
         $('#log-clear-on-disk').button({icons: {primary: 'ui-icon-trash'}, text: false}).click(function () {
             that.main.confirmMessage(_('Log file will be deleted. Are you sure?'), null, null, function (result) {

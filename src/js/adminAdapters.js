@@ -473,6 +473,11 @@ function Adapters(main) {
             that.$tab.find('#instances-filter-clear').hide();
         }
 
+        if (that.onlyInstalled) {
+            that.$tab.find('#btn_filter_adapters').addClass('red lighten-3');
+        } else {
+            that.$tab.find('#btn_filter_adapters').removeClass('red lighten-3');
+        }
 
         onExpertmodeChanged();
 
