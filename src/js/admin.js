@@ -319,10 +319,12 @@ $(document).ready(function () {
                         icons: {primary: ' ui-icon-search'},
                         text: false
                     })*/.click(function () {
-                        main.navigate({tab: 'instances'});
-
                         // open configuration dialog
-                        main.tabs.instances.showConfigDialog('system.adapter.discovery.0');
+                        main.navigate({
+                            tab: 'instances',
+                            dialog: 'config',
+                            params: 'system.adapter.discovery.0'
+                        });
                     }).attr('title', _('Device discovery'));
                 }
                 $wizard.show();
@@ -551,8 +553,9 @@ $(document).ready(function () {
     main.instances     = tabs.instances.list;
     main.tabs          = tabs;
     main.dialogs       = {
-        system: new System(main),
-        customs: new Customs(main)
+        system:  new System(main),
+        customs: new Customs(main),
+        config:  new Config(main)
     };
 
     var stdout;
@@ -922,8 +925,6 @@ $(document).ready(function () {
         $dialogConfirm.modal();
     }
 
-    tabs.logs.prepare();
-
     function checkNodeJsVersions(hosts, index) {
         index = index || 0;
         if (hosts && index < hosts.length) {
@@ -1258,6 +1259,11 @@ $(document).ready(function () {
             }
         }
         callback(false);
+    };
+
+    main.navigateGetParams = function () {
+        var parts = window.location.hash.split('/');
+        return parts[2];
     };
 
     main.navigate = function (options) {
@@ -1733,13 +1739,14 @@ $(document).ready(function () {
                                 initAllDialogs();
                                 tabs.hosts.prepare();
                                 tabs.objects.prepare();
-                                if (tabs.states) tabs.states.prepare();
+                                // if (tabs.states) tabs.states.prepare();
                                 tabs.adapters.prepare();
                                 tabs.instances.prepare();
                                 tabs.users.prepare();
                                 //tabs.groups.prepare();
                                 tabs.enums.prepare();
                                 tabs.events.prepare();
+                                tabs.logs.prepare();
                                 // TABS
                                 // resizeGrids();
 

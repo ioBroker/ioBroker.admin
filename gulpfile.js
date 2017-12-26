@@ -140,7 +140,8 @@ function words2languages(src) {
         'pt': {},
         'nl': {},
         'fr': {},
-        'it': {}
+        'it': {},
+        'es': {}
     };
     var data = readWordJs(src);
     if (data) {
@@ -187,7 +188,8 @@ function words2languagesFlat(src) {
         'pt': {},
         'nl': {},
         'fr': {},
-        'it': {}
+        'it': {},
+        'es': {}
     };
     var data = readWordJs(src);
     if (data) {
@@ -234,7 +236,7 @@ function languagesFlat2words(src) {
     var dirs = fs.readdirSync(src + 'i18n/');
     var langs = {};
     var bigOne = {};
-    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it'];
+    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it', 'es'];
     dirs.sort(function (a, b) {
         var posA = order.indexOf(a);
         var posB = order.indexOf(b);
@@ -302,7 +304,7 @@ function languages2words(src) {
     var dirs = fs.readdirSync(src + 'i18n/');
     var langs = {};
     var bigOne = {};
-    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it'];
+    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it', 'es'];
     dirs.sort(function (a, b) {
         var posA = order.indexOf(a);
         var posB = order.indexOf(b);
@@ -338,7 +340,7 @@ function languages2words(src) {
     // read actual words.js
     var aWords = readWordJs();
 
-    var temporaryIgnore = ['pt', 'fr', 'nl'];
+    var temporaryIgnore = ['pt', 'fr', 'nl', 'es'];
     if (aWords) {
         // Merge words together
         for (var w in aWords) {
@@ -484,7 +486,11 @@ gulp.task('compressMaterialize', function () {
 });
 
 gulp.task('lessApp', function () {
-    gulp.src(['./src/less/*.less', './src/colorpicker/less/*.less', '!./src/less/adapter.less'])
+    gulp.src([
+        './src/less/*.less',
+        './src/colorpicker/less/*.less',
+        '!./src/less/adapter.less'
+    ])
         .pipe(sourcemaps.init())
         .pipe(less({
             paths: [ ]

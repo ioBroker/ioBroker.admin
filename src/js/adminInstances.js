@@ -5,8 +5,6 @@ function Instances(main) {
 
     this.$grid         = $('#grid-instances');
     this.$gridhead     = $('#grid-instances-head');
-    this.$configFrame  = $('#config-iframe');
-    this.$dialogConfig = $('#dialog-config');
     this.$dialogCron   = $('#dialog-cron');
 
     this.inited        = false;
@@ -658,46 +656,7 @@ function Instances(main) {
         that.$dialogCron.dialog('open');
     }
 
-    this.prepare = function () {
-        this.$dialogConfig.dialog({
-            autoOpen:   false,
-            modal:      true,
-            width:      830, //$(window).width() > 920 ? 920: $(window).width(),
-            height:     536, //$(window).height() - 100, // 480
-            closeOnEscape: false,
-            open: function (event, ui) {
-                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
-                that.$dialogConfig.css('padding', '2px 0px');
-            },
-            beforeClose: function () {
-                if (window.frames['config-iframe'].changed) {
-                    return confirm(_('Are you sure? Changes are not saved.'));
-                }
-                var pos  = $(this).parent().position();
-                var name = $(this).data('name');
-                that.main.saveConfig('adapter-config-top-' + name,  pos.top);
-                that.main.saveConfig('adapter-config-left-' + name, pos.left);
-
-                return true;
-            },
-            close: function () {
-                // Clear iframe
-                that.$configFrame.attr('src', '');
-
-                // If after wizard some configuratins must be shown
-                if (typeof showConfig !== 'undefined' && showConfig && showConfig.length) {
-                    var configId = showConfig.shift();
-                    setTimeout(function (_id) {
-                        that.showConfigDialog(_id)
-                    }, 1000, configId);
-                }
-            },
-            resize: function () {
-                var name = $(this).data('name');
-                that.main.saveConfig('adapter-config-width-'  + name, $(this).parent().width());
-                that.main.saveConfig('adapter-config-height-' + name, $(this).parent().height() + 10);
-            }
-        });
+    this.prepare            = function () {
 
         this.$dialogCron.dialog({
             autoOpen:   false,
@@ -797,7 +756,7 @@ function Instances(main) {
         });
     };
 
-    this.updateExpertMode = function () {
+    this.updateExpertMode   = function () {
         that.init(true);
         if (that.main.config.expertMode) {
             $('#btn-instances-expert-mode').addClass('ui-state-error');
@@ -806,7 +765,7 @@ function Instances(main) {
         }
     };
 
-    this.replaceLink = function (_var, adapter, instance, elem) {
+    this.replaceLink        = function (_var, adapter, instance, elem) {
         _var = _var.replace(/%/g, '');
         if (_var.match(/^native_/))  _var = _var.substring(7);
         // like web.0_port
@@ -880,7 +839,7 @@ function Instances(main) {
         }
     };*/
 
-    this._replaceLink = function (link, _var, adapter, instance, callback) {
+    this._replaceLink       = function (link, _var, adapter, instance, callback) {
         // remove %%
         _var = _var.replace(/%/g, '');
 
@@ -918,7 +877,7 @@ function Instances(main) {
         });
     };
 
-    this._replaceLinks = function (link, adapter, instance, arg, callback) {
+    this._replaceLinks      = function (link, adapter, instance, arg, callback) {
         if (!link) {
             return callback(link, adapter, instance, arg);
         }
@@ -941,7 +900,7 @@ function Instances(main) {
         }.bind(this));
     };
 
-    this._postInit = function (update) {
+    this._postInit          = function (update) {
         if (this.main.currentHost && typeof this.$grid !== 'undefined' && (!this.$grid.data('inited') || update)) {
             this.$grid.data('inited', true);
             this.list.sort();
@@ -980,7 +939,7 @@ function Instances(main) {
         }
     };
 
-    this.getInstances = function (callback) {
+    this.getInstances       = function (callback) {
         this.main.socket.emit('getForeignObjects', 'system.adapter.*', 'state', function (err, res) {
             for (var id in res) {
                 if (!res.hasOwnProperty(id)) continue;
@@ -1010,7 +969,7 @@ function Instances(main) {
         });
     };
 
-    this.init = function (update) {
+    this.init               = function (update) {
         if (this.inited && !update) {
             return;
         }
@@ -1041,7 +1000,7 @@ function Instances(main) {
         }
     };
 
-    this.destroy = function () {
+    this.destroy            = function () {
         if (this.inited) {
             this.inited = false;
             // subscribe objects and states
@@ -1052,7 +1011,7 @@ function Instances(main) {
         }
     };
 
-    this.stateChange = function (id, state) {
+    this.stateChange        = function (id, state) {
         this.main.states[id] = state;
         if (this.$grid) {
             var parts = id.split('.');
@@ -1093,7 +1052,7 @@ function Instances(main) {
         }
     };
 
-    this.objectChange = function (id, obj) {
+    this.objectChange       = function (id, obj) {
         // Update Instance Table
         if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
             if (obj) {
@@ -1111,11 +1070,13 @@ function Instances(main) {
                     // open automatically config dialog
                     if (!obj.common.noConfig) {
                         setTimeout(function () {
-                            if (!that.$configFrame.attr('src') && !$('#dialog-license').is(':visible')) {
-                                window.onhashchange('tab-instances');
-
+                            if (window.location.hash.indexOf('/config/') === -1) {
                                 // open configuration dialog
-                                that.showConfigDialog(id);
+                                that.main.navigate({
+                                    tab:    'instances',
+                                    dialog: 'config',
+                                    params:  id
+                                });
                             }
                         }, 2000);
                     }
@@ -1152,44 +1113,7 @@ function Instances(main) {
         }
     };
 
-    this.showConfigDialog = function (id) {
-        // id = 'system.adapter.NAME.X'
-        $iframeDialog = that.$dialogConfig;
-        var parts = id.split('.');
-        that.$configFrame.attr('src', 'adapter/' + parts[2] + '/?' + parts[3]);
-
-        var name      = id.replace(/^system\.adapter\./, '');
-        var config    = that.main.objects[id];
-        var width     = 830;
-        var height    = 536;
-        var minHeight = 0;
-        var minWidth  = 0;
-        if (config.common.config) {
-            if (config.common.config.width)     width     = config.common.config.width;
-            if (config.common.config.height)    height    = config.common.config.height;
-            if (config.common.config.minWidth)  minWidth  = config.common.config.minWidth;
-            if (config.common.config.minHeight) minHeight = config.common.config.minHeight;
-        }
-        if (that.main.config['adapter-config-width-'  + name])  width = that.main.config['adapter-config-width-'  + name];
-        if (that.main.config['adapter-config-height-' + name]) height = that.main.config['adapter-config-height-' + name];
-
-        that.$dialogConfig.data('name', name);
-
-        // Set minimal height and width
-        that.$dialogConfig.dialog('option', 'minWidth',  minWidth).dialog('option', 'minHeight', minHeight);
-
-        that.$dialogConfig
-            .dialog('option', 'title', _('Adapter configuration') + ': ' + name)
-            .dialog('option', 'width',  width)
-            .dialog('option', 'height', height)
-            .dialog('open');
-        that.$dialogConfig.parent().find('.ui-widget-header button .ui-button-text').html('');
-
-        if (that.main.config['adapter-config-top-'  + name])   that.$dialogConfig.parent().css({top:  that.main.config['adapter-config-top-' + name]});
-        if (that.main.config['adapter-config-left-' + name])   that.$dialogConfig.parent().css({left: that.main.config['adapter-config-left-' + name]});
-    };
-
-    this.initButtons = function (id, url) {
+    this.initButtons        = function (id, url) {
         id = id ? '[data-instance-id="' + id + '"]' : '';
 
         var $e = $('.instance-edit' + id).unbind('click').click(function () {
@@ -1207,8 +1131,11 @@ function Instances(main) {
 
         $e = $('.instance-settings' + id).unbind('click')
             .click(function () {
-                var id = $(this).data('instance-id');
-                that.showConfigDialog(id);
+                that.main.navigate({
+                    tab:    'instances',
+                    dialog: 'config',
+                    params:  $(this).data('instance-id')
+                });
             });
         if (!$e.find('.ui-button-icon-primary').length) {
             $e.button({icons: {primary: 'ui-icon-note'}, text: false})./*css({width: '2em', height: '2em'}).*/attr('title', _('config'));
@@ -1345,7 +1272,7 @@ function Instances(main) {
         }
     };
 
-    this.resize = function (width, height) {
+    this.resize             = function (width, height) {
         //this.$grid.setGridHeight(height - 150).setGridWidth(width);
     };
 }

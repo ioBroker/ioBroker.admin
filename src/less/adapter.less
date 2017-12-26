@@ -6,6 +6,30 @@ body {
     font-family: Lucida Grande,Lucida Sans,Arial,sans-serif;
 }
 
+/* Load material icons */
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(./../../lib/fonts/material.woff2) format('woff2');
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+
 .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited, .ui-state-hover a, .ui-state-hover a:link, .ui-state-hover a:visited  {
     outline: none;
 }
@@ -25,7 +49,24 @@ body {
     margin: 4px;
 
 }
-
+.adapter-body {
+    height: calc(~"100% - 93px");
+    width: 100%;
+    overflow: auto
+}
+.dialog-config-buttons {
+    .btn-save {
+        margin-left: 1rem;
+    }
+    .btn-cancel {
+        float: right;
+        margin-top: 1rem;
+        margin-right: 1rem;
+    }
+    .btn i {
+        line-height: 35px !important;
+    }
+}
 .ui-tabs-nav {
     border-radius: 0;
     border-top: none;

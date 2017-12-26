@@ -524,14 +524,16 @@ function Customs(main) {
         return that.$dialog.find('.dialog-system-buttons .btn-save').hasClass('disabled');
     };
 
-    this.init = function (ids) {
+    this.init = function () {
         if (this.inited) {
             return;
         }
         this.inited = true;
 
-        if (typeof ids !== 'object') {
-            ids = [ids];
+        var ids = this.main.navigateGetParams();
+
+        if (ids) {
+            ids = ids.split(',');
         }
         // if the list of IDs is too long, it was saved into this.ids
         if (!ids || !ids.length) {

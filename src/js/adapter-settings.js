@@ -16,39 +16,43 @@ var certs    = [];
 var adapter  = '';
 var onChangeSupported = false;
 
-$(document).ready(function () {
+function preInit () {
     'use strict';
-
-    var tmp = window.location.pathname.split('/');
+        var tmp = window.location.pathname.split('/');
     adapter = tmp[tmp.length - 2];
     var id = 'system.adapter.' + adapter + '.' + instance;
 
     // Extend dictionary with standard words for adapter
     if (typeof systemDictionary === 'undefined') systemDictionary = {};
 
-    systemDictionary.save =           {"en": "Save",           "de": "Speichern",                "ru": "Сохранить"};
-    systemDictionary.saveclose =      {"en": "Save and close", "de": "Speichern und schließen",  "ru": "Сохранить и выйти"};
-    systemDictionary.none =           {"en": "none",           "de": "keins",                    "ru": ""};
-	systemDictionary.nonerooms =      {"en": "",               "de": "",                         "ru": ""};
-    systemDictionary.nonefunctions =  {"en": "",               "de": "",                         "ru": ""};
-    systemDictionary.all =            {"en": "all",            "de": "alle",                     "ru": "все"};
-    systemDictionary['Device list'] = {"en": "Device list",    "de": "Geräteliste",              "ru": "Список устройств"};
-    systemDictionary['new device'] =  {"en": "new device",     "de": "Neues Gerät",              "ru": "Новое устройство"};
-    systemDictionary.edit =           {"en": "edit",           "de": "Ändern",                   "ru": "Изменить"};
-    systemDictionary.delete =         {"en": "delete",         "de": "Löschen",                  "ru": "Удалить"};
-    systemDictionary.pair =           {"en": "pair",           "de": "Verbinden",                "ru": "Связать"};
-    systemDictionary.unpair =         {"en": "unpair",         "de": "Trennen",                  "ru": "Разорвать связь"};
-    systemDictionary.ok =             {"en": "Ok",             "de": "Ok",                       "ru": "Ok"};
-    systemDictionary.cancel =         {"en": "Cancel",         "de": "Abbrechen",                "ru": "Отмена"};
-    systemDictionary.Message =        {"en": "Message",        "de": "Mitteilung",               "ru": "Сообщение"};
-    systemDictionary.close =          {"en": "Close",          "de": "Schließen",                "ru": "Закрыть"};
-    systemDictionary.htooltip =       {"en": "Click for help", "de": "Anclicken",                "ru": "Перейти по ссылке"};
+    systemDictionary.save =           {"en": "Save",           "fr": "Sauvegarder",                     "nl": "Opslaan",             "es": "Salvar",                      "pt": "Salve ",                 "it": "Salvare",                     "de": "Speichern",                "ru": "Сохранить"};
+    systemDictionary.saveclose =      {"en": "Save and close", "fr": "Sauver et fermer",                "nl": "Opslaan en afsluiten","es": "Guardar y cerrar",            "pt": "Salvar e fechar",         "it": "Salva e chiudi",              "de": "Speichern und schließen",  "ru": "Сохранить и выйти"};
+    systemDictionary.none =           {"en": "none",           "fr": "aucun",                           "nl": "geen",                "es": "ninguna",                     "pt": "Nenhum",                  "it": "nessuna",                     "de": "keins",                    "ru": ""};
+	systemDictionary.nonerooms =      {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "ru": ""};
+    systemDictionary.nonefunctions =  {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "ru": ""};
+    systemDictionary.all =            {"en": "all",            "fr": "tout",                            "nl": "alle",                "es": "todas",                       "pt": "todos",                   "it": "tutti",                       "de": "alle",                     "ru": "все"};
+    systemDictionary['Device list'] = {"en": "Device list",    "fr": "Liste des périphériques",         "nl": "Lijst met apparaten", "es": "Lista de dispositivos",       "pt": "Lista de dispositivos",   "it": "Elenco dispositivi",          "de": "Geräteliste",              "ru": "Список устройств"};
+    systemDictionary['new device'] =  {"en": "new device",     "fr": "nouvel appareil",                 "nl": "nieuw apparaat",      "es": "Nuevo dispositivo",           "pt": "Novo dispositivo",        "it": "nuovo dispositivo",           "de": "Neues Gerät",              "ru": "Новое устройство"};
+    systemDictionary.edit =           {"en": "edit",           "fr": "modifier",                        "nl": "Bewerk",              "es": "editar",                      "pt": "editar",                  "it": "modificare",                  "de": "Ändern",                   "ru": "Изменить"};
+    systemDictionary.delete =         {"en": "delete",         "fr": "effacer",                         "nl": "Delete",              "es": "borrar",                      "pt": "excluir",                 "it": "Elimina",                     "de": "Löschen",                  "ru": "Удалить"};
+    systemDictionary.pair =           {"en": "pair",           "fr": "paire",                           "nl": "paar",                "es": "par",                         "pt": "par",                     "it": "paio",                        "de": "Verbinden",                "ru": "Связать"};
+    systemDictionary.unpair =         {"en": "unpair",         "fr": "unpair",                          "nl": "Unpair",              "es": "desvincular",                 "pt": "unpair",                  "it": "Disaccoppia",                 "de": "Trennen",                  "ru": "Разорвать связь"};
+    systemDictionary.ok =             {"en": "Ok",             "fr": "D'accord",                        "nl": "OK",                  "es": "De acuerdo",                  "pt": "Está bem",                "it": "Ok",                          "de": "Ok",                       "ru": "Ok"};
+    systemDictionary.cancel =         {"en": "Cancel",         "fr": "Annuler",                         "nl": "Annuleer",            "es": "Cancelar",                    "pt": "Cancelar",                "it": "Annulla",                     "de": "Abbrechen",                "ru": "Отмена"};
+    systemDictionary.Message =        {"en": "Message",        "fr": "Message",                         "nl": "Bericht",             "es": "Mensaje",                     "pt": "Mensagem",                "it": "Messaggio",                   "de": "Mitteilung",               "ru": "Сообщение"};
+    systemDictionary.close =          {"en": "Close",          "fr": "Fermer",                          "nl": "Dichtbij",            "es": "Cerca",                       "pt": "Fechar",                  "it": "Vicino",                      "de": "Schließen",                "ru": "Закрыть"};
+    systemDictionary.htooltip =       {"en": "Click for help", "fr": "Cliquez pour obtenir de l'aide",  "nl": "Klik voor hulp",      "es": "Haz clic para obtener ayuda", "pt": "Clique para ajuda",       "it": "Fai clic per chiedere aiuto", "de": "Anclicken",                "ru": "Перейти по ссылке"};
 	systemDictionary.maxTableRaw =    {
-		"en": "Maximum number of allowed raws", 
-		"de": "Maximale Anzahl von erlaubten Tabellenzeilen", 
-		"ru": "Достигнуто максимальное число строк"
+		"en": "Maximum number of allowed raws",
+		"de": "Maximale Anzahl von erlaubten Tabellenzeilen",
+		"ru": "Достигнуто максимальное число строк",
+        "it": "Numero massimo di raw consentiti",
+        "fr": "Nombre maximum de raw autorisés",
+        "nl": "Maximumaantal toegestane raws",
+        "pt": "Número máximo de raias permitidas",
+        "es": "Número máximo de raws permitidos"
 	};
-    systemDictionary.maxTableRawInfo = {"en": "Warning",       "de": "Warnung",                  "ru": "Внимание"};
+    systemDictionary.maxTableRawInfo = {"en": "Warning",       "de": "Warnung",                  "ru": "Внимание", "pt": "Atenção",  "nl": "Waarschuwing", "fr": "Attention", "it": "avvertimento", "es": "Advertencia"};
 
     //socket.on('connection', function () {
         loadSystemConfig(function () {
@@ -57,14 +61,22 @@ $(document).ready(function () {
         });
     //});
     var $body = $('body');
-    $body.wrapInner('<div style="height: calc(100% - 44px); width: 100%; overflow:auto"></div>');
-    $body.prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" style="padding: 2px" >' +
+    $body.wrapInner('<div class="adapter-body"></div>');
+    /*$body.prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" style="padding: 2px" >' +
         '<button id="save" class="translateB">save</button>&nbsp;' +
         '<button id="saveclose" class="translateB">saveclose</button>&nbsp;' +
         '<button id="close" class="translateB" style="float: right;">cancel</button>&nbsp;' +
         '</div>');
+    */
+    $body.append(
+        '<div class="m"><nav class="dialog-config-buttons nav-wrapper footer">' +
+        '   <a class="btn btn-active btn-save"><i class="material-icons left">save</i><span class="translate">save</span></a> ' +
+        '   <a class="btn btn-save-close"><i class="material-icons left">save</i><i class="material-icons left">close</i><span class="translate">saveclose</span></a> ' +
+        '   <a class="btn btn-cancel"><i class="material-icons left">close</i><span class="translate">cancel</span></a>' +
+        '</nav></div>');
 
-    $('button#save').button({icons: {primary: 'ui-icon-disk'}}).click(function () {
+    var $navButtons = $('.dialog-config-buttons');
+    $navButtons.find('.btn-save').click(function () {
         if (typeof save === 'undefined') {
             alert('Please implement save function in your admin/index.html');
             return;
@@ -76,10 +88,8 @@ $(document).ready(function () {
             saveSettings(obj, common);
         });
     });
-    $('button#saveclose').button({icons: {
-        primary: 'ui-icon-disk',
-        secondary: 'ui-icon-close'
-    }}).click(function () {
+
+    $navButtons.find('.btn-save-close').click(function () {
         if (typeof save === 'undefined') {
             alert('Please implement save function in your admin/index.html');
             return;
@@ -89,17 +99,17 @@ $(document).ready(function () {
                 parent.adapterRedirect(redirect);
             }
             saveSettings(obj, common, function () {
-                window.close();
-                if (parent && parent.$iframeDialog) {
-                    parent.$iframeDialog.dialog('close');
+                // window.close();
+                if (typeof parent !== 'undefined' && parent && parent.$iframeDialog && typeof parent.$iframeDialog.close === 'function') {
+                    parent.$iframeDialog.close();
                 }
             });
         });
     });
-    $('button#close').button({icons: {primary: 'ui-icon-close'}}).click(function () {
-        window.close();
-        if (typeof parent !== 'undefined' && parent && parent.$iframeDialog) {
-            parent.$iframeDialog.dialog('close');
+
+    $navButtons.find('.btn-cancel').click(function () {
+        if (typeof parent !== 'undefined' && parent && parent.$iframeDialog && typeof parent.$iframeDialog.close === 'function') {
+            parent.$iframeDialog.close();
         }
     });
 
@@ -113,12 +123,16 @@ $(document).ready(function () {
             if (!oldObj) oldObj = {};
 
             for (var a in native) {
-                oldObj.native[a] = native[a];
+                if (native.hasOwnProperty(a)) {
+                    oldObj.native[a] = native[a];
+                }
             }
 
             if (common) {
                 for (var b in common) {
-                    oldObj.common[b] = common[b];
+                    if (common.hasOwnProperty(b)) {
+                        oldObj.common[b] = common[b];
+                    }
                 }
             }
             socket.emit('setObject', id, oldObj, function (err) {
@@ -128,9 +142,9 @@ $(document).ready(function () {
                 }
                 changed = false;
                 if (onChangeSupported) {
-                    $('#save').button('disable');
-                    $('#saveclose').button('disable');
-                    $('#close .ui-button-text').html(_('close'));
+                    $navButtons.find('.btn-save').addClass('disabled');
+                    $navButtons.find('.btn-save-close').addClass('disabled');
+                    $navButtons.find('.btn-close').find('span').html(_('close'));
                 }
                 if (callback) callback();
             });
@@ -178,7 +192,7 @@ $(document).ready(function () {
                                 var m = res.native.certificates[c].split('-----END CERTIFICATE-----');
                                 var count = 0;
                                 for (var _m = 0; _m < m.length; _m++) {
-                                    if (m[_m].replace(/[\r\n|\r|\n]+/, '').trim()) count++;
+                                    if (m[_m].replace(/\r\n|\r|\n/, '').trim()) count++;
                                 }
                                 if (count > 1) _cert.type = 'chained';
                             }
@@ -197,14 +211,14 @@ $(document).ready(function () {
         onChangeSupported = true;
         if (typeof isChanged === 'boolean' && isChanged === false) {
             changed = false;
-            $('#save').button('disable');
-            $('#saveclose').button('disable');
-            $('#close .ui-button-text').html(_('close'));
+            $navButtons.find('.btn-save').addClass('disabled');
+            $navButtons.find('.btn-save-close').addClass('disabled');
+            $navButtons.find('.btn-close').find('span').html(_('close'));
         } else {
             changed = true;
-            $('#save').button('enable');
-            $('#saveclose').button('enable');
-            $('#close .ui-button-text').html(_('cancel'));
+            $navButtons.find('.btn-save').removeClass('disabled');
+            $navButtons.find('.btn-save-close').removeClass('disabled');
+            $navButtons.find('.btn-close').find('span').html(_('cancel'));
         }
     }
 
@@ -231,6 +245,24 @@ $(document).ready(function () {
             }
         });
     }
+}
+
+$(document).ready(function () {
+    'use strict';
+
+    // load materialze
+    var cssLink    = document.createElement('link');
+    cssLink.href   = '../../lib/css/materialize.css';
+    cssLink.type   = 'text/css';
+    cssLink.rel    = 'stylesheet';
+    cssLink.media  = 'screen,print';
+    document.getElementsByTagName('head')[0].appendChild(cssLink);
+
+    // load materialze.js
+    var jsLink     = document.createElement('script');
+    jsLink.onload  = preInit;
+    jsLink.src     = '../../lib/js/materialize.js';
+    document.head.appendChild(jsLink);
 });
 
 function prepareTooltips() {
@@ -334,16 +366,17 @@ function showMessage(message, title, icon, width) {
     }
     $dialogMessage.dialog('option', 'width', width + 500);
 
-    if (typeof _ != 'undefined') {
+    if (typeof _ !== 'undefined') {
         $dialogMessage.dialog('option', 'title', title || _('Message'));
     } else {
         $dialogMessage.dialog('option', 'title', title || 'Message');
     }
     $('#dialog-message-text-settings').html(message);
     if (icon) {
-        $('#dialog-message-icon-settings').show();
-        $('#dialog-message-icon-settings').attr('class', '');
-        $('#dialog-message-icon-settings').addClass('ui-icon ui-icon-' + icon);
+        $('#dialog-message-icon-settings')
+            .show()
+            .attr('class', '')
+            .addClass('ui-icon ui-icon-' + icon);
     } else {
         $('#dialog-message-icon-settings').hide();
     }
@@ -505,8 +538,9 @@ function getIPs(host, callback) {
             var IPs6 = [{name: '[IPv6] ::',      address: '::',      family: 'ipv6'}];
             if (host.native.hardware && host.native.hardware.networkInterfaces) {
                 for (var eth in host.native.hardware.networkInterfaces) {
+                    if (!host.native.hardware.networkInterfaces.hasOwnProperty(eth)) continue;
                     for (var num = 0; num < host.native.hardware.networkInterfaces[eth].length; num++) {
-                        if (host.native.hardware.networkInterfaces[eth][num].family != 'IPv6') {
+                        if (host.native.hardware.networkInterfaces[eth][num].family !== 'IPv6') {
                             IPs4.push({name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv4'});
                         } else {
                             IPs6.push({name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv6'});
@@ -667,9 +701,12 @@ function _editInitButtons($grid, tabId, objId) {
             $grid[0]._edited.push(id);
         }
         changed = true;
-        $('#save').button('enable');
-        $('#saveclose').button('enable');
-        if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
+        var $navButtons = $('.dialog-config-buttons');
+        $navButtons.find('.btn-save').removeClass('disabled');
+        $navButtons.find('.btn-save-close').removeClass('disabled');
+        if (onChangeSupported) {
+            $navButtons.find('.btn-close').find('span').html(_('cancel'));
+        }
     }).css({'height': '18px', width: '22px'});
 
     $('.' + tabId + '-delete-submit' + search).unbind('click').button({
@@ -680,9 +717,12 @@ function _editInitButtons($grid, tabId, objId) {
         $grid.jqGrid('delRowData', tabId + '_' + id);
 
         changed = true;
-        $('#save').button('enable');
-        $('#saveclose').button('enable');
-        if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
+        var $navButtons = $('.dialog-config-buttons');
+        $navButtons.find('.btn-save').removeClass('disabled');
+        $navButtons.find('.btn-save-close').removeClass('disabled');
+        if (onChangeSupported) {
+            $navButtons.find('.btn-close').find('span').html(_('cancel'));
+        }
 
         var pos = $grid[0]._edited.indexOf(id);
         if (pos !== -1) {
@@ -705,9 +745,12 @@ function _editInitButtons($grid, tabId, objId) {
         $grid.jqGrid('saveRow', tabId + '_' + id, {url: 'clientArray'});
 
         changed = true;
-        $('#save').button('enable');
-        $('#saveclose').button('enable');
-        if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
+        var $navButtons = $('.dialog-config-buttons');
+        $navButtons.find('.btn-save').removeClass('disabled');
+        $navButtons.find('.btn-save-close').removeClass('disabled');
+        if (onChangeSupported) {
+            $navButtons.find('.btn-close').find('span').html(_('cancel'));
+        }
 
         var pos = $grid[0]._edited.indexOf(id);
         if (pos !== -1) {
@@ -828,9 +871,12 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             if ($grid[0]._edited.indexOf(id) === -1) $grid[0]._edited.push(id);
 
             changed = true;
-            $('#save').button('enable');
-            $('#saveclose').button('enable');
-            if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
+            var $navButtons = $('.dialog-config-buttons');
+            $navButtons.find('.btn-save').removeClass('disabled');
+            $navButtons.find('.btn-save-close').removeClass('disabled');
+            if (onChangeSupported) {
+                $navButtons.find('.btn-close').find('span').html(_('cancel'));
+            }
         },
         sortname:  'id',
         sortorder: 'desc',
@@ -845,9 +891,12 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         },
         onSortCol: function () {
             changed = true;
-            $('#save').button('enable');
-            $('#saveclose').button('enable');
-            if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
+            var $navButtons = $('.dialog-config-buttons');
+            $navButtons.find('.btn-save').removeClass('disabled');
+            $navButtons.find('.btn-save-close').removeClass('disabled');
+            if (onChangeSupported) {
+                $navButtons.find('.btn-close').find('span').html(_('cancel'));
+            }
         }
     }).jqGrid('filterToolbar', {
         defaultSearch: 'cn',
@@ -897,9 +946,12 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
                 obj[$grid[0]._cols[0]] = newText + idx;
 
                 changed = true;
-                $('#save').button('enable');
-                $('#saveclose').button('enable');
-                if (onChangeSupported) $('#close .ui-button-text').html(_('cancel'));
+                var $navButtons = $('.dialog-config-buttons');
+                $navButtons.find('.btn-save').removeClass('disabled');
+                $navButtons.find('.btn-save-close').removeClass('disabled');
+                if (onChangeSupported) {
+                    $navButtons.find('.btn-close').find('span').html(_('cancel'));
+                }
 
                 addToTable(tabId, obj, $grid);
             },
