@@ -1397,7 +1397,7 @@ $(document).ready(function () {
                     }
 
                     // trigger resize
-                    /*var func;
+                    var func;
                     if ((func = tabs[tab.substr(4)]) && func.resize) {
                         func.onSelected && func.onSelected();
 
@@ -1410,9 +1410,9 @@ $(document).ready(function () {
                             if (y < 480) {
                                 y = 480;
                             }
-                            func.resize(x,y);
+                            func.resize(x, y);
                         }, 10);
-                    }*/
+                    }
                 }
 
                 // select menu element
