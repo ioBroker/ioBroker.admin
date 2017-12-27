@@ -774,7 +774,7 @@ function Customs(main) {
             e.stopPropagation();
             e.preventDefault();
             if (!that.$dialog.find('.dialog-system-buttons .btn-save').hasClass('disabled')) {
-                that.main.confirmMessage(_('Are you sure? Changes are not saved.'), _('Question'), 'error_outline', function (result) {
+                that.main.confirmMessage(_('Are you sure? Changes are not saved.'), _('Please confirm'), 'error_outline', function (result) {
                     if (result) {
                         // disable iframe
                         that.loadHistoryChart();

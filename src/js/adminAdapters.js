@@ -427,7 +427,7 @@ function Adapters(main) {
             });
 
         that.$tab.find('#btn_upgrade_all').unbind('click').click(function () {
-            that.main.confirmMessage(_('Do you want to upgrade all adapters?'), _('Question'), 'help', function (result) {
+            that.main.confirmMessage(_('Do you want to upgrade all adapters?'), _('Please confirm'), 'help', function (result) {
                 if (result) {
                     that.main.cmdExec(null, 'upgrade', function (exitCode) {
                         if (!exitCode) that._postInit(true);
@@ -1230,7 +1230,7 @@ function Adapters(main) {
             text:  false
         }).css(xytdButton).unbind('click').on('click', function () {
             var name = $(this).attr('data-adapter-name');
-            that.main.confirmMessage(_('Are you sure?'), _('Question'), 'help', function (result) {
+            that.main.confirmMessage(_('Are you sure you want to delete adapter %s?', name), _('Please confirm'), 'help', function (result) {
                 if (result) {
                     that.main.cmdExec(null, 'del ' + name, function (exitCode) {
                         if (!exitCode) that._postInit(true);

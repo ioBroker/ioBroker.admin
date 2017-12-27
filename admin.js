@@ -3,7 +3,6 @@
 'use strict';
 
 var adapterName = require(__dirname + '/package.json').name.split('.').pop();
-var fs 			= require('fs');
 var utils 		= require(__dirname + '/lib/utils'); // Get common adapter utils
 var tools 		= require(utils.controllerDir + '/lib/tools.js');
 var SocketIO    = require(__dirname + '/lib/socket');
@@ -20,6 +19,7 @@ var adapter = new utils.Adapter({
     name:           adapterName, // adapter name
     dirname:        __dirname,   // say own position
     logTransporter: true,        // receive the logs
+    systemConfig:   true,
     install: function (callback) {
         if (typeof callback === 'function') {
             callback();

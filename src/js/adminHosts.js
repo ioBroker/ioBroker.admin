@@ -19,7 +19,8 @@ function Hosts(main) {
             $('#hosts-filter').val('').trigger('change');
         });
 
-        $('#hosts-filter').change(function () {
+        var $hostsFilter = $('#hosts-filter');
+        $hostsFilter.change(function () {
             that.main.saveConfig('hostsFilter', $(this).val());
             applyFilter($(this).val());
         }).keyup(function () {
@@ -29,7 +30,7 @@ function Hosts(main) {
             }, 300);
         });
         if (that.main.config.hostsFilter && that.main.config.hostsFilter[0] !== '{') {
-            $('#hosts-filter').val(that.main.config.hostsFilter);
+            $hostsFilter.val(that.main.config.hostsFilter);
         }
     };
 
@@ -93,16 +94,16 @@ function Hosts(main) {
 
     function applyFilter(filter) {
         filter = filter.toLowerCase().trim();
-        var index = 0;
+        // var index = 0;
         if (!filter) {
-            $('.hosts-host').each(function () {
+            /*$('.hosts-host').each(function () {
                 if (index & 1) {
                     $(this).removeClass('hosts-even').addClass('hosts-odd');
                 } else {
                     $(this).removeClass('hosts-odd').addClass('hosts-even');
                 }
                 index++;
-            });
+            });*/
         } else {
             $('.hosts-host').each(function () {
                 var $this = $(this);
@@ -119,12 +120,12 @@ function Hosts(main) {
                 } else {
                     $this.show();
                 }
-                if (index & 1) {
+                /*if (index & 1) {
                     $(this).removeClass('hosts-even').addClass('hosts-odd');
                 } else {
                     $(this).removeClass('hosts-odd').addClass('hosts-even');
-                }
-                index++;
+                }*/
+                //index++;
             });
         }
     }
@@ -145,7 +146,7 @@ function Hosts(main) {
         // description
         text += '<td>' + obj.common.title + '</td>';
         // platform
-        text += '<td>' + obj.common.platform + '</td>';
+        // text += '<td>' + obj.common.platform + '</td>'; // actually only one platform
         // OS
         text += '<td>' + obj.native.os.platform + '</td>';
         // Available

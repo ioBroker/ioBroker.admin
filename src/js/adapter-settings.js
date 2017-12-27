@@ -548,7 +548,7 @@ function confirmMessage(message, title, icon, buttons, callback) {
             });
         }
 
-        $dialogConfirm.find('.dialog-title').text(title || _('Question'));
+        $dialogConfirm.find('.dialog-title').text(title || _('Please confirm'));
         if (icon) {
             $dialogConfirm.find('.dialog-icon')
                 .show()
