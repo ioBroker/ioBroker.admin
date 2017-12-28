@@ -3,10 +3,32 @@
 /** hosts tab **********************/
 /**/
 
-.hosts-table {
-    .new-iob-list-table;
-    font-size: 0.9em;
-}
-.hosts-table td{
-    padding-left: @line-indent;
+#tab-hosts {
+    .hosts-table {
+        .new-iob-list-table;
+        font-size: 0.9em;
+
+        .grid-hosts > tr:nth-child(2n) {
+            background-color: @even-bg-color;
+         }
+
+        th, td, tr, td {
+            border: @td-border;
+            padding-left: 0;
+        }
+        &>tbody>tr>td>b {
+            font-weight: normal;
+            color: #008;
+        }
+        th {
+            padding-left: @line-indent;
+        }
+        &>tbody>tr {
+            height: 35px;
+            border: 0;
+        }
+        &>tbody>tr>td {
+            padding: 0;
+        }
+    }
 }

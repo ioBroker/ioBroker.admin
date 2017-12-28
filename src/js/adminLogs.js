@@ -7,8 +7,12 @@ function Logs(main) {                                                           
     this.logLinesCount        = 0;
     this.logLinesStart        = 0;
 
-    var $logTable, $logOuter, $logPause;
-    var logFilterHost = '', logFilterSeverity = '', logFilterMessage = '';
+    var $logTable;
+    var $logOuter;
+    var $logPause;
+    var logFilterHost = '';
+    var logFilterSeverity = '';
+    var logFilterMessage = '';
     var pause = {
         list: [],
         mode: false,
@@ -38,7 +42,7 @@ function Logs(main) {                                                           
         ]).$filter.attr('title', _('severity'));
         hdr.add('edit', 'Message', 'message');
 
-        $('#log-clear-on-disk').button({icons: {primary: 'ui-icon-trash'}, text: false}).click(function () {
+        this.$table.find('#log-clear-on-disk').button({icons: {primary: 'ui-icon-trash'}, text: false}).click(function () {
             that.main.confirmMessage(_('Log file will be deleted. Are you sure?'), null, null, function (result) {
                 if (result) {
                     that.main.socket.emit('sendToHost', main.currentHost, 'delLogs', null, function (err) {
@@ -52,7 +56,7 @@ function Logs(main) {                                                           
             });
         })/*.css({width: 20, height: 20})*/.addClass('ui-state-error');
 
-        $('#log-refresh').button({icons:{primary: 'ui-icon-refresh'}, text: false}).click(function () {
+        this.$table.find('#log-refresh').button({icons:{primary: 'ui-icon-refresh'}, text: false}).click(function () {
             that.clear();
         });
 
@@ -66,18 +70,18 @@ function Logs(main) {                                                           
 
         pause.$counterSpan = $logPause.find('ui-button-text');
 
-        $('#log-clear').button({icons:{primary: 'ui-icon-close'}, text: false}).click(function () {
+        this.$table.find('#log-clear').button({icons:{primary: 'ui-icon-close'}, text: false}).click(function () {
             that.clear(false);
         });
 
-        $('#log-copy-text').click(function () {
+        this.$table.find('#log-copy-text').click(function () {
             $('#log-copy-text').hide().html('');
         });
 
-        $('#log-copy').button({icons: {primary: 'ui-icon-copy'}, text: false}).click(function () {
+        this.$table.find('#log-copy').button({icons: {primary: 'ui-icon-copy'}, text: false}).click(function () {
             var text = '<span class="error">' + _('copy note') + '</span>';
-            $('#log-copy-text').show().html(text + '<br><table style="width: 100%; font-size: 12px" id="log-copy-table">' + $logTable.html() + '</table>');
-            var lines = $('#log-copy-table').find('.log-column-4');
+            that.$table.find('#log-copy-text').show().html(text + '<br><table style="width: 100%; font-size: 12px" id="log-copy-table">' + $logTable.html() + '</table>');
+            var lines = that.$table.find('#log-copy-table').find('.log-column-4');
             for (var t = 0; t < lines.length; t++) {
                 var q = $(lines[t]);
                 q.html(q.attr('title'));
@@ -115,18 +119,16 @@ function Logs(main) {                                                           
     }
 
     // -------------------------------- Logs ------------------------------------------------------------
-    this.init = function () {
-        if (this.inited) {
+    this.init = function (update) {
+        if (this.inited && !update) {
             return;
         }
         if (!this.main.currentHost) {
             setTimeout(function () {
-                that.init();
+                that.init(update);
             }, 100);
             return;
         }
-
-        this.inited = true;
 
         $logTable.html('');
 
@@ -167,7 +169,32 @@ function Logs(main) {                                                           
                 logFilterHost     = hdr.host.val();
                 logFilterMessage  = hdr.message.val();
                 logFilterSeverity = hdr.severity.val();
-                that.main.subscribeLogs(true);
+                if (!that.inited) {
+                    that.inited = true;
+                    that.main.subscribeLogs(true);
+                }
+
+                that.main.socket.emit('readLogs', function (err, list) {
+                    if (list && list.length) {
+                        var html = '<option value="">' + _('Download log file') + '</option>';
+                        for (var l = 0; l < list.length; l++) {
+                            var parts = list[l].split('/');
+                            var name = parts.pop().replace('iobroker').replace('.log');
+
+                            html += '<option value="' + list[l] + '">' + name + '</option>';
+                        }
+                        that.$table.find('#log-files').show().html(html).unbind('change').change(function () {
+                            var val = $(this).val();
+                            if (val) {
+                                $(this).val('');
+                                var win = window.open(val, '_blank');
+                                win.focus();
+                            }
+                        });
+                    } else {
+                        that.$table.find('#log-files').hide();
+                    }
+                });
             }, 0);
         });
     };
@@ -317,7 +344,7 @@ function Logs(main) {                                                           
 
         if (isReload) {
             setTimeout(function () {
-                that.init();
+                that.init(isReload);
             }, 0);
         }
     };

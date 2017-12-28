@@ -42,24 +42,24 @@ gulp.task('4_static', ['compressHtml', 'copyAce', 'copyColorpicker', 'copySrc'])
  */
 
 function lang2data(lang, isFlat) {
-    var str = isFlat ? '' : '{\n';
+    var str = isFlat ? '' : '{\r\n';
     var count = 0;
     for (var w in lang) {
         if (lang.hasOwnProperty(w)) {
             count++;
             if (isFlat) {
-                str += (lang[w] === '' ? (isFlat[w] || w) : lang[w]) + '\n';
+                str += (lang[w] === '' ? (isFlat[w] || w) : lang[w]) + '\r\n';
             } else {
                 var key = '  "' + w.replace(/"/g, '\\"') + '": ';
-                str += /*padRight(*/key/*, 42)*/ +  '"' + lang[w].replace(/"/g, '\\"') + '",\n';
+                str += /*padRight(*/key/*, 42)*/ +  '"' + lang[w].replace(/"/g, '\\"') + '",\r\n';
             }
         }
     }
-    if (!count) return isFlat ? '' : '{\n}';
+    if (!count) return isFlat ? '' : '{\r\n}';
     if (isFlat) {
         return str;
     } else {
-        return str.substring(0, str.length - 2) + '\n}';
+        return str.substring(0, str.length - 3) + '\r\n}\r\n';
     }
 }
 
@@ -122,7 +122,7 @@ function writeWordJs(data, src) {
             text += line + '},\n';
         }
     }
-    text += '};';
+    text += '};\n';
     if (src.indexOf('admin') === -1) {
         fs.writeFileSync(src + 'js/words.js', text);
     } else {
@@ -574,7 +574,9 @@ gulp.task('compressVendor', function () {
         './src/lib/js/translate.js',
         './src/lib/js/jquery.fancytree-all.min.js',
         './src/lib/js/jquery.treetable.js',
-      //  './src/lib/js/selectID.js',
+        './src/lib/js/selectID.js',
+        './src/lib/js/cron/jquery.cron.locale.js',
+        './src/lib/js/cron/jquery.cron.words.js',
         './src/lib/js/cron/jquery.cron.js',
         './src/lib/js/cron/cron2text.js'
     ])

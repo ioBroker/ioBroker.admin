@@ -533,14 +533,14 @@ function Instances(main) {
         }
 
         // set odd and even
-        var count = 0;
+        /*var count = 0;
         for (var k = 0; k < that.list.length; k++) {
             var _obj = that.main.objects[that.list[k]];
             if (!_obj) continue;
             if (invisible.indexOf(that.list[k]) !== -1) continue;
             that.$grid.find('.instance-adapter[data-instance-id="' + that.list[k] + '"]').removeClass('instance-odd instance-even').addClass((count % 2) ? 'instance-odd' : 'instance-even');
             count++;
-        }
+        }*/
     }
 
     function onQuickEditField(e) {
@@ -732,7 +732,7 @@ function Instances(main) {
             that.main.config.expertMode = !that.main.config.expertMode;
             that.main.saveConfig('expertMode', that.main.config.expertMode);
             that.updateExpertMode();
-            that.main.tabs.adapter.updateExpertMode();
+            that.main.tabs.adapters.updateExpertMode();
         });
         if (that.main.config.expertMode) $('#btn-instances-expert-mode').addClass('ui-state-error');
 
