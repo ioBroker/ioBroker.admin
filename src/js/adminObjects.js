@@ -876,7 +876,6 @@ function Objects(main) {
                             if (that.main.objects[_ids[i]] && that.main.objects[_ids[i]].type === 'state') ids.push(_ids[i]);
                         }
                         if (ids && ids.length) {
-                            // that.main.dialogs.customs.init(ids);
                             if (ids.length < 10) {
                                 that.main.dialogs.customs.ids = null;
                                 that.main.navigate({dialog: 'customs', params: ids.join(',')});

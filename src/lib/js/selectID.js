@@ -3,9 +3,9 @@
 /* jshint -W097 */
 /* jshint strict: false */
 /*
- MIT, Copyright 2014-2017 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
+ MIT, Copyright 2014-2018 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
 
- version: 1.0.8 (2017.12.13)
+ version: 1.1.0 (2017.12.28)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -32,6 +32,7 @@
          {
              currentId:  '',       // Current ID or empty if nothing preselected
              objects:    null,     // All objects that should be shown. It can be empty if connCfg used.
+             getObjects: null,     // null or function to read all objects anew on refresh (because of subscripitons): funsubscriptionsjects) {}
              states:     null,     // All states of objects. It can be empty if connCfg used. If objects are set and no states, states will no be shown.
              filter:     null,     // filter
              imgPath:    'lib/css/fancytree/', // Path to images device.png, channel.png and state.png
@@ -176,15 +177,9 @@ function filterChanged(e) {
 
     if ($.fn.selectId) return;
 
-    var instance = 0;
     var ICON_MINIMAL_BASE64_SIZE = 312;
 
-    // var lineIndent = '6px';
-    // function span (txt) {
-    //     //if (txt === undefined) txt = '';
-    //     //return txt;
-    //     return '<span style="padding-left: ' + lineIndent + ';">' + txt + '</span>';
-    // }
+
 
     function formatDate(dateObj) {
         //return dateObj.getFullYear() + '-' +
@@ -733,7 +728,7 @@ function filterChanged(e) {
     function syncHeader($dlg) {
         var data = $dlg.data('selectId');
         if (!data) return;
-        var $header = $('#selectID_header_' + data.instance);
+        var $header = $dlg.find('.main-header-table');
         var thDest = $header.find('>tbody>tr>td');	//if table headers are specified in its semantically correct tag, are obtained
         var thSrc = data.$tree.find('>tbody>tr>td');
 
@@ -840,7 +835,7 @@ function filterChanged(e) {
         e.stopPropagation();
     }
 
-    function editValueDialog(e) {
+    function editValueDialog() {
         var data = $(this).data('data');
         var $parent = $(this).parent();
         var value = $parent.data('clippy');
@@ -968,13 +963,9 @@ function filterChanged(e) {
         return states;
     }
 
-    /*function getFilter(data, name) {
-        return $ ('#filter_' + name + '_' + data.instance);
-    }*/
-
     function setFilterVal(data, field, val) {
         if (!field) return;
-        $ ('#filter_' + field + '_' + data.instance).val(val).trigger('change');
+        data.$dlg.find('.filter[data-index="' + field + '"]').val(val).trigger('change');
     }
 
     function onQuickEditField(event) {
@@ -1064,6 +1055,10 @@ function filterChanged(e) {
 
         var timeout = null;
 
+        if (attr === 'room' || attr === 'function' || attr === 'role') {
+            editType = 'select';
+        }
+
         $this.html(text +
             '<div class="select-id-quick-edit-buttons ' + editType + '"><div class="ui-icon ui-icon-check select-id-quick-edit-ok"></div>' +
             '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '"></div></div>');
@@ -1076,7 +1071,6 @@ function filterChanged(e) {
         var $input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
 
         if (attr === 'room' || attr === 'function') {
-            editType = 'select';
             $input.multiselect({
                 autoOpen: true,
                 close: function () {
@@ -1084,7 +1078,6 @@ function filterChanged(e) {
                 }
             });
         } else if (attr === 'role')  {
-            editType = 'select';
             $input.autocomplete({
                 minLength: 0,
                 source: data.roles
@@ -1202,9 +1195,9 @@ function filterChanged(e) {
         }
     }
 
-    function initTreeDialog($dlg, resort) {
+    function initTreeDialog($dlg) {
         var c;
-        //$dlg.css({height: '100%', width: 'calc(100% - 18px)'});
+        $dlg.addClass('dialog-select-object-ids');
         if ($dlg.attr('id') !== 'dialog-select-member' && $dlg.attr('id') !== 'dialog-select-members') {
             $dlg.css({height: '100%', width: '100%'});
         } else {
@@ -1238,9 +1231,9 @@ function filterChanged(e) {
         if (!data.noDialog && !data.buttonsDlg) {
             data.buttonsDlg = [
                 {
-                    id: data.instance + '-button-ok',
-                    text: data.texts.select,
-                    click: function () {
+                    id:     'button-ok',
+                    text:   data.texts.select,
+                    click:  function () {
                         var _data = $dlg.data('selectId');
                         if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId, _data.objects[_data.selectedID]);
                         _data.currentId = _data.selectedID;
@@ -1249,11 +1242,10 @@ function filterChanged(e) {
                     }
                 },
                 {
-                    id: data.instance + '-button-cancel',
-                    text: data.texts.cancel,
-                    click: function () {
+                    text:   data.texts.cancel,
+                    click:  function () {
                         storeSettings(data);
-                        $ (this).dialog('close');
+                        $(this).dialog('close');
                     }
                 }
             ];
@@ -1276,18 +1268,9 @@ function filterChanged(e) {
             }
         }
 
-        // Store current filter
-        //var filter = {ID: $ ('#filter_ID_' + data.instance).val ()};
-        // for (var u = 0; u < data.columns.length; u++) {
-        //     var name = data.columns[u];
-        //     if (typeof name === 'object') name = name.name;
-        //     filter[name] = $ ('#filter_' + name + '_' + data.instance).val ();
-        // }
-
-
         var filter = {};
         forEachColumn(data, function (name) {
-            filter[name] = $('#filter_' + name + '_' + data.instance).val ();
+            filter[name] = $dlg.find('.filter[data-index="' + name + '"]').val();
         });
 
         function getComboBoxEnums(kind) {
@@ -1333,64 +1316,61 @@ function filterChanged(e) {
             return ret;
         }
 
+        // todo remove data.instance
         // toolbar buttons
         var tds = 
-            '<td><button class="ui-button-icon-only panel-button" id="btn_refresh_' + data.instance + '"></button></td>' +
-            '<td><button class="panel-button" id="btn_list_' + data.instance + '"></button></td>' +
-            '<td><button class="panel-button" id="btn_collapse_' + data.instance + '"></button></td>'  +
-            '<td><button class="panel-button" id="btn_expand_' + data.instance + '"></button></td>' +
+            '<td><button class="ui-button-icon-only panel-button btn-refresh"></button></td>' +
+            '<td><button class="panel-button btn-list"></button></td>' +
+            '<td><button class="panel-button btn-collapse"></button></td>'  +
+            '<td><button class="panel-button btn-expand"></button></td>' +
             '<td class="select-id-custom-buttons"></td>';
         if (data.filter && data.filter.type === 'state' && multiselect) {
             tds += 
-                '<td style="padding-left: 10px"><button class="panel-button" id="btn_select_all_' + data.instance + '"></button></td>' +
-                '<td><button class="panel-button" id="btn_unselect_all_' + data.instance + '"></button></td>' +
-                '<td><button class="panel-button" id="btn_invert_selection_' + data.instance + '"></button></td>';
+                '<td style="padding-left: 10px"><button class="panel-button btn-select-all"></button></td>' +
+                '<td><button class="panel-button btn-unselect-all"></button></td>' +
+                '<td><button class="panel-button btn-invert-selection"></button></td>';
         }
         if (data.expertModeRegEx) {
-            tds += 
-                   '<td style="padding-left: 10px"><button class="panel-button" id="btn_expert_' + data.instance + '"></button></td>';
+            tds += '<td style="padding-left: 10px"><button class="panel-button btn-expert"></button></td>';
         }
-        tds += '<td><button class="panel-button" id="btn_sort_' + data.instance + '"></button></td>';
+        tds += '<td><button class="panel-button btn-sort"></button></td>';
 
         if (data.panelButtons) {
             tds += '<td class="iob-toolbar-sep"></td>';
             for (c = 0; c < data.panelButtons.length; c++) {
-                tds += '<td><button class="panel-button" id="btn_custom_' + data.instance + '_' + c + '"></button></td>';
+                tds += '<td><button class="panel-button btn-custom-' + c + '"></button></td>';
             }
         }
 
         if (data.useHistory) {
-            tds += '<td style="padding-left: 10px"><button class="panel-button" id="btn_history_' + data.instance + '" style="position: absolute; top: 5px; right: 20px"></button></td>';
+            tds += '<td style="padding-left: 10px"><button class="panel-button btn-history"></button></td>';
         }
 
         var text = 
-            '<div id="' + data.instance + '-div" style="width: 100%; height: 100%">' +
+            '<div class="dialog-select-container" style="width: 100%; height: 100%">' +
             '<table class="main-toolbar-table">' +
             '    <tr>' + tds + '<td style="width: 100%;"></td>' +
             '    </tr>' +
             '</table>' +
-            '<table id="selectID_header_' + data.instance + '" class="main-header-table">'
+            '<table class="main-header-table">'
         ;
-
 
         function textFilterText(filterNo, placeholder) {
             if (placeholder === undefined) {
                 placeholder = data.texts[filterNo.toLowerCase()] || '';
             }
             return  '<table class="main-header-input-table">' +
-                    '        <tbody>' +
-                    '        <tr style="background: #ffffff; ">' +
-                    '            <td style="width: 100%">' +
-                    //'                <input placeholder="' + placeholder + '" style="width: 100%; padding: 0; padding-left: ' + lineIndent + ';font-size: 12px;border: 0;line-height: 1.5em;" type="text" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
-                    '                <input placeholder="' + placeholder + '" id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">' +
-                    '            </td>' +
-                    '            <td>' +
-                    '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="" style="width: 18px;height: 18px;border: 0;background: #fff;">' +
-                    '                </button>' +
-                    '            </td>' +
-                    '        </tr>' +
-                    '        </tbody>' +
-                    '    </table>';
+                    '    <tbody>' +
+                    '       <tr>' +
+                    '           <td class="input">' +
+                    '               <input  data-index="' + filterNo + '" placeholder="' + placeholder + '" class="filter">' +
+                    '           </td>' +
+                    '           <td>' +
+                    '               <button data-index="' + filterNo + '" class="filter-btn"></button>' +
+                    '           </td>' +
+                    '       </tr>' +
+                    '    </tbody>' +
+                    '</table>';
         }
 
         function textCombobox(filterNo, placeholder) {
@@ -1398,7 +1378,7 @@ function filterChanged(e) {
             if (data.columns.indexOf (filterNo) !== -1) {
                 if (placeholder === undefined) placeholder = data.texts[filterNo.toLowerCase()] || '';
                 var cbEntries = getComboBoxEnums(filterNo);
-                var cbText = '<select id="filter_' + filterNo + '_' + data.instance + '" class="filter_' + data.instance + '">';
+                var cbText = '<select data-index="' + filterNo + '" class="filter">';
 
                 var add = function (a, b) {
                     if (Array.isArray(a)) {
@@ -1407,7 +1387,7 @@ function filterChanged(e) {
                     } else if (b === undefined) {
                         b = a;
                     }
-                    cbText += '<option style="line-height: 0.5em; background: #fff" value="' + a + '">' + b + '</option>';
+                    cbText += '<option value="' + a + '">' + b + '</option>';
                 };
                 if (typeof addAll2FilterCombobox !== 'undefined' && addAll2FilterCombobox) {
                     add('', placeholder + ' (' + data.texts.all + ')');
@@ -1423,14 +1403,13 @@ function filterChanged(e) {
                     //'<table style="width: 100%;padding: 0;border: 1px solid #c0c0c0;border-spacing: 0;border-radius: 2px;">' +
                     '<table class="main-header-input-table">' +
                     '        <tbody>' +
-                    '        <tr style="background: #ffffff; ">' +
-                    '            <td style="width: 100%">';
+                    '        <tr>' +
+                    '            <td class="input">';
                 txt += cbText;
                 txt += '' +
                     '            </td>' +
                     '            <td>' +
-                    '                <button data-id="filter_' + filterNo + '_' + data.instance + '" class="filter_btn_' + data.instance + '" role="button" title="">' +
-                    '                </button>' +
+                    '                <button data-index="' + filterNo + '" class="filter-btn"></button>' +
                     '            </td>' +
                     '        </tr>' +
                     '        </tbody>' +
@@ -1503,8 +1482,8 @@ function filterChanged(e) {
         text += '        </tbody>';
         text += '    </table>';
 
-        text += '<div class="' + (data.buttons ? 'grid-main-wh-div' : 'grid-main-wob-div') + '" style="width: 100%; padding:0; overflow-y: scroll">';
-        text += ' <table class="iob-list-font objects-list-table" style="width: calc(100%-5px);" id="selectID_' + data.instance + '" cellspacing="0" cellpadding="0">';
+        text += '<div class="' + (data.buttons ? 'grid-main-wh-div' : 'grid-main-wob-div') + '">';
+        text += ' <table class="iob-list-font objects-list-table" cellspacing="0" cellpadding="0">';
         text += '        <colgroup>';
 
         var thead = '<thead class="grid-objects-head"><tr>';
@@ -1524,7 +1503,7 @@ function filterChanged(e) {
         text += '        <tbody>';
         text += '        </tbody>';
         text += '    </table></div>' +
-            '<div id="process_running_' + data.instance + '" style="position: absolute; top: 50%; left: 50%; width: 150px; height: 25px; padding: 12px; background: rgba(30, 30, 30, 0.5); display: none; text-align:center; font-size: 1.2em; color: white; font-weight: bold; border-radius: 5px">' + data.texts.wait + '</div>' +
+            '<div class="objects-list-running" style="display: none;">' + data.texts.wait + '</div>' +
             '</div>'
         ;
 
@@ -1549,7 +1528,7 @@ function filterChanged(e) {
 
         $dlg.html(text);
 
-        data.$tree = $('#selectID_' + data.instance);
+        data.$tree = $dlg.find('.objects-list-table');
         data.$tree[0]._onChange = data.onSuccess || data.onChange;
 
         var foptions = {
@@ -1617,7 +1596,6 @@ function filterChanged(e) {
             activate: function (event, data) {
                 // A node was activated: display its title:
                 // On change
-                //var $dlg = $('#' + data.instance + '-dlg');
                 if (!multiselect) {
                     var _data = $dlg.data('selectId');
                     var newId = data.node.key;
@@ -1634,9 +1612,9 @@ function filterChanged(e) {
                         }
                         // Enable/ disable 'Select' button
                         if (_data.objects[newId]) { // && _data.objects[newId].type === 'state') {
-                            $('#' + _data.instance + '-button-ok').removeClass('ui-state-disabled');
+                            $dlg.find('#button-ok').removeClass('ui-state-disabled');
                         } else {
-                            $('#' + _data.instance + '-button-ok').addClass('ui-state-disabled');
+                            $dlg.find('#button-ok').addClass('ui-state-disabled');
                         }
 
                     }
@@ -1658,9 +1636,9 @@ function filterChanged(e) {
 
                 // Enable/ disable 'Select' button
                 if (newIds.length > 0) {
-                    $('#' + _data.instance + '-button-ok').removeClass('ui-state-disabled');
+                    $dlg.find('#button-ok').removeClass('ui-state-disabled');
                 } else {
-                    $('#' + _data.instance + '-button-ok').addClass('ui-state-disabled');
+                    $dlg.find('#button-ok').addClass('ui-state-disabled');
                 }
             },
             renderColumns: function (event, _data) {
@@ -1962,9 +1940,7 @@ function filterChanged(e) {
                                 (data.expertMode || obj.common.write !== false)
                             ) {
                                 if (obj.common.role === 'button' && !data.expertMode) {
-                                    //$tdList.eq(base).html('<button data-id="' + node.key + '" class="select-button-push"></button>'); //!!!!
                                     $elem.html ('<button data-id="' + node.key + '" class="select-button-push"></button>');
-                                    //$elem.html (span('<button data-id="' + node.key + '" class="select-button-push"></button>'));
                                 } else if (!obj.common || obj.common.type !== 'file') {
                                     var val = data.states[node.key];
                                     val = val ? val.val : '';
@@ -2190,9 +2166,8 @@ function filterChanged(e) {
 
                     forEachColumn(data, function(name, c) {
                         if (name === 'name') {
-                            //$tdList.eq(2 + c).html('<input type="text" id="select_edit_' + name + '" value="' + data.objects[_data.node.key].common[name] + '" style="width: 100%"/>');
-                            $tdList.eq(c).html('<input type="text" id="select_edit_' + name + '" value="' + data.objects[_data.node.key].common[name] + '" style="width: 100%"/>');
-                            inputs[name] = $dlg.find('#select_edit_' + name);
+                            inputs[name] = $('<input type="text" data-name="' + name + '" class="select-edit" value="' + data.objects[_data.node.key].common[name] + '" style="width: 100%"/>');
+                            $tdList.eq(c).html(inputs[name]);
                         }
                     });
 
@@ -2225,7 +2200,7 @@ function filterChanged(e) {
 
                     forEachColumn (data, function(name) {
                         if (name === 'name') {
-                            editValues[name] = $dlg.find('#select_edit_' + name).val();
+                            editValues[name] = $dlg.find('.select-edit[data-name="' + name + '"]').val();
                         }
                     });
 
@@ -2345,7 +2320,6 @@ function filterChanged(e) {
             }
         });
 
-
         function customFilter(node) {
             if (node.parent && node.parent.match) return true;
 
@@ -2354,9 +2328,9 @@ function filterChanged(e) {
                 data.filterVals = {length: 0};
                 var value;
 
-                forEachColumn (data, function(name) {
+                forEachColumn (data, function (name) {
                     //if (name === 'image') return;
-                    value = $('#filter_' + name + '_' + data.instance).val();
+                    value = $dlg.find('.filter[data-index="' + name + '"]').val();
                     if (name !== 'role' && name !== 'type' && name !== 'room' && name !== 'function' && value) {
                         value = value.toLowerCase();
                     }
@@ -2436,10 +2410,9 @@ function filterChanged(e) {
         });
         $dlg.trigger('resize');
 
-
         var changeTimer;
 
-        $('.filter_' + data.instance).change(function (event) {
+        $dlg.find('.filter').change(function (event) {
             data.filterVals = null;
             if (changeTimer) clearTimeout(changeTimer);
             //changeTimer = setTimeout(function() {
@@ -2447,7 +2420,7 @@ function filterChanged(e) {
                 filterChanged(event.target);
             }
 
-            var $ee = $('#process_running_' + data.instance);
+            var $ee = $dlg.find('.objects-list-running');
             $ee.show ();
             data.$tree.fancytree ('getTree').filterNodes (customFilter, false);
             $ee.hide ();
@@ -2462,102 +2435,109 @@ function filterChanged(e) {
             }, 200);
         });
 
-        $('.filter_btn_' + data.instance).button({icons: {primary: 'ui-icon-close'}, text: false})./*css({width: 18, height: 18}).*/click(function () {
-            $('#' + $(this).data('id')).val('').trigger('change');  //filter buttons action
+        $dlg.find('.filter-btn').button({icons: {primary: 'ui-icon-close'}, text: false}).click(function () {
+            console.log('AA');
+            $dlg.find('.filter[data-index="' + $(this).data('index') + '"]').val('').trigger('change');  //filter buttons action
         });
 
-        $('#btn_collapse_' + data.instance).button({icons: {primary: 'ui-icon-folder-collapsed'}, text: false})./*css({width: 18, height: 18}).*/click(function () {
-            $('#process_running_' + data.instance).show();
+        $dlg.find('.btn-collapse').button({icons: {primary: 'ui-icon-folder-collapsed'}, text: false}).click(function () {
+            $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
                     if (!data.filterVals.length || node.match || node.subMatch) node.setExpanded(false);
                 });
-                $('#process_running_' + data.instance).hide();
+                $dlg.find('.objects-list-running').hide();
             }, 100);
         }).attr('title', data.texts.collapse);
 
-        $('#btn_expand_' + data.instance).button({icons: {primary: 'ui-icon-folder-open'}, text: false})./*css({width: 18, height: 18}).*/click(function () {
-            $('#process_running_' + data.instance).show();
+        $dlg.find('.btn-expand').button({icons: {primary: 'ui-icon-folder-open'}, text: false}).click(function () {
+            $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
                     if (!data.filterVals.length || node.match || node.subMatch)
                         node.setExpanded(true);
                 });
-                $('#process_running_' + data.instance).hide();
+                $dlg.find('.objects-list-running').hide();
             }, 100);
         }).attr('title', data.texts.expand);
 
-        $('#btn_list_' + data.instance).button({icons: {primary: 'ui-icon-grip-dotted-horizontal'}, text: false})./*css({width: 18, height: 18}).*/click(function () {
-            $('#process_running_' + data.instance).show();
+        $dlg.find('.btn-list').button({icons: {primary: 'ui-icon-grip-dotted-horizontal'}, text: false}).click(function () {
+            $dlg.find('.objects-list-running').show();
             data.list = !data.list;
             if (data.list) {
-                $('#btn_list_' + data.instance).addClass('ui-state-error');
-                $('#btn_expand_' + data.instance).hide();
-                $('#btn_collapse_' + data.instance).hide();
+                $dlg.find('.btn-list').addClass('ui-state-error');
+                $dlg.find('.btn-collapse').hide();
                 $(this).attr('title', data.texts.list);
             } else {
-                $('#btn_list_' + data.instance).removeClass('ui-state-error');
-                $('#btn_expand_' + data.instance).show();
-                $('#btn_collapse_' + data.instance).show();
+                $dlg.find('.btn-list').removeClass('ui-state-error');
+                $dlg.find('.btn-expand').show();
+                $dlg.find('.btn-collapse').show();
                 $(this).attr('title', data.texts.tree);
             }
-            $('#process_running_' + data.instance).show();
+            $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.inited = false;
                 initTreeDialog(data.$dlg);
-                $('#process_running_' + data.instance).hide();
+                $dlg.find('.objects-list-running').hide();
             }, 200);
         }).attr('title', data.texts.tree);
 
         if (data.list) {
-            $('#btn_list_' + data.instance)
+            $dlg.find('.btn-list')
                 .addClass('ui-state-error')
                 .attr('title', data.texts.list);
-            $('#btn_expand_' + data.instance).hide();
-            $('#btn_collapse_' + data.instance).hide();
+            $dlg.find('.btn-expand').hide();
+            $dlg.find('.btn-collapse').hide();
         }
 
-        $('#btn_refresh_' + data.instance).button({icons: {primary: 'ui-icon-refresh'}, text: false})./*css({width: "1.5em", height: "1.5em"}).*/click(function () {
-            $('#process_running_' + data.instance).show();
+        $dlg.find('.btn-refresh').button({icons: {primary: 'ui-icon-refresh'}, text: false}).click(function () {
+            $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.inited = false;
-                initTreeDialog(data.$dlg);
-                $('#process_running_' + data.instance).hide();
+                // request all objects anew on refresh
+                if (data.getObjects) {
+                    data.getObjects(function (err, objs) {
+                        data.objects = objs;
+                        initTreeDialog(data.$dlg, false);
+                        $dlg.find('.objects-list-running').hide();
+                    });
+                } else {
+                    initTreeDialog(data.$dlg, false);
+                    $dlg.find('.objects-list-running').hide();
+                }
             }, 100);
         }).attr('title', data.texts.refresh);
 
-        $('#btn_sort_' + data.instance).button({icons: {primary: 'ui-icon-bookmark'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
-            $('#process_running_' + data.instance).show();
+        $dlg.find('.btn-sort').button({icons: {primary: 'ui-icon-bookmark'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
+            $dlg.find('.objects-list-running').show();
 
             data.sort = !data.sort;
             if (data.sort) {
-                $('#btn_sort_' + data.instance).addClass('ui-state-error');
+                $dlg.find('.btn-sort').addClass('ui-state-error');
             } else {
-                $('#btn_sort_' + data.instance).removeClass('ui-state-error');
+                $dlg.find('.btn-sort').removeClass('ui-state-error');
             }
             storeSettings(data, true);
 
             setTimeout(function () {
                 data.inited = false;
                 sortTree(data);
-                //initTreeDialog(data.$dlg);
-                $('#process_running_' + data.instance).hide();
+                $dlg.find('.objects-list-running').hide();
             }, 100);
         }).attr('title', data.texts.sort);
-        if (data.sort) $('#btn_sort_' + data.instance).addClass('ui-state-error');
+        if (data.sort) $dlg.find('.btn-sort').addClass('ui-state-error');
 
-        //data.customButtonFilter.callback
-        $('#btn_history_' + data.instance).button({icons: {primary: 'ui-icon-gear'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
-            $('#process_running_' + data.instance).show();
+        $dlg.find('.btn-history').button({icons: {primary: 'ui-icon-gear'}, text: false}).click(function () {
+            $dlg.find('.objects-list-running').show();
 
             setTimeout(function () {
                 data.customButtonFilter.callback();
-                $('#process_running_' + data.instance).hide();
+                $dlg.find('.objects-list-running').hide();
             }, 1);
         }).attr('title', data.texts.history);
 
-        $('#btn_select_all_' + data.instance).button({icons: {primary: 'ui-icon-circle-check'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
-            $('#process_running_' + data.instance).show();
+        $dlg.find('.btn-select-all').button({icons: {primary: 'ui-icon-circle-check'}, text: false}).click(function () {
+            $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
                     if (!data.filterVals.length || node.match || node.subMatch) {
@@ -2567,44 +2547,44 @@ function filterChanged(e) {
                         }
                     }
                 });
-                $('#process_running_' + data.instance).hide();
+                $dlg.find('.objects-list-running').hide();
             }, 100);
         }).attr('title', data.texts.selectAll);
 
         if (data.expertModeRegEx) {
-            $('#btn_expert_' + data.instance).button({icons: {primary: 'ui-icon-person'}, text: false})./*css({width: 18, height: 18}).*/click(function () {
-                $('#process_running_' + data.instance).show();
+            $dlg.find('.btn-expert').button({icons: {primary: 'ui-icon-person'}, text: false}).click(function () {
+                $dlg.find('.objects-list-running').show();
 
                 data.expertMode = !data.expertMode;
                 if (data.expertMode) {
-                    $('#btn_expert_' + data.instance).addClass('ui-state-error');
+                    $dlg.find('.btn-expert').addClass('ui-state-error');
                 } else {
-                    $('#btn_expert_' + data.instance).removeClass('ui-state-error');
+                    $dlg.find('.btn-expert').removeClass('ui-state-error');
                 }
                 storeSettings(data, true);
 
                 setTimeout(function () {
                     data.inited = false;
                     initTreeDialog(data.$dlg);
-                    $('#process_running_' + data.instance).hide();
+                    $dlg.find('.objects-list-running').hide();
                 }, 200);
             }).attr('title', data.texts.expertMode);
 
-            if (data.expertMode) $('#btn_expert_' + data.instance).addClass('ui-state-error');
+            if (data.expertMode) $dlg.find('.btn-expert').addClass('ui-state-error');
         }
 
-        $('#btn_unselect_all_' + data.instance).button({icons: {primary: 'ui-icon-circle-close'}, text: false})./*css({width: 18, height: 18}).*/click(function () {
-            $('#process_running_' + data.instance).show();
+        $dlg.find('.btn-unselectall').button({icons: {primary: 'ui-icon-circle-close'}, text: false}).click(function () {
+            $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
                     node.setSelected(false);
                 });
-                $('#process_running_' + data.instance).hide();
+                $dlg.find('.objects-list-running').hide();
             }, 100);
         }).attr('title', data.texts.unselectAll);
 
-        $('#btn_invert_selection_' + data.instance).button({icons: {primary: 'ui-icon-transferthick-e-w'}, text: false})./*css({width: 18, height: 18}).*/click(function () {
-            $('#process_running_' + data.instance).show();
+        $dlg.find('.btn-invert-selection').button({icons: {primary: 'ui-icon-transferthick-e-w'}, text: false}).click(function () {
+            $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
                     if (!data.filterVals.length || node.match || node.subMatch){
@@ -2613,19 +2593,13 @@ function filterChanged(e) {
                         }
                     }
                 });
-                $('#process_running_' + data.instance).hide();
+                $dlg.find('.objects-list-running').hide();
             }, 100);
         }).attr('title', data.texts.invertSelection);
 
         for (var f in filter) {
             try {
-                //if (f) $('#filter_' + f + '_' + data.instance).val(filter[f]).trigger('change');
                 if (f) setFilterVal(data, f, filter[f]);
-                // if (f) {             //xxx
-                //     var $f = $('#filter_' + f + '_' + data.instance);
-                //     var val = $f.val(filter[f]);
-                //     $(val).trigger('change');
-                // }
             } catch (err) {
                 console.error('Cannot apply filter: ' + err)
             }
@@ -2633,17 +2607,15 @@ function filterChanged(e) {
 
         if (data.panelButtons) {
             for (var z = 0; z < data.panelButtons.length; z++) {
-                $('#btn_custom_' + data.instance + '_' + z).button(data.panelButtons[z])./*css({width: 18, height: 18}).*/click(data.panelButtons[z].click).attr('title', data.panelButtons[z].title || '');
-                text += '<td><button id="btn_custom_' + data.instance + '_' + z + '"></button></td>';
+                $dlg.find('.btn-custom-' + z).button(data.panelButtons[z]).click(data.panelButtons[z].click).attr('title', data.panelButtons[z].title || '');
             }
         }
 
-        if (data.customButtonFilter) {
-            //$('#filter_button_' + data.instance + '_btn').button(data.customButtonFilter).css({width: 18, height: 18}).click(data.customButtonFilter.callback); //xxx
-            $('#filter_button_' + data.instance + '_btn').button(data.customButtonFilter).css({width: 18, height: 18}).click(function(a,b,c) {
-                data.customButtonFilter.callback(a,b,c);
-            }); //xxx
-        }
+        /*if (data.useHistory) {
+            $dlg.find('.filter_button_' + data.instance + '_btn')
+                .button(data.customButtonFilter)
+                .click(data.customButtonFilter.callback);
+        }*/
 
         showActive($dlg);
         //loadSettings(data);
@@ -2661,10 +2633,8 @@ function filterChanged(e) {
         for (var field in data.filterPresets) {
             if (!data.filterPresets.hasOwnProperty(field) || !data.filterPresets[field]) continue;
             if (typeof data.filterPresets[field] === 'object') {
-                //$('#filter_' + field + '_' + data.instance).val(data.filterPresets[field][0]).trigger('change');
                 setFilterVal(data, field, data.filterPresets[field][0]);
             } else {
-                //$('#filter_' + field + '_' + data.instance).val(data.filterPresets[field]).trigger('change');
                 setFilterVal(data, field, data.filterPresets[field]);
             }
         }
@@ -2701,7 +2671,6 @@ function filterChanged(e) {
                     for (var field in f) {
                         if (!f.hasOwnProperty(field) || field === 'length') continue;
                         if (data.filterPresets[field]) continue;
-                        //$('#filter_' + field + '_' + data.instance).val(f[field]).trigger('change');
                         setFilterVal(data, field, f[field]);
                     }
                     //}, 0);
@@ -2710,7 +2679,6 @@ function filterChanged(e) {
                 }
             } else if (!data.filter) {
                 // set default filter: state
-                //$('#filter_type_' + data.instance).val('state').trigger('change');
                 setFilterVal(data, 'type', 'state');
             }
         }
@@ -2843,7 +2811,6 @@ function filterChanged(e) {
                         regexSystemHost:    new RegExp('^system\\.host\\.'),
                         regexEnumRooms:     new RegExp('^enum\\.rooms\\.'),
                         regexEnumFuncs:     new RegExp('^enum\\.functions\\.'),
-                        instance:           instance++,
                         inited:             false,
                         filterPresets:      {}
                     };
@@ -2893,8 +2860,9 @@ function filterChanged(e) {
                     }
 
                     var connectTimeout = setTimeout(function () {
+                        // noinspection JSJQueryEfficiency
                         if (!$('#select-id-dialog').length) {
-                            $('body').append('<div id="select-id-dialog"><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span><span>' + (data.texts.noconnection || 'No connection to server') + '</span></div>');
+                            $('body').append('<div id="select-id-dialog"><span class="ui-icon ui-icon-alert"></span><span>' + (data.texts.noconnection || 'No connection to server') + '</span></div>');
                         }
                         $('#select-id-dialog').dialog({
                             modal: true,
@@ -2977,7 +2945,7 @@ function filterChanged(e) {
                 if (filter    !== undefined) data.filter    = JSON.parse(JSON.stringify(filter));
                 if (onSuccess !== undefined) {
                     data.onSuccess  = onSuccess;
-                    data.$tree = $('#selectID_' + data.instance);
+                    data.$tree = $dlg.find('.objects-list-table');
                     if (data.$tree[0]) data.$tree[0]._onSuccess = data.onSuccess;
                 }
                 data.selectedID = data.currentId;
@@ -3006,7 +2974,7 @@ function filterChanged(e) {
                             $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + (data.currentId || ' '));
                         }
                     } else {
-                        $('#' + data.instance + '-button-ok').addClass('ui-state-disabled');
+                        $dlg.find('#button-ok').addClass('ui-state-disabled');
                     }
 
                     $dlg.dialog('open');
@@ -3102,7 +3070,7 @@ function filterChanged(e) {
                 var data = $dlg.data('selectId');
                 if (data) {
                     $dlg.data('selectId', null);
-                    $('#' + data.instance + '-div').remove();
+                    $dlg.find('.dialog-select-container').remove();
                 }
             }
             return this;

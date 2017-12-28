@@ -1,42 +1,45 @@
 <div id="tab-logs"      class="admin-tab" style="display: none" data-name="Log">
-    <div id="grid-log" class="ui-jqgrid" style="display: block; height: 100%">
-        <table class="main-toolbar-table">
-            <tr>
-                <td><button id="log-refresh"       class="panel-button translateT" title="Refresh log"></button></td>
-                <td><button id="log-pause"         class="panel-button translateT" title="Pause output" style="width: 3em !important;"></button></td>
-                <td><button id="log-copy"          class="panel-button translateT" title="Copy log"></button></td>
-                <td><button id="log-clear"         class="panel-button translateT" title="Clear log"></button></td>
-                <td><button id="log-clear-on-disk" class="panel-button translateT" title="Clear on disk permanent"></button></td>
-                <td><select id="log-files" style="display: none"></select> </td>
-                <td id="log-size" style=""></td>
-            </tr>
-        </table>
+    <div class="main-toolbar-table m">
+        <a class="btn-floating btn-small translateT " title="Refresh log" id="log-refresh"><i class="material-icons">refresh</i></a>
+        <a class="btn-floating btn-small translateT " title="Pause output" id="log-pause"><i class="material-icons">pause</i></a>
+        <!--a class="btn-floating btn-small translateT " title="Copy log"  id="log-copy"><i class="material-icons">content_copy</i></a-->
+        <a class="btn-floating btn-small translateT " title="Clear log" id="log-clear"><i class="material-icons">delete</i></a>
+        <a class="btn-floating btn-small translateT red lighten-3" title="Clear on disk permanent" id="log-clear-on-disk"><i class="material-icons">delete_forever</i></a>
+        <!--button id="log-refresh"       class="panel-button translateT" title="Refresh log"></button>
+        <button id="log-pause"         class="panel-button translateT" title="Pause output"></button>
+        <button id="log-copy"          class="panel-button translateT" title="Copy log"></button>
+        <button id="log-clear"         class="panel-button translateT" title="Clear log"></button>
+        <button id="log-clear-on-disk" class="panel-button translateT" title="Clear on disk permanent"></button>
+        <select id="log-files" style="display: none"></select!-->
+        <a class="dropdown-button btn" style="display: none" data-target="log-files" id="log-files-btn">Download log</a>
+        <ul id="log-files" class="dropdown-content"></ul>
+        <span id="log-size" style=""></span>
+    </div>
 
-        <table id="log-outer-header" class="main-header-table" style="width: 100%; border-collapse: collapse;">
+    <table id="log-outer-header" class="main-header-table">
+        <thead>
+        <tr></tr>
+        </thead>
+    </table>
+
+    <div id="grid-log-inner" class="grid-main-wh-div" >
+        <table id="log-outer">
+            <colgroup>
+                <col width="120px"/>
+                <col width="180px"/>
+                <col width="90px"/>
+                <!--<col width="90%"/>-->
+            </colgroup>
+
             <thead>
-            <tr></tr>
+                <tr class="log-head"><th></th><th></th><th></th><th></th></tr>
             </thead>
+            <tbody id="log-table">
+
+            </tbody>
         </table>
 
-        <div id="grid-log-inner" class="grid-main-wh-div" >
-            <table id="log-outer" class="ui-widget ui-state-default ui-corner-bottom">
-                <colgroup>
-                    <col width="120px"/>
-                    <col width="180px"/>
-                    <col width="90px"/>
-                    <!--<col width="90%"/>-->
-                </colgroup>
-
-                <thead>
-                    <tr class="log-head"><th></th><th></th><th></th><th></th></tr>
-                </thead>
-                <tbody id="log-table">
-
-                </tbody>
-            </table>
-
-        </div>
     </div>
 </div>
 
-<div id="log-copy-text"      title="Copy log"     style="display: none; width: 100%; height: 100%; background: white; top: 0; left: 0; position: absolute; z-index: 2000"></div>
+<div id="log-copy-text" title="Copy log" style="display: none;"></div>
