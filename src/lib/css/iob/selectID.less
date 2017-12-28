@@ -1,152 +1,228 @@
 @import "../../../less/commons";
 
-.true {
-    color: #06960E;
-    font-weight: bold;
-}
-.false {
-    color: #D92626;
-    font-weight: normal;
-}
-.error {
-    color: #D92626;
-    font-weight: normal;
-}
+.dialog-select-object-ids {
+    .true {
+        color: #06960E;
+        font-weight: bold;
+    }
+    .false {
+        color: #D92626;
+        font-weight: normal;
+    }
+    .error {
+        color: #D92626;
+        font-weight: normal;
+    }
 
-.highlight {
-    animation: highlight 2s;
-}
-
-@-moz-keyframes spin    { 100% { -moz-transform:    rotate(360deg); } }
-@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
-@keyframes spin         { 100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
-
-
-.objects-folder {
-    height: 0.8em;
-    width: 0.8em;
-    margin: 0.3em;
-}
-
-
-.objects-name-coll-table-td {
-    border-spacing: 0;
-    padding: 0;
-    margin: 0;
-    border: 0;
-}
-
-.objects-name-coll-icon {
-    /*position: relative;*/
-    /*top: 3px;*/
-    vertical-align: sub;
-}
-
-.objects-name-coll-title {
-    border-spacing: 0;
-    padding: 0;
-    margin: 0;
-    border: 0;
-    display: inline-block;
-    padding-left: @line-indent;
-    vertical-align: middle;
-}
-
-.objects-inline-edit {
-    width: 100%;
-    height: 24px;
-    border:0;
-    padding:0;
-    margin:0;
-    padding-left:4px;
-}
-
-
-table.objects-list-table td {
-    border: @td-border;
-}
-
-.objects-list-table {
-    &:extend(.new-iob-list-table);
-    width: calc(~'100% - 10px');
-    margin-left:1px; /* for mouse over rahmen */
-    margin-right:5px;
-
-    outline: 5px;
-    outline-offset: -1px;
-    border-collapse: collapse;
-    padding:0;
-    table-layout:fixed;
-    overflow:auto;
-    white-space:nowrap;
-}
-
-.objects-list-table>tbody>tr>td {
-    padding-left: @line-indent;
-}
-
-.objects-list-table .fancytree-title {
-    font-weight: normal !important;
-}
-
-/** inline edit **/
-/**/
-.select-id-quick-edit-buttons {
-    position: absolute;
-    z-index: 3;
-    top: 2px;
-    right: 5px;
-    &.text {
-        top: 23px;
-        .select-id-quick-edit-ok,
-        .select-id-quick-edit-cancel {
-            border: 1px solid gray;
-            background-color: white;
+    .highlight {
+        animation: highlight 2s;
+    }
+    .grid-main-div {
+        height: calc(~'100% - 50px');
+    }
+    .grid-main-wh-div { // with header
+        height: calc(~'100% - '@grid-offset-wh);
+    }
+    .grid-main-wob-div { // without buttons
+        height: calc(~'100% - '@grid-offset - @main-toolbar-full-height);
+    }
+    .grid-main-wh-div,
+    .grid-main-wob-div {
+        overflow-x: hidden;
+        width: 100%;
+        padding:0;
+        overflow-y: scroll;
+        &>table {
+            width: calc(~"100% - 5px");
         }
     }
-    .select-id-quick-edit-ok,
-    .select-id-quick-edit-cancel {
-        cursor: pointer;
-        width: 16px;
-        height: 16px;
-        border-radius: 0;
+    @-moz-keyframes spin    { 100% { -moz-transform:    rotate(360deg); } }
+    @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+    @keyframes spin         { 100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
+
+
+    .objects-folder {
+        height: 0.8em;
+        width: 0.8em;
+        margin: 0.3em;
+    }
+
+
+    .objects-name-coll-table-td {
+        border-spacing: 0;
+        padding: 0;
+        margin: 0;
+        border: 0;
+    }
+
+    .objects-name-coll-icon {
+        /*position: relative;*/
+        /*top: 3px;*/
+        vertical-align: sub;
+    }
+
+    .objects-name-coll-title {
+        border-spacing: 0;
+        padding: 0;
+        margin: 0;
+        border: 0;
         display: inline-block;
+        padding-left: @line-indent;
+        vertical-align: middle;
+    }
+
+    .objects-inline-edit {
+        width: 100%;
+        height: 24px;
+        border:0;
+        padding:0;
+        margin:0;
+        padding-left:4px;
+    }
+
+
+    table.objects-list-table td {
+        border: @td-border;
+    }
+
+    .objects-list-table {
+        &:extend(.new-iob-list-table);
+        width: calc(~'100% - 10px');
+        margin-left:1px; /* for mouse over rahmen */
+        margin-right:5px;
+
+        outline: 5px;
+        outline-offset: -1px;
+        border-collapse: collapse;
+        padding:0;
+        table-layout:fixed;
+        overflow:auto;
+        white-space:nowrap;
+    }
+
+    .objects-list-table>tbody>tr>td {
+        padding-left: @line-indent;
+    }
+
+    .objects-list-table .fancytree-title {
+        font-weight: normal !important;
+    }
+
+    /** inline edit **/
+    /**/
+    .select-id-quick-edit-buttons {
+        position: absolute;
+        z-index: 3;
+        top: 2px;
+        right: 5px;
+        &.text {
+            top: 23px;
+            .select-id-quick-edit-ok,
+            .select-id-quick-edit-cancel {
+                border: 1px solid gray;
+                background-color: white;
+            }
+        }
+        .select-id-quick-edit-ok,
+        .select-id-quick-edit-cancel {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            border-radius: 0;
+            display: inline-block;
+        }
+    }
+
+
+    /*select ~ .select-id-quick-edit-ok,        // only if type = combobx
+    select ~ .select-id-quick-edit-cancel {   // only if type = combobx
+        top:1px;
+    }*/
+
+    @quick-edit-padding: 4px;
+    .objects-inline-edit {
+        position: relative;
+        left: -@quick-edit-padding;
+        padding-left: @quick-edit-padding;
+        padding-right: @quick-edit-padding;
+        width: calc(~'100% - 0px');
+        //max-width: calc(~'100px - 10px');
+        z-index: 2;
+        font-family: @iob-font;
+        font-size: @list-font-size;
+        vertical-align: middle;
+        text-overflow-mode: clip;
+    }
+    .objects-name-coll-title .objects-inline-edit {  // only for object name
+        //background:#f00;
+        width: calc(~'100% + '@quick-edit-padding - 1);
+
+    }
+    input.objects-inline-edit {
+        width: calc(~'100% - 2px');
+        z-index: 2;
+    }
+    .objects-name-coll-title {
+    }
+
+    .objects-list-table>colgroup>col:nth-child(8) {
+        width: 80px !important;
+        min-width: 80px !important;
+    }
+    .filter-btn {
+        width: 18px;
+        height: 18px;
+        border: 0;
+        background: #fff;
+    }
+    .main-header-input-table{
+        tr {
+            background: #ffffff;
+        }
+        td.input {
+            width: 100%
+        }
+        select.filter {
+            option {
+                line-height: 0.5em; background: #fff
+            }
+        }
+    }
+
+    .objects-list-running {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 150px;
+        height: 25px;
+        padding: 12px;
+        background: rgba(30, 30, 30, 0.5);
+        text-align:center;
+        font-size: 1.2em;
+        color: white;
+        font-weight: bold;
+        border-radius: 5px
+    }
+    .btn-history {
+        position: absolute;
+        top: 5px;
+        right: 20px;
+    }
+    // scrollbar
+    *::-webkit-scrollbar-track {
+        background-color: @admin-sidemenu-background;
+    }
+    *::-webkit-scrollbar {
+        width: 6px;
+        background-color: @admin-sidemenu-background;
+    }
+    *::-webkit-scrollbar-thumb {
+        background-color: @admin-sidemenu-scrollbar-thumb-color;
     }
 }
-
-
-/*select ~ .select-id-quick-edit-ok,        // only if type = combobx
-select ~ .select-id-quick-edit-cancel {   // only if type = combobx
-    top:1px;
-}*/
-
-@quick-edit-padding: 4px;
-.objects-inline-edit {
-    position: relative;
-    left: -@quick-edit-padding;
-    padding-left: @quick-edit-padding;
-    padding-right: @quick-edit-padding;
-    width: calc(~'100% - 0px');
-    //max-width: calc(~'100px - 10px');
-    z-index: 2;
-    font-family: @iob-font;
-    font-size: @list-font-size;
-    vertical-align: middle;
-    text-overflow-mode: clip;
-}
-.objects-name-coll-title .objects-inline-edit {  // only for object name
-    //background:#f00;
-    width: calc(~'100% + '@quick-edit-padding - 1);
-
-}
-input.objects-inline-edit {
-    width: calc(~'100% - 2px');
-    z-index: 2;
-}
-.objects-name-coll-title {
-}
-
-.objects-list-table>colgroup>col:nth-child(8) {
-    width: 80px !important;
-    min-width: 80px !important;
+#select-id-dialog {
+    &>span {
+        float:left;
+        margin:0 7px 50px 0;
+    }
 }

@@ -1,18 +1,18 @@
 function Logs(main) {                                                                       'use strict';
 
-    var that                  = this;
-    this.main                 = main;
-    this.logLimit             = 2000; //const
-    this.$table               = $('#tab-logs');
-    this.logLinesCount        = 0;
-    this.logLinesStart        = 0;
+    var that           = this;
+    this.main          = main;
+    this.logLimit      = 2000; //const
+    this.$table        = $('#tab-logs');
+    this.logLinesCount = 0;
+    this.logLinesStart = 0;
 
     var $logTable;
     var $logOuter;
     var $logPause;
-    var logFilterHost = '';
+    var logFilterHost     = '';
     var logFilterSeverity = '';
-    var logFilterMessage = '';
+    var logFilterMessage  = '';
     var pause = {
         list: [],
         mode: false,
@@ -42,7 +42,7 @@ function Logs(main) {                                                           
         ]).$filter.attr('title', _('severity'));
         hdr.add('edit', 'Message', 'message');
 
-        this.$table.find('#log-clear-on-disk').button({icons: {primary: 'ui-icon-trash'}, text: false}).click(function () {
+        this.$table.find('#log-clear-on-disk').click(function () {
             that.main.confirmMessage(_('Log file will be deleted. Are you sure?'), null, null, function (result) {
                 if (result) {
                     that.main.socket.emit('sendToHost', main.currentHost, 'delLogs', null, function (err) {
@@ -54,15 +54,13 @@ function Logs(main) {                                                           
                     });
                 }
             });
-        })/*.css({width: 20, height: 20})*/.addClass('ui-state-error');
+        }).addClass('ui-state-error');
 
-        this.$table.find('#log-refresh').button({icons:{primary: 'ui-icon-refresh'}, text: false}).click(function () {
+        this.$table.find('#log-refresh').click(function () {
             that.clear();
         });
 
         $logPause
-            .button({icons:{primary: 'ui-icon-pause'}, text: false})
-            //.css({height: 20})
             .attr('title', _('Pause output'))
             .click(function () {
                 that.pause();
@@ -70,17 +68,17 @@ function Logs(main) {                                                           
 
         pause.$counterSpan = $logPause.find('ui-button-text');
 
-        this.$table.find('#log-clear').button({icons:{primary: 'ui-icon-close'}, text: false}).click(function () {
+        this.$table.find('#log-clear').click(function () {
             that.clear(false);
         });
 
-        this.$table.find('#log-copy-text').click(function () {
-            $('#log-copy-text').hide().html('');
+        $('#log-copy-text').click(function () {
+            $(this).hide().html('');
         });
 
-        this.$table.find('#log-copy').button({icons: {primary: 'ui-icon-copy'}, text: false}).click(function () {
+        this.$table.find('#log-copy').click(function () {
             var text = '<span class="error">' + _('copy note') + '</span>';
-            that.$table.find('#log-copy-text').show().html(text + '<br><table style="width: 100%; font-size: 12px" id="log-copy-table">' + $logTable.html() + '</table>');
+            $('#log-copy-text').show().html(text + '<br><table style="width: 100%; font-size: 12px" id="log-copy-table">' + $logTable.html() + '</table>');
             var lines = that.$table.find('#log-copy-table').find('.log-column-4');
             for (var t = 0; t < lines.length; t++) {
                 var q = $(lines[t]);
@@ -174,25 +172,43 @@ function Logs(main) {                                                           
                     that.main.subscribeLogs(true);
                 }
 
+                // prepare log list
                 that.main.socket.emit('readLogs', function (err, list) {
                     if (list && list.length) {
-                        var html = '<option value="">' + _('Download log file') + '</option>';
+                        var html = '';
+                        list.reverse();
+                        // first 2018-01-01
                         for (var l = 0; l < list.length; l++) {
                             var parts = list[l].split('/');
-                            var name = parts.pop().replace('iobroker').replace('.log');
-
-                            html += '<option value="' + list[l] + '">' + name + '</option>';
-                        }
-                        that.$table.find('#log-files').show().html(html).unbind('change').change(function () {
-                            var val = $(this).val();
-                            if (val) {
-                                $(this).val('');
-                                var win = window.open(val, '_blank');
-                                win.focus();
+                            var name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
+                            if (name[0] <= '9') {
+                                html += '<li><a data-value="' + list[l] + '">' + name + '</a></li>';
                             }
-                        });
+                        }
+                        // then restart.log ans so on
+                        list.sort();
+                        for (var ll = 0; ll < list.length; ll++) {
+                            var parts_ = list[ll].split('/');
+                            var name_ = parts_.pop().replace(/iobroker\.?/, '').replace('.log', '');
+                            if (name_[0] > '9') {
+                                html += '<li><a data-value="' + list[ll] + '">' + name_ + '</a></li>';
+                            }
+                        }
+
+                        that.$table.find('#log-files-btn').show().dropdown();
+                        that.$table.find('#log-files')
+                            .html(html)
+                                .find('a').click(function () {
+                                    var val = $(this).data('value');
+                                    if (val) {
+                                        $(this).val('');
+                                        var win = window.open(val, '_blank');
+                                        win.focus();
+                                    }
+                                });
                     } else {
                         that.$table.find('#log-files').hide();
+                        that.$table.find('#log-files-btn').hide();
                     }
                 });
             }, 0);
@@ -246,10 +262,10 @@ function Logs(main) {                                                           
         //     }
         // }
 
-        if (message.from) {
+        if (message.from && hdr) {
             hdr.host.checkAddOption(message.from, function (o) {
                 return { val: o.replace(/\./g, '-'), name: o };
-            })
+            });
         }
 
         var visible = '';
@@ -352,12 +368,10 @@ function Logs(main) {                                                           
     this.pause = function () {
         if (!pause.mode) {
             $logPause
-                .addClass('ui-state-focus ui-state-error log-pause-button-active')
-                .button('option', 'text', true)
-                .button('option', 'icons', {primary: null});
+                .addClass('yellow log-pause-button-active');
 
-            pause.$counterSpan = $logPause.find('.ui-button-text');
-            pause.$counterSpan.addClass().html('0');
+            pause.$counterSpan = $logPause;
+            pause.$counterSpan.html('0');
             pause.counter  = 0;
             pause.mode     = true;
         } else {
@@ -370,10 +384,8 @@ function Logs(main) {                                                           
             pause.counter  = 0;
 
             $logPause
-                .removeClass('ui-state-error ui-state-focus')
-                .removeClass('log-pause-button-active')
-                .attr('title', _('Pause output'))
-                .button('option', 'text', false).button('option', 'icons', {primary: 'ui-icon-pause'});
+                .removeClass('yellow log-pause-button-active')
+                .html('<i class="material-icons">pause</i>');
         }
     };
 }

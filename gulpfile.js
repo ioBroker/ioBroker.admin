@@ -504,6 +504,7 @@ gulp.task('lessApp', function () {
 
 gulp.task('lessConfig', function () {
     gulp.src([
+        './src/lib/css/iob/selectID.less',
         './src/less/adapter.less',
         './src/less/materializeCorrect.less'
     ])

@@ -630,7 +630,7 @@ function Instances(main) {
         }
 
         setTimeout(function () {
-            $input.focus().select();
+            $input.focus();
         }, 100);
     }
 
