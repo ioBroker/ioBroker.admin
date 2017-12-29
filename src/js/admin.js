@@ -1786,6 +1786,9 @@ $(document).ready(function () {
                                                 }
                                             }).modal('open');
 
+                                            // trigegr translations
+                                            $('#license_language').trigger('change');
+
                                             $('#license_agree').addClass('disabled').unbind('click').click(function (e) {
                                                 e.preventDefault();
                                                 e.stopPropagation();
