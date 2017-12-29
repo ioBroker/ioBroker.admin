@@ -150,7 +150,6 @@ function removeImageFromSettings(data) {
     if (idx >= 0) data.columns.splice(idx, 1);
 }
 
-//var lineIndent = '6px';
 var lineIndent = '5px';
 var xytdButton = { width: 20, height: 20 };
 function span(txt, attr) {
@@ -1316,7 +1315,6 @@ function filterChanged(e) {
             return ret;
         }
 
-        // todo remove data.instance
         // toolbar buttons
         var tds = 
             '<td><button class="ui-button-icon-only panel-button btn-refresh"></button></td>' +
@@ -1543,13 +1541,6 @@ function filterChanged(e) {
 
             source:         data.tree.children,
             extensions:     ['table', 'gridnav', 'filter', 'themeroller'],
-            // extensions:     ['table', 'gridnav', 'filter', 'themeroller', 'wide'],
-            // wide: {
-            //     // iconWidth: '32px',     // Adjust this if @fancy-icon-width != '16px'
-            //     // iconSpacing: '6px', // Adjust this if @fancy-icon-spacing != '3px'
-            //     // labelSpacing: '6px',   // Adjust this if padding between icon and label !=  '3px'
-            //     // levelOfs: '32px'     // Adjust this if ul padding != '16px'
-            // },
 
             themeroller: {
                 addClass: '',  // no rounded corners
@@ -1768,7 +1759,6 @@ function filterChanged(e) {
                 for (var c = 0; c < data.columns.length; c++) {
                     var name = data.columns[c];
                     $elem = $tdList.eq(base);
-                    //* if (c > 0) $elem.attr('style', 'padding-left: 6px !important');
 
                     var setText = function (txt) {
                         $elem.html(span(txt));
@@ -1797,7 +1787,6 @@ function filterChanged(e) {
                             if (!t) $e.css ({'vertical-align': 'middle'});
 
                             $e.attr ('title', t);
-                            //$elem.text(isCommon ? data.objects[node.key].common.name : '').css({overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis'}).attr('title', isCommon ? data.objects[node.key].common.name : '');
                             if (data.quickEdit /*&& obj*/ && data.quickEdit.indexOf ('name') !== -1) {
                                 $e.data ('old-value', isCommon ? (obj.common.name || ''): '');
                                 $e.click (onQuickEditField).data ('id', node.key).data ('name', 'name').data ('selectId', data).addClass ('select-id-quick-edit');
@@ -1942,13 +1931,13 @@ function filterChanged(e) {
                                 if (obj.common.role === 'button' && !data.expertMode) {
                                     $elem.html ('<button data-id="' + node.key + '" class="select-button-push"></button>');
                                 } else if (!obj.common || obj.common.type !== 'file') {
-                                    var val = data.states[node.key];
-                                    val = val ? val.val : '';
-                                    var $span = $elem.find('span');
-                                    $span.data ('old-value', val).data ('type', common.type || typeof val);
+                                    var val_ = data.states[node.key];
+                                    val_ = val_ ? val_.val : '';
+                                    var $span_ = $elem.find('span');
+                                    $span_.data ('old-value', val_).data ('type', common.type || typeof val_);
 
                                     //$elem.click (onQuickEditField)    //!!!xxx
-                                    $span.click (onQuickEditField)    //!!!xxx
+                                    $span_.click (onQuickEditField)    //!!!xxx
                                         .data ('id', node.key)
                                         .data ('name', 'value')
                                         .data ('selectId', data)
@@ -2051,7 +2040,6 @@ function filterChanged(e) {
                                     height: 20
                                 });
                             }
-                            //base++;
                             break;
                         case 'enum':
                             if (isCommon && obj.common.members && obj.common.members.length > 0) {
@@ -2096,7 +2084,7 @@ function filterChanged(e) {
                             break;
                     }
                     ///
-                    base += 1;
+                    base++;
                     ///
                 }
             },
@@ -2436,7 +2424,6 @@ function filterChanged(e) {
         });
 
         $dlg.find('.filter-btn').button({icons: {primary: 'ui-icon-close'}, text: false}).click(function () {
-            console.log('AA');
             $dlg.find('.filter[data-index="' + $(this).data('index') + '"]').val('').trigger('change');  //filter buttons action
         });
 
@@ -2861,10 +2848,13 @@ function filterChanged(e) {
 
                     var connectTimeout = setTimeout(function () {
                         // noinspection JSJQueryEfficiency
-                        if (!$('#select-id-dialog').length) {
+                        var $dlg = $('#select-id-dialog');
+                        if (!$dlg.length) {
                             $('body').append('<div id="select-id-dialog"><span class="ui-icon ui-icon-alert"></span><span>' + (data.texts.noconnection || 'No connection to server') + '</span></div>');
+                            $dlg = $('#select-id-dialog');
                         }
-                        $('#select-id-dialog').dialog({
+
+                        $dlg.dialog({
                             modal: true,
                             open: function (event) {
                                 $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');

@@ -469,6 +469,7 @@ gulp.task('compressMaterialize', function () {
         './src/materialize-css/js/forms.js',
         './src/materialize-css/js/collapsible.js',
         './src/materialize-css/js/datepicker.js',
+        './src/materialize-css/js/autocomplete.js',
         './src/colorpicker/js/materialize-colorpicker.js'
     ])
     .pipe(sourcemaps.init())

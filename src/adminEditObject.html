@@ -1,0 +1,187 @@
+<div id="dialog-editobject" class="m">
+    <div class="dialog-editobject-body">
+        <div class="row">
+            <div class="col s12">
+                <h6 class="title"><span class="translate">Edit object</span> <span class="title-id"></span></h6>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s6 l8">
+                <input size="60" class="edit-object-name">
+                <label class="translate" >name</label>
+            </div>
+            <div class="col s6 l4">
+                <select class="edit-object-type" disabled="disabled">
+                    <option>device</option>
+                    <option>channel</option>
+                    <option>state</option>
+                    <option>enum</option>
+                    <option>host</option>
+                    <option>adapter</option>
+                    <option>instance</option>
+                    <option>meta</option>
+                    <option>config</option>
+                    <option>path</option>
+                    <option>file</option>
+                    <option>script</option>
+                    <option>group</option>
+                    <option>user</option>
+                    <option>chart</option>
+                </select>
+                <label class="translate">type</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs">
+                    <li class="tab col s2"><a href="#object-tab-common"  class="translate active">common</a></li>
+                    <li class="tab col s2"><a href="#object-tab-native"  class="translate">native</a></li>
+                    <li class="tab col s2"><a href="#object-tab-acl"     class="translate">Access control</a></li>
+                    <li class="tab col s2"><a href="#object-tab-rest"    class="translate">rest</a></li>
+                    <li class="tab col s2"><a href="#object-tab-raw"     class="translate">raw</a></li>
+                </ul>
+            </div>
+            <div id="object-tab-common" class="col s12 page-noscroll">
+                <div class="row">
+                    <div class="col s1">
+                        <a class="btn-floating waves-effect waves-light blue btn-add-common"><i class="material-icons">add</i></a>
+                    </div>
+                    <div class="col s11 object-tab-common-table page-scroll">
+                    </div>
+                    <div class="row icon-editor" style="display: none">
+                        <div class="col s1">
+                            <label class="translate">common_icon</label>
+                        </div>
+                        <div class="col s10">
+                            <i class="material-icons prefix">file_upload</i>
+                            <div class="btn icon-upload">
+                                <span class="translate">Icon upload</span>
+                            </div>
+                            <div class="icon"></div>
+                        </div>
+                        <div class="col s1">
+                            <a class="btn-floating waves-effect waves-light red icon-clear"><i class="material-icons">delete</i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="object-tab-native" class="col s12 page-noscroll">
+                <div class="row">
+                    <div class="col s1">
+                        <a class="btn-floating waves-effect waves-light blue btn-add-native"><i class="material-icons">add</i></a>
+                    </div>
+                    <div class="col s11 object-tab-native-table page-scroll">
+                    </div>
+                </div>
+            </div>
+            <div id="object-tab-acl"  class="col s12 page">
+                <div class="row">
+                    <div class="col s12 m6">
+                        <select class="object-tab-acl-owner"></select>
+                        <label class="translate">Owner user</label>
+                    </div>
+                    <div class="col s12 m6">
+                        <select class="object-tab-acl-group"></select>
+                        <label class="translate" >Owner group</label>
+                    </div>
+                </div>
+                <div class="row object-tab-rights">
+                    <div class="col s12">
+                        <div class="row">
+                            <div class="col s12 m3">
+                                <h6 class="translate">Object rights</h6>
+                            </div>
+                            <div class="col s12 m9">
+                                <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                                    <tr>
+                                        <td colspan="2" class="object-tab-rights-borders object-tab-top-borders translate">Owner</td>
+                                        <td colspan="2" class="object-tab-rights-borders object-tab-top-borders translate">Group</td>
+                                        <td colspan="2" class="object-tab-rights-borders object-tab-top-borders translate">Everyone</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="object-tab-rights-borders translate">read</td>
+                                        <td class="object-tab-rights-borders translate">write</td>
+                                        <td class="object-tab-rights-borders translate">read</td>
+                                        <td class="object-tab-rights-borders translate">write</td>
+                                        <td class="object-tab-rights-borders translate">read</td>
+                                        <td class="object-tab-rights-borders translate">write</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="object-tab-rights-borders object-tab-bottom-borders"><input type="checkbox" class="filled-in" id="object-tab-acl-obj-owner-read"  /><span></span></td>
+                                        <td class="object-tab-rights-borders object-tab-bottom-borders"><input type="checkbox" class="filled-in" id="object-tab-acl-obj-owner-write" /><span></span></td>
+                                        <td class="object-tab-rights-borders object-tab-bottom-borders"><input type="checkbox" class="filled-in" id="object-tab-acl-obj-group-read"  /><span></span></td>
+                                        <td class="object-tab-rights-borders object-tab-bottom-borders"><input type="checkbox" class="filled-in" id="object-tab-acl-obj-group-write" /><span></span></td>
+                                        <td class="object-tab-rights-borders object-tab-bottom-borders"><input type="checkbox" class="filled-in" id="object-tab-acl-obj-every-read"  /><span></span></td>
+                                        <td class="object-tab-rights-borders object-tab-bottom-borders"><input type="checkbox" class="filled-in" id="object-tab-acl-obj-every-write" /><span></span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row object-tab-acl-state">
+                            <div class="col s12 m3">
+                                <h6 class="translate">States rights</h6>
+                            </div>
+                            <div class="col s12 m9">
+                                <table style="border: none; border-collapse: collapse; padding: 0; margin: 0;">
+                                    <tr>
+                                        <td colspan="2" class="object-tab-rights-borders object-tab-top-borders translate">Owner</td>
+                                        <td colspan="2" class="object-tab-rights-borders object-tab-top-borders translate">Group</td>
+                                        <td colspan="2" class="object-tab-rights-borders object-tab-top-borders translate">Everyone</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="object-tab-rights-borders translate">read</td>
+                                        <td class="object-tab-rights-borders translate">write</td>
+                                        <td class="object-tab-rights-borders translate">read</td>
+                                        <td class="object-tab-rights-borders translate">write</td>
+                                        <td class="object-tab-rights-borders translate">read</td>
+                                        <td class="object-tab-rights-borders translate">write</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="object-tab-rights-borders object-tab-bottom-borders"><input class="filled-in" type="checkbox" id="object-tab-acl-state-owner-read"  /><span></span></td>
+                                        <td class="object-tab-rights-borders object-tab-bottom-borders"><input class="filled-in" type="checkbox" id="object-tab-acl-state-owner-write" /><span></span></td>
+                                        <td class="object-tab-rights-borders object-tab-bottom-borders"><input class="filled-in" type="checkbox" id="object-tab-acl-state-group-read"  /><span></span></td>
+                                        <td class="object-tab-rights-borders object-tab-bottom-borders"><input class="filled-in" type="checkbox" id="object-tab-acl-state-group-write" /><span></span></td>
+                                        <td class="object-tab-rights-borders object-tab-bottom-borders"><input class="filled-in" type="checkbox" id="object-tab-acl-state-every-read"  /><span></span></td>
+                                        <td class="object-tab-rights-borders object-tab-bottom-borders"><input class="filled-in" type="checkbox" id="object-tab-acl-state-every-write" /><span></span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="object-tab-rest" class="col s12 page">
+                <textarea id="view-object-rest" readonly></textarea>
+            </div>
+            <div id="object-tab-raw" class="col s12 page">
+                <div id="view-object-raw">Test!</div>
+            </div>
+        </div>
+    </div>
+    <nav class="dialog-editobject-buttons nav-wrapper footer">
+        <a class="btn btn-active translate btn-save">Save</a>
+        <a class="btn translate btn-cancel">Cancel</a>
+    </nav>
+</div>
+
+<div class="materialize-dialogs m">
+    <div id="dialog-new-field" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col s12">
+                    <h6 class="title translate">Add new field</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <input class="object-tab-new-name input-field" id="object-tab-new-name" />
+                    <label class="translate" for="object-tab-new-name">Name</label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn-flat translate btn-add">Add</a>
+            <a class="modal-action modal-close waves-effect waves-green btn-flat translate btn-cancel">Cancel</a>
+        </div>
+    </div>
+</div>

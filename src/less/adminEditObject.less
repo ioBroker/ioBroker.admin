@@ -1,0 +1,77 @@
+@import "commons";
+@import "materializeConsts";
+
+#dialog-editobject {
+  height: 100%;
+  .dialog-editobject-body{
+    overflow: hidden;
+    height: calc(~"100% - "@admin-m-footer-height);
+
+    textarea {
+      resize: vertical;
+    }
+    .row {
+      margin-bottom: 1rem !important;
+    }
+    .page, .page-noscroll {
+      background: #f5f2f0;
+      padding-top: 1rem;
+      padding-left: 1rem;
+      height: calc(~"100% - "@admin-m-footer-height + 148);
+    }
+    .page {
+      overflow: auto;
+    }
+    .page-noscroll {
+      overflow: hidden;
+    }
+    .page-scroll {
+      height: 100%;
+      overflow: auto;
+    }
+    .title {
+      background: @main-background-color;
+      color:      @admin-buttons-background;
+      padding:    0.5rem;
+    }
+    .title-id {
+      font-style: italic;
+    }
+    .title {
+
+    }
+    #view-object-raw {
+      width: 100%;
+      height: 100%;
+    }
+    #view-object-rest {
+      width: 100%;
+      height: calc(~"100% - 1rem");
+      resize: none;
+    }
+    .col {
+      position: relative;
+      .select-wrapper + label {
+        top: 100%;
+      }
+    }
+    .object-tab-rights-borders {
+      border-right: 1px solid black; border-left: 1px solid black; text-align: center
+    }
+    .object-tab-top-borders {
+      border-top: 1px solid black;
+    }
+    .object-tab-bottom-borders {
+      border-bottom: 1px solid black;
+    }
+    .icon-editor {
+      .icon {
+        padding: 1rem;
+        display: inline-block;
+        img {
+          width: 64px;
+        }
+      }
+    }
+  }
+}

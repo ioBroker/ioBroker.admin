@@ -342,9 +342,7 @@ function Enums(main) {
                     $id.val(val);
                     $dialog.find('#tab-enums-dialog-new-preview').val((isCategoryOrID === true ? 'enum' : that.enumEdit) + '.' + (val || '#'));
                     // detect materialize
-                    if (window.M && window.M.toast) {
-                        M.updateTextFields('#tab-enums-dialog-new');
-                    }
+                    M.updateTextFields('#tab-enums-dialog-new');
                 }
                 if ($id.val() && !$id.val().match(/[.\s]/)) {
                     $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
@@ -364,9 +362,8 @@ function Enums(main) {
                 idChanged = true;
                 var val = $(this).val();
                 $dialog.find('#tab-enums-dialog-new-preview').val((isCategoryOrID === true ? 'enum' : that.enumEdit) + '.' + ($(this).val() || '#'));
-                if (window.M && window.M.toast) {
-                    M.updateTextFields('#tab-enums-dialog-new');
-                }
+                M.updateTextFields('#tab-enums-dialog-new');
+
                 if (val && !val.match(/[.\s]/)) {
                     $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
                     $(this).removeClass('wrong');
@@ -434,12 +431,8 @@ function Enums(main) {
             $dialog.find('.tab-enums-dialog-new-color').val();
         }
 
-        // Detect materialize
-        if (window.M && window.M.toast) {
-            M.updateTextFields('#tab-enums-dialog-new');
-
-            that.main.showToast($dialog, _('Drop the icons here'));
-        }
+        M.updateTextFields('#tab-enums-dialog-new');
+        that.main.showToast($dialog, _('Drop the icons here'));
 
         $dialog.find('.tab-enums-dialog-new-upload').unbind('click').click(function () {
             $dialog.find('.drop-file').trigger('click');

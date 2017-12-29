@@ -576,9 +576,10 @@ $(document).ready(function () {
     main.instances     = tabs.instances.list;
     main.tabs          = tabs;
     main.dialogs       = {
-        system:  new System(main),
-        customs: new Customs(main),
-        config:  new Config(main)
+        system:     new System(main),
+        customs:    new Customs(main),
+        config:     new Config(main),
+        editobject: new EditObject(main)
     };
 
     var stdout;
@@ -1020,11 +1021,12 @@ $(document).ready(function () {
                 main.initHostsList(true);
 
                 initTabs();
-                // hide or show system button
-                main.dialogs.system.prepare();
-
-                // If customs enabled
-                main.dialogs.customs.check();
+                // init dialogs
+                for (var dialog in main.dialogs) {
+                    if (main.dialogs.hasOwnProperty(dialog) && typeof main.dialogs[dialog].prepare === 'function') {
+                        main.dialogs[dialog].prepare();
+                    }
+                }
 
                 // Detect node.js version
                 checkNodeJsVersions(tabs.hosts.list);
@@ -1445,11 +1447,9 @@ $(document).ready(function () {
         });
     };
 
-    // static, just used from many places
-    main.getIcon = function(id, imgPath, objects, classes) {
+    main.getIconFromObj = function (obj, imgPath, classes) {
         var icon     = '';
         var alt      = '';
-        var obj      = (objects || main.objects)[id];
         var isCommon = obj && obj.common;
 
         if (isCommon) {
@@ -1496,6 +1496,11 @@ $(document).ready(function () {
 
         if (icon) return '<img class="' + (classes || 'treetable-icon') + '" src="' + icon + '" alt="' + alt + '" />';
         return '';
+    };
+
+    // static, just used from many places
+    main.getIcon = function(id, imgPath, objects, classes) {
+        return main.getIconFromObj((objects || main.objects)[id], imgPath, classes);
     };
 
     var tabsInfo = {
@@ -1785,9 +1790,6 @@ $(document).ready(function () {
                                                     location.reload();
                                                 }
                                             }).modal('open');
-
-                                            // trigegr translations
-                                            $('#license_language').trigger('change');
 
                                             $('#license_agree').addClass('disabled').unbind('click').click(function (e) {
                                                 e.preventDefault();
