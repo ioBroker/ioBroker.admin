@@ -26,9 +26,9 @@ function EditObject(main) {
                     '<option value="mixed"   ' + (object[attr] === 'mixed'   ? 'selected' : '') + '>' + _('mixed')   + '</option>' +
                     '</select>';
             } else if (typeof object[attr] === 'string') {
-                text += '<input type="text" class="object-tab-edit-string" style="width: 100%" data-attr="' + attr + '" value="' + object[attr] + '" />\n';
+                text += '<input type="text" class="object-tab-edit-string" data-attr="' + attr + '" value="' + object[attr] + '" />\n';
             } else if (typeof object[attr] === 'number') {
-                text += '<input type="text" class="object-tab-edit-number" style="width: 100%" data-attr="' + attr + '" value="' + object[attr] + '" />\n';
+                text += '<input type="text" class="object-tab-edit-number" data-attr="' + attr + '" value="' + object[attr] + '" />\n';
             } else if (typeof object[attr] === 'boolean') {
                 text += '<input type="checkbox" class="object-tab-edit-boolean filled-in" data-attr="' + attr + '" ' + (object[attr] ? 'checked' : '') + ' />\n';
             } else {
@@ -192,7 +192,7 @@ function EditObject(main) {
                 if (!tab) return;
                 var id = $(tab).attr('id');
                 if (id === 'object-tab-common') {
-                    showMessage(_('You can drag&drop icons here'));
+                    showMessage(_('Drop the icons here'));
                 } else 
                 if (id === 'object-tab-raw') {
                     var obj = that.saveFromTabs();
@@ -423,6 +423,26 @@ function EditObject(main) {
         }).keyup(function () {
             $(this).trigger('change');
         });
+
+        if (obj.common.color !== undefined) {
+            var time = Date.now();
+
+            var $color = this.$dialog.find('.object-tab-edit-string[data-attr="color"]').parent();
+            $color.prepend('<i class="material-icons prefix tab-enums-dialog-new-color-icon">color_lens</i><a class="btn edit-color translate">' + _('Color') + '</a>');
+            $color.colorpicker({
+                component: '.btn',
+                color: $color,
+                container: true
+            }).colorpicker('setValue', obj.common.color || '#fff').on('showPicker.colorpicker', function (/* event */) {
+                console.log('A')
+            }).on('changeColor.colorpicker', function (event){
+                console.log('B')
+                if (Date.now() - time > 100) {
+                    $color.find('input').val(event.color.toHex()).trigger('change');
+                }
+            });
+        }
+
     };
 
     this.saveFromTabs   = function () {
