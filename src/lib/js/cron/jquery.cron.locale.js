@@ -364,7 +364,7 @@ JQUERY_CRON_LOCALE.nl = {
         'September',
         'Oktober',
         'November',
-        'December',
+        'December'
     ],
     DOW: [
 		'zondag',
@@ -373,7 +373,7 @@ JQUERY_CRON_LOCALE.nl = {
         'woensdag',
         'donderdag',
         'vrijdag',
-        'zaterdag',
+        'zaterdag'
     ],
     'Every':                'Elke',
     'and':                  'en',
