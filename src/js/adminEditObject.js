@@ -280,6 +280,7 @@ function EditObject(main) {
             if (that.iconVal) {
                 that.iconVal = null;
                 that.$dialog.find('.icon-editor').hide().appendTo(that.$dialog);
+                that.$dialogSave.removeClass('disabled');
             }
         });
     };
