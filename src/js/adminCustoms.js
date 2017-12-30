@@ -55,19 +55,14 @@ function Customs(main) {
         var collapsed = this.main.config['object-customs-collapsed'];
         collapsed = collapsed ? collapsed.split(',') : [];
 
-                var commons = {};
+        var commons = {};
         // calculate common settings
         for (var i = 0; i < instances.length; i++) {
             var inst = instances[i].replace('system.adapter.', '');
             commons[inst] = {};
             for (var id = 0; id < ids.length; id++) {
                 var custom = main.objects[ids[id]].common.custom;
-                // convert old structure
-                // TODO: remove some day (08.2016)
-                if (custom && custom.enabled !== undefined) {
-                    custom = main.objects[ids[id]].common.custom = custom.enabled ? {'history.0': custom} : {};
-                }
-                var sett = custom ? custom[inst] : null;
+                var sett   = custom ? custom[inst] : null;
 
                 if (sett) {
                     for (var _attr in sett) {
@@ -82,8 +77,12 @@ function Customs(main) {
                     var a = inst.split('.')[0];
                     var _default = null;
                     // Try to get default values
-                    if (typeof that.defaults[a] === 'function') {
-                        _default = that.defaults[a](that.main.objects[ids[id]], that.main.objects['system.adapter.' + inst]);
+                    if (defaults[a]) {
+                        if (typeof defaults[a] === 'function') {
+                            _default = defaults[a](that.main.objects[ids[id]], that.main.objects['system.adapter.' + inst]);
+                        } else {
+                            _default = defaults[a];
+                        }
                     } else {
                         _default = this.defaults[a];
                     }
@@ -107,7 +106,7 @@ function Customs(main) {
             var adapter  = parts[2];
             var instance = parts[3];
             var data = adapter + '.' + instance;
-             var img = this.main.objects['system.adapter.' + adapter].common.icon;
+            var img = this.main.objects['system.adapter.' + adapter].common.icon;
             img = '/adapter/' + adapter + '/' +img;
             var tab =
                 '<li data-adapter="' + data + '" class="' + (collapsed.indexOf(data) === -1 ? 'active' : '') + '">' +
@@ -484,8 +483,12 @@ function Customs(main) {
                     var adapter = instance.split('.')[0];
                     var _default;
                     // Try to get default values
-                    if (typeof that.defaults[adapter] === 'function') {
-                        _default = that.defaults[adapter](that.main.objects[ids[i]], that.main.objects['system.adapter.' + instance]);
+                    if (defaults[adapter]) {
+                        if (typeof defaults[adapter] === 'function') {
+                            _default = defaults[adapter](that.main.objects[ids[i]], that.main.objects['system.adapter.' + instance]);
+                        } else {
+                            _default = defaults[adapter];
+                        }
                     } else {
                         _default = that.defaults[adapter];
                     }
@@ -543,7 +546,7 @@ function Customs(main) {
         var instances = [];
 
         // clear global defaults object
-        that.defaults = {};
+        this.defaults = {};
 
         // collect all custom instances
         var count = 0;
@@ -577,11 +580,6 @@ function Customs(main) {
             } else {
                 var custom = this.main.objects[ids[i]].common.custom;
                 if (custom) {
-                    // convert old structure
-                    // TODO: TODO: remove some day (08.2016)
-                    if (custom.enabled !== undefined) {
-                        custom = this.main.objects[ids[i]].common.custom = custom.enabled ? {'history.0': custom} : {};
-                    }
                     var found = false;
                     // delete disabled entries
                     for (var h in custom) {

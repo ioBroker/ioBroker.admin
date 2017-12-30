@@ -1304,7 +1304,7 @@ $(document).ready(function () {
     main.navigateCheckDialog = function (callback) {
         if (main.currentDialog && main.dialogs[main.currentDialog] && typeof main.dialogs[main.currentDialog].allStored === 'function') {
             if (main.dialogs[main.currentDialog].allStored() === false) {
-                main.confirmMessage(_('Some data are not stored. Discard?'), _('Save configuration'), null, function (result) {
+                main.confirmMessage(_('Some data are not stored. Discard?'), _('Please confirm'), null, function (result) {
                     callback(!result);
                 });
                 return;
