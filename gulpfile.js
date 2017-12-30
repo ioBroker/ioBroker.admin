@@ -18,6 +18,8 @@ gulp.task('1_words',  ['wwwLanguages2words', 'adminLanguages2words']);
 gulp.task('2_css',    ['iobCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS']);
 gulp.task('3_js',     ['vendorJS', 'materializeJS', 'appJS']); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
 gulp.task('4_static', ['appHTML', 'aceCopy', 'colorpickerCopy', 'appCopy']);
+const fileName = 'words.js';
+const noSort   = false;
 
 /* How to work with language scripts
 --------------------------------------------------------
@@ -65,10 +67,10 @@ function lang2data(lang, isFlat) {
 function readWordJs(src) {
     try {
         var words;
-        if (fs.existsSync(src + 'js/words.js')) {
-            words = fs.readFileSync(src + 'js/words.js').toString();
+        if (fs.existsSync(src + 'js/' + fileName)) {
+            words = fs.readFileSync(src + 'js/' + fileName).toString();
         } else {
-            words = fs.readFileSync(src + 'words.js').toString();
+            words = fs.readFileSync(src + fileName).toString();
         }
 
         var lines = words.split(/\r\n|\r|\n/g);
@@ -123,9 +125,9 @@ function writeWordJs(data, src) {
     }
     text += '};\n';
     if (src.indexOf('admin') === -1) {
-        fs.writeFileSync(src + 'js/words.js', text);
+        fs.writeFileSync(src + 'js/' + fileName, text);
     } else {
-        fs.writeFileSync(src + 'words.js', text);
+        fs.writeFileSync(src + fileName, text);
     }
 }
 
@@ -164,7 +166,7 @@ function words2languages(src) {
         }
         for (var l in langs) {
             var keys = Object.keys(langs[l]);
-            keys.sort();
+            if (!noSort) keys.sort();
             var obj = {};
             for (var k = 0; k < keys.length; k++) {
                 obj[keys[k]] = langs[l][keys[k]];
@@ -176,7 +178,7 @@ function words2languages(src) {
             fs.writeFileSync(src + 'i18n/' + l + '/translations.json', lang2data(obj));
         }
     } else {
-        console.error('Cannot read or parse words.js');
+        console.error('Cannot read or parse ' + fileName);
     }
 }
 function words2languagesFlat(src) {
@@ -208,7 +210,7 @@ function words2languagesFlat(src) {
             }
         }
         var keys = Object.keys(langs.en);
-        keys.sort();
+        if (!noSort) keys.sort();
         for (var l in langs) {
             var obj = {};
             for (var k = 0; k < keys.length; k++) {
@@ -228,7 +230,7 @@ function words2languagesFlat(src) {
         }
         fs.writeFileSync(src + 'i18n/flat.txt', keys.join('\n'));
     } else {
-        console.error('Cannot read or parse words.js');
+        console.error('Cannot read or parse ' + fileName);
     }
 }
 function languagesFlat2words(src) {
@@ -283,7 +285,7 @@ function languagesFlat2words(src) {
         for (var w in aWords) {
             if (aWords.hasOwnProperty(w)) {
                 if (!bigOne[w]) {
-                    console.warn('Take from actual words.js: ' + w);
+                    console.warn('Take from actual ' + fileName + ': ' + w);
                     bigOne[w] = aWords[w]
                 }
                 dirs.forEach(function (lang) {
@@ -345,7 +347,7 @@ function languages2words(src) {
         for (var w in aWords) {
             if (aWords.hasOwnProperty(w)) {
                 if (!bigOne[w]) {
-                    console.warn('Take from actual words.js: ' + w);
+                    console.warn('Take from actual ' + fileName + ': ' + w);
                     bigOne[w] = aWords[w]
                 }
                 dirs.forEach(function (lang) {
