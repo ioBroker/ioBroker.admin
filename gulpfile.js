@@ -15,10 +15,9 @@ const babel       = require('gulp-babel');
 const fs          = require('fs');
 
 gulp.task('1_words',  ['wwwLanguages2words', 'adminLanguages2words']);
-gulp.task('2_css',    ['lessIob', 'lessApp', 'lessTreeTable', 'lessConfig', 'sassMaterialize']);
-gulp.task('3_js',     ['compressVendor', 'compressMaterialize', 'compressApp']); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
-gulp.task('4_static', ['compressHtml', 'copyAce', 'copyColorpicker', 'copySrc']);
-
+gulp.task('2_css',    ['iobCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS']);
+gulp.task('3_js',     ['vendorJS', 'materializeJS', 'appJS']); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
+gulp.task('4_static', ['appHTML', 'aceCopy', 'colorpickerCopy', 'appCopy']);
 
 /* How to work with language scripts
 --------------------------------------------------------
@@ -613,7 +612,7 @@ gulp.task('aceCopy', function () {
     ],  {base: './src/lib/js/ace-1.2.0/'})
         .pipe(gulp.dest('./www'));
 });
-gulp.task('copy', ['copySrc', 'copyAce', 'copyColorpicker']);
+gulp.task('copy', ['appCopy', 'aceCopy', 'colorpickerCopy']);
 
 gulp.task('watch', function () {
     gulp.watch('./src/css/*.less', ['lessApp']);
