@@ -1808,6 +1808,8 @@ $(document).ready(function () {
                                                             main.showError(err);
                                                         }
                                                         $dialogLicense.modal('close');
+                                                        $('#license_agree').unbind('click');
+                                                        $('#license_non_agree').unbind('click');
                                                     });
                                                 });
                                             });

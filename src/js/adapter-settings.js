@@ -440,194 +440,81 @@ function prepareTooltips() {
 
 function showMessage(message, title, icon) {
     var $dialogMessage;
-    if (isMaterialize) {
-        // noinspection JSJQueryEfficiency
+    // noinspection JSJQueryEfficiency
+    $dialogMessage = $('#dialog-message');
+    if (!$dialogMessage.length) {
+        $('body').append(
+            '<div id="dialog-message" class="modal modal-fixed-footer">' +
+            '    <div class="modal-content">' +
+            '        <h4 class="dialog-title"></h4>' +
+            '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
+            '    </div>' +
+            '    <div class="modal-footer">' +
+            '        <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>' +
+            '    </div>' +
+            '</div>');
         $dialogMessage = $('#dialog-message');
-        if (!$dialogMessage.length) {
-            $('body').append(
-                '<div id="dialog-message" class="modal modal-fixed-footer">' +
-                '    <div class="modal-content">' +
-                '        <h4 class="dialog-title"></h4>' +
-                '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
-                '    </div>' +
-                '    <div class="modal-footer">' +
-                '        <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>' +
-                '    </div>' +
-                '</div>');
-            $dialogMessage = $('#dialog-message');
-        }
-        if (icon) {
-            $dialogMessage.find('.dialog-icon')
-                .show()
-                .html(icon);
-        } else {
-            $dialogMessage.find('.dialog-icon').hide();
-        }
-        $dialogMessage.find('.dialog-text').html(message);
-        $dialogMessage.modal('open');
-    } else {
-        // noinspection JSJQueryEfficiency
-        $dialogMessage = $('#dialog-message-settings');
-        if (!$dialogMessage.length) {
-            $('body').append('<div id="dialog-message-settings" title="Message" style="display: none">\n' +
-                '<p>' +
-                '<span id="dialog-message-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
-                '<span id="dialog-message-text-settings"></span>\n' +
-                '</p>\n' +
-                '</div>');
-            $dialogMessage = $('#dialog-message-settings');
-            $dialogMessage.dialog({
-                autoOpen: false,
-                modal:    true,
-                buttons: [
-                    {
-                        text: _('Ok'),
-                        click: function () {
-                            $(this).dialog('close');
-                        }
-                    }
-                ]
-            });
-        }
-        $dialogMessage.dialog('option', 'width', width + 500);
-
-        if (typeof _ !== 'undefined') {
-            $dialogMessage.dialog('option', 'title', title || _('Message'));
-        } else {
-            $dialogMessage.dialog('option', 'title', title || 'Message');
-        }
-        $('#dialog-message-text-settings').html(message);
-        if (icon) {
-            $('#dialog-message-icon-settings')
-                .show()
-                .attr('class', '')
-                .addClass('ui-icon ui-icon-' + icon);
-        } else {
-            $('#dialog-message-icon-settings').hide();
-        }
-        $dialogMessage.dialog('open');
     }
+    if (icon) {
+        $dialogMessage.find('.dialog-icon')
+            .show()
+            .html(icon);
+    } else {
+        $dialogMessage.find('.dialog-icon').hide();
+    }
+    $dialogMessage.find('.dialog-text').html(message);
+    $dialogMessage.modal('open');
 }
 
 function confirmMessage(message, title, icon, buttons, callback) {
     var $dialogConfirm;
-    if (isMaterialize){
-        // noinspection JSJQueryEfficiency
+    // noinspection JSJQueryEfficiency
+    $dialogConfirm = $('#dialog-confirm');
+    if (!$dialogConfirm.length) {
+        $('body').append(
+            '<div id="dialog-confirm" class="modal modal-fixed-footer">' +
+            '    <div class="modal-content">' +
+            '        <h4 class="dialog-title"></h4>' +
+            '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
+            '    </div>' +
+            '    <div class="modal-footer">' +
+            '    </div>' +
+            '</div>'
+        );
         $dialogConfirm = $('#dialog-confirm');
-        if (!$dialogConfirm.length) {
-            $('body').append(
-                '<div id="dialog-confirm" class="modal modal-fixed-footer">' +
-                '    <div class="modal-content">' +
-                '        <h4 class="dialog-title"></h4>' +
-                '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
-                '    </div>' +
-                '    <div class="modal-footer">' +
-                '    </div>' +
-                '</div>'
-            );
-            $dialogConfirm = $('#dialog-confirm');
-        }
-        if (typeof buttons === 'function') {
-            callback = buttons;
-            $dialogConfirm.find('.modal-footer').html(
-                '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">' + _('Ok') + '</a>' +
-                '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">' + _('Cancel') + '</a>');
-            $dialogConfirm.find('.modal-footer .modal-action').click(function () {
-                var cb = $dialogConfirm.data('callback');
-                cb && cb($(this).data('result'));
-            });
-        } else if (typeof buttons === 'object') {
-            var tButtons = '';
-            for (var b = buttons.length - 1; b >= 0; b--) {
-                tButtons += '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-id="' + b + '">' + buttons[b] + '</a>';
-            }
-            $dialogConfirm.find('.modal-footer').html(tButtons);
-            $dialogConfirm.find('.modal-footer .modal-action').click(function () {
-                var cb = $dialogConfirm.data('callback');
-                cb && cb($(this).data('id'));
-            });
-        }
-
-        $dialogConfirm.find('.dialog-title').text(title || _('Please confirm'));
-        if (icon) {
-            $dialogConfirm.find('.dialog-icon')
-                .show()
-                .html(icon);
-        } else {
-            $dialogConfirm.find('.dialog-icon').hide();
-        }
-        $dialogConfirm.find('.dialog-text').html(message);
-        $dialogConfirm.data('callback', callback);
-        $dialogConfirm.modal('open');
-    } else {
-        // noinspection JSJQueryEfficiency
-        $dialogConfirm = $('#dialog-confirm-settings');
-        if (!$dialogConfirm.length) {
-            $('body').append('<div id="dialog-confirm-settings" title="Message" style="display: none">\n' +
-                '<p>' +
-                '<span id="dialog-confirm-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
-                '<span id="dialog-confirm-text-settings"></span>\n' +
-                '</p>\n' +
-                '</div>');
-            $dialogConfirm = $('#dialog-confirm-settings');
-            $dialogConfirm.dialog({
-                autoOpen: false,
-                modal:    true
-            });
-        }
-        if (typeof buttons === 'function') {
-            callback = buttons;
-            $dialogConfirm.dialog('option', 'buttons', [
-                {
-                    text: _('Ok'),
-                    click: function () {
-                        var cb = $(this).data('callback');
-                        $(this).data('callback', null);
-                        $(this).dialog('close');
-                        if (cb) cb(true);
-                    }
-                },
-                {
-                    text: _('Cancel'),
-                    click: function () {
-                        var cb = $(this).data('callback');
-                        $(this).data('callback', null);
-                        $(this).dialog('close');
-                        if (cb) cb(false);
-                    }
-                }
-
-            ]);
-        } else if (typeof buttons === 'object') {
-            for (var bb = 0; bb < buttons.length; bb++) {
-                buttons[bb] = {
-                    text: buttons[bb],
-                    id: 'dialog-confirm-button-' + bb,
-                    click: function (e) {
-                        var id = parseInt(e.currentTarget.id.substring('dialog-confirm-button-'.length), 10);
-                        var cb = $(this).data('callback');
-                        $(this).data('callback', null);
-                        $(this).dialog('close');
-                        if (cb) cb(id);
-                    }
-                }
-            }
-            $dialogConfirm.dialog('option', 'buttons', buttons);
-        }
-
-        $dialogConfirm.dialog('option', 'title', title || _('Message'));
-        $('#dialog-confirm-text-settings').html(message);
-        if (icon) {
-            $('#dialog-confirm-icon-settings')
-                .show()
-                .attr('class', '')
-                .addClass('ui-icon ui-icon-' + icon);
-        } else {
-            $('#dialog-confirm-icon-settings').hide();
-        }
-        $dialogConfirm.data('callback', callback);
-        $dialogConfirm.dialog('open');
     }
+    if (typeof buttons === 'function') {
+        callback = buttons;
+        $dialogConfirm.find('.modal-footer').html(
+            '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">' + _('Ok') + '</a>' +
+            '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">' + _('Cancel') + '</a>');
+        $dialogConfirm.find('.modal-footer .modal-action').click(function () {
+            var cb = $dialogConfirm.data('callback');
+            cb && cb($(this).data('result'));
+        });
+    } else if (typeof buttons === 'object') {
+        var tButtons = '';
+        for (var b = buttons.length - 1; b >= 0; b--) {
+            tButtons += '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-id="' + b + '">' + buttons[b] + '</a>';
+        }
+        $dialogConfirm.find('.modal-footer').html(tButtons);
+        $dialogConfirm.find('.modal-footer .modal-action').click(function () {
+            var cb = $dialogConfirm.data('callback');
+            cb && cb($(this).data('id'));
+        });
+    }
+
+    $dialogConfirm.find('.dialog-title').text(title || _('Please confirm'));
+    if (icon) {
+        $dialogConfirm.find('.dialog-icon')
+            .show()
+            .html(icon);
+    } else {
+        $dialogConfirm.find('.dialog-icon').hide();
+    }
+    $dialogConfirm.find('.dialog-text').html(message);
+    $dialogConfirm.data('callback', callback);
+    $dialogConfirm.modal('open');
 }
 
 function showError(error) {

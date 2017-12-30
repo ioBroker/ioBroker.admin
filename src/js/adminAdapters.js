@@ -1154,36 +1154,28 @@ function Adapters(main) {
                     body = body.toString().replace(/\r\n/g, '<br>');
                     body = body.replace(/\n/g, '<br>');
                     $dialogLicense.find('#license_text').html(body);
-                    $dialogLicense.dialog({
-                        autoOpen: true,
-                        modal: true,
-                        width: 600,
-                        height: 400,
-                        open: function (event) {
-                            $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
-                        },
-                        buttons: [
-                            {
-                                text: _('agree'),
-                                click: function () {
-                                    callback && callback(true);
-                                    callback = null;
-                                    $dialogLicense.dialog('close');
-                                }
-                            },
-                            {
-                                text: _('not agree'),
-                                click: function () {
-                                    callback && callback(false);
-                                    callback = null;
-                                    $dialogLicense.dialog('close');
-                                }
-                            }
-                        ],
-                        close: function () {
-                            callback && callback(false);
+
+                    $dialogLicense.modal({
+                        dismissible: false,
+                        complete: function () {
+                            $('#license_text').html('');
+                        }
+                    }).modal('open');
+                    $('#license_agree').unbind('click').click(function (e) {
+                        if (callback) {
+                            callback(true);
                             callback = null;
                         }
+                        $('#license_agree').unbind('click');
+                        $('#license_non_agree').unbind('click');
+                    });
+                    $('#license_non_agree').unbind('click').click(function (e) {
+                        if (callback) {
+                            callback(false);
+                            callback = null;
+                        }
+                        $('#license_agree').unbind('click');
+                        $('#license_non_agree').unbind('click');
                     });
                 } else {
                     callback && callback(true);
