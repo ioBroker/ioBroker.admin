@@ -1,21 +1,17 @@
 <div id="tab-instances" class="admin-tab" style="display: none" data-name="Instances">
-    <table class="main-toolbar-table">
-        <tr>
-            <td>
-                <button id="btn-instances-reload"></button>
-            </td>
-            <td>
-                <button id="btn-instances-expert-mode"></button>
-            </td>
-            <td>
-                <table class="panel-input-table"><tr>
-                    <td style="width: 100%"><input id="instances-filter" style="padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;" class="translateP" placeholder="Filter"/></td>
-                    <td><button id="instances-filter-clear" style="width: 18px;height: 18px;border: 0;background: #fff;"></button></td>
-                </tr></table>
-
-            </td>
-            <td style="width: 100%"></td>
-            <td class="ram-info-td">
+    <div class="main-toolbar-table m">
+        <div class="row">
+            <div class="col s4 m1 main-toolbar-table-types-tools">
+                <a class="btn-floating btn-small translateT btn-instances-reload" title="reload"><i class="material-icons">refresh</i></a>
+                <a class="btn-floating btn-small translateT btn-instances-expert-mode" title="_Toggle expert mode"><i class="material-icons">assignment_ind</i></a>
+            </div>
+            <div class="col s4 m3">
+                <div class="instances-filter-div">
+                    <input  class="translateP instances-filter" placeholder="Filter"/>
+                    <a class="btn-floating btn-very-small translateT red lighten-3 instances-filter-clear" title="clear"><i class="material-icons">clear</i></a>
+                </div>
+            </div>
+            <div class="col ram-info-td s4 m8">
                 <span class="translate">RAM total usage:</span> <span id="totalRam" class="ram-font-weight"></span>
                 <span class="translate">MB</span> <span class="free-mem-label">/</span>
                 <span class="translate free-mem-label">Free RAM:</span>
@@ -23,11 +19,11 @@
                 <span class="translate free-mem-label">MB</span>
                 [
                 <span class="translate">Host</span>: <span id="currentHost" class="ram-font-weight"></span> - <span id="running_processes"></span>]
-            </td>
-        </tr>
-    </table>
-    <div class="grid-main-div" style="width: 100%; height: calc(100% - 30px); overflow: auto; margin-left:1px; width:calc(100% - 2px)">
-        <table class="instance-table" style="width: 100%;">
+            </div>
+        </div>
+    </div>
+    <div class="grid-main-div">
+        <table class="instance-table">
             <thead id="grid-instances-head">
             </thead>
             <tbody id="grid-instances">

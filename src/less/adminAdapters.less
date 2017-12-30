@@ -25,32 +25,37 @@
     }
     .main-toolbar-table {
         left: -2px;
+        &>div {
+            display: inline-block
+        }
         a.btn-small {
             line-height: @admin-small-buttons-size;
             height: @admin-small-buttons-size;
             width: @admin-small-buttons-size;
             i {
-                margin-left: -0.5px;
-                font-size: 1.1rem;
-                line-height: @admin-small-buttons-size;
+                margin-left:    -0.5px;
+                font-size:      1.1rem;
+                line-height:    @admin-small-buttons-size;
             }
         }
 
         .adapters-filter-input {
-            display: inline-table;
-            padding-left: 6px;
-            background: @toolbar-background;
-            border: 1px solid @list-header-background;
-            margin-left: 20px;
-            font-size: 14px;
-            //    display: inline-block; padding-left: 5px; width: 100px; margin-right:3px; border: 1px solid #fff;
+            display:        inline-table;
+            padding-left:   6px;
+            margin-left:    20px;
+            font-size:      14px;
+            height:         24px;
+            width:          10rem;
         }
+
         .adapters-filter-clear {
-            display: inline-block;
-            width: @toolbar-btn-clear-size;
-            height: @toolbar-btn-clear-size;
-            border: 0;
-            background: #fff;
+            width:          18px;
+            height:         18px;
+            border:         0;
+            i {
+                font-size:  0.8rem;
+                line-height: 1.2rem;
+            }
         }
 
         .icon-github {
@@ -59,15 +64,6 @@
             background-image: url(../img/github.svg);
             background-repeat: no-repeat;
             background-position: 8px 8px;
-        }
-
-        .adapters-filter-input {
-            display: inline-table;
-            padding-left: 6px;
-            background: @toolbar-background;
-            border: 1px solid @list-header-background;
-            margin-left: 20px;
-            font-size: 14px;
         }
 
         .main-toolbar-table-types-tools {

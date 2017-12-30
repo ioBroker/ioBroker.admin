@@ -3,8 +3,9 @@ function Instances(main) {
 
     var that = this;
 
+    this.$tab          = $('#tab-instances');
     this.$grid         = $('#grid-instances');
-    this.$gridhead     = $('#grid-instances-head');
+    this.$gridHead     = $('#grid-instances-head');
     this.$dialogCron   = $('#dialog-cron');
 
     this.inited        = false;
@@ -281,7 +282,7 @@ function Instances(main) {
             text += '<th style="width: 8em">' + _('events') + '</th>';
         }
         text += '<th style="width: 8em">' + _('RAM usage') + '</th>';
-        that.$gridhead.html(text);
+        that.$gridHead.html(text);
     }
 
     function createHead() {
@@ -313,7 +314,7 @@ function Instances(main) {
             text += '<th style="width: 8em">' + _('events') + '</th>';
         }
         text += '<th style="width: 8em">' + _('RAM usage') + '</th>';
-        that.$gridhead.html(text);
+        that.$gridHead.html(text);
     }
 
     function calculateTotalRam() {
@@ -501,7 +502,9 @@ function Instances(main) {
     }
 
     function applyFilter(filter) {
-        if (filter === undefined) filter = $('#instances-filter').val();
+        if (filter === undefined) {
+            filter = that.$tab.find('.instances-filter').val();
+        }
         var invisible = [];
         if (filter) {
             var reg = new RegExp(filter);
@@ -531,16 +534,6 @@ function Instances(main) {
         } else {
             that.$grid.find('.instance-adapter').show();
         }
-
-        // set odd and even
-        /*var count = 0;
-        for (var k = 0; k < that.list.length; k++) {
-            var _obj = that.main.objects[that.list[k]];
-            if (!_obj) continue;
-            if (invisible.indexOf(that.list[k]) !== -1) continue;
-            that.$grid.find('.instance-adapter[data-instance-id="' + that.list[k] + '"]').removeClass('instance-odd instance-even').addClass((count % 2) ? 'instance-odd' : 'instance-even');
-            count++;
-        }*/
     }
 
     function onQuickEditField(e) {
@@ -657,7 +650,6 @@ function Instances(main) {
     }
 
     this.prepare            = function () {
-
         this.$dialogCron.dialog({
             autoOpen:   false,
             modal:      true,
@@ -700,68 +692,69 @@ function Instances(main) {
 
         $('#div-cron').cron({value: ''});
 
-        $('#instances-filter').change(function () {
+        var $filter      = that.$tab.find('.instances-filter');
+        var $filterClear = that.$tab.find('.instances-filter-clear');
+
+        $filter.change(function () {
             var val = $(this).val();
             if (val) {
                 $(this).addClass('input-not-empty');
-                $('#instances-filter-clear').show();
+                $filterClear.show();
             } else {
                 $(this).removeClass('input-not-empty');
-                $('#instances-filter-clear').hide();
+                $filterClear.hide();
             }
             that.main.saveConfig('instancesFilter', val);
             applyFilter(val);
         }).keyup(function () {
             if (that.filterTimeout) clearTimeout(that.filterTimeout);
             that.filterTimeout = setTimeout(function () {
-                $('#instances-filter').trigger('change');
+                $filter.trigger('change');
             }, 300);
         });
         if (that.main.config.instancesFilter && that.main.config.instancesFilter[0] !== '{') {
-            $('#instances-filter').addClass('input-not-empty').val(that.main.config.instancesFilter);
-            $('#instances-filter-clear').show();
+            $filter.addClass('input-not-empty').val(that.main.config.instancesFilter);
+            $filterClear.show();
         } else {
-            $('#instances-filter-clear').hide();
+            $filterClear.hide();
         }
 
         //$('#load_grid-instances').show();
-        $('#btn-instances-expert-mode').button({
-            icons: {primary: 'ui-icon-person'},
-            text:  false
-        }).css({width: '1.5em', height: '1.5em'}).attr('title', _('_Toggle expert mode')).click(function () {
+        that.$tab.find('.btn-instances-expert-mode').click(function () {
             that.main.config.expertMode = !that.main.config.expertMode;
             that.main.saveConfig('expertMode', that.main.config.expertMode);
             that.updateExpertMode();
             that.main.tabs.adapters.updateExpertMode();
         });
-        if (that.main.config.expertMode) $('#btn-instances-expert-mode').addClass('ui-state-error');
 
-        $('#btn-instances-reload').button({
-            icons: {primary: 'ui-icon-refresh'},
-            text:  false
-        }).css({width: '1.5em', height: '1.5em'}).attr('title', _('Update')).click(function () {
+        if (that.main.config.expertMode) {
+            that.$tab.find('.btn-instances-expert-mode').addClass('red lighten-3');
+        }
+
+        that.$tab.find('.btn-instances-reload').click(function () {
             that.init(true);
         });
-        $('#btn-instances-form').button({
+
+        /*that.$grid.find('#btn-instances-form').button({
             icons: {primary: 'ui-icon-refresh'},
             text:  false
         }).css({width: '1.5em', height: '1.5em'}).attr('title', _('reload')).click(function () {
             that.main.config.instanceForm = that.main.config.instanceForm === 'tile' ? 'list' : 'tile';
             that.main.saveCell('expertMode', that.main.config.expertMode);
             that.init(true);
-        });
+        });*/
 
-        $('#instances-filter-clear').button({icons: {primary: 'ui-icon-close'}, text: false}).css({width: '1em', height: '1em'}).click(function () {
-            $('#instances-filter').val('').trigger('change');
+        $filterClear.click(function () {
+            $filter.val('').trigger('change');
         });
     };
 
     this.updateExpertMode   = function () {
         that.init(true);
         if (that.main.config.expertMode) {
-            $('#btn-instances-expert-mode').addClass('ui-state-error');
+            that.$tab.find('.btn-instances-expert-mode').addClass('red lighten-3');
         } else {
-            $('#btn-instances-expert-mode').removeClass('ui-state-error');
+            that.$tab.find('.btn-instances-expert-mode').removeClass('red lighten-3');
         }
     };
 
@@ -1026,16 +1019,16 @@ function Instances(main) {
                     // update total ram
                     calculateTotalRam();
                     // update instance ram
-                    var $mem = $('.memUsage[data-instance-id="' + id + '"]');
+                    var $mem = that.$tab.find('.memUsage[data-instance-id="' + id + '"]');
                     var mem = calculateRam(id);
                     if ($mem.length && $mem.text() !== mem) {
                         $mem.html('<span class="highlight">' + mem + '</span>');
                     }
                 } else if (last === 'outputCount') {
                     // update total ram
-                    $('.instance-out[data-instance-id="' + id + '"]').html('<span class="highlight">&#x21A6;' + state.val + '</span>');
+                    that.$tab.find('.instance-out[data-instance-id="' + id + '"]').html('<span class="highlight">&#x21A6;' + state.val + '</span>');
                 } else if (last === 'inputCount') {
-                    $('.instance-in[data-instance-id="' + id + '"]').html('<span class="highlight">&#x21E5;' + state.val + '</span>');
+                    that.$tab.find('.instance-in[data-instance-id="' + id + '"]').html('<span class="highlight">&#x21E5;' + state.val + '</span>');
                 }
 
                 if (this.list.indexOf(id) !== -1) {
@@ -1116,7 +1109,7 @@ function Instances(main) {
     this.initButtons        = function (id, url) {
         id = id ? '[data-instance-id="' + id + '"]' : '';
 
-        var $e = $('.instance-edit' + id).unbind('click').click(function () {
+        var $e = that.$grid.find('.instance-edit' + id).unbind('click').click(function () {
             that.onEdit($(this).attr('data-instance-id'));
         });
 
@@ -1129,7 +1122,7 @@ function Instances(main) {
             }).css({width: '2em', height: '2em'}).attr('title', _('edit'));
         }
 
-        $e = $('.instance-settings' + id).unbind('click')
+        $e = that.$grid.find('.instance-settings' + id).unbind('click')
             .click(function () {
                 that.main.navigate({
                     tab:    'instances',
@@ -1147,17 +1140,17 @@ function Instances(main) {
             }
         });
 
-        $e = $('.instance-reload' + id).unbind('click')
+        $e = that.$grid.find('.instance-reload' + id).unbind('click')
             .click(function () {
                 that.main.socket.emit('extendObject', $(this).attr('data-instance-id'), {}, function (err) {
                     if (err) that.main.showError(err);
                 });
             });
         if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({icons: {primary: 'ui-icon-refresh'}, text: false})/*.css({width: '2em', height: '2em'})*/.attr('title', _('reload'));
+            $e.button({icons: {primary: 'ui-icon-refresh'}, text: false}).attr('title', _('reload'));
         }
 
-        $e = $('.instance-del' + id).unbind('click')
+        $e = that.$grid.find('.instance-del' + id).unbind('click')
             .click(function () {
                 var id = $(this).attr('data-instance-id');
                 if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.host) {
@@ -1170,13 +1163,14 @@ function Instances(main) {
                     });
                 }
             });
+
         if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({icons: {primary: 'ui-icon-trash'}, text: false})/*.css({width: '2em', height: '2em'})*/.attr('title', _('delete'));
+            $e.button({icons: {primary: 'ui-icon-trash'}, text: false}).attr('title', _('delete'));
         } else {
             $e.button('enable');
         }
 
-        $('.instance-image' + id).each(function () {
+        that.$grid.find('.instance-image' + id).each(function () {
             if (!$(this).data('installed')) {
                 $(this).data('installed', true);
                 $(this).hover(function () {
@@ -1201,7 +1195,7 @@ function Instances(main) {
                 });
             }
         });
-        $e = $('.instance-stop-run' + id).unbind('click')
+        $e = that.$grid.find('.instance-stop-run' + id).unbind('click')
             .click(function () {
                 var id = $(this).attr('data-instance-id');
                 $(this).button('disable');
@@ -1222,7 +1216,7 @@ function Instances(main) {
             });
         }
 
-        $e = $('.instance-web' + id).unbind('click')
+        $e = that.$grid.find('.instance-web' + id).unbind('click')
             .click(function () {
                 var _link = $(this).data('link');
                 if (typeof _link === 'object') {
@@ -1266,7 +1260,7 @@ function Instances(main) {
         if (typeof url === 'object') $e.data('link', url);
 
         if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({icons: {primary: 'ui-icon-image'}, text: false})/*.css({width: '2em', height: '2em'})*/.attr('title', _('open web page'));
+            $e.button({icons: {primary: 'ui-icon-image'}, text: false}).attr('title', _('open web page'));
         } else {
             $e.button('enable');
         }

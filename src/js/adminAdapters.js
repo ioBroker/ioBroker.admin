@@ -242,7 +242,7 @@ function Adapters(main) {
             that.$tab.find('#btn_collapse_adapters').show();
         }
 
-        that.$tab.find('#adapters-filter').trigger('change');
+        that.$tab.find('.adapters-filter-input').trigger('change');
     }
 
     function prepareTiles() {
@@ -252,7 +252,7 @@ function Adapters(main) {
         that.$tab.find('#btn_list_adapters').hide();
         that.$tab.find('#btn_collapse_adapters').hide();
         that.$tab.find('#btn_expand_adapters').hide();
-        that.$tab.find('#adapters-filter').trigger('change');
+        that.$tab.find('.adapters-filter-input').trigger('change');
     }
 
     function onOnlyUpdatableChanged() {
@@ -467,10 +467,10 @@ function Adapters(main) {
         that.currentOrder  = that.main.config.adaptersCurrentOrder  || '';
         that.isCollapsed   = that.main.config.adaptersIsCollapsed ? JSON.parse(that.main.config.adaptersIsCollapsed) : {};
         if (that.currentFilter) {
-            that.$tab.find('#adapters-filter').addClass('input-not-empty').val(that.currentFilter);
-            that.$tab.find('#instances-filter-clear').show();
+            that.$tab.find('.adapters-filter-input').addClass('input-not-empty').val(that.currentFilter);
+            that.$tab.find('.adapters-filter-clear').show();
         } else {
-            that.$tab.find('#instances-filter-clear').hide();
+            that.$tab.find('.adapters-filter-clear').hide();
         }
 
         if (that.onlyInstalled) {
@@ -486,7 +486,7 @@ function Adapters(main) {
         });
 
         // add filter processing
-        that.$tab.find('#adapters-filter').keyup(function () {
+        that.$tab.find('.adapters-filter-input').keyup(function () {
             $(this).trigger('change');
         }).on('change', function (event) {
             if (that.filterTimer) {
@@ -494,12 +494,12 @@ function Adapters(main) {
             }
             that.filterTimer = setTimeout(function () {
                 that.filterTimer = null;
-                that.currentFilter = that.$tab.find('#adapters-filter').val().toLowerCase();
+                that.currentFilter = that.$tab.find('.adapters-filter-input').val().toLowerCase();
                 event && event.target && $(event.target)[that.currentFilter ? 'addClass' : 'removeClass']('input-not-empty');
                 if (that.currentFilter) {
-                    that.$tab.find('#adapters-filter-clear').show();
+                    that.$tab.find('.adapters-filter-clear').show();
                 } else {
-                    that.$tab.find('#adapters-filter-clear').hide();
+                    that.$tab.find('.adapters-filter-clear').hide();
                 }
 
                 that.main.saveConfig('adaptersCurrentFilter', that.currentFilter);
@@ -511,8 +511,8 @@ function Adapters(main) {
             }, 400);
         });
 
-        that.$tab.find('#adapters-filter-clear').button({icons: {primary: 'ui-icon-close'}, text: false}).css({width: 16, height: 16}).click(function () {
-            that.$tab.find('#adapters-filter').val('').trigger('change');
+        that.$tab.find('.adapters-filter-clear').click(function () {
+            that.$tab.find('.adapters-filter-input').val('').trigger('change');
         });
 
         if (this.isTiles) {

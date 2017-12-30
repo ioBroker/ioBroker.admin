@@ -20,25 +20,72 @@
         background-color: @even-bg-color;
     }
 
+    .ram-info-td {
+        display:        inline-block;
+        font-size:      12px;
+        padding-top:    7px;
+        text-align:     right;
+    }
+    .instances-filter {
+        padding-left:   5px;
+        margin-right:   3px;
+        height:         24px;
+        width:          10rem;
+    }
+    .instances-filter-clear {
+        width:          18px;
+        height:         18px;
+        border:         0;
+        i {
+            font-size:  0.8rem;
+            line-height: 1.2rem;
+        }
+    }
+    .instances-filter-div {
+        display:        inlnie-block;
+    }
+
+    a.btn-small {
+        line-height:    @admin-small-buttons-size;
+        height:         @admin-small-buttons-size;
+        width:          @admin-small-buttons-size;
+        i {
+            margin-left: -0.5px;
+            font-size:  1.1rem;
+            line-height: @admin-small-buttons-size;
+        }
+    }
+
+    .grid-main-div {
+        width:          100%;
+        height:         calc(~"100% - 30px");
+        overflow:       auto;
+        margin-left:    1px;
+        width:          calc(~"100% - 2px");
+        .instance-table{
+            width:      100%;
+        }
+    }
+
     .instance-table {
         .new-iob-list-table;
-        font-size: 0.9em;
+        font-size:      0.9em;
 
         &>tbody>tr {
-            height: 35px;
-            border: 0;
+            height:     35px;
+            border:     0;
         }
         &>tbody>tr>td>b {
             font-weight: normal;
-            color: #008;
+            color:      #008;
         }
         &>tbody>tr>td {
-            padding: 0;
+            padding:    0;
         }
         th, td, tr, td {
-            border: @td-border;
+            border:     @td-border;
             padding-left: 0;
-            overflow: hidden;
+            overflow:   hidden;
         }
         th {
             padding-left: @line-indent;
@@ -46,25 +93,25 @@
     }
 
     .instance-state-hover {
-        border: 1px solid #66b6d6;
-        border-radius: 0.3em;
-        padding: 0.5em;
-        shadow-box: 1em 1em;
-        position: absolute;
-        z-index: 100;
+        border:         1px solid #66b6d6;
+        border-radius:  0.3em;
+        padding:        0.5em;
+        shadow-box:     1em 1em;
+        position:       absolute;
+        z-index:        100;
         background-color: rgba(145, 220, 255, 0.95);
     }
 
     .instance-schedule-button {
-        font-size: 10px !important;
-        width: 16px;
-        height: 16px;
-        float: right;
-        padding: 0;
+        font-size:      10px !important;
+        width:          16px;
+        height:         16px;
+        float:          right;
+        padding:        0;
     }
 
     .instance-schedule-button span {
-        padding: 0 !important;
+        padding:        0 !important;
     }
 
     /*
@@ -78,13 +125,13 @@
     }
     */
     .instance-empty {
-        width: 2.6em;
-        height: 2.6em;
+        width:          2.6em;
+        height:         2.6em;
     }
     button.instance-settings, button.instance-reload, button.instance-del, button.instance-web, button.instance-stop-run, button.instance-empty {
-        width: 2em;
-        height: 2em;
-        display: inline-block;
+        width:          2em;
+        height:         2em;
+        display:        inline-block;
     }
     button.instance-stop-run {
         background-color: lightgreen;

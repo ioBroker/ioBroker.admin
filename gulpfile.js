@@ -445,7 +445,7 @@ gulp.task('updateReadme', function (done) {
     done();
 });
 
-gulp.task('sassMaterialize', function () {
+gulp.task('materializeCSS', function () {
     gulp.src(['./src/materialize-css/sass/**/*.scss'])
         .pipe(sass({
             paths: [ ]
@@ -456,7 +456,7 @@ gulp.task('sassMaterialize', function () {
 
 });
 
-gulp.task('compressMaterialize', function () {
+gulp.task('materializeJS', function () {
     return gulp.src([
         './src/materialize-css/js/anime.min.js',
         './src/materialize-css/js/cash.js',
@@ -487,23 +487,7 @@ gulp.task('compressMaterialize', function () {
     .pipe(gulp.dest('./www/lib/js'));
 });
 
-gulp.task('lessApp', function () {
-    gulp.src([
-        './src/less/*.less',
-        './src/colorpicker/less/*.less',
-        '!./src/less/adapter.less'
-    ])
-        .pipe(sourcemaps.init())
-        .pipe(less({
-            paths: [ ]
-        }))
-        .pipe(concat('app.css'))
-        .pipe(cleanCSS({compatibility: 'ie8'}))
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('./www/css'));
-});
-
-gulp.task('lessConfig', function () {
+gulp.task('configCSS', function () {
     gulp.src([
         './src/lib/css/iob/selectID.less',
         './src/less/adapter.less',
@@ -519,7 +503,7 @@ gulp.task('lessConfig', function () {
         .pipe(gulp.dest('./www/css'));
 });
 
-gulp.task('lessIob', function () {
+gulp.task('iobCSS', function () {
     return gulp.src(['./src/lib/css/iob/*.less'])
         .pipe(sourcemaps.init())
         .pipe(less({
@@ -529,7 +513,7 @@ gulp.task('lessIob', function () {
         .pipe(gulp.dest('./www/lib/css/iob'));
 });
 
-gulp.task('lessTreeTable', function () {
+gulp.task('treeTableCSS', function () {
     return gulp.src(['./src/lib/css/jquery.treetable.theme.less'])
         .pipe(sourcemaps.init())
         .pipe(less({
@@ -539,7 +523,7 @@ gulp.task('lessTreeTable', function () {
         .pipe(gulp.dest('./www/lib/css'));
 });
 
-gulp.task('compressApp', function () {
+gulp.task('appJS', function () {
     return gulp.src([
         './src/js/*.js',
         '!./src/js/adapter-settings.js'
@@ -551,7 +535,7 @@ gulp.task('compressApp', function () {
         .pipe(gulp.dest('./www/js'));
 });
 
-gulp.task('compressHtml', function () {
+gulp.task('appHTML', function () {
     return gulp.src([
         './src/indexStart.html',
         './src/admin*.html',
@@ -564,7 +548,23 @@ gulp.task('compressHtml', function () {
         .pipe(gulp.dest('./www/'));
 });
 
-gulp.task('compressVendor', function () {
+gulp.task('appCSS', function () {
+    gulp.src([
+        './src/less/*.less',
+        './src/colorpicker/less/*.less',
+        '!./src/less/adapter.less'
+    ])
+        .pipe(sourcemaps.init())
+        .pipe(less({
+            paths: [ ]
+        }))
+        .pipe(concat('app.css'))
+        .pipe(cleanCSS({compatibility: 'ie8'}))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('./www/css'));
+});
+
+gulp.task('vendorJS', function () {
     return gulp.src([
         './src/lib/js/jquery-1.11.2.min.js',
         './src/lib/js/jquery-ui.min.js',
@@ -589,7 +589,7 @@ gulp.task('compressVendor', function () {
         .pipe(gulp.dest('./www/lib/js'));
 });
 
-gulp.task('copySrc', function () {
+gulp.task('appCopy', function () {
     return gulp.src([
         './src/**/*.*',
         '!./src/*.html',
@@ -600,13 +600,13 @@ gulp.task('copySrc', function () {
     ])
     .pipe(gulp.dest('./www'));
 });
-gulp.task('copyColorpicker', function () {
+gulp.task('colorpickerCopy', function () {
     return gulp.src([
         './src/colorpicker/**/*.png'
     ])
         .pipe(gulp.dest('./www'));
 });
-gulp.task('copyAce', function () {
+gulp.task('aceCopy', function () {
     return gulp.src([
         './src/lib/js/ace-1.2.0/mode-json.js',
         './src/lib/js/ace-1.2.0/worker-json.js'
