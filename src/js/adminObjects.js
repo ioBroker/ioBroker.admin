@@ -236,7 +236,13 @@ function Objects(main) {
             if (states) {
                 for (var _id in states) {
                     console.log('Update ' + _id);
-                    if (states.hasOwnProperty(_id) && (!that.main.states[_id] || that.main.states[_id].ts !== states[_id].ts)) {
+                    if (!states.hasOwnProperty(_id)) continue;
+
+                    if (!states[_id] && that.main.states[_id]) {
+                        that.main.states[_id] = {val: null};
+                        that.stateChange(_id, that.main.states[_id]); // may be call main.stateChange
+                    } else
+                    if (!that.main.states[_id] || that.main.states[_id].ts !== states[_id].ts) {
                         that.main.states[_id] = states[_id];
                         that.stateChange(_id, states[_id]); // may be call main.stateChange
                     }
