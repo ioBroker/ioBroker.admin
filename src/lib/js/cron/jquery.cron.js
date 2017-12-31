@@ -1,15 +1,26 @@
-$.fn.cron = function(options, setValue) {
-    var el = this;
+function setupCron(value, callback) {
+    var $el      = $('#dialog-cron');
+    var $input   = $el.find('.cron-input');
+    var $seconds = $el.find('.cron-checkbox-seconds');
+    $el.data('callback', callback);
 
-    if (options === 'value') {
-        if (setValue !== undefined) {
-            $(el).find('.cron-input').val(setValue).trigger('change');
-        } else {
-            return $(el).find('.cron-input').val();
-        }
-        return this;
+    if (value !== undefined) {
+        $input.val(value);
     }
 
+    $el.find('.btn-clear').unbind('click').click(function () {
+        $input.val('').trigger();
+    });
+    $el.find('.btn-apply').unbind('click').click(function () {
+        var cb = $el.data('callback');
+        $el.data('callback', null);
+        cb($input.val());
+    });
+    $el.find('.btn-cancel').unbind('click').click(function () {
+        var cb = $el.data('callback');
+        $el.data('callback', null);
+        cb();
+    });
     var types = [
         'second',
         'minute',
@@ -20,191 +31,115 @@ $.fn.cron = function(options, setValue) {
     ];
 
     var everyText = [
-        'Every %s seconds',
-        'Every %s minutes',
-        'Every %s hours',
-        'Every %s days',
-        'Every %s months'
+        'CRON Every %s seconds',
+        'CRON Every %s minutes',
+        'CRON Every %s hours',
+        'CRON Every %s days',
+        'CRON Every %s months'
     ];
 
-    if (typeof systemDictionary !== 'undefined' && !systemDictionary['Every %s seconds']) {
+    if (typeof systemDictionary !== 'undefined' && !systemDictionary['CRON Every %s seconds']) {
         for (var w in jQueryCronWords) {
             if (jQueryCronWords.hasOwnProperty(w)) {
                 systemDictionary[w] = jQueryCronWords[w];
             }
         }
+        translateAll('#dialog-cron');
     }
-
-    // Write the HTML template to the document
-    $(el).html(tmpl);
-
-    if (typeof translateAll !== 'undefined') translateAll();
 
     var cronArr;
     var updateInput = false;
 
-    if (options && typeof options.value === 'string') {
-        if (!options.value) {
-            $(el).find('.cron-checkbox-seconds').prop('checked', false);
-            cronArr = null;
-        } else {
-            cronArr = options.value.split(' ');
-            if (cronArr.length === 5) {
-                $(el).find('.cron-checkbox-seconds').prop('checked', false);
-                cronArr.unshift('*');
-            } else {
-                $(el).find('.cron-checkbox-seconds').prop('checked', true);
-            }
-        }
+    var value = $input.val();
+    if (!value) {
+        $seconds.prop('checked', false);
+        cronArr = null;
     } else {
-        cronArr = ['*', '*', '*', '*', '*', '*'];
-        $(el).find('.cron-checkbox-seconds').prop('checked', false);
+        cronArr = value.split(' ');
+        if (cronArr.length === 5) {
+            $seconds.prop('checked', false);
+            cronArr.unshift('*');
+        } else {
+            $seconds.prop('checked', true);
+        }
     }
 
-    $(el).find('.cron-main-tab').tabs();
+    var drawEach = {
+        second: drawEachSecond,
+        minute: drawEachMinute,
+        hour:   drawEachHour,
+        day:    drawEachDay,
+        month:  drawEachMonth,
+        week:   drawEachWeekday
+    };
 
-    $(el).find('.cron-tabs').tabs({
-        activate: function (event, ui) {
-            if ($(el).find('.cron-input').is(':focus') || updateInput) return;
-
-            cronArr = cronArr || ['*', '*', '*', '*', '*', '*'];
-            switch ($(ui.newTab).attr('id')) {
-
-                // Seconds
-                case 'cron-button-second-every':
-                    cronArr[0] = '*';
-                    break;
-                case 'cron-button-second-n':
-                    cronArr[0] = '*/' + $(el).find('.cron-tab-second .cron-slider').slider('value');
-                    break;
-                case 'cron-button-second-each':
-                    cronArr[0] = '*';
-                    $(el).find('.cron-tabs-second-format').html('');
-                    drawEachSecond();
-                    break;
-
-                // Minutes
-                case 'cron-button-minute-every':
-                    cronArr[1] = '*';
-                    break;
-                case 'cron-button-minute-n':
-                    cronArr[1] = '*/' + $(el).find('.cron-tab-minute .cron-slider').slider('value');
-                    break;
-                case 'cron-button-minute-each':
-                    cronArr[1] = '*';
-                    $(el).find('.cron-tabs-minute-format').html('');
-                    drawEachMinute();
-                    break;
-
-                // Hours
-                case 'cron-button-hour-every':
-                    cronArr[2] = '*';
-                    break;
-                case 'cron-button-hour-n':
-                    cronArr[2] = '*/' + $(el).find('.cron-tab-hour .cron-slider').slider('value');
-                    break;
-                case 'cron-button-hour-each':
-                    cronArr[2] = '*';
-                    $(el).find('.cron-tabs-hour-format').html('');
-                    drawEachHour();
-                    break;
-
-                // Days
-                case 'cron-button-day-every':
-                    cronArr[3] = '*';
-                    break;
-                case 'cron-button-day-each':
-                    cronArr[3] = '*';
-                    $(el).find('.cron-tabs-day-format').html('');
-                    drawEachDay();
-                    break;
-
-                // Months
-                case 'cron-button-month-every':
-                    cronArr[4] = '*';
-                    break;
-                case 'cron-button-month-each':
-                    cronArr[4] = '*';
-                    $(el).find('.cron-tabs-month-format').html('');
-                    drawEachMonth();
-                    break;
-
-                // Weeks
-                case 'cron-button-week-every':
-                    cronArr[5] = '*';
-                    break;
-                case 'cron-button-week-each':
-                    cronArr[5] = '*';
-                    $(el).find('.cron-tabs-week-format').html('');
-                    drawEachWeekday();
-                    break;
-
-            }
-
-            drawCron();
+    function enableSeconds(isEnabled) {
+        if (isEnabled === undefined) {
+            isEnabled =  $seconds.prop('checked');
         }
-    });
 
-    $(el).find('.cron-tab-second .cron-slider').slider({
-        min: 1,
-        max: 59,
-        slide: function (event, ui) {
-            processSlider(this, ui);
-        }
-    });
-
-    $(el).find('.cron-tab-minute .cron-slider').slider({
-        min: 1,
-        max: 59,
-        slide: function (event, ui) {
-            processSlider(this, ui);
-        }
-    });
-
-    $(el).find('.cron-tab-hour .cron-slider').slider({
-        min: 1,
-        max: 23,
-        slide: function (event, ui) {
-            processSlider(this, ui);
-        }
-    });
-
-    $(el).find('.cron-checkbox-seconds').change(function () {
-        if ($(this).prop('checked')) {
-            $(el).find('.cron-main-tab').tabs('option', 'disabled', []);
-            $(el).find('.cron-main-tab').tabs('option', 'active', 0);
+        if (isEnabled) {
+            $el.find('.cron-tab-second').show();
         } else {
-            $(el).find('.cron-main-tab').tabs('option', 'disabled', [0]);
-            if ($(el).find('.cron-main-tab').tabs('option', 'active') === 0) {
-                $(el).find('.cron-main-tab').tabs('option', 'active', 1);
+            $el.find('.cron-tab-second').hide();
+            if (getActiveTab() === 'cron-tabs-second') {
+                $el.find('.tabs').mtabs('select', 'cron-tabs-minute');
             }
         }
+    }
+
+    function getActiveTab() {
+        return M.Tabs.getInstance($el.find('.tabs')).$activeTabLink.attr('href').replace(/^#/, '');
+    }
+
+    $el.find('.tabs').mtabs();
+    $el.find('.cron-type-selector').select().unbind('change').change(function () {
+        if ($input.is(':focus') || updateInput) return;
+        cronArr = cronArr || ['*', '*', '*', '*', '*', '*'];
+        var type = $(this).data('type');
+        var val  = $(this).val();
+        var cronVal;
+        var $tab = $el.find('.cron-tab[data-type="' + type + '"]');
+        if (val === 'every') {
+            cronVal = '*';
+            $tab.find('.n').hide();
+            $tab.find('.each').hide();
+        } else if (val === 'n') {
+            cronVal = '*/' + $tab.find('.cron-slider').val();
+            $tab.find('.n').show();
+            $tab.find('.each').hide();
+        } else if (val === 'each') {
+            $tab.find('.n').hide();
+            $tab.find('.each').show();
+            drawEach[type]();
+        }
+
         drawCron();
     });
 
-    if (!$(el).find('.cron-checkbox-seconds').prop('checked')) {
-        $(el).find('.cron-main-tab').tabs('option', 'disabled', [0]);
-        if ($(el).find('.cron-main-tab').tabs('option', 'active') === 0) {
-            $(el).find('.cron-main-tab').tabs('option', 'active', 1);
-        }
-    }
+    $seconds.unbind('change').change(function () {
+        enableSeconds($(this).prop('checked'));
+        drawCron();
+    });
 
-    $(el).find('.cron-input').change(function () {
+    // init of seconds (whithout drawCron)
+    enableSeconds();
+
+    $input.unbind('change').change(function () {
         $(this).focus();
         cronArr = text2cron($(this).val());
         detectSettings($(this).val());
-    }).keyup(function () {
+    }).unbind('keyup').keyup(function () {
         $(this).trigger('change');
     });
 
     function text2cron(value) {
         if (value === undefined) {
-            value = $(el).find('.cron-input').val();
+            value = $input.val();
         }
         value = value.trim();
         if (!value) {
-            $(el).find('.cron-checkbox-seconds').prop('checked', false);
-            $(el).find('.cron-main-tab').tabs('option', 'disabled', [0]);
+            enableSeconds(false);
             return null;
         }
 
@@ -212,14 +147,9 @@ $.fn.cron = function(options, setValue) {
 
         if (arr.length === 5) {
             arr.unshift('*');
-            $(el).find('.cron-checkbox-seconds').prop('checked', false);
-            $(el).find('.cron-main-tab').tabs('option', 'disabled', [0]);
-            if ($(el).find('.cron-main-tab').tabs('option', 'active') === 0) {
-                $(el).find('.cron-main-tab').tabs('option', 'active', 1);
-            }
+            enableSeconds(false);
         } else {
-            $(el).find('.cron-checkbox-seconds').prop('checked', true);
-            $(el).find('.cron-main-tab').tabs('option', 'disabled', []);
+            enableSeconds(true);
         }
 
         return arr;
@@ -233,7 +163,7 @@ $.fn.cron = function(options, setValue) {
         }
 
         arr = JSON.parse(JSON.stringify(arr || ['*', '*', '*', '*', '*', '*']));
-        if (!$(el).find('.cron-checkbox-seconds').prop('checked')) {
+        if (!$seconds.prop('checked')) {
             arr.shift();
         }
         for (var a = 0; a < arr.length; a++) {
@@ -290,20 +220,20 @@ $.fn.cron = function(options, setValue) {
 
     function drawCron() {
         var newCron = cron2text();
-        $(el).find('.cron-input').val(newCron);
+        $input.val(newCron);
         updateDescription(newCron);
     }
 
     function updateDescription(value) {
         if (!value) {
-            $(el).find('.cron-text').html(_('never'));
+            $el.find('.cron-text').html(_('never'));
             return;
         }
-        var text = cronToText(value, $(el).find('.cron-checkbox-seconds').prop('checked'), JQUERY_CRON_LOCALE[systemLang]);
+        var isSeconds = $seconds.prop('checked');
+        var text = cronToText(value, isSeconds, JQUERY_CRON_LOCALE[systemLang]);
+        text = correctCasus(text, isSeconds ? cronArr[0] : null);
 
-        text = correctCasus(text, $(el).find('.cron-checkbox-seconds').prop('checked') ? cronArr[0] : null);
-
-        $(el).find('.cron-text').html(text);
+        $el.find('.cron-text').html(text);
     }
 
     function detectSettings(value) {
@@ -384,11 +314,15 @@ $.fn.cron = function(options, setValue) {
     }
 
     function detect(values, index) {
-        var $tab = $(el).find('.cron-tab-' + types[index]);
+        var $tab = $el.find('.page[data-type="' + types[index] + '"]');
 
+        var activeTab = getActiveTab();
         if (!values) {
-            if ($tab.find('.cron-tabs').tabs('option', 'active') != 0) {
-                $tab.find('.cron-tabs').tabs('option', 'active', 0);
+            if ($tab.find('.cron-type-selector').val() !== 'every') {
+                $tab.find('.cron-type-selector').val('every');
+                console.log($tab.find('.n').length);
+                $tab.find('.n').hide();
+                $tab.find('.each').hide();
                 changed = true;
             }
             return;
@@ -400,32 +334,34 @@ $.fn.cron = function(options, setValue) {
         if (values[index].indexOf('/') !== -1) {
             var parts_ = values[index].split('/');
             var value  = parseInt(parts_[1], 10) || 1;
-            if ($tab.find('.cron-slider').slider('value') != value) {
-                $tab.find('.cron-slider').slider('value', parseInt(parts_[1], 10) || 1);
+            if ($tab.find('.cron-slider').val() != value) {
+                $tab.find('.cron-slider').val(parseInt(parts_[1], 10) || 1);
                 changed = true;
             }
-            if ($tab.find('.cron-tabs').tabs('option', 'active') != 1) {
-                $tab.find('.cron-tabs').tabs('option', 'active', 1);
+            if ($tab.find('.cron-type-selector').val() !== 'n') {
+                $tab.find('.cron-type-selector').val('n');
+                $tab.find('.n').show();
+                $tab.find('.each').hide();
                 changed = true;
             }
             $tab.find('.cron-preview-every').html(_(everyText[index], parseInt(parts_[1], 10) || 1));
         } else if (values[index].indexOf('*') !== -1) {
-            if ($tab.find('.cron-tabs').tabs('option', 'active') != 0) {
-                $tab.find('.cron-tabs').tabs('option', 'active', 0);
+            if ($tab.find('.cron-type-selector').val() !== 'every') {
+                $tab.find('.cron-type-selector').val('every');
+                console.log($tab.find('.n').length);
+                $tab.find('.n').hide();
+                $tab.find('.each').hide();
                 changed = true;
             }
         } else {
+            // each
             var parts = convertMinusIntoArray(values[index]).split(',');
-            if ($tab.find('.cron-tabs li').length === 3) {
-                if ($tab.find('.cron-tabs').tabs('option', 'active') != 2) {
-                    $tab.find('.cron-tabs').tabs('option', 'active', 2);
-                    changed = true;
-                }
-            } else {
-                if ($tab.find('.cron-tabs').tabs('option', 'active') != 1) {
-                    $tab.find('.cron-tabs').tabs('option', 'active', 1);
-                    changed = true;
-                }
+            if ($tab.find('.cron-type-selector').val() !== 'each') {
+                $tab.find('.cron-type-selector').val('each');
+
+                $tab.find('.n').hide();
+                $tab.find('.each').show();
+                changed = true;
             }
             var selected = false;
 
@@ -441,27 +377,36 @@ $.fn.cron = function(options, setValue) {
             });
 
             if (!selected) {
-                if ($tab.find('.cron-tabs').tabs('option', 'active') != 0) {
-                    $tab.find('.cron-tabs').tabs('option', 'active', 0);
+                if ($tab.find('.cron-type-selector').val() !== 'every') {
+                    $tab.find('.cron-type-selector').val('every');
+
+                    $tab.find('.n').hide();
+                    $tab.find('.each').hide();
                     changed = true;
                 }
             }
-            if (changed) $(el).find('.cron-main-tab').tabs('option', 'active', index);
+            if (changed) {
+                $el.find('.cron-main-tab').mtabs('select', 'cron-tabs-' + types[index]);
+            }
         }
     }
 
-    function processSlider(elem, ui) {
-        var arg = $(elem).data('arg');
+    function processSlider() {
+        var arg  = $(this).data('arg');
+        var type = $(this).data('type');
+        var val  = $(this).val();
         cronArr[arg] = '*/' + ui.value;
-        $(el).find('.cron-tab-' + types[arg] + ' .cron-preview-every').html(ui.value === 1 ? _('CRON Every ' + types[arg]) : _('CRON Every') + ' ' + ui.value + ' ' + _('CRON ' + types[arg] + 's'));
+        $el.find('.cron-tab-' + type + ' .cron-preview-every').html(val === 1 ? _('CRON Every ' + type) : _('CRON Every') + ' ' + val + ' ' + _('CRON ' + type + 's'));
         drawCron();
     }
 
-    function processEachChange(elem) {
-        var newItem = $(elem).data('index').toString();
-        var arg     = $(elem).data('arg');
+    function processEachChange() {
+        var newItem = $(this).data('index').toString();
+        var arg     = $(this).data('arg');
 
-        if (!cronArr) cronArr = ['*', '*', '*', '*', '*', '*'];
+        if (!cronArr) {
+            cronArr = ['*', '*', '*', '*', '*', '*'];
+        }
 
         if (cronArr[arg] === '*') {
             cronArr[arg] = newItem;
@@ -493,7 +438,7 @@ $.fn.cron = function(options, setValue) {
     }
 
     function draw(type, drawFunc) {
-        var $format = $(el).find('.cron-tab-' + type + ' .cron-tabs-format');
+        var $format = $el.find('.page[data-type="' + type + '"] .cron-tabs-format');
         $format.html(drawFunc());
 
         $format.find('input').button();
@@ -602,131 +547,6 @@ $.fn.cron = function(options, setValue) {
     drawEachMonth();
     drawEachWeekday();
     drawCron();
-};
-
-// HTML Template for plugin
-var tmpl = '<input type="text" class="cron-input" value="* * * * * *" size="80"/>\
-<br/>\
-<div class="cron-text"></div><br>\
-<div><span class="translate">Use seconds:</span><input type="checkbox" class="cron-checkbox-seconds"></div>\
-<div class="cron-main-tab">\
-  <ul>\
-    <li><a href="#cron-tabs-second"  class="translate">Second</a></li>\
-    <li><a href="#cron-tabs-minute"  class="translate">Minute</a></li>\
-    <li><a href="#cron-tabs-hour"    class="translate">Hour</a></li>\
-    <li><a href="#cron-tabs-day"     class="translate">Day of Month</a></li>\
-    <li><a href="#cron-tabs-month"   class="translate">Month</a></li>\
-    <li><a href="#cron-tabs-week"    class="translate">Day of Week</a></li>\
-  </ul>\
-  <div id="cron-tabs-second" class="cron-tab-page cron-tab-second">\
-    <div class="cron-tabs">\
-      <ul>\
-        <li id="cron-button-second-every"><a href="#cron-tabs-second-every" class="translate">CRON Every second</a></li>\
-        <li id="cron-button-second-n"><a href="#cron-tabs-second-n" class="translate">Every n seconds</a></li>\
-        <li id="cron-button-second-each"><a href="#cron-tabs-second-each" class="translate">Each selected second</a></li>\
-      </ul>\
-      <div id="cron-tabs-second-every" class="cron-preview">\
-        <div>*</div>\
-        <div class="translate">CRON Every second</div>\
-      </div>\
-      <div id="cron-tabs-second-n">\
-        <div class="cron-preview-every translate">CRON Every second</div>\
-        <div class="cron-slider" data-arg="0"></div>\
-      </div>\
-      <div id="cron-tabs-second-each" class="cron-preview-n">\
-        <div class="translate">Each selected second</div><br/>\
-        <div class="cron-tabs-format"></div>\
-      </div>\
-    </div>\
-  </div>\
-  <div id="cron-tabs-minute" class="cron-tab-page cron-tab-minute">\
-    <div class="cron-tabs">\
-      <ul>\
-        <li id="cron-button-minute-every"><a href="#cron-tabs-minute-every" class="translate">CRON Every minute</a></li>\
-        <li id="cron-button-minute-n"><a href="#cron-tabs-minute-n" class="translate">Every n minutes</a></li>\
-        <li id="cron-button-minute-each"><a href="#cron-tabs-minute-each" class="translate">Each selected minute</a></li>\
-      </ul>\
-      <div id="cron-tabs-minute-every" class="cron-preview">\
-        <div>*</div>\
-        <div class="translate">CRON Every minute</div>\
-      </div>\
-      <div id="cron-tabs-minute-n">\
-        <div class="cron-preview-every translate">CRON Every minute</div>\
-        <div class="cron-slider" data-arg="1"></div>\
-      </div>\
-      <div id="cron-tabs-minute-each" class="cron-preview-n">\
-        <div class="translate">Each selected minute</div><br/>\
-        <div class="cron-tabs-format"></div>\
-      </div>\
-    </div>\
-  </div>\
-  <div id="cron-tabs-hour" class="cron-tab-page cron-tab-hour">\
-    <div class="cron-tabs">\
-      <ul>\
-        <li id="cron-button-hour-every"><a href="#cron-tabs-hour-every" class="translate">CRON Every hour</a></li>\
-        <li id="cron-button-hour-n"><a href="#cron-tabs-hour-n" class="translate">Every n hours</a></li>\
-        <li id="cron-button-hour-each"><a href="#cron-tabs-hour-each" class="translate">Each selected hour</a></li>\
-      </ul>\
-      <div id="cron-tabs-hour-every" class="cron-preview">\
-        <div>*</div>\
-        <div class="translate">CRON Every hour</div>\
-      </div>\
-      <div id="cron-tabs-hour-n">\
-        <div class="cron-preview-every translate">CRON Every hour</div>\
-        <div class="cron-slider" data-arg="2"></div>\
-      </div>\
-      <div id="cron-tabs-hour-each" class="cron-preview-n">\
-        <div class="translate">Each selected hour</div><br/>\
-        <div class="cron-tabs-format"></div>\
-      </div>\
-    </div>\
-  </div>\
-  <div id="cron-tabs-day" class="cron-tab-page cron-tab-day">\
-    <div class="cron-tabs">\
-      <ul>\
-        <li id="cron-button-day-every"><a href="#cron-tabs-day-every" class="translate">CRON Every day</a></li>\
-        <li id="cron-button-day-each"><a href="#cron-tabs-day-each" class="translate">Each selected day</a></li>\
-      </ul>\
-      <div id="cron-tabs-day-every" class="cron-preview">\
-        <div>*</div>\
-        <div class="translate">CRON Every day</div>\
-      </div>\
-      <div id="cron-tabs-day-each" class="cron-preview-n">\
-        <div class="translate">Each selected day</div><br/>\
-        <div class="cron-tabs-format"></div>\
-      </div>\
-    </div>\
-  </div>\
-  <div id="cron-tabs-month" class="cron-tab-page cron-tab-month">\
-    <div class="cron-tabs">\
-      <ul>\
-        <li id="cron-button-month-every"><a href="#cron-tabs-month-every" class="translate">CRON Every month</a></li>\
-        <li id="cron-button-month-each"><a href="#cron-tabs-month-each" class="translate">Each selected month</a></li>\
-      </ul>\
-      <div id="cron-tabs-month-every" class="cron-preview">\
-        <div>*</div>\
-        <div class="translate">CRON Every month</div>\
-      </div>\
-      <div id="cron-tabs-month-each" class="cron-preview-n">\
-        <div class="translate">Each selected month</div><br/>\
-        <div class="cron-tabs-format"></div>\
-      </div>\
-    </div>\
-  </div>\
-  <div id="cron-tabs-week" class="cron-tab-page cron-tab-week">\
-    <div class="cron-tabs">\
-      <ul>\
-        <li id="cron-button-week-every"><a href="#cron-tabs-week-every" class="translate">CRON Every week day</a></li>\
-        <li id="cron-button-week-each"><a href="#cron-tabs-week-each" class="translate">Each selected week day</a></li>\
-      </ul>\
-      <div id="cron-tabs-week-every" class="cron-preview">\
-        <div>*</div>\
-        <div class="translate">CRON Every week day</div>\
-      </div>\
-      <div id="cron-tabs-week-each" class="cron-preview-n">\
-        <div class="translate">Each selected week day</div><br/>\
-        <div class="cron-tabs-format"></div>\
-      </div>\
-    </div>\
-  </div>\
-</div>';
+    detectSettings($input.val());
+    $el.modal().modal('open');
+}

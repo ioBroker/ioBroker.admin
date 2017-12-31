@@ -6,7 +6,6 @@ function Instances(main) {
     this.$tab          = $('#tab-instances');
     this.$grid         = $('#grid-instances');
     this.$gridHead     = $('#grid-instances-head');
-    this.$dialogCron   = $('#dialog-cron');
 
     this.inited        = false;
     this.main          = main;
@@ -630,27 +629,14 @@ function Instances(main) {
     function showCronDialog(value, cb) {
         value = (value || '').replace(/"/g, '').replace(/'/g, '');
         try {
-            $('#div-cron').cron('value', value);
+            setupCron(value, cb);
         } catch (e) {
             alert(_('Cannot parse value as cron'));
         }
-
-        $('#dialog_cron_insert').hide();
-
-        $('#dialog_cron_callback')
-            .show()
-            .unbind('click')
-            .click(function () {
-                var val = $('#div-cron').cron('value');
-                that.$dialogCron.dialog('close');
-                if (cb) cb(val);
-            });
-
-        that.$dialogCron.dialog('open');
     }
 
     this.prepare            = function () {
-        this.$dialogCron.dialog({
+        /*this.$dialogCron.dialog({
             autoOpen:   false,
             modal:      true,
             width:      700,
@@ -691,7 +677,7 @@ function Instances(main) {
         });
 
         $('#div-cron').cron({value: ''});
-
+*/
         var $filter      = that.$tab.find('.instances-filter');
         var $filterClear = that.$tab.find('.instances-filter-clear');
 

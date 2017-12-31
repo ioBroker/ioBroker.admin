@@ -28,12 +28,16 @@ function translateWord(text, lang, dictionary) {
     return text;
 }
 
-function translateAll(lang, dictionary) {
+function translateAll(selector, lang, dictionary) {
     lang       = lang       || systemLang;
     dictionary = dictionary || systemDictionary;
+    if (!selector) {
+        selector = 'body';
+    }
+    var $selector = $(selector);
 
     // translate <div class="translate">textToTranslate</div>
-    $('.translate').each(function (idx) {
+    $selector.find('.translate').each(function (idx) {
         var text = $(this).attr('data-lang');
         if (!text) {
             text = $(this).html();
@@ -46,11 +50,11 @@ function translateAll(lang, dictionary) {
         }
     });
     // translate <input type="button" class="translateV" value="textToTranslate">
-    $('.translateV').each(function (idx) {
-        var text = $(this).attr('data-lang');
+    $selector.find('.translateV').each(function (idx) {
+        var text = $(this).attr('data-lang-value');
         if (!text) {
             text = $(this).attr('value');
-            $(this).attr('data-lang', text);
+            $(this).attr('data-lang-value', text);
         }
 
         var transText = translateWord(text, lang, dictionary);
@@ -58,34 +62,24 @@ function translateAll(lang, dictionary) {
             $(this).attr('value', transText);
         }
     });
-    $('.translateB').each(function (idx) {
-        //<span class="ui-button-text" >Save</span>
-        var text = $(this).attr('data-lang');
+    $selector.find('.translateT').each(function (idx) {
+        //<span class="ui-button-text translateT" title="TextToTranslate">Save</span>
+        var text = $(this).attr('data-lang-title');
         if (!text) {
-            text = $(this).html().match(/\>([\w ]+)\</);
-            if (text && text.length > 1) {
-                text = text[1];
-            } else {
-                text = $(this).html();
-                $(this).attr('data-lang-pure', true);
-            }
-            $(this).attr('data-lang', text);
+            text = $(this).attr('title');
+            $(this).attr('data-lang-title', text);
         }
         var transText = translateWord(text, lang, dictionary);
         if (transText) {
-            if ($(this).attr('data-lang-pure')) {
-                $(this).html(transText);
-            } else {
-                $(this).html($(this).html().replace(/>[\w ]+</, '>' + transText + '<'));
-            }
+            $(this).attr('title', transText);
         }
     });
-    $('.translateT').each(function (idx) {
-        //<span class="ui-button-text translateT" title="TextToTranslate">Save</span>
-        var text = $(this).attr('data-lang');
+    $selector.find('.translateP').each(function (idx) {
+        //<span class="ui-button-text translateP" placeholder="TextToTranslate">Save</span>
+        var text = $(this).attr('data-lang-placeholder');
         if (!text) {
             text = $(this).attr('title');
-            $(this).attr('data-lang', text);
+            $(this).attr('data-lang-placeholder', text);
         }
         var transText = translateWord(text, lang, dictionary);
         if (transText) {

@@ -1,0 +1,155 @@
+<div class="materialize-dialogs m">
+    <!-- HTML Template for plugin -->
+    <div id="dialog-cron" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col s12">
+                    <h6 class="title translate">CRON dialog</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s8">
+                    <input type="text" class="cron-input" value="* * * * * *" size="80"/>
+                    <label class="cron-text"></label>
+                </div>
+                <div class="col s4">
+                    <input type="checkbox" class="cron-checkbox-seconds">
+                    <span class="translate">CRON Use seconds</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 cron-main-tab">
+                    <ul class="tabs">
+                        <li class="tab col s2 cron-tab-second"><a href="#cron-tabs-second" class="translate">CRON Second</a></li>
+                        <li class="tab col s2"><a href="#cron-tabs-minute" class="translate">CRON Minute</a></li>
+                        <li class="tab col s2"><a href="#cron-tabs-hour"   class="translate">CRON Hour</a></li>
+                        <li class="tab col s2"><a href="#cron-tabs-day"    class="translate">CRON Day of Month</a></li>
+                        <li class="tab col s2"><a href="#cron-tabs-month"  class="translate">CRON Month</a></li>
+                        <li class="tab col s2"><a href="#cron-tabs-week"   class="translate">CRON Day of Week</a></li>
+                    </ul>
+                </div>
+                <div id="cron-tabs-second" class="col s12 page" data-type="second">
+                    <div class="row">
+                        <div class="col s12">
+                            <select class="cron-type-selector" data-type="second">
+                                <option value="every" class="translate">CRON Every second</option>
+                                <option value="n"     class="translate">CRON Every n seconds</option>
+                                <option value="each"  class="translate">CRON Each selected second</option>
+                            </select>
+                            <label class="translate">CRON Type</label>
+                        </div>
+                    </div>
+                    <div class="row n">
+                        <div class="col s12">
+                            <input class="cron-slider" data-type="second" data-arg="0" type="range" min="1" max="59" />
+                        </div>
+                    </div>
+                    <div class="row each cron-preview-n">
+                        <div class="col s12 cron-tabs-format">
+                        </div>
+                    </div>
+                </div>
+                <div id="cron-tabs-minute" class="col s12 page" data-type="minute">
+                    <div class="row">
+                        <div class="col s12">
+                            <select class="cron-type-selector" data-type="minute">
+                                <option value="every" class="translate">CRON Every minute</option>
+                                <option value="n"     class="translate">CRON Every n minutes</option>
+                                <option value="each"  class="translate">CRON Each selected minute</option>
+                            </select>
+                            <label class="translate">CRON Type</label>
+                        </div>
+                    </div>
+                    <div class="row n">
+                        <div class="col s12">
+                            <input class="cron-slider" data-type="minute" data-arg="1" type="range" min="1" max="59" />
+                        </div>
+                    </div>
+                    <div class="row each">
+                        <div class="col s12 cron-tabs-format">
+                        </div>
+                    </div>
+                </div>
+                <div id="cron-tabs-hour"   class="col s12 page" data-type="hour">
+                    <div class="row">
+                        <div class="col s12">
+                            <select class="cron-type-selector" data-type="hour">
+                                <option value="every" class="translate">CRON Every hour</option>
+                                <option value="n"     class="translate">CRON Every n hours</option>
+                                <option value="each"  class="translate">CRON Each selected hour</option>
+                            </select>
+                            <label class="translate">CRON Type</label>
+                        </div>
+                    </div>
+                    <div class="row n">
+                        <div class="col s12">
+                            <input class="cron-slider" data-type="hour" data-arg="2" type="range" min="1" max="23" />
+                        </div>
+                    </div>
+                    <div class="row each">
+                        <div class="col s12 cron-tabs-format">
+                        </div>
+                    </div>
+                </div>
+                <div id="cron-tabs-day"    class="col s12 page" data-type="day">
+                    <div class="row">
+                        <div class="col s12">
+                            <select class="cron-type-selector" data-type="day">
+                                <option value="every" class="translate">CRON Every day</option>
+                                <option value="each"  class="translate">CRON Each selected day</option>
+                            </select>
+                            <label class="translate">CRON Type</label>
+                        </div>
+                    </div>
+                    <div class="row each">
+                        <div class="col s12 cron-tabs-format">
+                        </div>
+                    </div>
+                </div>
+                <div id="cron-tabs-month"  class="col s12 page" data-type="month">
+                    <div class="row">
+                        <div class="col s12">
+                            <select class="cron-type-selector" data-type="month">
+                                <option value="every" class="translate">CRON Every month</option>
+                                <option value="each"  class="translate">CRON Each selected month</option>
+                            </select>
+                            <label class="translate">CRON Type</label>
+                        </div>
+                    </div>
+                    <div class="row each">
+                        <div class="col s12 cron-tabs-format">
+                        </div>
+                    </div>
+                </div>
+                <div id="cron-tabs-week"   class="col s12 page" data-type="week">
+                    <div class="row">
+                        <div class="col s12">
+                            <select class="cron-type-selector" data-type="week">
+                                <option value="every" class="translate">CRON Every week day</option>
+                                <option value="each"  class="translate">CRON Each selected week day</option>
+                            </select>
+                            <label class="translate">CRON Type</label>
+                        </div>
+                    </div>
+                    <div class="row each">
+                        <div class="col s12 cron-tabs-format">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn-flat btn-clear">
+                <i class="material-icons">delete_forever</i><span class="translate">CRON Clear</span>
+            </a>
+            <a class="modal-action modal-close waves-effect waves-green btn-flat btn-apply">
+                <i class="material-icons">check</i>
+                <span class="translate">>CRON Apply</span>
+            </a>
+            <a class="modal-action modal-close waves-effect waves-green btn-flat btn-cancel">
+                <i class="material-icons">close</i>
+                <span class="translate">>CRON Cancel</span>
+            </a>
+        </div>
+    </div>
+</div>
