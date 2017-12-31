@@ -553,9 +553,8 @@ function Customs(main) {
         var data = '';
         var urls = [];
         for (var u = 0; u < this.main.instances.length; u++) {
-            if (this.main.objects[this.main.instances[u]].common &&
-                (this.main.objects[this.main.instances[u]].common.type === 'storage' || this.main.objects[this.main.instances[u]].common.supportCustoms)
-            ) {
+            var inst = this.main.objects[this.main.instances[u]];
+            if (inst && inst.common && (inst.common.type === 'storage' || inst.common.supportCustoms)) {
                 instances.push(this.main.instances[u]);
                 var url = this.main.instances[u].split('.');
                 if (urls.indexOf(url[2]) === -1) {
