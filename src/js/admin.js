@@ -1849,6 +1849,7 @@ $(document).ready(function () {
                                     }
                                 }
 
+                                translateCron();
                                 translateAll();
 
                                 // Here we go!

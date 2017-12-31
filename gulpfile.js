@@ -468,6 +468,7 @@ gulp.task('materializeJS', function () {
         './src/materialize-css/js/modal.js',
         './src/materialize-css/js/select.js',
         './src/materialize-css/js/forms.js',
+        './src/materialize-css/js/range.js',
         './src/materialize-css/js/collapsible.js',
         './src/materialize-css/js/datepicker.js',
         './src/materialize-css/js/autocomplete.js',
@@ -580,7 +581,7 @@ gulp.task('vendorJS', function () {
         './src/lib/js/selectID.js',
         './src/lib/js/cron/jquery.cron.locale.js',
         './src/lib/js/cron/jquery.cron.words.js',
-        './src/lib/js/cron/jquery.cron.js',
+//        './src/lib/js/cron/jquery.cron.js',
         './src/lib/js/cron/cron2text.js'
     ])
         .pipe(sourcemaps.init())

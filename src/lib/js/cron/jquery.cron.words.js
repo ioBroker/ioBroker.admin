@@ -42,6 +42,26 @@ var jQueryCronWords = {
         "it": "Genere",
         "es": "Tipo"
     },
+    "CRON Apply": {
+        "en": "Apply",
+        "de": "Anwenden",
+        "ru": "Перенять",
+        "pt": "Aplique",
+        "nl": "Toepassen",
+        "fr": "Appliquer",
+        "it": "Applicare",
+        "es": "Aplicar"
+    },
+    "CRON Cancel": {
+        "en": "Cancel",
+        "de": "Stornieren",
+        "ru": "Отмена",
+        "pt": "Cancelar",
+        "nl": "Annuleer",
+        "fr": "Annuler",
+        "it": "Annulla",
+        "es": "Cancelar"
+    },
     "Dec": {                                         "en": "Dec",                                             "de": "Dez",                                             "ru": "Дек",                                             "pt": "Dec",                                             "nl": "DEC",                                             "fr": "Déc",                                             "it": "Dec",                                             "es": "Dic"},
     "Each day": {                                    "en": "Each Day",                                        "de": "Jeden Tag",                                       "ru": "Каждый день",                                     "pt": "Cada dia",                                        "nl": "Elke dag",                                        "fr": "Chaque jour",                                     "it": "Ogni giorno",                                     "es": "Cada día"},
     "Each month": {                                  "en": "Each Month",                                      "de": "Jeden Monat",                                     "ru": "Каждый месяц",                                    "pt": "Cada mês",                                        "nl": "Elke maand",                                      "fr": "Chaque mois",                                     "it": "Ogni mese",                                       "es": "Cada mes"},
@@ -51,7 +71,6 @@ var jQueryCronWords = {
     "CRON Each selected month": {                    "en": "Each selected month",                             "de": "Jeden ausgewählten Monat",                        "ru": "Каждый выбранный месяц",                          "pt": "Cada mês selecionado",                            "nl": "Elke geselecteerde maand",                        "fr": "Chaque mois sélectionné",                         "it": "Ogni mese selezionato",                           "es": "Cada mes seleccionado"},
     "CRON Each selected second": {                   "en": "Each selected second",                            "de": "Jede ausgewählte Sekunde",                        "ru": "Каждую выбранную секунду",                        "pt": "Cada segundo selecionado",                        "nl": "Elke geselecteerde seconde",                      "fr": "Chaque seconde sélectionnée",                     "it": "Ogni secondo selezionato",                        "es": "Cada segundo seleccionado"},
     "CRON Each selected week day": {                 "en": "Each selected week day",                          "de": "Jeden ausgewählten Wochentag",                    "ru": "Каждый выбранный день недели",                    "pt": "Cada dia da semana selecionado",                  "nl": "Elke geselecteerde weekdag",                      "fr": "Chaque jour de la semaine sélectionné",           "it": "Ogni giorno della settimana selezionato",         "es": "Cada día de la semana seleccionado"},
-    "CRON Every week day": {                         "en": "Every week day",                                  "de": "Jeden Wochentag",                                 "ru": "Каждый день недели",                              "pt": "Cada semana",                                     "nl": "Elke week",                                       "fr": "Chaque semaine",                                  "it": "Ogni settimana",                                  "es": "Cada semana"},
     "CRON Every %s seconds": {                       "en": "Every %s seconds",                                "de": "Alle %s Sekunden",                                "ru": "Каждые %s секунд(ы)",                             "pt": "Todos os% s segundos",                            "nl": "Elke% s seconden",                                "fr": "Chaque seconde% s",                               "it": "Ogni% s secondi",                                 "es": "Cada% s segundos"},
     "CRON Every n hours": {                          "en": "Every n Hours",                                   "de": "Alle N Stunden",                                  "ru": "Каждые N часов",                                  "pt": "Todas as horas",                                  "nl": "Every n Hours",                                   "fr": "Toutes les n heures",                             "it": "Ogni n ore",                                      "es": "Cada n horas"},
     "CRON Every n minutes": {                        "en": "Every n minutes",                                 "de": "Alle N Minuten",                                  "ru": "Каждые N минут",                                  "pt": "A cada n minutos",                                "nl": "Elke n minuten",                                  "fr": "Toutes les n minutes",                            "it": "Ogni n minuti",                                   "es": "Cada n minutos"},

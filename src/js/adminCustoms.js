@@ -221,7 +221,7 @@ function Customs(main) {
 
         this.showCustomsData(ids.length > 1 ? null : ids[0]);
         this.$dialog.find('.dialog-system-buttons .btn-save').addClass('disabled');
-        translateAll();
+        translateAll('#dialog-customs');
         var $collapsible = that.$dialog.find('.collapsible');
         $collapsible.collapsible({
             onOpenEnd: function (el) {
