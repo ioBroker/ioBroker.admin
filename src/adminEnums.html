@@ -1,12 +1,36 @@
 <div id="tab-enums"     class="admin-tab" style="display: none" data-name="Enums">
-    <div class="tab-enums-list"></div>
+    <div class="tab-enums-list m">
+        <div class="row tree-table-buttons">
+            <a class="btn-floating waves-effect waves-light blue btn-new-enum translateT" title="New enum" id="tab-enums-list-new-enum">
+                <i class="material-icons">note_add</i>
+            </a>
+            <a class='dropdown-trigger btn btn-new-enum-btn' href='#' data-target='btn-new-enum'><i class="material-icons">note_add</i><span class="translate">New enum</span></a>
+            <ul id='btn-new-enum' class='dropdown-content'>
+                <li><a href="#!">one</a></li>
+                <li><a href="#!">two</a></li>
+                <li class="divider"></li>
+                <li><a href="#!">three</a></li>
+                <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
+                <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
+            </ul>
+            <a class="btn-floating waves-effect waves-light blue btn-edit translateT" title="Edit" id="tab-enums-list-edit">
+                <i class="material-icons">edit</i>
+            </a>
+        </div>
+        <div class="row tree-table-body">
+        </div>
+    </div>
     <div class="tab-enums-objects" id="grid-enums">
-        <span class="translate" style="width: calc(100% - 100px); width: calc(100% - 20px); text-align: center">Loading...</span>
+        <span class="loader">
+            <svg class="spinner" width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+            <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+        </svg>
+        </span>
     </div>
     <div class="tab-enums-dialogs m">
         <div id="tab-enums-dialog-new" class="modal modal-fixed-footer">
             <div class="modal-content">
-                <h5 class="translate tab-enums-dialog-new-title"></h5>
+                <h5 class="translate tab-enums-dialog-new-title title"></h5>
                 <div class="row input-field">
                     <i class="material-icons prefix">text_fields</i>
                     <label for="tab-enums-dialog-new-name" class="translate">Name</label>

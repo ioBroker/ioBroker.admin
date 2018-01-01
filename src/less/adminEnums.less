@@ -15,6 +15,22 @@
   }
   .tab-enums-objects {
     display:  none;
+    .loader {
+      width: calc(~"100% - 50px");
+      text-align: center;
+      .spinner {
+        animation: rotator @duration linear infinite;
+      }
+
+      .path {
+        stroke-dasharray: @offset;
+        stroke-dashoffset: 0;
+        transform-origin: center;
+        stroke: #4285F4;
+        animation: dash @duration ease-in-out infinite;
+        //colors (@duration*4) ease-in-out infinite;
+      }
+    }
   }
   .tab-enums-list {
     width:    100%;
@@ -23,6 +39,53 @@
       margin-right: 5px;
     }
     line-height: 1.5rem;
+    .collection {
+      overflow: auto;
+      .edit-content,
+      .delete-content {
+        position: absolute;
+        bottom: 16px;
+        float: right;
+        color: @admin-buttons-color;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .edit-content {
+        right: 48px;
+      }
+      .delete-content {
+        right: 16px;
+      }
+      .secondary-content {
+        cursor: pointer;
+        color: @admin-buttons-color;
+      }
+      .edit-content.disabled,
+      .delete-content.disabled,
+      .secondary-content.disabled {
+        color: darkgray;
+        cursor: inherit;
+      }
+      .chip {
+        position: relative;
+        .chip-id {
+          position: absolute;
+          bottom: -11px;
+          left: 40px;
+          font-size: 10px;
+        }
+      }
+      .tab-accept-item {
+        background: repeating-linear-gradient(
+                135deg,
+                rgba(0, 0, 0, 0.2),
+                rgba(0, 0, 0, 0.2) 10px,
+                rgba(0, 0, 0, 0.3) 10px,
+                rgba(0, 0, 0, 0.3) 20px
+        ) !important;
+        color: black !important;
+      }
+    }
   }
   .tab-enums-objects {
     overflow: hidden;
@@ -37,15 +100,22 @@
     }
   }
 
+  .title {
+    margin: 0;
+    background: @main-active-color;
+    color: white;
+    letter-spacing: .5px;
+    padding: 0.5rem;
+  }
+
   // blur non-target components while dragging
   &.dragging {
-    .tree-table-buttons {
+    .tree-table-buttons,
+    .tab-enums-objects,
+    .enum-buttons {
       opacity: 0.3;
     }
-    .tab-enums-objects {
-      opacity: 0.3;
-    }
-    .tree-table-main::after {
+    .collection::after {
       content: "";
       pointer-events: none;
       box-sizing: border-box;

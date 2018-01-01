@@ -581,7 +581,7 @@ gulp.task('vendorJS', function () {
         './src/lib/js/selectID.js',
         './src/lib/js/cron/jquery.cron.locale.js',
         './src/lib/js/cron/jquery.cron.words.js',
-//        './src/lib/js/cron/jquery.cron.js',
+        './src/lib/js/cron/jquery.cron.js',
         './src/lib/js/cron/cron2text.js'
     ])
         .pipe(sourcemaps.init())
@@ -613,7 +613,7 @@ gulp.task('aceCopy', function () {
         './src/lib/js/ace-1.2.0/mode-json.js',
         './src/lib/js/ace-1.2.0/worker-json.js'
     ],  {base: './src/lib/js/ace-1.2.0/'})
-        .pipe(gulp.dest('./www'));
+    .pipe(gulp.dest('./www'));
 });
 gulp.task('copy', ['appCopy', 'aceCopy', 'colorpickerCopy']);
 

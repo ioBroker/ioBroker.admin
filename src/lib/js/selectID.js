@@ -178,7 +178,17 @@ function filterChanged(e) {
 
     var ICON_MINIMAL_BASE64_SIZE = 312;
 
-
+    function getName(obj, id) {
+        if (obj && obj.common) {
+            var rName = obj.common.name || (id || '').split('.').pop();
+            if (typeof rName === 'object') {
+                rName = rName[systemLang] || rName.en;
+            }
+            return rName;
+        } else {
+            return (id || '').split('.').pop();
+        }
+    }
 
     function formatDate(dateObj) {
         //return dateObj.getFullYear() + '-' +
@@ -334,8 +344,26 @@ function filterChanged(e) {
                         if (c1.sortOrder < c2.sortOrder) return -1;
                         return 0;
                     }
-                    var name1 = c1.name ? c1.name.toLowerCase() : child1.key;
-                    var name2 = c2.name ? c2.name.toLowerCase() : child2.key;
+                    var name1;
+                    var name2;
+                    if (c1.name) {
+                        if (typeof c1.name === 'object') {
+                            name1 = (c1.name[systemLang] || c1.name.en).toLowerCase();
+                        } else {
+                            name1 = c1.name.toLowerCase();
+                        }
+                    } else {
+                        name1 = child1.key;
+                    }
+                    if (c2.name) {
+                        if (typeof c2.name === 'object') {
+                            name2 = (c2.name[systemLang] || c2.name.en).toLowerCase();
+                        } else {
+                            name2 = c2.name.toLowerCase();
+                        }
+                    } else {
+                        name2 = child1.key;
+                    }
                     if (name1 > name2) return 1;
                     if (name1 < name2) return -1;
                 }
@@ -751,12 +779,16 @@ function filterChanged(e) {
         rooms = rooms || [];
         for (var i = 0; i < data.roomEnums.length; i++) {
             var common = data.objects[data.roomEnums[i]] && data.objects[data.roomEnums[i]].common;
-            if (common.members && common.members.indexOf(id) !== -1 &&
-                rooms.indexOf(common.name) === -1) {
+            var name = common.name;
+            if (typeof name === 'object') {
+                name = name[systemLang] || name.en;
+            }
+
+            if (common.members && common.members.indexOf(id) !== -1 && rooms.indexOf(name) === -1) {
                 if (!withParentInfo) {
-                    rooms.push(common.name);
+                    rooms.push(name);
                 } else {
-                    rooms.push({name: common.name, origin: id});
+                    rooms.push({name: name, origin: id});
                 }
             }
         }
@@ -790,12 +822,15 @@ function filterChanged(e) {
         funcs = funcs || [];
         for (var i = 0; i < data.funcEnums.length; i++) {
             var common = data.objects[data.funcEnums[i]] && data.objects[data.funcEnums[i]].common;
-            if (common && common.members && common.members.indexOf(id) !== -1 &&
-                funcs.indexOf(common.name) === -1) {
+            var name = common.name;
+            if (typeof name === 'object') {
+                name = name[systemLang] || name.en;
+            }
+            if (common && common.members && common.members.indexOf(id) !== -1 && funcs.indexOf(name) === -1) {
                 if (!withParentInfo) {
-                    funcs.push(common.name);
+                    funcs.push(name);
                 } else {
-                    funcs.push({name: common.name, origin: id});
+                    funcs.push({name: name, origin: id});
                 }
             }
         }
@@ -1015,7 +1050,18 @@ function filterChanged(e) {
                 states = findRoomsForObjectAsIds (data, id) || [];
                 text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
                 for (var ee = 0; ee < data.roomEnums.length; ee++) {
-                    text += '<option value="' + data.roomEnums[ee] + '" ' + (states.indexOf (data.roomEnums[ee]) !== -1 ? 'selected' : '') + '>' + data.objects[data.roomEnums[ee]].common.name + '</option>';
+                    var room = data.objects[data.roomEnums[ee]];
+                    var rName;
+                    if (room && room.common && room.common.name) {
+                        rName = room.common.name;
+                        if (typeof rName === 'object') {
+                            rName = rName[systemLang] || rName.en;
+                        }
+                    } else {
+                        rName = data.roomEnums[ee].split('.').pop();
+                    }
+
+                    text += '<option value="' + data.roomEnums[ee] + '" ' + (states.indexOf(data.roomEnums[ee]) !== -1 ? 'selected' : '') + '>' + rName + '</option>';
                 }
                 text += '</select>';
                 editType = 'select';
@@ -1024,7 +1070,17 @@ function filterChanged(e) {
                 states = findFunctionsForObjectAsIds (data, id) || [];
                 text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
                 for (var e = 0; e < data.funcEnums.length; e++) {
-                    text += '<option value="' + data.funcEnums[e] + '" ' + (states.indexOf (data.funcEnums[e]) !== -1 ? 'selected' : '') + '>' + data.objects[data.funcEnums[e]].common.name + '</option>';
+                    var func = data.objects[data.funcEnums[e]];
+                    var fName;
+                    if (func && func.common && func.common.name) {
+                        fName = func.common.name;
+                        if (typeof fName === 'object') {
+                            fName = fName[systemLang] || fName.en;
+                        }
+                    } else {
+                        fName = data.funcEnums[e].split('.').pop();
+                    }
+                    text += '<option value="' + data.funcEnums[e] + '" ' + (states.indexOf(data.funcEnums[e]) !== -1 ? 'selected' : '') + '>' + fName + '</option>';
                 }
                 text += '</select>';
                 editType = 'select';
@@ -1189,7 +1245,13 @@ function filterChanged(e) {
     function forEachColumn (data, cb) {
         for (var c = 0; c < data.columns.length; c++) {
             var name = data.columns[c];
-            if (typeof name === 'object') name = name.name;
+            if (typeof name === 'object') {
+                if (name.hasOwnProperty('name')) {
+                    name = name.name;
+                } else if (name.hasOwnProperty('en')) {
+                    name = name[systemLang] || name.en;
+                }
+            }
             cb (name, c);
         }
     }
@@ -1277,18 +1339,14 @@ function filterChanged(e) {
             switch (kind) {
                 case 'room':
                     for (i = 0; i < data.roomEnums.length; i++) {
-                        if (data.objects[data.roomEnums[i]]) {
-                            ret.push(data.objects[data.roomEnums[i]].common.name);
-                        }
+                        ret.push(getName(data.objects[data.roomEnums[i]], data.roomEnums[i]));
                     }
                     // if (data.rooms) delete data.rooms;
                     // if (data.roomsColored) delete data.roomsColored;
                     return ret;
                 case 'function':
                     for (i = 0; i < data.funcEnums.length; i++) {
-                        if (data.objects[data.funcEnums[i]]) {
-                            ret.push(data.objects[data.funcEnums[i]].common.name);
-                        }
+                        ret.push(getName(data.objects[data.funcEnums[i]], data.funcEnums[i]));
                     }
                     // if (data.funcs) delete data.funcs;
                     // if (data.funcsColored) delete data.funcsColored;
@@ -1596,11 +1654,8 @@ function filterChanged(e) {
                     _data.selectedID = newId;
                     if (!_data.noDialog) {
                         // Set title of dialog box
-                        if (_data.objects[newId] && _data.objects[newId].common && _data.objects[newId].common.name) {
-                            $dlg.dialog('option', 'title', _data.texts.selectid + ' - ' + (_data.objects[newId].common.name || ' '));
-                        } else {
-                            $dlg.dialog('option', 'title', _data.texts.selectid + ' - ' + (newId || ' '));
-                        }
+                        $dlg.dialog('option', 'title', _data.texts.selectid + ' - ' + getName(_data.objects[newId], newId));
+
                         // Enable/ disable 'Select' button
                         if (_data.objects[newId]) { // && _data.objects[newId].type === 'state') {
                             $dlg.find('#button-ok').removeClass('ui-state-disabled');
@@ -1695,8 +1750,8 @@ function filterChanged(e) {
                     addClippyToElement($firstTD, node.key);
                 }
 
-                if (data.useNameAsId && obj && obj.common && obj.common.name) {
-                    $firstTD.find('.fancytree-title').html(obj.common.name);
+                if (data.useNameAsId) {
+                    $firstTD.find('.fancytree-title').html(getName(obj, key));
                 }
 
                 function getIcon() {
@@ -1765,7 +1820,11 @@ function filterChanged(e) {
                     };
 
                     if (typeof name === 'object') {
-                        name = name.name;
+                        if (name.hasOwnProperty('name')) {
+                            name = name.name;
+                        } else {
+                            name = name[systemLang] || name.en;
+                        }
                     }
 
                     switch (name) {
@@ -1776,20 +1835,24 @@ function filterChanged(e) {
                             var icon = getIcon ();
                             //$elem = $tdList.eq(base);
                             var t = isCommon ? (obj.common.name || '') : '';
+                            if (typeof t === 'object') {
+                                t = t[systemLang] || t.en;
+                            }
 
-                            $elem.html ('<span style="padding-left: ' + (icon ? lineIndent : 0) + '; height: 100%; width: 100%">' +
+                            $elem.html('<span style="padding-left: ' + (icon ? lineIndent : 0) + '; height: 100%; width: 100%">' +
                                 (icon ? '<span class="objects-name-coll-icon" style="vertical-align: middle">' + icon + '</span>' : '') +
                                 '<div class="objects-name-coll-title iob-ellipsis" style="border:0;">' + t + '</div>' +
                                 '</span>');
 
 
-                            var $e = $elem.find ('.objects-name-coll-title');
-                            if (!t) $e.css ({'vertical-align': 'middle'});
+                            var $e = $elem.find('.objects-name-coll-title');
+                            if (!t) $e.css({'vertical-align': 'middle'});
 
-                            $e.attr ('title', t);
-                            if (data.quickEdit /*&& obj*/ && data.quickEdit.indexOf ('name') !== -1) {
-                                $e.data ('old-value', isCommon ? (obj.common.name || ''): '');
-                                $e.click (onQuickEditField).data ('id', node.key).data ('name', 'name').data ('selectId', data).addClass ('select-id-quick-edit');
+                            $e.attr('title', t);
+                            if (data.quickEdit /*&& obj*/ && data.quickEdit.indexOf('name') !== -1) {
+
+                                $e.data('old-value', t);
+                                $e.click(onQuickEditField).data('id', node.key).data('name', 'name').data('selectId', data).addClass('select-id-quick-edit');
                             }
                             break;
                         case 'type':
@@ -1810,7 +1873,11 @@ function filterChanged(e) {
                                 var room = data.roomsColored[node.key];
                                 if (!room) room = data.roomsColored[node.key] = findRoomsForObject (data, node.key, true);
                                 val = room.map (function (e) {
-                                    return e.name;
+                                    if (typeof e.name === 'object') {
+                                        return e.name[systemLang] || e.name.en;
+                                    } else {
+                                        return e.name;
+                                    }
                                 }).join (', ');
                                 if (room.length && room[0].origin !== node.key) {
                                     $elem.css ({color: 'gray'}).attr ('title', room[0].origin);
@@ -1836,7 +1903,11 @@ function filterChanged(e) {
                             if (data.funcsColored) {
                                 if (!data.funcsColored[node.key]) data.funcsColored[node.key] = findFunctionsForObject (data, node.key, true);
                                 val = data.funcsColored[node.key].map (function (e) {
-                                    return e.name;
+                                    if (typeof e.name === 'object') {
+                                        return e.name[systemLang] || e.name.en;
+                                    } else {
+                                        return e.name;
+                                    }
                                 }).join (', ');
                                 if (data.funcsColored[node.key].length && data.funcsColored[node.key][0].origin !== node.key) {
                                     $elem.css ({color: 'gray'}).attr ('title', data.funcsColored[node.key][0].origin);
@@ -2958,11 +3029,7 @@ function filterChanged(e) {
                 if (!data.noDialog) {
                     $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + (data.currentId || ' '));
                     if (data.currentId) {
-                        if (data.objects[data.currentId] && data.objects[data.currentId].common && data.objects[data.currentId].common.name) {
-                            $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + (data.objects[data.currentId].common.name || ' '));
-                        } else {
-                            $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + (data.currentId || ' '));
-                        }
+                        $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + getName(data.objects[data.currentId], data.currentId));
                     } else {
                         $dlg.find('#button-ok').addClass('ui-state-disabled');
                     }
