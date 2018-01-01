@@ -3,3 +3,9 @@ node_modules
 www
 .i18n-editor-metadata
 nbproject
+src/i18n/*/flat.txt
+src/i18n/flat.txt
+admin/i18n/*/flat.txt
+admin/i18n/flat.txt
+admin/words.js
+src/js/words.js
