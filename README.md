@@ -77,9 +77,10 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 In this project used some icons from Flaticon(c):
 - ![006-double-bed.svg](src/img/icons/rooms/006-double-bed.svg) - "designed by smalllikeart from Flaticon"
 - ![016-armchair-1.svg](src/img/icons/rooms/016-armchair-1.svg) - "designed by smalllikeart from Flaticon"
+- ![light-bulb.svg](src/img/icons/devices/light-bulb.svg) - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 
 ## Changelog
-### 3.0.6 (2018-01-01)
+### 3.0.7 (2018-01-01)
 * (soef) update instances, objects and other lists
 * (bluefox) rewrite interface with materialze 
 
