@@ -91,7 +91,7 @@
             "bluefox <bluefox@ccu.io>",
             "hobbyquaker <hq@ccu.io>"
         ],
-        "dependencies":             [{"js-controller": ">=0.12.0"}],
+        "dependencies":             [{"js-controller": ">=1.2.0"}],
         "type":                     "general",
         "license":                  "MIT",
         "logTransporter":           true,
