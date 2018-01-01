@@ -579,7 +579,8 @@ $(document).ready(function () {
         system:     new System(main),
         customs:    new Customs(main),
         config:     new Config(main),
-        editobject: new EditObject(main)
+        editobject: new EditObject(main),
+        issue:      new Issue(main)
     };
 
     var stdout;

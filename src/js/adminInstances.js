@@ -416,12 +416,13 @@ function Instances(main) {
             var isRun = common.onlyWWW || common.enabled;
             // buttons
             //text += '<td style="text-align: left; padding-left: 1em;">' +
-//            text += '<td style="text-align: left; padding-left: 1px;">' +
+            //text += '<td style="text-align: left; padding-left: 1px;">' +
             text += '<td style="text-align: left;">' +
                 (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-stop-run"></button>' : '<div class="ui-button instance-empty">&nbsp;</div>') +
                 '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-settings"></button>' +
                 (!common.onlyWWW ? '<button ' + (isRun ? '' : 'disabled ') + 'style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' : '<div class="ui-button instance-empty">&nbsp;</div>') +
-                '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-del"></button>'+
+                '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-issue"></button>' +
+                '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-del"></button>' +
                 (url ? '<button ' + (isRun ? '' : 'disabled ') + 'style="display: inline-block" data-link="' + (typeof url !== 'object' ? url : '') +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '') +
                 '</td>';
 
@@ -1155,6 +1156,18 @@ function Instances(main) {
             $e.button({icons: {primary: 'ui-icon-trash'}, text: false}).attr('title', _('delete'));
         } else {
             $e.button('enable');
+        }
+        
+        $e = that.$grid.find('.instance-issue' + id).unbind('click')
+            .click(function () {
+                that.main.navigate({
+                    tab:    'instances',
+                    dialog: 'issue',
+                    params:  $(this).data('instance-id')
+                });
+            });
+        if (!$e.find('.ui-button-icon-primary').length) {
+            $e.button({icons: {primary: 'ui-icon-pin-s'}, text: false})./*css({width: '2em', height: '2em'}).*/attr('title', _('bug'));
         }
 
         that.$grid.find('.instance-image' + id).each(function () {
