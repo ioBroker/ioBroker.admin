@@ -9,3 +9,4 @@ admin/i18n/*/flat.txt
 admin/i18n/flat.txt
 admin/words.js
 src/js/words.js
+package-lock.json
