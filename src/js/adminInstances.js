@@ -1140,7 +1140,8 @@ function Instances(main) {
             .click(function () {
                 var id = $(this).attr('data-instance-id');
                 if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.host) {
-                    that.main.confirmMessage(_('Are you sure?'), null, 'help', function (result) {
+                    var name = id.replace(/^system\.adapter\./, '');
+                    that.main.confirmMessage(_('Are you sure you want to delete the instance <b>%s</b>?', name), null, 'help', function (result) {
                         if (result) {
                             that.main.cmdExec(that.main.objects[id].common.host, 'del ' + id.replace('system.adapter.', ''), function (exitCode) {
                                 if (!exitCode) that.main.tabs.adapters.init(true);

@@ -1760,34 +1760,42 @@ function filterChanged(e) {
                     var _id_ = 'system.adapter.' + key;
                     if (data.objects[_id_] && data.objects[_id_].common && data.objects[_id_].common.icon) {
                         // if not BASE64
-                        if (data.objects[_id_].common.icon.length < ICON_MINIMAL_BASE64_SIZE) {
-                            icon = '/adapter/' + data.objects[_id_].common.name + '/' + data.objects[_id_].common.icon;
+                        if (!data.objects[_id_].common.icon.match(/^data:image\//)) {
+                            if (data.objects[_id_].common.icon.indexOf('.') !== -1) {
+                                icon = '/adapter/' + data.objects[_id_].common.name + '/' + data.objects[_id_].common.icon;
+                            } else {
+                                return '<i class="material-icons iob-list-icon">' + data.objects[_id_].common.icon + '</i>';
+                            }
                         } else {
                             icon = data.objects[_id_].common.icon;
                         }
                     } else
                     if (isCommon) {
                         if (obj.common.icon) {
-                            if (obj.common.icon.length < ICON_MINIMAL_BASE64_SIZE) {
-                                var instance;
-                                if (obj.type === 'instance') {
-                                    icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
-                                } else if (node.key.match(/^system\.adapter\./)) {
-                                    instance = node.key.split('.', 3);
-                                    if (obj.common.icon[0] === '/') {
-                                        instance[2] += obj.common.icon;
+                            if (!obj.common.icon.match(/^data:image\//)) {
+                                if (obj.common.icon.indexOf('.') !== -1) {
+                                    var instance;
+                                    if (obj.type === 'instance') {
+                                        icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
+                                    } else if (node.key.match(/^system\.adapter\./)) {
+                                        instance = node.key.split('.', 3);
+                                        if (obj.common.icon[0] === '/') {
+                                            instance[2] += obj.common.icon;
+                                        } else {
+                                            instance[2] += '/' + obj.common.icon;
+                                        }
+                                        icon = '/adapter/' + instance[2];
                                     } else {
-                                        instance[2] += '/' + obj.common.icon;
+                                        instance = key.split('.', 2);
+                                        if (obj.common.icon[0] === '/') {
+                                            instance[0] += obj.common.icon;
+                                        } else {
+                                            instance[0] += '/' + obj.common.icon;
+                                        }
+                                        icon = '/adapter/' + instance[0];
                                     }
-                                    icon = '/adapter/' + instance[2];
                                 } else {
-                                    instance = key.split('.', 2);
-                                    if (obj.common.icon[0] === '/') {
-                                        instance[0] += obj.common.icon;
-                                    } else {
-                                        instance[0] += '/' + obj.common.icon;
-                                    }
-                                    icon = '/adapter/' + instance[0];
+                                    return '<i class="material-icons iob-list-icon">' + obj.common.icon + '</i>';
                                 }
                             } else {
                                 // base 64 image
@@ -1832,7 +1840,7 @@ function filterChanged(e) {
                         case 'ID':
                             break;
                         case 'name':
-                            var icon = getIcon ();
+                            var icon = getIcon();
                             //$elem = $tdList.eq(base);
                             var t = isCommon ? (obj.common.name || '') : '';
                             if (typeof t === 'object') {

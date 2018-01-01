@@ -88,12 +88,12 @@ function Events(main) {
         this.eventPauseCounterSpan.css({'padding-top': 1, 'padding-bottom': 0});
     };
 
-    this.init = function () {
+    this.init    = function () {
         if (isRemote) {
             $('#grid-events').html(_('You can\'t see events via cloud'));
             return;
         }
-
+        hdr && hdr.syncHeader();
         if (this.inited) {
             return;
         }

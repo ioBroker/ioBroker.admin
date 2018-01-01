@@ -1006,9 +1006,9 @@ function Adapters(main) {
                         }
                     }
 
-                    var tTypes = '<li class="main-toolbar-table-types-item" data-type=""><a href="#!" >' + _('all') + '</a></li>\n';
+                    var tTypes = '<li class="main-toolbar-table-types-item" data-type=""><a>' + _('all') + '</a></li>\n';
                     for (var g = 0; g < types.length; g++) {
-                        tTypes += '<li class="main-toolbar-table-types-item" data-type="' + types[g] + '"><a href="#!" >' + _(types[g]) + '</a></li>\n';
+                        tTypes += '<li class="main-toolbar-table-types-item" data-type="' + types[g] + '"><a>' + _(types[g]) + '</a></li>\n';
                     }
                     var $types = $('#main-toolbar-table-types');
                     $types.html(tTypes);

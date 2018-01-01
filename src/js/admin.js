@@ -1455,26 +1455,31 @@ $(document).ready(function () {
         if (isCommon) {
             if (isCommon.icon) {
                 if (!isCommon.icon.match(/^data:image\//)) {
-                    var instance;
-                    if (obj.type === 'instance') {
-                        icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
-                    } else if (id.match(/^system\.adapter\./)) {
-                        instance = node.key.split('.', 3);
-                        if (obj.common.icon[0] === '/') {
-                            instance[2] += obj.common.icon;
+                    if (isCommon.icon.indexOf('.') !== -1) {
+                        var instance;
+                        if (obj.type === 'instance') {
+                            icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
+                        } else if (obj._id.match(/^system\.adapter\./)) {
+                            instance = node.key.split('.', 3);
+                            if (obj.common.icon[0] === '/') {
+                                instance[2] += obj.common.icon;
+                            } else {
+                                instance[2] += '/' + obj.common.icon;
+                            }
+                            icon = '/adapter/' + instance[2];
                         } else {
-                            instance[2] += '/' + obj.common.icon;
+                            instance = obj._id.split('.', 2);
+                            if (obj.common.icon[0] === '/') {
+                                instance[0] += obj.common.icon;
+                            } else {
+                                instance[0] += '/' + obj.common.icon;
+                            }
+                            icon = '/adapter/' + instance[0];
                         }
-                        icon = '/adapter/' + instance[2];
                     } else {
-                        instance = id.split('.', 2);
-                        if (obj.common.icon[0] === '/') {
-                            instance[0] += obj.common.icon;
-                        } else {
-                            instance[0] += '/' + obj.common.icon;
-                        }
-                        icon = '/adapter/' + instance[0];
+                        return '<i class="material-icons ' + (classes || 'treetable-icon') + '">' + isCommon.icon + '</i>';
                     }
+
                 } else {
                     icon = isCommon.icon;
                 }

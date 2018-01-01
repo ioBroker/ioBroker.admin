@@ -1,6 +1,7 @@
 {
   "%s added to %s": "%s ajouté à %s",
   "%s processes": "%s processus",
+  "(without prefix)": "(sans préfixe)",
   "A-Z": "A-Z",
   "Access control": "Contrôle d'accès",
   "Access control list": "Liste de contrôle d'accès",
@@ -39,6 +40,7 @@
   "Are you sure to delete all children of %s?": "Êtes-vous sûr de supprimer <b> \"%s\" </b> et <span style=\"color: red; font-weight: bold\"> tous </span> enfants?",
   "Are you sure to delete script %s?": "Etes-vous sûr de supprimer le script ' %s'?",
   "Are you sure you want to delete adapter %s?": "Êtes-vous sûr de vouloir supprimer l'adaptateur %s?",
+  "Are you sure you want to delete the instance <b>%s</b>?": "Êtes-vous sûr de vouloir supprimer l'instance <b>% s </ b>?",
   "Are you sure?": "Êtes-vous sûr?",
   "Are you sure? Changes are not saved.": "Êtes-vous sûr? Les modifications ne sont pas enregistrées.",
   "Argentina": "Argentine",

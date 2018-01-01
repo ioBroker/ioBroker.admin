@@ -16,10 +16,11 @@ function Enums(main) {
     this.editMode     = false;
 
     var tasks         = [];
-    var standardEnums = [
-        {
+    var standardEnums = {
+        'enum.rooms': {
             "_id": "enum.rooms",
             "common": {
+                "icon": "home",
                 "name": {
                     "en": "Rooms",
                     "de": "Räume",
@@ -43,16 +44,12 @@ function Enums(main) {
                 "members": [],
                 "object-non-deletable": true
             },
-            "type": "enum",
-            "acl": {
-                "owner": "system.user.admin",
-                "ownerGroup": "system.group.administrator",
-                "permissions": 1911
-            }
+            "type": "enum"
         },
-        {
+        'enum.functions': {
             "_id": "enum.functions",
             "common": {
+                "icon": "lightbulb_outline",
                 "name": {
                     "en": "Functions",
                     "de": "Funktionen",
@@ -76,14 +73,60 @@ function Enums(main) {
                 "members": [],
                 "object-non-deletable": true
             },
-            "type": "enum",
-            "acl": {
-                "owner": "system.user.admin",
-                "ownerGroup": "system.group.administrator",
-                "permissions": 1911
+            "type": "enum"
+        },
+        'enum.favorites': {
+            "_id": "enum.favorites",
+            "common": {
+                "icon": "favorite_border",
+                "name": {
+                    "en": "Favorites",
+                    "de": "Favoriten",
+                    "ru": "Избранные",
+                    "pt": "Favoritos",
+                    "nl": "favorieten",
+                    "fr": "Favoris",
+                    "it": "Preferiti",
+                    "es": "Favoritos"
+                },
+                "desc": {
+                    "en": "List of favorites objects",
+                    "de": "Liste der Favoritenobjekte",
+                    "ru": "Список избранных объектов",
+                    "pt": "Lista de objetos favoritos",
+                    "nl": "Lijst met favorietenobjecten",
+                    "fr": "Liste des objets favoris",
+                    "it": "Elenco di oggetti preferiti",
+                    "es": "Lista de objetos favoritos"
+                },
+                "members": []
+            },
+            "type": "enum"
+        }
+    };
+
+    var standardGroups = {
+        'enum.rooms': {
+            "enum.rooms.living_room": {
+                "_id": "enum.rooms.living_room",
+                "common": {
+                    "icon": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/PjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDQ4MC4wNDYgNDgwLjA0NiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDgwLjA0NiA0ODAuMDQ2OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PGc+PGc+PHBhdGggZD0iTTMyOC4wMzQsMzIwLjA0NmgtMjR2LTg4YzAtNC40MTgtMy41ODItOC04LThoLTI1NmMtNC40MTgsMC04LDMuNTgyLTgsOHY4OGgtMjRjLTQuNDE4LDAtOCwzLjU4Mi04LDh2MTI4YzAsNC40MTgsMy41ODIsOCw4LDhoMjR2MTZoMTZ2LTE2aDI0MHYxNmgxNnYtMTZoMjRjNC40MTgsMCw4LTMuNTgyLDgtOHYtMTI4QzMzNi4wMzQsMzIzLjYyOCwzMzIuNDUyLDMyMC4wNDYsMzI4LjAzNCwzMjAuMDQ2eiBNODAuMDM0LDQ0OC4wNDZoLTY0di0xMTJoNjRWNDQ4LjA0NnogTTI0MC4wMzQsNDQ4LjA0NmgtMTQ0di02NGgxNDRWNDQ4LjA0NnogTTI0MC4wMzQsMzI4LjA0NnY0MGgtMTQ0di00MGMwLTQuNDE4LTMuNTgyLTgtOC04aC00MHYtODBoMjQwdjgwaC00MEMyNDMuNjE1LDMyMC4wNDYsMjQwLjAzNCwzMjMuNjI4LDI0MC4wMzQsMzI4LjA0NnogTTMyMC4wMzQsNDQ4LjA0NmgtNjR2LTExMmg2NFY0NDguMDQ2eiIvPjwvZz48L2c+PGc+PGc+PHBhdGggZD0iTTQ3OS45NTQsMTUxLjE2NmwtMTYtMTQ0Yy0wLjQ0Ny00LjA0MS0zLjg1NC03LjEwNC03LjkyLTcuMTJoLTExMmMtNC4wOTYtMC4wMjUtNy41NDksMy4wNDktOCw3LjEybC0xNiwxNDRjLTAuMjc2LDIuMjU4LDAuNDIyLDQuNTI4LDEuOTIsNi4yNGMxLjU1LDEuNzE4LDMuNzY3LDIuNjgsNi4wOCwyLjY0aDY0djI3MmgtMzJjLTQuNDE4LDAtOCwzLjU4Mi04LDh2MzJjMCw0LjQxOCwzLjU4Miw4LDgsOGg4MGM0LjQxOCwwLDgtMy41ODIsOC04di0zMmMwLTQuNDE4LTMuNTgyLTgtOC04aC0zMnYtMjcyaDY0YzIuMjg1LDAuMDE3LDQuNDY5LTAuOTQzLDYtMi42NEM0NzkuNTMyLDE1NS42OTQsNDgwLjIzLDE1My40MjUsNDc5Ljk1NCwxNTEuMTY2eiBNNDMyLjAzNCw0NDguMDQ2djE2aC02NHYtMTZINDMyLjAzNHogTTMzNi45OTQsMTQ0LjA0NmwxNC4yNC0xMjhoOTcuNmwxNC4yNCwxMjhIMzM2Ljk5NHoiLz48L2c+PC9nPjxnPjxnPjxwYXRoIGQ9Ik0yNzIuMDM0LDQ4LjA0NmgtNTIuNzJsLTQ1LjYtNDUuNjhjLTMuMTExLTMuMTM3LTguMTc3LTMuMTU4LTExLjMxNC0wLjA0NmMtMC4wMTYsMC4wMTUtMC4wMzEsMC4wMzEtMC4wNDYsMC4wNDZsLTQ1LjYsNDUuNjhoLTUyLjcyYy00LjQxOCwwLTgsMy41ODItOCw4djEyOGMwLDQuNDE4LDMuNTgyLDgsOCw4aDIwOGM0LjQxOCwwLDgtMy41ODIsOC04di0xMjhDMjgwLjAzNCw1MS42MjgsMjc2LjQ1Miw0OC4wNDYsMjcyLjAzNCw0OC4wNDZ6IE0xNjguMDM0LDE5LjMyNmwyOC43MiwyOC43MmgtNTcuNDRMMTY4LjAzNCwxOS4zMjZ6IE0yNjQuMDM0LDE3Ni4wNDZoLTE5MnYtMTEyaDE5MlYxNzYuMDQ2eiIvPjwvZz48L2c+PGc+PGc+PHBhdGggZD0iTTg4LjAzNCw4MC4wNDZ2ODBoMTYwdi04MEg4OC4wMzR6IE0yMzIuMDM0LDE0NC4wNDZoLTEyOHYtNDhoMTI4VjE0NC4wNDZ6Ii8+PC9nPjwvZz48L3N2Zz4=",
+                    "name": {
+                        "en": "Living room",
+                        "de": "Wohnzimmer",
+                        "ru": "Гостиная",
+                        "pt": "Sala de estar",
+                        "nl": "Woonkamer",
+                        "fr": "Salon",
+                        "it": "Soggiorno",
+                        "es": "Sala"
+                    },
+                    "members": []
+                },
+                "type": "enum"
             }
         }
-    ];
+    };
 
     var selectId = function () {
         if (!that.$grid || !that.$grid.selectId) return;
@@ -199,23 +242,69 @@ function Enums(main) {
         return true;
     }
 
-    function prepareNewEnum() {
+    function prepareNewEnum(parent) {
         var text = '';
-        for (var e = 0; e < standardEnums.length; e++) {
-            if (that.list.indexOf(standardEnums[e]._id) === -1) {
-                text += '<li class="new-enum-item" data-id="' + standardEnums[e]._id + '"><a>' + getName(standardEnums[e]) + '</a></li>';
+        var id;
+        if (parent && standardGroups[parent]) {
+            var name = parent.replace(/[.#\\\/&?]+/g, '-');
+
+            for (id in standardGroups[parent]) {
+                if (standardGroups[parent].hasOwnProperty(id) && that.list.indexOf(id) === -1) {
+                    text += '<li class="new-group-item" data-id="' + id + '" data-enum="' + parent + '"><a>' + that.main.getIconFromObj(standardGroups[parent][id]) + getName(standardGroups[parent][id]) + '</a></li>';
+                }
             }
-        }
+            if (text) {
+                text += '<li class="divider"></li>';
+            }
+            text += '<li class="new-group-item" data-enum="' + parent + '"><a><i class="material-icons">control_point</i><span>' + _('custom group') + '</span></a></li>';
 
-        if (text) {
-            text += '<li class="divider"></li>';
-        }
-        text += '<li class="new-enum-item"><a><i class="material-icons">view_module</i><span class="translate">custom enum</span></a></li>';
-        that.$gridEnum.find('#btn-new-enum').html(text);
-        that.$gridEnum.find('.btn-new-enum-btn').dropdown();
-        that.$gridEnum.find('.new-enum-item').click(function () {
+            that.$gridEnum.find('#btn-new-group-' + name).html(text);
+            that.$gridEnum.find('.btn-new-group-btn[data-target="btn-new-group-' + name + '"]').dropdown({
+                constrainWidth: false
+            });
+            that.$gridEnum.find('#btn-new-group-' + name).find('.new-group-item').click(function () {
+                var id = $(this).data('id');
+                var parent = $(this).data('enum');
+                if (!id) {
+                    createOrEditEnum(null, parent);
+                } else {
+                    that.main.saveConfig('enums-active', id);
+                    that.main.socket.emit('setObject', id, standardGroups[parent][id], function (err) {
+                        if (err) {
+                            that.main.showError(err);
+                        }
+                    });
+                }
+            });
+        } else {
+            for (id in standardEnums) {
+                if (standardEnums.hasOwnProperty(id) && that.list.indexOf(id) === -1) {
+                    text += '<li class="new-enum-item" data-id="' + id + '"><a>' + that.main.getIconFromObj(standardEnums[id]) + getName(standardEnums[id]) + '</a></li>';
+                }
+            }
 
-        });
+            if (text) {
+                text += '<li class="divider"></li>';
+            }
+            text += '<li class="new-enum-item"><a><i class="material-icons">control_point</i><span>' + _('custom enum') + '</span></a></li>';
+            that.$gridEnum.find('#btn-new-enum').html(text);
+            that.$gridEnum.find('.btn-new-enum-btn').dropdown({
+                constrainWidth: false
+            });
+            that.$gridEnum.find('.new-enum-item').click(function () {
+                var id = $(this).data('id');
+                if (!id) {
+                    createOrEditEnum(null);
+                } else {
+                    that.main.saveConfig('enums-active', id);
+                    that.main.socket.emit('setObject', id, standardEnums[id], function (err) {
+                        if (err) {
+                            that.main.showError(err);
+                        }
+                    });
+                }
+            });
+        }
     }
 
     this.prepare = function () {
@@ -256,12 +345,12 @@ function Enums(main) {
 
     function drawEnum(id, $page) {
         var obj = that.main.objects[id];
+        var name = id.replace(/[.#\\\/&?]+/g, '-');
         var text =
             '<div class="raw enum-buttons">' +
             '   <div class="col s12">' +
-            '       <a class="btn-floating waves-effect waves-light blue btn-new-category" title="' + _('New category') + '" data-id="' + id + '">' +
-            '           <i class="material-icons">library_add</i>' +
-            '       </a>' +
+            '       <a class="btn-floating waves-effect waves-light blue dropdown-trigger btn-new-group-btn" title="' + _('New enum') + '" href="#" data-target="btn-new-group-' + name + '"><i class="material-icons">library_add</i></a>' +
+            '       <ul id="btn-new-group-' + name + '" class="dropdown-content" data-id="' + id + '"></ul>' +
             '       <a class="btn-floating waves-effect waves-light btn-edit-category" title="' + _('Edit category') + '" data-id="' + id + '">' +
             '           <i class="material-icons">edit</i>' +
             '       </a>' +
@@ -303,6 +392,7 @@ function Enums(main) {
         }
         text += '</ul></div></div>';
         $page.html(text);
+        prepareNewEnum(id);
     }
 
     function drawEnums() {
@@ -314,7 +404,7 @@ function Enums(main) {
             if (parts.length !== 2) continue;
             var name = getName(that.main.objects, that.list[e]);
             var id = that.list[e].replace(/[#.\s_]/g, '-');
-            text += '<li class="tab col"><a href="#enum-' + id + '" class="translate">' + name + '</a></li>';
+            text += '<li class="tab col"><a href="#enum-' + id + '">' + that.main.getIcon(that.list[e]) + '<span>' + name + '</span></a></li>';
         }
         text += '</ul>';
         text += '</div>';
@@ -875,9 +965,6 @@ function Enums(main) {
             } else {
                 selectId('destroy');
             }
-            this.$gridList.find('.btn-new-enum').unbind('click').click(function () {
-                createOrEditEnum(null, $(this).data('id'));
-            });
 
             this.$gridList.find('.btn-edit').unbind('click').click(function () {
                 switchEditMode(!that.editMode);

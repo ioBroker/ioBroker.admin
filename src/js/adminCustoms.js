@@ -609,7 +609,7 @@ function Customs(main) {
             var text = '';
             for (var k = 0; k < _instances.length; k++) {
                 var insta = this.main.objects['system.adapter.' + _instances[k]];
-                if (insta.common && (insta.common.enabled ||
+                if (insta && insta.common && (insta.common.enabled ||
                     (this.main.states['system.adapter.' + _instances[k] + '.alive'] && this.main.states['system.adapter.' + _instances[k] + '.alive'].val))) {
                     text += '<option value="' + _instances[k] + '" ' + (!k ? 'selected' : '') + ' >' + _instances[k] + '</option>\n';
                 }

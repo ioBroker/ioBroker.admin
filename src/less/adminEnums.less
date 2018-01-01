@@ -13,6 +13,10 @@
       color: white;
     }
   }
+  .treetable-icon {
+    width: 32px;
+    max-height: 32px;
+  }
   .tab-enums-objects {
     display:  none;
     .loader {
@@ -66,6 +70,12 @@
         color: darkgray;
         cursor: inherit;
       }
+      .collection-item {
+        //margin-bottom: 1rem;
+        &>img.circle {
+          border-radius: 0;
+        }
+      }
       .chip {
         position: relative;
         .chip-id {
@@ -100,7 +110,7 @@
     }
   }
 
-  .title {
+  .modal-content .title {
     margin: 0;
     background: @main-active-color;
     color: white;

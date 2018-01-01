@@ -1,6 +1,7 @@
 {
   "%s added to %s": "%s добавлен в %s",
   "%s processes": "%s процессов",
+  "(without prefix)": "(без префикса)",
   "A-Z": "А-Я",
   "Access control": "Права доступа",
   "Access control list": "Права доступа",
@@ -39,6 +40,7 @@
   "Are you sure to delete all children of %s?": "Вы действительно хотите удалить <b>\"%s\"</b> и <span style=\"color: red; font-weight: bold\">все</span> нижележащие объекты?",
   "Are you sure to delete script %s?": "Вы действительно хотите удалить скрипт '%s'?",
   "Are you sure you want to delete adapter %s?": "Вы действительно хотите удалить адаптер %s?",
+  "Are you sure you want to delete the instance <b>%s</b>?": "Вы действительно хотите удалить экземпляр <b>% s </ b>?",
   "Are you sure?": "Вы уверены?",
   "Are you sure? Changes are not saved.": "Изменения не сохранены. Всё равно закрыть?",
   "Argentina": "Аргентина",
