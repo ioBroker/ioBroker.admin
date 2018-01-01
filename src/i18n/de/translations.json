@@ -40,7 +40,7 @@
   "Are you sure to delete all children of %s?": "Wollen Sie wirklich <b>\"%s\"</b> und <span style=\"color: red; font-weight: bold\">alle</span> unterliegende Objekte löschen?",
   "Are you sure to delete script %s?": "Wollen Sie wirklich das Skript '%s' löschen?",
   "Are you sure you want to delete adapter %s?": "Möchten Sie den Adapter %s wirklich löschen?",
-  "Are you sure you want to delete the instance <b>%s</b>?": "Möchten Sie die Instanz <b>% s </ b> wirklich löschen?",
+  "Are you sure you want to delete the instance <b>%s</b>?": "Möchten Sie die Instanz <b> %s </b> wirklich löschen?",
   "Are you sure?": "Sind Sie sicher?",
   "Are you sure? Changes are not saved.": "Änderungen sind nicht gespeichert. Sicher?",
   "Argentina": "Argentinien",
