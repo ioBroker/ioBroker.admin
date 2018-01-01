@@ -79,6 +79,10 @@ In this project used some icons from Flaticon(c):
 - ![016-armchair-1.svg](src/img/icons/rooms/016-armchair-1.svg) - "designed by smalllikeart from Flaticon"
 
 ## Changelog
+### 3.0.6 (2018-01-01)
+* (soef) update instances, objects and other lists
+* (bluefox) rewrite interface with materialze 
+
 ### 2.0.11 (2017-10-23)
 * (bluefox) Configurable event update disable threshold
 

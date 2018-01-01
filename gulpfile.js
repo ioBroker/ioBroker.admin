@@ -628,6 +628,7 @@ gulp.task('beta', function (done) {
     var ioPack = require('./io-package.json');
     var pack = require('./package.json');
     ioPack.common.name = 'admin-beta';
+    ioPack.common.title = 'ioBroker Admin Beta';
     ioPack.native.port = 9081;
     fs.writeFileSync('./io-package.json', JSON.stringify(ioPack, null, 2));
     pack.name = 'iobroker.admin-beta';
