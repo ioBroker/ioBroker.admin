@@ -54,7 +54,7 @@ var jQueryCronWords = {
     },
     "CRON Cancel": {
         "en": "Cancel",
-        "de": "Stornieren",
+        "de": "Abbrechen",
         "ru": "Отмена",
         "pt": "Cancelar",
         "nl": "Annuleer",
