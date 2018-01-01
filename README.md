@@ -73,6 +73,11 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 - use everywhere material icons
 - Move jQuery UI dialogs to Material dialogs
 
+## Used icons
+In this project used some icons from Flaticon(c):
+- ![006-double-bed.svg](src/img/icons/rooms/006-double-bed.svg) - "designed by smalllikeart from Flaticon"
+- ![016-armchair-1.svg](src/img/icons/rooms/016-armchair-1.svg) - "designed by smalllikeart from Flaticon"
+
 ## Changelog
 ### 2.0.11 (2017-10-23)
 * (bluefox) Configurable event update disable threshold
