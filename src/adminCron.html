@@ -9,7 +9,7 @@
             </div>
             <div class="row">
                 <div class="col s8">
-                    <input type="text" class="cron-input" value="* * * * * *" />
+                    <input type="text" class="cron-input" value="* * * * * *"/>
                     <label class="cron-text"></label>
                 </div>
                 <div class="col s4">
@@ -33,15 +33,16 @@
                         <div class="col s12">
                             <select class="cron-type-selector" data-type="second">
                                 <option value="every" class="translate">CRON Every second</option>
-                                <option value="n"     class="translate">CRON Every n seconds</option>
-                                <option value="each"  class="translate">CRON Each selected second</option>
+                                <option value="n" class="translate">CRON Every n seconds</option>
+                                <option value="each" class="translate">CRON Each selected second</option>
                             </select>
                             <label class="translate">CRON Type</label>
                         </div>
                     </div>
                     <div class="row n">
+                        <div class="col s12 padding"></div>
                         <div class="col s12">
-                            <input class="cron-slider" data-type="second" data-arg="0" type="range" min="1" max="59" />
+                            <input class="cron-slider" data-type="second" data-arg="0" type="range" min="1" max="59"/>
                         </div>
                     </div>
                     <div class="row each cron-preview-n">
@@ -54,14 +55,15 @@
                         <div class="col s12">
                             <select class="cron-type-selector" data-type="minute">
                                 <option value="every" class="translate">CRON Every minute</option>
-                                <option value="n"     class="translate">CRON Every n minutes</option>
-                                <option value="each"  class="translate">CRON Each selected minute</option>
+                                <option value="n" class="translate">CRON Every n minutes</option>
+                                <option value="each" class="translate">CRON Each selected minute</option>
                             </select>
                         </div>
                     </div>
                     <div class="row n">
+                        <div class="col s12 padding"></div>
                         <div class="col s12">
-                            <input class="cron-slider" data-type="minute" data-arg="1" type="range" min="1" max="59" />
+                            <input class="cron-slider" data-type="minute" data-arg="1" type="range" min="1" max="59"/>
                         </div>
                     </div>
                     <div class="row each">
@@ -74,14 +76,15 @@
                         <div class="col s12">
                             <select class="cron-type-selector" data-type="hour">
                                 <option value="every" class="translate">CRON Every hour</option>
-                                <option value="n"     class="translate">CRON Every n hours</option>
-                                <option value="each"  class="translate">CRON Each selected hour</option>
+                                <option value="n" class="translate">CRON Every n hours</option>
+                                <option value="each" class="translate">CRON Each selected hour</option>
                             </select>
                         </div>
                     </div>
                     <div class="row n">
+                        <div class="col s12 padding"></div>
                         <div class="col s12">
-                            <input class="cron-slider" data-type="hour" data-arg="2" type="range" min="1" max="23" />
+                            <input class="cron-slider" data-type="hour" data-arg="2" type="range" min="1" max="23"/>
                         </div>
                     </div>
                     <div class="row each">
@@ -94,7 +97,7 @@
                         <div class="col s12">
                             <select class="cron-type-selector" data-type="day">
                                 <option value="every" class="translate">CRON Every day</option>
-                                <option value="each"  class="translate">CRON Each selected day</option>
+                                <option value="each" class="translate">CRON Each selected day</option>
                             </select>
                         </div>
                     </div>
@@ -108,7 +111,7 @@
                         <div class="col s12">
                             <select class="cron-type-selector" data-type="month">
                                 <option value="every" class="translate">CRON Every month</option>
-                                <option value="each"  class="translate">CRON Each selected month</option>
+                                <option value="each" class="translate">CRON Each selected month</option>
                             </select>
                         </div>
                     </div>
@@ -118,19 +121,19 @@
                     </div>
                 </div>
                 <div id="cron-tabs-week"   class="col s12 page" data-type="week">
-                    <div class="row">
-                        <div class="col s12">
-                            <select class="cron-type-selector" data-type="week">
-                                <option value="every" class="translate">CRON Every week day</option>
-                                <option value="each"  class="translate">CRON Each selected week day</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row each">
-                        <div class="col s12 cron-tabs-format">
-                        </div>
+                <div class="row">
+                    <div class="col s12">
+                        <select class="cron-type-selector" data-type="week">
+                            <option value="every" class="translate">CRON Every week day</option>
+                            <option value="each" class="translate">CRON Each selected week day</option>
+                        </select>
                     </div>
                 </div>
+                <div class="row each">
+                    <div class="col s12 cron-tabs-format">
+                    </div>
+                </div>
+            </div>
             </div>
         </div>
         <div class="modal-footer">
