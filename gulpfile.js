@@ -414,7 +414,12 @@ gulp.task('updatePackages', function (done) {
         newNews[pkg.version] = {
             en: 'news',
             de: 'neues',
-            ru: 'новое'
+            ru: 'новое',
+            pt: 'novidades',
+            nl: 'nieuws',
+            fr: 'nouvelles',
+            it: 'notizie',
+            es: 'noticias'
         };
         iopackage.common.news = Object.assign(newNews, news);
     }
