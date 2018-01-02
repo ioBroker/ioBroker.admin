@@ -42,7 +42,7 @@
     "grunt-contrib-jshint": "^1.1.0",
     "grunt-jscs": "^3.0.1",
     "grunt-http": "^2.2.0",
-    "mocha": "^3.5.3",
+    "mocha": "^4.1.0",
     "chai": "^4.1.2"
   },
   "bugs": {
@@ -50,7 +50,7 @@
   },
   "main": "admin.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha"
+    "test": "node node_modules/mocha/bin/mocha --exit"
   },
   "author": "bluefox <dogafox@gmail.com>",
   "license": "MIT"
