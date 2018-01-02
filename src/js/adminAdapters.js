@@ -534,10 +534,19 @@ function Adapters(main) {
         if (that.currentFilter) {
              if (!that.data[node.key]) return false;
 
-             if ((that.data[node.key].name     && that.data[node.key].name.toLowerCase().indexOf(that.currentFilter)     !== -1) ||
-                 (that.data[node.key].title    && that.data[node.key].title.toLowerCase().indexOf(that.currentFilter)    !== -1) ||
+             var title = that.data[node.key].title;
+             if (title && typeof title === 'object') {
+                 title = title[systemLang] || title.en;
+             }
+            var desc = that.data[node.key].desc;
+            if (desc && typeof desc === 'object') {
+                desc = desc[systemLang] || desc.en;
+            }
+
+            if ((that.data[node.key].name      && that.data[node.key].name.toLowerCase().indexOf(that.currentFilter)     !== -1) ||
+                 (title                        && title.toLowerCase().indexOf(that.currentFilter)                        !== -1) ||
                  (that.data[node.key].keywords && that.data[node.key].keywords.toLowerCase().indexOf(that.currentFilter) !== -1) ||
-                 (that.data[node.key].desc     && that.data[node.key].desc.toLowerCase().indexOf(that.currentFilter)     !== -1)){
+                 (desc                         && desc.toLowerCase().indexOf(that.currentFilter)                         !== -1)){
                 return true;
              } else {
                  return false;
@@ -669,7 +678,17 @@ function Adapters(main) {
             var inst1 = c1.data.installed || 0, inst2 = c2.data.installed || 0;
             var ret = inst2 - inst1;
             if (ret) return ret;
-            var t1 = c1.title.toLowerCase(), t2 = c2.title.toLowerCase();
+            var t1 = c1.title || '';
+            if (typeof t1 === 'object') {
+                t1 = t1[systemLang] || t1.en;
+            }
+            var t2 = c2.title || '';
+            if (typeof t2 === 'object') {
+                t2 = t2[systemLang] || t2.en;
+            }
+
+            t1 = t1.toLowerCase();
+            t2 = t2.toLowerCase();
             if (t1 > t2) return 1;
             if (t1 < t2) return -1;
             return 0;
@@ -821,13 +840,14 @@ function Adapters(main) {
                     var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
                     var desc  = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
                     desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
+                    var title = (typeof obj.title === 'object') ? (obj.title[systemLang] || obj.title.en) : obj.title;
 
                     that.data[adapter] = {
                         image:      icon ? '<img onerror="this.src=\'img/info-big.png\';" src="' + icon + '" class="adapter-table-icon" />' : '',
                         icon:       icon || '',
                         stat:        repository[adapter] ? repository[adapter].stat : 0,
                         name:       adapter,
-                        title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),
+                        title:      (title || '').replace('ioBroker Visualisation - ', ''),
                         desc:       desc,
                         keywords:   obj.keywords ? obj.keywords.join(' ') : '',
                         version:    version,
@@ -902,12 +922,14 @@ function Adapters(main) {
                         var desc = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
                         desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
+                        title = (typeof obj.title === 'object') ? (obj.title[systemLang] || obj.title.en) : obj.title;
+
                         that.data[adapter] = {
                             image:      obj.extIcon ? '<img onerror="this.src=\'img/info-big.png\';" src="' + obj.extIcon + '" class="adapter-table-icon" />' : '',
                             icon:       obj.extIcon,
                             stat:       obj.stat,
                             name:       adapter,
-                            title:      (obj.title || '').replace('ioBroker Visualisation - ', ''),
+                            title:      (title || '').replace('ioBroker Visualisation - ', ''),
                             desc:       desc,
                             keywords:   obj.keywords ? obj.keywords.join(' ') : '',
                             version:    version,

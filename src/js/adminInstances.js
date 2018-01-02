@@ -426,8 +426,13 @@ function Instances(main) {
                 (url ? '<button ' + (isRun ? '' : 'disabled ') + 'style="display: inline-block" data-link="' + (typeof url !== 'object' ? url : '') +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '') +
                 '</td>';
 
+            var title = common.title;
+            if (typeof title === 'object') {
+                title = title[systemLang] || title.en;
+            }
+
             // title
-            text += '<td title="' + (link ? _('Click on icon') : '') + '" style="padding-left: 0.5em" data-name="title" data-value="' + (common.title || '') + '" class="instance-editable" data-instance-id="' + instanceId + '">' + (common.title || '') + '</td>';
+            text += '<td title="' + (link ? _('Click on icon') : '') + '" style="padding-left: 0.5em" data-name="title" data-value="' + (title || '') + '" class="instance-editable" data-instance-id="' + instanceId + '">' + (common.title || '') + '</td>';
 
             // host - hide it if only one host
             if (that.main.tabs.hosts.list.length > 1) {
@@ -516,10 +521,15 @@ function Instances(main) {
                     continue;
                 }
                 var isShow = 'hide';
+                var title = obj.common.title;
+                if (typeof title === 'object') {
+                    title = title[systemLang] || title.en;
+                }
+
                 if (obj.common.name && reg.test(obj.common.name)) {
                     isShow = 'show';
                 } else
-                if (obj.common.title && reg.test(obj.common.title)) {
+                if (title && reg.test(title)) {
                     isShow = 'show';
                 } else
                 if (filter === 'true') {

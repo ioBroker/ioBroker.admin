@@ -143,8 +143,12 @@ function Hosts(main) {
             + '</td>';
         // type
         text += '<td>' + obj.common.type + '</td>';
+        var title = obj.common.title;
+        if (typeof title === 'object') {
+            title = title[systemLang] || title.en;
+        }
         // description
-        text += '<td>' + obj.common.title + '</td>';
+        text += '<td>' + title + '</td>';
         // platform
         // text += '<td>' + obj.common.platform + '</td>'; // actually only one platform
         // OS

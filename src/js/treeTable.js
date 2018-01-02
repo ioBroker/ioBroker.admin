@@ -117,10 +117,14 @@
                 if (!found) break;
                 parents++;
             }
+            var title = rows[i].title;
+            if (typeof title === 'object') {
+                title = title[systemLang] || title.en;
+            }
             var isNotFolder = rows[i].instance === undefined ? 0 : 1;
             table += '<li data-id="' + rows[i].id + '" class="' + (!isNotFolder ? 'treetable-list-folder' : 'treetable-list-item') + '" style="margin-left: ' + (parents * 19) + 'px; width: calc(100% - ' + (parents * 15 + 2 + isNotFolder * 7) + 'px);' +
             (rows[i].id === 'script.js.global' ? 'color: rgb(0, 128, 0);' : '') + '">' +
-            (!isNotFolder ? '<span class="fancytree-expander"></span>' : '') + '<span class="fancytree-icon"></span>' + rows[i].title + '</li>';
+            (!isNotFolder ? '<span class="fancytree-expander"></span>' : '') + '<span class="fancytree-icon"></span>' + title + '</li>';
         }
         table += '</ul>';
         var $dlg = $(this);
