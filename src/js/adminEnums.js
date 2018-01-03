@@ -125,6 +125,36 @@ function Enums(main) {
                 },
                 "type": "enum"
             }
+            // todo
+            //
+        },
+        'enum.functions': {
+            "enum.functions.light": {
+                "_id": "enum.functions.light",
+                "common": {
+                    "icon": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0ndXRmLTgnPz4KPCFET0NUWVBFIHN2ZyBQVUJMSUMgJy0vL1czQy8vRFREIFNWRyAxLjEvL0VOJyAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIj4KICA8Zz4KICAgIDxnPgogICAgICA8cGF0aCBkPSJtMjU2LDkyLjNjLTc0LjIsMC0xMjcuOCw1NS4zLTEzNi4zLDExNC43LTUuMywzOS42IDcuNSw3OC4yIDM0LjEsMTA3LjQgMjMuNCwyNSAzNi4yLDU4LjQgMzYuMiw5Mi44bC0uMSw1NC4yYzAsMjEuOSAxOC4xLDM5LjYgNDAuNSwzOS42aDUyLjJjMjIuNCwwIDQwLjUtMTcuNyA0MC41LTM5LjZsLjEtNTQuMmMwLTM1LjQgMTEuNy02Ny44IDM0LjEtOTAuNyAyNC41LTI1IDM3LjMtNTcuMyAzNy4zLTkwLjctMC4xLTc0LjEtNjMtMTMzLjUtMTM4LjYtMTMzLjV6bTQ2LjgsMzY5LjFjMCwxMC40LTguNSwxOC44LTE5LjIsMTguOGgtNTIuMmMtMTAuNywwLTE5LjItOC4zLTE5LjItMTguOHYtMjRoOTAuNXYyNHptMzkuNi0xNTkuNWMtMjYuNiwyNy4xLTQwLjUsNjQuNi00MC41LDEwNS4zdjkuNGgtOTAuNXYtOS40YzAtMzguNi0xNi03Ny4xLTQyLjYtMTA2LjMtMjMuNC0yNS0zMy01Ny4zLTI4LjgtOTAuNyA3LjUtNTAgNTQtOTcgMTE2LjEtOTcgNjUsMCAxMTcuMiw1MS4xIDExNy4yLDExMi42IDAsMjguMS0xMC43LDU1LjItMzAuOSw3Ni4xeiIvPgogICAgICA8cmVjdCB3aWR0aD0iMjEuMyIgeD0iMjQ1LjMiIHk9IjExIiBoZWlnaHQ9IjUwIi8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzg1LjEsMTA3LjQgNDAwLDEyMi4zIDQzNi41LDg3LjIgNDIxLjUsNzIuMyAgICIvPgogICAgICA8cmVjdCB3aWR0aD0iNTIuMiIgeD0iNDQ4LjgiIHk9IjIzNi4yIiBoZWlnaHQ9IjIwLjkiLz4KICAgICAgPHJlY3Qgd2lkdGg9IjUyLjIiIHg9IjExIiB5PSIyMzYuMiIgaGVpZ2h0PSIyMC45Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iOTAuMSw3Mi4yIDc1LjEsODcuMSAxMTEuNiwxMjIuMiAxMjYuNSwxMDcuMyAgICIvPgogICAgPC9nPgogIDwvZz4KPC9zdmc+Cg==",
+                    "name": {
+                        "en": "Light",
+                        "de": "Licht",
+                        "ru": "Свет",
+                        "pt": "Luz",
+                        "nl": "Licht",
+                        "fr": "Lumière",
+                        "it": "Soggiorno",
+                        "es": "Luz"
+                    },
+                    "members": []
+                },
+                "type": "enum"
+            }
+            // todo
+            // Blinds
+            // Weather
+            // Heating
+            // Backlight
+            // Household
+            //
+
         }
     };
 
@@ -245,12 +275,14 @@ function Enums(main) {
     function prepareNewEnum(parent) {
         var text = '';
         var id;
-        if (parent && standardGroups[parent]) {
+        if (parent) {
             var name = parent.replace(/[.#\\\/&?]+/g, '-');
 
-            for (id in standardGroups[parent]) {
-                if (standardGroups[parent].hasOwnProperty(id) && that.list.indexOf(id) === -1) {
-                    text += '<li class="new-group-item" data-id="' + id + '" data-enum="' + parent + '"><a>' + that.main.getIconFromObj(standardGroups[parent][id]) + getName(standardGroups[parent][id]) + '</a></li>';
+            if (standardGroups[parent]) {
+                for (id in standardGroups[parent]) {
+                    if (standardGroups[parent].hasOwnProperty(id) && that.list.indexOf(id) === -1) {
+                        text += '<li class="new-group-item" data-id="' + id + '" data-enum="' + parent + '"><a>' + that.main.getIconFromObj(standardGroups[parent][id]) + getName(standardGroups[parent][id]) + '</a></li>';
+                    }
                 }
             }
             if (text) {
@@ -268,7 +300,8 @@ function Enums(main) {
                 if (!id) {
                     createOrEditEnum(null, parent);
                 } else {
-                    that.main.saveConfig('enums-active', id);
+                    var name = parent.replace(/[.#\\\/&?]+/g, '-');
+                    that.main.saveConfig('enums-active', 'enum-' + name);
                     that.main.socket.emit('setObject', id, standardGroups[parent][id], function (err) {
                         if (err) {
                             that.main.showError(err);
@@ -296,7 +329,8 @@ function Enums(main) {
                 if (!id) {
                     createOrEditEnum(null);
                 } else {
-                    that.main.saveConfig('enums-active', id);
+                    var name = id.replace(/[.#\\\/&?]+/g, '-');
+                    that.main.saveConfig('enums-active', 'enum-' + name);
                     that.main.socket.emit('setObject', id, standardEnums[id], function (err) {
                         if (err) {
                             that.main.showError(err);

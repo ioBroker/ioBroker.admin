@@ -414,7 +414,12 @@ gulp.task('updatePackages', function (done) {
         newNews[pkg.version] = {
             en: 'news',
             de: 'neues',
-            ru: 'новое'
+            ru: 'новое',
+            pt: 'novidades',
+            nl: 'nieuws',
+            fr: 'nouvelles',
+            it: 'notizie',
+            es: 'noticias'
         };
         iopackage.common.news = Object.assign(newNews, news);
     }
@@ -628,6 +633,7 @@ gulp.task('beta', function (done) {
     var ioPack = require('./io-package.json');
     var pack = require('./package.json');
     ioPack.common.name = 'admin-beta';
+    ioPack.common.title = 'ioBroker Admin Beta';
     ioPack.native.port = 9081;
     fs.writeFileSync('./io-package.json', JSON.stringify(ioPack, null, 2));
     pack.name = 'iobroker.admin-beta';

@@ -1,136 +1,154 @@
 {
-    "common": {
-        "name":                     "admin",
-        "title":                    "ioBroker Admin",
-        "version": "3.0.5",
-        "news": {
-            "3.0.5": {
-                "en": "GUI was redesigned",
-                "de": "GUI wurde neu gestaltet",
-                "ru": "Графический интерфейс был обновлён",
-                "pt": "GUI foi redesenhado",
-                "nl": "GUI is opnieuw ontworpen",
-                "fr": "L'interface graphique a été repensée",
-                "it": "La GUI è stata ridisegnata"
-            },
-            "2.0.11": {
-                "en": "Configurable event update disable threshold",
-                "de": "Konfigurierbar Schwellenwert für Ereignisses",
-                "ru": "Настраиваемое пороговое значение отключения обновления событий",
-                "pt": "Limite configurável para o número de eventos"
-            },
-            "2.0.10": {
-                "en": "added use of delete-key in the objects view.",
-                "de": "Verwendung der Entfernen-Taste in der Objekte-Ansicht hinzugefügt",
-		        "ru": "добавлено использование ключа delete в представлении объектов",
-                "pt": "Usagem da tecla de deletar na vista de objetos"
-            },
-            "2.0.9": {
-                "en": "fix sorting, when using adapters with more than one instance",
-                "de": "Sortierung für Adapter mit mehr als einer Instanz repariert",
-                "pt": "Classificação para adaptadores com mais de uma instância"
-            },
-            "2.0.8": {
-                "en": "fix quickEdit: number with boolean value",
-                "de": "behoben: quickEdit, number mit übergebenem boolean Wert",
-		        "ru": "Исправлено: возможность ввода булевых значений в состояниях",
-                "pt": "fix quickEdit: número com valor booleano"
-            },
-            "2.0.7": {
-                "en": "Sort option added to object view",
-                "de": "Sortiermöglichkeit zur Objectansicht hinzugefügt",
-                "ru": "Добавлена возможность сортировки",
-                "pt": "Opção de classificação adicionada à vista de objeto"
-            },
-            "2.0.5": {
-                "en": "Show the history charts if the web server has the https option on too",
-                "de": "Zeige Charts auch wenn WEB server is https",
-                "ru": "Показывать графики даже если web сервер на https",
-                "pt": "ostre os gráficos de histórico se o servidor da Web também tiver a opção https"
-            }
-        },
-        "desc": {
-            "en":   "The configuration of ioBroker via Web-Interface",
-            "de":   "Die Konfiguration von ioBroker über das Web-Interface",
-            "ru":   "Конфигурация ioBroker через веб-интерфейс",
-            "pt":   "A configuração do ioBroker via Web-Interface",
-            "fr":   "La configuration de ioBroker via Web-Interface",
-            "nl":   "De configuratie van ioBroker via de webinterface",
-            "it": "La configurazione di ioBroker tramite interfaccia Web"
-       },
-        "docs": {
-            "en": "docs/en/admin.md",
-            "ru": "docs/ru/admin.md",
-            "de": [
-                "docs/de/admin.md",
-                "docs/de/admin/tab-adapters.md",
-                "docs/de/admin/tab-instances.md",
-                "docs/de/admin/tab-objects.md",
-                "docs/de/admin/tab-states.md",
-                "docs/de/admin/tab-groups.md",
-                "docs/de/admin/tab-users.md",
-                "docs/de/admin/tab-events.md",
-                "docs/de/admin/tab-hosts.md",
-                "docs/de/admin/tab-enums.md",
-                "docs/de/admin/tab-log.md",
-                "docs/de/admin/tab-system.md"
-            ],
-            "pt": "docs/pt/admin.md"
-        },
-        "materialize":              true,
-        "mode":                     "daemon",
-        "platform":                 "Javascript/Node.js",
-        "loglevel":                 "info",
-        "icon":                     "admin.png",
-        "messagebox":               true,
-        "enabled":                  true,
-        "extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/admin/admin.png",
-        "keywords":                 ["setup", "config", "update", "upgrade", "system", "konfiguration", "administration", "einrichtung", "wartung"],
-        "readme":                   "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
-        "authors": [
-            "bluefox <bluefox@ccu.io>",
-            "hobbyquaker <hq@ccu.io>"
-        ],
-        "dependencies":             [{"js-controller": ">=1.2.0"}],
-        "type":                     "general",
-        "license":                  "MIT",
-        "logTransporter":           true,
-        "stopBeforeUpdate":         true,
-        "wwwDontUpload":            true,
-        "nogit":                    true,
-        "welcomeScreenPro":         {"link": "admin/index.html",  "name": "Admin", "img": "admin/img/gear.png", "color": "pink", "order": 5, "localLink": true},
-        "localLink":                "%protocol%://%ip%:%port%"
+  "common": {
+    "name": "admin",
+    "title": "ioBroker Admin",
+    "version": "3.0.7",
+    "news": {
+      "3.0.7": {
+        "en": "GUI was redesigned",
+        "de": "GUI wurde neu gestaltet",
+        "ru": "Графический интерфейс был обновлён",
+        "pt": "GUI foi redesenhado",
+        "nl": "GUI is opnieuw ontworpen",
+        "fr": "L'interface graphique a été repensée",
+        "it": "La GUI è stata ridisegnata"
+      },
+      "2.0.11": {
+        "en": "Configurable event update disable threshold",
+        "de": "Konfigurierbar Schwellenwert für Ereignisses",
+        "ru": "Настраиваемое пороговое значение отключения обновления событий",
+        "pt": "Limite configurável para o número de eventos"
+      },
+      "2.0.10": {
+        "en": "added use of delete-key in the objects view.",
+        "de": "Verwendung der Entfernen-Taste in der Objekte-Ansicht hinzugefügt",
+        "ru": "добавлено использование ключа delete в представлении объектов",
+        "pt": "Usagem da tecla de deletar na vista de objetos"
+      },
+      "2.0.9": {
+        "en": "fix sorting, when using adapters with more than one instance",
+        "de": "Sortierung für Adapter mit mehr als einer Instanz repariert",
+        "pt": "Classificação para adaptadores com mais de uma instância"
+      },
+      "2.0.8": {
+        "en": "fix quickEdit: number with boolean value",
+        "de": "behoben: quickEdit, number mit übergebenem boolean Wert",
+        "ru": "Исправлено: возможность ввода булевых значений в состояниях",
+        "pt": "fix quickEdit: número com valor booleano"
+      },
+      "2.0.7": {
+        "en": "Sort option added to object view",
+        "de": "Sortiermöglichkeit zur Objectansicht hinzugefügt",
+        "ru": "Добавлена возможность сортировки",
+        "pt": "Opção de classificação adicionada à vista de objeto"
+      },
+      "2.0.5": {
+        "en": "Show the history charts if the web server has the https option on too",
+        "de": "Zeige Charts auch wenn WEB server is https",
+        "ru": "Показывать графики даже если web сервер на https",
+        "pt": "ostre os gráficos de histórico se o servidor da Web também tiver a opção https"
+      }
     },
-    "native": {
-        "port":                     8081,
-        "auth":                     false,
-        "secure":                   false,
-        "bind":                     "0.0.0.0",
-        "cache":                    false,
-        "certPublic":               "",
-        "certPrivate":              "",
-        "certChained":              "",
-        "ttl":                      3600,
-        "defaultUser":              "admin",
-        "tmpPath":                  "/tmp",
-        "tmpPathAllow":             false,
-        "thresholdValue":           200,
-
-        "leEnabled":                false,
-        "leUpdate":                 false,
-        "leCheckPort":              80
+    "desc": {
+      "en": "The configuration of ioBroker via Web-Interface",
+      "de": "Die Konfiguration von ioBroker über das Web-Interface",
+      "ru": "Конфигурация ioBroker через веб-интерфейс",
+      "pt": "A configuração do ioBroker via Web-Interface",
+      "fr": "La configuration de ioBroker via Web-Interface",
+      "nl": "De configuratie van ioBroker via de webinterface",
+      "it": "La configurazione di ioBroker tramite interfaccia Web"
     },
-    "objects": [
-
+    "docs": {
+      "en": "docs/en/admin.md",
+      "ru": "docs/ru/admin.md",
+      "de": [
+        "docs/de/admin.md",
+        "docs/de/admin/tab-adapters.md",
+        "docs/de/admin/tab-instances.md",
+        "docs/de/admin/tab-objects.md",
+        "docs/de/admin/tab-states.md",
+        "docs/de/admin/tab-groups.md",
+        "docs/de/admin/tab-users.md",
+        "docs/de/admin/tab-events.md",
+        "docs/de/admin/tab-hosts.md",
+        "docs/de/admin/tab-enums.md",
+        "docs/de/admin/tab-log.md",
+        "docs/de/admin/tab-system.md"
+      ],
+      "pt": "docs/pt/admin.md"
+    },
+    "materialize": true,
+    "mode": "daemon",
+    "platform": "Javascript/Node.js",
+    "loglevel": "info",
+    "icon": "admin.png",
+    "messagebox": true,
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/admin/admin.png",
+    "keywords": [
+      "setup",
+      "config",
+      "update",
+      "upgrade",
+      "system",
+      "konfiguration",
+      "administration",
+      "einrichtung",
+      "wartung"
     ],
-    "instanceObjects": [
-        {
-            "_id":  "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        }
-    ]
+    "readme": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
+    "authors": [
+      "bluefox <bluefox@ccu.io>",
+      "hobbyquaker <hq@ccu.io>"
+    ],
+    "dependencies": [
+      {
+        "js-controller": ">=1.2.0"
+      }
+    ],
+    "type": "general",
+    "license": "MIT",
+    "logTransporter": true,
+    "stopBeforeUpdate": true,
+    "wwwDontUpload": true,
+    "nogit": true,
+    "welcomeScreenPro": {
+      "link": "admin/index.html",
+      "name": "Admin",
+      "img": "admin/img/gear.png",
+      "color": "pink",
+      "order": 5,
+      "localLink": true
+    },
+    "localLink": "%protocol%://%ip%:%port%"
+  },
+  "native": {
+    "port": 9081,
+    "auth": false,
+    "secure": false,
+    "bind": "0.0.0.0",
+    "cache": false,
+    "certPublic": "",
+    "certPrivate": "",
+    "certChained": "",
+    "ttl": 3600,
+    "defaultUser": "admin",
+    "tmpPath": "/tmp",
+    "tmpPathAllow": false,
+    "thresholdValue": 200,
+    "leEnabled": false,
+    "leUpdate": false,
+    "leCheckPort": 80
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    }
+  ]
 }
