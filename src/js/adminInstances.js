@@ -265,7 +265,7 @@ function Instances(main) {
         //text += '<th style="width: 2em"></th>';
         text += '<th style="width: calc(2em - 6px)"></th>';
         text += '<th style="width: 14em">' + _('instance') + '</th>';
-        text += '<th style="width: 13.1em"></th>';
+        text += '<th style="width: 15.1em"></th>';
         text += '<th style="text-align: left">' + _('title') + '</th>';
 
         if (that.main.tabs.hosts.list.length > 1) {
@@ -287,17 +287,12 @@ function Instances(main) {
     function createHead() {
         var text = '<tr>';
         // _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('memlimit'), _('alive'), _('connected')],
-
-
-               ///xxx
-        text += '<th style="width: calc(2em - 6px); border-right-color:transparent;">' +
+        text += '<th style="width: calc(2em - 6px); border-right-color: transparent; overflow: visible">' +
             '<span style="overflow:visible;" >' + _('instance') + '</span>' +
             '</th>';
-        //text += '<th style="width: 2em"></th>';
-        text += '<th style="width: calc(2em - 6px); border-left-color:transparent; border-right-color:transparent;"></th>';
-        //text += '<th style="width: 14em">' + _('instance') + '</th>';
-        text += '<th style="width: 14em; border-left-color:transparent;"></th>';
-        text += '<th style="width: 13.1em">' + _('actions') + '</th>';
+        text += '<th style="width: calc(2em - 6px); border-left-color: transparent; border-right-color: transparent;"></th>';
+        text += '<th style="width: ' + (that.main.config.expertMode ? 10 : 14) + 'em; border-left-color: transparent;"></th>';
+        text += '<th style="width: 15.8em">' + _('actions') + '</th>';
         text += '<th style="text-align: left">' + _('title') + '</th>';
 
         if (that.main.tabs.hosts.list.length > 1) {
@@ -1178,7 +1173,7 @@ function Instances(main) {
         if (!$e.find('.ui-button-icon-primary').length) {
             //$e.button({icons: {primary: 'ui-icon-pin-s'}, text: false})./*css({width: '2em', height: '2em'}).*/attr('title', _('bug'));
             //Material-Hack
-            $e.button().attr('title', _('bug')).empty().append('<i class="material-icons">bug_report</i>');
+            $e.button().attr('title', _('bug')).empty().append('<i class="material-icons bug-report">bug_report</i>');
         }
 
         that.$grid.find('.instance-image' + id).each(function () {
