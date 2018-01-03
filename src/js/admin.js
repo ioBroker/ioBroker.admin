@@ -580,7 +580,8 @@ $(document).ready(function () {
         customs:    new Customs(main),
         config:     new Config(main),
         editobject: new EditObject(main),
-        issue:      new Issue(main)
+        issue:      new Issue(main),
+        readme:     new Readme(main)
     };
 
     var stdout;

@@ -587,7 +587,8 @@ gulp.task('vendorJS', function () {
         './src/lib/js/cron/jquery.cron.locale.js',
         './src/lib/js/cron/jquery.cron.words.js',
         './src/lib/js/cron/jquery.cron.js',
-        './src/lib/js/cron/cron2text.js'
+        './src/lib/js/cron/cron2text.js',
+        './src/lib/js/showdown.min.js'
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('vendor.js'))

@@ -1257,7 +1257,11 @@ function Adapters(main) {
             icons: {primary: 'ui-icon-help'},
             text: false
         }).css(xytdButton).unbind('click').on('click', function () {
-            window.open($(this).attr('data-adapter-url'), $(this).attr('data-adapter-name') + ' ' + _('readme'));
+            that.main.navigate({
+                tab:    'adapters',
+                dialog: 'readme',
+                params:  $(this).data('adapter-name')
+            });
         });
 
         this.$tab.find('.adapter-update-submit[data-adapter-name="' + adapter + '"]').button({
