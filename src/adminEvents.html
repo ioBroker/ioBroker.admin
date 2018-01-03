@@ -1,17 +1,20 @@
 <div id="tab-events"    class="admin-tab" data-name="Events" style="display: none">
     <div id="grid-events" class="ui-jqgrid" style="height: 100%; display: block;">
-        <table class="main-toolbar-table">
+        <div class="main-toolbar-table m">
+            <a class="btn-floating btn-small btn-pause translateT" title="Pause output" id="event-pause"><i class="material-icons">pause</i></a>
+            <a class="btn-floating btn-small translateT" title="Clear list"   id="event-clear"><i class="material-icons">delete</i></a>
+        </div>
+        <!--table class="main-toolbar-table">
             <tr>
                 <td>
                     <button id="event-pause" class="panel-button" style="width: 3em !important;"></button>
                 </td>
                 <td>
-                    <!--<button id="event-clear" style="font-size: 12px; font-weight: normal;"></button>-->
                     <button id="event-clear" class="toolbar-icon-text-button"></button>
                 </td>
                 <td style="width: 90%"></td>
             </tr>
-        </table>
+        </table-->
         <table style="width: 100%; border-collapse: collapse;" class="main-header-table">
             <thead>
             <tr id="events-table-tr"></tr>

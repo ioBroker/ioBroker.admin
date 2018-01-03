@@ -15,25 +15,32 @@ function EditObject(main) {
         for (var attr in object) {
             if (!object.hasOwnProperty(attr) || (part === 'common' && (attr === 'name' || attr === 'icon'))) continue;
 
-            text += '<div class="row">\n<div class="col s11">\n';
-            if (objectType === 'state' && part === 'common' && attr === 'type') {
-                text += '<select class="object-tab-edit-string" data-attr="' + attr + '">' +
-                    '<option value="boolean" ' + (object[attr] === 'boolean' ? 'selected' : '') + '>' + _('boolean') + '</option>' +
-                    '<option value="string"  ' + (object[attr] === 'string'  ? 'selected' : '') + '>' + _('string')  + '</option>' +
-                    '<option value="number"  ' + (object[attr] === 'number'  ? 'selected' : '') + '>' + _('number')  + '</option>' +
-                    '<option value="array"   ' + (object[attr] === 'array'   ? 'selected' : '') + '>' + _('array')   + '</option>' +
-                    '<option value="object"  ' + (object[attr] === 'object'  ? 'selected' : '') + '>' + _('object')  + '</option>' +
-                    '<option value="mixed"   ' + (object[attr] === 'mixed'   ? 'selected' : '') + '>' + _('mixed')   + '</option>' +
-                    '</select>';
-            } else if (typeof object[attr] === 'string') {
-                text += '<input type="text" class="object-tab-edit-string" data-attr="' + attr + '" value="' + object[attr] + '" />\n';
-            } else if (typeof object[attr] === 'number') {
-                text += '<input type="text" class="object-tab-edit-number" data-attr="' + attr + '" value="' + object[attr] + '" />\n';
-            } else if (typeof object[attr] === 'boolean') {
-                text += '<input type="checkbox" class="object-tab-edit-boolean filled-in" data-attr="' + attr + '" ' + (object[attr] ? 'checked' : '') + ' />\n';
+            if (objectType === 'state' && part === 'common' && attr === 'role') {
+                text += '<div class="input-field col s11">' +
+                    '<i class="material-icons prefix">textsms</i>' +
+                    '<input type="text" class="object-tab-edit-string autocomplete" data-attr="' + attr + '" value="' + object[attr] + '"/>';
             } else {
-                text += '<textarea class="object-tab-edit-object"  style="width: 100%" rows="3" data-attr="' + attr + '">' + JSON.stringify(object[attr], null, 2) + '</textarea>\n';
+                text += '<div class="row">\n<div class="col s11">\n';
+                if (objectType === 'state' && part === 'common' && attr === 'type') {
+                    text += '<select class="object-tab-edit-string" data-attr="' + attr + '">' +
+                        '<option value="boolean" ' + (object[attr] === 'boolean' ? 'selected' : '') + '>' + _('boolean') + '</option>' +
+                        '<option value="string"  ' + (object[attr] === 'string'  ? 'selected' : '') + '>' + _('string')  + '</option>' +
+                        '<option value="number"  ' + (object[attr] === 'number'  ? 'selected' : '') + '>' + _('number')  + '</option>' +
+                        '<option value="array"   ' + (object[attr] === 'array'   ? 'selected' : '') + '>' + _('array')   + '</option>' +
+                        '<option value="object"  ' + (object[attr] === 'object'  ? 'selected' : '') + '>' + _('object')  + '</option>' +
+                        '<option value="mixed"   ' + (object[attr] === 'mixed'   ? 'selected' : '') + '>' + _('mixed')   + '</option>' +
+                        '</select>';
+                } else if (typeof object[attr] === 'string') {
+                    text += '<input type="text" class="object-tab-edit-string" data-attr="' + attr + '" value="' + object[attr] + '" />\n';
+                } else if (typeof object[attr] === 'number') {
+                    text += '<input type="text" class="object-tab-edit-number" data-attr="' + attr + '" value="' + object[attr] + '" />\n';
+                } else if (typeof object[attr] === 'boolean') {
+                    text += '<input type="checkbox" class="object-tab-edit-boolean filled-in" data-attr="' + attr + '" ' + (object[attr] ? 'checked' : '') + ' />\n';
+                } else {
+                    text += '<textarea class="object-tab-edit-object"  style="width: 100%" rows="3" data-attr="' + attr + '">' + JSON.stringify(object[attr], null, 2) + '</textarea>\n';
+                }
             }
+
             var title = attr;
             // translations
             if (part === 'common' && systemDictionary['common_' + attr] && systemDictionary['common_' + attr][systemLang]) {
@@ -52,6 +59,23 @@ function EditObject(main) {
         }
 
         that.$dialog.find(selector).html(text);
+        /*that.$dialog.find(selector).find('.autocomplete').each(function () {
+            $(this).mautocomplete({
+                data: {
+                    'state': null,
+                    'switch': null,
+                    'button': null,
+                    'value': null,
+                    'level': null,
+                    'indicator': null,
+                    'value.temperature': null,
+                    'value.humidity': null,
+                    'level.temperature': null,
+                    'level.dimmer': null
+                },
+                minLength: 0 // The minimum length of the input for the autocomplete to start. Default: 1.
+            });
+        });*/
     }
 
     function saveObjectFields(selector, object) {
@@ -138,21 +162,20 @@ function EditObject(main) {
             that.$dialogNewField.modal('open');
             var $name = that.$dialogNewField.find('.object-tab-new-name');
             $name.data('type', 'common').focus();
-            // does not work. Why???
             if (!$name.hasClass('autocomplete')) {
                 $name.addClass('autocomplete');
-                $name.autocomplete({
+                $name.mautocomplete({
                     data: {
-                        "type":     null,
-                        "desc":     null,
-                        "min":      null,
-                        "max":      null,
-                        "def":      null,
-                        "role":     null,
-                        "unit":     null,
-                        "read":     null,
-                        "write":    null,
-                        "states":   null
+                        type:     null,
+                        desc:     null,
+                        min:      null,
+                        max:      null,
+                        def:      null,
+                        role:     null,
+                        unit:     null,
+                        read:     null,
+                        write:    null,
+                        states:   null
                     },
                     minLength: 0 // The minimum length of the input for the autocomplete to start. Default: 1.
                 });
@@ -165,7 +188,7 @@ function EditObject(main) {
             that.$dialogNewField.modal('open');
             var $name = that.$dialogNewField.find('.object-tab-new-name');
             if ($name.hasClass('autocomplete')) {
-                $name.autocomplete('destroy');
+                $name.mautocomplete('destroy');
                 $name.removeClass('autocomplete');
             }
             M.updateTextFields('#dialog-new-field');
@@ -434,9 +457,7 @@ function EditObject(main) {
                 color: $color,
                 container: true
             }).colorpicker('setValue', obj.common.color || '#fff').on('showPicker.colorpicker', function (/* event */) {
-                console.log('A')
             }).on('changeColor.colorpicker', function (event){
-                console.log('B')
                 if (Date.now() - time > 100) {
                     $color.find('input').val(event.color.toHex()).trigger('change');
                 }

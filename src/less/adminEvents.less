@@ -1,64 +1,83 @@
 @import "../lib/css/iob/selectID";
 @import "commons";
+#tab-events {
+    #event-clear {
+        .iob-font;
+    }
+    table#events {
+        font-size: 12px;
+    }
+    /** events tab ******************/
+    /**/
 
-#event-clear {
-    .iob-font;
-}
-table#events {
-    font-size: 12px;
-}
-/** events tab ******************/
-/**/
+    #event-outer {
+        border-collapse: collapse;
+    }
+    #event-outer>thead>tr, #event-outer>thead>tr>th  {
+        .th-0;
+    }
 
-#event-outer {
-    border-collapse: collapse;
-}
-#event-outer>thead>tr, #event-outer>thead>tr>th  {
-    .th-0;
-}
+    #events_threshold {
+        position: fixed;
+        top: 8px;
+        left: calc(~'100% - 300px');
+        height: 18px;
+        background: #ff9999;
+        color: white;
+        border: 1px solid;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 14px;
+        font-family: Arial;
+        width: 150px;
+        padding-top: 4px;
+        cursor: pointer;
+    }
 
-#events_threshold {
-    position: fixed;
-    top: 8px;
-    left: calc(~'100% - 300px');
-    height: 18px;
-    background: #ff9999;
-    color: white;
-    border: 1px solid;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 14px;
-    font-family: Arial;
-    width: 150px;
-    padding-top: 4px;
-    cursor: pointer;
-}
+    .events-list-table {
+        border:0;
+        overflow: auto;
+        font-size: @list-font-size !important;
+        font-weight: normal !important;
+        color: #000 !important;
 
-.events-list-table {
-    border:0;
-    overflow: auto;
-    font-size: @list-font-size !important;
-    font-weight: normal !important;
-    color: #000 !important;
+        width: calc(~'100% - 1px');
+        margin-left:1px; /* for mouse over rahmen */
+        background: #efefef !important;
+    }
 
-    width: calc(~'100% - 1px');
-    margin-left:1px; /* for mouse over rahmen */
-    background: #efefef !important;
-}
+    table.events-list-table > tbody > tr {
+        height: 25px;
+    }
 
-table.events-list-table > tbody > tr {
-    height: 25px;
+    table.events-list-table>tbody>tr>td {
+        padding: 0;
+        margin: 0;
+        padding-left: 5px;
+        border: @td-border;
+    }
+    #grid-events-inner {
+        height: calc(~'100% - 60px');
+        width: 100%;
+        overflow-y: scroll;
+    }
+    a.btn-small {
+        line-height: @admin-small-buttons-size;
+        height: @admin-small-buttons-size;
+        width: @admin-small-buttons-size;
+        i {
+            margin-left:    -0.5px;
+            font-size:      1.1rem;
+            line-height:    @admin-small-buttons-size;
+        }
+    }
+    .btn-pause {
+        width: 3em !important;
+        border-radius: 25px !important;
+        margin-right: 3px;
+    }
+    .btn-pause-button-active {
+        color: black;
+        text-align: center;
+    }
 }
-
-table.events-list-table>tbody>tr>td {
-    padding: 0;
-    margin: 0;
-    padding-left: 5px;
-    border: @td-border;
-}
-#grid-events-inner {
-    height: calc(~'100% - 60px');
-    width: 100%;
-    overflow-y: scroll;
-}
-/** events ends **/

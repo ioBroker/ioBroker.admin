@@ -31,11 +31,11 @@
     <!--script type="text/javascript" src="js/license.js"></script-->
     <script type="text/javascript" src="./socket.io/socket.io.js"></script>
 
-    <!--script type="text/javascript" src="lib/js/jquery.fancytree-all.min.js"></script-->
     <script type="text/javascript" src="lib/js/vendor.js"></script>
     <script type="text/javascript" src="lib/js/materialize.js"></script>
     <!--script type="text/javascript" src="lib/js/jquery.treetable.js"></script-->
-    <!--script type="text/javascript" src="lib/js/selectID.js"></script-->
+    <!--script type="text/javascript" src="lib/js/selectID.js"></script>
+    <script type="text/javascript" src="lib/js/jquery.fancytree-all.js"></script-->
     <!--script type="text/javascript" src="js/listHeader.js"></script-->
 
     <!--script type="text/javascript" src="lib/js/cron/jquery.cron.js"></script-->
@@ -110,7 +110,7 @@
 <div id="events_threshold" class="translate translateT"  style="display: none" title="Click do activate events again, or just wait one minute">Too many events</div>
 
 <div class="materialize-dialogs m">
-    <div id="dialog-command" class="modal modal-fixed-footer">
+    <div id="dialog-command"    class="modal modal-fixed-footer">
         <div class="modal-content">
             <div class="row">
                 <div class="col s12">
@@ -147,10 +147,10 @@
         </div>
         <div class="modal-footer">
             <div class="progress-dont-close"><input type="checkbox" class="filled-in" /><span class="translate">close on ready</span></div>
-            <a class="modal-action modal-close waves-effect waves-green btn translate">Close</a>
+            <a class="modal-action modal-close waves-effect waves-green btn"><i class="large material-icons">close</i><span class="translate">Close</span></a>
         </div>
     </div>
-    <div id="dialog-message" class="modal modal-fixed-footer">
+    <div id="dialog-message"    class="modal modal-fixed-footer">
         <div class="modal-content">
             <h4 class="dialog-title"></h4>
             <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>
@@ -159,7 +159,7 @@
             <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>
         </div>
     </div>
-    <div id="dialog-confirm" class="modal modal-fixed-footer">
+    <div id="dialog-confirm"    class="modal modal-fixed-footer">
         <div class="modal-content">
             <h4 class="dialog-title"></h4>
             <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>
@@ -167,7 +167,7 @@
         <div class="modal-footer">
         </div>
     </div>
-    <div id="dialog-license" class="modal modal-fixed-footer">
+    <div id="dialog-license"    class="modal modal-fixed-footer">
         <div class="modal-content">
              <div class="col s12 m6 l3">
                 <h5 class="translate" id="license_agreement_label">license agreement</h5>
@@ -199,8 +199,26 @@
             </div>
         </div>
         <div class="modal-footer">
-            <a id="license_agree"     class="modal-action modal-close waves-effect waves-green btn-flat translate">agree</a>
-            <a id="license_non_agree" class="modal-action modal-close waves-effect waves-green btn-flat btn-gray translate">not agree</a>
+            <a id="license_agree"     class="modal-action modal-close waves-effect waves-green btn-flat"><i class="large material-icons">check</i><span class="translate">agree</span></a>
+            <a id="license_non_agree" class="modal-action modal-close waves-effect waves-green btn-flat btn-gray "><i class="large material-icons">close</i><span class="translate">not agree</span></a>
+        </div>
+    </div>
+    <div id="dialog-value-edit" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col s12">
+                    <h6 class="title"><span class="translate">edit value</span><span class="name"></span></h6>
+                </div>
+            </div>
+            <div class="row textarea">
+                <div class="col s12">
+                    <textarea style="width: 100%; height: calc(100% - 100px); resize: none;"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn btn-set"  ><i class="large material-icons">check</i><span class="translate">Set</span></a>
+            <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons">close</i><span class="translate">Close</span></a>
         </div>
     </div>
 </div>

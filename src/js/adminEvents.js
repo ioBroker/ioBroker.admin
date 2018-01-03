@@ -59,8 +59,6 @@ function Events(main) {
 
         var $eventPause = this.$tab.find('#event-pause');
         $eventPause
-            .button({icons:{primary: 'ui-icon-pause'}, text: false})
-            .attr('title', _('Pause output'))
             .click(function () {
                 that.pause();
             });
@@ -69,22 +67,16 @@ function Events(main) {
 
         // bind "clear events" button
         var $eventClear = this.$tab.find('#event-clear');
-        $eventClear.button({
-            icons: {
-                primary: 'ui-icon-close'
-            },
-            text: false
-        })
-            .attr('title', _('clear'))
+        $eventClear
             .unbind('click').click(function () {
                 eventsLinesCount = 0;
                 eventsLinesStart = 0;
                 $('#event-table').html('');
-            })
-            .prepend(_('Clear list'))
-            .attr('style', 'width: 100% !important; padding-left: 20px !important; font-size: 12px; vertical-align: middle; padding-top: 3px !important; padding-right: 5px !important; color:#000')
-            .find('span').css({left: '10px'})
-        ;
+            });
+            //.prepend(_('Clear list'));
+//            .attr('style', 'width: 100% !important; padding-left: 20px !important; font-size: 12px; vertical-align: middle; padding-top: 3px !important; padding-right: 5px !important; color:#000')
+//            .find('span').css({left: '10px'})
+
         this.eventPauseCounterSpan.css({'padding-top': 1, 'padding-bottom': 0});
     };
 
@@ -278,14 +270,12 @@ function Events(main) {
         var $eventPause = $('#event-pause');
         if (!this.eventPauseMode) {
             $eventPause
-                .addClass('ui-state-focus')
-                .button('option', 'text', true)
-                .button('option', 'icons', {primary: null});
+                .addClass('yellow btn-pause-button-active');
 
-            this.eventPauseCounterSpan = $eventPause.find('.ui-button-text');
-            this.eventPauseCounterSpan.html('0').css({'padding-top': '1px', 'padding-bottom': '0px'});
-            this.eventPauseCounter  = 0;
-            this.eventPauseMode     = true;
+            this.eventPauseCounterSpan = $eventPause;
+            this.eventPauseCounterSpan.html('0');
+            this.eventPauseCounter     = 0;
+            this.eventPauseMode        = true;
         } else {
             this.eventPauseMode     = false;
             for (var i = 0; i < this.eventPauseList.length; i++) {
@@ -303,9 +293,8 @@ function Events(main) {
             this.eventPauseCounter  = 0;
 
             $eventPause
-                .removeClass('ui-state-error ui-state-focus')
-                .attr('title', _('Pause output'))
-                .button('option', 'text', false).button('option', 'icons', {primary: 'ui-icon-pause'});
+                .removeClass('yellow btn-pause-button-active')
+                .html('<i class="material-icons">pause</i>');
         }
     };
 }

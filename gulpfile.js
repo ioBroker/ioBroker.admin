@@ -16,7 +16,7 @@ const fs          = require('fs');
 
 gulp.task('1_words',  ['wwwLanguages2words', 'adminLanguages2words']);
 gulp.task('2_css',    ['iobCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS']);
-gulp.task('3_js',     ['vendorJS', 'materializeJS', 'appJS']); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
+gulp.task('3_js',     ['vendorJS', 'materializeJS', 'appJS', 'fancyTreeJS']); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
 gulp.task('4_static', ['appHTML', 'aceCopy', 'colorpickerCopy', 'appCopy']);
 const fileName = 'words.js';
 const noSort   = false;
@@ -142,7 +142,8 @@ function words2languages(src) {
         'nl': {},
         'fr': {},
         'it': {},
-        'es': {}
+        'es': {},
+        'pl': {}
     };
     var data = readWordJs(src);
     if (data) {
@@ -190,7 +191,8 @@ function words2languagesFlat(src) {
         'nl': {},
         'fr': {},
         'it': {},
-        'es': {}
+        'es': {},
+        'pl': {}
     };
     var data = readWordJs(src);
     if (data) {
@@ -237,7 +239,7 @@ function languagesFlat2words(src) {
     var dirs = fs.readdirSync(src + 'i18n/');
     var langs = {};
     var bigOne = {};
-    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it', 'es'];
+    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it', 'es', 'pl'];
     dirs.sort(function (a, b) {
         var posA = order.indexOf(a);
         var posB = order.indexOf(b);
@@ -305,7 +307,7 @@ function languages2words(src) {
     var dirs = fs.readdirSync(src + 'i18n/');
     var langs = {};
     var bigOne = {};
-    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it', 'es'];
+    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it', 'es', 'pl'];
     dirs.sort(function (a, b) {
         var posA = order.indexOf(a);
         var posB = order.indexOf(b);
@@ -341,7 +343,7 @@ function languages2words(src) {
     // read actual words.js
     var aWords = readWordJs();
 
-    var temporaryIgnore = ['pt', 'fr', 'nl', 'es'];
+    var temporaryIgnore = ['pt', 'fr', 'nl', 'es', 'pl'];
     if (aWords) {
         // Merge words together
         for (var w in aWords) {
@@ -419,7 +421,8 @@ gulp.task('updatePackages', function (done) {
             nl: 'nieuws',
             fr: 'nouvelles',
             it: 'notizie',
-            es: 'noticias'
+            es: 'noticias',
+            pl: 'aktualności'
         };
         iopackage.common.news = Object.assign(newNews, news);
     }
@@ -542,6 +545,17 @@ gulp.task('appJS', function () {
         .pipe(gulp.dest('./www/js'));
 });
 
+gulp.task('fancyTreeJS', function () {
+    return gulp.src([
+        './src/lib/js/jquery.fancytree-all.js'
+    ])
+        .pipe(sourcemaps.init())
+        .pipe(concat('jquery.fancytree-all.min.js'))
+        .pipe(uglify())
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('./www/lib/js'));
+});
+
 gulp.task('appHTML', function () {
     return gulp.src([
         './src/indexStart.html',
@@ -581,7 +595,7 @@ gulp.task('vendorJS', function () {
         './src/lib/js/ace-1.2.0/ace.js',
         './src/lib/js/loStorage.js',
         './src/lib/js/translate.js',
-        './src/lib/js/jquery.fancytree-all.min.js',
+        './src/lib/js/jquery.fancytree-all.js',
         './src/lib/js/jquery.treetable.js',
         './src/lib/js/selectID.js',
         './src/lib/js/cron/jquery.cron.locale.js',
@@ -601,6 +615,7 @@ gulp.task('appCopy', function () {
     return gulp.src([
         './src/**/*.*',
         '!./src/*.html',
+        '!./src/lib/js/jquery.fancytree-all.js',
         '!./src/**/*.less',
         '!./src/js/**/admin*.js',
         '!./src/materialize-css/**/*',
@@ -608,6 +623,7 @@ gulp.task('appCopy', function () {
     ])
     .pipe(gulp.dest('./www'));
 });
+
 gulp.task('colorpickerCopy', function () {
     return gulp.src([
         './src/colorpicker/**/*.png'

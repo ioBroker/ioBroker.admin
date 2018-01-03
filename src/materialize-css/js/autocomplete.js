@@ -356,7 +356,7 @@
   M.Autocomplete = Autocomplete;
 
   if (M.jQueryLoaded) {
-    M.initializeJqueryWrapper(Autocomplete, 'autocomplete', 'M_Autocomplete');
+    M.initializeJqueryWrapper(Autocomplete, 'mautocomplete', 'M_Autocomplete'); //iob
   }
 
 }( cash ));

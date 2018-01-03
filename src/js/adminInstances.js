@@ -407,7 +407,6 @@ function Instances(main) {
             text += '<td class="instance-state" style="text-align: center"><div class="instance-led" style="margin-left: 0.5em; width: 1em; height: 1em;" data-instance-id="' + instanceId + '"></div></td>';
 
             // icon
-            //text += '<td>' + (common.icon ? link + '<img src="adapter/' + adapter + '/' + common.icon + '" style="width: 2em; height: 2em" class="instance-image" data-instance-id="' + instanceId + '"/>' : '') + (link ? '</a>': '') + '</td>';
             text += '<td>' + (common.icon ? link + '<img src="adapter/' + adapter + '/' + common.icon + '" class="instance-image" data-instance-id="' + instanceId + '"/>' : '') + (link ? '</a>': '') + '</td>';
 
             // name and instance
@@ -432,7 +431,7 @@ function Instances(main) {
             }
 
             // title
-            text += '<td title="' + (link ? _('Click on icon') : '') + '" style="padding-left: 0.5em" data-name="title" data-value="' + (title || '') + '" class="instance-editable" data-instance-id="' + instanceId + '">' + (common.title || '') + '</td>';
+            text += '<td title="' + (link ? _('Click on icon') : '') + '" style="padding-left: 0.5em" data-name="title" data-value="' + (title || '') + '" class="instance-editable" data-instance-id="' + instanceId + '">' + (title || '') + '</td>';
 
             // host - hide it if only one host
             if (that.main.tabs.hosts.list.length > 1) {
