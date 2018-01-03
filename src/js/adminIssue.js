@@ -1,5 +1,6 @@
 function Issue(main) {
     'use strict';
+    
     var that = this;
     this.$dialogIssue = $('#dialog-issue');
     this.main = main;
@@ -21,8 +22,10 @@ function Issue(main) {
         if (adapter && adapter.common && adapter.common.extIcon) {
             var tmp = adapter.common.extIcon.split('/');
             var issue = 'https://api.github.com/repos/' + tmp[3] + "/" + tmp[4] + "/issues";
-            $.getJSON(issue, function (data) {
-                var $table = $('#issueTable').children().clone(true, true);
+            var $table = $('#result-issue');
+            $table.empty();
+            var count = 0;
+            $.getJSON(issue, function (data) {                
                 var bug = false;
                 for (var i in data) {
                     if (i === "remove") {
@@ -30,42 +33,46 @@ function Issue(main) {
                     }
                     bug = true;
                     var issue = data[i];
-                    var $issueElement = $('#issueTableElement').children().clone(true, true);
-                    $issueElement.find('.title').text(issue.title).attr('href', issue.html_url);
+                    var $issueElement = $('#issueTable').children().clone(true, true);
+                    if(count === 0){
+                        $issueElement.find('li').addClass('active');
+                    }
+                    $issueElement.find('.collapsible-header-title').text(issue.title);
+                    $issueElement.find('.goto').attr('href', issue.html_url);
                     $issueElement.find('.user').text(issue.user.login);
-                    $issueElement.find('.description').text(issue.body);
+                    $issueElement.find('.form-row').text(issue.body);
                     $issueElement.find('.created').text(main.formatDate(new Date(issue.created_at), false, true));
                     if (issue.labels.length > 0) {
                         for (var k in issue.labels) {
                             if (k === "remove") {
                                 break;
                             }
-                            $issueElement.find('.tags').append('<a class="tag" style="background:#' + issue.labels[k].color + ';" title="' + issue.labels[k].name + '"><span>' + issue.labels[k].name + '</span></a>');
+                            $issueElement.find('.category').append('<a class="btn-floating btn-small translateT" style="background:#' + issue.labels[k].color + ';" title="' + issue.labels[k].name + '"><span>' + issue.labels[k].name + '</span></a>');
                         }
                     }
-
-                    $table.find('.timeline').append($issueElement);
+                    
+                    $table.append($issueElement);
+                    count++;
                 }
 
                 if (!bug) {
-                    $table.find('.timeline').append($('<li><h2>' + _('No bug') + '</h2></li>'));
+                    $table.append($('<li><h2>' + _('No bug') + '</h2></li>'));
                 }
-                
-                $('#result-issue').append($table);
 
             });
         }
         
-        this.$dialogIssue.data('name', name);
-        this.$dialogIssue.find('.title').html(_('Known bugs for') + ': ' + name);
-    };
-
-    this.allStored = function () {
-        return !window.frames['config-iframe'].changed;
+        that.$dialogIssue.data('name', name);
+        that.$dialogIssue.find('.title').html(_('Known bugs for') + ': ' + name);
+        
+        var $collapsible = that.$dialogIssue.find('.collapsible');
+        $collapsible.collapsible();
+        
     };
 
     this.destroy = function () {
         if (this.inited) {
+            this.$dialogIssue.find('.collapsible').collapsible('destroy')
             this.inited = false;             
         }
     }
