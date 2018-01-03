@@ -71,6 +71,7 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 - remove jQuery UI!
 - login page
 
+
 ## Used icons
 In this project used some icons from Flaticon(c):
 - ![006-double-bed.svg](src/img/rooms/006-double-bed.svg) - "designed by smalllikeart from Flaticon"

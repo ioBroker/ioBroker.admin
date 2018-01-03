@@ -1,12 +1,33 @@
-<div id="dialog-issue" title="adater issue" style="display: none" class="m">
-    <div class="row row-title">
-        <div class="col s12">
-            <h6 class="title"></h6>
+<div id="dialog-issue" style="display: none" class="m">
+    <div id="tabs-issue">
+        <div class="row">            
+            <div class="col s12 page">
+                <h6 class="title"></h6>
+                <ul class="collapsible" id="result-issue"></ul>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col s12">
-           
-        </div>
-    </div>
+    <nav class="dialog-system-buttons nav-wrapper footer">        
+        <a href="" target="_blank" class="btn translate btn-add">Add new issue</a>
+        <a class="btn translate btn-cancel">Close</a>
+    </nav>
 </div>
+
+<!-- Issue Table -->
+<ul id="issueTable" style="display: none">
+    <li>
+        <div class="collapsible-header">
+            <span class="collapsible-header-title"></span>
+            <span class="category"></span>
+        </div>
+        <div class="customs-settings collapsible-body">
+            <div class="form-row"></div>
+            <br/>
+            <a href="" target="_blank" class="goto translate">Go to Github...</a>
+            <div class="signature">
+                <span class="created">2017-01-06T20:33:28Z</span> by <span class="user">Jane Smith</span>                
+            </div>
+        </div>
+    </li>
+</ul>
+<!-- / Issue Table -->

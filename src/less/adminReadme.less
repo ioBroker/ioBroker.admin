@@ -1,0 +1,30 @@
+@import "commons";
+@import "materializeConsts";
+
+#tabs-readme {
+    overflow-y: auto;
+    height: calc(~"100% - "@admin-m-footer-height);
+    td {
+        padding: 0 5px;
+    }
+    .title {
+        background: @main-active-color;
+        color: white;
+        letter-spacing: .5px;
+        padding: 0.5rem;        
+    }
+    .nav-wrapper{
+        position: fixed;
+        bottom: 0;
+    }
+    #result-readme {
+        width: 100%;        
+        .col {
+            position: relative;
+            .select-wrapper + label {
+                top: 100%;
+            }
+        }
+    }     
+}
+
