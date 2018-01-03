@@ -43,7 +43,26 @@
         padding-left: 1rem;
         overflow: auto;
     }
-    
+
+    .loader {
+        width: 10%;
+        margin-left: 45%;
+        text-align: center;
+
+        .spinner {
+            animation: rotator @duration linear infinite;
+        }
+
+        .path {
+            stroke-dasharray: @offset;
+            stroke-dashoffset: 0;
+            transform-origin: center;
+            stroke: #4285F4;
+            animation: dash @duration ease-in-out infinite;
+            //colors (@duration*4) ease-in-out infinite;
+        }
+    }
+
     #result-issue {
         width: 100%;        
         .col {

@@ -533,6 +533,17 @@ gulp.task('treeTableCSS', function () {
         .pipe(gulp.dest('./www/lib/css'));
 });
 
+gulp.task('fancyTreeJS', function () {
+    return gulp.src([
+        './src/lib/js/jquery.fancytree-all.js'
+    ])
+        .pipe(sourcemaps.init())
+        .pipe(concat('jquery.fancytree-all.min.js'))
+        .pipe(uglify())
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('./www/lib/js'));
+});
+
 gulp.task('appJS', function () {
     return gulp.src([
         './src/js/*.js',
@@ -545,16 +556,6 @@ gulp.task('appJS', function () {
         .pipe(gulp.dest('./www/js'));
 });
 
-gulp.task('fancyTreeJS', function () {
-    return gulp.src([
-        './src/lib/js/jquery.fancytree-all.js'
-    ])
-        .pipe(sourcemaps.init())
-        .pipe(concat('jquery.fancytree-all.min.js'))
-        .pipe(uglify())
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('./www/lib/js'));
-});
 
 gulp.task('appHTML', function () {
     return gulp.src([

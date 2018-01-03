@@ -24,12 +24,19 @@ function Issue(main) {
         if (adapter && adapter.common && adapter.common.extIcon) {
             var tmp = adapter.common.extIcon.split('/');
             var $table = $('#result-issue');
-            $table.empty();
+            $table.html(
+                '<div class="loader"><svg class="spinner" width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">\n' +
+                '      <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>\n' +
+                '</svg></div>');
             var count = 0;
-            $.getJSON('https://api.github.com/repos/' + tmp[3] + "/" + tmp[4] + "/issues", function (data) {
+
+            $.getJSON('https://api.github.com/repos/' + tmp[3] + '/' + tmp[4] + '/issues', function (data) {
                 var bug = false;
+
+                $table.empty();
                 for (var i in data) {
-                    if (i === "remove") {
+                    if (!data.hasOwnProperty(i)) continue;
+                    if (i === 'remove') {
                         break;
                     }
                     var issue = data[i];
@@ -44,10 +51,11 @@ function Issue(main) {
                     $issueElement.find('.user').text(issue.user.login);
                     $issueElement.find('.form-row').text(issue.body);
                     var issueDate = new Date(new Date(issue.created_at));
-                    $issueElement.find('.created').text(issueDate.toLocaleDateString(systemLang, {"weekday": "short", "year": "numeric", "month": "long", "day": "2-digit", "hour": "2-digit", "minute": "2-digit", "second": "2-digit"}));
+                    $issueElement.find('.created').text(issueDate.toLocaleDateString(systemLang, {'weekday': 'short', 'year': 'numeric', 'month': 'long', 'day': '2-digit', 'hour': '2-digit', 'minute': '2-digit', 'second': '2-digit'}));
                     if (issue.labels.length > 0) {
                         for (var k in issue.labels) {
-                            if (k === "remove") {
+                            if (!issue.labels.hasOwnProperty(k)) continue;
+                            if (k === 'remove') {
                                 break;
                             }
                             $issueElement.find('.category').append('<a class="btn-floating btn-small translateT" style="background:#' + issue.labels[k].color + ';" title="' + issue.labels[k].name + '"><span>' + issue.labels[k].name + '</span></a>');
@@ -67,13 +75,12 @@ function Issue(main) {
 
         that.$dialogIssue.data('name', name);
         that.$dialogIssue.find('.title').html(_('Known bugs for') + ': ' + name);
-        that.$dialogIssue.find('.dialog-system-buttons .btn-add').attr('href', 'https://github.com/' + tmp[3] + "/" + tmp[4] + "/issues/new");
+        that.$dialogIssue.find('.dialog-system-buttons .btn-add').attr('href', 'https://github.com/' + tmp[3] + '/' + tmp[4] + '/issues/new');
         that.$dialogIssue.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function (e) {
             e.stopPropagation();
             e.preventDefault();
             that.main.navigate();
         });
-
     };
 
     this.destroy = function () {
