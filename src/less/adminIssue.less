@@ -1,30 +1,75 @@
 @import "commons";
-#dialog-issue {
-  iframe {
-    border:0 solid #FFF;
-    display:block;
-    left:0;
-    top:0;
-    width: 100%;
-    height: 100%;
-  }
-  .col {
-    padding: 0 !important;
-  }
-  .row-title {
-    margin-bottom: 0 !important;
-  }
-  .row.iframe {
-    height: 100%;
-    .col {
-      height: 100%;
+@import "materializeConsts";
+
+#tabs-issue {
+    overflow: hidden;
+    height: calc(~"100% - "@admin-m-footer-height);
+    td {
+        padding: 0 5px;
     }
-  }
-  .title {
-    margin: 0;
-    background: @main-active-color;
-    color: white;
-    letter-spacing: .5px;
-    padding: 0.5rem;
-  }
+    .title {
+        background: @main-active-color;
+        color: white;
+        letter-spacing: .5px;
+        padding: 0.5rem;        
+    }
+    .collapsible-header {
+        font-size: 1.2rem;
+        position: relative;
+        .category {
+            letter-spacing: .5px;
+            text-decoration: none;
+            text-transform: uppercase;
+            position: absolute;
+            right: 4rem;
+            top: 1rem;
+        }
+    }
+    .collapsible-body {
+        background: whitesmoke;
+        position: relative;
+        .signature{
+            position: absolute;
+            right: 4rem;
+            .user{
+                font-style: italic;
+            }
+        }
+    }
+    .page {
+        background: #f5f2f0;
+        height: calc(~"100% - "@admin-m-footer-height - 16);
+        padding-top: 1rem;
+        padding-left: 1rem;
+        overflow: auto;
+    }
+    
+    #result-issue {
+        width: 100%;        
+        .col {
+            position: relative;
+            .select-wrapper + label {
+                top: 100%;
+            }
+        }
+    }
+    #tab-customs-chart, #tab-customs-table {
+        overflow: hidden;
+        .row {
+            position: relative;
+            &.body {
+                overflow: auto;
+                width: 100%;
+                height: calc(~"100% - "@admin-toolbar-height);
+            }
+        }
+        .select-wrapper + label {
+            top: -10px;
+        }
+        // materialize bug
+        .select-wrapper select {
+            display: none !important;
+        }
+    }    
 }
+

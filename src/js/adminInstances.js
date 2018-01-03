@@ -1177,7 +1177,9 @@ function Instances(main) {
                 });
             });
         if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({icons: {primary: 'ui-icon-pin-s'}, text: false})./*css({width: '2em', height: '2em'}).*/attr('title', _('bug'));
+            //$e.button({icons: {primary: 'ui-icon-pin-s'}, text: false})./*css({width: '2em', height: '2em'}).*/attr('title', _('bug'));
+            //Material-Hack
+            $e.button().attr('title', _('bug')).empty().append('<i class="material-icons">bug_report</i>');
         }
 
         that.$grid.find('.instance-image' + id).each(function () {
