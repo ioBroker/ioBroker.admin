@@ -23,11 +23,10 @@ function Issue(main) {
         var adapter = this.main.objects[id];
         if (adapter && adapter.common && adapter.common.extIcon) {
             var tmp = adapter.common.extIcon.split('/');
-            var issue = 'https://api.github.com/repos/' + tmp[3] + "/" + tmp[4] + "/issues";
             var $table = $('#result-issue');
             $table.empty();
             var count = 0;
-            $.getJSON(issue, function (data) {
+            $.getJSON('https://api.github.com/repos/' + tmp[3] + "/" + tmp[4] + "/issues", function (data) {
                 var bug = false;
                 for (var i in data) {
                     if (i === "remove") {
@@ -68,7 +67,7 @@ function Issue(main) {
 
         that.$dialogIssue.data('name', name);
         that.$dialogIssue.find('.title').html(_('Known bugs for') + ': ' + name);
-
+        that.$dialogIssue.find('.dialog-system-buttons .btn-add').attr('href', 'https://github.com/' + tmp[3] + "/" + tmp[4] + "/issues/new");
         that.$dialogIssue.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function (e) {
             e.stopPropagation();
             e.preventDefault();
