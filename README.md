@@ -69,6 +69,7 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 - System Info: show map for coordinates
 - Adapters/Tile view: add to filter - latest updated
 - remove jQuery UI!
+- login page
 
 ## Used icons
 In this project used some icons from Flaticon(c):

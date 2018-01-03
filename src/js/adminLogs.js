@@ -369,7 +369,7 @@ function Logs(main) {                                                           
     this.pause = function () {
         if (!pause.mode) {
             $logPause
-                .addClass('yellow log-pause-button-active');
+                .addClass('yellow btn-pause-button-active');
 
             pause.$counterSpan = $logPause;
             pause.$counterSpan.html('0');
@@ -385,7 +385,7 @@ function Logs(main) {                                                           
             pause.counter  = 0;
 
             $logPause
-                .removeClass('yellow log-pause-button-active')
+                .removeClass('yellow btn-pause-button-active')
                 .html('<i class="material-icons">pause</i>');
         }
     };

@@ -3,6 +3,7 @@
 #tab-logs {
   #grid-log-inner {
     width: 100%;
+    height: calc(~"100% - 36px");
     overflow-y: scroll;
   }
   #log-outer {
@@ -42,35 +43,15 @@
       float: right;
       padding-top: 7px;
     }
-    #log-pause {
+    .btn-pause {
       width: 3em !important;
       border-radius: 25px !important;
       margin-right: 3px;
     }
-    .log-pause-button-active {
+    .btn-pause-button-active {
       color: black;
       text-align: center;
     }
-    /*.log-pause-button-active {
-      font-size: 14px;
-      width: 100% !important;
-      text-align: center;
-      padding: 0 !important;
-      margin: 0 !important;
-      padding-right: @line-indent !important;
-      padding-left: @line-indent !important;
-    }
-    .log-pause-button-active:focus {
-      background: @toolbar-background !important;
-    }
-
-    .log-pause-button-active>span {
-      padding:0 !important;
-      width: 100%;
-      font-weight: normal;
-      font-size: 14px;
-    }*/
-    /** log end **/
   }
   #log-outer-header {
     width: 100%; border-collapse: collapse;

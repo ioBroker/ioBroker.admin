@@ -676,7 +676,6 @@ function filterChanged(e) {
         })(data.tree, 0);
     } */
 
-
     function treeInsert(data, id, isExpanded, addedNodes) {
         return _treeInsert(data.tree, data.list ? [id] : treeSplit(data, id, false), id, 0, isExpanded, addedNodes, data);
     }
@@ -859,12 +858,12 @@ function filterChanged(e) {
     }
 
     function clippyCopy(e) {
-        var $temp = $('<input>');
-        //$('body').append($temp);
-        $(this).append($temp);
-        $temp.val($(this).parent().data('clippy')).select();
+        var $input = $('<input>');
+        $(this).append($input);
+        $input.val($(this).parent().data('clippy'));
+        $input.trigger('select');
         document.execCommand('copy');
-        $temp.remove();
+        $input.remove();
         e.preventDefault();
         e.stopPropagation();
     }
@@ -874,38 +873,53 @@ function filterChanged(e) {
         var $parent = $(this).parent();
         var value = $parent.data('clippy');
         var id = $parent.data('id');
-        $('<div position: absolute;left: 5px; top: 5px; right: 5px; bottom: 5px; border: 1px solid #CCC;"><textarea style="margin: 0; border: 0;background: white;width: 100%; height: 100%; resize: none;" ></textarea></div>')
-            .dialog({
-                autoOpen: true,
-                modal: true,
-                title: data.texts.edit,
-                width: '50%',
-                height: 200,
-                open: function (event) {
-                    $(this).find('textarea').val(value);
-                    $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
-                },
-                buttons: [
-                    {
-                        text: data.texts.select,
-                        click: function () {
-                            var val = $(this).find('textarea').val();
-                            if (val !== value) {
-                                data.quickEditCallback(id, 'value', val, value);
-                                value = '<span style="color: darkviolet; width: 100%;">' + value + '</span>';
-                                $parent.html(value);
-                            }
-                            $(this).dialog('close').dialog('destroy').remove();
-                        }
-                    },
-                    {
-                        text: data.texts.cancel,
-                        click: function () {
-                            $(this).dialog('close').dialog('destroy').remove();
-                        }
-                    }
-                ]
+        var $dlg = $('#dialog-value-edit');
+        if (typeof M !== 'undefined' && $dlg.length) {
+            $dlg.find('textarea').val(value);
+            $dlg.find('.btn-set').unbind('click').click(function () {
+                var val = $dlg.find('textarea').val();
+                if (val !== value) {
+                    data.quickEditCallback(id, 'value', val, value);
+                    value = '<span style="color: darkviolet; width: 100%;">' + value + '</span>';
+                    $parent.html(value);
+                }
+                $(this).dialog('close').dialog('destroy').remove();
             });
+            $dlg.modal().modal('open');
+        } else {
+            $('<div position: absolute;left: 5px; top: 5px; right: 5px; bottom: 5px; border: 1px solid #CCC;"><textarea style="margin: 0; border: 0;background: white;width: 100%; height: 100%; resize: none;" ></textarea></div>')
+                .dialog({
+                    autoOpen: true,
+                    modal: true,
+                    title: data.texts.edit,
+                    width: '50%',
+                    height: 200,
+                    open: function (event) {
+                        $(this).find('textarea').val(value);
+                        $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                    },
+                    buttons: [
+                        {
+                            text: data.texts.select,
+                            click: function () {
+                                var val = $(this).find('textarea').val();
+                                if (val !== value) {
+                                    data.quickEditCallback(id, 'value', val, value);
+                                    value = '<span style="color: darkviolet; width: 100%;">' + value + '</span>';
+                                    $parent.html(value);
+                                }
+                                $(this).dialog('close').dialog('destroy').remove();
+                            }
+                        },
+                        {
+                            text: data.texts.cancel,
+                            click: function () {
+                                $(this).dialog('close').dialog('destroy').remove();
+                            }
+                        }
+                    ]
+                });
+        }
     }
 
     function clippyShow(e) {
@@ -926,7 +940,7 @@ function filterChanged(e) {
         if ($(this).hasClass('edit-dialog') && !$(this).find('.edit-dialog-button').length) {
             data = data || $(this).data('data');
             text = '<button class="edit-dialog-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button" ' +
-                'role="button" title="' + data.texts.editDialog + '" ' +
+                'role="button" title="' + (data.texts.editDialog || '') + '" ' +
                 //'style="position: absolute; right: 0; top: 0; width: 36px; height: 18px;z-index: 1">' +
                 'style="position: absolute; right: 22px; top: 0; z-index: 1; margin-top: 1px;">' +
                 '<span class="ui-button-icon-primary ui-icon ui-icon-pencil"></span></button>';
@@ -1168,7 +1182,9 @@ function filterChanged(e) {
                 //$(event.currentTarget).parent().trigger('click'); // re-select the line so we can continue using the keyboard
                 $parent.trigger('click'); // re-select the line so we can continue using the keyboard
             }, 50);
-            //$(event.currentTarget).parent().focus().select();
+
+            var $parent = $(event.currentTarget).parent();
+            $parent.focus().trigger('select');
         }
 
         function handleCancel(e) {
@@ -1225,7 +1241,7 @@ function filterChanged(e) {
         }
 
         setTimeout(function () {
-            $input.focus();//.select();
+            $input.focus().trigger('select');
         }, 100);
     }
 
@@ -1590,7 +1606,6 @@ function filterChanged(e) {
         var foptions = {
             titlesTabbable: true,     // Add all node titles to TAB chain
             quicksearch:    true,
-
             ///////////////////////////
 
             //autoScroll: true,
@@ -1616,8 +1631,9 @@ function filterChanged(e) {
                 handleCursorKeys: true
             },
             filter: {
-                mode: 'hide',
-                autoApply: true
+                mode:      'hide',
+                autoApply: true,
+                counter:   false
             },
 
             // keydown: function(event, data){
@@ -2181,33 +2197,38 @@ function filterChanged(e) {
                     }
                 }
             },
-            expand: function (event, _data) {
+            beforeExpand: function (event, _data) {
                 if (data.expandedCallback) {
                     if (_data && _data.node) {
-                        var childrenCount = 0;
-                        var hasStates = false;
-                        var patterns  = [];
-                        if (_data.node.children) {
-                            childrenCount = _data.node.children.length;
-                            detectStates(_data.node, patterns);
-                            if (patterns.length) hasStates = true;
-                        }
+                        // if will be expanded
+                        if (!_data.node.expanded) {
+                            var childrenCount = 0;
+                            var hasStates = false;
+                            var patterns  = [];
+                            if (_data.node.children) {
+                                childrenCount = _data.node.children.length;
+                                detectStates(_data.node, patterns);
+                                if (patterns.length) hasStates = true;
+                            }
 
-                        if (!patterns.length) {
-                            patterns.push(_data.node.key);
-                        }
+                            if (!patterns.length) {
+                                patterns.push(_data.node.key);
+                            }
 
-                        data.expandedCallback(patterns, childrenCount, hasStates);
+                            data.expandedCallback(patterns, childrenCount, hasStates);
+
+                        } else {
+                            data.collapsedCallback(_data.node.key);
+                        }
                     }
                 }
             },
             collapse: function (event, _data) {
-                if (data.collapsedCallback) {
+                /*if (data.collapsedCallback) {
                     if (_data && _data.node) {
                         data.collapsedCallback(_data.node.key);
                     }
-                }
-
+                }*/
             }
         };
 
@@ -2385,6 +2406,8 @@ function filterChanged(e) {
                 $(this).trigger('nodeCommand', {cmd: cmd});
                 return false;
             }
+        }).on('beforeExpand', function (node, event) {
+            console.log(event);
         });
 
         function customFilter(node) {
@@ -2933,12 +2956,16 @@ function filterChanged(e) {
                             $dlg = $('#select-id-dialog');
                         }
 
-                        $dlg.dialog({
-                            modal: true,
-                            open: function (event) {
-                                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
-                            }
-                        });
+                        if (typeof M !== 'undefined') {
+                            $dlg.modal();
+                        } else {
+                            $dlg.dialog({
+                                modal: true,
+                                open: function (event) {
+                                    $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                                }
+                            });
+                        }
                     }, 5000);
 
                     data.socket = io.connect(data.socketURL, {

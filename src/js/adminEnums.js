@@ -377,7 +377,7 @@ function Enums(main) {
         return text;
     }
 
-    function drawEnum(id, $page) {
+    function drawEnum(id, $page, scrollTop) {
         var obj = that.main.objects[id];
         var name = id.replace(/[.#\\\/&?]+/g, '-');
         var text =
@@ -394,7 +394,7 @@ function Enums(main) {
             '   </div>' +
             '</div>';
 
-        text += '<div class="raw"><div class="col s12"><ul class="collection">';
+        text += '<div class="raw"><div class="col s12 enum-collection" data-id="' + id + '"><ul class="collection">';
 
         for (var se = 0; se < that.list.length; se++) {
             if (that.list[se].substring(0, id.length + 1) === id + '.') {
@@ -427,10 +427,12 @@ function Enums(main) {
         text += '</ul></div></div>';
         $page.html(text);
         prepareNewEnum(id);
+        scrollTop && $page.find('.enum-collection').scrollTop(scrollTop);
     }
 
     function drawEnums() {
         var $tableBody = that.$gridList.find('.tree-table-body');
+
         var text = '<div class="col s12 cron-main-tab">';
         text += '<ul class="tabs">';
         for (var e = 0; e < that.list.length; e++) {
@@ -450,6 +452,11 @@ function Enums(main) {
             text += '<div id="enum-' + id + '" class="col s12 page" data-id="' + that.list[se] + '" data-type="second">';
             text += '</div>';
         }
+        var scrollTop = {};
+        $tableBody.find('.enum-collection').each(function () {
+            // remember actual offset
+            scrollTop[$(this).data('id')] = $(this).scrollTop();
+        });
         $tableBody.html(text);
 
         $tableBody.find('.tabs').mtabs({
@@ -463,7 +470,7 @@ function Enums(main) {
         }
 
         $tableBody.find('.page').each(function () {
-            drawEnum($(this).data('id'), $(this));
+            drawEnum($(this).data('id'), $(this), scrollTop[$(this).data('id')]);
         });
         $tableBody.find('.btn-new-category').click(function () {
             createOrEditEnum(null, $(this).data('id'));

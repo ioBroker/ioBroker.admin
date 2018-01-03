@@ -318,12 +318,7 @@ function values2table(divId, values, options) {
                     .find('.material-icons')
                     .html('delete');
             } else if (command === 'up') {
-                $(this)/*.button({
-                        icons: {primary: 'ui-icon-triangle-1-n'},
-                        text: false
-                    })
-                        .css({width: '1em', height: '1em'})*/
-                    .click(function () {
+                $(this).click(function () {
                         var id = $(this).data('index');
                         var elem = values[id];
                         values.splice(id, 1);
@@ -334,12 +329,7 @@ function values2table(divId, values, options) {
                         }, 100);
                     }).find('i').html('arrow_upward');
             } else if (command === 'down') {
-                $(this)/*.button({
-                        icons: {primary: 'ui-icon-triangle-1-s'},
-                        text: false
-                    })
-                        .css({width: '1em', height: '1em'})*/
-                    .click(function () {
+                $(this).click(function () {
                         var id = $(this).data('index');
                         var elem = values[id];
                         values.splice(id, 1);
@@ -350,12 +340,7 @@ function values2table(divId, values, options) {
                         }, 100);
                     }).find('i').html('arrow_downward');
             } else if (command === 'pair') {
-                $(this)/*.button({
-                        icons: {primary: 'ui-icon-transferthick-e-w'},
-                        text: false
-                    })
-                        .css({width: '1em', height: '1em'})*/
-                    .click(function () {
+                $(this).click(function () {
                         if (typeof tableEvents === 'function') {
                             var id = $(this).data('index');
                             var elem = values[id];
@@ -363,12 +348,7 @@ function values2table(divId, values, options) {
                         }
                     }).attr('title', _('pair')).find('i').html('insert_link');
             } else if (command === 'unpair') {
-                $(this)/*.button({
-                        icons: {primary: 'ui-icon-scissors'},
-                        text: false
-                    })
-                        .css({width: '1em', height: '1em'})*/
-                    .click(function () {
+                $(this).click(function () {
                         if (typeof tableEvents === 'function') {
                             var id = $(this).data('index');
                             var elem = values[id];

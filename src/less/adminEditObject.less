@@ -80,5 +80,25 @@
       width: 100%;
       resize: vertical;
     }
+
+  }
+}
+
+#dialog-new-field {
+  .autocomplete-content {
+    max-height: 200px;
+  }
+}
+// overload jqueryUI style
+.ui-autocomplete {
+  border: 1px solid gray !important;
+  max-height: 200px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+
+  .ui-menu-item:hover {
+    font-weight: normal !important;
+    background: @main-active-color;
+    color: @admin-sidemenu-color;
   }
 }

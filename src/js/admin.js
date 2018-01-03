@@ -1572,8 +1572,8 @@ $(document).ready(function () {
                     icon = tabsInfo[id].icon;
                 } else {
                     var _id = 'system.adapter.' + id.substring(4);
-                    if (main.objects[_id] && main.objects[_id].common.adminTab && main.objects[_id].common.adminTab['fa-icon']) {
-                        icon = main.objects[_id].common.adminTab['fa-icon'];
+                    if (main.objects[_id] && main.objects[_id].adminTab && main.objects[_id]['fa-icon']) {
+                        icon = main.objects[_id]['fa-icon'];
                     }
                 }
 
