@@ -272,6 +272,7 @@
   "Kazakhstan": "Kasachstan",
   "Kenya": "Kenia",
   "Kiribati": "Kiribati",
+  "Known bugs for": "Bekannte Bugs für",
   "Korea": "Korea",
   "Kosovo": "Kosovo",
   "Kuwait": "Kuwait",
@@ -520,6 +521,7 @@
   "United States": "United States",
   "United States minor outlying islands": "United States minor outlying islands",
   "Unknown file format!": "Unbekanntes Dateiformat!",
+  "Unsupported image format": "Nicht unterstütztes Bildformat",
   "Update": "Aktualisieren",
   "Update objects": "Objekte aktualisieren",
   "Update states": "Zustände aktualisieren",
@@ -577,6 +579,7 @@
   "available": "Verfügbar",
   "beta": "beta",
   "boolean": "Logikwert",
+  "bug": "Bugtracker",
   "cancel": "Abbrechen",
   "cert_path_note": "Sie können den absoluten Pfad zum Zertifikat verwenden, wie '/opt/certs/cert.pem', oder einfach hochladen",
   "certificate": "Zertifikate",
@@ -789,7 +792,7 @@
   "visualization_group": "Visualisierung",
   "warn": "Warnung",
   "weather_group": "Wetter",
-  "wetty": "wetty",
+  "wetty": "Wetty",
   "write": "schreiben",
   "write operation": "schreiben"
 }
