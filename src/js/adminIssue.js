@@ -1,4 +1,4 @@
-/* global systemLang */
+/* global systemLang, showdown */
 
 function Issue(main) {
     'use strict';
@@ -49,7 +49,7 @@ function Issue(main) {
                     $issueElement.find('.collapsible-header-title').text(issue.title);
                     $issueElement.find('.goto').attr('href', issue.html_url);
                     $issueElement.find('.user').text(issue.user.login);
-                    $issueElement.find('.form-row').text(issue.body);
+                    $issueElement.find('.form-row').html(new showdown.Converter().makeHtml(issue.body).replace(/src="/g, 'class="responsive-img" src="'));
                     var issueDate = new Date(new Date(issue.created_at));
                     $issueElement.find('.created').text(issueDate.toLocaleDateString(systemLang, {'weekday': 'short', 'year': 'numeric', 'month': 'long', 'day': '2-digit', 'hour': '2-digit', 'minute': '2-digit', 'second': '2-digit'}));
                     if (issue.labels.length > 0) {
