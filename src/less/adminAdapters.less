@@ -108,6 +108,40 @@
         width: 100%;
         display: block;
     }
+
+    .small-button-empty, .small-button {
+        width:      24px;
+        margin:     0 1px 0 0;
+        display:    inline-block;
+        position:   relative;
+        z-index:    1;
+        border:     0;
+    }
+    .small-button {
+        height:     24px;
+        background: @tiles-tile-background;
+        color:      @admin-sidemenu-main-items-color;
+        padding:    1px 0 0 0;
+        cursor:     pointer;
+        i {
+            //font-size: 14px;
+        }
+        &:hover {
+            background: @main-active-color;
+            color: @admin-sidemenu-color;
+        }
+        &.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+    }
+    .fancytree-container {
+        .small-button {
+            i {
+                font-size: 18px;
+            }
+        }
+    }
 }
 #dialog-install-url {
     .with-select {
@@ -134,22 +168,40 @@
 // adapters dropdown menu
 #adapters-menu {
     position: absolute;
-    width: 80px;
+    z-index: 2;
+    max-height: 200px;
+    overflow: auto;
+    width: 100px !important;
+    background: white;
+    margin-top: 18px;
+    ul {
+        margin: 0;
+    }
+    li {
+        cursor: pointer;
+        padding-left: 0.5rem;
+        &:hover {
+            background: @main-active-color;
+            color: @admin-sidemenu-color !important;
+        }
+    }
+
+    /*width: 80px;
     z-index: 1;
     background: @admin-buttons-color;
     color: white;
-    border: 2px solid #605e5e;
+    border: 2px solid #605e5e;*/
 }
 
 #grid-adapters, .adapters-list-table {
-    width: 100%;
-    border-collapse: collapse;
-    padding:0;
-    table-layout:fixed;
-    overflow:auto;
-    white-space:nowrap;
-    border-top:0 !important;
-    font-family: @iob-font;
+    width:              100%;
+    border-collapse:    collapse;
+    padding:            0;
+    table-layout:       fixed;
+    overflow:           auto;
+    white-space:        nowrap;
+    border-top:         0 !important;
+    font-family:        @iob-font;
 }
 
 #grid-adapters{
