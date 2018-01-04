@@ -521,6 +521,7 @@
   "United States": "United States",
   "United States minor outlying islands": "United States minor outlying islands",
   "Unknown file format!": "Неизвестный формат файла",
+  "Unsupported image format": "Неподдерживаемый формат изображения",
   "Update": "Обновить",
   "Update objects": "Обновить объекты",
   "Update states": "Обновить состояния",
@@ -729,7 +730,7 @@
   "of": "из",
   "ok": "Ok",
   "open web page": "Открыть приложение",
-  "os": "ОС",
+  "os": "операционная система",
   "other permissions": "Разрешения",
   "parent name": "Имя родителя",
   "password": "Пароль",
@@ -791,7 +792,7 @@
   "visualization_group": "Визуализация",
   "warn": "предупреждения",
   "weather_group": "Погода",
-  "wetty": "wetty",
+  "wetty": "Wetty",
   "write": "писать",
   "write operation": "Писать"
 }

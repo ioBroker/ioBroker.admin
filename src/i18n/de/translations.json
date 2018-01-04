@@ -521,6 +521,7 @@
   "United States": "United States",
   "United States minor outlying islands": "United States minor outlying islands",
   "Unknown file format!": "Unbekanntes Dateiformat!",
+  "Unsupported image format": "Nicht unterstütztes Bildformat",
   "Update": "Aktualisieren",
   "Update objects": "Objekte aktualisieren",
   "Update states": "Zustände aktualisieren",
@@ -791,7 +792,7 @@
   "visualization_group": "Visualisierung",
   "warn": "Warnung",
   "weather_group": "Wetter",
-  "wetty": "wetty",
+  "wetty": "Wetty",
   "write": "schreiben",
   "write operation": "schreiben"
 }
