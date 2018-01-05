@@ -16,6 +16,8 @@ function Issue(main) {
         }
 
         this.inited = true;
+        
+        showdown.setFlavor('github');
 
         var id = this.main.navigateGetParams();
         var name = id.replace(/^system\.adapter\./, '');
@@ -49,7 +51,7 @@ function Issue(main) {
                     $issueElement.find('.collapsible-header-title').text(issue.title);
                     $issueElement.find('.goto').attr('href', issue.html_url);
                     $issueElement.find('.user').text(issue.user.login);
-                    $issueElement.find('.form-row').html(new showdown.Converter().setFlavor('github').makeHtml(issue.body).replace(/src="/g, 'class="responsive-img" src="'));
+                    $issueElement.find('.form-row').html(new showdown.Converter().makeHtml(issue.body).replace(/src="/g, 'class="responsive-img" src="'));
                     var issueDate = new Date(new Date(issue.created_at));
                     $issueElement.find('.created').text(issueDate.toLocaleDateString(systemLang, {'weekday': 'short', 'year': 'numeric', 'month': 'long', 'day': '2-digit', 'hour': '2-digit', 'minute': '2-digit', 'second': '2-digit'}));
                     if (issue.labels.length > 0) {
