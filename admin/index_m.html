@@ -4,7 +4,7 @@
 <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
 <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
 
-<script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 
 <script type="text/javascript" src="../../js/translate.js"></script>
@@ -86,12 +86,12 @@
             var key = $(this).attr('id');
             var $value = $('#' + key + '.value');
             if ($value.attr('type') === 'checkbox') {
-                $value.prop('checked', settings[key]).change(function() {
+                $value.prop('checked', settings[key]).on('change', function() {
                     showHideSettings();
                     onChange();
                 });
             } else {
-                $value.val(settings[key]).change(onChange).keyup(function() {
+                $value.val(settings[key]).on('change', onChange).on('keyup', function() {
                     onChange();
                     // Chack that only numbers entered
                     if ($(this).hasClass('number')) {

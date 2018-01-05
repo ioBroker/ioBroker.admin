@@ -182,7 +182,7 @@ function Adapters(main) {
                 }
             });
 
-            that.$tab.find('#btn_collapse_adapters').show().unbind('click').click(function () {
+            that.$tab.find('#btn_collapse_adapters').show().off('click').on('click', function () {
                 that.$tab.find('.process-adapters').show();
                 setTimeout(function () {
                     that.$grid.fancytree('getRootNode').visit(function (node) {
@@ -192,7 +192,7 @@ function Adapters(main) {
                 }, 100);
             });
 
-            that.$tab.find('#btn_expand_adapters').show().unbind('click').click(function () {
+            that.$tab.find('#btn_expand_adapters').show().off('click').on('click', function () {
                 that.$tab.find('.process-adapters').show();
                 setTimeout(function () {
                     that.$grid.fancytree('getRootNode').visit(function (node) {
@@ -203,7 +203,7 @@ function Adapters(main) {
                 }, 100);
             });
 
-            that.$tab.find('#btn_list_adapters').show().unbind('click').click(function () {
+            that.$tab.find('#btn_list_adapters').show().off('click').on('click', function () {
                 var $processAdapters = that.$tab.find('.process-adapters');
                 $processAdapters.show();
                 that.isList = !that.isList;
@@ -303,7 +303,7 @@ function Adapters(main) {
     }
 
     this.prepare = function () {
-        that.$tab.find('#btn_switch_adapters').unbind('click').click(function () {
+        that.$tab.find('#btn_switch_adapters').off('click').on('click', function () {
             that.$tab.find('.process-adapters').show();
             that.isTiles = !that.isTiles;
 
@@ -326,7 +326,7 @@ function Adapters(main) {
             }, 50);
         });
 
-        that.$tab.find('#btn_filter_adapters').unbind('click').click(function () {
+        that.$tab.find('#btn_filter_adapters').off('click').on('click', function () {
             that.$tab.find('.process-adapters').show();
             that.onlyInstalled = !that.onlyInstalled;
             if (that.onlyInstalled) {
@@ -342,7 +342,7 @@ function Adapters(main) {
             }, 50);
         });
 
-        that.$tab.find('#btn_filter_updates').unbind('click').click(function () {
+        that.$tab.find('#btn_filter_updates').off('click').on('click', function () {
             that.$tab.find('.process-adapters').show();
             that.onlyUpdatable = !that.onlyUpdatable;
             onOnlyUpdatableChanged();
@@ -356,8 +356,8 @@ function Adapters(main) {
         });
 
         that.$tab.find('#btn_filter_custom_url')
-            .unbind('click')
-            .click(function () {
+            .off('click')
+            .on('click', function () {
                 // prepare adapters
                 var text  = '<option value="">' + _('none') + '</option>';
                 var order = [];
@@ -379,7 +379,7 @@ function Adapters(main) {
 
                 that.$installDialog.modal();
 
-                that.$installDialog.find('.btn-install').unbind('click').click(function () {
+                that.$installDialog.find('.btn-install').off('click').on('click', function () {
                     var isCustom = !that.$installDialog.find('a[href="#tabs-install-github"]').hasClass('active');//!!that.$installDialog.find('#tabs-install').tabs('option', 'active');
                     var url;
                     var debug;
@@ -408,7 +408,7 @@ function Adapters(main) {
                 });
                 that.$installDialog.find('#install-github-link').select();
                 // workaround for materialize checkbox problem
-                that.$installDialog.find('input[type="checkbox"]+span').unbind('click').click(function () {
+                that.$installDialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
                     var $input = $(this).prev();
                     if (!$input.prop('disabled')) {
                         $input.prop('checked', !$input.prop('checked')).trigger('change');
@@ -426,7 +426,7 @@ function Adapters(main) {
                 }
             });
 
-        that.$tab.find('#btn_upgrade_all').unbind('click').click(function () {
+        that.$tab.find('#btn_upgrade_all').off('click').on('click', function () {
             that.main.confirmMessage(_('Do you want to upgrade all adapters?'), _('Please confirm'), 'help', function (result) {
                 if (result) {
                     that.main.cmdExec(null, 'upgrade', function (exitCode) {
@@ -436,7 +436,7 @@ function Adapters(main) {
             });
         });
 
-        that.$tab.find('#btn_adapters_expert_mode').click(function () {
+        that.$tab.find('#btn_adapters_expert_mode').on('click', function () {
             that.main.config.expertMode = !that.main.config.expertMode;
             that.main.saveConfig('expertMode', that.main.config.expertMode);
             that.updateExpertMode();
@@ -448,10 +448,10 @@ function Adapters(main) {
         }
 
         // save last selected adapter
-        that.$installDialog.find('#install-github-link').change(function () {
+        that.$installDialog.find('#install-github-link').on('change', function () {
             that.main.saveConfig('adaptersGithub', $(this).val());
         });
-        that.$installDialog.find('#install-url-link').keyup(function (event) {
+        that.$installDialog.find('#install-url-link').on('keyup', function (event) {
             if (event.which === 13) {
                 that.$installDialog.find('#dialog-install-url-button').trigger('click');
             }
@@ -481,12 +481,12 @@ function Adapters(main) {
 
         onExpertmodeChanged();
 
-        that.$tab.find('#btn_refresh_adapters').click(function () {
+        that.$tab.find('#btn_refresh_adapters').on('click', function () {
             that.init(true, true);
         });
 
         // add filter processing
-        that.$tab.find('.adapters-filter-input').keyup(function () {
+        that.$tab.find('.adapters-filter-input').on('keyup', function () {
             $(this).trigger('change');
         }).on('change', function (event) {
             if (that.filterTimer) {
@@ -511,7 +511,7 @@ function Adapters(main) {
             }, 400);
         });
 
-        that.$tab.find('.adapters-filter-clear').click(function () {
+        that.$tab.find('.adapters-filter-clear').on('click', function () {
             that.$tab.find('.adapters-filter-input').val('').trigger('change');
         });
 
@@ -1048,7 +1048,7 @@ function Adapters(main) {
                     }
                     var $types = $('#main-toolbar-table-types');
                     $types.html(tTypes);
-                    $types.find('.main-toolbar-table-types-item').click(function () {
+                    $types.find('.main-toolbar-table-types-item').on('click', function () {
                         that.currentType = $(this).data('type') || '';
                         filterTiles();
                         that.$tab.find('#main-toolbar-table-types-btn').html(_(that.currentType || 'all'));
@@ -1062,7 +1062,7 @@ function Adapters(main) {
                     });
 
                     $types = $('#main-toolbar-table-order');
-                    $types.find('.main-toolbar-table-order-item').click(function () {
+                    $types.find('.main-toolbar-table-order-item').on('click', function () {
                         that.currentOrder = $(this).data('type') || '';
                         //filterTiles();
                         that.$tab.find('#main-toolbar-table-order-btn').html(_(that.currentOrder || 'a-z'));
@@ -1199,21 +1199,21 @@ function Adapters(main) {
                             $('#license_text').html('');
                         }
                     }).modal('open');
-                    $('#license_agree').unbind('click').click(function (e) {
+                    $('#license_agree').off('click').on('click', function (e) {
                         if (callback) {
                             callback(true);
                             callback = null;
                         }
-                        $('#license_agree').unbind('click');
-                        $('#license_non_agree').unbind('click');
+                        $('#license_agree').off('click');
+                        $('#license_non_agree').off('click');
                     });
-                    $('#license_non_agree').unbind('click').click(function (e) {
+                    $('#license_non_agree').off('click').on('click', function (e) {
                         if (callback) {
                             callback(false);
                             callback = null;
                         }
-                        $('#license_agree').unbind('click');
-                        $('#license_non_agree').unbind('click');
+                        $('#license_agree').off('click');
+                        $('#license_non_agree').off('click');
                     });
                 } else {
                     callback && callback(true);
@@ -1224,7 +1224,7 @@ function Adapters(main) {
     }
 
     this.initButtons = function (adapter) {
-        this.$tab.find('.adapter-install-submit[data-adapter-name="' + adapter + '"]').unbind('click').on('click', function () {
+        this.$tab.find('.adapter-install-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
             var adapter = $(this).attr('data-adapter-name');
             that.getAdaptersInfo(that.main.currentHost, false, false, function (repo, installed) {
                 var obj = repo[adapter];
@@ -1250,7 +1250,7 @@ function Adapters(main) {
             });
         });
 
-        this.$tab.find('.adapter-delete-submit[data-adapter-name="' + adapter + '"]').unbind('click').on('click', function () {
+        this.$tab.find('.adapter-delete-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
             var name = $(this).attr('data-adapter-name');
             that.main.confirmMessage(_('Are you sure you want to delete adapter %s?', name), _('Please confirm'), 'help', function (result) {
                 if (result) {
@@ -1261,7 +1261,7 @@ function Adapters(main) {
             });
         });
 
-        this.$tab.find('.adapter-readme-submit[data-adapter-name="' + adapter + '"]').unbind('click').on('click', function () {
+        this.$tab.find('.adapter-readme-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
             that.main.navigate({
                 tab:    'adapters',
                 dialog: 'readme',
@@ -1269,7 +1269,7 @@ function Adapters(main) {
             });
         });
 
-        this.$tab.find('.adapter-update-submit[data-adapter-name="' + adapter + '"]').unbind('click').on('click', function () {
+        this.$tab.find('.adapter-update-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
             var aName = $(this).attr('data-adapter-name');
             if (aName === 'admin') that.main.waitForRestart = true;
 
@@ -1278,7 +1278,7 @@ function Adapters(main) {
             });
         });
 
-        this.$tab.find('.adapter-upload-submit[data-adapter-name="' + adapter + '"]').unbind('click').on('click', function () {
+        this.$tab.find('.adapter-upload-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
             var aName = $(this).attr('data-adapter-name');
 
             that.main.cmdExec(null, 'upload ' + aName, function (exitCode) {
@@ -1287,7 +1287,7 @@ function Adapters(main) {
         });
 
         var $button = this.$tab.find('.adapter-update-custom-submit[data-adapter-name="' + adapter + '"]');
-        $button.unbind('click').on('click', function () {
+        $button.off('click').on('click', function () {
             var versions = [];
             if (that.main.objects['system.adapter.' + adapter].common.news) {
                 var news = that.main.objects['system.adapter.' + adapter].common.news;
@@ -1315,7 +1315,7 @@ function Adapters(main) {
                 var $adaptersMenu = $('#adapters-menu');
                 var trigger = $adaptersMenu.data('trigger');
                 $(trigger).dropdown('close').dropdown('destroy');
-                $adaptersMenu.unbind('mouseleave');
+                $adaptersMenu.off('mouseleave');
                 setTimeout(function () {
                     $adaptersMenu.data('trigger', null).hide();
                 }, 100);
@@ -1326,7 +1326,7 @@ function Adapters(main) {
                 top:    pos.top
             }).show();*/
 
-            $adaptersMenu.find('.adapters-versions-link').unbind('click').click(function () {
+            $adaptersMenu.find('.adapters-versions-link').off('click').on('click', function () {
                 //if ($(this).data('link')) window.open($(this).data('link'), $(this).data('instance-id'));
                 var adapter = $(this).data('adapter-name');
                 var version = $(this).data('version');

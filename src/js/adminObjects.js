@@ -29,7 +29,7 @@ function Objects(main) {
         var $dialogNewObject = $('#dialog-new-object');
         $dialogNewObject.modal();
 
-        $dialogNewObject.find('.btn-add').unbind('click').click(function () {
+        $dialogNewObject.find('.btn-add').off('click').on('click', function () {
             var name  = $dialogNewObject.find('#object-tab-new-object-name').val();
             var id    = name.trim();
             var parent = $dialogNewObject.find('#object-tab-new-object-parent').val();
@@ -121,9 +121,9 @@ function Objects(main) {
         });
         $dialogNewObject.find('#object-tab-new-object-type').select();
         $dialogNewObject.find('#object-tab-new-state-type').select();
-        $dialogNewObject.find('#object-tab-new-object-name').keyup(function () {
+        $dialogNewObject.find('#object-tab-new-object-name').on('keyup', function () {
             $(this).trigger('change');
-        }).change(function () {
+        }).on('change', function () {
             var parent = $dialogNewObject.find('#object-tab-new-object-parent').val();
             var id     = $dialogNewObject.find('#object-tab-new-object-name').val();
             id = parent ? parent + '.' + id : id;
@@ -131,7 +131,7 @@ function Objects(main) {
             $dialogNewObject.find('.title').html(_('Add new object: %s', id));
         });
 
-        $dialogNewObject.find('#object-tab-new-object-type').change(function () {
+        $dialogNewObject.find('#object-tab-new-object-type').on('change', function () {
             if ($(this).val() === 'state') {
                 $dialogNewObject.find('.object-tabe-new-object-tr').show();
             } else {
@@ -139,7 +139,7 @@ function Objects(main) {
             }
         });
 
-        $dialogNewObject.find('.btn-add').keydown(function (e) {
+        $dialogNewObject.find('.btn-add').on('keydown', function (e) {
             if (e.keyCode === 13) {
                 setTimeout(function () {
                     $('#dialog-object-tab-new').trigger('click');

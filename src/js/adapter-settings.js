@@ -107,7 +107,7 @@ function preInit () {
         '</nav></div>');
 
     var $navButtons = $('.dialog-config-buttons');
-    $navButtons.find('.btn-save').click(function () {
+    $navButtons.find('.btn-save').on('click', function () {
         if (typeof save === 'undefined') {
             alert('Please implement save function in your admin/index.html');
             return;
@@ -120,7 +120,7 @@ function preInit () {
         });
     });
 
-    $navButtons.find('.btn-save-close').click(function () {
+    $navButtons.find('.btn-save-close').on('click', function () {
         if (typeof save === 'undefined') {
             alert('Please implement save function in your admin/index.html');
             return;
@@ -138,7 +138,7 @@ function preInit () {
         });
     });
 
-    $navButtons.find('.btn-cancel').click(function () {
+    $navButtons.find('.btn-cancel').on('click', function () {
         if (typeof parent !== 'undefined' && parent && parent.$iframeDialog && typeof parent.$iframeDialog.close === 'function') {
             parent.$iframeDialog.close();
         }
@@ -323,7 +323,7 @@ function prepareTooltips() {
                     $label = $this.next();
                 }
 
-                $label.unbind('click').click(function () {
+                $label.off('click').on('click', function () {
                     var $input = $(this).prev();
                     if (!$input.prop('disabled')) {
                         $input.prop('checked', !$input.prop('checked')).trigger('change');
@@ -488,7 +488,7 @@ function confirmMessage(message, title, icon, buttons, callback) {
         $dialogConfirm.find('.modal-footer').html(
             '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">' + _('Ok') + '</a>' +
             '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">' + _('Cancel') + '</a>');
-        $dialogConfirm.find('.modal-footer .modal-action').click(function () {
+        $dialogConfirm.find('.modal-footer .modal-action').on('click', function () {
             var cb = $dialogConfirm.data('callback');
             cb && cb($(this).data('result'));
         });
@@ -498,7 +498,7 @@ function confirmMessage(message, title, icon, buttons, callback) {
             tButtons += '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-id="' + b + '">' + buttons[b] + '</a>';
         }
         $dialogConfirm.find('.modal-footer').html(tButtons);
-        $dialogConfirm.find('.modal-footer .modal-action').click(function () {
+        $dialogConfirm.find('.modal-footer .modal-action').on('click', function () {
             var cb = $dialogConfirm.data('callback');
             cb && cb($(this).data('id'));
         });
@@ -785,10 +785,10 @@ function addToTable(tabId, value, $grid, _isInitial) {
 function _editInitButtons($grid, tabId, objId) {
     var search = objId ? '[data-' + tabId + '-id="' + objId + '"]' : '';
 
-    $('.' + tabId + '-edit-submit' + search).unbind('click').button({
+    $('.' + tabId + '-edit-submit' + search).off('click').button({
         icons: {primary: 'ui-icon-pencil'},
         text:  false
-    }).click(function () {
+    }).on('click', function () {
         var id = $(this).attr('data-' + tabId + '-id');
 
         $('.' + tabId + '-edit-submit').hide();
@@ -809,10 +809,10 @@ function _editInitButtons($grid, tabId, objId) {
         }
     }).css({'height': '18px', width: '22px'});
 
-    $('.' + tabId + '-delete-submit' + search).unbind('click').button({
+    $('.' + tabId + '-delete-submit' + search).off('click').button({
         icons: {primary: 'ui-icon-trash'},
         text:  false
-    }).click(function () {
+    }).on('click', function () {
         var id = $(this).attr('data-' + tabId + '-id');
         $grid.jqGrid('delRowData', tabId + '_' + id);
 
@@ -831,10 +831,10 @@ function _editInitButtons($grid, tabId, objId) {
         if ($grid[0]._onChange) $grid[0]._onChange('del', id);
     }).css({'height': '18px', width: '22px'});
 
-    $('.' + tabId + '-ok-submit' + search).unbind('click').button({
+    $('.' + tabId + '-ok-submit' + search).off('click').button({
         icons: {primary: 'ui-icon-check'},
         text:  false
-    }).click(function () {
+    }).on('click', function () {
         var id = $(this).attr('data-' + tabId + '-id');
 
         $('.' + tabId + '-edit-submit').show();
@@ -859,10 +859,10 @@ function _editInitButtons($grid, tabId, objId) {
         if ($grid[0]._onChange) $grid[0]._onChange('changed', $grid.jqGrid('getRowData', tabId + '_' + id));
     }).css({'height': '18px', width: '22px'});
 
-    $('.' + tabId + '-cancel-submit' + search).unbind('click').button({
+    $('.' + tabId + '-cancel-submit' + search).off('click').button({
         icons: {primary: 'ui-icon-close'},
         text:  false
-    }).click(function () {
+    }).on('click', function () {
         var id = $(this).attr('data-' + tabId + '-id');
 
         $('.' + tabId + '-edit-submit').show();
@@ -1067,7 +1067,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             addToTable(tabId, values[u], $grid, true);
         }
     }
-    $(window).resize(function () {
+    $(window).on('resize', function () {
         $grid.setGridHeight($(this).height() - top).setGridWidth($(this).width() - 10);
     });
     $(window).trigger('resize');
@@ -1234,7 +1234,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             label: addText ? _(addText) : undefined
         })
             //.css({width: '1em', height: '1em'})
-            .click(function () {
+            .on('click', function () {
 				if (!$add.data('maxraw') || ($add.data('raw') < $add.data('maxraw'))) {
 					var $table = $div.find('.table-values');
 					var values = $table.data('values');
@@ -1457,7 +1457,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     text: false
                 })
                     .css({width: '1em', height: '1em'})
-                    .click(function () {
+                    .on('click', function () {
                         var id = $(this).data('index');
                         var elem = values[id];
                         values.splice(id, 1);
@@ -1481,7 +1481,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     text: false
                 })
                     .css({width: '1em', height: '1em'})
-                    .click(function () {
+                    .on('click', function () {
                         var id = $(this).data('index');
                         var elem = values[id];
                         values.splice(id, 1);
@@ -1497,7 +1497,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     text: false
                 })
                     .css({width: '1em', height: '1em'})
-                    .click(function () {
+                    .on('click', function () {
                         var id = $(this).data('index');
                         var elem = values[id];
                         values.splice(id, 1);
@@ -1513,7 +1513,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     text: false
                 })
                     .css({width: '1em', height: '1em'})
-                    .click(function () {
+                    .on('click', function () {
                         if (typeof tableEvents === 'function') {
                             var id = $(this).data('index');
                             var elem = values[id];
@@ -1526,7 +1526,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     text: false
                 })
                     .css({width: '1em', height: '1em'})
-                    .click(function () {
+                    .on('click', function () {
                         if (typeof tableEvents === 'function') {
                             var id = $(this).data('index');
                             var elem = values[id];
@@ -1539,7 +1539,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     text: false
                 })
                     .css({width: '1em', height: '1em'})
-                    .click(function () {
+                    .on('click', function () {
                         var id = $(this).data('index');
                         var elem = values[id];
                         if (typeof editLine === 'function') {
@@ -1568,7 +1568,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 values[$(this).data('index')][$(this).data('name')] = $(this).val();
 
             }
-        }).keyup(function () {
+        }).on('keyup', function () {
             $(this).trigger('change.adaptersettings');
         });
     }

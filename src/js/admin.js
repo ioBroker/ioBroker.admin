@@ -169,7 +169,7 @@ $(document).ready(function () {
                 $dialogConfirm.find('.modal-footer').html(
                     '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">' + _('Ok') + '</a>' +
                     '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">' + _('Cancel') + '</a>');
-                $dialogConfirm.find('.modal-footer .modal-action').click(function () {
+                $dialogConfirm.find('.modal-footer .modal-action').on('click', function () {
                     var cb = $dialogConfirm.data('callback');
                     cb && cb($(this).data('result'));
                 });
@@ -179,7 +179,7 @@ $(document).ready(function () {
                     tButtons += '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-id="' + b + '">' + buttons[b] + '</a>';
                 }
                 $dialogConfirm.find('.modal-footer').html(tButtons);
-                $dialogConfirm.find('.modal-footer .modal-action').click(function () {
+                $dialogConfirm.find('.modal-footer .modal-action').on('click', function () {
                     var cb = $dialogConfirm.data('callback');
                     cb && cb($(this).data('id'));
                 });
@@ -341,7 +341,7 @@ $(document).ready(function () {
                     $wizard/*.button({
                         icons: {primary: ' ui-icon-search'},
                         text: false
-                    })*/.click(function () {
+                    })*/.on('click', function () {
                         // open configuration dialog
                         main.navigate({
                             tab: 'instances',
@@ -618,18 +618,18 @@ $(document).ready(function () {
     function initHtmlButtons() {
         $('.button-version').text('ioBroker.admin ' + (main.objects['system.adapter.admin'] && main.objects['system.adapter.admin'].common && main.objects['system.adapter.admin'].common.version));
 
-        $('.choose-tabs-config-button').unbind('click').click(function(event) {
+        $('.choose-tabs-config-button').off('click').on('click', function(event) {
             var $dialog = $('#admin_sidemenu_dialog');
             var html = $dialog.html();
             if (html) {
                 $dialog.html('');
-                $('html').unbind('click');
+                $('html').off('click');
                 return;
             }
             setTimeout(function () {
-                $('html').bind('click', function (event){
+                $('html').on('click', function (event){
                     $dialog.html('');
-                    $('html').unbind('click');
+                    $('html').off('click');
                 });
             }, 100);
             var $e = $(event.target);
@@ -663,7 +663,7 @@ $(document).ready(function () {
                 '</dialog>';
             $dialog.append (text);
 
-            $('.chk-tab').click(function(event) {
+            $('.chk-tab').on('click', function(event) {
                 var id = $(event.currentTarget).attr('id').substr(4);
                 if (event.toElement.checked) {
                     main.systemConfig.common.tabs.push(id);
@@ -678,7 +678,7 @@ $(document).ready(function () {
 
         main.updateWizard();
 
-        $('#button-logout').click(function () {
+        $('#button-logout').on('click', function () {
             window.location.href = '/logout/';
         });
 
@@ -697,7 +697,7 @@ $(document).ready(function () {
 
             initHtmlButtons();
 
-            $('#events_threshold').click(function () {
+            $('#events_threshold').on('click', function () {
                 main.socket.emit('eventsThreshold', false);
             });
         } else {
@@ -911,7 +911,7 @@ $(document).ready(function () {
         }
 
         // host selector
-        $selHosts.find('a').click(function () {
+        $selHosts.find('a').on('click', function () {
             var val = $(this).data('value');
             var id  = 'system.host.' + val + '.alive';
             if (!main.states[id] || !main.states[id].val || main.states[id].val === 'null') {
@@ -941,7 +941,7 @@ $(document).ready(function () {
             dismissible: false
         });
 
-        $dialogCommand.find('.progress-show-more').change(function () {
+        $dialogCommand.find('.progress-show-more').on('change', function () {
             var val = $(this).prop('checked');
             main.saveConfig('progressMore', val);
             if (val) {
@@ -953,11 +953,11 @@ $(document).ready(function () {
         if (main.config.progressClose === undefined) {
             main.config.progressClose = true;
         }
-        $dialogCommand.find('.progress-dont-close input').change(function () {
+        $dialogCommand.find('.progress-dont-close input').on('change', function () {
             main.saveConfig('progressClose', $(this).prop('checked'));
         });
         // workaround for materialize checkbox problem
-        $dialogCommand.find('input[type="checkbox"]+span').unbind('click').click(function () {
+        $dialogCommand.find('input[type="checkbox"]+span').off('click').on('click', function () {
             var $input = $(this).prev();
             if (!$input.prop('disabled')) {
                 $input.prop('checked', !$input.prop('checked')).trigger('change');
@@ -965,7 +965,7 @@ $(document).ready(function () {
         });
         $dialogCommand.find('.progress-dont-close input').prop('checked', main.config.progressClose);
         $dialogCommand.find('.progress-show-more').prop('checked', !!main.config.progressMore).trigger('change');
-        $dialogCommand.find('.btn').click(function () {
+        $dialogCommand.find('.btn').on('click', function () {
             if ($dialogCommand.data('finished')) {
                 $('#admin_sidemenu_main').find('.button-command').hide();
             } else {
@@ -973,7 +973,7 @@ $(document).ready(function () {
             }
         });
 
-        $('#admin_sidemenu_main').find('.button-command').click(function () {
+        $('#admin_sidemenu_main').find('.button-command').on('click', function () {
             $dialogCommand.modal('open');
         });
     }
@@ -1601,7 +1601,7 @@ $(document).ready(function () {
         }
         $('#admin_sidemenu_menu').find('.admin-sidemenu-menu').html(lines);
 
-        $('.admin-sidemenu-close').unbind('click').click(function () {
+        $('.admin-sidemenu-close').off('click').on('click', function () {
             $('#admin_sidemenu_main').toggleClass('admin-sidemenu-closed');
             $('#admin_sidemenu_menu').toggleClass('admin-sidemenu-closed');
 
@@ -1611,7 +1611,7 @@ $(document).ready(function () {
             }, 400);
         });
 
-        $('.admin-sidemenu-items').unbind('click').click(function () {
+        $('.admin-sidemenu-items').off('click').on('click', function () {
             window.location.hash = '#' + $(this).data('tab');
         });
     }
@@ -1781,7 +1781,7 @@ $(document).ready(function () {
                                                 .data('licenseConfirmed', false)
                                                 .val(language)
                                                 .show()
-                                                .change(function () {
+                                                .on('change', function () {
                                                     language = $(this).val();
                                                     $('#license_language_label').html(translateWord('Select language', language));
                                                     $('#license_text').html(license[language] || license.en);
@@ -1792,7 +1792,7 @@ $(document).ready(function () {
                                                     $('#license_agreement_label').html(translateWord('license agreement', language));
                                                 });
 
-                                            $('#license_diag').change(function () {
+                                            $('#license_diag').on('change', function () {
                                                 if ($(this).prop('checked')) {
                                                     $('#license_agree').removeClass('disabled');
                                                 } else {
@@ -1801,7 +1801,7 @@ $(document).ready(function () {
                                             });
 
                                             // workaround for materialize checkbox problem
-                                            $dialogLicense.find('input[type="checkbox"]+span').unbind('click').click(function () {
+                                            $dialogLicense.find('input[type="checkbox"]+span').off('click').on('click', function () {
                                                 var $input = $(this).prev();
                                                 if (!$input.prop('disabled')) {
                                                     $input.prop('checked', !$input.prop('checked')).trigger('change');
@@ -1816,7 +1816,7 @@ $(document).ready(function () {
                                                 }
                                             }).modal('open');
 
-                                            $('#license_agree').addClass('disabled').unbind('click').click(function (e) {
+                                            $('#license_agree').addClass('disabled').off('click').on('click', function (e) {
                                                 e.preventDefault();
                                                 e.stopPropagation();
 
@@ -1833,8 +1833,8 @@ $(document).ready(function () {
                                                             main.showError(err);
                                                         }
                                                         $dialogLicense.modal('close');
-                                                        $('#license_agree').unbind('click');
-                                                        $('#license_non_agree').unbind('click');
+                                                        $('#license_agree').off('click');
+                                                        $('#license_non_agree').off('click');
                                                     });
                                                 });
                                             });

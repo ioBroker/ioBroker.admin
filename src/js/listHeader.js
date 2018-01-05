@@ -59,7 +59,7 @@ function IobListHeader(header, options) {
     };
 
     var resizeTimer;
-    $(window).resize(function (x, y) {
+    $(window).on('resize', function (x, y) {
         if (resizeTimer) clearTimeout(resizeTimer);
         resizeTimer = setTimeout(self.syncHeader.bind(self), 100);
     });
@@ -175,20 +175,20 @@ function IobListHeader(header, options) {
             }
         }
 
-        $(fisId + '-clear').button({icons:{primary: 'ui-icon-close'}, text: false}).click(function () {
+        $(fisId + '-clear').button({icons:{primary: 'ui-icon-close'}, text: false}).on('click', function () {
             if ($id.val() !== '') {
                 $id.val('').trigger('change');
             }
         });
 
         var eventFilterTimeout;
-        $id.change(function (event) {
+        $id.on('change', function (event) {
             if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
             elem.selectedVal = $id.val();
             eventFilterTimeout = setTimeout(self.doFilter, what !== 'combobox' ? 400 : 0);
             filterChanged($id);
             //elem.$filter.parent().parent()[elem.selectedVal ? 'addClass' : 'removeClass'] ('filter-active');
-        }).keyup(function (event) {
+        }).on('keyup', function (event) {
             if (event.which === 13) {
                 self.doFilter();
             } else {

@@ -243,7 +243,7 @@ function Instances(main) {
                 if (top < 0) {
                     top = 0;
                 }
-                $big.css({top: top}).click(function () {
+                $big.css({top: top}).on('click', function () {
                     var big = $(this).data('big');
                     $(big).remove();
                     $(this).data('big', undefined);
@@ -252,7 +252,7 @@ function Instances(main) {
                 var big = $(this).data('big');
                 $(big).remove();
                 $(this).data('big', undefined);
-            }).click(function () {
+            }).on('click', function () {
                 $(this).trigger('hover');
             });
         }
@@ -472,14 +472,14 @@ function Instances(main) {
         updateLed(instanceId);
         // init links
         $('.instance-editable[data-instance-id="' + instanceId + '"]')
-            .click(onQuickEditField)
+            .on('click', onQuickEditField)
             .addClass('select-id-quick-edit');
 
         // init schedule editor
         $('.instance-schedule[data-instance-id="' + instanceId + '"]').each(function () {
             if (!$(this).find('button').length) {
                 $(this).append('<button class="instance-schedule-button" data-instance-id="' + instanceId + '" data-name="' + $(this).data('name') + '">...</button>');
-                $(this).find('button').button().css('width', 16).click(function () {
+                $(this).find('button').button().css('width', 16).on('click', function () {
                     var attr = $(this).data('name');
                     var _instanceId = $(this).data('instance-id');
                     showCronDialog(that.main.objects[_instanceId].common[attr] || '', function (newValue) {
@@ -495,7 +495,7 @@ function Instances(main) {
             }
         });
 
-        $('.instance-name[data-instance-id="' + instanceId + '"]').click(function () {
+        $('.instance-name[data-instance-id="' + instanceId + '"]').on('click', function () {
             $('.instance-settings[data-instance-id="' + $(this).data('instance-id') + '"]').trigger('click');
         }).css('cursor', 'pointer');
     }
@@ -549,7 +549,7 @@ function Instances(main) {
         var textAlign = $this.css('text-align');
         $this.css('text-align', 'left');
 
-        $this.unbind('click').removeClass('select-id-quick-edit').css('position', 'relative');
+        $this.off('click').removeClass('select-id-quick-edit').css('position', 'relative');
 
         var css = 'cursor: pointer; position: absolute;width: 16px; height: 16px; top: 2px; border-radius: 6px; z-index: 3; background-color: lightgray';
         var type = 'text';
@@ -574,19 +574,19 @@ function Instances(main) {
 
         var $input = (options) ? $this.find('select') : $this.find('input');
 
-        $this.find('.select-id-quick-edit-cancel').click(function (e)  {
+        $this.find('.select-id-quick-edit-cancel').on('click', function (e)  {
             if (timeout) clearTimeout(timeout);
             timeout = null;
             e.preventDefault();
             e.stopPropagation();
             if (oldVal === undefined) oldVal = '';
             $this.html(oldVal)
-                .click(onQuickEditField)
+                .on('click', onQuickEditField)
                 .addClass('select-id-quick-edit')
                 .css('text-align', textAlign);
         });
 
-        $this.find('.select-id-quick-edit-ok').click(function ()  {
+        $this.find('.select-id-quick-edit-ok').on('click', function ()  {
             $this.trigger('blur');
         });
 
@@ -606,16 +606,16 @@ function Instances(main) {
                     oldVal = '<span style="color: pink">' + oldVal + '</span>';
                 }
                 $this.html(oldVal)
-                    .click(onQuickEditField)
+                    .on('click', onQuickEditField)
                     .addClass('select-id-quick-edit')
                     .css('text-align', textAlign);
             }.bind(this), 100);
-        }).keyup(function (e) {
+        }).on('keyup', function (e) {
             if (e.which === 13) $(this).trigger('blur');
             if (e.which === 27) {
                 if (oldVal === undefined) oldVal = '';
                 $this.html(oldVal)
-                    .click(onQuickEditField)
+                    .on('click', onQuickEditField)
                     .addClass('select-id-quick-edit')
                     .css('text-align', textAlign);
             }
@@ -686,7 +686,7 @@ function Instances(main) {
         var $filter      = that.$tab.find('.instances-filter');
         var $filterClear = that.$tab.find('.instances-filter-clear');
 
-        $filter.change(function () {
+        $filter.on('change', function () {
             var val = $(this).val();
             if (val) {
                 $(this).addClass('input-not-empty');
@@ -697,7 +697,7 @@ function Instances(main) {
             }
             that.main.saveConfig('instancesFilter', val);
             applyFilter(val);
-        }).keyup(function () {
+        }).on('keyup', function () {
             if (that.filterTimeout) clearTimeout(that.filterTimeout);
             that.filterTimeout = setTimeout(function () {
                 $filter.trigger('change');
@@ -711,7 +711,7 @@ function Instances(main) {
         }
 
         //$('#load_grid-instances').show();
-        that.$tab.find('.btn-instances-expert-mode').click(function () {
+        that.$tab.find('.btn-instances-expert-mode').on('click', function () {
             that.main.config.expertMode = !that.main.config.expertMode;
             that.main.saveConfig('expertMode', that.main.config.expertMode);
             that.updateExpertMode();
@@ -722,20 +722,20 @@ function Instances(main) {
             that.$tab.find('.btn-instances-expert-mode').addClass('red lighten-3');
         }
 
-        that.$tab.find('.btn-instances-reload').click(function () {
+        that.$tab.find('.btn-instances-reload').on('click', function () {
             that.init(true);
         });
 
         /*that.$grid.find('#btn-instances-form').button({
             icons: {primary: 'ui-icon-refresh'},
             text:  false
-        }).css({width: '1.5em', height: '1.5em'}).attr('title', _('reload')).click(function () {
+        }).css({width: '1.5em', height: '1.5em'}).attr('title', _('reload')).on('click', function () {
             that.main.config.instanceForm = that.main.config.instanceForm === 'tile' ? 'list' : 'tile';
             that.main.saveCell('expertMode', that.main.config.expertMode);
             that.init(true);
         });*/
 
-        $filterClear.click(function () {
+        $filterClear.on('click', function () {
             $filter.val('').trigger('change');
         });
     };
@@ -1100,7 +1100,7 @@ function Instances(main) {
     this.initButtons        = function (id, url) {
         id = id ? '[data-instance-id="' + id + '"]' : '';
 
-        var $e = that.$grid.find('.instance-edit' + id).unbind('click').click(function () {
+        var $e = that.$grid.find('.instance-edit' + id).off('click').on('click', function () {
             that.onEdit($(this).attr('data-instance-id'));
         });
 
@@ -1113,8 +1113,8 @@ function Instances(main) {
             }).css({width: '2em', height: '2em'}).attr('title', _('edit'));
         }
 
-        $e = that.$grid.find('.instance-settings' + id).unbind('click')
-            .click(function () {
+        $e = that.$grid.find('.instance-settings' + id).off('click')
+            .on('click', function () {
                 that.main.navigate({
                     tab:    'instances',
                     dialog: 'config',
@@ -1131,8 +1131,8 @@ function Instances(main) {
             }
         });
 
-        $e = that.$grid.find('.instance-reload' + id).unbind('click')
-            .click(function () {
+        $e = that.$grid.find('.instance-reload' + id).off('click')
+            .on('click', function () {
                 that.main.socket.emit('extendObject', $(this).attr('data-instance-id'), {}, function (err) {
                     if (err) that.main.showError(err);
                 });
@@ -1141,8 +1141,8 @@ function Instances(main) {
             $e.button({icons: {primary: 'ui-icon-refresh'}, text: false}).attr('title', _('reload'));
         }
 
-        $e = that.$grid.find('.instance-del' + id).unbind('click')
-            .click(function () {
+        $e = that.$grid.find('.instance-del' + id).off('click')
+            .on('click', function () {
                 var id = $(this).attr('data-instance-id');
                 if (that.main.objects[id] && that.main.objects[id].common && that.main.objects[id].common.host) {
                     var name = id.replace(/^system\.adapter\./, '');
@@ -1162,8 +1162,8 @@ function Instances(main) {
             $e.button('enable');
         }
         
-        $e = that.$grid.find('.instance-issue' + id).unbind('click')
-            .click(function () {
+        $e = that.$grid.find('.instance-issue' + id).off('click')
+            .on('click', function () {
                 that.main.navigate({
                     tab:    'instances',
                     dialog: 'issue',
@@ -1201,8 +1201,8 @@ function Instances(main) {
                 });
             }
         });
-        $e = that.$grid.find('.instance-stop-run' + id).unbind('click')
-            .click(function () {
+        $e = that.$grid.find('.instance-stop-run' + id).off('click')
+            .on('click', function () {
                 var id = $(this).attr('data-instance-id');
                 $(this).button('disable');
                 that.main.socket.emit('extendObject', id, {common: {enabled: !that.main.objects[id].common.enabled}}, function (err) {
@@ -1222,8 +1222,8 @@ function Instances(main) {
             });
         }
 
-        $e = that.$grid.find('.instance-web' + id).unbind('click')
-            .click(function () {
+        $e = that.$grid.find('.instance-web' + id).off('click')
+            .on('click', function () {
                 var _link = $(this).data('link');
                 if (typeof _link === 'object') {
                     var menu = '';
@@ -1254,7 +1254,7 @@ function Instances(main) {
                         top:    pos.top
                     }).show();
 
-                    $('.instances-menu-link').unbind('click').click(function () {
+                    $('.instances-menu-link').off('click').on('click', function () {
                         if ($(this).data('link')) window.open($(this).data('link'), $(this).data('instance-id'));
                         $('#instances-menu').hide();
                     });

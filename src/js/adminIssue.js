@@ -49,7 +49,7 @@ function Issue(main) {
                     $issueElement.find('.collapsible-header-title').text(issue.title);
                     $issueElement.find('.goto').attr('href', issue.html_url);
                     $issueElement.find('.user').text(issue.user.login);
-                    $issueElement.find('.form-row').html(new showdown.Converter().makeHtml(issue.body).replace(/src="/g, 'class="responsive-img" src="'));
+                    $issueElement.find('.form-row').html(new showdown.Converter().setFlavor('github').makeHtml(issue.body).replace(/src="/g, 'class="responsive-img" src="'));
                     var issueDate = new Date(new Date(issue.created_at));
                     $issueElement.find('.created').text(issueDate.toLocaleDateString(systemLang, {'weekday': 'short', 'year': 'numeric', 'month': 'long', 'day': '2-digit', 'hour': '2-digit', 'minute': '2-digit', 'second': '2-digit'}));
                     if (issue.labels.length > 0) {
@@ -76,7 +76,7 @@ function Issue(main) {
         that.$dialogIssue.data('name', name);
         that.$dialogIssue.find('.title').html(_('Known bugs for') + ': ' + name);
         that.$dialogIssue.find('.dialog-system-buttons .btn-add').attr('href', 'https://github.com/' + tmp[3] + '/' + tmp[4] + '/issues/new');
-        that.$dialogIssue.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function (e) {
+        that.$dialogIssue.find('.dialog-system-buttons .btn-cancel').off('click').on('click', function (e) {
             e.stopPropagation();
             e.preventDefault();
             that.main.navigate();

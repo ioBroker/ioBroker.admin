@@ -65,7 +65,7 @@ function values2table(divId, values, options) {
 
         // var addText = $add.text();
 
-        $add.click(function () {
+        $add.on('click', function () {
             if (!$add.data('maxRaw') || ($add.data('raw') < $add.data('maxRaw'))) {
                 var $table = $div.find('.table-values');
                 var values = $table.data('values');
@@ -296,7 +296,7 @@ function values2table(divId, values, options) {
         $lines.find('a[data-command]').each(function () {
             var command = $(this).data('command');
             if (command === 'delete') {
-                $(this).click(function () {
+                $(this).on('click', function () {
                     var id = $(this).data('index');
                     var elem = values[id];
                     values.splice(id, 1);
@@ -318,7 +318,7 @@ function values2table(divId, values, options) {
                     .find('.material-icons')
                     .html('delete');
             } else if (command === 'up') {
-                $(this).click(function () {
+                $(this).on('click', function () {
                         var id = $(this).data('index');
                         var elem = values[id];
                         values.splice(id, 1);
@@ -329,7 +329,7 @@ function values2table(divId, values, options) {
                         }, 100);
                     }).find('i').html('arrow_upward');
             } else if (command === 'down') {
-                $(this).click(function () {
+                $(this).on('click', function () {
                         var id = $(this).data('index');
                         var elem = values[id];
                         values.splice(id, 1);
@@ -340,7 +340,7 @@ function values2table(divId, values, options) {
                         }, 100);
                     }).find('i').html('arrow_downward');
             } else if (command === 'pair') {
-                $(this).click(function () {
+                $(this).on('click', function () {
                         if (typeof tableEvents === 'function') {
                             var id = $(this).data('index');
                             var elem = values[id];
@@ -348,7 +348,7 @@ function values2table(divId, values, options) {
                         }
                     }).attr('title', _('pair')).find('i').html('insert_link');
             } else if (command === 'unpair') {
-                $(this).click(function () {
+                $(this).on('click', function () {
                         if (typeof tableEvents === 'function') {
                             var id = $(this).data('index');
                             var elem = values[id];
@@ -369,7 +369,7 @@ function values2table(divId, values, options) {
                 values[index][name] = $(this).val();
 
             }
-        }).keyup(function () {
+        }).on('keyup', function () {
             $(this).trigger('change.adaptersettings');
         });
     }

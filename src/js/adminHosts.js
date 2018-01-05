@@ -11,19 +11,19 @@ function Hosts(main) {
         $('#btn-hosts-reload').button({
             icons: {primary: 'ui-icon-refresh'},
             text:  false
-        }).css({width: '1.5em', height: '1.5em'}).attr('title', _('Update')).click(function () {
+        }).css({width: '1.5em', height: '1.5em'}).attr('title', _('Update')).on('click', function () {
             that.init();
         });
 
-        $('#hosts-filter-clear').button({icons: {primary: 'ui-icon-close'}, text: false}).css({width: '1em', height: '1em'}).click(function () {
+        $('#hosts-filter-clear').button({icons: {primary: 'ui-icon-close'}, text: false}).css({width: '1em', height: '1em'}).on('click', function () {
             $('#hosts-filter').val('').trigger('change');
         });
 
         var $hostsFilter = $('#hosts-filter');
-        $hostsFilter.change(function () {
+        $hostsFilter.on('change', function () {
             that.main.saveConfig('hostsFilter', $(this).val());
             applyFilter($(this).val());
-        }).keyup(function () {
+        }).on('keyup', function () {
             if (that.filterTimeout) clearTimeout(that.filterTimeout);
             that.filterTimeout = setTimeout(function () {
                 $('#hosts-filter').trigger('change');
@@ -38,18 +38,18 @@ function Hosts(main) {
     this.initButtons = function (id) {
         var selector = id ? '[data-host-id="' + id + '"]' : '';
 
-        $('.host-update-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}}).css({width: 22, height: 18}).unbind('click').on('click', function () {
+        $('.host-update-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}}).css({width: 22, height: 18}).off('click').on('click', function () {
             that.main.cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
                 if (!exitCode) that.init();
             });
         });
 
-        $('.host-restart-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click').on('click', function () {
+        $('.host-restart-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).off('click').on('click', function () {
             that.main.waitForRestart = true;
             that.main.cmdExec($(this).attr('data-host-name'), '_restart');
         });
 
-        $('.host-update-hint-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click').on('click', function () {
+        $('.host-update-hint-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).off('click').on('click', function () {
 
             var infoTimeout = setTimeout(function () {
                 showUpdateInfo();

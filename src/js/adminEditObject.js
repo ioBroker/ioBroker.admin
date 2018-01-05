@@ -148,16 +148,16 @@ function EditObject(main) {
             return;
         }
         this.prepared = true;
-        this.$dialogSave.click(function () {
+        this.$dialogSave.on('click', function () {
             that.save();
         });
-        this.$dialog.find('.dialog-editobject-buttons .btn-cancel').click(function () {
+        this.$dialog.find('.dialog-editobject-buttons .btn-cancel').on('click', function () {
             that.editor.setValue('');
             that.$dialogSave.addClass('disabled');
             that.main.navigate();
         });
 
-        this.$dialog.find('.btn-add-common').click(function () {
+        this.$dialog.find('.btn-add-common').on('click', function () {
             that.$dialogNewField.find('.object-tab-new-icon').show();
             that.$dialogNewField.modal('open');
             var $name = that.$dialogNewField.find('.object-tab-new-name');
@@ -183,7 +183,7 @@ function EditObject(main) {
             $name.focus()
         });
 
-        this.$dialog.find('.btn-add-native').click(function () {
+        this.$dialog.find('.btn-add-native').on('click', function () {
             that.$dialogNewField.find('.object-tab-new-icon').hide();
             that.$dialogNewField.modal('open');
             var $name = that.$dialogNewField.find('.object-tab-new-name');
@@ -239,7 +239,7 @@ function EditObject(main) {
             }
         });
 
-        this.$dialogNewField.find('.btn-add').click(function (e) {
+        this.$dialogNewField.find('.btn-add').on('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -264,18 +264,18 @@ function EditObject(main) {
             that.$dialogNewField.modal('close');
             that.$dialogSave.removeClass('disabled');
         });
-        this.$dialogNewField.find('.btn-cancel').click(function (e) {
+        this.$dialogNewField.find('.btn-cancel').on('click', function (e) {
             that.$dialogNewField.find('.object-tab-new-name').val('');
         });
-        this.$dialog.find('.edit-object-name').change(function () {
+        this.$dialog.find('.edit-object-name').on('change', function () {
             that.$dialogSave.removeClass('disabled');
-        }).keyup(function () {
+        }).on('keyup', function () {
             $(this).trigger('change');
         });
-        this.$dialog.find('.edit-object-type').change(function () {
+        this.$dialog.find('.edit-object-type').on('change', function () {
             that.$dialogSave.removeClass('disabled');
         });
-        this.$dialog.find('.object-tab-rights input').change(function () {
+        this.$dialog.find('.object-tab-rights input').on('change', function () {
             that.$dialogSave.removeClass('disabled');
         });
 
@@ -296,10 +296,10 @@ function EditObject(main) {
                 $tab.find('.icon .treetable-icon').attr('src', text);
             }
         });
-        this.$dialog.find('.icon-editor .icon-upload').unbind('click').click(function () {
+        this.$dialog.find('.icon-editor .icon-upload').off('click').on('click', function () {
             that.$dialog.find('.drop-file').trigger('click');
         });
-        this.$dialog.find('.icon-editor .icon-clear').unbind('click').click(function () {
+        this.$dialog.find('.icon-editor .icon-clear').off('click').on('click', function () {
             if (that.iconVal) {
                 that.iconVal = null;
                 that.$dialog.find('.icon-editor').hide().appendTo(that.$dialog);
@@ -387,7 +387,7 @@ function EditObject(main) {
             this.iconVal = null;
         }
 
-        this.$dialog.find('.object-tab-field-delete').click(function () {
+        this.$dialog.find('.object-tab-field-delete').on('click', function () {
             var part  = $(this).data('part');
             var field = $(this).data('attr');
             that.main.confirmMessage(_('Delete attribute'), _('Please confirm'), 'error_outline', function (result) {
@@ -434,16 +434,16 @@ function EditObject(main) {
         this.$dialog.find('select').select();
 
         // workaround for materialize checkbox problem
-        this.$dialog.find('input[type="checkbox"]+span').unbind('click').click(function () {
+        this.$dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
             var $input = $(this).prev();
             if (!$input.prop('disabled')) {
                 $input.prop('checked', !$input.prop('checked')).trigger('change');
             }
         });
         // enable save
-        this.$dialog.find('input').change(function () {
+        this.$dialog.find('input').on('change', function () {
             that.$dialogSave.removeClass('disabled');
-        }).keyup(function () {
+        }).on('keyup', function () {
             $(this).trigger('change');
         });
 

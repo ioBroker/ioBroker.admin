@@ -35,7 +35,7 @@ function Readme(main) {
             that.fillDiv(url);
         }
 
-        that.$dialog.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function (e) {
+        that.$dialog.find('.dialog-system-buttons .btn-cancel').off('click').on('click', function (e) {
             e.stopPropagation();
             e.preventDefault();
             localStorage.removeItem('original-md-url');
@@ -47,7 +47,7 @@ function Readme(main) {
     this.fillDiv = function (url) {
         $.get(url, function (data) {
             var link = url.substring(0, url.lastIndexOf('/') + 1);
-            var html = new showdown.Converter().makeHtml(data);
+            var html = new showdown.Converter().setFlavor('github').makeHtml(data);
             html = html.replace(/id="/g, 'id="mdid-');
             html = html.replace(/src="(?!http)/g, 'class="responsive-img" src="' + link);
             html = html.replace(/href="#/g, 'href="" class="goto-link" data-goto="#mdid-');
