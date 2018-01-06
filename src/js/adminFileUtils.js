@@ -31,7 +31,7 @@ function installFileUpload($dropZone, limit, callback) {
         $dropZone.prepend('<div class="drop-zone" style="display: none"><input type="file" class="drop-file" style="display: none" /></div>');
         var $dz = $dropZone.find('.drop-zone');
         $dropZone[0].ondragover = function() {
-            $dz.unbind('click');
+            $dz.off('click');
             $dz.show();
             return false;
         };
@@ -45,5 +45,5 @@ function installFileUpload($dropZone, limit, callback) {
     }
     $dropZone.data('drop-zone-cb', callback);
     $dropZone.data('limit', limit);
-    $dropZone.find('.drop-file').change(fileHandler.bind($dropZone[0]));
+    $dropZone.find('.drop-file').on('change', fileHandler.bind($dropZone[0]));
 }

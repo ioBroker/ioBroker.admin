@@ -19,17 +19,17 @@ function setupCron(value, callback) {
         $input.val(value);
     }
 
-    $el.find('.btn-clear').unbind('click').click(function (e) {
+    $el.find('.btn-clear').off('click').click(function (e) {
         e.stopPropagation();
         e.preventDefault();
         $input.val('').trigger('change');
     });
-    $el.find('.btn-apply').unbind('click').click(function () {
+    $el.find('.btn-apply').off('click').click(function () {
         var cb = $el.data('callback');
         $el.data('callback', null);
         cb($input.val());
     });
-    $el.find('.btn-cancel').unbind('click').click(function () {
+    $el.find('.btn-cancel').off('click').click(function () {
         var cb = $el.data('callback');
         $el.data('callback', null);
         cb();
@@ -97,7 +97,7 @@ function setupCron(value, callback) {
     }
 
     $el.find('.tabs').mtabs();
-    $el.find('.cron-type-selector').select().unbind('change').change(function () {
+    $el.find('.cron-type-selector').select().off('change').change(function () {
         if ($input.is(':focus') || updateInput) return;
         cronArr = cronArr || ['*', '*', '*', '*', '*', '*'];
         var type = $(this).data('type');
@@ -128,14 +128,14 @@ function setupCron(value, callback) {
     M.Range.init($el.find('.cron-slider'));
 
     // workaround for materialize checkbox problem
-    $el.find('.cron-checkbox-seconds+span').unbind('click').click(function () {
+    $el.find('.cron-checkbox-seconds+span').off('click').click(function () {
         var $input = $(this).prev();
         if (!$input.prop('disabled')) {
             $input.prop('checked', !$input.prop('checked')).trigger('change');
         }
     });
 
-    $seconds.unbind('change').change(function () {
+    $seconds.off('change').change(function () {
         enableSeconds($(this).prop('checked'));
         drawCron();
     });
@@ -143,11 +143,11 @@ function setupCron(value, callback) {
     // init of seconds (whithout drawCron)
     enableSeconds();
 
-    $input.unbind('change').change(function () {
+    $input.off('change').change(function () {
         $(this).focus();
         cronArr = text2cron($(this).val());
         detectSettings($(this).val());
-    }).unbind('keyup').keyup(function () {
+    }).off('keyup').keyup(function () {
         $(this).trigger('change');
     });
 
@@ -503,7 +503,7 @@ function setupCron(value, callback) {
         var arg = types.indexOf(type);
         var list = convertMinusIntoArray(cronArr[arg]).split(',');
 
-        $format.find('.cron-number').unbind('click').click(processEachChange).each(function () {
+        $format.find('.cron-number').off('click').click(processEachChange).each(function () {
             if (list.indexOf($(this).data('index').toString()) !== -1) {
                 $(this).addClass('selected')
             }

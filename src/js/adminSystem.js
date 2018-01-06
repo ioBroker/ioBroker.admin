@@ -254,7 +254,7 @@ function System(main) {
         $dialogSystem.find('#tab-system-acl-file-every-write').prop('checked', acl.file & 0x2);
 
         // workaround for materialize checkbox problem
-        $dialogSystem.find('input[type="checkbox"]+span').unbind('click').click(function () {
+        $dialogSystem.find('input[type="checkbox"]+span').off('click').on('click', function () {
             var $input = $(this).prev();
             if (!$input.prop('disabled')) {
                 $input.prop('checked', !$input.prop('checked')).trigger('change');
@@ -432,7 +432,7 @@ function System(main) {
 
             $dialogSystem.find('#diagMode')
                 .val(main.systemConfig.common.diag)
-                .change(function () {
+                .on('change', function () {
                     main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
                         $dialogSystem.find('#diagSample').html(JSON.stringify(obj, null, 2));
                     });
@@ -507,8 +507,8 @@ function System(main) {
                 }
             });
 
-            $dialogSystem.find('.dialog-system-buttons .btn-save').unbind('click').click(onButtonSave);
-            $dialogSystem.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function () {
+            $dialogSystem.find('.dialog-system-buttons .btn-save').off('click').on('click', onButtonSave);
+            $dialogSystem.find('.dialog-system-buttons .btn-cancel').off('click').on('click', function () {
                 that.main.navigate();
             });
 
@@ -516,9 +516,9 @@ function System(main) {
             initRights();
             initCertsGrid();
 
-            $dialogSystem.find('.value').change(function () {
+            $dialogSystem.find('.value').on('change', function () {
                 $dialogSystem.find('.btn-save').removeClass('disabled');
-            }).keyup(function () {
+            }).on('keyup', function () {
                 $(this).trigger('change');
             });
 
@@ -539,7 +539,7 @@ function System(main) {
 
     this.prepare = function () {
         if (!main.systemConfig.error) {
-            $('#button-system').unbind('click').click(function () {
+            $('#button-system').off('click').on('click', function () {
                 that.main.navigate({dialog: 'system'});
             });
         } else {

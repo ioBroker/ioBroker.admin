@@ -42,7 +42,7 @@ function Logs(main) {                                                           
         ]).$filter.attr('title', _('severity'));
         hdr.add('edit', 'Message', 'message');
 
-        this.$table.find('#log-clear-on-disk').click(function () {
+        this.$table.find('#log-clear-on-disk').on('click', function () {
             that.main.confirmMessage(_('Log file will be deleted. Are you sure?'), null, null, function (result) {
                 if (result) {
                     that.main.socket.emit('sendToHost', main.currentHost, 'delLogs', null, function (err) {
@@ -56,27 +56,27 @@ function Logs(main) {                                                           
             });
         }).addClass('ui-state-error');
 
-        this.$table.find('#log-refresh').click(function () {
+        this.$table.find('#log-refresh').on('click', function () {
             that.clear();
         });
 
         $logPause
             .attr('title', _('Pause output'))
-            .click(function () {
+            .on('click', function () {
                 that.pause();
             });
 
         pause.$counterSpan = $logPause.find('ui-button-text');
 
-        this.$table.find('#log-clear').click(function () {
+        this.$table.find('#log-clear').on('click', function () {
             that.clear(false);
         });
 
-        $('#log-copy-text').click(function () {
+        $('#log-copy-text').on('click', function () {
             $(this).hide().html('');
         });
 
-        this.$table.find('#log-copy').click(function () {
+        this.$table.find('#log-copy').on('click', function () {
             var text = '<span class="error">' + _('copy note') + '</span>';
             $('#log-copy-text').show().html(text + '<br><table style="width: 100%; font-size: 12px" id="log-copy-table">' + $logTable.html() + '</table>');
             var lines = that.$table.find('#log-copy-table').find('.log-column-4');
@@ -198,7 +198,7 @@ function Logs(main) {                                                           
                         that.$table.find('#log-files-btn').show().dropdown();
                         that.$table.find('#log-files')
                             .html(html)
-                                .find('a').click(function () {
+                                .find('a').on('click', function () {
                                     var val = $(this).data('value');
                                     if (val) {
                                         $(this).val('');

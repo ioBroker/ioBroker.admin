@@ -59,7 +59,7 @@ function Events(main) {
 
         var $eventPause = this.$tab.find('#event-pause');
         $eventPause
-            .click(function () {
+            .on('click', function () {
                 that.pause();
             });
 
@@ -68,7 +68,7 @@ function Events(main) {
         // bind "clear events" button
         var $eventClear = this.$tab.find('#event-clear');
         $eventClear
-            .unbind('click').click(function () {
+            .off('click').on('click', function () {
                 eventsLinesCount = 0;
                 eventsLinesStart = 0;
                 $('#event-table').html('');

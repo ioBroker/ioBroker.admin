@@ -468,8 +468,8 @@ function Users(main) {
         }
         $dialog.find('#tab-users-dialog-new-name')
             .val(options.name)
-            .unbind('change')
-            .bind('change', function () {
+            .off('change')
+            .on('change', function () {
                 var $id = $('#tab-users-dialog-new-id');
                 var id = $id.val();
                 var val = $(this).val();
@@ -484,24 +484,24 @@ function Users(main) {
                     M.updateTextFields('#tab-users-dialog-new');
                 }
                 checkValidId($dialog);
-            }).unbind('keyup').bind('keyup', function () {
+            }).off('keyup').on('keyup', function () {
             $(this).trigger('change');
         });
 
         $dialog.find('#tab-users-dialog-new-desc')
             .val(options.desc)
-            .unbind('change')
-            .bind('change', function () {
+            .off('change')
+            .on('change', function () {
                 checkValidId($dialog);
-            }).unbind('keyup').bind('keyup', function () {
+            }).off('keyup').on('keyup', function () {
             $(this).trigger('change');
         });
 
         prevId = options.id;
         $dialog.find('#tab-users-dialog-new-id')
             .val(options.id)
-            .unbind('change')
-            .bind('change', function () {
+            .off('change')
+            .on('change', function () {
                 var val = $(this).val();
                 if (prevId !== val) {
                     idChanged = true;
@@ -510,15 +510,15 @@ function Users(main) {
                     M.updateTextFields('#tab-users-dialog-new');
                     checkValidId($dialog);
                 }
-            }).unbind('keyup').bind('keyup', function () {
+            }).off('keyup').on('keyup', function () {
             $(this).trigger('change');
         });
 
         $dialog.find('.tab-dialog-create')
             .addClass('disabled')
-            .unbind('click')
+            .off('click')
             .text(oldId ? _('Change') : _('Create'))
-            .click(function (event) {
+            .on('click', function (event) {
                 options.name = $dialog.find('#tab-users-dialog-new-name').val();
                 options.id   = $dialog.find('#tab-users-dialog-new-id').val();
                 options.desc = $dialog.find('#tab-users-dialog-new-desc').val();
@@ -549,10 +549,10 @@ function Users(main) {
         }
 
         showMessageInDialog(_('Drop the icons here'));
-        $dialog.find('.tab-dialog-new-upload').unbind('click').click(function () {
+        $dialog.find('.tab-dialog-new-upload').off('click').on('click', function () {
             $dialog.find('.drop-file').trigger('click');
         });
-        $dialog.find('.tab-dialog-new-icon-clear').unbind('click').click(function () {
+        $dialog.find('.tab-dialog-new-icon-clear').off('click').on('click', function () {
             if (options.icon) {
                 options.icon = '';
                 $dialog.find('.tab-dialog-new-icon').hide();
@@ -560,7 +560,7 @@ function Users(main) {
                 checkValidId($dialog);
             }
         });
-        $dialog.find('.tab-dialog-new-color-clear').unbind('click').click(function () {
+        $dialog.find('.tab-dialog-new-color-clear').off('click').on('click', function () {
             if (options.color) {
                 checkValidId($dialog);
                 $dialog.find('.tab-dialog-new-color-clear').hide();
@@ -592,10 +592,10 @@ function Users(main) {
                 $dialog.find('.tab-users-dialog-new-icon-clear').show();
             }
         });
-        $dialog.find('#tab-users-dialog-new-password').unbind('change').change(function () {
+        $dialog.find('#tab-users-dialog-new-password').off('change').on('change', function () {
             checkValidId($dialog);
         });
-        $dialog.find('#tab-users-dialog-new-password-repeat').unbind('change').change(function () {
+        $dialog.find('#tab-users-dialog-new-password-repeat').off('change').on('change', function () {
             checkValidId($dialog);
         });
         if (options.color) {
@@ -675,14 +675,14 @@ function Users(main) {
                     $dialog.find('#tab-users-dialog-new-rights').html(table);
 
                     // workaround for materialize checkbox problem
-                    $dialog.find('input[type="checkbox"]+span').unbind('click').click(function () {
+                    $dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
                         var $input = $(this).prev();
                         if (!$input.prop('disabled')) {
                             $input.prop('checked', !$input.prop('checked')).trigger('change');
                         }
                     });
 
-                    $dialog.find('input[type="checkbox"]').unbind('change').change(function () {
+                    $dialog.find('input[type="checkbox"]').off('change').on('change', function () {
                         checkValidId($dialog);
                     });
 
@@ -857,10 +857,10 @@ function Users(main) {
         }
         text += '</ul>';
         that.$gridUsers.html(text);
-        that.$gridUsers.find('#tab-users-btn-new-user').click(function () {
+        that.$gridUsers.find('#tab-users-btn-new-user').on('click', function () {
             createOrEdit(false);
         });
-        that.$gridUsers.find('.tab-users-enabled-user').click(function () {
+        that.$gridUsers.find('.tab-users-enabled-user').on('click', function () {
             var id = $(this).data('user');
             if (id === 'system.user.admin') {
                 showMessage(_('Cannot disable admin!'), true);
@@ -878,7 +878,7 @@ function Users(main) {
                 }
             });
         });
-        that.$gridUsers.find('.delete-content').click(function () {
+        that.$gridUsers.find('.delete-content').on('click', function () {
             var id = $(this).data('user');
             if (that.main.objects[id] && that.main.objects[id].type === 'user') {
                 that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
@@ -891,10 +891,10 @@ function Users(main) {
                 showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id), true);
             }
         });
-        that.$gridUsers.find('.edit-content').click(function () {
+        that.$gridUsers.find('.edit-content').on('click', function () {
             createOrEdit($(this).data('user'));
         });
-        that.$gridUsers.find('.tab-users-remove-group').click(function () {
+        that.$gridUsers.find('.tab-users-remove-group').on('click', function () {
             var id = $(this).data('user');
             var gId = $(this).data('group');
             // delete user from group
@@ -972,10 +972,10 @@ function Users(main) {
         }
         text += '</ul>';
         that.$gridGroups.html(text);
-        that.$gridGroups.find('#tab-users-btn-new-group').click(function () {
+        that.$gridGroups.find('#tab-users-btn-new-group').on('click', function () {
             createOrEdit(true);
         });
-        that.$gridGroups.find('.delete-content').click(function () {
+        that.$gridGroups.find('.delete-content').on('click', function () {
             var id = $(this).data('group');
             if (that.main.objects[id] && that.main.objects[id].type === 'user') {
                 that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
@@ -988,10 +988,10 @@ function Users(main) {
                 showMessage(_('Object "<b>%s</b>" does not exists. Update the page.', id), true);
             }
         });
-        that.$gridGroups.find('.edit-content').click(function () {
+        that.$gridGroups.find('.edit-content').on('click', function () {
             createOrEdit($(this).data('group'));
         });
-        that.$gridGroups.find('.tab-users-remove-user').click(function () {
+        that.$gridGroups.find('.tab-users-remove-user').on('click', function () {
             var id = $(this).data('user');
             var gId = $(this).data('group');
             // delete user from group

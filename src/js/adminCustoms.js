@@ -135,7 +135,7 @@ function Customs(main) {
 
                 that.defaults[adapter][field] = def;
                 if (field === 'enabled') {
-                    $this.click(function (event) {
+                    $this.on('click', function (event) {
                         event.stopPropagation();
                         if ($(this).prop('checked')) {
 
@@ -198,7 +198,7 @@ function Customs(main) {
             }
 
             if ($this.attr('type') === 'checkbox') {
-                $this.change(function () {
+                $this.on('change', function () {
                     that.$dialog.find('.dialog-system-buttons .btn-save').removeClass('disabled');
                     if ($(this).data('field') === 'enabled') {
                         var instance = $this.data('instance');
@@ -211,9 +211,9 @@ function Customs(main) {
                     }
                 });
             } else {
-                $this.change(function () {
+                $this.on('change', function () {
                     that.$dialog.find('.dialog-system-buttons .btn-save').removeClass('disabled');
-                }).keyup(function () {
+                }).on('keyup', function () {
                     $(this).trigger('change');
                 });
             }
@@ -243,7 +243,7 @@ function Customs(main) {
                 that.main.saveConfig('object-customs-collapsed', _collapsed.join(','));
             }
         });
-        that.$dialog.find('input[type="checkbox"]+span').unbind('click').click(function () {
+        that.$dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
             var $input = $(this).prev();//.addClass('filled-in');
             if (!$input.prop('disabled')) {
                 $input.prop('checked', !$input.prop('checked')).trigger('change');
@@ -619,7 +619,7 @@ function Customs(main) {
                     .data('id', ids[0])
                     .html(text)
                     .show()
-                    .unbind('change').bind('change', function () {
+                    .off('change').on('change', function () {
                         that.main.saveConfig('object-history-table', $historyTableInstance.val());
                         that.loadHistoryTable($(this).data('id'));
                     });
@@ -628,8 +628,8 @@ function Customs(main) {
                     .data('id', ids[0])
                     .html(text)
                     .show()
-                    .unbind('change')
-                    .bind('change', function () {
+                    .off('change')
+                    .on('change', function () {
                         that.main.saveConfig('object-history-chart', $historyChartInstance.val());
                         that.loadHistoryChart($(this).data('id')); // reinit iframe
                     });
@@ -643,14 +643,14 @@ function Customs(main) {
                 $historyTableInstanceBtn
                     .data('id', ids[0])
                     .show()
-                    .unbind('click').bind('click', function () {
+                    .off('click').on('click', function () {
                         that.$dialog.find('#grid-history-body').html('');
                         that.loadHistoryTable($(this).data('id'));
                     });
                 $historyChartInstanceBtn
                     .data('id', ids[0])
                     .show()
-                    .unbind('click').bind('click', function () {
+                    .off('click').on('click', function () {
                         that.loadHistoryChart($(this).data('id')); // reinit iframe
                     });
 
@@ -767,8 +767,8 @@ function Customs(main) {
             }
         });
         this.$dialog.find('#customs-tabs').data('ids', ids);
-        that.$dialog.find('.dialog-system-buttons .btn-save').unbind('click').click(onButtonSave);
-        that.$dialog.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function (e) {
+        that.$dialog.find('.dialog-system-buttons .btn-save').off('click').on('click', onButtonSave);
+        that.$dialog.find('.dialog-system-buttons .btn-cancel').off('click').on('click', function (e) {
             e.stopPropagation();
             e.preventDefault();
             if (!that.$dialog.find('.dialog-system-buttons .btn-save').hasClass('disabled')) {

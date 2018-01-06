@@ -876,7 +876,7 @@ function filterChanged(e) {
         var $dlg = $('#dialog-value-edit');
         if (typeof M !== 'undefined' && $dlg.length) {
             $dlg.find('textarea').val(value);
-            $dlg.find('.btn-set').unbind('click').click(function () {
+            $dlg.find('.btn-set').off('click').click(function () {
                 var val = $dlg.find('textarea').val();
                 if (val !== value) {
                     data.quickEditCallback(id, 'value', val, value);
@@ -1041,7 +1041,7 @@ function filterChanged(e) {
             $thisParent.find('.edit-dialog-button').remove(); // delete edit buttons because they overlay the edit field
         }
         $thisParent.css({overflow: 'visible'});
-        $this.unbind('click').removeClass('select-id-quick-edit').css('position', 'relative');
+        $this.off('click').removeClass('select-id-quick-edit').css('position', 'relative');
 
         type = type === 'boolean' ? 'checkbox' : 'text';
         var text;
@@ -2494,7 +2494,7 @@ function filterChanged(e) {
 
         restoreExpandeds(data, expandeds);
         var resizeTimer;
-        $(window).resize(function (/* x, y */) {
+        $(window).on('resize', function (/* x, y */) {
             if (resizeTimer) clearTimeout(resizeTimer);
             resizeTimer = setTimeout(syncHeader.bind(null, $dlg), 100);
         });

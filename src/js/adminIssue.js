@@ -16,6 +16,8 @@ function Issue(main) {
         }
 
         this.inited = true;
+        
+        showdown.setFlavor('github');
 
         var id = this.main.navigateGetParams();
         var name = id.replace(/^system\.adapter\./, '');
@@ -76,7 +78,7 @@ function Issue(main) {
         that.$dialogIssue.data('name', name);
         that.$dialogIssue.find('.title').html(_('Known bugs for') + ': ' + name);
         that.$dialogIssue.find('.dialog-system-buttons .btn-add').attr('href', 'https://github.com/' + tmp[3] + '/' + tmp[4] + '/issues/new');
-        that.$dialogIssue.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function (e) {
+        that.$dialogIssue.find('.dialog-system-buttons .btn-cancel').off('click').on('click', function (e) {
             e.stopPropagation();
             e.preventDefault();
             that.main.navigate();

@@ -294,7 +294,7 @@ function Enums(main) {
             that.$gridEnum.find('.btn-new-group-btn[data-target="btn-new-group-' + name + '"]').dropdown({
                 constrainWidth: false
             });
-            that.$gridEnum.find('#btn-new-group-' + name).find('.new-group-item').click(function () {
+            that.$gridEnum.find('#btn-new-group-' + name).find('.new-group-item').on('click', function () {
                 var id = $(this).data('id');
                 var parent = $(this).data('enum');
                 if (!id) {
@@ -324,7 +324,7 @@ function Enums(main) {
             that.$gridEnum.find('.btn-new-enum-btn').dropdown({
                 constrainWidth: false
             });
-            that.$gridEnum.find('.new-enum-item').click(function () {
+            that.$gridEnum.find('.new-enum-item').on('click', function () {
                 var id = $(this).data('id');
                 if (!id) {
                     createOrEditEnum(null);
@@ -472,22 +472,22 @@ function Enums(main) {
         $tableBody.find('.page').each(function () {
             drawEnum($(this).data('id'), $(this), scrollTop[$(this).data('id')]);
         });
-        $tableBody.find('.btn-new-category').click(function () {
+        $tableBody.find('.btn-new-category').on('click', function () {
             createOrEditEnum(null, $(this).data('id'));
         });
-        $tableBody.find('.btn-edit-category').click(function () {
+        $tableBody.find('.btn-edit-category').on('click', function () {
             createOrEditEnum($(this).data('id'));
         });
-        $tableBody.find('.btn-del-category').click(function () {
+        $tableBody.find('.btn-del-category').on('click', function () {
             deleteEnum($(this).data('id'));
         });
-        $tableBody.find('.edit-content').click(function () {
+        $tableBody.find('.edit-content').on('click', function () {
             createOrEditEnum($(this).data('id'));
         });
-        $tableBody.find('.delete-content').click(function () {
+        $tableBody.find('.delete-content').on('click', function () {
             deleteEnum($(this).data('id'));
         });
-        $tableBody.find('.close').click(function () {
+        $tableBody.find('.close').on('click', function () {
             removeMember($(this).data('id'), $(this).data('enum'));
         });
     }
@@ -818,8 +818,8 @@ function Enums(main) {
 
         $dialog.find('#tab-enums-dialog-new-name')
             .val(nameVal)
-            .unbind('change')
-            .bind('change', function () {
+            .off('change')
+            .on('change', function () {
                 var $id = $('#tab-enums-dialog-new-id');
                 var id = $id.val();
                 var val = $(this).val();
@@ -837,14 +837,14 @@ function Enums(main) {
                     $dialog.find('.tab-enums-dialog-create').addClass('disabled');
                     $id.addClass('wrong');
                 }
-            }).unbind('keyup').bind('keyup', function () {
+            }).off('keyup').on('keyup', function () {
                 $(this).trigger('change');
             });
 
         $dialog.find('#tab-enums-dialog-new-id')
             .val(idVal)
-            .unbind('change')
-            .bind('change', function () {
+            .off('change')
+            .on('change', function () {
                 idChanged = true;
                 var val = $(this).val();
                 $dialog.find('#tab-enums-dialog-new-preview').val((parentId || 'enum') + '.' + ($(this).val() || '#'));
@@ -857,7 +857,7 @@ function Enums(main) {
                     $dialog.find('.tab-enums-dialog-create').addClass('disabled');
                     $(this).addClass('wrong');
                 }
-            }).unbind('keyup').bind('keyup', function () {
+            }).off('keyup').on('keyup', function () {
                 $(this).trigger('change');
             });
 
@@ -865,9 +865,9 @@ function Enums(main) {
 
         $dialog.find('.tab-enums-dialog-create')
             .addClass('disabled')
-            .unbind('click')
+            .off('click')
             .text(oldId ? _('Change') : _('Create'))
-            .click(function () {
+            .on('click', function () {
                 if (oldId) {
                     enumRename(
                         oldId,
@@ -922,10 +922,10 @@ function Enums(main) {
         M.updateTextFields('#tab-enums-dialog-new');
         that.main.showToast($dialog, _('Drop the icons here'));
 
-        $dialog.find('.tab-enums-dialog-new-upload').unbind('click').click(function () {
+        $dialog.find('.tab-enums-dialog-new-upload').off('click').on('click', function () {
             $dialog.find('.drop-file').trigger('click');
         });
-        $dialog.find('.tab-enums-dialog-new-icon-clear').unbind('click').click(function () {
+        $dialog.find('.tab-enums-dialog-new-icon-clear').off('click').on('click', function () {
             if (iconVal) {
                 iconVal = '';
                 $dialog.find('.tab-enums-dialog-new-icon').hide();
@@ -933,7 +933,7 @@ function Enums(main) {
                 $dialog.find('.tab-enums-dialog-new-icon-clear').hide();
             }
         });
-        $dialog.find('.tab-enums-dialog-new-color-clear').unbind('click').click(function () {
+        $dialog.find('.tab-enums-dialog-new-color-clear').off('click').on('click', function () {
             if (colorVal) {
                 $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
                 $dialog.find('.tab-enums-dialog-new-color-clear').hide();
@@ -1007,7 +1007,7 @@ function Enums(main) {
                 selectId('destroy');
             }
 
-            this.$gridList.find('.btn-edit').unbind('click').click(function () {
+            this.$gridList.find('.btn-edit').off('click').on('click', function () {
                 switchEditMode(!that.editMode);
             });
 

@@ -18,6 +18,8 @@ function Readme(main) {
         }
 
         this.inited = true;
+        
+        showdown.setFlavor('github');
 
         var adapterName = this.main.navigateGetParams();
 
@@ -35,7 +37,7 @@ function Readme(main) {
             that.fillDiv(url);
         }
 
-        that.$dialog.find('.dialog-system-buttons .btn-cancel').unbind('click').click(function (e) {
+        that.$dialog.find('.dialog-system-buttons .btn-cancel').off('click').on('click', function (e) {
             e.stopPropagation();
             e.preventDefault();
             localStorage.removeItem('original-md-url');
@@ -46,6 +48,10 @@ function Readme(main) {
 
     this.fillDiv = function (url) {
         $.get(url, function (data) {
+            
+            var orgurl = url.replace('https://raw.githubusercontent.com', 'https://github.com').replace('/master/', '/blob/master/');;
+            that.$dialog.find('.dialog-system-buttons .btn-open-org').attr('href', orgurl);
+            
             var link = url.substring(0, url.lastIndexOf('/') + 1);
             var html = new showdown.Converter().makeHtml(data);
             html = html.replace(/id="/g, 'id="mdid-');
@@ -56,6 +62,7 @@ function Readme(main) {
             });
             html = html.replace(/href="http/g, 'target="_blank" href="http');
             that.$readmediv.html(html);
+            
         }).done(function () {
             that.$readmediv.on('click', '.md-link', function (e) {
                 e.stopPropagation();
@@ -71,7 +78,6 @@ function Readme(main) {
                         scrollTop: that.$readmediv.scrollTop() - that.$readmediv.offset().top + $elemId.offset().top
                     }, 2000);
                 }
-
             });
         });
     };

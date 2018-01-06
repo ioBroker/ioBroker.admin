@@ -3,6 +3,7 @@
 const less        = require('gulp-less');
 const sass        = require('gulp-sass');
 const gulp        = require('gulp');
+const gutil       = require('gulp-util');
 const uglify      = require('gulp-uglify');
 const htmlmin     = require('gulp-htmlmin');
 const concat      = require('gulp-concat');
@@ -493,7 +494,7 @@ gulp.task('materializeJS', function () {
             'transform-es2015-template-literals'
         ]
     }))
-    //.pipe(uglify())
+    //.pipe(uglify())    
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./www/lib/js'));
 });
@@ -541,6 +542,9 @@ gulp.task('fancyTreeJS', function () {
         .pipe(sourcemaps.init())
         .pipe(concat('jquery.fancytree-all.min.js'))
         .pipe(uglify())
+        .on('error', function (err) {
+            gutil.log(gutil.colors.red('[Error]'), err.toString());
+        })
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/lib/js'));
 });
@@ -553,6 +557,9 @@ gulp.task('appJS', function () {
         .pipe(sourcemaps.init())
         .pipe(concat('app.js'))
         .pipe(uglify())
+        .on('error', function (err) {
+            gutil.log(gutil.colors.red('[Error]'), err.toString());
+        })
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/js'));
 });
@@ -589,9 +596,9 @@ gulp.task('appCSS', function () {
 
 gulp.task('vendorJS', function () {
     return gulp.src([
-        './src/lib/js/jquery-1.11.2.min.js',
+        './src/lib/js/jquery-3.2.1.min.js',
         './src/lib/js/jquery-ui.min.js',
-        './src/lib/js/colResizable-1.6.min.js',
+        './src/lib/js/colResizable-1.6.js',
         './src/lib/js/jquery.multiselect-1.13.min.js',
         './src/lib/js/semver.min.js',
         './src/lib/js/ace-1.2.0/ace.js',
@@ -609,6 +616,9 @@ gulp.task('vendorJS', function () {
         .pipe(sourcemaps.init())
         .pipe(concat('vendor.js'))
         .pipe(uglify())
+        .on('error', function (err) {
+            gutil.log(gutil.colors.red('[Error]'), err.toString());
+        })
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/lib/js'));
 });
@@ -664,4 +674,3 @@ gulp.task('default', [
     '2_css',
     '3_js',
     '4_static']);
-
