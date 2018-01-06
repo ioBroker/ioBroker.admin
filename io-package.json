@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "admin",
-    "title": "ioBroker Admin",
+    "title": "Admin",
     "version": "3.0.10",
     "news": {
       "3.0.10": {

@@ -1028,14 +1028,20 @@ function Adapters(main) {
                             types.push(ad.group);
                         }
                         text += '<div class="tile class-' + ad.group + '" data-id="' + ad.name + '">';
-                        text += '    <div class="title">' + ad.title + '</div>';
+                        text += '   <div class="card-header">';
+                        text += '       <div class="title">' + ad.title + '</div>';
                         if (that.currentOrder === 'popular' && ad.stat) {
-                            text += '    <div class="stat">' + ad.stat + '</div>';
+                            text += '   <div class="stat">' + ad.stat + '</div>';
                         }
-                        text += '    <img onerror="this.src=\'img/info-big.png\';" class="icon" src="' + ad.icon + '" />';
-                        text += '    <div class="desc">' + ad.desc + '</div>';
-                        text += '    <div class="version"><table><tr><td>' + ad.version + (ad.installed ? '</td><td class="installed">' + ad.rawInstalled : '')  + '</td></tr></table></div>';
-                        text += '    <div class="buttons">' + ad.install + '</div>';
+                        text += '    </div>';
+                        text += '    <div class="card-body">';
+                        text += '       <img onerror="this.src=\'img/info-big.png\';" class="icon" src="' + ad.icon + '" />';
+                        text += '       <div class="desc">' + ad.desc + '</div>';
+                        text += '    </div>';
+                        text += '    <div class="card-action">';
+                        text += '       <div class="version"><table><tr><td>' + ad.version + (ad.installed ? '</td><td class="installed">' + ad.rawInstalled : '')  + '</td></tr></table></div>';
+                        text += '       <div class="buttons">' + ad.install + '</div>';
+                        text += '    </div>';
                         text += '</div>';
                     }
                     that.$tiles.html(text);
