@@ -399,7 +399,7 @@ function Instances(main) {
             //             red - adapter is not connected or not alive,
             //             orange - adapter is connected and alive, but device is not connected,
             //             green - adapter is connected and alive, device is connected or no device,
-            text += '<td class="instance-state" style="text-align: center"><div class="instance-led" style="margin-left: 0.5em; width: 1em; height: 1em;" data-instance-id="' + instanceId + '"></div></td>';
+            text += '<td class="instance-state" style="text-align: center"><div class="instance-led" data-instance-id="' + instanceId + '"></div></td>';
 
             // icon
             text += '<td>' + (common.icon ? link + '<img src="adapter/' + adapter + '/' + common.icon + '" class="instance-image" data-instance-id="' + instanceId + '"/>' : '') + (link ? '</a>': '') + '</td>';
@@ -420,7 +420,7 @@ function Instances(main) {
                 (url ?              '<button data-instance-id="' + instanceId + '" class="instance-web      small-button ' + (isRun ? '' : 'disabled') + '" title="' + _('open web page') + '" data-link="' + (typeof url !== 'object' ? url : '') + '"><i class="material-icons">input</i></button>' : '') +
                 '</td>';
 
-            var title = common.title;
+            var title = common.titleLang || common.title;
             if (typeof title === 'object') {
                 title = title[systemLang] || title.en;
             }
@@ -478,7 +478,7 @@ function Instances(main) {
         // init schedule editor
         $('.instance-schedule[data-instance-id="' + instanceId + '"]').each(function () {
             if (!$(this).find('button').length) {
-                $(this).append('<button class="instance-schedule-button small-button" data-instance-id="' + instanceId + '" data-name="' + $(this).data('name') + '" title="' + _('Set CRON schedule') + '"><i class="material-icons">schedule</i></button>');
+                $(this).append('<button class="instance-schedule-button small-button" data-instance-id="' + instanceId + '" data-name="' + $(this).data('name') + '" title="' + _('Set CRON schedule for restarts') + '"><i class="material-icons">schedule</i></button>');
                 $(this).find('button').on('click', function () {
                     var attr = $(this).data('name');
                     var _instanceId = $(this).data('instance-id');
@@ -515,7 +515,7 @@ function Instances(main) {
                     continue;
                 }
                 var isShow = 'hide';
-                var title = obj.common.title;
+                var title = obj.common.titleLang || obj.common.title;
                 if (typeof title === 'object') {
                     title = title[systemLang] || title.en;
                 }
@@ -981,6 +981,7 @@ function Instances(main) {
             this.main.subscribeStates('system.adapter.*');
             this.main.subscribeObjects('system.host.*');
             this.main.subscribeStates('system.host.*');
+            this.main.subscribeStates('*.info.connection');
         }
     };
 
@@ -992,6 +993,7 @@ function Instances(main) {
             this.main.unsubscribeStates('system.host.*');
             this.main.unsubscribeObjects('system.host.*');
             this.main.unsubscribeStates('system.adapter.*');
+            this.main.unsubscribeStates('*.info.connection');
         }
     };
 

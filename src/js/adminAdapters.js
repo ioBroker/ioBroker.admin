@@ -680,11 +680,11 @@ function Adapters(main) {
             var inst1 = c1.data.installed || 0, inst2 = c2.data.installed || 0;
             var ret = inst2 - inst1;
             if (ret) return ret;
-            var t1 = c1.title || '';
+            var t1 = c1.titleLang || c1.title || '';
             if (typeof t1 === 'object') {
                 t1 = t1[systemLang] || t1.en;
             }
-            var t2 = c2.title || '';
+            var t2 = c2.titleLang || c2.title || '';
             if (typeof t2 === 'object') {
                 t2 = t2[systemLang] || t2.en;
             }
@@ -854,7 +854,8 @@ function Adapters(main) {
                     var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
                     var desc  = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
                     desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
-                    var title = (typeof obj.title === 'object') ? (obj.title[systemLang] || obj.title.en) : obj.title;
+                    var title = obj.titleLang || obj.title;
+                    title = (title === 'object') ? (title[systemLang] || title.en) : title;
 
                     that.data[adapter] = {
                         image:      icon ? '<img onerror="this.src=\'img/info-big.png\';" src="' + icon + '" class="adapter-table-icon" />' : '',
@@ -937,7 +938,8 @@ function Adapters(main) {
                         var desc = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
                         desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
-                        title = (typeof obj.title === 'object') ? (obj.title[systemLang] || obj.title.en) : obj.title;
+                        title = obj.titleLang || obj.title;
+                        title = (typeof title === 'object') ? (title[systemLang] || title.en) : title;
 
                         that.data[adapter] = {
                             image:      obj.extIcon ? '<img onerror="this.src=\'img/info-big.png\';" src="' + obj.extIcon + '" class="adapter-table-icon" />' : '',

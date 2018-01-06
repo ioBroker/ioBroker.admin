@@ -1186,6 +1186,7 @@ $(document).ready(function () {
     main.resubscribeStates = function () {
         for (var pattern in main.subscribesStates) {
             if (main.subscribesStates.hasOwnProperty(pattern) && main.subscribesStates[pattern]) {
+                console.debug('Re-Subscribe: ' + pattern);
                 main.socket.emit('subscribe', pattern);
             }
         }
@@ -1201,6 +1202,7 @@ $(document).ready(function () {
 
     main.resubscribeLogs = function () {
         if (main.subscribesLogs) {
+            console.debug('Subscribe LOG');
             main.socket.emit('requireLog', true);
         }
     };
@@ -1212,6 +1214,7 @@ $(document).ready(function () {
                 main.subscribesStates[patterns[s]] = main.subscribesStates[patterns[s]] || 0;
                 main.subscribesStates[patterns[s]]++;
                 if (main.subscribesStates[patterns[s]] === 1) {
+                    console.debug('Subscribe: ' + patterns[s]);
                     main.socket.emit('subscribe', patterns[s]);
                 }
             }
@@ -1219,6 +1222,7 @@ $(document).ready(function () {
             main.subscribesStates[patterns] = main.subscribesStates[patterns] || 0;
             main.subscribesStates[patterns]++;
             if (main.subscribesStates[patterns] === 1) {
+                console.debug('Subscribe: ' + patterns);
                 main.socket.emit('subscribe', patterns);
             }
         }
@@ -1232,6 +1236,7 @@ $(document).ready(function () {
                     main.subscribesStates[patterns[s]]--;
                 }
                 if (main.subscribesStates[patterns[s]] === 0) {
+                    console.debug('Unsibscribe: ' + patterns[s]);
                     main.socket.emit('unsubscribe', patterns[s]);
                     delete main.subscribesStates[patterns[s]];
                 }
@@ -1241,6 +1246,7 @@ $(document).ready(function () {
                 main.subscribesStates[patterns]--;
             }
             if (main.subscribesStates[patterns] === 0) {
+                console.debug('Unsibscribe: ' + patterns);
                 main.socket.emit('unsubscribe', patterns);
                 delete main.subscribesStates[patterns];
             }
@@ -1293,12 +1299,14 @@ $(document).ready(function () {
         if (isSubscribe) {
             main.subscribesLogs++;
             if (main.subscribesLogs === 1) {
+                console.debug('Subscribe Logs');
                 main.socket.emit('requireLog', true);
             }
         } else {
             main.subscribesLogs--;
             if (main.subscribesLogs <= 0) {
                 main.subscribesLogs = 0;
+                console.debug('Unsubscribe Logs');
                 main.socket.emit('requireLog', false);
             }
         }

@@ -132,17 +132,19 @@ function Hosts(main) {
     function showOneHost(index) {
         var obj   = that.main.objects[that.list[index].id];
         var alive = that.main.states[obj._id + '.alive'] && that.main.states[obj._id + '.alive'].val && that.main.states[obj._id + '.alive'].val !== 'null';
+        obj.common = obj.common || {};
+        obj.native = obj.native || {};
 
         var text = '<tr class="hosts-host " data-host-id="' + obj._id + '">';
         //LED
-        text += '<td><div class="hosts-led ' + (alive ? 'led-green' : 'led-red') + '" style="margin-left: 0.5em; width: 1em; height: 1em;" data-host-id="' + obj._id + '"></div></td>';
+        text += '<td><div class="hosts-led ' + (alive ? 'led-green' : 'led-red') + '" data-host-id="' + obj._id + '"></div></td>';
         // name
         text += '<td class="hosts-name" style="font-weight: bold">' + obj.common.hostname +
                 '<button class="small-button host-restart-submit" style="float: right; ' + (alive ? '' : 'display: none') + '" data-host-id="' + obj._id + '" title="' + _('restart') + '"><i class="material-icons">power_settings_new</i></button></td>' +
             + '</td>';
         // type
         text += '<td>' + obj.common.type + '</td>';
-        var title = obj.common.title;
+        var title = obj.common.titleLang || obj.common.title;
         if (typeof title === 'object') {
             title = title[systemLang] || title.en;
         }
@@ -151,11 +153,11 @@ function Hosts(main) {
         // platform
         // text += '<td>' + obj.common.platform + '</td>'; // actually only one platform
         // OS
-        text += '<td>' + obj.native.os.platform + '</td>';
+        text += '<td>' + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</td>';
         // Available
         text += '<td><span data-host-id="' + obj._id + '" data-type="' + obj.common.type + '" class="hosts-version-available"></span>' +
-            '<button class="small-button host-update-submit"      data-host-name="' + obj.common.hostname + '" style="display: none; opacity: 0; float: right" title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
-            '<button class="small-button host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none; float: right"             title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
+            '<button class="small-button host-update-submit"      data-host-name="' + obj.common.hostname + '" style="display: none; float: right; opacity: 0;" title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
+            '<button class="small-button host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none; float: right"              title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
             '</td>';
 
         // installed
@@ -183,7 +185,7 @@ function Hosts(main) {
 
     this.updateCounter = function (counter) {
         if (counter === undefined) {
-            that.main.tabs.adapters.getAdaptersInfo(this.main.currentHost, false, false, function (repository, installedList) {
+            this.main.tabs.adapters.getAdaptersInfo(this.main.currentHost, false, false, function (repository, installedList) {
                 var hostsToUpdate = 0;
                 if (!installedList || !installedList.hosts) return;
 
@@ -194,7 +196,7 @@ function Hosts(main) {
                     var installedVersion = obj.common.installedVersion;
                     var availableVersion = obj.common ? (repository && repository[obj.common.type] ? repository[obj.common.type].version : '') : '';
 
-                    if (installedVersion && availableVersion && 1) {//!that.main.upToDate(availableVersion, installedVersion)) {
+                    if (installedVersion && availableVersion && !that.main.upToDate(availableVersion, installedVersion)) {
                         id = 'system.host.' + id.replace(/\s/g, '_');
                         if (that.main.states[id + '.alive'] && that.main.states[id + '.alive'].val && that.main.states[id + '.alive'].val !== 'null') {
                             hostsToUpdate++;

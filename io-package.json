@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "ioBroker Admin",
-    "version": "3.0.8",
+    "version": "3.0.9",
     "news": {
+      "3.0.9": {
+        "en": "Update indication\nUse jQuery3\nTranslations",
+        "de": "Anzeige aktualisieren\nVerwenden Sie jQuery3\nÜbersetzungen",
+        "ru": "Индикация обновления\nИспользовать jQuery3\nПереводы",
+        "pt": "Indicação de atualização\nUse jQuery3\nTraduções",
+        "nl": "Update indicatie\nGebruik jQuery3\nvertaalwerk",
+        "fr": "Mise à jour indication\nUtilisez jQuery3\nTraductions",
+        "it": "Indicazione di aggiornamento\nUtilizza jQuery3\nTraduzioni",
+        "es": "Indicación de actualización\nUse jQuery3\nTraducciones",
+        "pl": "Wskaźnik aktualizacji\nUżyj jQuery3\nTłumaczenia"
+      },
       "3.0.8": {
         "en": "GUI was redesigned",
         "de": "GUI wurde neu gestaltet",
