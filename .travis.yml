@@ -7,10 +7,10 @@ node_js:
   - '6'
   - '8'
 before_script:
-  - node node_modules/gulp/bin/gulp default 
-  - rm -rf ./node_modules/iobroker.js-controller/node_modules/iobroker.admin
+  - node node_modules/gulp/bin/gulp default
   - npm install winston@2.3.1
   - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
+  - rm -rf ./node_modules/iobroker.js-controller/node_modules/iobroker.admin
 env:
   - CXX=g++-4.8
 addons:
