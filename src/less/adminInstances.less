@@ -129,7 +129,7 @@
         background-color: rgba(255, 0, 0, 0.1) !important;
     }
     */
-    .instance-empty {
+    /*.instance-empty {
         width:          2.6em;
         height:         2.6em;
     }
@@ -140,12 +140,10 @@
     }
     button.instance-stop-run {
         background-color: lightgreen;
-    }
+    }*/
 
     .instance-image {
-        /*height: 16px !important;*/
         margin: 0.3em;
-        /*width: 16px !important;*/
     }
 
     thead#grid-instances-head {
@@ -155,5 +153,54 @@
 
     thead#grid-instances-head {
         .grid-objects-head;
+    }
+
+    .small-button-empty {
+        padding-right: 1px;
+    }
+    .small-button-empty, .small-button {
+        width:      2.6em;
+        margin:     0 1px 0 0;
+        display:    inline-block;
+        position:   relative;
+        z-index:    1;
+        border:     0;
+    }
+    .small-button {
+        height:     2.6em;
+        background: @tiles-tile-background;
+        color:      @admin-sidemenu-main-items-color;
+        padding:    1px 0 0 0;
+        cursor:     pointer;
+        i {
+            font-size: 18px;
+        }
+        &:hover {
+            background: @main-active-color;
+            color: @admin-sidemenu-color;
+        }
+        &.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        &.instance-stop-run {
+            background: #FF9999;
+        }
+        &.instance-running {
+            background: lightgreen;
+        }
+    }
+
+    .desktop-screen {
+        .small-button {
+            &.instance-schedule-button {
+                display: none;
+            }
+        }
+        td[data-name="restartSchedule"]:hover {
+            .instance-schedule-button {
+                display: inline-block;
+            }
+        }
     }
 }

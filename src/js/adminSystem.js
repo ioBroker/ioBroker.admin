@@ -210,20 +210,20 @@ function System(main) {
     }
 
     function initRights() {
-        that.main.systemConfig.common.defaultNewAcl = main.systemConfig.common.defaultNewAcl || {};
-        var acl = that.main.systemConfig.common.defaultNewAcl;
+        main.systemConfig.common.defaultNewAcl = main.systemConfig.common.defaultNewAcl || {};
+        var acl = main.systemConfig.common.defaultNewAcl;
 
         // fill users
         var text = '';
-        for (var u = 0; u < that.main.tabs.users.list.length; u++) {
-            text += '<option value="' + that.main.tabs.users.list[u] + '">' + (that.main.objects[that.main.tabs.users.list[u]].common.name || that.main.tabs.users.list[u]) + '</option>';
+        for (var u = 0; u < main.tabs.users.list.length; u++) {
+            text += '<option value="' + main.tabs.users.list[u] + '">' + (main.objects[main.tabs.users.list[u]].common.name || main.tabs.users.list[u]) + '</option>';
         }
         $dialogSystem.find('#tab-system-acl-owner').html(text).val(acl.owner || 'system.user.admin');
 
         // fill groups
         text = '';
-        for (u = 0; u < that.main.tabs.users.groups.length; u++) {
-            text += '<option value="' + that.main.tabs.users.groups[u] + '">' + (that.main.objects[that.main.tabs.users.groups[u]].common.name || that.main.tabs.users.groups[u]) + '</option>';
+        for (u = 0; u < main.tabs.users.groups.length; u++) {
+            text += '<option value="' + main.tabs.users.groups[u] + '">' + (main.objects[main.tabs.users.groups[u]].common.name || main.tabs.users.groups[u]) + '</option>';
         }
         $dialogSystem.find('#tab-system-acl-group').html(text).val(acl.ownerGroup || 'system.group.administrator');
 
@@ -263,8 +263,8 @@ function System(main) {
     }
 
     function finishEditingRights () {
-        that.main.systemConfig.common.defaultNewAcl = that.main.systemConfig.common.defaultNewAcl || {};
-        var acl = that.main.systemConfig.common.defaultNewAcl;
+        main.systemConfig.common.defaultNewAcl = main.systemConfig.common.defaultNewAcl || {};
+        var acl = main.systemConfig.common.defaultNewAcl;
         var old = JSON.stringify(acl);
         acl.object = 0;
         acl.object |= $dialogSystem.find('#tab-system-acl-obj-owner-read').prop('checked')  ? 0x400 : 0;
@@ -309,7 +309,7 @@ function System(main) {
     }
 
     function onButtonSave() {
-        var common = that.main.systemConfig.common;
+        var common = main.systemConfig.common;
         var languageChanged   = false;
         var activeRepoChanged = false;
 
@@ -385,10 +385,10 @@ function System(main) {
             });
         }
 
-        that.main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
+        main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
             if (!err) {
-                that.main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function () {
-                    that.main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function () {
+                main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function () {
+                    main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function () {
                         $dialogSystem.find('.btn-save').addClass('disabled');
                         if (languageChanged) {
                             window.location.reload();
@@ -396,14 +396,14 @@ function System(main) {
                             that.main.navigate();
                             if (activeRepoChanged) {
                                 setTimeout(function () {
-                                    that.main.tabs.adapters.init(true);
+                                    main.tabs.adapters.init(true);
                                 }, 0);
                             }
                         }
                     });
                 });
             } else {
-                that.main.showError(err);
+                main.showError(err);
             }
         });
     }
@@ -431,9 +431,9 @@ function System(main) {
             }
 
             $dialogSystem.find('#diagMode')
-                .val(that.main.systemConfig.common.diag)
+                .val(main.systemConfig.common.diag)
                 .change(function () {
-                    that.main.socket.emit('sendToHost', that.main.currentHost, 'getDiagData', $(this).val(), function (obj) {
+                    main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
                         $dialogSystem.find('#diagSample').html(JSON.stringify(obj, null, 2));
                     });
                 })
@@ -442,9 +442,9 @@ function System(main) {
             // collect all history instances
             var $system_defaultHistory = $dialogSystem.find('#system_defaultHistory');
             $system_defaultHistory.html('<option value=""></option>');
-            for (var id = 0; id < that.main.instances.length; id++) {
-                if (that.main.objects[that.main.instances[id]].common.type === 'storage') {
-                    $system_defaultHistory.append('<option value="' + that.main.instances[id].substring('system.adapter.'.length) + '">' + main.instances[id].substring('system.adapter.'.length) + '</option>');
+            for (var id = 0; id < main.instances.length; id++) {
+                if (main.objects[main.instances[id]].common.type === 'storage') {
+                    $system_defaultHistory.append('<option value="' + main.instances[id].substring('system.adapter.'.length) + '">' + main.instances[id].substring('system.adapter.'.length) + '</option>');
                 }
             }
 
@@ -455,12 +455,12 @@ function System(main) {
                 id = id.substring('system_'.length);
 
                 if ($this.attr('type') === 'checkbox') {
-                    $this.prop('checked', that.main.systemConfig.common[id]);
+                    $this.prop('checked', main.systemConfig.common[id]);
                 } else {
                     if (id === 'isFloatComma') {
-                        $this.val(that.main.systemConfig.common[id] ? 'true' : 'false');
+                        $this.val(main.systemConfig.common[id] ? 'true' : 'false');
                     } else {
-                        $this.val(that.main.systemConfig.common[id]);
+                        $this.val(main.systemConfig.common[id]);
                     }
                 }
             });
@@ -538,7 +538,7 @@ function System(main) {
     };
 
     this.prepare = function () {
-        if (!that.main.systemConfig.error) {
+        if (!main.systemConfig.error) {
             $('#button-system').unbind('click').click(function () {
                 that.main.navigate({dialog: 'system'});
             });

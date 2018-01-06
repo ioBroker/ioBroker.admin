@@ -4,33 +4,46 @@ function Hosts(main) {
     var that      = this;
     this.main     = main;
     this.list     = [];
-    this.$grid    = $('#grid-hosts');
+    this.$tab     = $('#tab-hosts');
+    this.$grid    = this.$tab.find('#grid-hosts');
     this.inited   = false;
 
     this.prepare  = function () {
-        $('#btn-hosts-reload').button({
-            icons: {primary: 'ui-icon-refresh'},
-            text:  false
-        }).css({width: '1.5em', height: '1.5em'}).attr('title', _('Update')).click(function () {
-            that.init();
+        this.$tab.find('.btn-reload')
+            .attr('title', _('Update'))
+            .click(function () {
+                that.init();
+            });
+
+        this.$tab.find('.filter-clear').click(function () {
+            that.$tab.find('.filter-input').val('').trigger('change');
         });
 
-        $('#hosts-filter-clear').button({icons: {primary: 'ui-icon-close'}, text: false}).css({width: '1em', height: '1em'}).click(function () {
-            $('#hosts-filter').val('').trigger('change');
-        });
-
-        var $hostsFilter = $('#hosts-filter');
+        var $hostsFilter = that.$tab.find('.filter-input');
         $hostsFilter.change(function () {
-            that.main.saveConfig('hostsFilter', $(this).val());
-            applyFilter($(this).val());
+            var filter = $(this).val();
+            if (filter) {
+                $(this).addClass('input-not-empty');
+                that.$tab.find('.filter-clear').show();
+            } else {
+                that.$tab.find('.filter-clear').hide();
+                $(this).removeClass('input-not-empty');
+            }
+
+            that.main.saveConfig('hostsFilter', filter);
+            applyFilter(filter);
         }).keyup(function () {
             if (that.filterTimeout) clearTimeout(that.filterTimeout);
             that.filterTimeout = setTimeout(function () {
-                $('#hosts-filter').trigger('change');
+                that.$tab.find('.filter-input').trigger('change');
             }, 300);
         });
+
         if (that.main.config.hostsFilter && that.main.config.hostsFilter[0] !== '{') {
-            $hostsFilter.val(that.main.config.hostsFilter);
+            $hostsFilter.val(that.main.config.hostsFilter).addClass('input-not-empty');
+            that.$tab.find('.filter-clear').show();
+        } else {
+            that.$tab.find('.filter-clear').hide();
         }
     };
 
@@ -38,19 +51,18 @@ function Hosts(main) {
     this.initButtons = function (id) {
         var selector = id ? '[data-host-id="' + id + '"]' : '';
 
-        $('.host-update-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}}).css({width: 22, height: 18}).unbind('click').on('click', function () {
+        $('.host-update-submit' + selector)/*.button({icons: {primary: 'ui-icon-refresh'}}).css({width: 22, height: 18})*/.unbind('click').on('click', function () {
             that.main.cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
                 if (!exitCode) that.init();
             });
         });
 
-        $('.host-restart-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click').on('click', function () {
+        $('.host-restart-submit' + selector)/*.button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18})*/.unbind('click').on('click', function () {
             that.main.waitForRestart = true;
             that.main.cmdExec($(this).attr('data-host-name'), '_restart');
         });
 
-        $('.host-update-hint-submit' + selector).button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18}).unbind('click').on('click', function () {
-
+        $('.host-update-hint-submit' + selector)/*.button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18})*/.unbind('click').on('click', function () {
             var infoTimeout = setTimeout(function () {
                 showUpdateInfo();
                 infoTimeout = null;
@@ -93,17 +105,10 @@ function Hosts(main) {
     }
 
     function applyFilter(filter) {
-        filter = filter.toLowerCase().trim();
-        // var index = 0;
+        filter = (filter || '').toLowerCase().trim();
+
         if (!filter) {
-            /*$('.hosts-host').each(function () {
-                if (index & 1) {
-                    $(this).removeClass('hosts-even').addClass('hosts-odd');
-                } else {
-                    $(this).removeClass('hosts-odd').addClass('hosts-even');
-                }
-                index++;
-            });*/
+            $('.hosts-host').show();
         } else {
             $('.hosts-host').each(function () {
                 var $this = $(this);
@@ -120,12 +125,6 @@ function Hosts(main) {
                 } else {
                     $this.show();
                 }
-                /*if (index & 1) {
-                    $(this).removeClass('hosts-even').addClass('hosts-odd');
-                } else {
-                    $(this).removeClass('hosts-odd').addClass('hosts-even');
-                }*/
-                //index++;
             });
         }
     }
@@ -139,7 +138,7 @@ function Hosts(main) {
         text += '<td><div class="hosts-led ' + (alive ? 'led-green' : 'led-red') + '" style="margin-left: 0.5em; width: 1em; height: 1em;" data-host-id="' + obj._id + '"></div></td>';
         // name
         text += '<td class="hosts-name" style="font-weight: bold">' + obj.common.hostname +
-                '<button class="host-restart-submit" style="float: right; ' + (alive ? '' : 'display: none') + '" data-host-id="' + obj._id + '" title="' + _('restart') + '"></button></td>' +
+                '<button class="small-button host-restart-submit" style="float: right; ' + (alive ? '' : 'display: none') + '" data-host-id="' + obj._id + '" title="' + _('restart') + '"><i class="material-icons">power_settings_new</i></button></td>' +
             + '</td>';
         // type
         text += '<td>' + obj.common.type + '</td>';
@@ -155,8 +154,8 @@ function Hosts(main) {
         text += '<td>' + obj.native.os.platform + '</td>';
         // Available
         text += '<td><span data-host-id="' + obj._id + '" data-type="' + obj.common.type + '" class="hosts-version-available"></span>' +
-            '<button class="host-update-submit" data-host-name="' + obj.common.hostname + '" style="display: none; opacity: 0; float: right" title="' + _('update') + '"></button>' +
-            '<button class="host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none; float: right" title="' + _('update') + '"></button>' +
+            '<button class="small-button host-update-submit"      data-host-name="' + obj.common.hostname + '" style="display: none; opacity: 0; float: right" title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
+            '<button class="small-button host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none; float: right"             title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
             '</td>';
 
         // installed
@@ -182,9 +181,43 @@ function Hosts(main) {
         that.$grid.html(text);
     }
 
+    this.updateCounter = function (counter) {
+        if (counter === undefined) {
+            that.main.tabs.adapters.getAdaptersInfo(this.main.currentHost, false, false, function (repository, installedList) {
+                var hostsToUpdate = 0;
+                if (!installedList || !installedList.hosts) return;
+
+                for (var id in installedList.hosts) {
+                    if (!installedList.hosts.hasOwnProperty(id)) continue;
+                    var obj = that.main.objects['system.host.' + id];
+                    if (!obj || !obj.common) continue;
+                    var installedVersion = obj.common.installedVersion;
+                    var availableVersion = obj.common ? (repository && repository[obj.common.type] ? repository[obj.common.type].version : '') : '';
+
+                    if (installedVersion && availableVersion && 1) {//!that.main.upToDate(availableVersion, installedVersion)) {
+                        id = 'system.host.' + id.replace(/\s/g, '_');
+                        if (that.main.states[id + '.alive'] && that.main.states[id + '.alive'].val && that.main.states[id + '.alive'].val !== 'null') {
+                            hostsToUpdate++;
+                        }
+                    }
+                }
+
+                that.updateCounter(hostsToUpdate);
+            });
+        } else if (counter) {
+            var $updates = $('#updates-for-hosts');
+            if ($updates.length) {
+                $updates.text(counter);
+            } else {
+                $('<span id="updates-for-hosts" title="' + _('updates') + '" class="new badge updates-for-hosts" data-badge-caption="">' + counter + '</span>').appendTo('.admin-sidemenu-items[data-tab="tab-hosts"] a');
+            }
+        } else {
+            $('#updates-for-hosts').remove();
+        }
+    };
+
     this._postInit = function () {
         if (typeof that.$grid !== 'undefined') {
-            $('a[href="#tab-hosts"]').removeClass('updateReady');
             showHosts();
             applyFilter($('#hosts-filter').val());
 
@@ -212,7 +245,7 @@ function Hosts(main) {
                     if (!installedList.hosts.hasOwnProperty(id)) continue;
                     var obj = that.main.objects['system.host.' + id];
                     var installed = installedList.hosts[id].version;
-                    if (installed !== installedList.hosts[id].runningVersion) installed += '(' + _('Running: ') + installedList.hosts[id].runningVersion + ')';
+                    if (installed !== installedList.hosts[id].runningVersion)   installed += '(' + _('Running: ') + installedList.hosts[id].runningVersion + ')';
                     if (!installed && obj.common && obj.common.installedVersion) installed = obj.common.installedVersion;
 
                     id = 'system.host.' + id.replace(/ /g, '_');
@@ -231,7 +264,6 @@ function Hosts(main) {
                                 $(this).find('.host-update-submit').show();
                                 $(this).find('.host-update-hint-submit').show();
                                 $(this).find('.hosts-version-installed').addClass('updateReady');
-                                $('a[href="#tab-hosts"]').addClass('updateReady');
                             }
                         }
                     }

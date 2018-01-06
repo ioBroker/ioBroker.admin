@@ -479,6 +479,7 @@ gulp.task('materializeJS', function () {
         './src/materialize-css/js/range.js',
         './src/materialize-css/js/collapsible.js',
         './src/materialize-css/js/datepicker.js',
+        './src/materialize-css/js/tooltip.js',
         './src/materialize-css/js/autocomplete.js',
         './src/colorpicker/js/materialize-colorpicker.js'
     ])
