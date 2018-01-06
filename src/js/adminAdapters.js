@@ -486,7 +486,7 @@ function Adapters(main) {
         });
 
         // add filter processing
-        that.$tab.find('.filter-input').keyup(function () {
+        that.$tab.find('.filter-input').on('keyup', function () {
             $(this).trigger('change');
         }).on('change', function (event) {
             if (that.filterTimer) {
@@ -511,7 +511,7 @@ function Adapters(main) {
             }, 400);
         });
 
-        that.$tab.find('.filter-clear').click(function () {
+        that.$tab.find('.filter-clear').on('click', function () {
             that.$tab.find('.filter-input').val('').trigger('change');
         });
 

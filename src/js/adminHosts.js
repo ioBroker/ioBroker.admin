@@ -11,16 +11,16 @@ function Hosts(main) {
     this.prepare  = function () {
         this.$tab.find('.btn-reload')
             .attr('title', _('Update'))
-            .click(function () {
+            .on('click', function () {
                 that.init();
             });
 
-        this.$tab.find('.filter-clear').click(function () {
+        this.$tab.find('.filter-clear').on('click', function () {
             that.$tab.find('.filter-input').val('').trigger('change');
         });
 
         var $hostsFilter = that.$tab.find('.filter-input');
-        $hostsFilter.change(function () {
+        $hostsFilter.on('change', function () {
             var filter = $(this).val();
             if (filter) {
                 $(this).addClass('input-not-empty');
@@ -32,7 +32,7 @@ function Hosts(main) {
 
             that.main.saveConfig('hostsFilter', filter);
             applyFilter(filter);
-        }).keyup(function () {
+        }).on('keyup', function () {
             if (that.filterTimeout) clearTimeout(that.filterTimeout);
             that.filterTimeout = setTimeout(function () {
                 that.$tab.find('.filter-input').trigger('change');
@@ -51,18 +51,18 @@ function Hosts(main) {
     this.initButtons = function (id) {
         var selector = id ? '[data-host-id="' + id + '"]' : '';
 
-        $('.host-update-submit' + selector)/*.button({icons: {primary: 'ui-icon-refresh'}}).css({width: 22, height: 18})*/.unbind('click').on('click', function () {
+        $('.host-update-submit' + selector).off('click').on('click', function () {
             that.main.cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
                 if (!exitCode) that.init();
             });
         });
 
-        $('.host-restart-submit' + selector)/*.button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18})*/.unbind('click').on('click', function () {
+        $('.host-restart-submit' + selector).off('click').on('click', function () {
             that.main.waitForRestart = true;
             that.main.cmdExec($(this).attr('data-host-name'), '_restart');
         });
 
-        $('.host-update-hint-submit' + selector)/*.button({icons: {primary: 'ui-icon-refresh'}, text: false}).css({width: 22, height: 18})*/.unbind('click').on('click', function () {
+        $('.host-update-hint-submit' + selector).off('click').on('click', function () {
             var infoTimeout = setTimeout(function () {
                 showUpdateInfo();
                 infoTimeout = null;

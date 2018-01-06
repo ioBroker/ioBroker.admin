@@ -479,7 +479,7 @@ function Instances(main) {
         $('.instance-schedule[data-instance-id="' + instanceId + '"]').each(function () {
             if (!$(this).find('button').length) {
                 $(this).append('<button class="instance-schedule-button small-button" data-instance-id="' + instanceId + '" data-name="' + $(this).data('name') + '" title="' + _('Set CRON schedule') + '"><i class="material-icons">schedule</i></button>');
-                $(this).find('button')/*.button().css('width', 16)*/.click(function () {
+                $(this).find('button').on('click', function () {
                     var attr = $(this).data('name');
                     var _instanceId = $(this).data('instance-id');
                     showCronDialog(that.main.objects[_instanceId].common[attr] || '', function (newValue) {
@@ -1163,8 +1163,8 @@ function Instances(main) {
             //$e.button('enable');
             $e.removeClass('disabled');
         }*/
-        $e = that.$grid.find('.instance-issue' + id).unbind('click')
-            .click(function () {
+        $e = that.$grid.find('.instance-issue' + id).off('click')
+            .on('click', function () {
                 that.main.navigate({
                     tab:    'instances',
                     dialog: 'issue',
