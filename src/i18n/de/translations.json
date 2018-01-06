@@ -244,6 +244,7 @@
   "Install adapter from URL": "Adapter aus beliebiger Quelle installieren oder aktualisieren",
   "Install adapter from github": "Adapter von GitHub installieren oder aktualisieren",
   "Install from custom URL": "Installieren aus eigenem URL",
+  "Installations counter": "Installationszähler",
   "Installed from group": "Installiert aus der Gruppe",
   "Installed instances": "Installierte Instanzen",
   "Installed version": "Installierte Version",

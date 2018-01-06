@@ -723,7 +723,8 @@ function Adapters(main) {
                     'readme':                   _('readme'),
                     'delete adapter':           _('delete adapter'),
                     'install specific version': _('install specific version'),
-                    'all':                      _('all')
+                    'all':                      _('all'),
+                    'Installations counter':     _('Installation counter')
                 };
 
                 if (installedList) {
@@ -1031,7 +1032,7 @@ function Adapters(main) {
                         text += '   <div class="card-header">';
                         text += '       <div class="title">' + ad.title + '</div>';
                         if (that.currentOrder === 'popular' && ad.stat) {
-                            text += '   <div class="stat">' + ad.stat + '</div>';
+                            text += '   <div class="stat" title="' + localTexts['Installations counter'] + '">' + ad.stat + '</div>';
                         }
                         text += '    </div>';
                         text += '    <div class="card-body">';

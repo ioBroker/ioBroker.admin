@@ -244,6 +244,7 @@
   "Install adapter from URL": "Установить или обновить адаптер с URL-адреса",
   "Install adapter from github": "Установить или обновить адаптер с github",
   "Install from custom URL": "Установить из собственного источника",
+  "Installations counter": "Счетчик установок",
   "Installed from group": "Установлено из группы",
   "Installed instances": "Добавлено драйверов",
   "Installed version": "установленная версия",
