@@ -82,7 +82,7 @@ In this project used some icons from Flaticon(c):
 - ![light-bulb.svg](src/img/devices/light-bulb.svg) - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 
 ## Changelog
-### 3.0.9 (2018-01-06)
+### 3.0.10 (2018-01-06)
 * (bluefox) Update indication
 * (ldittmar) Use jQuery3
 * (AlCalzone) German translations

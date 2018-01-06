@@ -855,7 +855,7 @@ function Adapters(main) {
                     var desc  = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
                     desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
                     var title = obj.titleLang || obj.title;
-                    title = (title === 'object') ? (title[systemLang] || title.en) : title;
+                    title = (typeof title === 'object') ? (title[systemLang] || title.en) : title;
 
                     that.data[adapter] = {
                         image:      icon ? '<img onerror="this.src=\'img/info-big.png\';" src="' + icon + '" class="adapter-table-icon" />' : '',

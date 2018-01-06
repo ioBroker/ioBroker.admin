@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "ioBroker Admin",
-    "version": "3.0.9",
+    "version": "3.0.10",
     "news": {
-      "3.0.9": {
+      "3.0.10": {
         "en": "Update indication\nUse jQuery3\nTranslations",
         "de": "Anzeige aktualisieren\nVerwenden Sie jQuery3\nÜbersetzungen",
         "ru": "Индикация обновления\nИспользовать jQuery3\nПереводы",
