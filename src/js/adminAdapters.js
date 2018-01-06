@@ -242,7 +242,7 @@ function Adapters(main) {
             that.$tab.find('#btn_collapse_adapters').show();
         }
 
-        that.$tab.find('.adapters-filter-input').trigger('change');
+        that.$tab.find('.filter-input').trigger('change');
     }
 
     function prepareTiles() {
@@ -252,7 +252,7 @@ function Adapters(main) {
         that.$tab.find('#btn_list_adapters').hide();
         that.$tab.find('#btn_collapse_adapters').hide();
         that.$tab.find('#btn_expand_adapters').hide();
-        that.$tab.find('.adapters-filter-input').trigger('change');
+        that.$tab.find('.filter-input').trigger('change');
     }
 
     function onOnlyUpdatableChanged() {
@@ -467,10 +467,10 @@ function Adapters(main) {
         that.currentOrder  = that.main.config.adaptersCurrentOrder  || '';
         that.isCollapsed   = that.main.config.adaptersIsCollapsed ? JSON.parse(that.main.config.adaptersIsCollapsed) : {};
         if (that.currentFilter) {
-            that.$tab.find('.adapters-filter-input').addClass('input-not-empty').val(that.currentFilter);
-            that.$tab.find('.adapters-filter-clear').show();
+            that.$tab.find('.filter-input').addClass('input-not-empty').val(that.currentFilter);
+            that.$tab.find('.filter-clear').show();
         } else {
-            that.$tab.find('.adapters-filter-clear').hide();
+            that.$tab.find('.filter-clear').hide();
         }
 
         if (that.onlyInstalled) {
@@ -486,7 +486,7 @@ function Adapters(main) {
         });
 
         // add filter processing
-        that.$tab.find('.adapters-filter-input').on('keyup', function () {
+        that.$tab.find('.filter-input').keyup(function () {
             $(this).trigger('change');
         }).on('change', function (event) {
             if (that.filterTimer) {
@@ -494,12 +494,12 @@ function Adapters(main) {
             }
             that.filterTimer = setTimeout(function () {
                 that.filterTimer = null;
-                that.currentFilter = that.$tab.find('.adapters-filter-input').val().toLowerCase();
+                that.currentFilter = that.$tab.find('.filter-input').val().toLowerCase();
                 event && event.target && $(event.target)[that.currentFilter ? 'addClass' : 'removeClass']('input-not-empty');
                 if (that.currentFilter) {
-                    that.$tab.find('.adapters-filter-clear').show();
+                    that.$tab.find('.filter-clear').show();
                 } else {
-                    that.$tab.find('.adapters-filter-clear').hide();
+                    that.$tab.find('.filter-clear').hide();
                 }
 
                 that.main.saveConfig('adaptersCurrentFilter', that.currentFilter);
@@ -511,8 +511,8 @@ function Adapters(main) {
             }, 400);
         });
 
-        that.$tab.find('.adapters-filter-clear').on('click', function () {
-            that.$tab.find('.adapters-filter-input').val('').trigger('change');
+        that.$tab.find('.filter-clear').click(function () {
+            that.$tab.find('.filter-input').val('').trigger('change');
         });
 
         if (this.isTiles) {
@@ -638,10 +638,12 @@ function Adapters(main) {
         var text = '';
         if (adapter.news) {
             for (var v in adapter.news) {
-                if (systemLang === v) text += (text ? '\n' : '') + adapter.news[v];
-                if (v === 'en' || v === 'ru'  || v === 'de') continue;
-                if (v === actualVersion) break;
-                text += (text ? '\n' : '') + (adapter.news[v][systemLang] || adapter.news[v].en);
+                if (adapter.news.hasOwnProperty(v)) {
+                    if (systemLang === v) text += (text ? '\n' : '') + adapter.news[v];
+                    if (v === 'en' || v === 'ru'  || v === 'de') continue;
+                    if (v === actualVersion) break;
+                    text += (text ? '\n' : '') + (adapter.news[v][systemLang] || adapter.news[v].en);
+                }
             }
         }
         return text;
@@ -707,6 +709,7 @@ function Adapters(main) {
                 var obj;
                 var version;
                 var adapter;
+                var adaptersToUpdate = 0;
 
                 var listInstalled = [];
                 var listNonInstalled = [];
@@ -761,8 +764,6 @@ function Adapters(main) {
                         '<td style="border: 0; padding: 0; width: 30px" class="update-version">';
                     if (updatable) {    //xxx
                         version += '<button class="adapter-update-submit small-button" data-adapter-name="' + adapter + '" ' + (updatableError ? ' disabled title="' + updatableError + '"' : 'title="' + localTexts['update'] + '"') + '><i class="material-icons">refresh</i></button>';
-                        //version = version.replace('class="', 'class="updateReady ');
-                        $ ('a[href="#tab-adapters"]').addClass('updateReady');
                     }
                     version += '</td></tr></table>';
                     return version;
@@ -801,6 +802,7 @@ function Adapters(main) {
                             // check if version is compatible with current adapters and js-controller
                             updatable = true;
                             updatableError = checkDependencies(repository[adapter].dependencies);
+                            adaptersToUpdate++;
                         }
                         // TODO: move style to class
                         installed = '<table style="min-width: 80px; text-align: center; border: 0; border-spacing: 0;' /*+ (news ? 'font-weight: bold;' : '')*/ + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
@@ -1113,9 +1115,41 @@ function Adapters(main) {
                     that.enableColResize();
                 }
                 that.$tab.find('.process-adapters').hide();
+                that.updateCounter(adaptersToUpdate);
             });
         } else {
             this.enableColResize();
+        }
+    };
+
+    this.updateCounter = function (counter) {
+        if (counter === undefined) {
+            this.getAdaptersInfo(this.main.currentHost, false, false, function (repository, installedList) {
+                var adaptersToUpdate = 0;
+
+                for (var adapter in installedList) {
+                    if (!installedList.hasOwnProperty(adapter)) continue;
+                    var obj = installedList ? installedList[adapter] : null;
+                    if (!obj || obj.controller || adapter === 'hosts') continue;
+
+                    var version = '';
+                    if (repository[adapter] && repository[adapter].version) version = repository[adapter].version;
+
+                    if (obj.version && !that.main.upToDate(version, obj.version)) {
+                        adaptersToUpdate++;
+                    }
+                }
+                that.updateCounter(adaptersToUpdate);
+            });
+        } else if (counter) {
+            var $updates = $('#updates-for-adapters');
+            if ($updates.length) {
+                $updates.text(counter);
+            } else {
+                $('<span id="updates-for-adapters" title="' + _('updates') + '" class="new badge updates-for-adapters" data-badge-caption="">' + counter + '</span>').appendTo('.admin-sidemenu-items[data-tab="tab-adapters"] a');
+            }
+        } else {
+            $('#updates-for-adapters').remove();
         }
     };
 
@@ -1299,32 +1333,24 @@ function Adapters(main) {
             } else {
                 versions.push(that.main.objects['system.adapter.' + adapter].common.version);
             }
-            var menu = '<ul>';
+            var menu = '<ul><li class="adapters-versions-link"><a><i class="material-icons">close</i>' + _('Close') + '</a></li><li class="divider"></li>';
             for (var v = 0; v < versions.length; v++) {
-                menu += '<li data-version="' + versions[v] + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="adapters-versions-link"><a>' + versions[v] + '</a></li>';
+                menu += '<li data-version="' + versions[v] + '" data-position="left" data-delay="50" title="' + (news[versions[v]] ? news[versions[v]][systemLang] || news[versions[v]].en : '') + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="adapters-versions-link tooltipped"><a>' + versions[v] + '</a></li>';
             }
-            menu += '<li class="divider"></li><li class="adapters-versions-link"><a>' + _('Close') + '</a></li></ul>';
+            if (versions.length > 5) {
+                menu += '<li class="divider"></li><li class="adapters-versions-link"><a><i class="material-icons">close</i>' + _('Close') + '</a></li></ul>';
+            } else {
+                menu += '</ul>'
+            }
 
             var $adaptersMenu = $('#adapters-menu');
-            //if ($adaptersMenu.data('inited')) $adaptersMenu.dropdown('destroy');
+            if (!$adaptersMenu.length) {
+                $adaptersMenu = $('<div id="adapters-menu" class="dropdown-content m"></div>');
+                $adaptersMenu.appendTo('body');
+            }
             $adaptersMenu.data('trigger', this);
 
-            //var pos = $(this).offset();
             $adaptersMenu.html(menu);
-            /*$adaptersMenu.mouseleave(function () {
-                var $adaptersMenu = $('#adapters-menu');
-                var trigger = $adaptersMenu.data('trigger');
-                $(trigger).dropdown('close').dropdown('destroy');
-                $adaptersMenu.off('mouseleave');
-                setTimeout(function () {
-                    $adaptersMenu.data('trigger', null).hide();
-                }, 100);
-            });*/
-
-            /*$adaptersMenu.menu().css({
-                left:   pos.left - $adaptersMenu.width(),
-                top:    pos.top
-            }).show();*/
 
             $adaptersMenu.find('.adapters-versions-link').off('click').on('click', function () {
                 //if ($(this).data('link')) window.open($(this).data('link'), $(this).data('instance-id'));
@@ -1342,12 +1368,16 @@ function Adapters(main) {
                     var trigger = $adaptersMenu.data('trigger');
                     $(trigger).dropdown('close').dropdown('destroy');
                     $adaptersMenu.data('trigger', null).hide();
+                    $adaptersMenu.remove();
                 }
             }).dropdown('open');
+
+            // does not work... must be fixed.
+            //$adaptersMenu.find('.tooltipped').tooltip();
         });
 
         if (!that.main.objects['system.adapter.' + adapter]) {
-            $button.addClass('disabled');
+            $button.hide();//addClass('disabled');
         }
     };
 

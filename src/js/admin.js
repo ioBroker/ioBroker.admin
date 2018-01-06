@@ -597,6 +597,11 @@ $(document).ready(function () {
 
     var firstConnect   = true;
 
+    // detect touch devices
+    if (!('ontouchstart' in window || navigator.maxTouchPoints)) {
+        $('body').addClass('desktop-screen');
+    }
+
     // Read all positions, selected widgets for every view,
     // Selected view, selected menu page,
     // Selected widget or view page
@@ -1033,8 +1038,6 @@ $(document).ready(function () {
                 // Detect node.js version
                 checkNodeJsVersions(tabs.hosts.list);
 
-                // Show if update available
-                // tabs.hosts.initList();
                 main.getUser();
 
                 if (typeof callback === 'function') callback();
@@ -1614,6 +1617,10 @@ $(document).ready(function () {
         $('.admin-sidemenu-items').off('click').on('click', function () {
             window.location.hash = '#' + $(this).data('tab');
         });
+
+        // Show if update available
+        tabs.hosts.updateCounter();
+        tabs.adapters.updateCounter();
     }
 
     // ---------------------------- Socket.io methods ---------------------------------------------

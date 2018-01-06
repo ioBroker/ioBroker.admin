@@ -70,6 +70,9 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 - Adapters/Tile view: add to filter - latest updated
 - remove jQuery UI!
 - login page
+- move html tooltips to materialize tooltips
+- tiles for hosts (additionally to table - low prior)
+- tiles for instances (additionally to table - low prior)
 
 
 ## Used icons

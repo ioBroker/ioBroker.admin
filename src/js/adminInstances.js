@@ -412,12 +412,12 @@ function Instances(main) {
             //text += '<td style="text-align: left; padding-left: 1em;">' +
             //text += '<td style="text-align: left; padding-left: 1px;">' +
             text += '<td style="text-align: left;">' +
-                (!common.onlyWWW ? '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-stop-run"></button>' : '<div class="ui-button instance-empty">&nbsp;</div>') +
-                '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-settings"></button>' +
-                (!common.onlyWWW ? '<button ' + (isRun ? '' : 'disabled ') + 'style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-reload"></button>' : '<div class="ui-button instance-empty">&nbsp;</div>') +
-                '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-issue"></button>' +
-                '<button style="display: inline-block" data-instance-id="' + instanceId + '" class="instance-del"></button>' +
-                (url ? '<button ' + (isRun ? '' : 'disabled ') + 'style="display: inline-block" data-link="' + (typeof url !== 'object' ? url : '') +'" data-instance-id="' + instanceId + '" class="instance-web"></button>' : '') +
+                (!common.onlyWWW  ? '<button data-instance-id="' + instanceId + '" class="instance-stop-run small-button"                                   title="dynamic"            ><i class="material-icons">pause</i></button>'   : '<div class="small-button-empty">&nbsp;</div>') +
+                (!common.noConfig ? '<button data-instance-id="' + instanceId + '" class="instance-settings small-button"                                   title="' + _('config') + '"><i class="material-icons">build</i></button>'   : '<div class="small-button-empty">&nbsp;</div>') +
+                (!common.onlyWWW  ? '<button data-instance-id="' + instanceId + '" class="instance-reload   small-button ' + (isRun ? '' : 'disabled') + '" title="' + _('reload') + '"><i class="material-icons">refresh</i></button>' : '<div class="small-button-empty">&nbsp;</div>') +
+                                    '<button data-instance-id="' + instanceId + '" class="instance-issue    small-button"                                   title="' + _('bug') + '"   ><i class="material-icons">bug_report</i></button>' +
+                                    '<button data-instance-id="' + instanceId + '" class="instance-del      small-button"                                   title="' + _('delete') + '"><i class="material-icons">delete</i></button>' +
+                (url ?              '<button data-instance-id="' + instanceId + '" class="instance-web      small-button ' + (isRun ? '' : 'disabled') + '" title="' + _('open web page') + '" data-link="' + (typeof url !== 'object' ? url : '') + '"><i class="material-icons">input</i></button>' : '') +
                 '</td>';
 
             var title = common.title;
@@ -478,8 +478,8 @@ function Instances(main) {
         // init schedule editor
         $('.instance-schedule[data-instance-id="' + instanceId + '"]').each(function () {
             if (!$(this).find('button').length) {
-                $(this).append('<button class="instance-schedule-button" data-instance-id="' + instanceId + '" data-name="' + $(this).data('name') + '">...</button>');
-                $(this).find('button').button().css('width', 16).on('click', function () {
+                $(this).append('<button class="instance-schedule-button small-button" data-instance-id="' + instanceId + '" data-name="' + $(this).data('name') + '" title="' + _('Set CRON schedule') + '"><i class="material-icons">schedule</i></button>');
+                $(this).find('button')/*.button().css('width', 16)*/.click(function () {
                     var attr = $(this).data('name');
                     var _instanceId = $(this).data('instance-id');
                     showCronDialog(that.main.objects[_instanceId].common[attr] || '', function (newValue) {
@@ -1107,10 +1107,10 @@ function Instances(main) {
         //var buttonSize = {width: '2em', height: '2em'}
 
         if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({
+            $e/*.button({
                 icons: {primary: 'ui-icon-pencil'},
                 text:  false
-            }).css({width: '2em', height: '2em'}).attr('title', _('edit'));
+            }).css({width: '2em', height: '2em'})*/.attr('title', _('edit'));
         }
 
         $e = that.$grid.find('.instance-settings' + id).off('click')
@@ -1121,13 +1121,14 @@ function Instances(main) {
                     params:  $(this).data('instance-id')
                 });
             });
-        if (!$e.find('.ui-button-icon-primary').length) {
-            $e.button({icons: {primary: 'ui-icon-note'}, text: false})./*css({width: '2em', height: '2em'}).*/attr('title', _('config'));
-        }
+        /*if (!$e.find('.ui-button-icon-primary').length) {
+            $e.button({icons: {primary: 'ui-icon-note'}, text: false}).css({width: '2em', height: '2em'}).attr('title', _('config'));
+        }*/
         $e.each(function () {
             var _id = $(this).attr('data-instance-id');
             if (main.objects[_id] && main.objects[_id].common && main.objects[_id].common.noConfig) {
-                $(this).button('disable');
+                //$(this).button('disable');
+                $(this).addClass('disabled');
             }
         });
 
@@ -1137,9 +1138,9 @@ function Instances(main) {
                     if (err) that.main.showError(err);
                 });
             });
-        if (!$e.find('.ui-button-icon-primary').length) {
+        /*if (!$e.find('.ui-button-icon-primary').length) {
             $e.button({icons: {primary: 'ui-icon-refresh'}, text: false}).attr('title', _('reload'));
-        }
+        }*/
 
         $e = that.$grid.find('.instance-del' + id).off('click')
             .on('click', function () {
@@ -1156,25 +1157,25 @@ function Instances(main) {
                 }
             });
 
-        if (!$e.find('.ui-button-icon-primary').length) {
+        /*if (!$e.find('.ui-button-icon-primary').length) {
             $e.button({icons: {primary: 'ui-icon-trash'}, text: false}).attr('title', _('delete'));
         } else {
-            $e.button('enable');
-        }
-        
-        $e = that.$grid.find('.instance-issue' + id).off('click')
-            .on('click', function () {
+            //$e.button('enable');
+            $e.removeClass('disabled');
+        }*/
+        $e = that.$grid.find('.instance-issue' + id).unbind('click')
+            .click(function () {
                 that.main.navigate({
                     tab:    'instances',
                     dialog: 'issue',
                     params:  $(this).data('instance-id')
                 });
             });
-        if (!$e.find('.ui-button-icon-primary').length) {
-            //$e.button({icons: {primary: 'ui-icon-pin-s'}, text: false})./*css({width: '2em', height: '2em'}).*/attr('title', _('bug'));
+        /*if (!$e.find('.ui-button-icon-primary').length) {
+            //$e.button({icons: {primary: 'ui-icon-pin-s'}, text: false}).css({width: '2em', height: '2em'}).attr('title', _('bug'));
             //Material-Hack
             $e.button().attr('title', _('bug')).empty().append('<i class="material-icons bug-report">bug_report</i>');
-        }
+        }*/
 
         that.$grid.find('.instance-image' + id).each(function () {
             if (!$(this).data('installed')) {
@@ -1204,7 +1205,8 @@ function Instances(main) {
         $e = that.$grid.find('.instance-stop-run' + id).off('click')
             .on('click', function () {
                 var id = $(this).attr('data-instance-id');
-                $(this).button('disable');
+                //$(this).button('disable');
+                $(this).addClass('disabled');
                 that.main.socket.emit('extendObject', id, {common: {enabled: !that.main.objects[id].common.enabled}}, function (err) {
                     if (err) that.main.showError(err);
                 });
@@ -1214,11 +1216,26 @@ function Instances(main) {
             $e.each(function () {
                 var id = $(this).attr('data-instance-id');
                 var enabled = that.main.objects[id].common.enabled;
-                $e.button({icons: {primary: enabled ? 'ui-icon-pause': 'ui-icon-play'}, text: false})
+
+                if (enabled) {
+                    $e
+                        .addClass('instance-running')
+                        .attr('title', _('Activated. Click to stop.'))
+                            .find('i')
+                            .html('pause');
+                } else {
+                    $e
+                        .removeClass('instance-running')
+                        .attr('title', _('Deactivated. Click to start.'))
+                            .find('i')
+                            .html('play_arrow');
+                }
+
+                /*$e.button({icons: {primary: enabled ? 'ui-icon-pause': 'ui-icon-play'}, text: false})
                     //.css({'background-color': enabled ? 'lightgreen' : '#FF9999'})
                     //.css({'background-color': enabled ? 'rgba(0, 255, 0, 0.15)' : 'rgba(255, 0, 0, 0.15)'})
                     .css({'background-color': enabled ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)'})
-                    .attr('title', enabled ? _('Activated. Click to stop.') : _('Deactivated. Click to start.'));
+                    .attr('title', enabled ? _('Activated. Click to stop.') : _('Deactivated. Click to start.'));*/
             });
         }
 
@@ -1265,11 +1282,12 @@ function Instances(main) {
             });
         if (typeof url === 'object') $e.data('link', url);
 
-        if (!$e.find('.ui-button-icon-primary').length) {
+        /*if (!$e.find('.ui-button-icon-primary').length) {
             $e.button({icons: {primary: 'ui-icon-image'}, text: false}).attr('title', _('open web page'));
         } else {
-            $e.button('enable');
-        }
+            $e.removeClass('disabled');
+            //$e.button('enable');
+        }*/
     };
 
     this.resize             = function (width, height) {

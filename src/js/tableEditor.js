@@ -165,7 +165,7 @@ function values2table(divId, values, options) {
                     name:    name,
                     type:     $(this).data('type') || 'text',
                     def:      $(this).data('default'),
-                    'class':  $(this).attr('class').replace('translate', ''),
+                    'class':  ($(this).attr('class') || '').replace('translate', ''),
                     style:    $(this).data('style'),
                     readOnly: $(this).data('readOnly'),
                     tdstyle:  $(this).data('tdstyle')
@@ -195,7 +195,7 @@ function values2table(divId, values, options) {
             if (name) {
                 buttons.push({
                     btn:        name.split(' '),
-                    'class':    $(this).attr('class').replace('translate', ''),
+                    'class':    ($(this).attr('class') || '').replace('translate', ''),
                     style:      $(this).data('style'),
                     tdstyle:    $(this).data('tdstyle')
                 });

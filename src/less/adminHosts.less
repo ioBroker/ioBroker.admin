@@ -4,9 +4,54 @@
 /**/
 
 #tab-hosts {
+    // todo combine it with other tabs
+    .main-toolbar-table {
+        margin-left: 0.3rem;
+        &>div {
+            display: inline-block
+        }
+        a.btn-small {
+            line-height: @admin-small-buttons-size;
+            height: @admin-small-buttons-size;
+            width: @admin-small-buttons-size;
+            i {
+                margin-left:    -0.5px;
+                font-size:      1.1rem;
+                line-height:    @admin-small-buttons-size;
+            }
+        }
+
+        .filter-input {
+            display:        inline-table;
+            padding-left:   6px;
+            margin-left:    20px;
+            font-size:      14px;
+            height:         24px;
+            width:          10rem;
+        }
+
+        .filter-clear {
+            width:          18px;
+            height:         18px;
+            border:         0;
+            i {
+                font-size:  0.8rem;
+                line-height: 1.2rem;
+            }
+        }
+
+        .main-toolbar-table-types-tools {
+            display: inline-block;
+        }
+    }
     .hosts-table {
         .new-iob-list-table;
         font-size: 0.9em;
+
+        .updateReady {
+            font-weight: bold;
+            color: #06960E !important;
+        }
 
         .grid-hosts > tr:nth-child(2n) {
             background-color: @even-bg-color;
@@ -14,7 +59,7 @@
 
         th, td, tr, td {
             border: @td-border;
-            padding-left: 0;
+            padding: 0 0.5rem 0 0.5rem;
         }
         &>tbody>tr>td>b {
             font-weight: normal;
@@ -27,8 +72,34 @@
             height: 35px;
             border: 0;
         }
-        &>tbody>tr>td {
+        /*&>tbody>tr>td {
             padding: 0;
+        }*/
+    }
+    .small-button-empty, .small-button {
+        width:      24px;
+        margin:     0 1px 0 0;
+        display:    inline-block;
+        position:   relative;
+        z-index:    1;
+        border:     0;
+    }
+    .small-button {
+        height:     24px;
+        background: @tiles-tile-background;
+        color:      @admin-sidemenu-main-items-color;
+        padding:    1px 0 0 0;
+        cursor:     pointer;
+        i {
+            //font-size: 14px;
+        }
+        &:hover {
+            background: @main-active-color;
+            color: @admin-sidemenu-color;
+        }
+        &.disabled {
+            opacity: 0.5;
+            pointer-events: none;
         }
     }
 }
