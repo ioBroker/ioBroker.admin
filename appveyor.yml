@@ -14,7 +14,7 @@ install:
   - node node_modules/gulp/bin/gulp default
   - npm install winston@2.3.1
   - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
-  - rmdir  /s /q node_modules/iobroker.js-controller/node_modules/iobroker.admin
+  - rmdir  /s /q "node_modules/iobroker.js-controller/node_modules/iobroker.admin"
 test_script:
   - echo %cd%
   - node --version
