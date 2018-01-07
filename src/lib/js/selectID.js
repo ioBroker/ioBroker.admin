@@ -118,8 +118,8 @@
                                  // {name: 'field', options: {a1: 'a111_Text', a2: 'a22_Text'}}, options can be a function (id, name), that give back such an object
              quickEditCallback: null, // function (id, attr, newValue, oldValue),
              readyCallback: null // called when objects and states are read from server (only if connCfg is not null). function (err, objects, states)
-             expandedCallback: null, // called when some node was expanded. function(id, childrenCount, statesCount)
-             collapsedCallback: null, // called when some node was expanded. function(id, childrenCount, statesCount)
+             expandedCallback: null, // called when some node was expanded. function (id, childrenCount, statesCount)
+             collapsedCallback: null, // called when some node was expanded. function (id, childrenCount, statesCount)
         }
  +  show(currentId, filter, callback) - all arguments are optional if set by "init". Callback is like function (newId, oldId) {}. If multiselect, so the arguments are arrays.
  +  clear() - clear object tree to read and build anew (used only if objects set by "init")
@@ -151,7 +151,7 @@ function removeImageFromSettings(data) {
 }
 
 var lineIndent = '5px';
-var xytdButton = { width: 20, height: 20 };
+
 function span(txt, attr) {
     //if (txt === undefined) txt = '';
     //return txt;
@@ -162,12 +162,12 @@ function span(txt, attr) {
 }
 
 function filterChanged(e) {
-    var $e = $(e);
-    var val = $e.val ();
-    var tr = $e.parent ().parent ();
-    tr.find ('td').last().css ({'display': val ? 'unset' : 'none'});   //
-    tr [val ? 'addClass' : 'removeClass'] ('filter-active');         // set background of <tr>
-    tr.find('button').attr('style' , 'background: transparent !important;');
+    var $e  = $(e);
+    var val = $e.val();
+    var tr  = $e.parent().parent();
+    tr.find('td').last().css({'display': val ? 'unset' : 'none'});   //
+    tr [val ? 'addClass' : 'removeClass']('filter-active');         // set background of <tr>
+    tr.find('button').attr('style', 'background: transparent !important;');
 }
 
 
@@ -176,7 +176,7 @@ function filterChanged(e) {
 
     if ($.fn.selectId) return;
 
-    var ICON_MINIMAL_BASE64_SIZE = 312;
+    var isMaterial = typeof M !== 'undefined'; // is material UI
 
     function getName(obj, id) {
         if (obj && obj.common) {
@@ -311,9 +311,9 @@ function filterChanged(e) {
         var objects = data.objects;
         var checkStatesFirst;
         switch (data.sortConfig.statesFirst) {
-            case undefined: checkStatesFirst = function() { return 0 }; break;
-            case true:      checkStatesFirst = function(child1, child2) { return ((~~child2.folder) - (~~child1.folder))}; break;
-            case false:     checkStatesFirst = function(child1, child2) { return ((~~child1.folder) - (~~child2.folder))}; break;
+            case undefined: checkStatesFirst = function () { return 0 }; break;
+            case true:      checkStatesFirst = function (child1, child2) { return ((~~child2.folder) - (~~child1.folder))}; break;
+            case false:     checkStatesFirst = function (child1, child2) { return ((~~child1.folder) - (~~child2.folder))}; break;
         }
 
         // function compAdapterAndInstance(c1, c2) {
@@ -762,8 +762,8 @@ function filterChanged(e) {
         for (var i = 0; i < thDest.length - 1; i++) {
             if ((x = $(thSrc[i]).width())) {
                 $(thDest[i]).attr('width', x);
-                if ((o = $ (thSrc[i + 1]).offset().left)) {
-                    if ((o -= $ (thDest[i + 1]).offset().left)) {
+                if ((o = $(thSrc[i + 1]).offset().left)) {
+                    if ((o -= $(thDest[i + 1]).offset().left)) {
                         $(thDest[i]).attr('width', x + o);
                     }
                 }
@@ -876,7 +876,7 @@ function filterChanged(e) {
         var $dlg = $('#dialog-value-edit');
         if (typeof M !== 'undefined' && $dlg.length) {
             $dlg.find('textarea').val(value);
-            $dlg.find('.btn-set').off('click').click(function () {
+            $dlg.find('.btn-set').off('click').on('click', function () {
                 var val = $dlg.find('textarea').val();
                 if (val !== value) {
                     data.quickEditCallback(id, 'value', val, value);
@@ -934,7 +934,7 @@ function filterChanged(e) {
                 '<span class="ui-button-icon-primary ui-icon ui-icon-clipboard" ></span></button>';
 
             $(this).append(text);
-            $(this).find('.clippy-button').click(clippyCopy);
+            $(this).find('.clippy-button').on('click', clippyCopy);
         }
 
         if ($(this).hasClass('edit-dialog') && !$(this).find('.edit-dialog-button').length) {
@@ -945,7 +945,7 @@ function filterChanged(e) {
                 'style="position: absolute; right: 22px; top: 0; z-index: 1; margin-top: 1px;">' +
                 '<span class="ui-button-icon-primary ui-icon ui-icon-pencil"></span></button>';
             $(this).append(text);
-            $(this).find('.edit-dialog-button').click(editValueDialog).data('data', data);
+            $(this).find('.edit-dialog-button').on('click', editValueDialog).data('data', data);
         }
     }
 
@@ -1147,6 +1147,8 @@ function filterChanged(e) {
                 }
             });
         } else if (attr === 'role')  {
+            
+            // remove jquery UI - todo
             $input.autocomplete({
                 minLength: 0,
                 source: data.roles
@@ -1176,9 +1178,9 @@ function filterChanged(e) {
             } else {
                 $this.attr('width', oldWidth);
             }
-            $this.html(ot).click(onQuickEditField).addClass('select-id-quick-edit');
+            $this.html(ot).on('click', onQuickEditField).addClass('select-id-quick-edit');
             //if (activeNode && activeNode.lebgth) activeNode.setActive();
-            setTimeout(function() {
+            setTimeout(function () {
                 //$(event.currentTarget).parent().trigger('click'); // re-select the line so we can continue using the keyboard
                 $parent.trigger('click'); // re-select the line so we can continue using the keyboard
             }, 50);
@@ -1198,9 +1200,9 @@ function filterChanged(e) {
             editDone();
         }
 
-        $this.find('.select-id-quick-edit-cancel').click(handleCancel);
+        $this.find('.select-id-quick-edit-cancel').on('click', handleCancel);
 
-        $this.find('.select-id-quick-edit-ok').click(function ()  {
+        $this.find('.select-id-quick-edit-ok').on('click', function ()  {
             var _$input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
             _$input.trigger('blur');
         });
@@ -1341,7 +1343,7 @@ function filterChanged(e) {
                 buttons: data.buttonsDlg
             });
             if (data.zindex !== null) {
-                $ ('div[aria-describedby="' + $dlg.attr ('id') + '"]').css ({'z-index': data.zindex})
+                $('div[aria-describedby="' + $dlg.attr('id') + '"]').css({'z-index': data.zindex})
             }
         }
 
@@ -1527,7 +1529,7 @@ function filterChanged(e) {
         text += '        <tbody>';
         text += '            <tr>'; //<td></td>';
 
-        forEachColumn(data, function(name) {
+        forEachColumn(data, function (name) {
             text += '<td>';
             // we may not search by value
             if (name === 'ID' || name === 'name' || name === 'enum') {
@@ -1563,7 +1565,7 @@ function filterChanged(e) {
 
         var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '6%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '9%', enum: '2%'};
 
-        forEachColumn(data, function(name, i) {
+        forEachColumn(data, function (name, i) {
             var w = data.widths ? data.widths[i] : widths[name] || '2%';
             text += '<col width="' + w + '"/>';
             thead += '<th style="width: ' + w + ';"></th>';
@@ -1591,7 +1593,7 @@ function filterChanged(e) {
                     $elem.data('id', objectId);
                 }
 
-                $elem.css ({position: 'relative'})
+                $elem.css({position: 'relative'})
                     .data('data', data)
                     .mouseenter(clippyShow)
                     .mouseleave(clippyHide);
@@ -1636,7 +1638,7 @@ function filterChanged(e) {
                 counter:   false
             },
 
-            // keydown: function(event, data){
+            // keydown: function (event, data){
             //     var KC = $.ui.keyCode;
             //
             //     if( $(event.originalEvent.target).is(':input') ){
@@ -1876,7 +1878,7 @@ function filterChanged(e) {
                             if (data.quickEdit /*&& obj*/ && data.quickEdit.indexOf('name') !== -1) {
 
                                 $e.data('old-value', t);
-                                $e.click(onQuickEditField).data('id', node.key).data('name', 'name').data('selectId', data).addClass('select-id-quick-edit');
+                                $e.on('click', onQuickEditField).data('id', node.key).data('name', 'name').data('selectId', data).addClass('select-id-quick-edit');
                             }
                             break;
                         case 'type':
@@ -1887,26 +1889,27 @@ function filterChanged(e) {
                             setText(val);
 
                             if (data.quickEdit && obj && data.quickEdit.indexOf ('role') !== -1) {
-                                $elem.data ('old-value', val);
-                                $elem.click (onQuickEditField).data ('id', node.key).data ('name', 'role').data ('selectId', data).addClass ('select-id-quick-edit');
+                                $elem.data('old-value', val);
+                                $elem.on('click', onQuickEditField).data('id', node.key).data('name', 'role').data('selectId', data).addClass('select-id-quick-edit');
                             }
                             break;
                         case 'room':
                             // Try to find room
                             if (data.roomsColored) {
                                 var room = data.roomsColored[node.key];
-                                if (!room) room = data.roomsColored[node.key] = findRoomsForObject (data, node.key, true);
-                                val = room.map (function (e) {
+                                if (!room) room = data.roomsColored[node.key] = findRoomsForObject(data, node.key, true);
+                                val = room.map(function (e) {
                                     if (typeof e.name === 'object') {
                                         return e.name[systemLang] || e.name.en;
                                     } else {
                                         return e.name;
                                     }
-                                }).join (', ');
+                                }).join(', ');
+
                                 if (room.length && room[0].origin !== node.key) {
-                                    $elem.css ({color: 'gray'}).attr ('title', room[0].origin);
+                                    $elem.css({color: 'gray'}).attr('title', room[0].origin);
                                 } else {
-                                    $elem.css ({color: 'inherit'}).attr ('title', null);
+                                    $elem.css({color: 'inherit'}).attr('title', null);
                                 }
                             } else {
                                 val = '';
@@ -1914,19 +1917,19 @@ function filterChanged(e) {
                             setText(val);
 
                             if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf ('room') !== -1) {
-                                $elem.data ('old-value', val);
-                                $elem.click (onQuickEditField)
-                                    .data ('id', node.key)
-                                    .data ('name', 'room')
-                                    .data ('selectId', data)
-                                    .addClass ('select-id-quick-edit');
+                                $elem.data('old-value', val);
+                                $elem.on('click', onQuickEditField)
+                                    .data('id', node.key)
+                                    .data('name', 'room')
+                                    .data('selectId', data)
+                                    .addClass('select-id-quick-edit');
                             }
                             break;
                         case 'function':
                             // Try to find function
                             if (data.funcsColored) {
-                                if (!data.funcsColored[node.key]) data.funcsColored[node.key] = findFunctionsForObject (data, node.key, true);
-                                val = data.funcsColored[node.key].map (function (e) {
+                                if (!data.funcsColored[node.key]) data.funcsColored[node.key] = findFunctionsForObject(data, node.key, true);
+                                val = data.funcsColored[node.key].map(function (e) {
                                     if (typeof e.name === 'object') {
                                         return e.name[systemLang] || e.name.en;
                                     } else {
@@ -1934,22 +1937,22 @@ function filterChanged(e) {
                                     }
                                 }).join (', ');
                                 if (data.funcsColored[node.key].length && data.funcsColored[node.key][0].origin !== node.key) {
-                                    $elem.css ({color: 'gray'}).attr ('title', data.funcsColored[node.key][0].origin);
+                                    $elem.css({color: 'gray'}).attr('title', data.funcsColored[node.key][0].origin);
                                 } else {
-                                    $elem.css ({color: 'inherit'}).attr ('title', null);
+                                    $elem.css({color: 'inherit'}).attr('title', null);
                                 }
                             } else {
                                 val = '';
                             }
                             setText(val);
 
-                            if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf ('function') !== -1) {
-                                $elem.data ('old-value', val);
-                                $elem.click (onQuickEditField)
-                                    .data ('id', node.key)
-                                    .data ('name', 'function')
-                                    .data ('selectId', data)
-                                    .addClass ('select-id-quick-edit');
+                            if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('function') !== -1) {
+                                $elem.data('old-value', val);
+                                $elem.on('click', onQuickEditField)
+                                    .data('id', node.key)
+                                    .data('name', 'function')
+                                    .data('selectId', data)
+                                    .addClass('select-id-quick-edit');
                             }
                             break;
                         case 'value':
@@ -1958,7 +1961,7 @@ function filterChanged(e) {
                             var state;
                             if (data.states && ((state = data.states[node.key]) || data.states[node.key + '.val'] !== undefined)) {
                                 //var $elem = $tdList.eq(base);
-                                var states = getStates (data, node.key);
+                                var states = getStates(data, node.key);
                                 if (!state) {
                                     state = {
                                         val: data.states[node.key + '.val'],
@@ -1969,11 +1972,11 @@ function filterChanged(e) {
                                         q: (data.states[node.key + '.q'] === undefined) ? 0 : data.states[node.key + '.q']
                                     };
                                 } else {
-                                    state = Object.assign ({}, state);
+                                    state = Object.assign({}, state);
                                 }
 
                                 if (common.role === 'value.time') {
-                                    state.val = state.val ? (new Date (state.val)).toString () : state.val;
+                                    state.val = state.val ? (new Date(state.val)).toString() : state.val;
                                 }
                                 if (states && states[state.val] !== undefined) {
                                     state.val = states[state.val] + '(' + state.val + ')';
@@ -1989,16 +1992,16 @@ function filterChanged(e) {
 
                                     if (isCommon && common.unit) state.val += ' ' + common.unit;
                                     fullVal = data.texts.value + ': ' + state.val;
-                                    fullVal += '\x0A' + data.texts.ack + ': ' + state.ack;
-                                    fullVal += '\x0A' + data.texts.ts + ': ' + (state.ts ? formatDate (new Date (state.ts)) : '');
-                                    fullVal += '\x0A' + data.texts.lc + ': ' + (state.lc ? formatDate (new Date (state.lc)) : '');
-                                    fullVal += '\x0A' + data.texts.from + ': ' + (state.from || '');
-                                    fullVal += '\x0A' + data.texts.quality + ': ' + quality2text (state.q || 0);
+                                    fullVal += '\x0A' + data.texts.ack     + ': ' + state.ack;
+                                    fullVal += '\x0A' + data.texts.ts      + ': ' + (state.ts ? formatDate(new Date(state.ts)) : '');
+                                    fullVal += '\x0A' + data.texts.lc      + ': ' + (state.lc ? formatDate(new Date(state.lc)) : '');
+                                    fullVal += '\x0A' + data.texts.from    + ': ' + (state.from || '');
+                                    fullVal += '\x0A' + data.texts.quality + ': ' + quality2text(state.q || 0);
                                 }
 
-                                $elem.html ('<span class="highlight" style="display: inline-block; width: 100%; padding-left: ' + lineIndent + ';">' + state.val + '</span>')
-                                    .attr ('title', fullVal)
-                                    .css ({position: 'relative'});
+                                $elem.html('<span class="highlight" style="display: inline-block; width: 100%; padding-left: ' + lineIndent + ';">' + state.val + '</span>')
+                                    .attr('title', fullVal)
+                                    .css({position: 'relative'});
                                 var $span = $elem.find('span');
                                 $span.css({color: state.ack ? (state.q ? 'orange' : '') : '#c00000'});
 
@@ -2009,9 +2012,9 @@ function filterChanged(e) {
                                         (data.expertMode || obj.common.write !== false) ? key : undefined);
                                 }
                             } else {
-                                $elem.text ('')
-                                    .attr ('title', '')
-                                    .removeClass ('clippy');
+                                $elem.text('')
+                                    .attr('title', '')
+                                    .removeClass('clippy');
                             }
                             $elem.dblclick (function (e) {
                                 e.preventDefault ();
@@ -2024,38 +2027,45 @@ function filterChanged(e) {
                                 (data.expertMode || obj.common.write !== false)
                             ) {
                                 if (obj.common.role === 'button' && !data.expertMode) {
-                                    $elem.html ('<button data-id="' + node.key + '" class="select-button-push"></button>');
+                                    $elem.html('<button data-id="' + node.key + '" class="select-button-push"></button>');
                                 } else if (!obj.common || obj.common.type !== 'file') {
                                     var val_ = data.states[node.key];
                                     val_ = val_ ? val_.val : '';
                                     var $span_ = $elem.find('span');
-                                    $span_.data ('old-value', val_).data ('type', common.type || typeof val_);
+                                    $span_.data('old-value', val_).data('type', common.type || typeof val_);
 
-                                    //$elem.click (onQuickEditField)    //!!!xxx
-                                    $span_.click (onQuickEditField)    //!!!xxx
-                                        .data ('id', node.key)
-                                        .data ('name', 'value')
-                                        .data ('selectId', data)
-                                        .addClass ('select-id-quick-edit');
+                                    //$elem.on('click', onQuickEditField)    //!!!xxx
+                                    $span_.on('click', onQuickEditField)    //!!!xxx
+                                        .data('id', node.key)
+                                        .data('name', 'value')
+                                        .data('selectId', data)
+                                        .addClass('select-id-quick-edit');
                                 }
 
-                                $tr.find('.select-button-push[data-id="' + node.key + '"]').button({
-                                    text: false,
-                                    icons: {
-                                        primary: 'ui-icon-arrowthickstop-1-s'
-                                    }
-                                }).click (function () {
-                                    var id = $ (this).data ('id');
-                                    data.quickEditCallback (id, 'value', true);
-                                }).attr ('title', data.texts.push).css ({width: 26, height: 20});
+                                var $btnPush = $tr.find('.select-button-push[data-id="' + node.key + '"]');
+                                $btnPush.on('click', function () {
+                                    var id = $(this).data('id');
+                                    data.quickEditCallback(id, 'value', true);
+                                }).attr('title', data.texts.push);
+
+                                if (!isMaterial) {
+                                    $btnPush.button({
+                                        text: false,
+                                        icons: {
+                                            primary: 'ui-icon-arrowthickstop-1-s'
+                                        }
+                                    });
+                                } else {
+                                    $btnPush.prepend('<i class="material-icons">room_service</i>')
+                                }
                             }
 
                             if (common.type === 'file') {
                                 data.webServer = data.webServer || (window.location.protocol + '//' + window.location.hostname + ':8082');
 
                                 // link
-                                $elem.html ('<a href="' + data.webServer + '/state/' + node.key + '" target="_blank">' + data.webServer + '/state/' + node.key + '</a>')
-                                    .attr ('title', data.texts.linkToFile);
+                                $elem.html('<a href="' + data.webServer + '/state/' + node.key + '" target="_blank">' + data.webServer + '/state/' + node.key + '</a>')
+                                    .attr('title', data.texts.linkToFile);
                             }
 
                             break;
@@ -2079,61 +2089,91 @@ function filterChanged(e) {
                                     setText(text);
 
                                     for (var p = 0; p < data.buttons.length; p++) {
-                                        var $btn = $tr.find('.select-button-' + p + '[data-id="' + node.key + '"]').button(data.buttons[p]).click(function () {
-                                            var cb = $(this).data('callback');
-                                            if (cb) cb.call($(this), $(this).data('id'));
-                                        }).data('callback', data.buttons[p].click).attr('title', data.buttons[p].title || '');
+                                        var $btn = $tr.find('.select-button-' + p + '[data-id="' + node.key + '"]');
+
                                         if ($btn.length === 0) continue;
+
+                                        $btn
+                                            .on('click', function () {
+                                                var cb = $(this).data('callback');
+                                                if (cb) cb.call($(this), $(this).data('id'));
+                                            })
+                                            .data('callback', data.buttons[p].click)
+                                            .attr('title', data.buttons[p].title || '');
+
                                         if (data.buttons[p].width)  $btn.css({width: data.buttons[p].width});
                                         if (data.buttons[p].height) $btn.css({height: data.buttons[p].height});
                                         if (data.buttons[p].match)  data.buttons[p].match.call($btn, node.key);
+                                        if (!isMaterial) {
+                                            $btn.button(data.buttons[p]);
+                                        } else {
+                                            console.warn('TODO!');
+                                        }
                                     }
                                 } else {
                                     $elem.text('');
                                 }
                             } else if (data.editEnd) {
                                 text = '<button data-id="' + node.key + '" class="select-button-edit"></button>' +
-                                    '<button data-id="' + node.key + '" class="select-button-ok"></button>' +
-                                    '<button data-id="' + node.key + '" class="select-button-cancel"></button>';
+                                       '<button data-id="' + node.key + '" class="select-button-ok"></button>' +
+                                       '<button data-id="' + node.key + '" class="select-button-cancel"></button>';
                             }
 
                             if (data.editEnd) {
-                                $tr.find ('.select-button-edit[data-id="' + node.key + '"]').button({
-                                    text: false,
-                                    icons: {
-                                        primary: 'ui-icon-pencil'
-                                    }
-                                }).click (function () {
-                                    $ (this).data ('node').editStart ();
-                                }).attr ('title', data.texts.edit).data ('node', node).css ({width: 26, height: 20});
+                                var $btnEdit = $tr.find('.select-button-edit[data-id="' + node.key + '"]');
+                                $btnEdit
+                                    .on('click', function () {
+                                        $(this).data('node').editStart();
+                                    })
+                                    .attr('title', data.texts.edit)
+                                    .data('node', node);
 
-                                $tr.find ('.select-button-ok[data-id="' + node.key + '"]').button({
-                                    text: false,
-                                    icons: {
-                                        primary: 'ui-icon-check'
-                                    }
-                                }).click (function () {
-                                    var node = $ (this).data ('node');
+                                if (!isMaterial) {
+                                    $btnEdit.button({
+                                        text: false,
+                                        icons: {
+                                            primary: 'ui-icon-pencil'
+                                        }
+                                    });
+                                } else {
+                                    $btnEdit.prepend('<i class="material-icons">edit</i>');
+                                }
+
+                                $btnEdit = $tr.find('.select-button-ok[data-id="' + node.key + '"]');
+                                $btnEdit.on('click', function () {
+                                    var node = $(this).data('node');
                                     node.editFinished = true;
                                     node.editEnd (true);
-                                }).attr ('title', data.texts.ok).data ('node', node).hide ().css({
-                                    width: 26,
-                                    height: 20
-                                });
+                                }).attr('title', data.texts.ok).data('node', node).hide();
 
-                                $tr.find('.select-button-cancel[data-id="' + node.key + '"]').button({
-                                    text: false,
-                                    icons: {
-                                        primary: 'ui-icon-close'
-                                    }
-                                }).click(function () {
-                                    var node = $ (this).data ('node');
+                                if (!isMaterial) {
+                                    $btnEdit.button({
+                                        text: false,
+                                        icons: {
+                                            primary: 'ui-icon-check'
+                                        }
+                                    });
+                                } else {
+                                    $btnEdit.prepend('<i class="material-icons">done</i>');
+                                }
+
+                                $btnEdit = $tr.find('.select-button-cancel[data-id="' + node.key + '"]');
+                                $btnEdit.on('click', function () {
+                                    var node = $(this).data('node');
                                     node.editFinished = true;
                                     node.editEnd (false);
-                                }).attr('title', data.texts.cancel).data('node', node).hide().css({
-                                    width: 26,
-                                    height: 20
-                                });
+                                }).attr('title', data.texts.cancel).data('node', node).hide();
+
+                                if (!isMaterial) {
+                                    $btnEdit.button({
+                                        text: false,
+                                        icons: {
+                                            primary: 'ui-icon-close'
+                                        }
+                                    });
+                                } else {
+                                    $btnEdit.prepend('<i class="material-icons">close</i>');
+                                }
                             }
                             break;
                         case 'enum':
@@ -2145,31 +2185,31 @@ function filterChanged(e) {
                                     te = '#' + obj.common.members.length;
                                 }
                                 $elem.html('<div class="iob-ellipsis">' + te + '</div>');
-                                $elem.attr ('title', obj.common.members.join ('\x0A'));
+                                $elem.attr('title', obj.common.members.join ('\x0A'));
                             } else {
-                                $elem.text ('');
-                                $elem.attr ('title', '');
+                                $elem.text('');
+                                $elem.attr('title', '');
                             }
                             break;
                         default:
                             if (typeof data.columns[c].data === 'function') {
                                 //$elem = $tdList.eq(base);
-                                var val = data.columns[c].data (node.key, data.columns[c].name);
+                                var val = data.columns[c].data(node.key, data.columns[c].name);
                                 var title = '';
                                 if (data.columns[c].title) title = data.columns[c].title (node.key, data.columns[c].name);
-                                $elem.html (val).attr ('title', title);
+                                $elem.html(val).attr('title', title);
                                 if (data.quickEdit && data.objects[node.key]) {
                                     for (var q = 0; q < data.quickEdit.length; q++) {
                                         if (data.quickEdit[q] === data.columns[c].name ||
                                             data.quickEdit[q].name === data.columns[c].name) {
-                                            $elem.data ('old-value', val).data ('type', typeof val);
+                                            $elem.data('old-value', val).data('type', typeof val);
 
-                                            $elem.click (onQuickEditField)
-                                                .data ('id', node.key)
-                                                .data ('name', data.columns[c].name)
-                                                .data ('selectId', data)
-                                                .data ('options', data.quickEdit[q].options)
-                                                .addClass ('select-id-quick-edit');
+                                            $elem.on('click', onQuickEditField)
+                                                .data('id', node.key)
+                                                .data('name', data.columns[c].name)
+                                                .data('selectId', data)
+                                                .data('options', data.quickEdit[q].options)
+                                                .addClass('select-id-quick-edit');
 
                                             break;
                                         }
@@ -2252,7 +2292,7 @@ function filterChanged(e) {
                     // Editor was opened (available as data.input)
                     var inputs = {id: _data.input};
 
-                    forEachColumn(data, function(name, c) {
+                    forEachColumn(data, function (name, c) {
                         if (name === 'name') {
                             inputs[name] = $('<input type="text" data-name="' + name + '" class="select-edit" value="' + data.objects[_data.node.key].common[name] + '" style="width: 100%"/>');
                             $tdList.eq(c).html(inputs[name]);
@@ -2286,7 +2326,7 @@ function filterChanged(e) {
                 save: function (event, _data) {
                     var editValues = {id: _data.input.val()};
 
-                    forEachColumn (data, function(name) {
+                    forEachColumn (data, function (name) {
                         if (name === 'name') {
                             editValues[name] = $dlg.find('.select-edit[data-name="' + name + '"]').val();
                         }
@@ -2505,15 +2545,15 @@ function filterChanged(e) {
         $dlg.find('.filter').change(function (event) {
             data.filterVals = null;
             if (changeTimer) clearTimeout(changeTimer);
-            //changeTimer = setTimeout(function() {
+            //changeTimer = setTimeout(function () {
             if (event && event.target) {
                 filterChanged(event.target);
             }
 
             var $ee = $dlg.find('.objects-list-running');
-            $ee.show ();
+            $ee.show();
             data.$tree.fancytree ('getTree').filterNodes (customFilter, false);
-            $ee.hide ();
+            $ee.hide();
             //}, 0);
         }).keyup(function () {
             var tree = data.$tree[0];
@@ -2525,11 +2565,19 @@ function filterChanged(e) {
             }, 200);
         });
 
-        $dlg.find('.filter-btn').button({icons: {primary: 'ui-icon-close'}, text: false}).click(function () {
+        var $btn = $dlg.find('.filter-btn');
+
+        $btn.on('click', function () {
             $dlg.find('.filter[data-index="' + $(this).data('index') + '"]').val('').trigger('change');  //filter buttons action
         });
+        if (!isMaterial) {
+            $btn.button({icons: {primary: 'ui-icon-close'}, text: false});
+        } else {
+            $btn.prepend('<i class="material-icons">close</i>');
+        }
 
-        $dlg.find('.btn-collapse').button({icons: {primary: 'ui-icon-folder-collapsed'}, text: false}).click(function () {
+        $btn = $dlg.find('.btn-collapse');
+        $btn.on('click', function () {
             $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
@@ -2539,7 +2587,14 @@ function filterChanged(e) {
             }, 100);
         }).attr('title', data.texts.collapse);
 
-        $dlg.find('.btn-expand').button({icons: {primary: 'ui-icon-folder-open'}, text: false}).click(function () {
+        if (!isMaterial) {
+            $btn.button({icons: {primary: 'ui-icon-folder-collapsed'}, text: false});
+        } else {
+            $btn.prepend('<i class="material-icons">folder</i>');
+        }
+
+        $btn = $dlg.find('.btn-expand');
+        $dlg.on('click', function () {
             $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
@@ -2549,16 +2604,22 @@ function filterChanged(e) {
                 $dlg.find('.objects-list-running').hide();
             }, 100);
         }).attr('title', data.texts.expand);
+        if (!isMaterial) {
+            $btn.button({icons: {primary: 'ui-icon-folder-open'}, text: false});
+        } else {
+            $btn.prepend('<i class="material-icons">folder_open</i>');
+        }
 
-        $dlg.find('.btn-list').button({icons: {primary: 'ui-icon-grip-dotted-horizontal'}, text: false}).click(function () {
+        $btn = $dlg.find('.btn-list');
+        $btn.on('click', function () {
             $dlg.find('.objects-list-running').show();
             data.list = !data.list;
             if (data.list) {
-                $dlg.find('.btn-list').addClass('ui-state-error');
+                $dlg.find('.btn-list').addClass('ui-state-error red lighten-3');
                 $dlg.find('.btn-collapse').hide();
                 $(this).attr('title', data.texts.list);
             } else {
-                $dlg.find('.btn-list').removeClass('ui-state-error');
+                $dlg.find('.btn-list').removeClass('ui-state-error red lighten-3');
                 $dlg.find('.btn-expand').show();
                 $dlg.find('.btn-collapse').show();
                 $(this).attr('title', data.texts.tree);
@@ -2571,15 +2632,22 @@ function filterChanged(e) {
             }, 200);
         }).attr('title', data.texts.tree);
 
+        if (!isMaterial) {
+            $btn.button({icons: {primary: 'ui-icon-grip-dotted-horizontal'}, text: false});
+        } else {
+            $btn.prepend('<i class="material-icons">format_list_bulleted</i>');
+        }
+
         if (data.list) {
             $dlg.find('.btn-list')
-                .addClass('ui-state-error')
+                .addClass('ui-state-error red lighten-3')
                 .attr('title', data.texts.list);
             $dlg.find('.btn-expand').hide();
             $dlg.find('.btn-collapse').hide();
         }
 
-        $dlg.find('.btn-refresh').button({icons: {primary: 'ui-icon-refresh'}, text: false}).click(function () {
+        $btn = $dlg.find('.btn-refresh');
+        $btn.on('click', function () {
             $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.inited = false;
@@ -2597,14 +2665,21 @@ function filterChanged(e) {
             }, 100);
         }).attr('title', data.texts.refresh);
 
-        $dlg.find('.btn-sort').button({icons: {primary: 'ui-icon-bookmark'}, text: false})/*.css({width: 18, height: 18})*/.click(function () {
+        if (!isMaterial) {
+            $btn.button({icons: {primary: 'ui-icon-refresh'}, text: false});
+        } else {
+            $btn.prepend('<i class="material-icons">refresh</i>');
+        }
+
+        $btn = $dlg.find('.btn-sort');
+        $btn.on('click', function () {
             $dlg.find('.objects-list-running').show();
 
             data.sort = !data.sort;
             if (data.sort) {
-                $dlg.find('.btn-sort').addClass('ui-state-error');
+                $dlg.find('.btn-sort').addClass('ui-state-error red lighten-3');
             } else {
-                $dlg.find('.btn-sort').removeClass('ui-state-error');
+                $dlg.find('.btn-sort').removeClass('ui-state-error red lighten-3');
             }
             storeSettings(data, true);
 
@@ -2614,9 +2689,16 @@ function filterChanged(e) {
                 $dlg.find('.objects-list-running').hide();
             }, 100);
         }).attr('title', data.texts.sort);
-        if (data.sort) $dlg.find('.btn-sort').addClass('ui-state-error');
+        if (data.sort) $dlg.find('.btn-sort').addClass('ui-state-error red lighten-3');
 
-        $dlg.find('.btn-history').button({icons: {primary: 'ui-icon-gear'}, text: false}).click(function () {
+        if (!isMaterial) {
+            $btn.button({icons: {primary: 'ui-icon-bookmark'}, text: false});
+        } else {
+            $btn.prepend('<i class="material-icons">sort_by_alpha</i>');
+        }
+
+        $btn = $dlg.find('.btn-history');
+        $btn.on('click', function () {
             $dlg.find('.objects-list-running').show();
 
             setTimeout(function () {
@@ -2625,7 +2707,14 @@ function filterChanged(e) {
             }, 1);
         }).attr('title', data.texts.history);
 
-        $dlg.find('.btn-select-all').button({icons: {primary: 'ui-icon-circle-check'}, text: false}).click(function () {
+        if (!isMaterial) {
+            $btn.button({icons: {primary: 'ui-icon-gear'}, text: false});
+        } else {
+            $btn.prepend('<i class="material-icons">build</i>');
+        }
+
+        $btn = $dlg.find('.btn-select-all');
+        $btn.on('click', function () {
             $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
@@ -2640,15 +2729,22 @@ function filterChanged(e) {
             }, 100);
         }).attr('title', data.texts.selectAll);
 
+        if (!isMaterial) {
+            $btn.button({icons: {primary: 'ui-icon-circle-check'}, text: false});
+        } else {
+            $btn.prepend('<i class="material-icons">playlist_add_check</i>');
+        }
+
         if (data.expertModeRegEx) {
-            $dlg.find('.btn-expert').button({icons: {primary: 'ui-icon-person'}, text: false}).click(function () {
+            $btn = $dlg.find('.btn-expert');
+            $btn.on('click', function () {
                 $dlg.find('.objects-list-running').show();
 
                 data.expertMode = !data.expertMode;
                 if (data.expertMode) {
-                    $dlg.find('.btn-expert').addClass('ui-state-error');
+                    $dlg.find('.btn-expert').addClass('ui-state-error red lighten-3');
                 } else {
-                    $dlg.find('.btn-expert').removeClass('ui-state-error');
+                    $dlg.find('.btn-expert').removeClass('ui-state-error red lighten-3');
                 }
                 storeSettings(data, true);
 
@@ -2659,10 +2755,17 @@ function filterChanged(e) {
                 }, 200);
             }).attr('title', data.texts.expertMode);
 
-            if (data.expertMode) $dlg.find('.btn-expert').addClass('ui-state-error');
+            if (data.expertMode) $dlg.find('.btn-expert').addClass('ui-state-error red lighten-3');
+
+            if (!isMaterial) {
+                $btn.button({icons: {primary: 'ui-icon-person'}, text: false});
+            } else {
+                $btn.prepend('<i class="material-icons">assignment_ind</i>');
+            }
         }
 
-        $dlg.find('.btn-unselectall').button({icons: {primary: 'ui-icon-circle-close'}, text: false}).click(function () {
+        $btn = $dlg.find('.btn-unselectall');
+        $btn.on('click', function () {
             $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
@@ -2672,7 +2775,14 @@ function filterChanged(e) {
             }, 100);
         }).attr('title', data.texts.unselectAll);
 
-        $dlg.find('.btn-invert-selection').button({icons: {primary: 'ui-icon-transferthick-e-w'}, text: false}).click(function () {
+        if (!isMaterial) {
+            $btn.button({icons: {primary: 'ui-icon-circle-close'}, text: false});
+        } else {
+            $btn.prepend('<i class="material-icons">cancel</i>');// todo
+        }
+
+        $btn = $dlg.find('.btn-invert-selection');
+        $btn.on('click', function () {
             $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
@@ -2686,6 +2796,12 @@ function filterChanged(e) {
             }, 100);
         }).attr('title', data.texts.invertSelection);
 
+        if (!isMaterial) {
+            $btn.button({icons: {primary: 'ui-icon-transferthick-e-w'}, text: false});
+        } else {
+            $btn.prepend('<i class="material-icons">invert_colors</i>'); // todo
+        }
+
         for (var f in filter) {
             try {
                 if (f) setFilterVal(data, f, filter[f]);
@@ -2696,14 +2812,22 @@ function filterChanged(e) {
 
         if (data.panelButtons) {
             for (var z = 0; z < data.panelButtons.length; z++) {
-                $dlg.find('.btn-custom-' + z).button(data.panelButtons[z]).click(data.panelButtons[z].click).attr('title', data.panelButtons[z].title || '');
+                $btn = $dlg.find('.btn-custom-' + z);
+                $btn.attr('title', data.panelButtons[z].title || '');
+
+                if (!isMaterial) {
+                    $btn.button(data.panelButtons[z]).on('click', data.panelButtons[z].click);
+                } else {
+                    console.log('TODO!');
+                    $btn.prepend('<i class="material-icons">refresh</i>');
+                }
             }
         }
 
         /*if (data.useHistory) {
             $dlg.find('.filter_button_' + data.instance + '_btn')
                 .button(data.customButtonFilter)
-                .click(data.customButtonFilter.callback);
+                .on('click', data.customButtonFilter.callback);
         }*/
 
         showActive($dlg);
@@ -2756,7 +2880,7 @@ function filterChanged(e) {
                 try{
                     f = JSON.parse(f);
                     removeImageFromSettings(f);
-                    //setTimeout(function() {
+                    //setTimeout(function () {
                     for (var field in f) {
                         if (!f.hasOwnProperty(field) || field === 'length') continue;
                         if (data.filterPresets[field]) continue;
