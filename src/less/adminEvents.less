@@ -10,6 +10,35 @@
     table#events {
         font-size: 12px;
     }
+    #event-table>tr {
+        height: 24px;
+        &:nth-child(even){
+            /*background: #efefef;*/
+            background-color: @even-bg-color;
+        }
+        &>td {
+            box-sizing: border-box;
+            text-align: left !important;
+            padding-left: @line-indent !important;
+            border: @td-border;
+            &:first-child {
+                color: #0000a0;
+            }
+        }
+        &.log-severity-debug {
+            color: #808080;
+        }
+        &.log-severity-info {
+            color: black;
+            /*background-color: #0ca3d2;*/
+        }
+        &.log-severity-warn {
+            color: #ce9900;
+        }
+        &.log-severity-error {
+            color: red;
+        }
+    }
     /** events tab ******************/
     /**/
 
@@ -63,7 +92,7 @@
         border: @td-border;
     }
     #grid-events-inner {
-        height: calc(~'100% - 60px');
+        height: calc(~"100% - 35px");
         width: 100%;
         overflow-y: scroll;
     }
