@@ -7,11 +7,15 @@ function IobListHeader(header, options) {
     if (options === undefined) options = {};
     if (options.colWidthOffset === undefined) options.colWidthOffset = 0;
 
-    var $headerThs, $listTds, $header;
+    var $headerThs;
+    var $listTds;
+    var $header;
     $header = typeof header === 'object' ? $(header) : $('#' + header);
     if ($header[0].tagName === 'TABLE') $header = $header.find('tr:first');
-
-    var self = this;
+    header = $header[0];
+    
+    var that = this;
+    that.selectIdOffset = [];
 
     $header.html('');
 
@@ -40,34 +44,34 @@ function IobListHeader(header, options) {
     this.syncHeader = function () {
         if (typeof $listTds !== 'object') return;
         var $dlg = $headerThs[0];
-        this.syncHeader = function () {
-            $dlg.selectIdOffset = $dlg.selectIdOffset || [];
+        var syncHeader = function () {
             $listTds.each(function (i, o) {
                 if (i >= $listTds.length - 1) return;
                 var x = $(o).width();
-                var offset = $dlg.selectIdOffset[i] || 0;
+                var offset = that.selectIdOffset[i] || 0;
                 if (x + offset) {
                     $($headerThs[i]).width(Math.round(x + offset));
                 }
             });
-            if ($listTds.length && !$dlg.selectIdOffset.length) {
+            if ($listTds.length && !that.selectIdOffset.length) {
+                that.selectIdOffset[0] = 0;
                 $listTds.each(function (i, o) {
                     //if (i >= $listTds.length - 1) return;
                     var x = $($listTds[i]).offset().left;
                     if (x) {
-                        $dlg.selectIdOffset[i] = x - $($headerThs[i]).offset().left;
+                        that.selectIdOffset[i] = x - $($headerThs[i]).offset().left;
                     }
                 });
-                this.syncHeader();
+                syncHeader();
             }
         };
-        this.syncHeader();
+        syncHeader();
     };
 
     var resizeTimer;
     $(window).on('resize', function (x, y) {
         if (resizeTimer) clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(self.syncHeader.bind(self), 100);
+        resizeTimer = setTimeout(that.syncHeader.bind(that), 100);
     });
 
     function buildId(id, fis) {
@@ -94,8 +98,8 @@ function IobListHeader(header, options) {
         //tr.find('button').attr('style', 'background: transparent !important;');
     }*/
 
-    self.ids = [];
-    self.add = function (what, title, _id, selectOptions) {
+    that.ids = [];
+    that.add = function (what, title, _id, selectOptions) {
         if (_id === undefined) _id = title;
         var id = buildId(_id);
         title = _(title);
@@ -147,12 +151,12 @@ function IobListHeader(header, options) {
 
         var fisId   = '#' + id;
         var $id     = $(fisId);
-        var elem    = self[_id] = {
+        var elem    = that[_id] = {
             $filter:     $id,
             val:         $id.val.bind($id),
             selectedVal: $id.val() || ''
         };
-        self.ids.push(_id);
+        that.ids.push(_id);
 
         if (what === 'combobox') {
             elem.options = [];
@@ -208,7 +212,7 @@ function IobListHeader(header, options) {
         $id.on('change', function (event) {
             if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
             elem.selectedVal = $id.val();
-            eventFilterTimeout = setTimeout(self.doFilter, what !== 'combobox' ? 400 : 0);
+            eventFilterTimeout = setTimeout(that.doFilter, what !== 'combobox' ? 400 : 0);
             //_filterChanged($id);
             if (elem.selectedVal) {
                 $id.parent().addClass('filter-active');
@@ -217,7 +221,7 @@ function IobListHeader(header, options) {
             }
         }).on('keyup', function (event) {
             if (event.which === 13) {
-                self.doFilter();
+                that.doFilter();
             } else {
                 $id.trigger('change');
             }

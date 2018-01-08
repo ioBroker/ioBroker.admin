@@ -375,7 +375,7 @@
 			
 				//attributes:
                 
-                resizeMode: 'fit',                    //mode can be 'fit', 'flex' or 'overflow'
+                resizeMode: 'fit',              //mode can be 'fit', 'flex' or 'overflow'
                 draggingClass: 'JCLRgripDrag',	//css-class used when a grip is being dragged (for visual feedback purposes)
 				gripInnerHtml: '',				//if it is required to use a custom grip it can be done using some custom HTML				
 				liveDrag: false,				//enables table-layout updating while dragging	
@@ -394,7 +394,7 @@
 				//events:
 				onDrag: null, 					//callback function to be fired during the column resizing process if liveDrag is enabled
 				onResize: null					//callback function fired when the dragging process is over
-            }			
+            };
 			var options =  $.extend(defaults, options);		
             
             //since now there are 3 different ways of resizing columns, I changed the external interface to make it clear
