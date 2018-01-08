@@ -1,8 +1,11 @@
-@import "../lib/css/iob/selectID";
 @import "commons";
+// @import "../lib/css/iob/selectID";
+
 #tab-events {
     #event-clear {
-        .iob-font;
+        //.iob-font
+        font-family: @iob-font;
+        font-weight: normal;
     }
     table#events {
         font-size: 12px;
@@ -14,7 +17,10 @@
         border-collapse: collapse;
     }
     #event-outer>thead>tr, #event-outer>thead>tr>th  {
-        .th-0;
+        //.th-0;
+        height: 0 !important;
+        padding: 0;
+        border: 0;
     }
 
     #events_threshold {

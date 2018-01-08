@@ -73,8 +73,19 @@
     }
 
     .instance-table {
-        .new-iob-list-table;
-        font-size:      0.9em;
+        // .new-iob-list-table;
+        font-weight:        normal;
+        font-family:        @iob-font;
+
+        background:         @iob-background !important;
+        white-space:        nowrap;
+        table-layout:       fixed;
+        border-collapse:    collapse;
+        border-spacing:     0;
+        padding:            0;
+        margin:             0;
+        overflow:           auto;
+        font-size:          0.82rem;
 
         &>tbody>tr {
             height:     35px;
@@ -148,11 +159,18 @@
 
     thead#grid-instances-head {
         line-height: 1.6em;
-        &:extend(.iob-font);
+        //.iob-font
+        font-family: @iob-font;
+        font-weight: normal;
     }
 
     thead#grid-instances-head {
-        .grid-objects-head;
+        //.grid-objects-head;
+        line-height:        1.6em !important;
+        background-color:   #e0e0e0;
+        text-align:         left;
+        color:              #000;
+        font-size:          @list-font-size !important;
     }
 
     .small-button-empty {

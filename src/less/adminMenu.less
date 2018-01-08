@@ -1,0 +1,230 @@
+@import "commons";
+
+// The navigation menu links
+.admin-sidemenu {
+    height:         100%;
+    width:          0;
+    position:       fixed;
+    z-index:        1;
+    top:            0;
+    left:           0;
+    //background-color: @admin-sidemenu-background; // Black
+    transition:     @admin-sidemenu-transition; // 0.5 second transition effect to slide in the sidenav */
+    font-family:    @admin-sidemenu-font;
+
+    .admin-sidemenu-logo {
+        transition: opacity @admin-sidemenu-transition; // 0.5 second transition effect to slide in the sidenav */
+        opacity:    1;
+        position:   fixed;
+        top:        3px;
+        left:       3px;
+        img {
+            width: 106px
+        }
+    }
+
+    li > a {
+        padding: 0 16px !important;
+    }
+    a {
+        padding:    .75rem;
+        text-decoration: none;
+        font-size:  1rem;
+        color:      @admin-sidemenu-color;
+        display:    block;
+        transition: @admin-sidemenu-transition;
+        z-index:    1;
+    }
+    a:hover {
+        background: @main-background-color;
+        color: @admin-sidemenu-user-view-background;
+    }
+    li {
+        &.admin-sidemenu-active {
+            background: @admin-buttons-color;
+            color:  @admin-buttons-background !important;
+        }
+        &.admin-sidemenu-active:hover {
+            background: @admin-buttons-color;
+            color: @admin-buttons-background;
+        }
+        &:hover {
+            background: @main-background-color;
+            color: @admin-sidemenu-user-view-background;
+        }
+    }
+
+    .admin-sidemenu-menu {
+        width:  100%;
+        height: calc(~"100% - 176px"); // 176 is height of user-view
+        margin: 0;
+        overflow-y: auto;
+    }
+    a i {
+        margin: 0 0.5rem 0 0 !important;
+    }
+    a .icon-empty {
+        width: 24px;
+        display: inline-block;
+        margin-left: 8px;
+    }
+    // Position and style the close button (top right corner)
+    .admin-sidemenu-close {
+        position:       fixed;
+        left:           calc(@admin-sidemenu-width ~"- 35px");
+        top:            0;
+        line-height:    .8rem;
+
+        span {
+            &:after {
+                content: "×";
+            }
+        }
+    }
+
+    .choose-tabs-config-button {
+        position:       absolute;
+        top:            0;
+        left:           0;
+        border:         0;
+        width:          36px;
+        color:          @admin-sidemenu-color;
+        font-size:      1.2rem;
+        line-height:    38px;
+        padding:        0;
+    }
+
+    .choose-tabs-config-button:hover {
+        //background: @admin-sidemenu-background-hover;
+    }
+    // badge with updates
+    #updates-for-adapters, #updates-for-hosts {
+        min-width:  1rem !important;
+    }
+}
+
+.btn {
+    margin-left: 0.5rem;
+}
+
+#admin_sidemenu_main {
+    transition: margin-left @admin-sidemenu-transition;
+    padding:    0;
+    overflow:   hidden;
+    margin-left: @admin-sidemenu-width;
+    background: @admin-sidemenu-main-background;
+
+    .main-toolbar-table {
+        //padding-left: 10px;                // left aligned with the underlying list headers
+    }
+
+    .admin-sidemenu-header {
+        height:         @admin-sidemenu-main-header-height;
+        //overflow:       hidden;
+        background:     @admin-sidemenu-main-header-background;
+        width:          100%;
+        margin-left:    0;
+        transition:     margin-left @admin-sidemenu-transition;
+    }
+    .admin-sidemenu-body {
+
+        width:      calc(~"100% - " 2 * @main-frame-distance);
+        //height:     calc(~"100% - " @admin-sidemenu-main-header-height ~" - " @admin-sidemenu-main-footer-height);
+        height:     calc(~"100% - " @admin-sidemenu-main-header-height + @admin-sidemenu-main-footer-height + 2*@main-frame-distance + 2);
+        overflow:   hidden;
+        padding:    @main-frame-distance;
+    }
+    .admin-sidemenu-footer {
+        height:     @admin-sidemenu-main-footer-height;
+        width:      100%;
+        overflow:   hidden;
+        background: @admin-sidemenu-main-footer-background;
+    }
+    .admin-sidemenu-body .admin-tab {
+        height:     100%;
+        width:      100%;
+    }
+    .admin-sidemenu-body .admin-tab .grid-main-div {
+        height: calc(~"100% - 35px");
+    }
+
+    // scrollbar
+    *::-webkit-scrollbar-track {
+        background-color: @admin-sidemenu-background;
+    }
+    *::-webkit-scrollbar {
+        width: 6px;
+        background-color: @admin-sidemenu-background;
+    }
+    *::-webkit-scrollbar-thumb {
+        background-color: @admin-sidemenu-scrollbar-thumb-color;
+    }
+}
+
+#admin_sidemenu_menu {
+    transition: width @admin-sidemenu-transition;
+    width:      @admin-sidemenu-width;
+    overflow-y: auto;
+
+    .admin-sidemenu-items {
+        cursor: pointer;
+        padding-bottom:  0.5rem;;
+        padding-top:  0.5rem;;
+        a {
+            color: @admin-sidemenu-main-items-color;
+        }
+    }
+
+    // scrollbar
+    *::-webkit-scrollbar-track {
+        background-color: @admin-sidemenu-background;
+    }
+    *::-webkit-scrollbar {
+        width: 6px;
+        background-color: @admin-sidemenu-background;
+    }
+    *::-webkit-scrollbar-thumb {
+        background-color: @admin-sidemenu-scrollbar-thumb-color;
+    }
+}
+
+.admin-sidemenu-closed {
+    &#admin_sidemenu_menu {
+        width: 0;
+    }
+    &#admin_sidemenu_main {
+        margin-left: 0;
+    }
+    .admin-sidemenu-logo {
+        transition: opacity @admin-sidemenu-transition; // 0.5 second transition effect to slide in the sidenav */
+        opacity: 0;
+    }
+    .side-nav {
+        transform: translateX(-180px);
+    }
+    .admin-sidemenu-header {
+        width: 100%;
+        //padding-left: 30px;
+    }
+    .admin-sidemenu-close {
+        left:           0;
+        width:          10px;
+        margin-left:    -5px;
+        &:hover {
+            background: @admin-sidemenu-user-view-background;
+            color: @admin-sidemenu-color;
+        }
+    }
+    .admin-sidemenu-header {
+        width: calc(~"100% - 29px");
+        margin-left: 29px;
+    }
+    .admin-sidemenu-items {
+        display: none;
+    }
+    .admin-sidemenu-close {
+        span:after {
+            content: "☰";
+        }
+    }
+}

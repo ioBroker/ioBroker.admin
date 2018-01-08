@@ -421,6 +421,7 @@ function Objects(main) {
                         icons: {
                             primary: 'ui-icon-pencil'
                         },
+                        'material-icon': 'edit',
                         click: function (id) {
                             that.main.navigate({
                                 dialog: 'editobject',
@@ -440,6 +441,7 @@ function Objects(main) {
                         icons: {
                             primary:'ui-icon-trash'
                         },
+                        'material-icon': 'delete',
                         click: function (id) {
                             // Delete all children
                             if (id) {
@@ -461,6 +463,7 @@ function Objects(main) {
                         icons: {
                             primary: 'ui-icon-gear'
                         },
+                        'material-icon': 'build',
                         click: function (id) {
                             that.main.dialogs.customs.ids = null;
                             that.main.navigate({dialog: 'customs', params: id});
@@ -506,6 +509,7 @@ function Objects(main) {
                         icons: {
                             primary: 'ui-icon-plus'
                         },
+                        'material-icon': 'add',
                         title: _('Add new child object to selected parent'),
                         click: function () {
                             var id = selectId('getActual') || '';
@@ -529,6 +533,7 @@ function Objects(main) {
                     {
                         text: false,
                         id:   'add_object_tree',
+                        'material-icon': 'file_upload',
                         icons: {
                             primary: 'ui-icon-arrowthickstop-1-n'
                         },
@@ -551,6 +556,7 @@ function Objects(main) {
                         icons: {
                             primary: 'ui-icon-arrowthickstop-1-s'
                         },
+                        'material-icon': 'file_download',
                         title: _('Save Objecttree as JSON File'),
                         click: function () {
                             var id = selectId('getActual') || '';
@@ -632,6 +638,7 @@ function Objects(main) {
             if (this.main.dialogs.customs.customEnabled) {
                 settings.customButtonFilter = {
                     icons:    {primary: 'ui-icon-gear'},
+                    'material-icon': 'build',
                     text:     false,
                     callback: function () {
                         var _ids = selectId('getFilteredIds');

@@ -1,4 +1,4 @@
-@import "../lib/css/iob/selectID";
+// @import "../lib/css/iob/selectID";
 @import "commons";
 /** hosts tab **********************/
 /**/
@@ -45,7 +45,21 @@
         }
     }
     .hosts-table {
-        .new-iob-list-table;
+        //.new-iob-list-table;
+        // font-size: @list-font-size !important;
+        font-weight: normal;
+        font-family: @iob-font;
+
+        background:         @iob-background !important;
+        white-space:        nowrap;
+        table-layout:       fixed;
+        border-collapse:    collapse;
+        border-spacing:     0;
+        padding:            0;
+        margin:             0;
+        overflow:           auto;
+
+
         font-size: 0.9em;
 
         .hosts-led {

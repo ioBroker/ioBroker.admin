@@ -69,12 +69,31 @@
   }*/
 
   #log-outer {
-    .iob-min-table;
+    //.iob-min-table;
+    background:         @iob-background;
+    white-space:        nowrap;
+    table-layout:       fixed;
+    border-collapse:    collapse;
+    border-spacing:     0;
+    padding:            0;
+    margin:             0;
+    overflow:           auto;
+
+    //.iob-font
+    font-family: @iob-font;
+    font-weight: normal;
+    //.iob-list-font
+    font-size: @list-font-size !important;
+
+
     text-align: left;
     margin-top: @header-table-distance - 3px !important;
     margin-left: 1px;
     &>thead>tr>th {
-      .th-0;
+      //.th-0;
+      height: 0 !important;
+      padding: 0;
+      border: 0;
     }
   }
   #log-table>tr {

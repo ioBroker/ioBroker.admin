@@ -564,7 +564,6 @@ gulp.task('appJS', function () {
         .pipe(gulp.dest('./www/js'));
 });
 
-
 gulp.task('appHTML', function () {
     return gulp.src([
         './src/indexStart.html',

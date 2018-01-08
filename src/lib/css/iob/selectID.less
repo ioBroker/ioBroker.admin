@@ -86,18 +86,29 @@
     }
 
     .objects-list-table {
-        &:extend(.new-iob-list-table);
-        width: calc(~'100% - 10px');
-        margin-left:1px; /* for mouse over rahmen */
-        margin-right:5px;
+        //.new-iob-list-table;
+        //.iob-min-table;
+        background:         @iob-background;
+        white-space:        nowrap;
+        table-layout:       fixed;
+        border-collapse:    collapse;
+        border-spacing:     0;
+        padding:            0;
+        overflow:           auto;
 
-        outline: 5px;
-        outline-offset: -1px;
-        border-collapse: collapse;
-        padding:0;
-        table-layout:fixed;
-        overflow:auto;
-        white-space:nowrap;
+        //.iob-font
+        font-family:        @iob-font;
+        font-weight:        normal;
+        //.iob-list-font
+        font-size:          @list-font-size !important;
+
+        border-top:         0; // objects
+
+        width:              calc(~'100% - 10px');
+        margin:             0 5px 0 1px; /* for mouse over rahmen */
+
+        outline:            5px;
+        outline-offset:     -1px;
     }
 
     .objects-list-table>tbody>tr>td {
@@ -231,11 +242,65 @@
     .select-button-edit,
     .select-button-ok,
     .select-button-cancel {
-        width: 26px;
+        width:  26px;
         height: 20px;
     }
 
+    .m.main-toolbar-table {
+        .panel-button {
+            line-height:    28px;
+            height:         28px;
+            width:          28px;
+            display:        inline-block;
+            color:          #fff;
+            position:       relative;
+            overflow:       hidden;
+            z-index:        1;
+            padding:        0;
+            background-color: #2196f3;
+            border-radius: 50%;
+            transition:     background-color .3s;
+            cursor:         pointer;
+            vertical-align: middle;
+            &:hover {
+                border: 0;
+            }
+            i {
+                margin-left: -.5px;
+                font-size: 1.1rem;
+                line-height: 28px;
+                margin-top: -1px;
+            }
+        }
+    }
+    .material {
+        .filter-btn {
+            i {
+                font-size: 12px;
+            }
+        }
+        .td-button-placeholder {
+            width: 21px;
+        }
+        .custom-obj-btn {
+            cursor:         pointer;
+            color:          #4c4c4c;
+            background:     white;
+            border:         0;
+            padding-left:   4px;
+            margin-right:   1px;
+            &:hover {
+                background: @admin-buttons-color;
+            }
+
+            i {
+                font-size: 12px;
+            }
+        }
+    }
+
 }
+
 #select-id-dialog {
     &>span {
         float:left;

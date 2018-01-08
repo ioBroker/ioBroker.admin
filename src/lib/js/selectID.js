@@ -176,7 +176,7 @@ function filterChanged(e) {
 
     if ($.fn.selectId) return;
 
-    var isMaterial = typeof M !== 'undefined'; // is material UI
+    var isMaterial;
 
     function getName(obj, id) {
         if (obj && obj.common) {
@@ -1417,13 +1417,15 @@ function filterChanged(e) {
         }
 
         if (data.useHistory) {
-            tds += '<td style="padding-left: 10px"><button class="panel-button btn-history"></button></td>';
+            tds += '<td style="width: 100%; text-align: right"><button class="panel-button btn-history"></button></td>';
+        } else {
+            tds += '<td style="width: 100%;"></td>';
         }
 
         var text = 
-            '<div class="dialog-select-container" style="width: 100%; height: 100%">' +
-            '<table class="main-toolbar-table">' +
-            '    <tr>' + tds + '<td style="width: 100%;"></td>' +
+            '<div class="dialog-select-container ' + (isMaterial ? 'material' : '') + '" style="width: 100%; height: 100%">' +
+            '<table class="main-toolbar-table ' + (isMaterial ? 'm' : '') + '">' +
+            '    <tr>' + tds +
             '    </tr>' +
             '</table>' +
             '<table class="main-header-table">'
@@ -2101,13 +2103,13 @@ function filterChanged(e) {
                                             .data('callback', data.buttons[p].click)
                                             .attr('title', data.buttons[p].title || '');
 
-                                        if (data.buttons[p].width)  $btn.css({width: data.buttons[p].width});
-                                        if (data.buttons[p].height) $btn.css({height: data.buttons[p].height});
                                         if (data.buttons[p].match)  data.buttons[p].match.call($btn, node.key);
                                         if (!isMaterial) {
+                                            // if (data.buttons[p].width)  $btn.css({width: data.buttons[p].width});
+                                            // if (data.buttons[p].height) $btn.css({height: data.buttons[p].height});
                                             $btn.button(data.buttons[p]);
                                         } else {
-                                            console.warn('TODO!');
+                                            $btn.addClass('custom-obj-btn').prepend('<i class="material-icons">' + data.buttons[p]['material-icon'] + '</i>');
                                         }
                                     }
                                 } else {
@@ -2594,7 +2596,7 @@ function filterChanged(e) {
         }
 
         $btn = $dlg.find('.btn-expand');
-        $dlg.on('click', function () {
+        $btn.on('click', function () {
             $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
@@ -2815,11 +2817,11 @@ function filterChanged(e) {
                 $btn = $dlg.find('.btn-custom-' + z);
                 $btn.attr('title', data.panelButtons[z].title || '');
 
+                $btn.on('click', data.panelButtons[z].click);
                 if (!isMaterial) {
-                    $btn.button(data.panelButtons[z]).on('click', data.panelButtons[z].click);
+                    $btn.button(data.panelButtons[z]);
                 } else {
-                    console.log('TODO!');
-                    $btn.prepend('<i class="material-icons">refresh</i>');
+                    $btn.addClass('custom-toolbar-btn').prepend('<i class="material-icons">' + data.panelButtons[z]['material-icon'] + '</i>');
                 }
             }
         }
@@ -2947,6 +2949,7 @@ function filterChanged(e) {
 
     var methods = {
         init: function (options) {
+            isMaterial = typeof M !== 'undefined'; // is material UI
             // done, just to show possible settings, this is not required
             var settings = $.extend({
                 currentId:  '',
