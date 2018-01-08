@@ -166,7 +166,7 @@ function filterChanged(e) {
     var val = $e.val();
     var tr  = $e.parent().parent();
     tr.find('td').last().css({'display': val ? 'unset' : 'none'});   //
-    tr [val ? 'addClass' : 'removeClass']('filter-active');         // set background of <tr>
+    tr[val ? 'addClass' : 'removeClass']('filter-active');         // set background of <tr>
     tr.find('button').attr('style', 'background: transparent !important;');
 }
 

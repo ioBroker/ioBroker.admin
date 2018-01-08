@@ -39,25 +39,27 @@ function IobListHeader(header, options) {
 
     this.syncHeader = function () {
         if (typeof $listTds !== 'object') return;
-        var $dlg = $($headerThs[0]);
+        var $dlg = $headerThs[0];
         this.syncHeader = function () {
-            var offs = $dlg.selectIdOffset || 0;
+            $dlg.selectIdOffset = $dlg.selectIdOffset || [];
             $listTds.each(function (i, o) {
                 if (i >= $listTds.length - 1) return;
                 var x = $(o).width();
-                if (x && !i) {
-                    $($headerThs[i]).width(x + offs);
-                } else {
-                    $($headerThs[i]).width(x + offs);
+                var offset = $dlg.selectIdOffset[i] || 0;
+                if (x + offset) {
+                    $($headerThs[i]).width(Math.round(x + offset));
                 }
             });
-            /*if ($dlg.selectIdOffset === undefined) {
-                var x = $($listTds[1]).offset().left;
-                if (x) {
-                    $dlg.selectIdOffset = x - $($headerThs[1]).offset().left;
-                    this.syncHeader();
-                }
-            }*/
+            if ($listTds.length && !$dlg.selectIdOffset.length) {
+                $listTds.each(function (i, o) {
+                    //if (i >= $listTds.length - 1) return;
+                    var x = $($listTds[i]).offset().left;
+                    if (x) {
+                        $dlg.selectIdOffset[i] = x - $($headerThs[i]).offset().left;
+                    }
+                });
+                this.syncHeader();
+            }
         };
         this.syncHeader();
     };
@@ -83,6 +85,15 @@ function IobListHeader(header, options) {
         return '<option value="" ' + ((selectedVal === "") ? 'selected' : '') + '>' + name + '</option>';
     }
 
+    /*function _filterChanged(e) {
+        var $e  = $(e);
+        var val = $e.val();
+        var tr  = $e.parent();
+        //tr.find('td').last().css({'display': val ? 'unset' : 'none'});   //
+        tr[val ? 'addClass' : 'removeClass']('filter-active');         // set background of <tr>
+        //tr.find('button').attr('style', 'background: transparent !important;');
+    }*/
+
     self.ids = [];
     self.add = function (what, title, _id, selectOptions) {
         if (_id === undefined) _id = title;
@@ -94,27 +105,28 @@ function IobListHeader(header, options) {
             case 'combobox':
                 txt =
                     //'<td style="width: 100%">' +
-                    '<td>' +
-                    '    <select id="' + id + '" title="' + title + '"></select>' +
-                    '</td>' +
-                    '<td>' +
-                    '    <button id="' + id + '-clear" role="button" title=""></button>' +
-                    '</td>';
+                    //'<td>' +
+                    '    <select class="list-header-input" id="' + id + '" title="' + title + '"></select>' +
+                    //'</td>' +
+                    //'<td>' +
+                    '    <button class="list-header-clear" id="' + id + '-clear" role="button" title=""></button>';
+                    //'</td>';
                 break;
             case 'edit':
                 txt =
                     //'<td style="width: 100%">' +
-                    '<td>' +
-                    '    <input placeholder="' + title + '" id="' + id + '" title="' + title + '">' +
-                    '</td>' +
-                    '<td>' +
-                    '    <button id="' + id + '-clear" role="button" title="' + title + '"></button>' +
-                    '</td>';
+                    //'<td>' +
+                    '    <input  class="list-header-input" placeholder="' + title + '" id="' + id + '" title="' + title + '">' +
+                    //'</td>' +
+                    //'<td>' +
+                    '    <button class="list-header-clear" id="' + id + '-clear" role="button" title="' + title + '"></button>';
+                    //'</td>';
                 break;
             case 'text':
                 txt =
-                    '<td style="width: 100%"><span>' + title +
-                    '</span></td>';
+                    //'<td style="width: 100%">' +
+                    '<span class="list-header-text">' + title + '</span>';
+                    //'</td>';
                 break;
         }
 
@@ -122,22 +134,22 @@ function IobListHeader(header, options) {
             //'<td class="event-column-' + ++cnt + '">' +
             '<th>' +
             //'<table class="main-header-input-table" style="width: 100%;">' +
-            '<table class="main-header-input-table">' +
-            '    <tbody>' +
+            //'<table class="main-header-input-table">' +
+            //'    <tbody>' +
             //'    <tr style="background: #ffffff; ">' +
-            '    <tr>' +
+            //'    <tr>' +
                     txt +
-            '    </tr>' +
-            '    </tbody>' +
-            '</table>' +
+            //'    </tr>' +
+            //'    </tbody>' +
+            //'</table>' +
             '</th>'
         );
 
-        var fisId = '#' + id;
-        var $id = $(fisId);
-        var elem = self[_id] = {
-            $filter: $id,
-            val: $id.val.bind($id),
+        var fisId   = '#' + id;
+        var $id     = $(fisId);
+        var elem    = self[_id] = {
+            $filter:     $id,
+            val:         $id.val.bind($id),
             selectedVal: $id.val() || ''
         };
         self.ids.push(_id);
@@ -179,19 +191,30 @@ function IobListHeader(header, options) {
             }
         }
 
-        $(fisId + '-clear').button({icons:{primary: 'ui-icon-close'}, text: false}).on('click', function () {
+        var $btnClear =  $(fisId + '-clear');
+        $btnClear.on('click', function () {
             if ($id.val() !== '') {
                 $id.val('').trigger('change');
             }
         });
+
+        if (typeof M === 'undefined') {
+            $btnClear.button({icons: {primary: 'ui-icon-close'}, text: false})
+        } else {
+            $btnClear.prepend('<i class="material-icons">close</i>');
+        }
 
         var eventFilterTimeout;
         $id.on('change', function (event) {
             if (eventFilterTimeout) clearTimeout(eventFilterTimeout);
             elem.selectedVal = $id.val();
             eventFilterTimeout = setTimeout(self.doFilter, what !== 'combobox' ? 400 : 0);
-            filterChanged($id);
-            //elem.$filter.parent().parent()[elem.selectedVal ? 'addClass' : 'removeClass'] ('filter-active');
+            //_filterChanged($id);
+            if (elem.selectedVal) {
+                $id.parent().addClass('filter-active');
+            } else {
+                $id.parent().removeClass('filter-active');
+            }
         }).on('keyup', function (event) {
             if (event.which === 13) {
                 self.doFilter();

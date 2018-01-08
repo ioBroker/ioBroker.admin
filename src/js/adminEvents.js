@@ -4,20 +4,26 @@ function Events(main) {
     var that =                   this;
     this.main =                  main;
     this.$tab =                  $('#tab-events'); // body
-    this.$table =                $('#event-table'); // body
     var isRemote =               location.hostname === 'iobroker.net' || location.hostname === 'iobroker.pro';
-
     var eventsLinesCount =       0;
     var eventsLinesStart =       0;
     var eventFilterTimeout =     null;
 
-    this.eventLimit =            500;
-    this.eventPauseList =        [];
+    this.limit =                 500; //const
+    /*this.eventPauseList =        [];
     this.eventPauseMode =        false;
     this.eventPauseOverflow =    false;
     this.eventPauseCounterSpan = null;
-    this.eventPauseCounter =     [];
+    this.eventPauseCounter =     [];*/
 
+    var pause = {
+        list:           [],
+        mode:           false,
+        counter:        0,
+        overflow:       false,
+        $counterSpan:   null
+    };
+    
     /*var filter = {
         type: {},
         id:   {},
@@ -27,12 +33,18 @@ function Events(main) {
     };*/
     var $header;
     var hdr;
+    var $table;
+    var $outer;
+    var $pause;
 
     this.prepare = function () {
-        var $eventOuter = this.$tab.find('#event-outer');
+        $outer = this.$tab.find('#event-outer');
+        $table = this.$tab.find('#event-table');
+        $pause = this.$tab.find('#event-pause');
+
         $header = this.$tab.find('#events-table-tr');
 
-        hdr = new IobListHeader($header, {list: $eventOuter, colWidthOffset: 1, prefix: 'event-filter'});
+        hdr = new IobListHeader($header, {list: $outer, colWidthOffset: 1, prefix: 'event-filter'});
         hdr.doFilter = filterEvents;
 
         hdr.add('combobox', 'type');
@@ -57,13 +69,11 @@ function Events(main) {
             enumerateble: false
         });
 
-        var $eventPause = this.$tab.find('#event-pause');
-        $eventPause
-            .on('click', function () {
-                that.pause();
-            });
+        $pause.on('click', function () {
+            that.pause();
+        });
 
-        this.eventPauseCounterSpan = $eventPause.find('.ui-button-text');
+        //this.eventPauseCounterSpan = $pause.find('.ui-button-text');
 
         // bind "clear events" button
         var $eventClear = this.$tab.find('#event-clear');
@@ -73,11 +83,6 @@ function Events(main) {
                 eventsLinesStart = 0;
                 $('#event-table').html('');
             });
-            //.prepend(_('Clear list'));
-//            .attr('style', 'width: 100% !important; padding-left: 20px !important; font-size: 12px; vertical-align: middle; padding-top: 3px !important; padding-right: 5px !important; color:#000')
-//            .find('span').css({left: '10px'})
-
-        this.eventPauseCounterSpan.css({'padding-top': 1, 'padding-bottom': 0});
     };
 
     this.init    = function () {
@@ -85,10 +90,13 @@ function Events(main) {
             $('#grid-events').html(_('You can\'t see events via cloud'));
             return;
         }
-        hdr && hdr.syncHeader();
+        if (!hdr) return;
+
         if (this.inited) {
             return;
         }
+        
+        installColResize();
 
         this.inited = true;
         this.main.subscribeObjects('*');
@@ -104,6 +112,34 @@ function Events(main) {
     };
 
     var widthSet = false;
+
+    function installColResize() {
+        if (!$.fn.colResizable) return;
+        if ($outer.is(':visible')) {
+            $outer.colResizable({
+                liveDrag: true,
+
+                partialRefresh: true,
+                marginLeft: 5,
+                postbackSafe:true,
+
+                onResize: function (event) {
+                    return hdr.syncHeader();
+                    // // read width of data.$tree and set the same width for header
+                    // var thDest = $('#log-outer-header >thead>tr>th');	//if table headers are specified in its semantically correct tag, are obtained
+                    // var thSrc = $outer.find('>tbody>tr:first>td');
+                    // for (var i = 1; i < thSrc.length; i++) {
+                    //     $(thDest[i]).attr('width', $(thSrc[i]).width());
+                    // }
+                }
+            });
+            hdr.syncHeader();
+        } else {
+            setTimeout(function () {
+                installColResize();
+            }, 200)
+        }
+    }
 
     // ----------------------------- Show events ------------------------------------------------
     this.addEventMessage = function (id, stateOrObj, isMessage, isState) {
@@ -121,8 +157,8 @@ function Events(main) {
             hdr.type.checkAddOption(type);
         }
 
-        if (!this.eventPauseMode) {
-            if (eventsLinesCount >= that.eventLimit) {
+        if (!pause.mode) {
+            if (eventsLinesCount >= that.limit) {
                 eventsLinesStart++;
                 var e = document.getElementById('event_' + eventsLinesStart);
                 if (e) e.outerHTML = '';
@@ -204,21 +240,21 @@ function Events(main) {
         text += '<td>' + (lc   || '') + '</td>';
         text += '</tr>';
 
-        if (this.eventPauseMode) {
-            this.eventPauseList.push(text);
-            this.eventPauseCounter++;
+        if (pause.mode) {
+            pause.list.push(text);
+            pause.counter++;
 
-            if (this.eventPauseCounter > this.eventLimit) {
-                if (!this.eventPauseOverflow) {
-                    $('#event-pause').addClass('ui-state-error')
+            if (pause.counter > this.limit) {
+                if (!pause.overflow) {
+                    $pause.addClass('red lighten3')
                         .attr('title', _('Message buffer overflow. Losing oldest'));
-                    this.eventPauseOverflow = true;
+                    pause.overflow = true;
                 }
-                this.eventPauseList.shift();
+                pause.list.shift();
             }
-            this.eventPauseCounterSpan.html(this.eventPauseCounter);
+            pause.$counterSpan.html(pause.counter);
         } else {
-            this.$table.prepend(text);
+            $table.prepend(text);
             if (!widthSet && window.location.hash === '#events') {
                 hdr && hdr.syncHeader();
                 widthSet = true;
@@ -226,9 +262,9 @@ function Events(main) {
         }
     };
 
-    this.onSelected = function () {
+    /*this.onSelected = function () {
         hdr && hdr.syncHeader();
-    };
+    };*/
 
     function filterEvents() {
         if (eventFilterTimeout) {
@@ -267,18 +303,16 @@ function Events(main) {
     }
 
     this.pause = function () {
-        var $eventPause = $('#event-pause');
-        if (!this.eventPauseMode) {
-            $eventPause
-                .addClass('yellow btn-pause-button-active');
+        if (!pause.mode) {
+            $pause.addClass('yellow btn-pause-button-active');
 
-            this.eventPauseCounterSpan = $eventPause;
-            this.eventPauseCounterSpan.html('0');
-            this.eventPauseCounter     = 0;
-            this.eventPauseMode        = true;
+            pause.$counterSpan = $pause;
+            pause.$counterSpan.html('0');
+            pause.counter     = 0;
+            pause.mode        = true;
         } else {
-            this.eventPauseMode     = false;
-            for (var i = 0; i < this.eventPauseList.length; i++) {
+            pause.mode        = false;
+            for (var i = 0; i < pause.list.length; i++) {
                 if (eventsLinesCount >= 500) {
                     eventsLinesStart++;
                     var e = document.getElementById('event_' + eventsLinesStart);
@@ -286,13 +320,13 @@ function Events(main) {
                 } else {
                     eventsLinesCount++;
                 }
-                this.$table.prepend(this.eventPauseList[i]);
+                $table.prepend(pause.list[i]);
             }
-            this.eventPauseOverflow = false;
-            this.eventPauseList     = [];
-            this.eventPauseCounter  = 0;
+            pause.overflow = false;
+            pause.list     = [];
+            pause.counter  = 0;
 
-            $eventPause
+            $pause
                 .removeClass('yellow btn-pause-button-active')
                 .html('<i class="material-icons">pause</i>');
         }

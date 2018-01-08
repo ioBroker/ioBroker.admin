@@ -2,33 +2,35 @@ function Logs(main) {                                                           
 
     var that           = this;
     this.main          = main;
-    this.logLimit      = 2000; //const
-    this.$table        = $('#tab-logs');
+    this.limit         = 2000; //const
+    this.$tab          = $('#tab-logs');
     this.logLinesCount = 0;
     this.logLinesStart = 0;
 
-    var $logTable;
-    var $logOuter;
-    var $logPause;
+    var $table;
+    var $outer;
+    var $pause;
+    
     var logFilterHost     = '';
     var logFilterSeverity = '';
     var logFilterMessage  = '';
+    
     var pause = {
-        list: [],
-        mode: false,
-        counter: 0,
-        overflow: false,
-        $counterSpan: null
+        list:           [],
+        mode:           false,
+        counter:        0,
+        overflow:       false,
+        $counterSpan:   null
     };
 
     var hdr;
 
     this.prepare = function () {
-        $logOuter = this.$table.find('#log-outer');
-        $logTable = this.$table.find('#log-table');
-        $logPause = this.$table.find('#log-pause');
+        $outer = this.$tab.find('#log-outer');
+        $table = this.$tab.find('#log-table');
+        $pause = this.$tab.find('#log-pause');
 
-        hdr = new IobListHeader('log-outer-header', {list: $logOuter, colWidthOffset: 1, prefix: 'log-filter'});
+        hdr = new IobListHeader('log-outer-header', {list: $outer, colWidthOffset: 1, prefix: 'log-filter'});
         hdr.doFilter = that.filter;
 
         hdr.add('combobox', 'from', 'host');
@@ -42,7 +44,7 @@ function Logs(main) {                                                           
         ]).$filter.attr('title', _('severity'));
         hdr.add('edit', 'Message', 'message');
 
-        this.$table.find('#log-clear-on-disk').on('click', function () {
+        this.$tab.find('#log-clear-on-disk').on('click', function () {
             that.main.confirmMessage(_('Log file will be deleted. Are you sure?'), null, null, function (result) {
                 if (result) {
                     that.main.socket.emit('sendToHost', main.currentHost, 'delLogs', null, function (err) {
@@ -56,19 +58,19 @@ function Logs(main) {                                                           
             });
         }).addClass('ui-state-error');
 
-        this.$table.find('#log-refresh').on('click', function () {
+        this.$tab.find('#log-refresh').on('click', function () {
             that.clear();
         });
 
-        $logPause
+        $pause
             .attr('title', _('Pause output'))
             .on('click', function () {
                 that.pause();
             });
 
-        pause.$counterSpan = $logPause.find('ui-button-text');
+        pause.$counterSpan = $pause.find('ui-button-text');
 
-        this.$table.find('#log-clear').on('click', function () {
+        this.$tab.find('#log-clear').on('click', function () {
             that.clear(false);
         });
 
@@ -76,10 +78,10 @@ function Logs(main) {                                                           
             $(this).hide().html('');
         });
 
-        this.$table.find('#log-copy').on('click', function () {
+        this.$tab.find('#log-copy').on('click', function () {
             var text = '<span class="error">' + _('copy note') + '</span>';
-            $('#log-copy-text').show().html(text + '<br><table style="width: 100%; font-size: 12px" id="log-copy-table">' + $logTable.html() + '</table>');
-            var lines = that.$table.find('#log-copy-table').find('.log-column-4');
+            $('#log-copy-text').show().html(text + '<br><table style="width: 100%; font-size: 12px" id="log-copy-table">' + $table.html() + '</table>');
+            var lines = that.$tab.find('#log-copy-table').find('.log-column-4');
             for (var t = 0; t < lines.length; t++) {
                 var q = $(lines[t]);
                 q.html(q.attr('title'));
@@ -90,8 +92,8 @@ function Logs(main) {                                                           
 
     function installColResize() {
         if (!$.fn.colResizable) return;
-        if ($logOuter.is(':visible')) {
-            $logOuter.colResizable({
+        if ($outer.is(':visible')) {
+            $outer.colResizable({
                 liveDrag: true,
 
                 partialRefresh: true,
@@ -100,15 +102,9 @@ function Logs(main) {                                                           
 
                 onResize: function (event) {
                     return hdr.syncHeader();
-                    // // read width of data.$tree and set the same width for header
-                    // var thDest = $('#log-outer-header >thead>tr>th');	//if table headers are specified in its semantically correct tag, are obtained
-                    // var thSrc = $outer.find('>tbody>tr:first>td');
-                    // for (var i = 1; i < thSrc.length; i++) {
-                    //     $(thDest[i]).attr('width', $(thSrc[i]).width());
-                    // }
                 }
             });
-            hdr.syncHeader();
+            hdr && hdr.syncHeader();
         } else {
             setTimeout(function () {
                 installColResize();
@@ -128,7 +124,7 @@ function Logs(main) {                                                           
             return;
         }
 
-        $logTable.html('');
+        $table.html('');
 
         this.main.socket.emit('sendToHost', this.main.currentHost, 'getLogs', 200, function (lines) {
             setTimeout(function () {
@@ -195,8 +191,8 @@ function Logs(main) {                                                           
                             }
                         }
 
-                        that.$table.find('#log-files-btn').show().dropdown();
-                        that.$table.find('#log-files')
+                        that.$tab.find('#log-files-btn').show().dropdown();
+                        that.$tab.find('#log-files')
                             .html(html)
                                 .find('a').on('click', function () {
                                     var val = $(this).data('value');
@@ -207,8 +203,8 @@ function Logs(main) {                                                           
                                     }
                                 });
                     } else {
-                        that.$table.find('#log-files').hide();
-                        that.$table.find('#log-files-btn').hide();
+                        that.$tab.find('#log-files').hide();
+                        that.$tab.find('#log-files-btn').hide();
                     }
                 });
             }, 0);
@@ -223,7 +219,7 @@ function Logs(main) {                                                           
     };
 
     this.add = function (message) {
-        if (!$logTable) return;
+        if (!$table) return;
         // remove instance name from text
         if (message.message.substring(0, message.from.length) === message.from) {
             message.message = message.message.substring(message.from.length + 1);
@@ -233,9 +229,9 @@ function Logs(main) {                                                           
             pause.list.push(message);
             pause.counter++;
 
-            if (pause.counter > this.logLimit) {
+            if (pause.counter > this.limit) {
                 if (!pause.overflow) {
-                    $logPause.addClass('ui-state-error')
+                    $pause.addClass('ui-state-error')
                         .attr('title', _('Message buffer overflow. Losing oldest'));
                     pause.overflow = true;
                 }
@@ -246,7 +242,7 @@ function Logs(main) {                                                           
         }
 
         //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
-        if (this.logLinesCount >= this.logLimit) {
+        if (this.logLinesCount >= this.limit) {
             var line = document.getElementById('log-line-' + (this.logLinesStart + 1));
             if (line) line.outerHTML = '';
             this.logLinesStart++;
@@ -298,7 +294,7 @@ function Logs(main) {                                                           
         text += '<td class="log-column-3">' + message.severity + '</td>';
         text += '<td class="log-column-4" title="' + message.message.replace(/"/g, "'") + '">' + message.message.substring(0, 200) + '</td></tr>';
 
-        $logTable.prepend(text);
+        $table.prepend(text);
     };
 
     this.filter = function () {
@@ -307,42 +303,42 @@ function Logs(main) {                                                           
         logFilterSeverity = hdr.severity.val();
 
         if (logFilterSeverity === 'error') {
-            $logOuter.find('.log-severity-silly').hide();
-            $logOuter.find('.log-severity-debug').hide();
-            $logOuter.find('.log-severity-info').hide();
-            $logOuter.find('.log-severity-warn').hide();
-            $logOuter.find('.log-severity-error').show();
+            $outer.find('.log-severity-silly').hide();
+            $outer.find('.log-severity-debug').hide();
+            $outer.find('.log-severity-info').hide();
+            $outer.find('.log-severity-warn').hide();
+            $outer.find('.log-severity-error').show();
         } else
         if (logFilterSeverity === 'warn') {
-            $logOuter.find('.log-severity-silly').hide();
-            $logOuter.find('.log-severity-debug').hide();
-            $logOuter.find('.log-severity-info').hide();
-            $logOuter.find('.log-severity-warn').show();
-            $logOuter.find('.log-severity-error').show();
+            $outer.find('.log-severity-silly').hide();
+            $outer.find('.log-severity-debug').hide();
+            $outer.find('.log-severity-info').hide();
+            $outer.find('.log-severity-warn').show();
+            $outer.find('.log-severity-error').show();
         } else
         if (that.logFilterSeverity === 'info') {
-            $logOuter.find('.log-severity-silly').hide();
-            $logOuter.find('.log-severity-debug').hide();
-            $logOuter.find('.log-severity-info').show();
-            $logOuter.find('.log-severity-warn').show();
-            $logOuter.find('.log-severity-error').show();
+            $outer.find('.log-severity-silly').hide();
+            $outer.find('.log-severity-debug').hide();
+            $outer.find('.log-severity-info').show();
+            $outer.find('.log-severity-warn').show();
+            $outer.find('.log-severity-error').show();
         } else
         if (logFilterSeverity === 'silly') {
-            $logOuter.find('.log-severity-silly').show();
-            $logOuter.find('.log-severity-debug').show();
-            $logOuter.find('.log-severity-info').show();
-            $logOuter.find('.log-severity-warn').show();
-            $logOuter.find('.log-severity-error').show();
+            $outer.find('.log-severity-silly').show();
+            $outer.find('.log-severity-debug').show();
+            $outer.find('.log-severity-info').show();
+            $outer.find('.log-severity-warn').show();
+            $outer.find('.log-severity-error').show();
         } else {
-            $logOuter.find('.log-severity-silly').hide();
-            $logOuter.find('.log-severity-debug').show();
-            $logOuter.find('.log-severity-info').show();
-            $logOuter.find('.log-severity-warn').show();
-            $logOuter.find('.log-severity-error').show();
+            $outer.find('.log-severity-silly').hide();
+            $outer.find('.log-severity-debug').show();
+            $outer.find('.log-severity-info').show();
+            $outer.find('.log-severity-warn').show();
+            $outer.find('.log-severity-error').show();
         }
 
         if (logFilterHost || logFilterMessage) {
-            $logOuter.find('.log-line').each(function () {
+            $outer.find('.log-line').each(function () {
                 if (logFilterHost && !$(this).hasClass('log-from-' + logFilterHost)) {
                     $(this).hide();
                 } else if (logFilterMessage && $(this).html().indexOf(logFilterMessage) === -1) {
@@ -354,7 +350,7 @@ function Logs(main) {                                                           
 
     this.clear = function (isReload) {
         if (isReload === undefined) isReload = true;
-        $logTable.html('');
+        $table.html('');
         this.logLinesCount = 0;
         this.logLinesStart = 0;
         $('a[href="#tab-logs"]').removeClass('errorLog');
@@ -368,10 +364,10 @@ function Logs(main) {                                                           
 
     this.pause = function () {
         if (!pause.mode) {
-            $logPause
+            $pause
                 .addClass('yellow btn-pause-button-active');
 
-            pause.$counterSpan = $logPause;
+            pause.$counterSpan = $pause;
             pause.$counterSpan.html('0');
             pause.counter  = 0;
             pause.mode     = true;
@@ -381,10 +377,10 @@ function Logs(main) {                                                           
                 this.add(pause.list[i]);
             }
             pause.overflow = false;
-            pause.list.length = 0;
+            pause.list     = [];
             pause.counter  = 0;
 
-            $logPause
+            $pause
                 .removeClass('yellow btn-pause-button-active')
                 .html('<i class="material-icons">pause</i>');
         }

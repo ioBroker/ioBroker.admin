@@ -54,7 +54,13 @@
     }
   }
   #log-outer-header {
-    width: 100%; border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
+    .main-header-input-table {
+      td, th {
+        box-sizing: border-box;
+      }
+    }
   }
   /*.log-column-1-header {
     width: 100px;
@@ -103,6 +109,7 @@
       background-color: @even-bg-color;
     }
     &>td {
+      box-sizing: border-box;
       text-align: left !important;
       padding-left: @line-indent !important;
       border: @td-border;
