@@ -1,20 +1,17 @@
 function Events(main) {
     'use strict';
 
-    var that =                   this;
-    this.main =                  main;
-    this.$tab =                  $('#tab-events'); // body
-    var isRemote =               location.hostname === 'iobroker.net' || location.hostname === 'iobroker.pro';
-    var eventsLinesCount =       0;
-    var eventsLinesStart =       0;
-    var eventFilterTimeout =     null;
+    var that     = this;
+    this.main    = main;
+    this.$tab    = $('#tab-events'); // body
+    var isRemote = location.hostname === 'iobroker.net' || location.hostname === 'iobroker.pro';
 
-    this.limit =                 500; //const
-    /*this.eventPauseList =        [];
-    this.eventPauseMode =        false;
-    this.eventPauseOverflow =    false;
-    this.eventPauseCounterSpan = null;
-    this.eventPauseCounter =     [];*/
+    var list = {
+        count: 0,
+        start: 0,
+        limit: 500 //const
+    };
+    var timeout = null;
 
     var pause = {
         list:           [],
@@ -23,42 +20,40 @@ function Events(main) {
         overflow:       false,
         $counterSpan:   null
     };
-    
-    /*var filter = {
-        type: {},
-        id:   {},
-        val:  {},
-        ack:  {},
-        from: {}
-    };*/
+
     var $header;
     var hdr;
     var $table;
     var $outer;
     var $pause;
 
+    var columnResizeInit =  {
+        done: false,
+        timer: null
+    };
+
     this.prepare = function () {
         $outer = this.$tab.find('#event-outer');
         $table = this.$tab.find('#event-table');
         $pause = this.$tab.find('#event-pause');
 
+        // install header
         $header = this.$tab.find('#events-table-tr');
-
         hdr = new IobListHeader($header, {list: $outer, colWidthOffset: 1, prefix: 'event-filter'});
         hdr.doFilter = filterEvents;
 
         hdr.add('combobox', 'type');
-        hdr.add('edit', 'id', 'ID');
-        //hdr.add('edit', 'val', 'Value');
-        hdr.add('edit', 'val', 'value');
+        hdr.add('edit',     'id', 'ID');
+        //hdr.add('edit',   'val', 'Value');
+        hdr.add('edit',     'val', 'value');
         hdr.add('combobox', 'ack', 'ack', [
             {val: '',       name: 'all'},
             {val: 'true',   name: 'ack'},
             {val: 'false',  name: 'not ack'}
         ]);
         hdr.add('combobox', 'from', 'from');
-        hdr.add('text', 'ts');
-        hdr.add('text', 'lc');
+        hdr.add('text',     'ts');
+        hdr.add('text',     'lc');
 
         Object.defineProperty(hdr, 'getValues', {
             value: function () {
@@ -73,14 +68,12 @@ function Events(main) {
             that.pause();
         });
 
-        //this.eventPauseCounterSpan = $pause.find('.ui-button-text');
-
         // bind "clear events" button
         var $eventClear = this.$tab.find('#event-clear');
         $eventClear
             .off('click').on('click', function () {
-                eventsLinesCount = 0;
-                eventsLinesStart = 0;
+                list.count = 0;
+                list.start = 0;
                 $('#event-table').html('');
             });
     };
@@ -141,8 +134,13 @@ function Events(main) {
         }
     }
 
+    function updateResizersHeight() {
+        columnResizeInit.timer = null;
+        $(window).trigger('resize.JColResizer');
+    }
+
     // ----------------------------- Show events ------------------------------------------------
-    this.addEventMessage = function (id, stateOrObj, isMessage, isState) {
+    this.add = function (id, stateOrObj, isMessage, isState) {
         if (isRemote) return;
 
         var type = isState ? 'stateChange' : (isMessage ? 'message' : 'objChange');
@@ -152,18 +150,31 @@ function Events(main) {
         var ts;
         var lc;
         if (hdr) {
-            if (hdr.getValues) hdr.getValues();
+            if (hdr.getValues) {
+                hdr.getValues();
+            }
 
             hdr.type.checkAddOption(type);
         }
+        if (!columnResizeInit.done) {
+            // if the height not 100%, the column resizer is too short. Wait till the table will be really full and reinit resizer.
+            // update resizer once and remeber it if the table has full height
+            if (!columnResizeInit.timer) {
+                columnResizeInit.timer = setTimeout(updateResizersHeight, 1000);
+            }
+
+            if (list.count > 20) {
+                columnResizeInit.done = true;
+            }
+        }
 
         if (!pause.mode) {
-            if (eventsLinesCount >= that.limit) {
-                eventsLinesStart++;
-                var e = document.getElementById('event_' + eventsLinesStart);
+            if (list.count >= that.limit) {
+                list.start++;
+                var e = document.getElementById('event_' + list.start);
                 if (e) e.outerHTML = '';
             } else {
-                eventsLinesCount++;
+                list.count++;
             }
         }
 
@@ -226,7 +237,7 @@ function Events(main) {
         }
 
 
-        var text = '<tr id="event_' + (eventsLinesStart + eventsLinesCount) + '" class="event-line event-type-' + type + ' event-from-' + from.replace('.', '-') + ' event-ack-' + ack + '" style="' + (visible ? '' : 'display:none') + '">';
+        var text = '<tr id="event_' + (list.start + list.count) + '" class="event-line event-type-' + type + ' event-from-' + from.replace('.', '-') + ' event-ack-' + ack + '" style="' + (visible ? '' : 'display:none') + '">';
         text += '<td>' + type  + '</td>';
         text += '<td class="event-column-id">' + id + '</td>';
         if (isNaN(value)) {
@@ -244,7 +255,7 @@ function Events(main) {
             pause.list.push(text);
             pause.counter++;
 
-            if (pause.counter > this.limit) {
+            if (pause.counter > list.limit) {
                 if (!pause.overflow) {
                     $pause.addClass('red lighten3')
                         .attr('title', _('Message buffer overflow. Losing oldest'));
@@ -267,9 +278,9 @@ function Events(main) {
     };*/
 
     function filterEvents() {
-        if (eventFilterTimeout) {
-            clearTimeout(eventFilterTimeout);
-            eventFilterTimeout = null;
+        if (timeout) {
+            clearTimeout(timeout);
+            timeout = null;
         }
         if (hdr.getValues) {
             hdr.getValues();
@@ -313,12 +324,12 @@ function Events(main) {
         } else {
             pause.mode        = false;
             for (var i = 0; i < pause.list.length; i++) {
-                if (eventsLinesCount >= 500) {
-                    eventsLinesStart++;
-                    var e = document.getElementById('event_' + eventsLinesStart);
+                if (list.count >= 500) {
+                    list.start++;
+                    var e = document.getElementById('event_' + list.start);
                     if (e) e.outerHTML = '';
                 } else {
-                    eventsLinesCount++;
+                    list.count++;
                 }
                 $table.prepend(pause.list[i]);
             }

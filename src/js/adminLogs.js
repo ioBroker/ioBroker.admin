@@ -1,19 +1,24 @@
 function Logs(main) {                                                                       'use strict';
 
-    var that           = this;
-    this.main          = main;
-    this.limit         = 2000; //const
-    this.$tab          = $('#tab-logs');
-    this.logLinesCount = 0;
-    this.logLinesStart = 0;
+    var that   = this;
+    this.main  = main;
+    this.$tab  = $('#tab-logs');
+
+    var list = {
+        count: 0,
+        start: 0,
+        limit: 2000 //const
+    };
 
     var $table;
     var $outer;
     var $pause;
     
-    var logFilterHost     = '';
-    var logFilterSeverity = '';
-    var logFilterMessage  = '';
+    var filters = {
+        host: '',
+        severity: '',
+        message: ''
+    };
     
     var pause = {
         list:           [],
@@ -160,9 +165,9 @@ function Logs(main) {                                                           
 
                 installColResize();
 
-                logFilterHost     = hdr.host.val();
-                logFilterMessage  = hdr.message.val();
-                logFilterSeverity = hdr.severity.val();
+                filters.host     = hdr.host.val();
+                filters.message  = hdr.message.val();
+                filters.severity = hdr.severity.val();
                 if (!that.inited) {
                     that.inited = true;
                     that.main.subscribeLogs(true);
@@ -229,7 +234,7 @@ function Logs(main) {                                                           
             pause.list.push(message);
             pause.counter++;
 
-            if (pause.counter > this.limit) {
+            if (pause.counter > list.limit) {
                 if (!pause.overflow) {
                     $pause.addClass('ui-state-error')
                         .attr('title', _('Message buffer overflow. Losing oldest'));
@@ -242,12 +247,12 @@ function Logs(main) {                                                           
         }
 
         //message = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
-        if (this.logLinesCount >= this.limit) {
-            var line = document.getElementById('log-line-' + (this.logLinesStart + 1));
+        if (list.count >= list.limit) {
+            var line = document.getElementById('log-line-' + (list.start + 1));
             if (line) line.outerHTML = '';
-            this.logLinesStart++;
+            list.start++;
         } else {
-            this.logLinesCount++;
+            list.count++;
         }
 
         // if (message.from && this.logHosts.indexOf(message.from) === -1) {
@@ -255,7 +260,7 @@ function Logs(main) {                                                           
         //     this.logHosts.sort();
         //     this.$logFilterHost.html('<option value="">' + _('all') + '</option>');
         //     for (var i = 0; i < this.logHosts.length; i++) {
-        //         this.$logFilterHost.append('<option value="' + this.logHosts[i].replace(/\./g, '-') + '" ' + ((this.logHosts[i] === this.logFilterHost) ? 'selected' : '') + '>' + this.logHosts[i] + '</option>');
+        //         this.$logFilterHost.append('<option value="' + this.logHosts[i].replace(/\./g, '-') + '" ' + ((this.logHosts[i] === filters.host) ? 'selected' : '') + '>' + this.logHosts[i] + '</option>');
         //     }
         // }
 
@@ -268,27 +273,27 @@ function Logs(main) {                                                           
         var visible = '';
         var from = message.from ? message.from.replace(/\./g, '-') : '';
 
-        if (this.logFilterHost && this.logFilterHost !== from) visible = 'display: none';
+        if (filters.host && filters.host !== from) visible = 'display: none';
 
-        if (!visible && logFilterSeverity) {
-            if (this.logFilterSeverity === 'debug' && message.severity === 'silly') {
+        if (!visible && filters.severity) {
+            if (filters.severity === 'debug' && message.severity === 'silly') {
                 visible = 'display: none';
-            } else if (this.logFilterSeverity === 'info' && (message.severity === 'debug' || message.severity === 'silly')) {
+            } else if (filters.severity === 'info' && (message.severity === 'debug' || message.severity === 'silly')) {
                 visible = 'display: none';
-            } else if (logFilterSeverity === 'warn' && message.severity !== 'warn' && message.severity !== 'error') {
+            } else if (filters.severity === 'warn' && message.severity !== 'warn' && message.severity !== 'error') {
                 visible = 'display: none';
-            } else if (logFilterSeverity === 'error' && message.severity !== 'error') {
+            } else if (filters.severity === 'error' && message.severity !== 'error') {
                 visible = 'display: none';
             }
         }
 
-        if (!visible && logFilterMessage && message.message.indexOf(logFilterMessage) === -1) {
+        if (!visible && filters.message && message.message.indexOf(filters.message) === -1) {
             visible = 'display: none';
         }
 
         if (message.severity === 'error') $('a[href="#tab-logs"]').addClass('errorLog');
 
-        var text = '<tr id="log-line-' + (this.logLinesStart + this.logLinesCount) + '" class="log-line log-severity-' + message.severity + ' ' + (from ? 'log-from-' + from : '') + '" style="' + visible + '">';
+        var text = '<tr id="log-line-' + (list.start + list.count) + '" class="log-line log-severity-' + message.severity + ' ' + (from ? 'log-from-' + from : '') + '" style="' + visible + '">';
         text += '<td class="log-column-1">' + (message.from || '') + '</td>';
         text += '<td class="log-column-2">' + this.main.formatDate(message.ts) + '</td>';
         text += '<td class="log-column-3">' + message.severity + '</td>';
@@ -298,32 +303,32 @@ function Logs(main) {                                                           
     };
 
     this.filter = function () {
-        logFilterHost     = hdr.host.val();
-        logFilterMessage  = hdr.message.val();
-        logFilterSeverity = hdr.severity.val();
+        filters.host     = hdr.host.val();
+        filters.message  = hdr.message.val();
+        filters.severity = hdr.severity.val();
 
-        if (logFilterSeverity === 'error') {
+        if (filters.severity === 'error') {
             $outer.find('.log-severity-silly').hide();
             $outer.find('.log-severity-debug').hide();
             $outer.find('.log-severity-info').hide();
             $outer.find('.log-severity-warn').hide();
             $outer.find('.log-severity-error').show();
         } else
-        if (logFilterSeverity === 'warn') {
+        if (filters.severity === 'warn') {
             $outer.find('.log-severity-silly').hide();
             $outer.find('.log-severity-debug').hide();
             $outer.find('.log-severity-info').hide();
             $outer.find('.log-severity-warn').show();
             $outer.find('.log-severity-error').show();
         } else
-        if (that.logFilterSeverity === 'info') {
+        if (that.filters.severity === 'info') {
             $outer.find('.log-severity-silly').hide();
             $outer.find('.log-severity-debug').hide();
             $outer.find('.log-severity-info').show();
             $outer.find('.log-severity-warn').show();
             $outer.find('.log-severity-error').show();
         } else
-        if (logFilterSeverity === 'silly') {
+        if (filters.severity === 'silly') {
             $outer.find('.log-severity-silly').show();
             $outer.find('.log-severity-debug').show();
             $outer.find('.log-severity-info').show();
@@ -337,11 +342,11 @@ function Logs(main) {                                                           
             $outer.find('.log-severity-error').show();
         }
 
-        if (logFilterHost || logFilterMessage) {
+        if (filters.host || filters.message) {
             $outer.find('.log-line').each(function () {
-                if (logFilterHost && !$(this).hasClass('log-from-' + logFilterHost)) {
+                if (filters.host && !$(this).hasClass('log-from-' + filters.host)) {
                     $(this).hide();
-                } else if (logFilterMessage && $(this).html().indexOf(logFilterMessage) === -1) {
+                } else if (filters.message && $(this).html().indexOf(filters.message) === -1) {
                     $(this).hide();
                 }
             });
@@ -351,8 +356,8 @@ function Logs(main) {                                                           
     this.clear = function (isReload) {
         if (isReload === undefined) isReload = true;
         $table.html('');
-        this.logLinesCount = 0;
-        this.logLinesStart = 0;
+        list.count = 0;
+        list.start = 0;
         $('a[href="#tab-logs"]').removeClass('errorLog');
 
         if (isReload) {

@@ -1,18 +1,69 @@
 @import "commons";
 @import "materializeConsts";
 
-#tabs-readme {
-    overflow-y: auto;
-    height: calc(~"100% - "@admin-m-footer-height);
+.tabs-readme {
+    overflow: hidden;
+    .page {
+        //background: #f5f2f0;
+        height: calc(~"100% - "@admin-m-footer-height - 16);
+        overflow: auto;
+        padding-top: 1rem;
+        padding-left: 1rem;
+        position: relative;
+        .title {
+            background:     @main-active-color;
+            color:          white;
+            letter-spacing: .5px;
+            padding:        0.5rem;
+            text-transform: uppercase;
+        }
+    }
+    .result-readme,
+    .result-license {
+        h2 {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        h3 {
+            font-size: 1rem;
+        }
+        ul {
+            list-style-type: circle;
+            padding-left: 1rem;
+            li {
+                list-style-type: circle;
+            }
+        }
+    }
+    .result-changelog {
+        h3, h2 {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        ul {
+            list-style-type: circle;
+            padding-left: 1rem;
+            li {
+                list-style-type: circle;
+            }
+        }
+    }
+
+    .result-logo {
+        position: absolute;
+        top: 3.5rem;
+        right: 1rem;
+        width: 6rem;
+        height: 6rem;
+        img {
+            width: 100%;
+            height: auto;
+        }
+    }
     td {
         padding: 0 5px;
     }
-    .title {
-        background: @main-active-color;
-        color: white;
-        letter-spacing: .5px;
-        padding: 0.5rem;        
-    }
+
     .nav-wrapper{
         position: fixed;
         bottom: 0;

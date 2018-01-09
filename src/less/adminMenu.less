@@ -24,7 +24,7 @@
     }
 
     li > a {
-        padding: 0 16px !important;
+        padding: 0 0 0 16px;
     }
     a {
         padding:    .75rem;
@@ -100,6 +100,7 @@
     // badge with updates
     #updates-for-adapters, #updates-for-hosts {
         min-width:  1rem !important;
+        margin:     0.2rem .3rem 0 0;
     }
 }
 
@@ -167,11 +168,17 @@
     overflow-y: auto;
 
     .admin-sidemenu-items {
-        cursor: pointer;
-        padding-bottom:  0.5rem;;
-        padding-top:  0.5rem;;
+        cursor:             pointer;
+        padding-bottom:     0.5rem;
+        padding-top:        0.5rem;
         a {
             color: @admin-sidemenu-main-items-color;
+            .text {
+                width:          calc(~"100% - 3.7rem");
+                overflow:       hidden;
+                text-overflow:  ellipsis;
+                display:        inline-block;
+            }
         }
     }
 

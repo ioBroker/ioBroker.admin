@@ -1,9 +1,9 @@
 function Config(main) {
     'use strict';
-    var that = this;
-    this.$dialogConfig = $('#dialog-config');
-    this.$configFrame  = this.$dialogConfig.find('#config-iframe');
-    this.main = main;
+    var that          = this;
+    this.$dialog      = $('#dialog-config');
+    this.$configFrame = this.$dialog.find('#config-iframe');
+    this.main         = main;
 
     this.prepare = function () {
     };
@@ -32,8 +32,8 @@ function Config(main) {
         }
 
         var name = id.replace(/^system\.adapter\./, '');
-        this.$dialogConfig.data('name', name);
-        this.$dialogConfig.find('.title').html(_('Adapter configuration') + ': ' + name);
+        this.$dialog.data('name', name);
+        this.$dialog.find('.title').html(_('Adapter configuration') + ': ' + name);
     };
 
     this.allStored = function () {

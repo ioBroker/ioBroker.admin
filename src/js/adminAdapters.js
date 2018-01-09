@@ -464,7 +464,7 @@ function Adapters(main) {
         that.onlyUpdatable = that.main.config.adaptersOnlyUpdatable || false;
         that.currentFilter = that.main.config.adaptersCurrentFilter || '';
         that.currentType   = that.main.config.adaptersCurrentType   || '';
-        that.currentOrder  = that.main.config.adaptersCurrentOrder  || '';
+        that.currentOrder  = that.main.config.adaptersCurrentOrder  || 'a-z';
         that.isCollapsed   = that.main.config.adaptersIsCollapsed ? JSON.parse(that.main.config.adaptersIsCollapsed) : {};
         if (that.currentFilter) {
             that.$tab.find('.filter-input').addClass('input-not-empty').val(that.currentFilter);

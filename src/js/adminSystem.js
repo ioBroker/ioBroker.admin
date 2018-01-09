@@ -1,8 +1,8 @@
 function System(main) {
     'use strict';
-    var that = this;
-    var $dialogSystem = $('#dialog-system');
-    this.main = main;
+    var that    = this;
+    var $dialog = $('#dialog-system');
+    this.main   = main;
 
     this.systemRepos  = null;
     this.systemCerts  = null;
@@ -118,7 +118,7 @@ function System(main) {
 
             values2table('tab-system-repo', values, {
                 onChange: function (attr /* , index */) {
-                    $dialogSystem.find('.btn-save').removeClass('disabled');
+                    $dialog.find('.btn-save').removeClass('disabled');
                     if (!attr || attr === 'name') {
                         updateRepoListSelect();
                     }
@@ -161,7 +161,7 @@ function System(main) {
             }
             values2table('tab-system-certs', values, {
                 onChange: function (attr /* , index */) {
-                    $dialogSystem.find('.btn-save').removeClass('disabled');
+                    $dialog.find('.btn-save').removeClass('disabled');
                 }
             });
         } else {
@@ -218,43 +218,43 @@ function System(main) {
         for (var u = 0; u < main.tabs.users.list.length; u++) {
             text += '<option value="' + main.tabs.users.list[u] + '">' + (main.objects[main.tabs.users.list[u]].common.name || main.tabs.users.list[u]) + '</option>';
         }
-        $dialogSystem.find('#tab-system-acl-owner').html(text).val(acl.owner || 'system.user.admin');
+        $dialog.find('#tab-system-acl-owner').html(text).val(acl.owner || 'system.user.admin');
 
         // fill groups
         text = '';
         for (u = 0; u < main.tabs.users.groups.length; u++) {
             text += '<option value="' + main.tabs.users.groups[u] + '">' + (main.objects[main.tabs.users.groups[u]].common.name || main.tabs.users.groups[u]) + '</option>';
         }
-        $dialogSystem.find('#tab-system-acl-group').html(text).val(acl.ownerGroup || 'system.group.administrator');
+        $dialog.find('#tab-system-acl-group').html(text).val(acl.ownerGroup || 'system.group.administrator');
 
         if (acl.object === undefined) acl.object = 0x664;
 
-        $dialogSystem.find('#tab-system-acl-obj-owner-read') .prop('checked', acl.object & 0x400);
-        $dialogSystem.find('#tab-system-acl-obj-owner-write').prop('checked', acl.object & 0x200);
-        $dialogSystem.find('#tab-system-acl-obj-group-read'). prop('checked', acl.object & 0x40);
-        $dialogSystem.find('#tab-system-acl-obj-group-write').prop('checked', acl.object & 0x20);
-        $dialogSystem.find('#tab-system-acl-obj-every-read'). prop('checked', acl.object & 0x4);
-        $dialogSystem.find('#tab-system-acl-obj-every-write').prop('checked', acl.object & 0x2);
+        $dialog.find('#tab-system-acl-obj-owner-read') .prop('checked', acl.object & 0x400);
+        $dialog.find('#tab-system-acl-obj-owner-write').prop('checked', acl.object & 0x200);
+        $dialog.find('#tab-system-acl-obj-group-read'). prop('checked', acl.object & 0x40);
+        $dialog.find('#tab-system-acl-obj-group-write').prop('checked', acl.object & 0x20);
+        $dialog.find('#tab-system-acl-obj-every-read'). prop('checked', acl.object & 0x4);
+        $dialog.find('#tab-system-acl-obj-every-write').prop('checked', acl.object & 0x2);
 
         if (acl.state === undefined) acl.state = 0x664;
 
-        $dialogSystem.find('#tab-system-acl-state-owner-read') .prop('checked', acl.state & 0x400);
-        $dialogSystem.find('#tab-system-acl-state-owner-write').prop('checked', acl.state & 0x200);
-        $dialogSystem.find('#tab-system-acl-state-group-read'). prop('checked', acl.state & 0x40);
-        $dialogSystem.find('#tab-system-acl-state-group-write').prop('checked', acl.state & 0x20);
-        $dialogSystem.find('#tab-system-acl-state-every-read'). prop('checked', acl.state & 0x4);
-        $dialogSystem.find('#tab-system-acl-state-every-write').prop('checked', acl.state & 0x2);
+        $dialog.find('#tab-system-acl-state-owner-read') .prop('checked', acl.state & 0x400);
+        $dialog.find('#tab-system-acl-state-owner-write').prop('checked', acl.state & 0x200);
+        $dialog.find('#tab-system-acl-state-group-read'). prop('checked', acl.state & 0x40);
+        $dialog.find('#tab-system-acl-state-group-write').prop('checked', acl.state & 0x20);
+        $dialog.find('#tab-system-acl-state-every-read'). prop('checked', acl.state & 0x4);
+        $dialog.find('#tab-system-acl-state-every-write').prop('checked', acl.state & 0x2);
 
         if (acl.file === undefined) acl.file = 0x664;
-        $dialogSystem.find('#tab-system-acl-file-owner-read') .prop('checked', acl.file & 0x400);
-        $dialogSystem.find('#tab-system-acl-file-owner-write').prop('checked', acl.file & 0x200);
-        $dialogSystem.find('#tab-system-acl-file-group-read'). prop('checked', acl.file & 0x40);
-        $dialogSystem.find('#tab-system-acl-file-group-write').prop('checked', acl.file & 0x20);
-        $dialogSystem.find('#tab-system-acl-file-every-read'). prop('checked', acl.file & 0x4);
-        $dialogSystem.find('#tab-system-acl-file-every-write').prop('checked', acl.file & 0x2);
+        $dialog.find('#tab-system-acl-file-owner-read') .prop('checked', acl.file & 0x400);
+        $dialog.find('#tab-system-acl-file-owner-write').prop('checked', acl.file & 0x200);
+        $dialog.find('#tab-system-acl-file-group-read'). prop('checked', acl.file & 0x40);
+        $dialog.find('#tab-system-acl-file-group-write').prop('checked', acl.file & 0x20);
+        $dialog.find('#tab-system-acl-file-every-read'). prop('checked', acl.file & 0x4);
+        $dialog.find('#tab-system-acl-file-every-write').prop('checked', acl.file & 0x2);
 
         // workaround for materialize checkbox problem
-        $dialogSystem.find('input[type="checkbox"]+span').off('click').on('click', function () {
+        $dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
             var $input = $(this).prev();
             if (!$input.prop('disabled')) {
                 $input.prop('checked', !$input.prop('checked')).trigger('change');
@@ -267,31 +267,31 @@ function System(main) {
         var acl = main.systemConfig.common.defaultNewAcl;
         var old = JSON.stringify(acl);
         acl.object = 0;
-        acl.object |= $dialogSystem.find('#tab-system-acl-obj-owner-read').prop('checked')  ? 0x400 : 0;
-        acl.object |= $dialogSystem.find('#tab-system-acl-obj-owner-write').prop('checked') ? 0x200 : 0;
-        acl.object |= $dialogSystem.find('#tab-system-acl-obj-group-read').prop('checked')  ? 0x40  : 0;
-        acl.object |= $dialogSystem.find('#tab-system-acl-obj-group-write').prop('checked') ? 0x20  : 0;
-        acl.object |= $dialogSystem.find('#tab-system-acl-obj-every-read').prop('checked')  ? 0x4   : 0;
-        acl.object |= $dialogSystem.find('#tab-system-acl-obj-every-write').prop('checked') ? 0x2   : 0;
+        acl.object |= $dialog.find('#tab-system-acl-obj-owner-read').prop('checked')  ? 0x400 : 0;
+        acl.object |= $dialog.find('#tab-system-acl-obj-owner-write').prop('checked') ? 0x200 : 0;
+        acl.object |= $dialog.find('#tab-system-acl-obj-group-read').prop('checked')  ? 0x40  : 0;
+        acl.object |= $dialog.find('#tab-system-acl-obj-group-write').prop('checked') ? 0x20  : 0;
+        acl.object |= $dialog.find('#tab-system-acl-obj-every-read').prop('checked')  ? 0x4   : 0;
+        acl.object |= $dialog.find('#tab-system-acl-obj-every-write').prop('checked') ? 0x2   : 0;
 
-        acl.owner = $dialogSystem.find('#tab-system-acl-owner').val();
-        acl.ownerGroup = $dialogSystem.find('#tab-system-acl-group').val();
+        acl.owner = $dialog.find('#tab-system-acl-owner').val();
+        acl.ownerGroup = $dialog.find('#tab-system-acl-group').val();
 
         acl.state = 0;
-        acl.state |= $dialogSystem.find('#tab-system-acl-state-owner-read').prop('checked')  ? 0x400 : 0;
-        acl.state |= $dialogSystem.find('#tab-system-acl-state-owner-write').prop('checked') ? 0x200 : 0;
-        acl.state |= $dialogSystem.find('#tab-system-acl-state-group-read').prop('checked')  ? 0x40  : 0;
-        acl.state |= $dialogSystem.find('#tab-system-acl-state-group-write').prop('checked') ? 0x20  : 0;
-        acl.state |= $dialogSystem.find('#tab-system-acl-state-every-read').prop('checked')  ? 0x4   : 0;
-        acl.state |= $dialogSystem.find('#tab-system-acl-state-every-write').prop('checked') ? 0x2   : 0;
+        acl.state |= $dialog.find('#tab-system-acl-state-owner-read').prop('checked')  ? 0x400 : 0;
+        acl.state |= $dialog.find('#tab-system-acl-state-owner-write').prop('checked') ? 0x200 : 0;
+        acl.state |= $dialog.find('#tab-system-acl-state-group-read').prop('checked')  ? 0x40  : 0;
+        acl.state |= $dialog.find('#tab-system-acl-state-group-write').prop('checked') ? 0x20  : 0;
+        acl.state |= $dialog.find('#tab-system-acl-state-every-read').prop('checked')  ? 0x4   : 0;
+        acl.state |= $dialog.find('#tab-system-acl-state-every-write').prop('checked') ? 0x2   : 0;
 
         acl.file = 0;
-        acl.file |= $dialogSystem.find('#tab-system-acl-file-owner-read').prop('checked')  ? 0x400 : 0;
-        acl.file |= $dialogSystem.find('#tab-system-acl-file-owner-write').prop('checked') ? 0x200 : 0;
-        acl.file |= $dialogSystem.find('#tab-system-acl-file-group-read').prop('checked')  ? 0x40  : 0;
-        acl.file |= $dialogSystem.find('#tab-system-acl-file-group-write').prop('checked') ? 0x20  : 0;
-        acl.file |= $dialogSystem.find('#tab-system-acl-file-every-read').prop('checked')  ? 0x4   : 0;
-        acl.file |= $dialogSystem.find('#tab-system-acl-file-every-write').prop('checked') ? 0x2   : 0;
+        acl.file |= $dialog.find('#tab-system-acl-file-owner-read').prop('checked')  ? 0x400 : 0;
+        acl.file |= $dialog.find('#tab-system-acl-file-owner-write').prop('checked') ? 0x200 : 0;
+        acl.file |= $dialog.find('#tab-system-acl-file-group-read').prop('checked')  ? 0x40  : 0;
+        acl.file |= $dialog.find('#tab-system-acl-file-group-write').prop('checked') ? 0x20  : 0;
+        acl.file |= $dialog.find('#tab-system-acl-file-every-read').prop('checked')  ? 0x4   : 0;
+        acl.file |= $dialog.find('#tab-system-acl-file-every-write').prop('checked') ? 0x2   : 0;
         return old !== JSON.stringify(acl);
     }
 
@@ -315,7 +315,7 @@ function System(main) {
 
         finishEditingRights();
 
-        $dialogSystem.find('.system-settings.value').each(function () {
+        $dialog.find('.system-settings.value').each(function () {
             var $this = $(this);
             var id = $this.attr('id');
             if (!id) return;
@@ -363,7 +363,7 @@ function System(main) {
                 common.activeRepo = first;
             }
         }
-        common.diag = $dialogSystem.find('#diagMode').val();
+        common.diag = $dialog.find('#diagMode').val();
 
         if (that.systemCerts) {
             // Fill the certificates list
@@ -373,7 +373,7 @@ function System(main) {
                 that.systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
             }
 
-            $dialogSystem.find('.system-le-settings.value').each(function () {
+            $dialog.find('.system-le-settings.value').each(function () {
                 var $this = $(this);
                 var id = $this.data('name');
 
@@ -389,7 +389,7 @@ function System(main) {
             if (!err) {
                 main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function () {
                     main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function () {
-                        $dialogSystem.find('.btn-save').addClass('disabled');
+                        $dialog.find('.btn-save').addClass('disabled');
                         if (languageChanged) {
                             window.location.reload();
                         } else {
@@ -420,27 +420,27 @@ function System(main) {
                 showMessage(error, true);
                 return;
             }
-            var $system_activeRepo = $dialogSystem.find('#system_activeRepo');
+            var $system_activeRepo = $dialog.find('#system_activeRepo');
             $system_activeRepo.html('');
             if (that.systemRepos && that.systemRepos.native.repositories) {
                 for (var repo in that.systemRepos.native.repositories) {
                     $system_activeRepo.append('<option value="' + repo + '">' + repo + '</option>');
                 }
             } else {
-                $dialogSystem.find('#tab-system-repo').html(_('permissionError'));
+                $dialog.find('#tab-system-repo').html(_('permissionError'));
             }
 
-            $dialogSystem.find('#diagMode')
+            $dialog.find('#diagMode')
                 .val(main.systemConfig.common.diag)
                 .on('change', function () {
                     main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
-                        $dialogSystem.find('#diagSample').html(JSON.stringify(obj, null, 2));
+                        $dialog.find('#diagSample').html(JSON.stringify(obj, null, 2));
                     });
                 })
                 .trigger('change');
 
             // collect all history instances
-            var $system_defaultHistory = $dialogSystem.find('#system_defaultHistory');
+            var $system_defaultHistory = $dialog.find('#system_defaultHistory');
             $system_defaultHistory.html('<option value=""></option>');
             for (var id = 0; id < main.instances.length; id++) {
                 if (main.objects[main.instances[id]].common.type === 'storage') {
@@ -448,7 +448,7 @@ function System(main) {
                 }
             }
 
-            $dialogSystem.find('.system-settings.value').each(function () {
+            $dialog.find('.system-settings.value').each(function () {
                 var $this = $(this);
                 var id = $this.attr('id');
                 if (!id) return;
@@ -471,7 +471,7 @@ function System(main) {
                 };
             }
 
-            $dialogSystem.find('.system-le-settings.value').each(function () {
+            $dialog.find('.system-le-settings.value').each(function () {
                 var $this = $(this);
                 var id = $this.data('name');
                 if (that.systemCerts && that.systemCerts.native.letsEncrypt) {
@@ -483,7 +483,7 @@ function System(main) {
                 }
             });
 
-            var $tabs = $dialogSystem.find('#tabs-system');
+            var $tabs = $dialog.find('#tabs-system');
             $tabs.find('.tabs').mtabs({
                 onShow: function (tab)  {
                     if (!tab) return;
@@ -491,7 +491,7 @@ function System(main) {
                     // Detect materialize
                     if ((id === 'tab-system-letsencrypt' || id === 'tab-system-main' || id === 'tab-system-acl') && window.M && window.M.toast) {
                         M.updateTextFields('#' + id);
-                        $dialogSystem.find('optgroup').each(function () {
+                        $dialog.find('optgroup').each(function () {
                             if (!$(this).data('lang')) {
                                 var label = $(this).attr('label');
                                 $(this).data('lang', label);
@@ -499,7 +499,7 @@ function System(main) {
                             }
                         });
 
-                        $dialogSystem.find('select').select();
+                        $dialog.find('select').select();
                     } else
                     if (id === 'tab-system-certs') {
                         showMessage(_('Drop the files here'));
@@ -507,8 +507,8 @@ function System(main) {
                 }
             });
 
-            $dialogSystem.find('.dialog-system-buttons .btn-save').off('click').on('click', onButtonSave);
-            $dialogSystem.find('.dialog-system-buttons .btn-cancel').off('click').on('click', function () {
+            $dialog.find('.dialog-system-buttons .btn-save').off('click').on('click', onButtonSave);
+            $dialog.find('.dialog-system-buttons .btn-cancel').off('click').on('click', function () {
                 that.main.navigate();
             });
 
@@ -516,13 +516,13 @@ function System(main) {
             initRights();
             initCertsGrid();
 
-            $dialogSystem.find('.value').on('change', function () {
-                $dialogSystem.find('.btn-save').removeClass('disabled');
+            $dialog.find('.value').on('change', function () {
+                $dialog.find('.btn-save').removeClass('disabled');
             }).on('keyup', function () {
                 $(this).trigger('change');
             });
 
-            $dialogSystem.find('.btn-save').addClass('disabled');
+            $dialog.find('.btn-save').addClass('disabled');
             $tabs.find('.tabs').mtabs('select', 'tab-system-main');
         });
     };
@@ -534,7 +534,7 @@ function System(main) {
     };
 
     this.allStored = function () {
-        return $dialogSystem.find('.btn-save').hasClass('disabled');
+        return $dialog.find('.btn-save').hasClass('disabled');
     };
 
     this.prepare = function () {

@@ -75,7 +75,8 @@ $(document).ready(function () {
         selectId:       null,
         config:         {},
         addEventMessage: function (id, stateOrObj, isMessage, isState) {
-            tabs.events.addEventMessage(id, stateOrObj, isMessage, isState);
+            // cannot directly use tabs.events.add, because to init time not available.
+            tabs.events.add(id, stateOrObj, isMessage, isState);
         },
         saveConfig:     function (attr, value) {
             if (attr) main.config[attr] = value;
@@ -1571,7 +1572,7 @@ $(document).ready(function () {
                 elements.push({
                     line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
                             (tabsInfo[id] && tabsInfo[id].icon ? '<i class="material-icons">' + tabsInfo[id].icon + '</i>' : '<div class="icon-empty">&nbsp;</div>') +
-                            _($(this).data('name')) + '</a></li>',
+                            '<div class="text">' + _($(this).data('name')) + '</div></a></li>',
                     id: id
                 });
             }

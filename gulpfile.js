@@ -461,7 +461,7 @@ gulp.task('materializeCSS', function () {
             paths: [ ]
         }))
         .pipe(concat('materialize.css'))
-//        .pipe(cleanCSS({compatibility: 'ie8'}))
+        .pipe(cleanCSS({compatibility: 'ie8'}))
         .pipe(gulp.dest('./www/lib/css'));
 
 });
