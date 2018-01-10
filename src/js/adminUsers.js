@@ -346,6 +346,7 @@ function Users(main) {
             };
             options.enabled = true;
             delete options.id;
+
             that.main.socket.emit('setObject', obj._id, obj, function (err) {
                 if (err) {
                     showMessage(_('Cannot add user: ') + err, true);
@@ -355,13 +356,7 @@ function Users(main) {
                             if (err) {
                                 showMessage(_('Cannot set password: ') + _(err), true);
                             } else {
-                                that.main.socket.emit('extendObject', oldId, {common: options}, function (err, res) {
-                                    if (err) {
-                                        showMessage(_('Cannot set password: ') + err, true);
-                                    } else {
-                                        showMessage(_('Created'));
-                                    }
-                                });
+                                showMessage(_('Created'));
                             }
                         });
                     } else {
@@ -1000,6 +995,10 @@ function Users(main) {
                     var pos = obj.common.members.indexOf(id);
                     if (pos !== -1) {
                         obj.common.members.splice(pos, 1);
+                        if (!obj._id) {
+                            console.error('INVLAID ID');
+                            return;
+                        }
                         that.main.socket.emit('setObject', obj._id, obj, function (err) {
                             if (!err) {
                                 showMessage(_('Removed'));
