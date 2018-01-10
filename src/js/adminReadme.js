@@ -65,6 +65,17 @@ function Readme(main) {
         return html.replace(/href="http/g, 'target="_blank" href="http');
     }
 
+    function trimArr(lines) {
+        var j = lines.length - 1;
+        while (j >= 0 && !lines[j]) {
+            j--;
+        }
+        if (j !== lines.length - 1) {
+            lines.splice(j);
+        }
+        return lines;
+    }
+
     function splitReadMe(html, link) {
         var result = {logo: '', readme: [], changeLog: [], license: []};
         var lines = html.trim().split(/\r\n|\n/);
@@ -97,6 +108,10 @@ function Readme(main) {
                 i++;
                 continue;
             }
+            if (!result[part].length && !lines[i]) {
+                i++;
+                continue;
+            }
             result[part].push(lines[i]);
             i++;
         }
@@ -106,6 +121,9 @@ function Readme(main) {
         } else {
             that.$divLogo.html('').hide();
         }
+        trimArr(result.readme);
+        trimArr(result.changeLog);
+        trimArr(result.license);
 
         if (result.readme.length) {
             result.readme = md2html(result.readme.join('\n'), link);
@@ -118,6 +136,7 @@ function Readme(main) {
             delete result.changeLog;
         }
         if (result.license.length) {
+            result.license[0] = '## ' + result.license[0];
             result.license = md2html(result.license.join('\n'), link);
         } else {
             delete result.license;
