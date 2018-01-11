@@ -1370,7 +1370,7 @@ $(document).ready(function () {
                 var params = parts[2];
 
                 // set default page
-                if (!tab) {
+                if (!tab || tab === '!') {
                     tab = 'adapters';
                 }
                 var $adminBody = $('.admin-sidemenu-body');

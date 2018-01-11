@@ -118,6 +118,7 @@
         position:   relative;
         z-index:    1;
         border:     0;
+        border-radius: 2px;
     }
     .small-button {
         height:     24px;
@@ -213,11 +214,11 @@
                 display: none;
             }
 
-            .stat {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                font-size: 12px;
+            .stat, .last-update {
+                position:   absolute;
+                top:        10px;
+                right:      10px;
+                font-size:  12px;
             }
             .icon {
                 width:          5rem;
@@ -260,6 +261,15 @@
                 }
                 .update-version:empty {
                     display:        none;
+                }
+            }
+        }
+    }
+    .order-updated {
+        .tiles {
+            .tile {
+                .title {
+                    width: calc(~"100% - "@tiles-tile-padding * 2 ~" - 2rem")
                 }
             }
         }

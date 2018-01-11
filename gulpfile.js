@@ -258,12 +258,12 @@ function languagesFlat2words(src) {
             return 0;
         }
     });
-    var keys = fs.readFileSync(src + 'i18n/flat.txt').toString().split('\n');
+    var keys = fs.readFileSync(src + 'i18n/flat.txt').toString().split(/\r\n|\n|\r/);
 
     for (var l = 0; l < dirs.length; l++) {
         if (dirs[l] === 'flat.txt') continue;
         var lang = dirs[l];
-        var values = fs.readFileSync(src + 'i18n/' + lang + '/flat.txt').toString().split('\n');
+        var values = fs.readFileSync(src + 'i18n/' + lang + '/flat.txt').toString().split(/\r\n|\n|\r/);
         langs[lang] = {};
         keys.forEach(function (word, i) {
              langs[lang][word] = values[i];
@@ -282,7 +282,7 @@ function languagesFlat2words(src) {
     // read actual words.js
     var aWords = readWordJs();
 
-    var temporaryIgnore = ['pt', 'fr', 'nl', 'flat.txt'];
+    var temporaryIgnore = ['flat.txt'];
     if (aWords) {
         // Merge words together
         for (var w in aWords) {
@@ -625,6 +625,7 @@ gulp.task('vendorJS', function () {
 gulp.task('appCopy', function () {
     return gulp.src([
         './src/**/*.*',
+        '!./src/i18n/**/*',
         '!./src/*.html',
         '!./src/lib/js/jquery.fancytree-all.js',
         '!./src/**/*.less',

@@ -698,6 +698,43 @@ function Adapters(main) {
         that.$grid.fancytree('getRootNode').sortChildren(sort, true);
     };
 
+    function getInterval(time, todayText, yesterdayText, x1DayAgoText, x2DaysAgoText, x5DaysAgoText, now) {
+        now = now || Date.now();
+        if (!time) return '';
+        if (typeof time === 'string' || typeof time === 'number') {
+            time = new Date(time);
+        }
+        var interval = now.getTime() - time.getTime();
+        var days = Math.floor(interval / (24 * 3600000));
+        if (days === 0) {
+            if (now.getDate() === time.getDate()) {
+                return todayText;
+            } else {
+                return yesterdayText;
+            }
+        } else if (days === 1) {
+            if (now.getDate() - time.getDate() === 1) {
+                return yesterdayText;
+            } else {
+                return x2DaysAgoText.replace('%d', days);
+            }
+        } else {
+            var t  = days % 10;
+            var tt = days % 100;
+            // 2, 3, 4, 22, 23, 24, 32, 33, 34, 111, ...x2, x3, h4
+            if ((tt < 10 || tt > 20) && t >= 2 && t <= 4) {
+                return x2DaysAgoText.replace('%d', days);
+            } else
+            // 1, 21, 31, 41, 121....
+            if ((tt < 10 || tt > 20) && t === 1) {
+                return x1DayAgoText.replace('%d', days);
+            } else {
+                return x5DaysAgoText.replace('%d', days);
+            }
+
+        }
+    }
+
     this._postInit = function (update, updateRepo) {
         if (typeof this.$grid !== 'undefined') {
 
@@ -713,6 +750,7 @@ function Adapters(main) {
 
                 var listInstalled = [];
                 var listNonInstalled = [];
+                var nowObj = new Date();
                 var localTexts = {
                     'add instance':             _('add instance'),
                     'update':                   _('update'),
@@ -724,7 +762,13 @@ function Adapters(main) {
                     'delete adapter':           _('delete adapter'),
                     'install specific version': _('install specific version'),
                     'all':                      _('all'),
-                    'Installations counter':     _('Installation counter')
+                    'Last update':              _('Last update'),
+                    'Installations counter':    _('Installation counter'),
+                    'today':                    _('today'),
+                    'yesterday':                _('yesterday'),
+                    '1 %d days ago':            _('1 %d days ago'),
+                    '2 %d days ago':            _('2 %d days ago'),
+                    '5 %d days ago':            _('5 %d days ago')
                 };
 
                 if (installedList) {
@@ -741,6 +785,10 @@ function Adapters(main) {
                 // List of adapters for repository
                 for (adapter in repository) {
                     if (!repository.hasOwnProperty(adapter)) continue;
+                    if (installedList && installedList[adapter] && !installedList[adapter].versionDate) {
+                        installedList[adapter].versionDate = repository[adapter].versionDate;
+                    }
+
                     // it is not possible to install this adapter from git
                     if (!repository[adapter].nogit) {
                         that.urls[adapter] = repository[adapter].meta;
@@ -869,6 +917,7 @@ function Adapters(main) {
                         version:    version,
                         installed:  installed,
                         rawInstalled: rawInstalled,
+                        versionDate: obj.versionDate,
                         updatable:  updatable,
                         bold:       obj.highlight || false,
                         install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button" title="' + localTexts['add instance'] + '"><i class="material-icons">add</i></button>' +
@@ -953,6 +1002,7 @@ function Adapters(main) {
                             version:    version,
                             bold:       obj.highlight,
                             installed:  '',
+                            versionDate: obj.versionDate,
                             install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button" title="' + localTexts['add instance'] + '"><i class="material-icons">add</i></button>' +
                             '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
                             '<div class="small-button-empty">&nbsp;</div>' +
@@ -1004,13 +1054,26 @@ function Adapters(main) {
                     }
                 }
 
-                if (that.currentOrder === 'popular') {
+                if (that.currentOrder === 'popular' || that.currentOrder === 'updated') {
                     var akeys = Object.keys(that.data);
-                    akeys.sort(function (a, b) {
-                        if (that.data[a].stat > that.data[b].stat) return -1;
-                        if (that.data[a].stat < that.data[b].stat) return 1;
-                        return 0;
-                    });
+
+                    if (that.currentOrder === 'popular') {
+                        akeys.sort(function (a, b) {
+                            if (that.data[a].stat > that.data[b].stat) return -1;
+                            if (that.data[a].stat < that.data[b].stat) return 1;
+                            return 0;
+                        });
+                    } else if (that.currentOrder === 'updated') {
+                        akeys.sort(function (a, b) {
+                            if (that.data[a].versionDate && !that.data[b].versionDate) return -1;
+                            if (!that.data[a].versionDate && that.data[b].versionDate) return 1;
+                            if (that.data[a].versionDate > that.data[b].versionDate) return -1;
+                            if (that.data[a].versionDate < that.data[b].versionDate) return 1;
+                            if (a > b) return -1;
+                            if (a < b) return 1;
+                            return 0;
+                        });
+                    }
                     var newData = {};
                     for (var u = 0; u < akeys.length; u++) {
                         newData[akeys[u]] = that.data[akeys[u]];
@@ -1033,6 +1096,8 @@ function Adapters(main) {
                         text += '       <div class="title">' + ad.title + '</div>';
                         if (that.currentOrder === 'popular' && ad.stat) {
                             text += '   <div class="stat" title="' + localTexts['Installations counter'] + '">' + ad.stat + '</div>';
+                        } else if (that.currentOrder === 'updated' && ad.versionDate) {
+                            text += '   <div class="last-update" title="' + localTexts['Last update'] + '">' + getInterval(ad.versionDate, localTexts['today'], localTexts['yesterday'], localTexts['1 %d days ago'], localTexts['2 %d days ago'], localTexts['5 %d days ago'], nowObj) + '</div>';
                         }
                         text += '    </div>';
                         text += '    <div class="card-body">';
@@ -1123,6 +1188,7 @@ function Adapters(main) {
                     that.sortTree();
                     that.enableColResize();
                 }
+                that.$tab.find('.grid-main-div').removeClass('order-a-z order-popular order-updated').addClass(that.currentOrder ? 'order-' + that.currentOrder : '');
                 that.$tab.find('.process-adapters').hide();
                 that.updateCounter(adaptersToUpdate);
             });
