@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.0.10",
+    "version": "3.0.11",
     "news": {
+      "3.0.11": {
+        "en": "French translations\nthe error with empty ID was fixed\nadded sort by \"recently updated\"\nadded readme and issues viewer",
+        "de": "Französische Übersetzungen\nDer Fehler mit der leeren ID wurde behoben\nSortiert nach \"Zuletzt aktualisiert\"\nViewer für Probleme und Readme hinzugefügt",
+        "ru": "Французские переводы\nисправлена ​​ошибка с пустым идентификатором\nдобавлена сортировка по \"недавно обновленному\"\nдобавлено чтение readme и просмотр открытых проблем",
+        "pt": "Traduções francesas\no erro com ID vazio foi corrigido\nAdicionado por \"atualizado recentemente\"\nadicionou readme e visualizador de problemas",
+        "nl": "Franse vertalingen\nde fout met lege ID was opgelost\nsoort toegevoegd door \"recent bijgewerkt\"\nreadme toegevoegd en issues viewer",
+        "fr": "Traductions en français\nl'erreur avec ID vide a été corrigé\ntri ajouté par \"récemment mis à jour\"\nReadme ajouté et questions spectateur",
+        "it": "Traduzioni francesi\nl'errore con ID vuoto è stato corretto\naggiunto ordina per \"aggiornato di recente\"\naggiunto readme ed emette il visore",
+        "es": "Traducciones francesas\nel error con la ID vacía fue arreglado\nagregado ordenado por \"actualizado recientemente\"\nagregado lector de léame y problemas",
+        "pl": "Francuskie tłumaczenia\nbłąd z pustym identyfikatorem został naprawiony\ndodany sortuj według \"niedawno zaktualizowany\"\ndodano przeglądarkę do odczytu i problemów"
+      },
       "3.0.10": {
         "en": "Update indication\nUse jQuery3\nTranslations",
         "de": "Anzeige aktualisieren\nVerwenden Sie jQuery3\nÜbersetzungen",
