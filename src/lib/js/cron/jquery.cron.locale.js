@@ -149,33 +149,34 @@ JQUERY_CRON_LOCALE.ru = {
 
 JQUERY_CRON_LOCALE.fr = {
     ORDINALS: {
-        th: 'th',
-        st: 'st',
-        nd: 'nd',
-        rd: 'rd'
+        th: '',
+        st: '',
+        nd: '',
+        rd: ''
     },
     MONTH: [
-        'Fév',
-        'Mar',
-        'Avr',
-        'Mai',
-        'Jun',
-        'Juil',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Déc'
+	    'janv.',
+        'févr.',
+        'mars',
+        'avr.',
+        'mai',
+        'juin',
+        'juill.',
+        'août',
+        'sept.',
+        'oct.',
+        'nov.',
+        'déc.'
 
     ],
     DOW: [
-        'Dim',
-        'Lun',
-        'Mar',
-        'Mer',
-        'Jeu',
-        'Ven',
-        'Sam'
+        'dim.',
+        'lun.',
+        'mar.',
+        'mer.',
+        'jeu.',
+        'ven.',
+        'samm'
 
     ],
     'Every':            'Chaque',
@@ -186,7 +187,7 @@ JQUERY_CRON_LOCALE.fr = {
     'minute':           'minute',
     'minute of':        'minute de',
     'second':           'seconde',
-    'second in minute': 'seconde en minute',
+    'second in minute': 'seconde de la minute',
     'second of every':  'deuxième de tous',
     'minute every hour':'minute toutes les heures',
     'on the':           'sur le',
