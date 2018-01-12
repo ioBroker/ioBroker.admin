@@ -336,7 +336,7 @@ function languages2words(src) {
             if (words.hasOwnProperty(word)) {
                 bigOne[word] = bigOne[word] || {};
                 if (words[word] !== EMPTY) {
-                    bigOne[word][lang] = words[word];
+                    bigOne[word][lang] = words[word].replace(/<\/ i>/g, '</i>').replace(/<\/ b>/g, '</b>').replace(/<\/ span>/g, '</span>').replace(/% s/g, ' %s');
                 }
             }
         }

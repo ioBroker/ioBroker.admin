@@ -6,12 +6,8 @@ function Config(main) {
     this.main         = main;
 
     this.prepare = function () {
-    };
-
-    // called from inside of iframe
-    this.close = function () {
-        that.$configFrame.attr('src', '');
-        that.main.navigate();
+        // id = 'system.adapter.NAME.X'
+        $iframeDialog = this;
     };
 
     this.init = function () {
@@ -19,8 +15,6 @@ function Config(main) {
 
         this.inited = true;
 
-        // id = 'system.adapter.NAME.X'
-        $iframeDialog = this;
 
         var id = this.main.navigateGetParams();
 
@@ -38,6 +32,11 @@ function Config(main) {
 
     this.allStored = function () {
         return !window.frames['config-iframe'].changed;
+    };
+
+    // this function is called by the configuration code in iFrame
+    this.close = function () {
+        that.main.navigate();
     };
 
     this.destroy = function () {
