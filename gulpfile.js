@@ -630,6 +630,7 @@ gulp.task('appCopy', function () {
         '!./src/lib/js/jquery.fancytree-all.js',
         '!./src/**/*.less',
         '!./src/js/**/admin*.js',
+        '!./src/js/**/words.js',
         '!./src/materialize-css/**/*',
         '!./src/colorpicker/**/*'
     ])
