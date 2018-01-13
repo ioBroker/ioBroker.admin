@@ -444,15 +444,15 @@ function showMessage(message, title, icon) {
     $dialogMessage = $('#dialog-message');
     if (!$dialogMessage.length) {
         $('body').append(
-            '<div id="dialog-message" class="modal modal-fixed-footer">' +
+            '<div class="m"><div id="dialog-message" class="modal modal-fixed-footer">' +
             '    <div class="modal-content">' +
-            '        <h4 class="dialog-title"></h4>' +
+            '        <h6 class="dialog-title title"></h6>' +
             '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
             '    </div>' +
             '    <div class="modal-footer">' +
             '        <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>' +
             '    </div>' +
-            '</div>');
+            '</div></div>');
         $dialogMessage = $('#dialog-message');
     }
     if (icon) {
@@ -462,8 +462,13 @@ function showMessage(message, title, icon) {
     } else {
         $dialogMessage.find('.dialog-icon').hide();
     }
+    if (title) {
+        $dialogMessage.find('.dialog-title').html(title).show();
+    } else {
+        $dialogMessage.find('.dialog-title').hide();
+    }
     $dialogMessage.find('.dialog-text').html(message);
-    $dialogMessage.modal('open');
+    $dialogMessage.modal().modal('open');
 }
 
 function confirmMessage(message, title, icon, buttons, callback) {
@@ -472,14 +477,14 @@ function confirmMessage(message, title, icon, buttons, callback) {
     $dialogConfirm = $('#dialog-confirm');
     if (!$dialogConfirm.length) {
         $('body').append(
-            '<div id="dialog-confirm" class="modal modal-fixed-footer">' +
+            '<div class="m"><div id="dialog-confirm" class="modal modal-fixed-footer">' +
             '    <div class="modal-content">' +
-            '        <h4 class="dialog-title"></h4>' +
+            '        <h6 class="dialog-title title"></h6>' +
             '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
             '    </div>' +
             '    <div class="modal-footer">' +
             '    </div>' +
-            '</div>'
+            '</div></div>'
         );
         $dialogConfirm = $('#dialog-confirm');
     }
@@ -512,9 +517,16 @@ function confirmMessage(message, title, icon, buttons, callback) {
     } else {
         $dialogConfirm.find('.dialog-icon').hide();
     }
+    if (title) {
+        $dialogConfirm.find('.dialog-title').html(title).show();
+    } else {
+        $dialogConfirm.find('.dialog-title').hide();
+    }
     $dialogConfirm.find('.dialog-text').html(message);
     $dialogConfirm.data('callback', callback);
-    $dialogConfirm.modal('open');
+    $dialogConfirm.modal({
+        dismissible: false
+    }).modal('open');
 }
 
 function showError(error) {
