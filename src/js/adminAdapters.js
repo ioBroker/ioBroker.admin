@@ -716,7 +716,7 @@ function Adapters(main) {
             if (now.getDate() - time.getDate() === 1) {
                 return yesterdayText;
             } else {
-                return x2DaysAgoText.replace('%d', days);
+                return x2DaysAgoText.replace('%d', days + 1);
             }
         } else {
             var t  = days % 10;

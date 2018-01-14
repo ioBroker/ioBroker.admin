@@ -101,12 +101,12 @@ function EditObject(main) {
 
         if (object.write !== undefined) {
             if (object.write === 'false' || object.write === '0' || object.write === 0) object.write = false;
-            if (object.write === 'true' || object.write === '1' || object.write === 1) object.write = true;
+            if (object.write === 'true'  || object.write === '1' || object.write === 1) object.write = true;
         }
 
         if (object.read !== undefined) {
             if (object.read === 'false' || object.read === '0' || object.read === 0) object.read = false;
-            if (object.read === 'true' || object.read === '1' || object.read === 1) object.read = true;
+            if (object.read === 'true'  || object.read === '1' || object.read === 1) object.read = true;
         }
 
         if (object.min !== undefined) {
@@ -114,21 +114,38 @@ function EditObject(main) {
             if (f.toString() === object.min.toString()) object.min = f;
 
             if (object.min === 'false') object.min = false;
-            if (object.min === 'true') object.min = true;
+            if (object.min === 'true')  object.min = true;
         }
         if (object.max !== undefined) {
             var m = parseFloat(object.max);
             if (m.toString() === object.max.toString()) object.max = m;
 
             if (object.max === 'false') object.max = false;
-            if (object.max === 'true') object.max = true;
+            if (object.max === 'true')  object.max = true;
         }
         if (object.def !== undefined) {
             var d = parseFloat(object.def);
             if (d.toString() === object.def.toString()) object.def = d;
 
             if (object.def === 'false') object.def = false;
-            if (object.def === 'true') object.def = true;
+            if (object.def === 'true')  object.def = true;
+        }
+
+        // common part cannot have "true" or "false". Only true and false.
+        if (selector.indexOf('common') !== -1) {
+            for (var attr in object) {
+                if (object.hasOwnProperty(attr)) {
+                    if (object[attr] === 'true') {
+                        object[attr] = true;
+                    }
+                    if (object[attr] === 'false') {
+                        object[attr] = false;
+                    }
+                    if (parseFloat(object[attr]).toString() === object[attr]) {
+                        object[attr] = parseFloat(object[attr]);
+                    }
+                }
+            }
         }
 
         return err;
