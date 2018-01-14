@@ -51,11 +51,11 @@
         }
         if ($auth.prop('checked')) {
             $secure.prop('checked', true);
-            $('.col-defaultUser').val('admin');
-            $('.defaultUser').hide();
+            $('#defaultUser').val('admin');
+            $('.col-defaultUser').hide();
             $('.col-ttl').show();
         } else {
-            $('.defaultUser').show();
+            $('.col-defaultUser').show();
             $('.col-ttl').hide();
         }
     }
@@ -93,22 +93,6 @@
             } else {
                 $value.val(settings[key]).on('change', onChange).on('keyup', function() {
                     onChange();
-                    // Chack that only numbers entered
-                    if ($(this).hasClass('number')) {
-                        var val = $(this).val();
-                        if (val) {
-                            var newVal = '';
-                            for (var i = 0; i < val.length; i++) {
-                                if (val[i] >= '0' && val[i] <= '9') {
-                                    newVal += val[i];
-                                }
-                            }
-
-                            if (val != newVal) {
-                                $(this).val(newVal);
-                            }
-                        }
-                    }
                 });
             }
         });
