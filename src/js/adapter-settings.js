@@ -438,7 +438,52 @@ function prepareTooltips() {
     }
 }
 
+function showMessageJQ(message, title, icon, width) {
+    var $dialogMessage = $('#dialog-message-settings');
+    if (!$dialogMessage.length) {
+        $('body').append('<div id="dialog-message-settings" title="Message" style="display: none">\n' +
+            '<p>' +
+            '<span id="dialog-message-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
+            '<span id="dialog-message-text-settings"></span>\n' +
+            '</p>\n' +
+            '</div>');
+        $dialogMessage = $('#dialog-message-settings');
+        $dialogMessage.dialog({
+            autoOpen: false,
+            modal:    true,
+            buttons: [
+                {
+                    text: _('Ok'),
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+    $dialogMessage.dialog('option', 'width', width + 500);
+
+    if (typeof _ !== 'undefined') {
+        $dialogMessage.dialog('option', 'title', title || _('Message'));
+    } else {
+        $dialogMessage.dialog('option', 'title', title || 'Message');
+    }
+    $('#dialog-message-text-settings').html(message);
+    if (icon) {
+        $('#dialog-message-icon-settings')
+            .show()
+            .attr('class', '')
+            .addClass('ui-icon ui-icon-' + icon);
+    } else {
+        $('#dialog-message-icon-settings').hide();
+    }
+    $dialogMessage.dialog('open');
+}
+
 function showMessage(message, title, icon) {
+    if (!isMaterialize) {
+        return showMessageJQ(message, title, icon);
+    }
     var $dialogMessage;
     // noinspection JSJQueryEfficiency
     $dialogMessage = $('#dialog-message');
@@ -471,7 +516,80 @@ function showMessage(message, title, icon) {
     $dialogMessage.modal().modal('open');
 }
 
+function confirmMessageJQ(message, title, icon, buttons, callback) {
+    var $dialogConfirm =        $('#dialog-confirm-settings');
+    if (!$dialogConfirm.length) {
+        $('body').append('<div id="dialog-confirm-settings" title="Message" style="display: none">\n' +
+            '<p>' +
+            '<span id="dialog-confirm-icon-settings" class="ui-icon ui-icon-circle-check" style="float :left; margin: 0 7px 50px 0;"></span>\n' +
+            '<span id="dialog-confirm-text-settings"></span>\n' +
+            '</p>\n' +
+            '</div>');
+        $dialogConfirm = $('#dialog-confirm-settings');
+        $dialogConfirm.dialog({
+            autoOpen: false,
+            modal:    true
+        });
+    }
+    if (typeof buttons === 'function') {
+        callback = buttons;
+        $dialogConfirm.dialog('option', 'buttons', [
+            {
+                text: _('Ok'),
+                click: function () {
+                    var cb = $(this).data('callback');
+                    $(this).data('callback', null);
+                    $(this).dialog('close');
+                    if (cb) cb(true);
+                }
+            },
+            {
+                text: _('Cancel'),
+                click: function () {
+                    var cb = $(this).data('callback');
+                    $(this).data('callback', null);
+                    $(this).dialog('close');
+                    if (cb) cb(false);
+                }
+            }
+
+        ]);
+    } else if (typeof buttons === 'object') {
+        for (var b = 0; b < buttons.length; b++) {
+            buttons[b] = {
+                text: buttons[b],
+                id: 'dialog-confirm-button-' + b,
+                click: function (e) {
+                    var id = parseInt(e.currentTarget.id.substring('dialog-confirm-button-'.length), 10);
+                    var cb = $(this).data('callback');
+                    $(this).data('callback', null);
+                    $(this).dialog('close');
+                    if (cb) cb(id);
+                }
+            }
+        }
+        $dialogConfirm.dialog('option', 'buttons', buttons);
+    }
+
+    $dialogConfirm.dialog('option', 'title', title || _('Message'));
+    $('#dialog-confirm-text-settings').html(message);
+    if (icon) {
+        $('#dialog-confirm-icon-settings')
+            .show()
+            .attr('class', '')
+            .addClass('ui-icon ui-icon-' + icon);
+    } else {
+        $('#dialog-confirm-icon-settings').hide();
+    }
+    $dialogConfirm.data('callback', callback);
+    $dialogConfirm.dialog('open');
+}
+
 function confirmMessage(message, title, icon, buttons, callback) {
+    if (!isMaterialize) {
+        return confirmMessageJQ(message, title, icon, buttons, callback);
+    }
+
     var $dialogConfirm;
     // noinspection JSJQueryEfficiency
     $dialogConfirm = $('#dialog-confirm');
