@@ -264,7 +264,7 @@ function Events(main) {
                 pause.list.shift();
             }
             pause.$counterSpan.html(pause.counter);
-        } else {
+        } else if ($table) {
             $table.prepend(text);
             if (!widthSet && (window.location.hash === '#tab-events' || window.location.hash === '#events')) {
                 hdr && hdr.syncHeader();
@@ -286,7 +286,7 @@ function Events(main) {
             hdr.getValues();
         }
 
-        $table.find('.event-line').each(function (index) {
+        $table && $table.find('.event-line').each(function (index) {
             var isShow = true;
             var $this = $(this);
             if (hdr.type.selectedVal && !$this.hasClass('event-type-' + hdr.type.selectedVal)) {
