@@ -321,7 +321,7 @@ function Logs(main) {                                                           
             $outer.find('.log-severity-warn').show();
             $outer.find('.log-severity-error').show();
         } else
-        if (that.filters.severity === 'info') {
+        if (filters.severity === 'info') {
             $outer.find('.log-severity-silly').hide();
             $outer.find('.log-severity-debug').hide();
             $outer.find('.log-severity-info').show();
