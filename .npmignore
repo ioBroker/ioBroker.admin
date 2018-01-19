@@ -1,6 +1,4 @@
-Gruntfile.js
 gulpfile.js
-tasks
 package-lock.json
 node_modules
 .git

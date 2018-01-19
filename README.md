@@ -82,6 +82,13 @@ In this project used some icons from Flaticon(c):
 - ![light-bulb.svg](src/img/devices/light-bulb.svg) - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 
 ## Changelog
+### 3.0.12 (2018-01-19)
+* (bluefox) Old configuration dialogs fixed
+* (bluefox) convert strings to booleans by object edit
+* (DeepCoreSystem) Updates in english, german and french translations
+* (bluefox) buttons layout fixed
+* (bluefox) event fixes
+
 ### 3.0.11 (2018-01-11)
 * (DeepCoreSystem) French update
 * (bluefox) fix error with empty ID 

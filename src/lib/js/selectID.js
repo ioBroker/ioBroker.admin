@@ -104,7 +104,8 @@
                  invertSelection: 'Invert selection',
                  copyToClipboard: 'Copy to clipboard',
                  expertMode: 'Toggle expert mode',
-                 button: 'History'
+                 button:    'Settings',
+                 noData:    'No data'
              },
              columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button'],
                                 // some elements of columns could be an object {name: field, data: function (id, name){}, title: function (id, name) {}}
@@ -164,12 +165,13 @@ function span(txt, attr) {
 function filterChanged(e) {
     var $e  = $(e);
     var val = $e.val();
-    var tr  = $e.parent().parent();
-    tr.find('td').last().css({'display': val ? 'unset' : 'none'});   //
-    tr[val ? 'addClass' : 'removeClass']('filter-active');         // set background of <tr>
-    tr.find('button').attr('style', 'background: transparent !important;');
+    var td  = $e.parent();
+    if (val) {
+        td.addClass('filter-active');
+    } else {
+        td.removeClass('filter-active');
+    }
 }
-
 
 (function ($) {
     'use strict';
@@ -347,19 +349,21 @@ function filterChanged(e) {
                     var name1;
                     var name2;
                     if (c1.name) {
-                        if (typeof c1.name === 'object') {
-                            name1 = (c1.name[systemLang] || c1.name.en).toLowerCase();
+                        name1 = c1.name;
+                        if (typeof name1 === 'object') {
+                            name1 = (name1[systemLang] || name1.en).toLowerCase();
                         } else {
-                            name1 = c1.name.toLowerCase();
+                            name1 = name1.toLowerCase();
                         }
                     } else {
                         name1 = child1.key;
                     }
                     if (c2.name) {
-                        if (typeof c2.name === 'object') {
-                            name2 = (c2.name[systemLang] || c2.name.en).toLowerCase();
+                        name2 = c2.name;
+                        if (typeof name2 === 'object') {
+                            name2 = (name2[systemLang] || name2.en).toLowerCase();
                         } else {
-                            name2 = c2.name.toLowerCase();
+                            name2 = name2.toLowerCase();
                         }
                     } else {
                         name2 = child1.key;
@@ -755,8 +759,8 @@ function filterChanged(e) {
         var data = $dlg.data('selectId');
         if (!data) return;
         var $header = $dlg.find('.main-header-table');
-        var thDest = $header.find('>tbody>tr>td');	//if table headers are specified in its semantically correct tag, are obtained
-        var thSrc = data.$tree.find('>tbody>tr>td');
+        var thDest  = $header.find('>tbody>tr>th');	//if table headers are specified in its semantically correct tag, are obtained
+        var thSrc   = data.$tree.find('>tbody>tr>td');
 
         var x, o;
         for (var i = 0; i < thDest.length - 1; i++) {
@@ -1280,7 +1284,7 @@ function filterChanged(e) {
         if ($dlg.attr('id') !== 'dialog-select-member' && $dlg.attr('id') !== 'dialog-select-members') {
             $dlg.css({height: '100%', width: '100%'});
         } else {
-            $dlg.css({height: 'calc(100% - 110px)', width: '100%'});
+            $dlg.css({height: 'calc(100% - 110px)', width: 'calc(100%- 20px)'});
         }
         var data = $dlg.data('selectId');
         if (!data) return;
@@ -1393,65 +1397,51 @@ function filterChanged(e) {
 
         // toolbar buttons
         var tds = 
-            '<td><button class="ui-button-icon-only panel-button btn-refresh"></button></td>' +
-            '<td><button class="panel-button btn-list"></button></td>' +
-            '<td><button class="panel-button btn-collapse"></button></td>'  +
-            '<td><button class="panel-button btn-expand"></button></td>' +
-            '<td class="select-id-custom-buttons"></td>';
+            '<button class="ui-button-icon-only panel-button btn-refresh"></button>\n' +
+            '<button class="panel-button btn-list"></button>\n' +
+            '<button class="panel-button btn-collapse"></button>\n'  +
+            '<button class="panel-button btn-expand"></button>\n' +
+            '<div class="select-id-custom-buttons"></div>\n';
         if (data.filter && data.filter.type === 'state' && multiselect) {
             tds += 
-                '<td style="padding-left: 10px"><button class="panel-button btn-select-all"></button></td>' +
-                '<td><button class="panel-button btn-unselect-all"></button></td>' +
-                '<td><button class="panel-button btn-invert-selection"></button></td>';
+                '<div class="iob-toolbar-sep"></div>\n' +
+                '<button class="panel-button btn-select-all"></button>\n' +
+                '<button class="panel-button btn-unselect-all"></button>\n' +
+                '<button class="panel-button btn-invert-selection"></button>\n';
         }
         if (data.expertModeRegEx) {
-            tds += '<td style="padding-left: 10px"><button class="panel-button btn-expert"></button></td>';
+            tds += '<div class="iob-toolbar-sep"></div><button class="panel-button btn-expert"></button>';
         }
-        tds += '<td><button class="panel-button btn-sort"></button></td>';
+        tds += '<button class="panel-button btn-sort"></button>';
 
         if (data.panelButtons) {
-            tds += '<td class="iob-toolbar-sep"></td>';
+            tds += '<div class="iob-toolbar-sep"></div>\n';
             for (c = 0; c < data.panelButtons.length; c++) {
-                tds += '<td><button class="panel-button btn-custom-' + c + '"></button></td>';
+                tds += '<button class="panel-button btn-custom-' + c + '"></button>\n';
             }
         }
 
         if (data.useHistory) {
-            tds += '<td style="width: 100%; text-align: right"><button class="panel-button btn-history"></button></td>';
-        } else {
-            tds += '<td style="width: 100%;"></td>';
+            tds += '<button class="panel-button btn-history"></button>\n';
         }
 
         var text = 
-            '<div class="dialog-select-container ' + (isMaterial ? 'material' : '') + '" style="width: 100%; height: 100%">' +
-            '<table class="main-toolbar-table ' + (isMaterial ? 'm' : '') + '">' +
-            '    <tr>' + tds +
-            '    </tr>' +
-            '</table>' +
-            '<table class="main-header-table">'
+            '<div class="dialog-select-container ' + (isMaterial ? 'material' : '') + '" style="width: 100%; height: 100%">\n' +
+            '    <div class="main-toolbar-table ' + (isMaterial ? 'm' : '') + '">' + tds + '</div>\n' +
+            '       <table class="main-header-table">\n'
         ;
 
         function textFilterText(filterNo, placeholder) {
             if (placeholder === undefined) {
                 placeholder = data.texts[filterNo.toLowerCase()] || '';
             }
-            return  '<table class="main-header-input-table">' +
-                    '    <tbody>' +
-                    '       <tr>' +
-                    '           <td class="input">' +
-                    '               <input  data-index="' + filterNo + '" placeholder="' + placeholder + '" class="filter">' +
-                    '           </td>' +
-                    '           <td>' +
-                    '               <button data-index="' + filterNo + '" class="filter-btn"></button>' +
-                    '           </td>' +
-                    '       </tr>' +
-                    '    </tbody>' +
-                    '</table>';
+            return  '<input  data-index="' + filterNo + '" placeholder="' + placeholder + '" class="filter">' +
+                    '<button data-index="' + filterNo + '" class="filter-btn"></button>\n';
         }
 
         function textCombobox(filterNo, placeholder) {
             var txt = '';
-            if (data.columns.indexOf (filterNo) !== -1) {
+            if (data.columns.indexOf(filterNo) !== -1) {
                 if (placeholder === undefined) placeholder = data.texts[filterNo.toLowerCase()] || '';
                 var cbEntries = getComboBoxEnums(filterNo);
                 var cbText = '<select data-index="' + filterNo + '" class="filter">';
@@ -1475,21 +1465,7 @@ function filterChanged(e) {
                 }
                 cbText += '</select>';
 
-                txt = '' +
-                    //'<table style="width: 100%;padding: 0;border: 1px solid #c0c0c0;border-spacing: 0;border-radius: 2px;">' +
-                    '<table class="main-header-input-table">' +
-                    '        <tbody>' +
-                    '        <tr>' +
-                    '            <td class="input">';
-                txt += cbText;
-                txt += '' +
-                    '            </td>' +
-                    '            <td>' +
-                    '                <button data-index="' + filterNo + '" class="filter-btn"></button>' +
-                    '            </td>' +
-                    '        </tr>' +
-                    '        </tbody>' +
-                    '    </table>';
+                txt = cbText + '<button data-index="' + filterNo + '" class="filter-btn"></button>\n';
             } else {
                 if (filterNo === 'room') {
                     if (data.rooms) delete data.rooms;
@@ -1528,11 +1504,11 @@ function filterChanged(e) {
             }
         }
 
-        text += '        <tbody>';
-        text += '            <tr>'; //<td></td>';
+        text += '        <tbody>\n';
+        text += '            <tr>\n'; //<td></td>';
 
         forEachColumn(data, function (name) {
-            text += '<td>';
+            text += '<th>';
             // we may not search by value
             if (name === 'ID' || name === 'name' || name === 'enum') {
                 text += textFilterText(name);
@@ -1551,36 +1527,42 @@ function filterChanged(e) {
             } else {
                 text += '<span style="padding-left: ' + lineIndent + '">' + _(name) + '</span>';
             }
-            text += '</td>';
+            text += '</th>';
         });
 
-        text += '               </tr>';
-        text += '        </tbody>';
-        text += '    </table>';
+        text += '            </tr>\n';
+        text += '        </tbody>\n';
+        text += '    </table>\n';
 
-        text += '<div class="' + (data.buttons ? 'grid-main-wh-div' : 'grid-main-wob-div') + '">';
-        text += ' <table class="iob-list-font objects-list-table" cellspacing="0" cellpadding="0">';
-        text += '        <colgroup>';
+        text += '<div class="' + (data.buttons ? 'grid-main-wh-div' : 'grid-main-wob-div') + '">\n';
+        text += '   <table class="iob-list-font objects-list-table" cellspacing="0" cellpadding="0">\n';
+        text += '        <colgroup>\n';
 
-        var thead = '<thead class="grid-objects-head"><tr>';
+        var thead = '<thead class="grid-objects-head"><tr>\n';
 
 
         var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '6%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '9%', enum: '2%'};
 
         forEachColumn(data, function (name, i) {
             var w = data.widths ? data.widths[i] : widths[name] || '2%';
-            text += '<col width="' + w + '"/>';
+            text  += '<col width="' + w + '"/>';
             thead += '<th style="width: ' + w + ';"></th>';
         });
 
-        text += '        </colgroup>';
-        text += thead + '</tr></thead>';
+        text += '        </colgroup>\n';
+        text += thead + '</tr>\n</thead>\n';
 
-        text += '        <tbody>';
-        text += '        </tbody>';
-        text += '    </table></div>' +
-            '<div class="objects-list-running" style="display: none;">' + data.texts.wait + '</div>' +
-            '</div>'
+        text += '        <tbody>\n';
+        text += '        </tbody>\n';
+        text += '    </table>\n</div>\n';
+        if (isMaterial) {
+            text += '<div class="objects-list-running loader"><svg class="spinner" width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">\n' +
+            '      <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>\n' +
+            '</svg></div>\n'
+        } else {
+            text += '<div class="objects-list-running" style="display: none;">' + data.texts.wait + '</div>\n';
+        }
+        text += '</div>\n'
         ;
 
         function addClippyToElement($elem, key, objectId) {
@@ -1618,7 +1600,9 @@ function filterChanged(e) {
 
             source:         data.tree.children,
             extensions:     ['table', 'gridnav', 'filter', 'themeroller'],
-
+            strings: {
+                noData: data.texts.noData
+            },
             themeroller: {
                 addClass: '',  // no rounded corners
                 selectedClass: 'iob-state-active'
@@ -1890,7 +1874,7 @@ function filterChanged(e) {
                             val = isCommon ? obj.common.role || '' : '';
                             setText(val);
 
-                            if (data.quickEdit && obj && data.quickEdit.indexOf ('role') !== -1) {
+                            if (data.quickEdit && obj && data.quickEdit.indexOf('role') !== -1) {
                                 $elem.data('old-value', val);
                                 $elem.on('click', onQuickEditField).data('id', node.key).data('name', 'role').data('selectId', data).addClass('select-id-quick-edit');
                             }
@@ -1918,7 +1902,7 @@ function filterChanged(e) {
                             }
                             setText(val);
 
-                            if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf ('room') !== -1) {
+                            if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('room') !== -1) {
                                 $elem.data('old-value', val);
                                 $elem.on('click', onQuickEditField)
                                     .data('id', node.key)
@@ -2025,7 +2009,7 @@ function filterChanged(e) {
                             if (data.quickEdit &&
                                 obj &&
                                 obj.type === 'state' &&
-                                data.quickEdit.indexOf ('value') !== -1 &&
+                                data.quickEdit.indexOf('value') !== -1 &&
                                 (data.expertMode || obj.common.write !== false)
                             ) {
                                 if (obj.common.role === 'button' && !data.expertMode) {
@@ -2478,34 +2462,43 @@ function filterChanged(e) {
 
             var obj = data.objects[node.key];
             var isCommon = obj && obj.common;
+            var value;
 
             for (var f in data.filterVals) {
                 //if (f === 'length') continue;
                 //if (isCommon === null) isCommon = obj && obj.common;
+                if (!data.filterVals.hasOwnProperty(f)) continue;
 
                 switch (f) {
                     case 'length':
                         continue;
                     case 'ID':
-                        if (node.key.toLowerCase ().indexOf (data.filterVals[f]) === -1) return false;
+                        if (node.key.toLowerCase ().indexOf(data.filterVals[f]) === -1) return false;
                         break;
                     case 'name':
                     case 'enum':
-                        if (!isCommon || obj.common[f] === undefined || obj.common[f].toLowerCase ().indexOf (data.filterVals[f]) === -1) return false;
+                        if (!isCommon || obj.common[f] === undefined) return false;
+                        value = obj.common[f];
+                        if (typeof value === 'object') {
+                            value = value[systemLang] || value.en || '';
+                        }
+                        if ((value || '').toLowerCase().indexOf(data.filterVals[f]) === -1) {
+                            return false;
+                        }
                         break;
                     case 'role':
                         if (data.roleExactly) {
                             if (!isCommon || obj.common[f] === undefined || obj.common[f] !== data.filterVals[f]) return false;
                         } else {
-                            if (!isCommon || obj.common[f] === undefined || obj.common[f].indexOf (data.filterVals[f]) === -1) return false;
+                            if (!isCommon || obj.common[f] === undefined || obj.common[f].indexOf(data.filterVals[f]) === -1) return false;
                         }
                         break;
                     case 'type':
                         if (!obj || obj[f] === undefined || obj[f] !== data.filterVals[f]) return false;
                         break;
-                    case 'value':
-                        if (!data.states[node.key] || data.states[node.key].val === undefined || data.states[node.key].val === null || data.states[node.key].val.toString ().toLowerCase ().indexOf (data.filterVals[f]) === -1) return false;
-                        break;
+                    /*case 'value':
+                        if (!data.states[node.key] || data.states[node.key].val === undefined || data.states[node.key].val === null || data.states[node.key].val.toString ().toLowerCase ().indexOf(data.filterVals[f]) === -1) return false;
+                        break;*/
                     case 'button':
                         if (data.filterVals[f] === 'true') {
                             if (!isCommon || !obj.common.custom || obj.common.custom.enabled === false) return false;
@@ -2519,15 +2512,15 @@ function filterChanged(e) {
                         if (!obj || !data.rooms) return false;
 
                         // Try to find room
-                        if (!data.rooms[node.key]) data.rooms[node.key] = findRoomsForObject (data, node.key);
-                        if (data.rooms[node.key].indexOf (data.filterVals[f]) === -1) return false;
+                        if (!data.rooms[node.key]) data.rooms[node.key] = findRoomsForObject(data, node.key);
+                        if (data.rooms[node.key].indexOf(data.filterVals[f]) === -1) return false;
                         break;
                     case 'function':
                         if (!obj || !data.funcs) return false;
 
                         // Try to find functions
-                        if (!data.funcs[node.key]) data.funcs[node.key] = findFunctionsForObject (data, node.key);
-                        if (data.funcs[node.key].indexOf (data.filterVals[f]) === -1) return false;
+                        if (!data.funcs[node.key]) data.funcs[node.key] = findFunctionsForObject(data, node.key);
+                        if (data.funcs[node.key].indexOf(data.filterVals[f]) === -1) return false;
                         break;
                 }
             }
@@ -2538,7 +2531,9 @@ function filterChanged(e) {
         var resizeTimer;
         $(window).on('resize', function (/* x, y */) {
             if (resizeTimer) clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(syncHeader.bind(null, $dlg), 100);
+            resizeTimer = setTimeout(function () {
+                syncHeader($dlg);
+            }, 100);
         });
         $dlg.trigger('resize');
 
@@ -2554,7 +2549,7 @@ function filterChanged(e) {
 
             var $ee = $dlg.find('.objects-list-running');
             $ee.show();
-            data.$tree.fancytree ('getTree').filterNodes (customFilter, false);
+            data.$tree.fancytree('getTree').filterNodes (customFilter, false);
             $ee.hide();
             //}, 0);
         }).keyup(function () {
@@ -2889,7 +2884,7 @@ function filterChanged(e) {
                         setFilterVal(data, field, f[field]);
                     }
                     //}, 0);
-                } catch(e) {
+                } catch (e) {
                     console.error('Cannot parse settings: ' + e);
                 }
             } else if (!data.filter) {
@@ -3002,7 +2997,10 @@ function filterChanged(e) {
                 selectAll: 'Select all',
                 unselectAll: 'Unselect all',
                 invertSelection: 'Invert selection',
-                copyToClipboard: 'Copy to clipboard'
+                copyToClipboard: 'Copy to clipboard',
+                expertMode: 'Toggle expert mode',
+                button:    'Settings',
+                noData:   'No data'
             }, settings.texts);
 
             var that = this;

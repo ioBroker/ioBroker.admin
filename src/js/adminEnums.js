@@ -636,7 +636,8 @@ function Enums(main) {
                 expertMode: _('Toggle expert mode'),
                 refresh:	_('Update'),
                 sort:       _('Sort alphabetically'),
-                button: 'History'
+                button:     _('Settings'),
+                noData:     _('No data')
             },
             filter: {
                 type: 'state'

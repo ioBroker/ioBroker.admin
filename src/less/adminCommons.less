@@ -309,7 +309,7 @@ table.instance-table>thead>tr>th {
   }
 
   th.filter-active {
-    background: #ffbfb6;
+    background: @toolbar-filter-active-background;
   }
   .filter-active {
     .list-header-input {
@@ -391,7 +391,7 @@ table.main-header-input-table>tbody>tr.filter-active>td>input,
 table.main-header-input-table>tbody>tr.filter-active>td>select,
 table.main-header-input-table>tbody>tr.filter-active,
 .input-not-empty {
-  background-color: #ffbfb6 !important;
+  background-color: @toolbar-filter-active-background !important;
 }
 
 
@@ -645,4 +645,29 @@ span.select-id-cnt {
   text-align: left;
   color: #000;
   font-size: @list-font-size !important;
+}
+
+// loader
+.loader {
+  width: calc(~"100% - 50px");
+  text-align: center;
+  .spinner {
+    animation: rotator @duration linear infinite;
+  }
+
+  .path {
+    stroke-dasharray: @offset;
+    stroke-dashoffset: 0;
+    transform-origin: center;
+    stroke: #4285F4;
+    animation: dash @duration ease-in-out infinite;
+    //colors (@duration*4) ease-in-out infinite;
+  }
+}
+
+.main-toolbar-table {
+  position: relative;
+  .select-id-custom-buttons {
+    display: inline-block;
+  }
 }

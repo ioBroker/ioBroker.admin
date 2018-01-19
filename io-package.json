@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.0.11",
+    "version": "3.0.12",
     "news": {
+      "3.0.12": {
+        "en": "Old configuration dialogs are fixed\nConverts strings to booleans by object edit\nUpdates in english, german and french translations\nThe buttons layout fixed\nThe event table is fixed",
+        "de": "Alte Konfigurationsdialoge sind korrigiert\nKonvertiert Strings bei der Objektbearbeitung in boolesche Werte\nUpdates in Englisch, Deutsch und Französisch\nDas Tastenlayout wurde korrigiert\nDie Ereignistabelle ist korrigiert",
+        "ru": "Исправлены старые диалоги конфигурации\nПреобразует строки в boolean при редактировании объектов\nОбновления на английском, немецком и французском языках\nИсправлено расположение кнопок\nТаблица событий исправлена",
+        "pt": "Diálogos de configuração antigos são corrigidos\nConverte strings em booleanos por edição de objeto\nAtualizações em inglês, alemão e francês\nO layout dos botões é corrigido\nA tabela de eventos é fixa",
+        "nl": "Oude configuratiedialogen staan ​​vast\nConverteert strings naar booleans door objectbewerking\nUpdates in Engelse, Duitse en Franse vertalingen\nDe lay-out van de knoppen is opgelost\nDe gebeurtenistabel is vastgesteld",
+        "fr": "Les anciennes boîtes de dialogue de configuration sont corrigées\nConvertit les chaînes en booléens par modification d'objet\nMises à jour en anglais, allemand et français\nLa disposition des boutons est fixe\nLa table des événements est fixée",
+        "it": "Le vecchie finestre di configurazione sono fisse\nConverte stringhe in booleani mediante modifica dell'oggetto\nAggiornamenti in inglese, tedesco e francese\nLa disposizione dei pulsanti è stata corretta\nLa tabella degli eventi è fissa",
+        "es": "Los viejos diálogos de configuración son fijos\nConvierte cadenas en booleanos por edición de objeto\nActualizaciones en inglés, alemán y francés\nLa disposición de los botones está arreglada\nLa tabla de eventos es fija",
+        "pl": "Stare okna dialogowe konfiguracji są poprawione\nKonwertuje łańcuchy znaków na wartości logiczne, edytując obiekt\nAktualizacje w tłumaczeniach na język angielski, niemiecki i francuski\nNaprawiono układ przycisków\nTabela zdarzeń jest naprawiona"
+      },
       "3.0.11": {
         "en": "French translations\nthe error with empty ID was fixed\nadded sort by \"recently updated\"\nadded readme and issues viewer",
         "de": "Französische Übersetzungen\nDer Fehler mit der leeren ID wurde behoben\nSortiert nach \"Zuletzt aktualisiert\"\nViewer für Probleme und Readme hinzugefügt",

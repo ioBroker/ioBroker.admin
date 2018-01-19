@@ -401,8 +401,9 @@ function Objects(main) {
                     expertMode: _('Toggle expert mode'),
                     refresh:	_('Update'),
                     sort:       _('Sort alphabetically'),
-                    button: 'History',
-                    editDialog: _('Edit in dialog')
+                    button:     _('Settings'),
+                    editDialog: _('Edit in dialog'),
+                    noData:     _('No data')
                 },
                 columns: ['ID', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
                 expandedCallback: function (id, childrenCount, hasStates) {

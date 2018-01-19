@@ -186,7 +186,7 @@
         border: 0;
         background: #fff;
     }
-    .main-header-input-table{
+    .main-header-table {
         tr {
             background: #ffffff;
         }
@@ -214,11 +214,7 @@
         font-weight: bold;
         border-radius: 5px
     }
-    .btn-history {
-        position: absolute;
-        top: 5px;
-        right: 20px;
-    }
+
     .ui-state-active.fancytree-active {
         color: black !important;
         .ui-icon {
@@ -246,19 +242,27 @@
         height: 20px;
     }
 
-    .m.main-toolbar-table {
+    .main-toolbar-table {
+        position: relative;
+        .select-id-custom-buttons {
+            display: inline-block;
+        }
+        .iob-toolbar-sep {
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
         .panel-button {
-            line-height:    28px;
-            height:         28px;
-            width:          28px;
             display:        inline-block;
+            line-height:    @toolbar-size;
+            height:         @toolbar-size;
+            width:          @toolbar-size;
             color:          #fff;
             position:       relative;
             overflow:       hidden;
             z-index:        1;
             padding:        0;
             background-color: #2196f3;
-            border-radius: 50%;
+            border-radius:  50%;
             transition:     background-color .3s;
             cursor:         pointer;
             vertical-align: middle;
@@ -271,6 +275,11 @@
                 line-height: 28px;
                 margin-top: -1px;
             }
+        }
+        .btn-history {
+            position:   absolute;
+            top:        0;
+            right:      20px;
         }
     }
     .material {
@@ -299,6 +308,44 @@
         }
     }
 
+    .main-header-table {
+        th {
+            border-right: 1px solid #b9b9b9;
+            color:      gray;
+        }
+        .filter {
+            display:    inline-block;
+            border:     0;
+            height:     24px;
+            width:      calc(~"100% - 5px");
+            padding-left: 5px;
+            background: transparent;
+            color:      gray;
+            font-family: @iob-font;
+            font-size:  @list-font-size !important;
+        }
+        .filter-btn {
+            display: none;
+        }
+        .filter-active {
+            .filter {
+                color:      black;
+                width:      calc(~"100% - 24px");
+            }
+            .filter-btn {
+                padding:    0;
+                display:    inline-block;
+                width:      19px;
+                height:     16px;
+                background: transparent;
+                border:     0;
+                margin-top: 3px;
+                i {
+                    font-size: 12px;
+                }
+            }
+        }
+    }
 }
 
 #select-id-dialog {
