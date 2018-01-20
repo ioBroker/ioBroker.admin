@@ -67,9 +67,6 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 
 ## Todo
 - System Info: show map for coordinates
-- Adapters/Tile view: add to filter - latest updated
-- remove jQuery UI!
-- login page
 - move html tooltips to materialize tooltips
 - tiles for hosts (additionally to table - low prior)
 - tiles for instances (additionally to table - low prior)
@@ -102,7 +99,7 @@ In this project used some icons from Flaticon(c):
 
 ### 3.0.7 (2018-01-01)
 * (soef) update instances, objects and other lists
-* (bluefox) rewrite interface with materialze 
+* (bluefox) rewrite interface with materialize 
 
 ### 2.0.11 (2017-10-23)
 * (bluefox) Configurable event update disable threshold
