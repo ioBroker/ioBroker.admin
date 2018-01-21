@@ -400,7 +400,7 @@ function Enums(main) {
             if (that.list[se].substring(0, id.length + 1) === id + '.') {
                 var en = that.main.objects[that.list[se]];
                 var inverted;
-                var style;
+                var style = '';
                 if (en && en.common && en.common.color) {
                     style = 'background: ' + en.common.color  + '; ';
                     if (that.main.invertColor(en.common.color)) {

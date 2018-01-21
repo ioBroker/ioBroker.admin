@@ -1474,7 +1474,7 @@ $(document).ready(function () {
                         if (obj.type === 'instance') {
                             icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
                         } else if (obj._id.match(/^system\.adapter\./)) {
-                            instance = node.key.split('.', 3);
+                            instance = obj._id.split('.', 3);
                             if (obj.common.icon[0] === '/') {
                                 instance[2] += obj.common.icon;
                             } else {

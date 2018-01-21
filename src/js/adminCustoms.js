@@ -572,26 +572,28 @@ function Customs(main) {
             }
         }
         var _instances = [];
-        for (var i = ids.length - 1; i >= 0; i--) {
-            if (!this.main.objects[ids[i]]) {
-                console.warn('Null object: ' + ids[i]);
-                ids.splice(i, 1);
-            } else {
-                var custom = this.main.objects[ids[i]].common.custom;
-                if (custom) {
-                    var found = false;
-                    // delete disabled entries
-                    for (var h in custom) {
-                        if (!custom.hasOwnProperty(h)) continue;
-                        if (custom[h].enabled === false) {
-                            delete custom[h];
-                        } else {
-                            if (ids.length === 1) _instances.push(h);
-                            found = true;
+        if (ids) {
+            for (var i = ids.length - 1; i >= 0; i--) {
+                if (!this.main.objects[ids[i]]) {
+                    console.warn('Null object: ' + ids[i]);
+                    ids.splice(i, 1);
+                } else {
+                    var custom = this.main.objects[ids[i]].common.custom;
+                    if (custom) {
+                        var found = false;
+                        // delete disabled entries
+                        for (var h in custom) {
+                            if (!custom.hasOwnProperty(h)) continue;
+                            if (custom[h].enabled === false) {
+                                delete custom[h];
+                            } else {
+                                if (ids.length === 1) _instances.push(h);
+                                found = true;
+                            }
                         }
-                    }
-                    if (!found) {
-                        delete this.main.objects[ids[i]].common.custom;
+                        if (!found) {
+                            delete this.main.objects[ids[i]].common.custom;
+                        }
                     }
                 }
             }
