@@ -5,7 +5,7 @@
 /*
  MIT, Copyright 2014-2018 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
 
- version: 1.1.0 (2017.12.28)
+ version: 1.1.1 (2018.01.22)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -887,7 +887,7 @@ function filterChanged(e) {
                     value = '<span style="color: darkviolet; width: 100%;">' + value + '</span>';
                     $parent.html(value);
                 }
-                $(this).dialog('close').dialog('destroy').remove();
+                $dlg.modal('close').remove();
             });
             $dlg.modal().modal('open');
         } else {
@@ -934,11 +934,17 @@ function filterChanged(e) {
             text = '<button class="clippy-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button" ' +
                 'role="button" title="' + data.texts.copyToClipboard + '" ' +
                 //'style="position: absolute; right: 0; top: 0; width: 36px; height: 18px;z-index: 1">' +
-                'style="position: absolute; right: 0; top: 0; z-index: 1; margin-top: 1px;">' +
-                '<span class="ui-button-icon-primary ui-icon ui-icon-clipboard" ></span></button>';
+                'style="position: absolute; right: 0; top: 0; z-index: 1; margin-top: 1px;">';
+            if (typeof M !== 'undefined') {
+                text += '<i class="material-icons tiny">content_copy</i>'
+            } else {
+                text += '<span class="ui-button-icon-primary ui-icon ui-icon-clipboard"></span>'
+            }
+            text += '</button>';
 
             $(this).append(text);
-            $(this).find('.clippy-button').on('click', clippyCopy);
+            var $clippy = $(this).find('.clippy-button');
+            $clippy.on('click', clippyCopy);
         }
 
         if ($(this).hasClass('edit-dialog') && !$(this).find('.edit-dialog-button').length) {
@@ -1312,42 +1318,76 @@ function filterChanged(e) {
         getAllStates(data);
 
         if (!data.noDialog && !data.buttonsDlg) {
-            data.buttonsDlg = [
-                {
-                    id:     'button-ok',
-                    text:   data.texts.select,
-                    click:  function () {
-                        var _data = $dlg.data('selectId');
-                        if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId, _data.objects[_data.selectedID]);
-                        _data.currentId = _data.selectedID;
-                        storeSettings(data);
-                        $dlg.dialog('close');
+            if (typeof M !== 'undefined') {
+                data.buttonsDlg = true;
+                // following structure is expected
+                // <div id="dialog-select-member" class="modal modal-fixed-footer">
+                //     <div class="modal-content">
+                //          <div class="row">
+                //              <div class="col s12 title"></div>
+                //          </div>
+                //         <div class="row">
+                //             <div class="col s12 dialog-content">
+                //             </div>
+                //         </div>
+                //     </div>
+                //     <div class="modal-footer">
+                //         <a class="modal-action modal-close waves-effect waves-green btn btn-set"  ><i class="large material-icons">check</i><span class="translate">Ok</span></a>
+                //         <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons">close</i><span class="translate">Cancel</span></a>
+                //     </div>
+                // </div>
+                $dlg.find('.btn-set').off('click').on('click', function () {
+                    var _data = $dlg.data('selectId');
+                    if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId, _data.objects[_data.selectedID]);
+                    _data.currentId = _data.selectedID;
+                    storeSettings(_data);
+                });
+                $dlg.find('.btn-close').off('click').on('click', function () {
+                    var _data = $dlg.data('selectId');
+                    storeSettings(_data);
+                });
+                $dlg.modal({
+                    dismissible: false
+                });
+            } else {
+                data.buttonsDlg = [
+                    {
+                        id:     'button-ok',
+                        text:   data.texts.select,
+                        click:  function () {
+                            var _data = $dlg.data('selectId');
+                            if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId, _data.objects[_data.selectedID]);
+                            _data.currentId = _data.selectedID;
+                            storeSettings(_data);
+                            $dlg.dialog('close');
+                        }
+                    },
+                    {
+                        text:   data.texts.cancel,
+                        click:  function () {
+                            var _data = $dlg.data('selectId');
+                            storeSettings(_data);
+                            $(this).dialog('close');
+                        }
                     }
-                },
-                {
-                    text:   data.texts.cancel,
-                    click:  function () {
-                        storeSettings(data);
-                        $(this).dialog('close');
-                    }
-                }
-            ];
+                ];
 
-            $dlg.dialog ({
-                autoOpen: false,
-                modal: true,
-                width: '90%',
-                open: function (event) {
-                    $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
-                },
-                close: function () {
-                    storeSettings (data);
-                },
-                height: 500,
-                buttons: data.buttonsDlg
-            });
-            if (data.zindex !== null) {
-                $('div[aria-describedby="' + $dlg.attr('id') + '"]').css({'z-index': data.zindex})
+                $dlg.dialog ({
+                    autoOpen: false,
+                    modal: true,
+                    width: '90%',
+                    open: function (event) {
+                        $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                    },
+                    close: function () {
+                        storeSettings (data);
+                    },
+                    height: 500,
+                    buttons: data.buttonsDlg
+                });
+                if (data.zindex !== null) {
+                    $('div[aria-describedby="' + $dlg.attr('id') + '"]').css({'z-index': data.zindex})
+                }
             }
         }
 
@@ -1584,7 +1624,11 @@ function filterChanged(e) {
             }
         }
 
-        $dlg.html(text);
+        if (typeof M !== 'undefined' && !data.noDialog && !data.buttonsDlg) {
+            $dlg.find('.dialog-content').html(text)
+        } else {
+            $dlg.html(text);
+        }
 
         data.$tree = $dlg.find('.objects-list-table');
         data.$tree[0]._onChange = data.onSuccess || data.onChange;
@@ -1658,13 +1702,20 @@ function filterChanged(e) {
                     _data.selectedID = newId;
                     if (!_data.noDialog) {
                         // Set title of dialog box
-                        $dlg.dialog('option', 'title', _data.texts.selectid + ' - ' + getName(_data.objects[newId], newId));
+                        var title = _data.texts.selectid + ' - ' + getName(_data.objects[newId], newId);
+                        if (typeof M !== 'undefined') {
+                            $dlg.find('.title').text(title);
+                        } else {
+                            $dlg.dialog('option', 'title', title);
+                        }
 
                         // Enable/ disable 'Select' button
                         if (_data.objects[newId]) { // && _data.objects[newId].type === 'state') {
                             $dlg.find('#button-ok').removeClass('ui-state-disabled');
+                            $dlg.find('.btn-set').removeClass('disabled');
                         } else {
                             $dlg.find('#button-ok').addClass('ui-state-disabled');
+                            $dlg.find('.btn-set').addClass('disabled');
                         }
 
                     }
@@ -1687,8 +1738,10 @@ function filterChanged(e) {
                 // Enable/ disable 'Select' button
                 if (newIds.length > 0) {
                     $dlg.find('#button-ok').removeClass('ui-state-disabled');
+                    $dlg.find('.btn-set').removeClass('disabled');
                 } else {
                     $dlg.find('#button-ok').addClass('ui-state-disabled');
+                    $dlg.find('.btn-set').addClass('disabled');
                 }
             },
             renderColumns: function (event, _data) {
@@ -2212,7 +2265,12 @@ function filterChanged(e) {
             dblclick: function (event, _data) {
                 if (data.buttonsDlg && !data.quickEditCallback) {
                     if (_data && _data.node && !_data.node.folder) {
-                        data.buttonsDlg[0].click();
+                        if (typeof M !== 'undefined') {
+                            $dlg.find('.btn-set').trigger('click');
+                            $dlg.modal('close');
+                        } else {
+                            data.buttonsDlg[0].trigger('click');
+                        }
                     }
                 } else if (data.dblclick) {
                     var tree = data.$tree.fancytree('getTree');
@@ -2432,8 +2490,6 @@ function filterChanged(e) {
                 $(this).trigger('nodeCommand', {cmd: cmd});
                 return false;
             }
-        }).on('beforeExpand', function (node, event) {
-            console.log(event);
         });
 
         function customFilter(node) {
@@ -3187,14 +3243,25 @@ function filterChanged(e) {
                     }
                 }
                 if (!data.noDialog) {
-                    $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + (data.currentId || ' '));
-                    if (data.currentId) {
-                        $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + getName(data.objects[data.currentId], data.currentId));
+                    if (typeof M !== 'undefined') {
+                        if (data.currentId) {
+                            $dlg.find('.title').text(data.texts.selectid +  ' - ' + getName(data.objects[data.currentId], data.currentId));
+                            $dlg.find('.btn-set').removeClass('disabled');
+                        } else {
+                            $dlg.find('.title').text(data.texts.selectid);
+                            $dlg.find('.btn-set').addClass('disabled');
+                        }
+                        $dlg.modal('open');
                     } else {
-                        $dlg.find('#button-ok').addClass('ui-state-disabled');
+                        if (data.currentId) {
+                            $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + getName(data.objects[data.currentId], data.currentId));
+                            $dlg.find('#button-ok').removeClass('ui-state-disabled');
+                        } else {
+                            $dlg.dialog('option', 'title', data.texts.selectid);
+                            $dlg.find('#button-ok').addClass('ui-state-disabled');
+                        }
+                        $dlg.dialog('open');
                     }
-
-                    $dlg.dialog('open');
                     showActive($dlg, true);
                 } else {
                     $dlg.show();
@@ -3311,14 +3378,14 @@ function filterChanged(e) {
                 var $dlg = $(dlg);
                 var data = $dlg.data('selectId');
                 if (!data || !data.states || !data.$tree) continue;
-                if (data.states[id] &&
+                /*if (data.states[id] &&
                     state &&
                     data.states[id].val  === state.val  &&
                     data.states[id].ack  === state.ack  &&
                     data.states[id].q    === state.q    &&
                     data.states[id].from === state.from &&
                     data.states[id].ts   === state.ts
-                ) return;
+                ) return;*/
 
                 data.states[id] = state;
                 var tree = data.$tree.fancytree('getTree');

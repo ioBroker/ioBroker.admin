@@ -318,11 +318,12 @@
             border:     0;
             height:     24px;
             width:      calc(~"100% - 5px");
-            padding-left: 5px;
+            padding:    0 0 0 5px;;
             background: transparent;
             color:      gray;
             font-family: @iob-font;
             font-size:  @list-font-size !important;
+            margin-bottom: 0;
         }
         .filter-btn {
             display: none;
@@ -352,5 +353,31 @@
     &>span {
         float:left;
         margin:0 7px 50px 0;
+    }
+}
+.m {
+    #dialog-select-member {
+        width:          calc(~"100% - 2rem");
+        height:         calc(~"100% - 2rem") !important;
+        border:         3px solid #2196f3;
+        box-sizing:     border-box;
+
+        td,
+        th {
+            padding:        1px 4px;
+        }
+        .modal-content {
+            padding:        0.5rem 0.2rem !important;
+            width:          100% !important;
+            overflow:       hidden;
+
+            .title {
+                padding: 3px 10px;
+            }
+
+            .grid-main-wob-div {
+                height:         calc(~"100% - 103px");
+            }
+        }
     }
 }

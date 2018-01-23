@@ -1006,7 +1006,7 @@ function Adapters(main) {
                             install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button" title="' + localTexts['add instance'] + '"><i class="material-icons">add</i></button>' +
                             '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
                             '<div class="small-button-empty">&nbsp;</div>' +
-                            '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button disabled" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
+                            '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
                             ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
                             // TODO do not show adapters not for this platform
                             // platform:   obj.platform, // actually there is only one platform
