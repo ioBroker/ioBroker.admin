@@ -605,7 +605,7 @@ function Customs(main) {
         var $historyTableInstanceBtn = this.$dialog.find('#tab-customs-table .refresh');
         var $historyChartInstanceBtn = this.$dialog.find('#tab-customs-chart .refresh');
 
-        if (ids.length === 1) {
+        if (ids && ids.length === 1) {
             title = _('Storage of %s', ids[0]);
             this.currentCustoms = _instances.length ? ids[0] : null;
             var text = '';
@@ -735,7 +735,7 @@ function Customs(main) {
             }
             this.$dialog.find('#tab-customs-table .title').html(_('Values of %s', ids[0]));
             this.$dialog.find('#tab-customs-chart .title').html(_('Chart for %s', ids[0]));
-        } else {
+        } else if (ids) {
             $historyTableInstance.hide();
             $historyChartInstance.hide();
             $historyTableInstanceBtn.hide();
