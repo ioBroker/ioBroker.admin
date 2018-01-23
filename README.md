@@ -66,11 +66,9 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 **Let's encrypt works only from node.js version>=4.5**
 
 ## Todo
-- System Info: show map for coordinates
 - move html tooltips to materialize tooltips
 - tiles for hosts (additionally to table - low prior)
 - tiles for instances (additionally to table - low prior)
-
 
 ## Used icons
 In this project used some icons from Flaticon(c):

@@ -952,9 +952,15 @@ function filterChanged(e) {
             text = '<button class="edit-dialog-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button" ' +
                 'role="button" title="' + (data.texts.editDialog || '') + '" ' +
                 //'style="position: absolute; right: 0; top: 0; width: 36px; height: 18px;z-index: 1">' +
-                'style="position: absolute; right: 22px; top: 0; z-index: 1; margin-top: 1px;">' +
-                '<span class="ui-button-icon-primary ui-icon ui-icon-pencil"></span></button>';
-            $(this).append(text);
+                'style="position: absolute; right: 22px; top: 0; z-index: 1; margin-top: 1px;">';
+            if (typeof M !== 'undefined') {
+                text += '<i class="material-icons tiny">edit</i>'
+            } else {
+                text += '<span class="ui-button-icon-primary ui-icon ui-icon-pencil"></span></button>';
+                $(this).append(text);
+            }
+            text += '</button>';
+
             $(this).find('.edit-dialog-button').on('click', editValueDialog).data('data', data);
         }
     }
