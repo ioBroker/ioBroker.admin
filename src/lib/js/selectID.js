@@ -1630,7 +1630,7 @@ function filterChanged(e) {
             }
         }
 
-        if (typeof M !== 'undefined' && !data.noDialog && !data.buttonsDlg) {
+        if (typeof M !== 'undefined' && (!data.noDialog || data.buttonsDlg)) {
             $dlg.find('.dialog-content').html(text)
         } else {
             $dlg.html(text);
