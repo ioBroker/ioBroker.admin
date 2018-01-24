@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.0.12",
+    "version": "3.1.0",
     "news": {
+      "3.1.0": {
+        "en": "GUI corrections",
+        "de": "GUI-Korrekturen",
+        "ru": "Исправления GUI",
+        "pt": "Correções GUI",
+        "nl": "GUI-correcties",
+        "fr": "Corrections GUI",
+        "it": "Correzioni della GUI",
+        "es": "Correcciones GUI",
+        "pl": "Poprawki GUI"
+      },
       "3.0.12": {
         "en": "Old configuration dialogs are fixed\nConverts strings to booleans by object edit\nUpdates in english, german and french translations\nThe buttons layout fixed\nThe event table is fixed",
         "de": "Alte Konfigurationsdialoge sind korrigiert\nKonvertiert Strings bei der Objektbearbeitung in boolesche Werte\nUpdates in Englisch, Deutsch und Französisch\nDas Tastenlayout wurde korrigiert\nDie Ereignistabelle ist korrigiert",
