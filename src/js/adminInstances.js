@@ -12,6 +12,12 @@ function Instances(main) {
     this.list          = [];
     this.hostsText     = null;
 
+    if (!window.tdp) {
+        window.tdp = function (x, nachkomma) {
+            return isNaN(x) ? "" : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+    }
+
     function getLinkVar(_var, obj, attr, link, instance) {
         if (attr === 'protocol') attr = 'secure';
 

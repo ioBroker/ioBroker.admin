@@ -8,7 +8,11 @@ function Customs(main) {
     this.customEnabled  = null;
     this.currentCustoms = null; // Id of the currently shown customs dialog
 
-        // ----------------------------- CUSTOMS ------------------------------------------------
+    var $table;
+    var $outer;
+    var hdr;
+
+    // ----------------------------- CUSTOMS ------------------------------------------------
     this.check = function () {
         var found = false;
         for (var u = 0; u < this.main.instances.length; u++) {
@@ -254,11 +258,49 @@ function Customs(main) {
         this.resizeHistory();
     };
 
+    function installColResize() {
+        if (!$.fn.colResizable) return;
+        if ($outer.is(':visible')) {
+            if (!$outer.data('inited')) {
+                hdr = new IobListHeader('grid-history-header', {list: $outer, colWidthOffset: 1, prefix: 'log-filter'});
+
+                hdr.add('text', 'val');
+                hdr.add('text', 'ack');
+                hdr.add('text', 'from');
+                hdr.add('text', 'ts');
+                hdr.add('text', 'lc');
+            }
+
+
+            $outer.colResizable({
+                liveDrag: true,
+
+                partialRefresh: true,
+                marginLeft: 5,
+                postbackSafe:true,
+
+                onResize: function (event) {
+                    return hdr.syncHeader();
+                }
+            });
+            hdr && hdr.syncHeader();
+        } else {
+            setTimeout(function () {
+                installColResize();
+            }, 200)
+        }
+    }
+
     this.loadHistoryTable = function (id, isSilent) {
         var end = (new Date()).getTime() + 10000; // now
+
+        $outer = $outer || that.$dialog.find('#grid-history');
+        $table = $table || that.$dialog.find('#grid-history-body');
+
         if (!isSilent) {
-            this.$dialog.find('#grid-history-body').html('<tr><td colspan="5" style="text-align: center">' + _('Loading...') + '</td></tr>');
+            $table.html('<tr><td colspan="5" style="text-align: center">' + _('Loading...') + '</td></tr>');
         }
+
 
         main.socket.emit('getHistory', id, {
             end:        end,
@@ -272,31 +314,26 @@ function Customs(main) {
             setTimeout(function () {
                 if (!err) {
                     var text = '';
-                    var $table = that.$dialog.find('#tab-customs-table');
-                    var th = $table.find('.body thead tr th');
-                    var classes = [];
-                    th.each(function (i) {
-                        classes[i] = $(this).attr('class').replace('translate', '').trim();
-                    });
                     if (res && res.length) {
                         for (var i = res.length - 1; i >= 0; i--) {
                             text += '<tr>' +
-                                '   <td class="' + classes[0] + '">' + res[i].val  + '</td>' +
-                                '   <td class="' + classes[1] + '">' + res[i].ack  + '</td>' +
-                                '   <td class="' + classes[2] + '">' + (res[i].from || '').replace('system.adapter.', '').replace('system.', '') + '</td>' +
-                                '   <td class="' + classes[3] + '">' + main.formatDate(res[i].ts) + '</td>' +
-                                '   <td class="' + classes[4] + '">' + main.formatDate(res[i].lc) + '</td>' +
+                                '   <td>' + res[i].val  + '</td>' +
+                                '   <td>' + res[i].ack  + '</td>' +
+                                '   <td>' + (res[i].from || '').replace('system.adapter.', '').replace('system.', '') + '</td>' +
+                                '   <td>' + main.formatDate(res[i].ts) + '</td>' +
+                                '   <td>' + main.formatDate(res[i].lc) + '</td>' +
                                 '</tr>\n'
                         }
                     } else {
                         text = '<tr><td colspan="5" style="text-align: center">' + _('No data') + '</td></tr>'
                     }
-                    $table.find('#grid-history-body').html(text)
-                        .data('odd', true);
+                    $table.html(text);
                 } else {
                     console.error(err);
-                    $table.find('#grid-history-body').html('<tr><td colspan="5" style="text-align: center" class="error">' + err + '</td></tr>');
+                    $table.html('<tr><td colspan="5" style="text-align: center" class="error">' + err + '</td></tr>');
                 }
+                installColResize();
+
             }, 0);
         });
     };

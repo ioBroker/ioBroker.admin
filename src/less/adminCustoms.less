@@ -63,12 +63,29 @@
   }
   #tab-customs-chart, #tab-customs-table {
     overflow: hidden;
+
+    .grid-history-head {
+      visibility: hidden;
+      height: 0 !important;
+      //background: #f00; // only for debug
+      th {
+        height: 0!important;
+        padding: 0;
+        border: 0;
+      }
+    }
+    .grid-history-body {
+      td {
+        padding-left: 5px;
+      }
+    }
+
     .row {
       position: relative;
       &.body {
         overflow: auto;
         width: 100%;
-        height: calc(~"100% - "@admin-toolbar-height);
+        height: calc(~"100% - "@admin-toolbar-height~" - 90px");
       }
     }
     .select-wrapper + label {
@@ -77,6 +94,15 @@
     // materialize bug
     .select-wrapper select {
       display: none !important;
+    }
+    .no-margin-below {
+      margin-bottom: 0;
+    }
+    .select-instance-div {
+      position: relative;
+    }
+    .select-wrapper+label{
+      top: 100%;
     }
   }
   #tab-customs-chart {

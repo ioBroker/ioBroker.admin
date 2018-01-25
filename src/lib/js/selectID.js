@@ -2504,16 +2504,16 @@ function filterChanged(e) {
             // Read all filter settings
             if (data.filterVals === null) {
                 data.filterVals = {length: 0};
-                var value;
+                var value_;
 
                 forEachColumn (data, function (name) {
                     //if (name === 'image') return;
-                    value = $dlg.find('.filter[data-index="' + name + '"]').val();
-                    if (name !== 'role' && name !== 'type' && name !== 'room' && name !== 'function' && value) {
-                        value = value.toLowerCase();
+                    value_ = $dlg.find('.filter[data-index="' + name + '"]').val();
+                    if (name !== 'role' && name !== 'type' && name !== 'room' && name !== 'function' && value_) {
+                        value_ = value_.toLowerCase();
                     }
-                    if (value) {
-                        data.filterVals[name] = value;
+                    if (value_) {
+                        data.filterVals[name] = value_;
                         data.filterVals.length++;
                     }
                 });
@@ -2611,7 +2611,7 @@ function filterChanged(e) {
 
             var $ee = $dlg.find('.objects-list-running');
             $ee.show();
-            data.$tree.fancytree('getTree').filterNodes (customFilter, false);
+            data.$tree.fancytree('getTree').filterNodes(customFilter, false);
             $ee.hide();
             //}, 0);
         }).keyup(function () {
@@ -2640,7 +2640,9 @@ function filterChanged(e) {
             $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
-                    if (!data.filterVals.length || node.match || node.subMatch) node.setExpanded(false);
+                    if (!data.filterVals.length || node.match || node.subMatchCount) {
+                        node.setExpanded(false);
+                    }
                 });
                 $dlg.find('.objects-list-running').hide();
             }, 100);
@@ -2657,8 +2659,9 @@ function filterChanged(e) {
             $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
-                    if (!data.filterVals.length || node.match || node.subMatch)
+                    if (!data.filterVals.length || node.match || node.subMatchCount) {
                         node.setExpanded(true);
+                    }
                 });
                 $dlg.find('.objects-list-running').hide();
             }, 100);
@@ -2777,7 +2780,7 @@ function filterChanged(e) {
             $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
-                    if (!data.filterVals.length || node.match || node.subMatch) {
+                    if (!data.filterVals.length || node.match || node.subMatchCount) {
                         // hide checkbox if only states should be selected
                         if (data.objects[node.key] && data.objects[node.key].type === 'state') {
                             node.setSelected(true);
@@ -2845,7 +2848,7 @@ function filterChanged(e) {
             $dlg.find('.objects-list-running').show();
             setTimeout(function () {
                 data.$tree.fancytree('getRootNode').visit(function (node) {
-                    if (!data.filterVals.length || node.match || node.subMatch){
+                    if (!data.filterVals.length || node.match || node.subMatchCount){
                         if (data.objects[node.key] && data.objects[node.key].type === 'state') {
                             node.toggleSelected();
                         }

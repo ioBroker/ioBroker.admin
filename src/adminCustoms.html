@@ -14,11 +14,13 @@
                 <div style="display: none" id="customs-templates"></div>
             </div>
             <div id="tab-customs-table" class="col s12 page">
-                <div class="row header">
-                    <div class="col s12 m12 l4">
+                <div class="row no-margin-below">
+                    <div class="col s12 m12 l12">
                         <h6 class="title"></h6>
                     </div>
-                    <div class="col s6 m3 l2">
+                </div>
+                <div class="row sub-header">
+                    <div class="col s6 m3 l2 select-instance-div">
                         <select class="select-instance"></select>
                         <label class="translate">Show values of instance</label>
                     </div>
@@ -35,18 +37,28 @@
                     </div>
                 </div>
                 <div class="row body">
-                    <table id="grid-history" class="col s12 m12 l8">
+                    <table id="grid-history-header" class="main-header-table">
                         <thead>
-                            <tr>
-                                <th class="translate col s3">val</th>
-                                <th class="translate col s1">ack</th>
-                                <th class="translate col s2">from</th>
-                                <th class="translate col s3">ts</th>
-                                <th class="translate col s3">lc</th>
-                            </tr>
+                            <tr></tr>
                         </thead>
-                        <tbody id="grid-history-body"></tbody>
                     </table>
+                    <div id="grid-history-inner" class="grid-main-wh-div" >
+                        <table id="grid-history" class="col s12">
+                            <colgroup>
+                                <col class="col s3"/>
+                                <col class="col s1"/>
+                                <col class="col s2"/>
+                                <col class="col s3"/>
+                                <col class="col s3"/>
+                            </colgroup>
+                            <thead>
+                                <tr class="grid-history-head">
+                                    <th></th><th></th><th></th><th></th><th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="grid-history-body"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             <div id="tab-customs-chart" class="col s12 page">

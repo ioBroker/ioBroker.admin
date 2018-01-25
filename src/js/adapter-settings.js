@@ -310,6 +310,19 @@ function prepareTooltips() {
         // init tabs
         $('.tabs').mtabs();
 
+        if (common.readme) {
+            // add help link after logo
+            var $logo = $('.logo').first().parent();
+
+            if ($logo.length) {
+                $('<div class="col s12 m8 l10 help-link">' +
+                    '   <a class="btn-floating btn-small waves-effect waves-light" href="' + common.readme +'" target="_blank">' +
+                    '       <i class="material-icons">live_help</i>' +
+                    '   </a>' +
+                    '</div>').insertAfter($logo);
+            }
+        }
+
         $('.value').each(function () {
             var $this = $(this);
 
@@ -319,7 +332,7 @@ function prepareTooltips() {
 
                 var $label = $this.next();
                 if ($label.prop('tagName') === 'LABEL') {
-                    $label.replaceWith('<span style="' + ($label.attr('style') || '') + '" class="' +  ($label.attr('class') || '') + '">' + $label.html() +'</span>')
+                    $label.replaceWith('<span style="' + ($label.attr('style') || '') + '" class="' +  ($label.attr('class') || '') + '">' + $label.html() +'</span>');
                     $label = $this.next();
                 }
 
