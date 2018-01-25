@@ -11,6 +11,20 @@ function Customs(main) {
     var $table;
     var $outer;
     var hdr;
+    var lastHistoryTimeStamp;
+
+    var $tableDateFrom;
+    var $tableDateTo;
+    var $tableTimeFrom;
+    var $tableTimeTo;
+
+    var $chartDateFrom;
+    var $chartDateTo;
+    var $chartTimeFrom;
+    var $chartTimeTo;
+
+    var $historyTableInstance;
+    var $historyChartInstance;
 
     // ----------------------------- CUSTOMS ------------------------------------------------
     this.check = function () {
@@ -41,13 +55,7 @@ function Customs(main) {
 
     this.stateChange = function (id /*, state */) {
         if (this.currentCustoms === id) {
-            // Load data again from adapter
-            if (this.historyTimeout) return;
-
-            this.historyTimeout = setTimeout(function () {
-                that.historyTimeout = null;
-                that.loadHistoryTable(that.$dialog.find('#tab-customs-table .select-instance').data('id'), true);
-            }, 5000);
+            updateTable();
         }
     };
 
@@ -264,6 +272,7 @@ function Customs(main) {
             if (!$outer.data('inited')) {
                 hdr = new IobListHeader('grid-history-header', {list: $outer, colWidthOffset: 1, prefix: 'log-filter'});
 
+                // todo define somehow the width of every column
                 hdr.add('text', 'val');
                 hdr.add('text', 'ack');
                 hdr.add('text', 'from');
@@ -271,7 +280,7 @@ function Customs(main) {
                 hdr.add('text', 'lc');
             }
 
-
+            // Fix somehow, that columns have different widths
             $outer.colResizable({
                 liveDrag: true,
 
@@ -283,7 +292,8 @@ function Customs(main) {
                     return hdr.syncHeader();
                 }
             });
-            hdr && hdr.syncHeader();
+
+            hdr.syncHeader();
         } else {
             setTimeout(function () {
                 installColResize();
@@ -291,32 +301,92 @@ function Customs(main) {
         }
     }
 
-    this.loadHistoryTable = function (id, isSilent) {
-        var end = (new Date()).getTime() + 10000; // now
+    function updateTable(delay) {
+        // Load data again from adapter
+        if (delay) {
+            if (that.historyTimeout) {
+                clearTimeout(that.historyTimeout)
+            }
+        } else if (that.historyTimeout) {
+            return;
+        }
 
-        $outer = $outer || that.$dialog.find('#grid-history');
-        $table = $table || that.$dialog.find('#grid-history-body');
+        that.historyTimeout = setTimeout(function () {
+            that.historyTimeout = null;
+            if ($historyTableInstance) {
+                that.loadHistoryTable($historyTableInstance.data('id'), true);
+            }
+        }, delay || 5000);
+    }
+
+    this.loadHistoryTable = function (id, isSilent) {
+        $outer    = $outer || that.$dialog.find('#grid-history');
+        $table    = $table || that.$dialog.find('#grid-history-body');
 
         if (!isSilent) {
             $table.html('<tr><td colspan="5" style="text-align: center">' + _('Loading...') + '</td></tr>');
         }
 
-
-        main.socket.emit('getHistory', id, {
-            end:        end,
-            count:      50,
+        var request = {
             aggregate: 'none',
-            instance:   this.$dialog.find('#tab-customs-table .select-instance').val(),
+            instance:   $historyTableInstance.val(),
             from:       true,
             ack:        true,
             q:          true
-        }, function (err, res) {
+        };
+        var dateFrom = $tableDateFrom.val() ? M.Datepicker.getInstance($tableDateFrom).toString('yyyy.mm.dd') : '';
+        var timeFrom = $tableTimeFrom.val();
+        var dateTo   = $tableDateTo.val() ? M.Datepicker.getInstance($tableDateTo).toString('yyyy.mm.dd') : '';
+        var timeTo   = $tableTimeTo.val();
+        var empty = true;
+        if (dateTo) {
+            dateTo = new Date(dateTo);
+            empty = false;
+            dateTo.setHours(23);
+            dateTo.setMinutes(59);
+            dateTo.setSeconds(59);
+            dateTo.setMilliseconds(999);
+        } else {
+            dateTo = new Date();
+        }
+        if (timeTo) {
+            var parts = timeTo.split(':');
+            dateTo.setHours(parts[0]);
+            dateTo.setMinutes(parts[1]);
+            dateTo.setSeconds(59);
+            dateTo.setMilliseconds(999);
+            empty = false;
+        }
+        dateTo = dateTo.getTime();
+        if (empty) dateTo += 10000;
+        request.end = dateTo;
+
+        if (dateFrom || timeFrom) {
+            dateFrom = new Date(dateFrom || dateTo);
+            if (timeFrom) {
+                var part__ = timeFrom.split(':');
+                dateFrom.setHours(part__[0]);
+                dateFrom.setMinutes(part__[1]);
+            } else {
+                dateFrom.setHours(0);
+                dateFrom.setMinutes(0);
+            }
+            dateFrom.setSeconds(0);
+            dateFrom.setMilliseconds(0);
+            request.start = dateFrom.getTime();
+        } else {
+            request.count = 50;
+        }
+
+        console.log(dateFrom + ' ' + timeFrom + ' - ' + dateTo + ' ' + timeTo);
+
+        main.socket.emit('getHistory', id, request, function (err, res) {
             setTimeout(function () {
                 if (!err) {
                     var text = '';
                     if (res && res.length) {
                         for (var i = res.length - 1; i >= 0; i--) {
-                            text += '<tr>' +
+                            text += '<tr class="' + (res[i].ts > lastHistoryTimeStamp ? 'highlight' : '') + '">' +
                                 '   <td>' + res[i].val  + '</td>' +
                                 '   <td>' + res[i].ack  + '</td>' +
                                 '   <td>' + (res[i].from || '').replace('system.adapter.', '').replace('system.', '') + '</td>' +
@@ -324,6 +394,7 @@ function Customs(main) {
                                 '   <td>' + main.formatDate(res[i].lc) + '</td>' +
                                 '</tr>\n'
                         }
+                        lastHistoryTimeStamp = res[res.length - 1].ts;
                     } else {
                         text = '<tr><td colspan="5" style="text-align: center">' + _('No data') + '</td></tr>'
                     }
@@ -339,6 +410,7 @@ function Customs(main) {
     };
 
     this.loadHistoryChart = function (id) {
+
         if (id) {
             var port = 0;
             var chart = false;
@@ -391,7 +463,7 @@ function Customs(main) {
                 if (!chart && main.objects[main.instances[i]].common.name === 'rickshaw' && main.objects[main.instances[i]].common.enabled) {
                     chart = 'rickshaw';
                 } else
-                if (main.objects[main.instances[i]].common.name === 'web'      && main.objects[main.instances[i]].common.enabled) {
+                if (main.objects[main.instances[i]].common.name === 'web'  && main.objects[main.instances[i]].common.enabled) {
                     port = main.objects[main.instances[i]].native.port;
                 }
                 if (chart === 'flot' && port) break;
@@ -637,8 +709,8 @@ function Customs(main) {
         }
 
         var title;
-        var $historyTableInstance    = this.$dialog.find('#tab-customs-table .select-instance');
-        var $historyChartInstance    = this.$dialog.find('#tab-customs-chart .select-instance');
+        $historyTableInstance    = this.$dialog.find('#tab-customs-table .select-instance');
+        $historyChartInstance    = this.$dialog.find('#tab-customs-chart .select-instance');
         var $historyTableInstanceBtn = this.$dialog.find('#tab-customs-table .refresh');
         var $historyChartInstanceBtn = this.$dialog.find('#tab-customs-chart .refresh');
 
@@ -708,10 +780,16 @@ function Customs(main) {
                 for (var n = 0; n < i18n.weekdaysAbbrev.length; n++) {
                     i18n.weekdaysAbbrev[n] = i18n.weekdaysShort[n][0];
                 }
-                var $tableDateFrom = this.$dialog.find('#tab-customs-table .datepicker.date-from');
-                var $tableDateTo   = this.$dialog.find('#tab-customs-table .datepicker.date-to');
-                var $chartDateFrom = this.$dialog.find('#tab-customs-chart .datepicker.date-from');
-                var $chartDateTo   = this.$dialog.find('#tab-customs-chart .datepicker.date-to');
+                if (!$tableDateFrom) {
+                    $tableDateFrom = this.$dialog.find('#tab-customs-table .datepicker.date-from');
+                    $tableDateTo   = this.$dialog.find('#tab-customs-table .datepicker.date-to');
+                    $tableTimeFrom = this.$dialog.find('#tab-customs-table .timepicker.time-from');
+                    $tableTimeTo   = this.$dialog.find('#tab-customs-table .timepicker.time-to');
+
+                    $chartDateFrom = this.$dialog.find('#tab-customs-chart .datepicker.date-from');
+                    $chartDateTo   = this.$dialog.find('#tab-customs-chart .datepicker.date-to');
+                }
+
                 $tableDateFrom.datepicker({
                     defaultDate: yesterday,
                     showDaysInNextAndPreviousMonths: true,
@@ -720,21 +798,37 @@ function Customs(main) {
                     i18n: i18n,
                     setDefaultDate: true,
                     firstDay: 1,
-                    onSelect: function (ui, date) {
-                        $(ui).datepicker('close');
+                    onSelect: function (date) {
+                        $tableDateFrom.datepicker('setInputValue');
+                        $tableDateFrom.datepicker('close');
                     }
                 });
-                $chartDateFrom.datepicker({
-                    defaultDate: yesterday,
-                    showDaysInNextAndPreviousMonths: true,
-                    minYear: 2014,
-                    maxYear: 2032,
-                    i18n: i18n,
-                    setDefaultDate: true,
-                    firstDay: 1,
-                    onSelect: function (ui, date) {
-                        $chartDateFrom.datepicker('close');
-                    }
+                $tableDateFrom.on('change', function () {
+                    updateTable(1000);
+                });
+
+                $tableTimeFrom.timepicker({
+                    defaultTime: '00:00',
+                    twelveHour: false, // TODO
+                    doneText: _('Ok'),
+                    clearText: _('Clear'),
+                    cancelText: _('Cancel'),
+                    autoClose: true
+                });
+                $tableTimeFrom.on('change', function () {
+                    updateTable(1000);
+                });
+
+                $tableTimeTo.timepicker({
+                    defaultTime: 'now',
+                    twelveHour: false, // TODO
+                    doneText: _('Ok'),
+                    clearText: _('Clear'),
+                    cancelText: _('Cancel'),
+                    autoClose: true
+                });
+                $tableTimeTo.on('change', function () {
+                    updateTable(1000);
                 });
 
                 $tableDateTo.datepicker({
@@ -745,9 +839,31 @@ function Customs(main) {
                     i18n: i18n,
                     setDefaultDate: true,
                     firstDay: 1,
-                    onSelect: function (ui, date) {
+                    onSelect: function (date) {
+                        $tableDateTo.datepicker('setInputValue');
                         $tableDateTo.datepicker('close');
                     }
+                });
+                $tableDateTo.on('change', function () {
+                    updateTable(1000);
+                });
+
+
+                $chartDateFrom.datepicker({
+                    defaultDate: yesterday,
+                    showDaysInNextAndPreviousMonths: true,
+                    minYear: 2014,
+                    maxYear: 2032,
+                    i18n: i18n,
+                    setDefaultDate: true,
+                    firstDay: 1,
+                    onSelect: function (date) {
+                        $chartDateFrom.datepicker('setInputValue');
+                        $chartDateFrom.datepicker('close');
+                    }
+                });
+                $chartDateFrom.on('change', function () {
+                    that.loadHistoryChart($historyChartInstance.data('id'));
                 });
                 $chartDateTo.datepicker({
                     defaultDate: new Date(),
@@ -757,9 +873,13 @@ function Customs(main) {
                     i18n: i18n,
                     setDefaultDate: true,
                     firstDay: 1,
-                    onSelect: function (ui, date) {
+                    onSelect: function (date) {
+                        $chartDateTo.datepicker('setInputValue');
                         $chartDateTo.datepicker('close');
                     }
+                });
+                $chartDateTo.on('change', function () {
+                    that.loadHistoryChart($historyChartInstance.data('id'));
                 });
             } else {
                 $historyTableInstance.hide();
@@ -794,7 +914,7 @@ function Customs(main) {
                         break;
 
                     case 'tab-customs-table':
-                        that.$dialog.find('#tab-customs-table .select-instance').select();
+                        $historyTableInstance.select();
                         that.loadHistoryChart(); // disable iframe
                         break;
 

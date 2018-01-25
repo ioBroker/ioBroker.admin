@@ -61,9 +61,13 @@
       }
     }
   }
+
   #tab-customs-chart, #tab-customs-table {
     overflow: hidden;
 
+    .highlight {
+      animation: highlight 2s;
+    }
     .grid-history-head {
       visibility: hidden;
       height: 0 !important;
@@ -74,18 +78,22 @@
         border: 0;
       }
     }
-    .grid-history-body {
+    #grid-history-body {
       td {
-        padding-left: 5px;
+        padding-left: 8px !important;
       }
+    }
+    #grid-history-inner {
+      overflow: auto;
+      height: calc(~"100% - 10px");
+      width: 100%;
     }
 
     .row {
       position: relative;
       &.body {
-        overflow: auto;
+        overflow: hidden;
         width: 100%;
-        height: calc(~"100% - "@admin-toolbar-height~" - 90px");
       }
     }
     .select-wrapper + label {
@@ -102,18 +110,14 @@
       position: relative;
     }
     .select-wrapper+label{
-      top: 100%;
+      top: calc(~"100% - 10px");
     }
   }
-  #tab-customs-chart {
-    iframe {
-      border: 0;
-      overflow: hidden;
-      height: 100%;
-      width: 100%;
-    }
-  }
+
   #tab-customs-table {
+    .body {
+      height: calc(~"100% - "@admin-toolbar-height~" - 85px");
+    }
     #grid-history {
       thead tr, thead th {
         background: @admin-table-header-background;
@@ -121,6 +125,20 @@
       tr:nth-child(even) {
         background: @admin-table-row-even-background;
       }
+    }
+  }
+  #tab-customs-chart {
+    .header {
+      margin-bottom: 3rem;
+    }
+    .body {
+      height: calc(~"100% - " @admin-toolbar-height);
+    }
+    iframe {
+      border: 0;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
     }
   }
 }

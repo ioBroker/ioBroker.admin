@@ -26,11 +26,19 @@
                     </div>
                     <div class="col s6 m3 l2">
                         <input type="text" class="datepicker date-from">
-                        <label class="translate">From</label>
+                        <label class="translate">Date From</label>
+                    </div>
+                    <div class="col s6 m3 l2">
+                        <input type="text" class="timepicker time-from">
+                        <label class="translate">Time From</label>
                     </div>
                     <div class="col s6 m3 l2">
                         <input type="text" class="datepicker date-to">
-                        <label class="translate">To</label>
+                        <label class="translate">Date To</label>
+                    </div>
+                    <div class="col s6 m3 l2">
+                        <input type="text" class="timepicker time-to">
+                        <label class="translate">Time To</label>
                     </div>
                     <div class="col s6 m3 l2">
                         <a class="btn-floating btn-large waves-effect waves-light blue refresh"><i class="material-icons">refresh</i></a>
@@ -45,11 +53,11 @@
                     <div id="grid-history-inner" class="grid-main-wh-div" >
                         <table id="grid-history" class="col s12">
                             <colgroup>
-                                <col class="col s3"/>
-                                <col class="col s1"/>
-                                <col class="col s2"/>
-                                <col class="col s3"/>
-                                <col class="col s3"/>
+                                <col style="width: 100px"/>
+                                <col style="width: 100px"/>
+                                <col style="width: 250px"/>
+                                <col style="width: 250px"/>
+                                <col style="width: 250px"/>
                             </colgroup>
                             <thead>
                                 <tr class="grid-history-head">
@@ -66,7 +74,7 @@
                     <div class="col s12 m12 l6">
                         <h6 class="title"></h6>
                     </div>
-                    <div class="col s6 m6 l5">
+                    <div class="col s6 m6 l5 select-instance-div">
                         <select class="select-instance"></select>
                         <label class="translate">Show values of instance</label>
                     </div>
