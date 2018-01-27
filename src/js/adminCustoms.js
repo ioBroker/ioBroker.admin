@@ -319,7 +319,20 @@ function Customs(main) {
         }, delay || 5000);
     }
 
-    this.loadHistoryTable = function (id, isSilent) {
+    function download(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+
+    this.loadHistoryTable = function (id, isSilent, isDownload) {
         $outer    = $outer || that.$dialog.find('#grid-history');
         $table    = $table || that.$dialog.find('#grid-history-body');
 
@@ -377,22 +390,31 @@ function Customs(main) {
         } else {
             request.count = 50;
         }
+        var fileName;
+        if (isDownload) {
+            fileName = new Date(dateTo).toISOString() + '_' + (request.start ? new Date(request.start) : request.count + 'points') + '_' + id + '__' + request.instance + '.csv';
+        }
 
-        console.log(dateFrom + ' ' + timeFrom + ' - ' + dateTo + ' ' + timeTo);
 
         main.socket.emit('getHistory', id, request, function (err, res) {
             setTimeout(function () {
+                var csv = 'value;acknowledged;from;timestamp;lastchanged;\n';
                 if (!err) {
                     var text = '';
                     if (res && res.length) {
                         for (var i = res.length - 1; i >= 0; i--) {
+                            var from = (res[i].from || '').replace('system.adapter.', '').replace('system.', '');
                             text += '<tr class="' + (res[i].ts > lastHistoryTimeStamp ? 'highlight' : '') + '">' +
                                 '   <td>' + res[i].val  + '</td>' +
                                 '   <td>' + res[i].ack  + '</td>' +
-                                '   <td>' + (res[i].from || '').replace('system.adapter.', '').replace('system.', '') + '</td>' +
+                                '   <td>' + from + '</td>' +
                                 '   <td>' + main.formatDate(res[i].ts) + '</td>' +
                                 '   <td>' + main.formatDate(res[i].lc) + '</td>' +
-                                '</tr>\n'
+                                '</tr>\n';
+
+                            if (isDownload) {
+                                csv += res[i].val + ';' + res[i].ack + ';' + (from || '') + ';' + (res[i].ts ? new Date(res[i].ts).toISOString() : '') + ';' + (res[i].lc ? new Date(res[i].lc).toISOString() : '') + ';\n';
+                            }
                         }
                         lastHistoryTimeStamp = res[res.length - 1].ts;
                     } else {
@@ -404,7 +426,9 @@ function Customs(main) {
                     $table.html('<tr><td colspan="5" style="text-align: center" class="error">' + err + '</td></tr>');
                 }
                 installColResize();
-
+                if (isDownload) {
+                    download(fileName, csv);
+                }
             }, 0);
         });
     };
@@ -712,6 +736,7 @@ function Customs(main) {
         $historyTableInstance    = this.$dialog.find('#tab-customs-table .select-instance');
         $historyChartInstance    = this.$dialog.find('#tab-customs-chart .select-instance');
         var $historyTableInstanceBtn = this.$dialog.find('#tab-customs-table .refresh');
+        var $historyTableDownloadBtn = this.$dialog.find('#tab-customs-table .download');
         var $historyChartInstanceBtn = this.$dialog.find('#tab-customs-chart .refresh');
 
         if (ids && ids.length === 1) {
@@ -730,7 +755,8 @@ function Customs(main) {
                     .data('id', ids[0])
                     .html(text)
                     .show()
-                    .off('change').on('change', function () {
+                    .off('change')
+                    .on('change', function () {
                         that.main.saveConfig('object-history-table', $historyTableInstance.val());
                         that.loadHistoryTable($(this).data('id'));
                     });
@@ -754,7 +780,8 @@ function Customs(main) {
                 $historyTableInstanceBtn
                     .data('id', ids[0])
                     .show()
-                    .off('click').on('click', function () {
+                    .off('click')
+                    .on('click', function () {
                         that.$dialog.find('#grid-history-body').html('');
                         that.loadHistoryTable($(this).data('id'));
                     });
@@ -763,6 +790,14 @@ function Customs(main) {
                     .show()
                     .off('click').on('click', function () {
                         that.loadHistoryChart($(this).data('id')); // reinit iframe
+                    });
+
+                $historyTableDownloadBtn
+                    .data('id', ids[0])
+                    .show()
+                    .off('click')
+                    .on('click', function () {
+                        that.loadHistoryTable($(this).data('id'), false, true);
                     });
 
                 var yesterday = new Date();
@@ -886,17 +921,20 @@ function Customs(main) {
                 $historyChartInstance.hide();
                 $historyTableInstanceBtn.hide();
                 $historyChartInstanceBtn.hide();
+                $historyTableDownloadBtn.hide();
             }
             if (this.currentCustoms) {
                 that.main.subscribeStates(this.currentCustoms);
             }
             this.$dialog.find('#tab-customs-table .title').html(_('Values of %s', ids[0]));
             this.$dialog.find('#tab-customs-chart .title').html(_('Chart for %s', ids[0]));
+
         } else if (ids) {
             $historyTableInstance.hide();
             $historyChartInstance.hide();
             $historyTableInstanceBtn.hide();
             $historyChartInstanceBtn.hide();
+            $historyTableDownloadBtn.hide();
             title = _('Storage of %s states', ids.length);
             this.currentCustoms = null;
         }
