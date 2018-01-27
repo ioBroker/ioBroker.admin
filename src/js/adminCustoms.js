@@ -347,6 +347,14 @@ function Customs(main) {
             ack:        true,
             q:          true
         };
+
+        if (!$tableDateFrom) {
+            $tableDateFrom = this.$dialog.find('#tab-customs-table .datepicker.date-from');
+            $tableDateTo   = this.$dialog.find('#tab-customs-table .datepicker.date-to');
+            $tableTimeFrom = this.$dialog.find('#tab-customs-table .timepicker.time-from');
+            $tableTimeTo   = this.$dialog.find('#tab-customs-table .timepicker.time-to');
+        }
+
         var dateFrom = $tableDateFrom.val() ? M.Datepicker.getInstance($tableDateFrom).toString('yyyy.mm.dd') : '';
         var timeFrom = $tableTimeFrom.val();
         var dateTo   = $tableDateTo.val() ? M.Datepicker.getInstance($tableDateTo).toString('yyyy.mm.dd') : '';
@@ -434,6 +442,10 @@ function Customs(main) {
     };
 
     this.loadHistoryChart = function (id) {
+        if (!$chartDateFrom) {
+            $chartDateFrom = this.$dialog.find('#tab-customs-chart .datepicker.date-from');
+            $chartDateTo   = this.$dialog.find('#tab-customs-chart .datepicker.date-to');
+        }
 
         if (id) {
             var port = 0;
@@ -455,13 +467,13 @@ function Customs(main) {
             var $chart = this.$dialog.find('#iframe-history-chart');
 
             var linkTemplate = 'http{isSecure}://{hostname}:{port}/{chart}/index.html?range=1440&zoom=true&axeX=lines&axeY=inside&hoverDetail=true&aggregate=onchange&chartType=step&live=30&instance={instance}&l%5B0%5D%5Bid%5D={id}&l%5B0%5D%5Boffset%5D=0&l%5B0%5D%5Baggregate%5D=minmax&l%5B0%5D%5Bcolor%5D=%231868a8&l%5B0%5D%5Bthickness%5D=1&l%5B0%5D%5Bshadowsize%5D=1&l%5B0%5D%5Bsmoothing%5D=0&l%5B0%5D%5BafterComma%5D=0&l%5B0%5D%5BignoreNull%5D=false&aggregateType=step&aggregateSpan=300&relativeEnd=now&timeType=relative&noBorder=noborder&bg=rgba(0%2C0%2C0%2C0)&timeFormat=%25H%3A%25M&useComma={comma}&noedit=false&animation=0';
-            linkTemplate = linkTemplate.replace('{isSecure}', (isSecure ? 's' : ''));
-            linkTemplate = linkTemplate.replace('{hostname}', location.hostname);
-            linkTemplate = linkTemplate.replace('{port}', port);
-            linkTemplate = linkTemplate.replace('{chart}', chart);
-            linkTemplate = linkTemplate.replace('{instance}', that.$dialog.find('#tab-customs-chart .select-instance').val());
-            linkTemplate = linkTemplate.replace('{id}', encodeURI(id));
-            linkTemplate = linkTemplate.replace('{comma}', that.main.systemConfig && that.main.systemConfig.common && that.main.systemConfig.isFloatComma);
+            linkTemplate = linkTemplate.replace('{isSecure}',   (isSecure ? 's' : ''));
+            linkTemplate = linkTemplate.replace('{hostname}',   location.hostname);
+            linkTemplate = linkTemplate.replace('{port}',       port);
+            linkTemplate = linkTemplate.replace('{chart}',      chart);
+            linkTemplate = linkTemplate.replace('{instance}',   that.$dialog.find('#tab-customs-chart .select-instance').val());
+            linkTemplate = linkTemplate.replace('{id}',         encodeURI(id));
+            linkTemplate = linkTemplate.replace('{comma}',      that.main.systemConfig && that.main.systemConfig.common && that.main.systemConfig.isFloatComma);
 
             // find out
             $chart.attr('src', linkTemplate);//'http' + (isSecure ? 's' : '') + '://' + location.hostname + ':' + port + '/' + chart + '/index.html?range=1440&zoom=true&axeX=lines&axeY=inside&_ids=' + encodeURI(id) + '&width=' + ($chart.width() - 50) + '&hoverDetail=true&height=' + ($chart.height() - 50) + '&aggregate=onchange&chartType=step&live=30&instance=' + that.$dialog.find('#tab-customs-chart .select-instance').val());
