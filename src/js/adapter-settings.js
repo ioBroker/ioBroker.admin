@@ -26,23 +26,23 @@ function preInit () {
     // Extend dictionary with standard words for adapter
     if (typeof systemDictionary === 'undefined') systemDictionary = {};
 
-    systemDictionary.save =           {"en": "Save",           "fr": "Sauvegarder",                     "nl": "Opslaan",             "es": "Salvar",                      "pt": "Salve ",                 "it": "Salvare",                     "de": "Speichern",                "ru": "Сохранить"};
-    systemDictionary.saveclose =      {"en": "Save and close", "fr": "Sauver et fermer",                "nl": "Opslaan en afsluiten","es": "Guardar y cerrar",            "pt": "Salvar e fechar",         "it": "Salva e chiudi",              "de": "Speichern und schließen",  "ru": "Сохранить и выйти"};
-    systemDictionary.none =           {"en": "none",           "fr": "aucun",                           "nl": "geen",                "es": "ninguna",                     "pt": "Nenhum",                  "it": "nessuna",                     "de": "keins",                    "ru": ""};
-    systemDictionary.nonerooms =      {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "ru": ""};
-    systemDictionary.nonefunctions =  {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "ru": ""};
-    systemDictionary.all =            {"en": "all",            "fr": "tout",                            "nl": "alle",                "es": "todas",                       "pt": "todos",                   "it": "tutti",                       "de": "alle",                     "ru": "все"};
-    systemDictionary['Device list'] = {"en": "Device list",    "fr": "Liste des périphériques",         "nl": "Lijst met apparaten", "es": "Lista de dispositivos",       "pt": "Lista de dispositivos",   "it": "Elenco dispositivi",          "de": "Geräteliste",              "ru": "Список устройств"};
-    systemDictionary['new device'] =  {"en": "new device",     "fr": "nouvel appareil",                 "nl": "nieuw apparaat",      "es": "Nuevo dispositivo",           "pt": "Novo dispositivo",        "it": "nuovo dispositivo",           "de": "Neues Gerät",              "ru": "Новое устройство"};
-    systemDictionary.edit =           {"en": "edit",           "fr": "modifier",                        "nl": "Bewerk",              "es": "editar",                      "pt": "editar",                  "it": "modificare",                  "de": "Ändern",                   "ru": "Изменить"};
-    systemDictionary.delete =         {"en": "delete",         "fr": "effacer",                         "nl": "Delete",              "es": "borrar",                      "pt": "excluir",                 "it": "Elimina",                     "de": "Löschen",                  "ru": "Удалить"};
-    systemDictionary.pair =           {"en": "pair",           "fr": "paire",                           "nl": "paar",                "es": "par",                         "pt": "par",                     "it": "paio",                        "de": "Verbinden",                "ru": "Связать"};
-    systemDictionary.unpair =         {"en": "unpair",         "fr": "unpair",                          "nl": "Unpair",              "es": "desvincular",                 "pt": "unpair",                  "it": "Disaccoppia",                 "de": "Trennen",                  "ru": "Разорвать связь"};
-    systemDictionary.ok =             {"en": "Ok",             "fr": "D'accord",                        "nl": "OK",                  "es": "De acuerdo",                  "pt": "Está bem",                "it": "Ok",                          "de": "Ok",                       "ru": "Ok"};
-    systemDictionary.cancel =         {"en": "Cancel",         "fr": "Annuler",                         "nl": "Annuleer",            "es": "Cancelar",                    "pt": "Cancelar",                "it": "Annulla",                     "de": "Abbrechen",                "ru": "Отмена"};
-    systemDictionary.Message =        {"en": "Message",        "fr": "Message",                         "nl": "Bericht",             "es": "Mensaje",                     "pt": "Mensagem",                "it": "Messaggio",                   "de": "Mitteilung",               "ru": "Сообщение"};
-    systemDictionary.close =          {"en": "Close",          "fr": "Fermer",                          "nl": "Dichtbij",            "es": "Cerca",                       "pt": "Fechar",                  "it": "Vicino",                      "de": "Schließen",                "ru": "Закрыть"};
-    systemDictionary.htooltip =       {"en": "Click for help", "fr": "Cliquez pour obtenir de l'aide",  "nl": "Klik voor hulp",      "es": "Haz clic para obtener ayuda", "pt": "Clique para ajuda",       "it": "Fai clic per chiedere aiuto", "de": "Anklicken",                "ru": "Перейти по ссылке"};
+    systemDictionary.save =           {"en": "Save",           "fr": "Sauvegarder",                     "nl": "Opslaan",             "es": "Salvar",                      "pt": "Salve",                   "it": "Salvare",                     "de": "Speichern",                "pl": "Zapisać",                      "ru": "Сохранить"};
+    systemDictionary.saveclose =      {"en": "Save and close", "fr": "Sauver et fermer",                "nl": "Opslaan en afsluiten","es": "Guardar y cerrar",            "pt": "Salvar e fechar",         "it": "Salva e chiudi",              "de": "Speichern und schließen",  "pl": "Zapisz i zamknij",             "ru": "Сохранить и выйти"};
+    systemDictionary.none =           {"en": "none",           "fr": "aucun",                           "nl": "geen",                "es": "ninguna",                     "pt": "Nenhum",                  "it": "nessuna",                     "de": "keins",                    "pl": "Żaden",                        "ru": ""};
+    systemDictionary.nonerooms =      {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": ""};
+    systemDictionary.nonefunctions =  {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": ""};
+    systemDictionary.all =            {"en": "all",            "fr": "tout",                            "nl": "alle",                "es": "todas",                       "pt": "todos",                   "it": "tutti",                       "de": "alle",                     "pl": "wszystko",                     "ru": "все"};
+    systemDictionary['Device list'] = {"en": "Device list",    "fr": "Liste des périphériques",         "nl": "Lijst met apparaten", "es": "Lista de dispositivos",       "pt": "Lista de dispositivos",   "it": "Elenco dispositivi",          "de": "Geräteliste",              "pl": "Lista urządzeń",               "ru": "Список устройств"};
+    systemDictionary['new device'] =  {"en": "new device",     "fr": "nouvel appareil",                 "nl": "nieuw apparaat",      "es": "Nuevo dispositivo",           "pt": "Novo dispositivo",        "it": "nuovo dispositivo",           "de": "Neues Gerät",              "pl": "nowe urządzenie",              "ru": "Новое устройство"};
+    systemDictionary.edit =           {"en": "edit",           "fr": "modifier",                        "nl": "Bewerk",              "es": "editar",                      "pt": "editar",                  "it": "modificare",                  "de": "Ändern",                   "pl": "edytować",                     "ru": "Изменить"};
+    systemDictionary.delete =         {"en": "delete",         "fr": "effacer",                         "nl": "Delete",              "es": "borrar",                      "pt": "excluir",                 "it": "Elimina",                     "de": "Löschen",                  "pl": "kasować",                      "ru": "Удалить"};
+    systemDictionary.pair =           {"en": "pair",           "fr": "paire",                           "nl": "paar",                "es": "par",                         "pt": "par",                     "it": "paio",                        "de": "Verbinden",                "pl": "para",                         "ru": "Связать"};
+    systemDictionary.unpair =         {"en": "unpair",         "fr": "unpair",                          "nl": "Unpair",              "es": "desvincular",                 "pt": "unpair",                  "it": "Disaccoppia",                 "de": "Trennen",                  "pl": "unpair",                       "ru": "Разорвать связь"};
+    systemDictionary.ok =             {"en": "Ok",             "fr": "D'accord",                        "nl": "OK",                  "es": "De acuerdo",                  "pt": "Está bem",                "it": "Ok",                          "de": "Ok",                       "pl": "Ok",                           "ru": "Ok"};
+    systemDictionary.cancel =         {"en": "Cancel",         "fr": "Annuler",                         "nl": "Annuleer",            "es": "Cancelar",                    "pt": "Cancelar",                "it": "Annulla",                     "de": "Abbrechen",                "pl": "Anuluj",                       "ru": "Отмена"};
+    systemDictionary.Message =        {"en": "Message",        "fr": "Message",                         "nl": "Bericht",             "es": "Mensaje",                     "pt": "Mensagem",                "it": "Messaggio",                   "de": "Mitteilung",               "pl": "Wiadomość",                    "ru": "Сообщение"};
+    systemDictionary.close =          {"en": "Close",          "fr": "Fermer",                          "nl": "Dichtbij",            "es": "Cerca",                       "pt": "Fechar",                  "it": "Vicino",                      "de": "Schließen",                "pl": "Blisko",                       "ru": "Закрыть"};
+    systemDictionary.htooltip =       {"en": "Click for help", "fr": "Cliquez pour obtenir de l'aide",  "nl": "Klik voor hulp",      "es": "Haz clic para obtener ayuda", "pt": "Clique para ajuda",       "it": "Fai clic per chiedere aiuto", "de": "Anklicken",                "pl": "Kliknij, aby uzyskać pomoc",   "ru": "Перейти по ссылке"};
     systemDictionary.maxTableRaw =    {
         "en": "Maximum number of allowed raws",
         "de": "Maximale Anzahl von erlaubten Tabellenzeilen",
@@ -51,9 +51,10 @@ function preInit () {
         "fr": "Nombre maximum de raw autorisés",
         "nl": "Maximumaantal toegestane raws",
         "pt": "Número máximo de raias permitidas",
-        "es": "Número máximo de raws permitidos"
+        "es": "Número máximo de raws permitidos",
+        "pl": "Maksymalna liczba dozwolonych surowców"
     };
-    systemDictionary.maxTableRawInfo = {"en": "Warning",       "de": "Warnung",                  "ru": "Внимание", "pt": "Atenção",  "nl": "Waarschuwing", "fr": "Attention", "it": "avvertimento", "es": "Advertencia"};
+    systemDictionary.maxTableRawInfo = {"en": "Warning",       "de": "Warnung",                  "ru": "Внимание", "pt": "Atenção",  "nl": "Waarschuwing", "fr": "Attention", "it": "avvertimento", "es": "Advertencia", "pl": "Ostrzeżenie"};
     systemDictionary["Main settings"] = {
         "en": "Main settings",
         "de": "Haupteinstellungen",
@@ -62,7 +63,8 @@ function preInit () {
         "nl": "Belangrijkste instellingen",
         "fr": "Réglages principaux",
         "it": "Impostazioni principali",
-        "es": "Ajustes principales"
+        "es": "Ajustes principales",
+        "pl": "Ustawienia główne"
       };
 
     systemDictionary["Let's Encrypt SSL"] = {
@@ -73,7 +75,8 @@ function preInit () {
         "nl": "Let's Encrypt certificaten",
         "fr": "Let's Encrypt Certificats",
         "it": "Let's Encrypt certificati",
-        "es": "Let's Encrypt Certificados"
+        "es": "Let's Encrypt Certificados",
+        "pl": "Let's Encrypt certyfikaty"
       };
     systemDictionary["Please activate secure communication"] = {
         "en": "Please activate secure communication",
@@ -83,7 +86,8 @@ function preInit () {
         "nl": "Activeer alstublieft beveiligde communicatie",
         "fr": "Veuillez activer la communication sécurisée",
         "it": "Si prega di attivare la comunicazione sicura",
-        "es": "Por favor active la comunicación segura"
+        "es": "Por favor active la comunicación segura",
+        "pl": "Aktywuj bezpieczną komunikację"
       };
     //socket.on('connection', function () {
         loadSystemConfig(function () {
