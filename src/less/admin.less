@@ -123,6 +123,7 @@ body {
     margin-top: 1px;
     padding-left: 0.5rem;
     a {
+        margin-top: 15px !important; // for safari. Safari does not support line-height
         margin-left: 0.5rem;
     }
     .button-version {
@@ -150,6 +151,9 @@ body {
                 left: 2rem;
             }
         }
+    }
+    li {
+        vertical-align: middle; // for safari. Safari does not support line-height
     }
 }
 
