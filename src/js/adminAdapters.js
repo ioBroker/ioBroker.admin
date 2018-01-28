@@ -93,6 +93,9 @@ function Adapters(main) {
             that.$grid.fancytree({
                 extensions: ['table', 'gridnav', 'filter', 'themeroller'],
                 checkbox:   false,
+                strings: {
+                    noData: _('No data')
+                },
                 table: {
                     indentation: 5      // indent 20px per node level
                 },
@@ -106,10 +109,7 @@ function Adapters(main) {
                     var obj = that.data[node.key];
 
                     function ellipsis(txt) {
-                        var ret = '<div style="padding-left: ' + lineIndent + '; overflow: hidden; white-space: nowrap; text-overflow: ellipsis !important;">' +
-                            txt +
-                            '</div>';
-                        return ret;
+                        return '<div class="text-ellipsis">' + txt + '</div>';
                     }
 
                     if (!obj) {
@@ -657,18 +657,24 @@ function Adapters(main) {
             adapters = {};
             for (var a = 0; a < dependencies.length; a++) {
                 if (typeof dependencies[a] === 'string') continue;
-                for (var b in dependencies[a]) adapters[b] = dependencies[a][b];
+                for (var b in dependencies[a]) {
+                    if (dependencies[a].hasOwnProperty(b)) {
+                        adapters[b] = dependencies[a][b];
+                    }
+                }
             }
         } else {
             adapters = dependencies;
         }
 
         for (var adapter in adapters) {
-            if (adapter === 'js-controller') {
-                if (!semver.satisfies(that.main.objects['system.host.' + that.main.currentHost].common.installedVersion, adapters[adapter])) return _('Invalid version of %s. Required %s', adapter, adapters[adapter]);
-            } else {
-                if (!that.main.objects['system.adapter.' + adapter] || !that.main.objects['system.adapter.' + adapter].common || !that.main.objects['system.adapter.' + adapter].common.installedVersion) return _('No version of %s', adapter);
-                if (!semver.satisfies(that.main.objects['system.adapter.' + adapter].common.installedVersion, adapters[adapter])) return _('Invalid version of %s', adapter);
+            if (adapters.hasOwnProperty(adapter)) {
+                if (adapter === 'js-controller') {
+                    if (!semver.satisfies(that.main.objects['system.host.' + that.main.currentHost].common.installedVersion, adapters[adapter])) return _('Invalid version of %s. Required %s', adapter, adapters[adapter]);
+                } else {
+                    if (!that.main.objects['system.adapter.' + adapter] || !that.main.objects['system.adapter.' + adapter].common || !that.main.objects['system.adapter.' + adapter].common.installedVersion) return _('No version of %s', adapter);
+                    if (!semver.satisfies(that.main.objects['system.adapter.' + adapter].common.installedVersion, adapters[adapter])) return _('Invalid version of %s', adapter);
+                }
             }
         }
         return '';

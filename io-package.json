@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.1.2",
+    "version": "3.1.3",
     "news": {
+      "3.1.3": {
+        "en": "Fixes for Firefox",
+        "de": "Korrekturen für Firefox",
+        "ru": "Исправления для Firefox",
+        "pt": "Correções para Firefox",
+        "nl": "Oplossingen voor Firefox",
+        "fr": "Corrections pour Firefox",
+        "it": "Correzioni per Firefox",
+        "es": "Correcciones para Firefox",
+        "pl": "Poprawki dla przeglądarki Firefox"
+      },
       "3.1.2": {
         "en": "GUI corrections",
         "de": "GUI-Korrekturen",
