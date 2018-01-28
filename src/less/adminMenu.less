@@ -1,5 +1,32 @@
 @import "commons";
 
+#admin_sidemenu_dialog {
+    .tab-selector {
+        margin: 0;
+        font-family:    Tahoma;
+        font-size:      12px;
+        white-space:    nowrap;
+        background:     #fff;
+        position:       absolute;
+        &>div {
+            overflow: visible;
+            z-index: 999;
+            position: absolute;
+            left:0;
+            top: 0;
+        }
+        ul {
+            border: 1px solid #909090;
+            line-height: 32px;
+            padding:8px;
+            margin: 0;
+            list-style: none;
+            float: left;
+            background:#fff;
+            color:#000
+        }
+    }
+}
 // The navigation menu links
 .admin-sidemenu {
     height:         100%;
@@ -135,6 +162,10 @@
         height:     calc(~"100% - " @admin-sidemenu-main-header-height + @admin-sidemenu-main-footer-height + 2*@main-frame-distance + 2);
         overflow:   hidden;
         padding:    @main-frame-distance;
+
+        .admin-sidemenu-body-content {
+            height: 100%; // for MS-edge
+        }
     }
     .admin-sidemenu-footer {
         height:     @admin-sidemenu-main-footer-height;

@@ -421,7 +421,8 @@ function Adapters(main) {
                         that.main.saveConfig('adaptersInstallTab', $(tab).attr('id'));
                     }
                 });
-                if (that.main.config.adaptersInstallTab) {
+
+                if (that.main.config.adaptersInstallTab && !that.main.noSelect) {
                     that.$installDialog.find('.tabs').mtabs('select', that.main.config.adaptersInstallTab);
                 }
             });

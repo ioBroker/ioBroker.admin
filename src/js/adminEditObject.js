@@ -246,7 +246,9 @@ function EditObject(main) {
                         _obj = JSON.parse(that.editor.getValue());
                     } catch (e) {
                         that.main.showMessage(e, _('Parse error'), 'error_outline');
-                        that.$dialog.find('.tabs').mtabs('select', 'object-tab-raw');
+                        if (!that.main.noSelect) {
+                            that.$dialog.find('.tabs').mtabs('select', 'object-tab-raw');
+                        }
                         return false;
                     }
                     that.load(_obj);
@@ -338,7 +340,7 @@ function EditObject(main) {
         var obj = this.main.objects[id];
         if (!obj) return;
 
-        if (this.main.config['object-edit-active'] !== undefined) {
+        if (this.main.config['object-edit-active'] !== undefined && !that.main.noSelect) {
             this.$dialog.find('.tabs').mtabs('select', this.main.config['object-edit-active']);
         }
 
@@ -547,7 +549,9 @@ function EditObject(main) {
             obj = JSON.parse(this.editor.getValue());
         } catch (e) {
             this.main.showMessage(e, _('Parse error'), 'error_outline');
-            this.$dialog.find('.tabs').mtabs('select', 'object-tab-raw');
+            if (!that.main.noSelect) {
+                this.$dialog.find('.tabs').mtabs('select', 'object-tab-raw');
+            }
             return false;
         }
         return obj;

@@ -13,6 +13,11 @@
 }
 
 #tab-instances {
+    // because of MS-EDGE
+    .main-toolbar-table-types-tools {
+        padding: 0;
+        margin: 0;
+    }
     .high-mem {
         color: #FF9999
     }
@@ -32,6 +37,9 @@
         margin-right:   3px;
         height:         24px;
         width:          10rem;
+        &::placeholder {
+            color: black;
+        }
     }
     .instances-filter-clear {
         width:          18px;
@@ -67,8 +75,8 @@
         overflow:       auto;
         margin-left:    1px;
         width:          calc(~"100% - 2px");
-        .instance-table{
-            width:      100%;
+        .instance-table {
+            width:      calc(~"100% - 5px"); //MS-EDGE
         }
     }
 
@@ -162,6 +170,9 @@
         //.iob-font
         font-family: @iob-font;
         font-weight: normal;
+        th {
+            padding: 0 5px;
+        }
     }
 
     thead#grid-instances-head {

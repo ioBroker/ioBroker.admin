@@ -487,7 +487,9 @@ function Customs(main) {
 
         var port  = 0;
         var chart = false;
-        $tabs.find('.tabs').mtabs('select', 'tab-customs-settings');
+
+        initTab('tab-customs-settings');
+
         if (id) {
             $tabs.data('id', id);
 
@@ -671,6 +673,25 @@ function Customs(main) {
     this.allStored = function () {
         return that.$dialog.find('.dialog-system-buttons .btn-save').hasClass('disabled');
     };
+
+    function initTab(id) {
+        switch (id) {
+            case 'tab-customs-settings':
+                that.loadHistoryChart(); // disable iframe
+                break;
+
+            case 'tab-customs-table':
+                $historyTableInstance.select();
+                that.loadHistoryChart(); // disable iframe
+                break;
+
+            case 'tab-customs-chart':
+                that.$dialog.find('#tab-customs-chart .select-instance').select();
+                var $tabs = that.$dialog.find('#tabs-customs');
+                that.loadHistoryChart($tabs.data('id')); // init iframe
+                break;
+        }
+    }
 
     this.init = function () {
         if (this.inited) {
@@ -957,22 +978,7 @@ function Customs(main) {
         $tabs.find('.tabs').mtabs({
             onShow: function (tab)  {
                 if (!tab) return;
-                var id = $(tab).attr('id');
-                switch (id) {
-                    case 'tab-customs-settings':
-                        that.loadHistoryChart(); // disable iframe
-                        break;
-
-                    case 'tab-customs-table':
-                        $historyTableInstance.select();
-                        that.loadHistoryChart(); // disable iframe
-                        break;
-
-                    case 'tab-customs-chart':
-                        that.$dialog.find('#tab-customs-chart .select-instance').select();
-                        that.loadHistoryChart($tabs.data('id')); // init iframe
-                        break;
-                }
+                initTab($(tab).attr('id'));
             }
         });
         this.$dialog.find('#customs-tabs').data('ids', ids);

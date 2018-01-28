@@ -700,7 +700,9 @@ function Users(main) {
             M.updateTextFields('#tab-users-dialog-new');
         }
         $dialog.find('ul.tabs').mtabs();
-        $dialog.find('ul.tabs').mtabs('select', 'tab-users-dialog-new-main');
+        if (!that.main.noSelect) {
+            $dialog.find('ul.tabs').mtabs('select', 'tab-users-dialog-new-main');
+        }
 
         $dialog.modal().modal('open');
     }

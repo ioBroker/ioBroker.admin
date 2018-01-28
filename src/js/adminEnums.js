@@ -465,7 +465,7 @@ function Enums(main) {
             }
         });
 
-        if (that.main.config['enums-active']) {
+        if (that.main.config['enums-active'] && !that.main.noSelect) {
             $tableBody.find('.tabs').mtabs('select', that.main.config['enums-active']);
         }
 

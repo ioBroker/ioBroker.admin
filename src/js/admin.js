@@ -47,6 +47,31 @@ var adapterRedirect = function (redirect, timeout) { // used in adapter settings
 };
 var gMain = null; // for google maps
 
+function detectIE() {
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf('MSIE ');
+    if (msie > 0) {
+        // IE 10 or older => return version number
+        return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+    }
+
+    var trident = ua.indexOf('Trident/');
+    if (trident > 0) {
+        // IE 11 => return version number
+        var rv = ua.indexOf('rv:');
+        return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+    }
+
+    var edge = ua.indexOf('Edge/');
+    if (edge > 0) {
+        // Edge (IE 12+) => return version number
+        return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+    }
+
+    // other browser
+    return false;
+}
+
 (function ($) {
 $(document).ready(function () {
     var path = location.pathname + 'socket.io';
@@ -609,6 +634,13 @@ $(document).ready(function () {
         navigator.userAgent.indexOf('Chrome') === -1 &&
         navigator.userAgent.indexOf('Android') === -1) {
         $('body').addClass('safari');
+        main.browser = 'safari';
+        main.noSelect = true;
+    } else if (detectIE()) {
+        $('body').addClass('ie');
+        // workaround
+        main.browser = 'ie';
+        main.noSelect = true;
     }
 
     // Read all positions, selected widgets for every view,
@@ -650,10 +682,10 @@ $(document).ready(function () {
             var offs = $e.offset();
             offs.top += $e.height() - 2;
 
-            var text = '' +
-                '<dialog open style="margin: 0; font-family: Tahoma; font-size: 12px; white-space: nowrap; background: #fff; position: absolute; top: ' + offs.top + 'px; left: ' + offs.left + 'px;">' + // style="overflow: visible; z-index: 999; ">'
-                '<div style="overflow: visible; z-index: 999; position: absolute; left:0; top: 0;">' +
-                '<ul style="border: 1px solid #909090; line-height: 24px; padding:8px; margin: 0; list-style: none; float: left; background:#fff; color:#000">';
+            var text =
+                '<dialog open class="tab-selector m" style="top: ' + offs.top + 'px; left: ' + offs.left + 'px;">' + // style="overflow: visible; z-index: 999; ">'
+                '<div>' +
+                '<ul style="">';
 
             var $lis = $('#admin_sidemenu_menu');
             for (var tid in allTabs) {
@@ -667,26 +699,35 @@ $(document).ready(function () {
                     }
                 });*/
                 var id = 'chk-' + tid;
-                text += '' +
-                    '<li><input ' + (found ? 'checked' : 'unchecked') + ' style="vertical-align: middle;" class="chk-tab" type="checkbox" id="' + id + '" />' +
-                    '<label style="padding-left: 4px;" for="' + id + '">' + _(name) + '</label></id>';
+                text +=
+                    '<li><input ' + (found ? 'checked' : 'unchecked') + ' class="chk-tab filled-in" type="checkbox" id="' + id + '" />' +
+                    '<span for="' + id + '">' + _(name) + '</span></id>';
             }
             text += '' +
                 '</ul>' +
                 '</div>' +
                 '</dialog>';
-            $dialog.append (text);
+            $dialog.append(text);
 
-            $('.chk-tab').on('click', function(event) {
-                var id = $(event.currentTarget).attr('id').substr(4);
-                if (event.toElement.checked) {
+            $dialog.find('.chk-tab').off('change').on('change', function (event) {
+                var id = $(this).attr('id').substr(4);
+                if ($(this).prop('checked')) {
                     main.systemConfig.common.tabs.push(id);
                 } else {
                     var pos = main.systemConfig.common.tabs.indexOf(id);
-                    if (id !== -1) main.systemConfig.common.tabs.splice(pos, 1);
+                    if (id !== -1) {
+                        main.systemConfig.common.tabs.splice(pos, 1);
+                    }
                 }
                 main.saveTabs();
                 initTabs();
+            });
+            // workaround for materialize checkbox problem
+            $dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
+                var $input = $(this).prev();
+                if (!$input.prop('disabled')) {
+                    $input.prop('checked', !$input.prop('checked')).trigger('change');
+                }
             });
         });
 
@@ -1336,7 +1377,7 @@ $(document).ready(function () {
     };
 
     main.navigateGetParams = function () {
-        var parts = window.location.hash.split('/');
+        var parts = decodeURI(window.location.hash).split('/');
         return parts[2];
     };
 
@@ -1354,7 +1395,7 @@ $(document).ready(function () {
 
         // get actual tab
         if (!options.tab) {
-            var parts   = window.location.hash.split('/');
+            var parts   = decodeURI(window.location.hash).split('/');
             options.tab = parts[0].replace(/^#/, '').replace(/^tab-/, '');
         }
 
@@ -1381,9 +1422,12 @@ $(document).ready(function () {
                 if (!tab || tab === '!') {
                     tab = 'adapters';
                 }
+                // do tab is not found
+
                 var $adminBody = $('.admin-sidemenu-body');
                 var $actualTab = $adminBody.find('.admin-sidemenu-body-content');
                 var $panel     = $('#tab-' + tab);
+
                 if (!$panel.length) {
                      tab = 'adapters';
                 }
