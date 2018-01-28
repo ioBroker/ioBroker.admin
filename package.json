@@ -1,7 +1,7 @@
 {
   "name": "iobroker.admin",
   "description": "The adapter opens a webserver for the ioBroker admin UI.",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "contributors": [
     "bluefox <dogafox@gmail.com>",
     "apollon77",
@@ -60,7 +60,7 @@
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"
   },
-  "main": "admin.js",
+  "main": "main.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha",
     "prepublish": "node node_modules/gulp/bin/gulp default"
