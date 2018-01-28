@@ -72,9 +72,9 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 
 ## Used icons
 In this project used some icons from Flaticon(c):
-- ![006-double-bed.svg](src/img/rooms/006-double-bed.svg) - "designed by smalllikeart from Flaticon"
-- ![016-armchair-1.svg](src/img/rooms/016-armchair-1.svg) - "designed by smalllikeart from Flaticon"
-- ![light-bulb.svg](src/img/devices/light-bulb.svg) - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
+- <img src="src/img/rooms/006-double-bed.svg" height="48" /> - "designed by smalllikeart from Flaticon"
+- <img src="src/img/rooms/016-armchair-1.svg" height="48" /> - "designed by smalllikeart from Flaticon"
+- <img src="src/img/devices/light-bulb.svg" height="48" /> - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 
 ## Changelog
 ### 3.1.2 (2018-01-25)
