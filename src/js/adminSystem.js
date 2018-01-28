@@ -1,3 +1,8 @@
+function initMap () {
+    gMain.dialogs.system.mapLoaded = true;
+    gMain.dialogs.system.updateMap(true);
+}
+
 function System(main) {
     'use strict';
     var that    = this;
@@ -6,6 +11,11 @@ function System(main) {
 
     this.systemRepos  = null;
     this.systemCerts  = null;
+    this.mapLoaded    = false;
+    var mapTimer;
+    var mapInited;
+    var longitude;
+    var latitude;
 
     function string2cert(name, str) {
         if (str.length < 700 && (str.indexOf('/') !== -1 || str.indexOf('\\') !== -1)) {
@@ -210,20 +220,20 @@ function System(main) {
     }
 
     function initRights() {
-        main.systemConfig.common.defaultNewAcl = main.systemConfig.common.defaultNewAcl || {};
-        var acl = main.systemConfig.common.defaultNewAcl;
+        that.main.systemConfig.common.defaultNewAcl = that.main.systemConfig.common.defaultNewAcl || {};
+        var acl = that.main.systemConfig.common.defaultNewAcl;
 
         // fill users
         var text = '';
-        for (var u = 0; u < main.tabs.users.list.length; u++) {
-            text += '<option value="' + main.tabs.users.list[u] + '">' + (main.objects[main.tabs.users.list[u]].common.name || main.tabs.users.list[u]) + '</option>';
+        for (var u = 0; u < that.main.tabs.users.list.length; u++) {
+            text += '<option value="' + that.main.tabs.users.list[u] + '">' + (that.main.objects[that.main.tabs.users.list[u]].common.name || that.main.tabs.users.list[u]) + '</option>';
         }
         $dialog.find('#tab-system-acl-owner').html(text).val(acl.owner || 'system.user.admin');
 
         // fill groups
         text = '';
-        for (u = 0; u < main.tabs.users.groups.length; u++) {
-            text += '<option value="' + main.tabs.users.groups[u] + '">' + (main.objects[main.tabs.users.groups[u]].common.name || main.tabs.users.groups[u]) + '</option>';
+        for (u = 0; u < that.main.tabs.users.groups.length; u++) {
+            text += '<option value="' + that.main.tabs.users.groups[u] + '">' + (that.main.objects[that.main.tabs.users.groups[u]].common.name || that.main.tabs.users.groups[u]) + '</option>';
         }
         $dialog.find('#tab-system-acl-group').html(text).val(acl.ownerGroup || 'system.group.administrator');
 
@@ -263,8 +273,8 @@ function System(main) {
     }
 
     function finishEditingRights () {
-        main.systemConfig.common.defaultNewAcl = main.systemConfig.common.defaultNewAcl || {};
-        var acl = main.systemConfig.common.defaultNewAcl;
+        that.main.systemConfig.common.defaultNewAcl = that.main.systemConfig.common.defaultNewAcl || {};
+        var acl = that.main.systemConfig.common.defaultNewAcl;
         var old = JSON.stringify(acl);
         acl.object = 0;
         acl.object |= $dialog.find('#tab-system-acl-obj-owner-read').prop('checked')  ? 0x400 : 0;
@@ -309,7 +319,7 @@ function System(main) {
     }
 
     function onButtonSave() {
-        var common = main.systemConfig.common;
+        var common = that.main.systemConfig.common;
         var languageChanged   = false;
         var activeRepoChanged = false;
 
@@ -385,10 +395,10 @@ function System(main) {
             });
         }
 
-        main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
+        that.main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
             if (!err) {
-                main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function () {
-                    main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function () {
+                that.main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function () {
+                    that.main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function () {
                         $dialog.find('.btn-save').addClass('disabled');
                         if (languageChanged) {
                             window.location.reload();
@@ -396,16 +406,61 @@ function System(main) {
                             that.main.navigate();
                             if (activeRepoChanged) {
                                 setTimeout(function () {
-                                    main.tabs.adapters.init(true);
+                                    that.main.tabs.adapters.init(true);
                                 }, 0);
                             }
                         }
                     });
                 });
             } else {
-                main.showError(err);
+                that.main.showError(err);
             }
         });
+    }
+
+    this.updateMap = function (immediately) {
+        if (!this.mapLoaded) return;
+        if (!immediately) {
+            clearTimeout(mapTimer);
+            mapTimer = setTimeout(function () {
+                that.updateMap(true);
+            }, 1000);
+            return;
+        }
+        if (mapTimer) {
+            clearTimeout(mapTimer);
+            mapTimer = null;
+        }
+
+        if (latitude || longitude) {
+            var map = new google.maps.Map($dialog.find('.map')[0], {
+                zoom:       14,
+                center:     {lat: parseFloat(latitude), lng: parseFloat(longitude)}
+            });
+
+            var marker = new google.maps.Marker({
+                position:   {lat: parseFloat(latitude), lng: parseFloat(longitude)},
+                map:        map,
+                title:      _('Your home')
+            });
+        }
+    };
+
+    function preInitMap() {
+        if (!mapInited) {
+            mapInited = true;
+            var key1 = 'AIzaSyCIrBRZfZAE';
+            var key2 = '_0C1OplAUy7OXhiWLoZc3eY';
+            var key = key1 + key2;
+
+            // load google API
+            $.ajax({
+                // please do not miss use this api key!
+                url: 'https://maps.googleapis.com/maps/api/js?key=' + key + '&signed_in=true&callback=initMap',
+                dataType: 'script',
+                cache: true
+            });
+        }
     }
 
     this.init = function () {
@@ -431,9 +486,9 @@ function System(main) {
             }
 
             $dialog.find('#diagMode')
-                .val(main.systemConfig.common.diag)
+                .val(that.main.systemConfig.common.diag)
                 .on('change', function () {
-                    main.socket.emit('sendToHost', main.currentHost, 'getDiagData', $(this).val(), function (obj) {
+                    that.main.socket.emit('sendToHost', that.main.currentHost, 'getDiagData', $(this).val(), function (obj) {
                         $dialog.find('#diagSample').html(JSON.stringify(obj, null, 2));
                     });
                 })
@@ -442,11 +497,14 @@ function System(main) {
             // collect all history instances
             var $system_defaultHistory = $dialog.find('#system_defaultHistory');
             $system_defaultHistory.html('<option value=""></option>');
-            for (var id = 0; id < main.instances.length; id++) {
+            for (var id = 0; id < that.main.instances.length; id++) {
                 if (main.objects[main.instances[id]].common.type === 'storage') {
-                    $system_defaultHistory.append('<option value="' + main.instances[id].substring('system.adapter.'.length) + '">' + main.instances[id].substring('system.adapter.'.length) + '</option>');
+                    $system_defaultHistory.append('<option value="' + that.main.instances[id].substring('system.adapter.'.length) + '">' + main.instances[id].substring('system.adapter.'.length) + '</option>');
                 }
             }
+            longitude = that.main.systemConfig.common.longitude;
+            latitude  = that.main.systemConfig.common.latitude;
+            preInitMap();
 
             $dialog.find('.system-settings.value').each(function () {
                 var $this = $(this);
@@ -455,16 +513,27 @@ function System(main) {
                 id = id.substring('system_'.length);
 
                 if ($this.attr('type') === 'checkbox') {
-                    $this.prop('checked', main.systemConfig.common[id]);
+                    $this.prop('checked', that.main.systemConfig.common[id]);
                 } else {
                     if (id === 'isFloatComma') {
-                        $this.val(main.systemConfig.common[id] ? 'true' : 'false');
+                        $this.val(that.main.systemConfig.common[id] ? 'true' : 'false');
                     } else {
-                        $this.val(main.systemConfig.common[id]);
+                        $this.val(that.main.systemConfig.common[id]);
                     }
                 }
             });
-
+            $dialog.find('#system_latitude').off('change').on('change', function () {
+                latitude = $(this).val();
+                that.updateMap();
+            }).off('keyup').on('keyup', function () {
+                $(this).trigger('change');
+            });
+            $dialog.find('#system_longitude').off('change').on('change', function () {
+                longitude = $(this).val();
+                that.updateMap();
+            }).off('keyup').on('keyup', function () {
+                $(this).trigger('change');
+            });
             if (!that.systemCerts.native.letsEncrypt) {
                 that.systemCerts.native.letsEncrypt = {
                     path: 'letsencrypt'
@@ -524,6 +593,7 @@ function System(main) {
 
             $dialog.find('.btn-save').addClass('disabled');
             $tabs.find('.tabs').mtabs('select', 'tab-system-main');
+            that.updateMap();
         });
     };
 
@@ -538,7 +608,7 @@ function System(main) {
     };
 
     this.prepare = function () {
-        if (!main.systemConfig.error) {
+        if (!that.main.systemConfig.error) {
             $('#button-system').off('click').on('click', function () {
                 that.main.navigate({dialog: 'system'});
             });

@@ -45,6 +45,7 @@ var adapterRedirect = function (redirect, timeout) { // used in adapter settings
         }, timeout || 5000);
     }
 };
+var gMain = null; // for google maps
 
 (function ($) {
 $(document).ready(function () {
@@ -558,6 +559,8 @@ $(document).ready(function () {
         }
     };
 
+    gMain = main; // for google maps
+
     var tabs = {
         adapters:   new Adapters(main),
         instances:  new Instances(main),
@@ -601,6 +604,11 @@ $(document).ready(function () {
     // detect touch devices
     if (!('ontouchstart' in window || navigator.maxTouchPoints)) {
         $('body').addClass('desktop-screen');
+    }
+    if (navigator.userAgent.indexOf('Safari') !== -1 &&
+        navigator.userAgent.indexOf('Chrome') === -1 &&
+        navigator.userAgent.indexOf('Android') === -1) {
+        $('body').addClass('safari');
     }
 
     // Read all positions, selected widgets for every view,

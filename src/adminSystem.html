@@ -15,58 +15,65 @@
                 <div class="row">
                     <form class="col s12">
                         <div class="row">
-                            <div class="input-field col s12 m6 l3">
-                                <select id="system_language" class="system-settings value">
-                                    <option value="en">English</option>
-                                    <option value="de">Deutsch</option>
-                                    <option value="ru">русский</option>
-                                    <option value="pt">Portugues</option>
-                                    <option value="nl">Nederlands</option>
-                                    <option value="fr">français</option>
-                                    <option value="it">Italiano</option>
-                                    <option value="es">Espanol</option>
-                                </select>
-                                <label class="translate" for="system_language">System language:</label>
+                            <div class="col s12 m6">
+                                <div class="row">
+                                    <div class="input-field col s12 m6">
+                                        <select id="system_language" class="system-settings value">
+                                            <option value="en">English</option>
+                                            <option value="de">Deutsch</option>
+                                            <option value="ru">русский</option>
+                                            <option value="pt">Portugues</option>
+                                            <option value="nl">Nederlands</option>
+                                            <option value="fr">français</option>
+                                            <option value="it">Italiano</option>
+                                            <option value="es">Espanol</option>
+                                        </select>
+                                        <label class="translate" for="system_language">System language:</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12 m6">
+                                        <select id="system_tempUnit" class="system-settings value">
+                                            <option value="°C">°C</option>
+                                            <option value="°F">°F</option>
+                                        </select>
+                                        <label class="translate" for="system_tempUnit">Temperature units:</label>
+                                    </div>
+                                    <div class="input-field col s12 m6">
+                                        <input type="text" size="5" maxlength="5" id="system_currency" class="system-settings value"/>
+                                        <label class="translate" for="system_currency">Currency:</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12 m6">
+                                        <select id="system_dateFormat" class="system-settings value">
+                                            <option value="DD.MM.YYYY" class="translate">DD.MM.YYYY</option>
+                                            <option value="DD.MM.YY"   class="translate">DD.MM.YY</option>
+                                            <option value="DD/MM/YYYY" class="translate">DD/MM/YYYY</option>
+                                        </select>
+                                        <label class="translate" for="system_dateFormat">Date format:</label>
+                                    </div>
+                                    <div class="input-field col s12 m6">
+                                        <select id="system_isFloatComma" class="system-settings value">
+                                            <option value="true"  class="translate">comma</option>
+                                            <option value="false" class="translate">point</option>
+                                        </select>
+                                        <label class="translate" for="system_isFloatComma">Float divider:</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12 m6">
+                                        <select id="system_defaultHistory" class="system-settings value"></select>
+                                        <label class="translate" for="system_defaultHistory">Default history instance:</label>
+                                    </div>
+                                    <div class="input-field col s12 m6">
+                                        <select id="system_activeRepo" class="system-settings value"></select>
+                                        <label class="translate" for="system_activeRepo">Active repository:</label>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12 m6 l3">
-                                <select id="system_tempUnit" class="system-settings value">
-                                    <option value="°C">°C</option>
-                                    <option value="°F">°F</option>
-                                </select>
-                                <label class="translate" for="system_tempUnit">Temperature units:</label>
-                            </div>
-                            <div class="input-field col s12 m6 l3">
-                                <input type="text" size="5" maxlength="5" id="system_currency" class="system-settings value"/>
-                                <label class="translate" for="system_currency">Currency:</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12 m6 l3">
-                                <select id="system_dateFormat" class="system-settings value">
-                                    <option value="DD.MM.YYYY" class="translate">DD.MM.YYYY</option>
-                                    <option value="DD.MM.YY"   class="translate">DD.MM.YY</option>
-                                    <option value="DD/MM/YYYY" class="translate">DD/MM/YYYY</option>
-                                </select>
-                                <label class="translate" for="system_dateFormat">Date format:</label>
-                            </div>
-                            <div class="input-field col s12 m6 l3">
-                                <select id="system_isFloatComma" class="system-settings value">
-                                    <option value="true"  class="translate">comma</option>
-                                    <option value="false" class="translate">point</option>
-                                </select>
-                                <label class="translate" for="system_isFloatComma">Float divider:</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12 m6 l3">
-                                <select id="system_defaultHistory" class="system-settings value"></select>
-                                <label class="translate" for="system_defaultHistory">Default history instance:</label>
-                            </div>
-                            <div class="input-field col s12 m6 l3">
-                                <select id="system_activeRepo" class="system-settings value"></select>
-                                <label class="translate" for="system_activeRepo">Active repository:</label>
+                            <div class="col s12 m6 map">
+                                <div id="map"></div>
                             </div>
                         </div>
                         <div class="row">
