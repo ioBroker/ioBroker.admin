@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.1.3",
+    "version": "3.1.4",
     "news": {
-      "3.1.3": {
+      "3.1.4": {
         "en": "Fixes for Firefox",
         "de": "Korrekturen für Firefox",
         "ru": "Исправления для Firefox",
@@ -178,7 +178,7 @@
     "localLink": "%protocol%://%ip%:%port%"
   },
   "native": {
-    "port": 9081,
+    "port": 8081,
     "auth": false,
     "secure": false,
     "bind": "0.0.0.0",

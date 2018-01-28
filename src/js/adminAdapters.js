@@ -1130,7 +1130,7 @@ function Adapters(main) {
                     }
                     var $types = $('#main-toolbar-table-types');
                     $types.html(tTypes);
-                    $types.find('.main-toolbar-table-types-item').on('click', function () {
+                    $types.find('.main-toolbar-table-types-item').show().off('click').on('click', function () {
                         that.currentType = $(this).data('type') || '';
                         filterTiles();
                         that.$tab.find('#main-toolbar-table-types-btn').html(_(that.currentType || 'all'));
@@ -1144,7 +1144,7 @@ function Adapters(main) {
                     });
 
                     $types = $('#main-toolbar-table-order');
-                    $types.find('.main-toolbar-table-order-item').on('click', function () {
+                    $types.find('.main-toolbar-table-order-item').off('click').on('click', function () {
                         that.currentOrder = $(this).data('type') || '';
                         //filterTiles();
                         that.$tab.find('#main-toolbar-table-order-btn').html(_(that.currentOrder || 'a-z'));
@@ -1152,7 +1152,7 @@ function Adapters(main) {
                         that._postInit();
                     });
                     if (that.currentOrder && !localTexts[that.currentOrder]) localTexts[that.currentOrder] = _(that.currentOrder);
-                    that.$tab.find('#main-toolbar-table-order-btn').html(localTexts[that.currentOrder || 'a-z']).dropdown({
+                    that.$tab.find('#main-toolbar-table-order-btn').show().html(localTexts[that.currentOrder || 'a-z']).dropdown({
                         constrainWidth: false, // Does not change width of dropdown to that of the activator
                         // hover: true, // Activate on hover
                         gutter: 0
@@ -1160,6 +1160,8 @@ function Adapters(main) {
 
                     filterTiles();
                 } else {
+                    that.$tab.find('#main-toolbar-table-types-btn').hide();
+                    that.$tab.find('#main-toolbar-table-order-btn').hide();
                     // build tree
                     that.$grid.fancytree('getTree').reload(that.tree);
                     that.$grid.find('.fancytree-icon').each(function () {
@@ -1167,7 +1169,7 @@ function Adapters(main) {
                             $(this).css({width: 18, height: 18});
                         }
 
-                        $(this).hover(function () {
+                        $(this).on('hover', function () {
                             var text = '<div class="icon-large" style="' +
                                 'left: ' + Math.round($(this).position().left + $(this).width() + 5) + 'px;"><img src="' + $(this).attr('src') + '"/></div>';
                             var $big = $(text);
