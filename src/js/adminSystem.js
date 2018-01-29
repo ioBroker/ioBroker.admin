@@ -463,6 +463,29 @@ function System(main) {
         }
     }
 
+    function initTab(id) {
+        if (id === 'tab-system-main') {
+            that.updateMap();
+        }
+
+        // Detect materialize
+        if ((id === 'tab-system-letsencrypt' || id === 'tab-system-main' || id === 'tab-system-acl') && window.M && window.M.toast) {
+            M.updateTextFields('#' + id);
+            $dialog.find('optgroup').each(function () {
+                if (!$(this).data('lang')) {
+                    var label = $(this).attr('label');
+                    $(this).data('lang', label);
+                    $(this).attr('label', _(label));
+                }
+            });
+
+            $dialog.find('select').select();
+        } else
+        if (id === 'tab-system-certs') {
+            showMessage(_('Drop the files here'));
+        }
+    }
+
     this.init = function () {
         if (this.inited) {
             return;
@@ -522,12 +545,14 @@ function System(main) {
                     }
                 }
             });
+
             $dialog.find('#system_latitude').off('change').on('change', function () {
                 latitude = $(this).val();
                 that.updateMap();
             }).off('keyup').on('keyup', function () {
                 $(this).trigger('change');
             });
+
             $dialog.find('#system_longitude').off('change').on('change', function () {
                 longitude = $(this).val();
                 that.updateMap();
@@ -553,26 +578,11 @@ function System(main) {
             });
 
             var $tabs = $dialog.find('#tabs-system');
+
             $tabs.find('.tabs').mtabs({
                 onShow: function (tab)  {
                     if (!tab) return;
-                    var id = $(tab).attr('id');
-                    // Detect materialize
-                    if ((id === 'tab-system-letsencrypt' || id === 'tab-system-main' || id === 'tab-system-acl') && window.M && window.M.toast) {
-                        M.updateTextFields('#' + id);
-                        $dialog.find('optgroup').each(function () {
-                            if (!$(this).data('lang')) {
-                                var label = $(this).attr('label');
-                                $(this).data('lang', label);
-                                $(this).attr('label', _(label));
-                            }
-                        });
-
-                        $dialog.find('select').select();
-                    } else
-                    if (id === 'tab-system-certs') {
-                        showMessage(_('Drop the files here'));
-                    }
+                    initTab($(tab).attr('id'));
                 }
             });
 
@@ -592,8 +602,8 @@ function System(main) {
             });
 
             $dialog.find('.btn-save').addClass('disabled');
-            $tabs.find('.tabs').mtabs('select', 'tab-system-main');
-            that.updateMap();
+
+            initTab('tab-system-main');
         });
     };
 

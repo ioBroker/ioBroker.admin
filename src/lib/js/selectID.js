@@ -931,7 +931,7 @@ function filterChanged(e) {
         var data;
         if ($(this).hasClass('clippy') && !$(this).find('.clippy-button').length) {
             data = data || $(this).data('data');
-            text = '<button class="clippy-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button" ' +
+            text = '<button class="clippy-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button m" ' +
                 'role="button" title="' + data.texts.copyToClipboard + '" ' +
                 //'style="position: absolute; right: 0; top: 0; width: 36px; height: 18px;z-index: 1">' +
                 'style="position: absolute; right: 0; top: 0; z-index: 1; margin-top: 1px;">';
@@ -949,7 +949,7 @@ function filterChanged(e) {
 
         if ($(this).hasClass('edit-dialog') && !$(this).find('.edit-dialog-button').length) {
             data = data || $(this).data('data');
-            text = '<button class="edit-dialog-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button" ' +
+            text = '<button class="edit-dialog-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button m" ' +
                 'role="button" title="' + (data.texts.editDialog || '') + '" ' +
                 //'style="position: absolute; right: 0; top: 0; width: 36px; height: 18px;z-index: 1">' +
                 'style="position: absolute; right: 22px; top: 0; z-index: 1; margin-top: 1px;">';
@@ -973,8 +973,6 @@ function filterChanged(e) {
     function installColResize(data, $dlg) {
         if (data.noColumnResize || !$.fn.colResizable) return;
 
-        var data = $dlg.data('selectId');
-        if (!data) return;
         if (data.$tree.is(':visible')) {
             data.$tree.colResizable({
                 liveDrag:       true,
@@ -986,7 +984,7 @@ function filterChanged(e) {
                 marginLeft:     5,
                 postbackSafe:   true,
 
-                onResize: function (event) {
+                onResize: function (/* event */) {
                     syncHeader($dlg);
                 }
             });
@@ -1145,8 +1143,10 @@ function filterChanged(e) {
         }
 
         $this.html(text +
-            '<div class="select-id-quick-edit-buttons ' + editType + '"><div class="ui-icon ui-icon-check select-id-quick-edit-ok"></div>' +
-            '<div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '"></div></div>');
+            '<div class="select-id-quick-edit-buttons m ' + editType + '">' +
+            '   <div class="ui-icon ui-icon-check select-id-quick-edit-ok"></div>' +
+            '   <div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '"></div>' +
+            '</div>');
 
         var oldLeftPadding = $this.css('padding-left');
         var oldWidth = $this.css('width');
@@ -1473,7 +1473,7 @@ function filterChanged(e) {
 
         var text = 
             '<div class="dialog-select-container ' + (isMaterial ? 'material' : '') + '" style="width: 100%; height: 100%">\n' +
-            '    <div class="main-toolbar-table ' + (isMaterial ? 'm' : '') + '">' + tds + '</div>\n' +
+            '    <div class="main-toolbar-table m">' + tds + '</div>\n' +
             '       <table class="main-header-table">\n'
         ;
 
@@ -2122,13 +2122,13 @@ function filterChanged(e) {
                                     text = '';
                                     if (data.editEnd) {
                                         text += '' +
-                                            '<button data-id="' + node.key + '" class="select-button-edit"></button>' +
-                                            '<button data-id="' + node.key + '" class="select-button-ok"></button>' +
-                                            '<button data-id="' + node.key + '" class="select-button-cancel"></button>';
+                                            '<button data-id="' + node.key + '" class="m select-button-edit"></button>' +
+                                            '<button data-id="' + node.key + '" class="m select-button-ok"></button>' +
+                                            '<button data-id="' + node.key + '" class="m select-button-cancel"></button>';
                                     }
 
                                     for (var j = 0; j < data.buttons.length; j++) {
-                                        text += '<button data-id="' + node.key + '" class="select-button-' + j + ' select-button-custom td-button"></button>';
+                                        text += '<button data-id="' + node.key + '" class="m select-button-' + j + ' select-button-custom td-button"></button>';
                                     }
 
                                     setText(text);
@@ -2159,9 +2159,9 @@ function filterChanged(e) {
                                     $elem.text('');
                                 }
                             } else if (data.editEnd) {
-                                text = '<button data-id="' + node.key + '" class="select-button-edit"></button>' +
-                                       '<button data-id="' + node.key + '" class="select-button-ok"></button>' +
-                                       '<button data-id="' + node.key + '" class="select-button-cancel"></button>';
+                                text = '<button data-id="' + node.key + '" class="m select-button-edit"></button>' +
+                                       '<button data-id="' + node.key + '" class="m select-button-ok"></button>' +
+                                       '<button data-id="' + node.key + '" class="m select-button-cancel"></button>';
                             }
 
                             if (data.editEnd) {
@@ -2275,7 +2275,7 @@ function filterChanged(e) {
                             $dlg.find('.btn-set').trigger('click');
                             $dlg.modal('close');
                         } else {
-                            data.buttonsDlg[0].trigger('click');
+                            $('#button-ok').trigger('click');
                         }
                     }
                 } else if (data.dblclick) {
