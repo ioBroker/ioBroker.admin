@@ -1,62 +1,62 @@
-## Descrição detalhada
+## DescriÃ§Ã£o detalhada
 
-O adaptador de administração é usado para configurar todas os adaptadores no ioBroker. Ele fornece uma interface web, que pode ser chamado sob o '<endereço IP do servidor>:8081`. Este adaptador é criado diretamente durante a instalação do ioBroker.
+O adaptador de administraÃ§Ã£o Ã© usado para configurar todas os adaptadores no ioBroker. Ele fornece uma interface web, que pode ser chamado sob o '<endereÃ§o IP do servidor>:8081`. Este adaptador Ã© criado diretamente durante a instalaÃ§Ã£o do ioBroker.
 
-Pelo GUI do adaptador pode ser usada as seguintes funções:
+Pelo GUI do adaptador pode ser usada as seguintes funÃ§Ãµes:
 
-* Instalação de adaptadores adicionais
-* Acesso à visão geral dos objetos
-* Acesso à visão geral dos estados dos objetos
-* Acesso à administração de usuários e grupos
+* InstalaÃ§Ã£o de adaptadores adicionais
+* Acesso Ã  visÃ£o geral dos objetos
+* Acesso Ã  visÃ£o geral dos estados dos objetos
+* Acesso Ã  administraÃ§Ã£o de usuÃ¡rios e grupos
 * Acesso ao arquivo de log
-* Administração dos hosts
+* AdministraÃ§Ã£o dos hosts
 
-## Instalação
+## InstalaÃ§Ã£o
 
-Este adaptador é criado diretamente durante a instalação do ioBroker. Uma instalação manual não é necessária
+Este adaptador Ã© criado diretamente durante a instalaÃ§Ã£o do ioBroker. Uma instalaÃ§Ã£o manual nÃ£o Ã© necessÃ¡ria
 
-## Configuração
+## ConfiguraÃ§Ã£o
 
 ![adapter_admin_konfiguration](img/admin_konfiguration.png)
 
 #### IP
 
-Aqui é deve ser inserido o endereço IP sob o qual o adaptador pode ser alcançado. Várias opções Ipv4 e Ipv6 estão disponíveis.
-<span style="color: #ff0000;">**O default é 0.0.0.0\. Isso não pode ser alterado!**</span>
+Aqui Ã© deve ser inserido o endereÃ§o IP sob o qual o adaptador pode ser alcanÃ§ado. VÃ¡rias opÃ§Ãµes Ipv4 e Ipv6 estÃ£o disponÃ­veis.
+<span style="color: #ff0000;">**O default Ã© 0.0.0.0\. Isso nÃ£o pode ser alterado!**</span>
 
 #### Porta
 
-Aqui é definida a porta sob a qual o administrador pode ser chamado. Se vários servidores da Web estiverem sendo executados no servidor, esta porta deve ser adaptada para que não haja problemas com portas duplicadas.
+Aqui Ã© definida a porta sob a qual o administrador pode ser chamado. Se vÃ¡rios servidores da Web estiverem sendo executados no servidor, esta porta deve ser adaptada para que nÃ£o haja problemas com portas duplicadas.
 
 #### Criptografia
 
-Se você quiser usar o protocolo seguro https, você deve marcar esta caixa.
+Se vocÃª quiser usar o protocolo seguro https, vocÃª deve marcar esta caixa.
 
-#### Autenticação
+#### AutenticaÃ§Ã£o
 
-Se você quiser que use uma autenticação, você deve marcar esta caixa.
+Se vocÃª quiser que use uma autenticaÃ§Ã£o, vocÃª deve marcar esta caixa.
 
 ## Funcionamento
 
-Usando o navegador da Web, vá para a página a seguir:
+Usando o navegador da Web, vÃ¡ para a pÃ¡gina a seguir:
 
-`<Endereço IP do servidor>:8081`
+`<EndereÃ§o IP do servidor>:8081`
 
 ## Abas
 
-Na página principal do administrador existem várias abas. Na instalação básica, as abas são vistas como mostrado. Usando o ícone de lápis na parte superior direita (1), outras abas podem ser adicionadas ou retiradas.
+Na pÃ¡gina principal do administrador existem vÃ¡rias abas. Na instalaÃ§Ã£o bÃ¡sica, as abas sÃ£o vistas como mostrado. Usando o Ã­cone de lÃ¡pis na parte superior direita (1), outras abas podem ser adicionadas ou retiradas.
 
 ![iobroker_adapter_admin_001a](img/admin_ioBroker_Adapter_Admin_001a.jpg)
 
-Informações detalhadas são fornecidas nos links dos títulos.
+InformaÃ§Ãµes detalhadas sÃ£o fornecidas nos links dos tÃ­tulos.
 
 ### [Adaptador](admin/tab-adapters.md)
 
-Aqui os adaptadores disponíveis podem ser instalados e gerenciados.
+Aqui os adaptadores disponÃ­veis podem ser instalados e gerenciados.
 
-### [Instâncias](admin/tab-instances.md)
+### [InstÃ¢ncias](admin/tab-instances.md)
 
-Aqui as instâncias já instaladas podem ser configuradas.
+Aqui as instÃ¢ncias jÃ¡ instaladas podem ser configuradas.
 
 ### [Objetos](admin/tab-objects.md)
 
@@ -68,27 +68,27 @@ Os estados atuais dos objetos.
 
 ### [Eventos](admin/tab-events.md)
 
-Uma lista de atualizações dos estados.
+Uma lista de atualizaÃ§Ãµes dos estados.
 
 ### [Grupos](admin/tab-groups.md)
 
-Aqui você pode criar os grupos de usuários e controlar os direitos desse.
+Aqui vocÃª pode criar os grupos de usuÃ¡rios e controlar os direitos desse.
 
-### [Usuários](admin/tab-users.md)
+### [UsuÃ¡rios](admin/tab-users.md)
 
-Aqui você pode criar os usuários e adicionar eles aos grupos existentes.
+Aqui vocÃª pode criar os usuÃ¡rios e adicionar eles aos grupos existentes.
 
-### [Enumerações](admin/tab-enums.md)
+### [EnumeraÃ§Ãµes](admin/tab-enums.md)
 
-Aqui estão listados os favoritos, as kategorias e os quartos.
+Aqui estÃ£o listados os favoritos, as kategorias e os quartos.
 
 ### [Hosts](admin/tab-hosts.md)
 
-Informações sobre o computador onde ioBroker está instalado. Você pode aqui atualizar a versão do js-controler. Se uma nova versão estiver disponível, a aba aparece em verde.
+InformaÃ§Ãµes sobre o computador onde ioBroker estÃ¡ instalado. VocÃª pode aqui atualizar a versÃ£o do js-controler. Se uma nova versÃ£o estiver disponÃ­vel, a aba aparece em verde.
 
 ### [Log](admin/tab-log.md)
 
 
-### [Configurações do sistema](admin/tab-system.md)
+### [ConfiguraÃ§Ãµes do sistema](admin/tab-system.md)
 
-![Configurações do administrador do sistema](img/admin_Systemeinstellungen.jpg)
+![ConfiguraÃ§Ãµes do administrador do sistema](img/admin_Systemeinstellungen.jpg)

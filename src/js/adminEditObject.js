@@ -15,7 +15,7 @@ function EditObject(main) {
         for (var attr in object) {
             if (!object.hasOwnProperty(attr) || (part === 'common' && (attr === 'name' || attr === 'icon'))) continue;
 
-            if (objectType === 'state' && part === 'common' && attr === 'role') {
+            if (false && objectType === 'state' && part === 'common' && attr === 'role') { // autocomplete is temporally disabled because buggy
                 text += '<div class="input-field col s11">' +
                     '<i class="material-icons prefix">textsms</i>' +
                     '<input type="text" class="object-tab-edit-string autocomplete" data-attr="' + attr + '" value="' + object[attr] + '"/>';
