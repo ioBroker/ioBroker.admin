@@ -32,6 +32,9 @@ Array.prototype.remove = function () {
     }
     return this;
 };
+if (!console.debug) {
+    console.debug = console.log;
+}
 
 var $iframeDialog = null; // used in adapter settings window
 var showConfig = null; // used in adapter settings window

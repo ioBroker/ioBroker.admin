@@ -873,11 +873,11 @@ function filterChanged(e) {
     }
 
     function editValueDialog() {
-        var data = $(this).data('data');
+        var data    = $(this).data('data');
         var $parent = $(this).parent();
-        var value = $parent.data('clippy');
-        var id = $parent.data('id');
-        var $dlg = $('#dialog-value-edit');
+        var value   = $parent.data('clippy');
+        var id      = $parent.data('id');
+        var $dlg    = $('#dialog-value-edit');
         if (typeof M !== 'undefined' && $dlg.length) {
             $dlg.find('textarea').val(value);
             $dlg.find('.btn-set').off('click').on('click', function () {
@@ -956,11 +956,10 @@ function filterChanged(e) {
             if (typeof M !== 'undefined') {
                 text += '<i class="material-icons tiny">edit</i>'
             } else {
-                text += '<span class="ui-button-icon-primary ui-icon ui-icon-pencil"></span></button>';
-                $(this).append(text);
+                text += '<span class="ui-button-icon-primary ui-icon ui-icon-pencil"></span>';
             }
             text += '</button>';
-
+            $(this).append(text);
             $(this).find('.edit-dialog-button').on('click', editValueDialog).data('data', data);
         }
     }
@@ -1036,8 +1035,9 @@ function filterChanged(e) {
         var attr    = $this.data('name');
         var data    = $this.data('selectId');
         var type    = $this.data('type');
-        var $parent = $(event.currentTarget).parent();
-        // actually $parent === $thisParent, but I dont know
+        var innerHTML = this.innerHTML;
+        var $parentTR = $(event.currentTarget).parent();
+        // actually $parentTR === $thisParent, but I dont know
         var $thisParent = $this.parent();
         var clippy  = $thisParent.hasClass('clippy');
         var editDialog = $thisParent.hasClass('edit-dialog');
@@ -1142,16 +1142,17 @@ function filterChanged(e) {
             editType = 'select';
         }
 
+        var oldLeftPadding = $this.css('padding-left');
+        var oldWidth       = $this.css('width');
+        var isTitleEdit    = $this.is('.objects-name-coll-title');
+
         $this.html(text +
             '<div class="select-id-quick-edit-buttons m ' + editType + '">' +
             '   <div class="ui-icon ui-icon-check select-id-quick-edit-ok"></div>' +
             '   <div class="cancel ui-icon ui-icon-close select-id-quick-edit-cancel" title="' + data.texts.cancel + '"></div>' +
             '</div>');
 
-        var oldLeftPadding = $this.css('padding-left');
-        var oldWidth = $this.css('width');
-        var isTitleEdit = $this.is('.objects-name-coll-title');
-        $this.css({'padding-left': 2, width: isTitleEdit ? 'calc(100% - 28px)' : 'calc(100% - 0px)'});
+        $this.css({'padding-left': 2, width: isTitleEdit ? 'calc(100% - 28px)' : '100%'});
 
         var $input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
 
@@ -1166,8 +1167,8 @@ function filterChanged(e) {
             
             // remove jquery UI - todo
             $input.autocomplete({
-                minLength: 0,
-                source: data.roles
+                minLength:  0,
+                source:     data.roles
             }).on('focus', function () {
                 $(this).autocomplete('search', '');
             });
@@ -1180,7 +1181,8 @@ function filterChanged(e) {
             }
         }
         function editDone(ot) {
-            if (ot === undefined) ot = $this.data('old-value') || '';
+            if (ot === undefined) ot = innerHTML;
+            innerHTML = null;
             if (clippy) {
                 $thisParent.addClass('clippy');
             }
@@ -1188,21 +1190,16 @@ function filterChanged(e) {
                 $thisParent.addClass('edit-dialog');
             }
             $thisParent.css({overflow: 'hidden'});
-            $this.css({'padding-left': oldLeftPadding});
-            if (!oldWidth) {
-                $this.removeAttr('width');
-            } else {
-                $this.attr('width', oldWidth);
-            }
-            $this.html(ot).on('click', onQuickEditField).addClass('select-id-quick-edit');
-            //if (activeNode && activeNode.lebgth) activeNode.setActive();
+            $this.css({'padding-left': oldLeftPadding, width: oldWidth ? oldWidth: null});
+            $this.html(ot).off('click').on('click', onQuickEditField).addClass('select-id-quick-edit');
+            //if (activeNode && activeNode.length) activeNode.setActive();
             setTimeout(function () {
                 //$(event.currentTarget).parent().trigger('click'); // re-select the line so we can continue using the keyboard
-                $parent.trigger('click'); // re-select the line so we can continue using the keyboard
+                $parentTR.trigger('click'); // re-select the line so we can continue using the keyboard
             }, 50);
 
-            var $parent = $(event.currentTarget).parent();
-            $parent.focus().trigger('select');
+            //var $parentTR = $(event.currentTarget).parent();
+            $parentTR.focus().trigger('select');
         }
 
         function handleCancel(e) {
@@ -1212,16 +1209,21 @@ function filterChanged(e) {
             }
             e.preventDefault();
             e.stopPropagation();
-            // var old = $this.data('old-value');
             editDone();
         }
 
-        $this.find('.select-id-quick-edit-cancel').on('click', handleCancel);
+        $this
+            .find('.select-id-quick-edit-cancel')
+            .on('click', handleCancel).on('mousedown', function (e) {
+                handleCancel(e);
+            });
 
-        $this.find('.select-id-quick-edit-ok').on('click', function ()  {
-            var _$input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
-            _$input.trigger('blur');
-        });
+        $this
+            .find('.select-id-quick-edit-ok')
+            .on('click', function ()  {
+                var _$input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
+                _$input.trigger('blur');
+            });
 
         if (type === 'checkbox') {
             $input.prop('checked', oldVal);
@@ -1242,7 +1244,7 @@ function filterChanged(e) {
 
                 if (attr === 'value' || JSON.stringify(val) !== JSON.stringify(_oldText)) {
                     data.quickEditCallback(id, attr, val, _oldText);
-                    _oldText = '<span style="color: darkviolet; width: 100%;">' + _oldText + '</span>';
+                    _oldText = '<span style="color: rgb(192, 0, 1); width: 100%;">' + _oldText + '</span>';
                 }
                 editDone(_oldText);
             }.bind(this), 100);
@@ -2001,26 +2003,25 @@ function filterChanged(e) {
                             }
                             break;
                         case 'value':
-                            var common = obj ? obj.common || {} : {};
-
                             var state;
-                            if (data.states && ((state = data.states[node.key]) || data.states[node.key + '.val'] !== undefined)) {
-                                //var $elem = $tdList.eq(base);
+                            if (data.states && obj && obj.type === 'state') {
+                                state = data.states[node.key];
+
                                 var states = getStates(data, node.key);
                                 if (!state) {
                                     state = {
-                                        val: data.states[node.key + '.val'],
-                                        ts: data.states[node.key + '.ts'],
-                                        lc: data.states[node.key + '.lc'],
-                                        from: data.states[node.key + '.from'],
-                                        ack: (data.states[node.key + '.ack'] === undefined) ? '' : data.states[node.key + '.ack'],
-                                        q: (data.states[node.key + '.q'] === undefined) ? 0 : data.states[node.key + '.q']
+                                        val:  data.states[node.key  + '.val'],
+                                        ts:   data.states[node.key  + '.ts'],
+                                        lc:   data.states[node.key  + '.lc'],
+                                        from: data.states[node.key  + '.from'],
+                                        ack:  (data.states[node.key + '.ack'] === undefined) ? '' : data.states[node.key + '.ack'],
+                                        q:    (data.states[node.key + '.q']   === undefined) ? 0  : data.states[node.key + '.q']
                                     };
                                 } else {
                                     state = Object.assign({}, state);
                                 }
 
-                                if (common.role === 'value.time') {
+                                if (isCommon && isCommon.role === 'value.time') {
                                     state.val = state.val ? (new Date(state.val)).toString() : state.val;
                                 }
                                 if (states && states[state.val] !== undefined) {
@@ -2029,13 +2030,13 @@ function filterChanged(e) {
 
                                 var fullVal;
                                 if (state.val === undefined) {
-                                    state.val = '';
+                                    state.val = '&nbsp;';
                                 } else {
                                     // if less 2000.01.01 00:00:00
                                     if (state.ts < 946681200000) state.ts *= 1000;
                                     if (state.lc < 946681200000) state.lc *= 1000;
 
-                                    if (isCommon && common.unit) state.val += ' ' + common.unit;
+                                    if (isCommon && isCommon.unit) state.val += ' ' + isCommon.unit;
                                     fullVal = data.texts.value + ': ' + state.val;
                                     fullVal += '\x0A' + data.texts.ack     + ': ' + state.ack;
                                     fullVal += '\x0A' + data.texts.ts      + ': ' + (state.ts ? formatDate(new Date(state.ts)) : '');
@@ -2043,18 +2044,21 @@ function filterChanged(e) {
                                     fullVal += '\x0A' + data.texts.from    + ': ' + (state.from || '');
                                     fullVal += '\x0A' + data.texts.quality + ': ' + quality2text(state.q || 0);
                                 }
+                                if (state.val === null || state.val === '') {
+                                    state.val = '&nbsp;';
+                                }
 
-                                $elem.html('<span class="highlight" style="display: inline-block; width: 100%; padding-left: ' + lineIndent + ';">' + state.val + '</span>')
-                                    .attr('title', fullVal)
-                                    .css({position: 'relative'});
+                                $elem.html('<span class="highlight select-value">' + state.val + '</span>')
+                                    .attr('title', fullVal);
+
                                 var $span = $elem.find('span');
                                 $span.css({color: state.ack ? (state.q ? 'orange' : '') : '#c00000'});
 
-                                if (obj && obj.type === 'state' && common.type !== 'file') {
+                                if (obj && obj.type === 'state' && isCommon && isCommon.type !== 'file') {
                                     addClippyToElement($elem, state.val,
                                         obj &&
                                         obj.type === 'state' &&
-                                        (data.expertMode || obj.common.write !== false) ? key : undefined);
+                                        (data.expertMode || isCommon.write !== false) ? key : undefined);
                                 }
                             } else {
                                 $elem.text('')
@@ -2066,21 +2070,20 @@ function filterChanged(e) {
                             });
 
                             if (data.quickEdit &&
-                                obj &&
+                                isCommon &&
                                 obj.type === 'state' &&
                                 data.quickEdit.indexOf('value') !== -1 &&
-                                (data.expertMode || obj.common.write !== false)
+                                (data.expertMode || isCommon.write !== false)
                             ) {
-                                if (obj.common.role === 'button' && !data.expertMode) {
+                                if (isCommon.role === 'button' && !data.expertMode) {
                                     $elem.html('<button data-id="' + node.key + '" class="select-button-push"></button>');
-                                } else if (!obj.common || obj.common.type !== 'file') {
-                                    var val_ = data.states[node.key];
-                                    val_ = val_ ? val_.val : '';
-                                    var $span_ = $elem.find('span');
-                                    $span_.data('old-value', val_).data('type', common.type || typeof val_);
+                                } else if (!isCommon || isCommon.type !== 'file') {
+                                    var val_    = data.states[node.key];
+                                    val_        = val_ ? val_.val : '';
+                                    var $span_  = $elem.find('span');
+                                    $span_.data('old-value', val_).data('type', isCommon.type || typeof val_);
 
-                                    //$elem.on('click', onQuickEditField)    //!!!xxx
-                                    $span_.on('click', onQuickEditField)    //!!!xxx
+                                    $span_.on('click', onQuickEditField)
                                         .data('id', node.key)
                                         .data('name', 'value')
                                         .data('selectId', data)
@@ -2105,7 +2108,7 @@ function filterChanged(e) {
                                 }
                             }
 
-                            if (common.type === 'file') {
+                            if (isCommon && isCommon.type === 'file') {
                                 data.webServer = data.webServer || (window.location.protocol + '//' + window.location.hostname + ':8082');
 
                                 // link
