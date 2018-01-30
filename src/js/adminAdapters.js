@@ -303,7 +303,7 @@ function Adapters(main) {
     }
 
     this.prepare = function () {
-        that.$tab.find('#btn_switch_adapters').off('click').on('click', function () {
+        this.$tab.find('#btn_switch_adapters').off('click').on('click', function () {
             that.$tab.find('.process-adapters').show();
             that.isTiles = !that.isTiles;
 
@@ -326,7 +326,7 @@ function Adapters(main) {
             }, 50);
         });
 
-        that.$tab.find('#btn_filter_adapters').off('click').on('click', function () {
+        this.$tab.find('#btn_filter_adapters').off('click').on('click', function () {
             that.$tab.find('.process-adapters').show();
             that.onlyInstalled = !that.onlyInstalled;
             if (that.onlyInstalled) {
@@ -342,7 +342,7 @@ function Adapters(main) {
             }, 50);
         });
 
-        that.$tab.find('#btn_filter_updates').off('click').on('click', function () {
+        this.$tab.find('#btn_filter_updates').off('click').on('click', function () {
             that.$tab.find('.process-adapters').show();
             that.onlyUpdatable = !that.onlyUpdatable;
             onOnlyUpdatableChanged();
@@ -355,7 +355,7 @@ function Adapters(main) {
             }, 200);
         });
 
-        that.$tab.find('#btn_filter_custom_url')
+        this.$tab.find('#btn_filter_custom_url')
             .off('click')
             .on('click', function () {
                 // prepare adapters
@@ -427,7 +427,7 @@ function Adapters(main) {
                 }
             });
 
-        that.$tab.find('#btn_upgrade_all').off('click').on('click', function () {
+        this.$tab.find('#btn_upgrade_all').off('click').on('click', function () {
             that.main.confirmMessage(_('Do you want to upgrade all adapters?'), _('Please confirm'), 'help', function (result) {
                 if (result) {
                     that.main.cmdExec(null, 'upgrade', function (exitCode) {
@@ -437,7 +437,7 @@ function Adapters(main) {
             });
         });
 
-        that.$tab.find('#btn_adapters_expert_mode').on('click', function () {
+        this.$tab.find('#btn_adapters_expert_mode').on('click', function () {
             that.main.config.expertMode = !that.main.config.expertMode;
             that.main.saveConfig('expertMode', that.main.config.expertMode);
             that.updateExpertMode();
@@ -449,45 +449,51 @@ function Adapters(main) {
         }
 
         // save last selected adapter
-        that.$installDialog.find('#install-github-link').on('change', function () {
+        this.$installDialog.find('#install-github-link').on('change', function () {
             that.main.saveConfig('adaptersGithub', $(this).val());
         });
-        that.$installDialog.find('#install-url-link').on('keyup', function (event) {
+        this.$installDialog.find('#install-url-link').on('keyup', function (event) {
             if (event.which === 13) {
                 that.$installDialog.find('#dialog-install-url-button').trigger('click');
             }
         });
 
         // Load settings
-        that.isTiles       = (that.main.config.adaptersIsTiles !== undefined && that.main.config.adaptersIsTiles !== null) ? that.main.config.adaptersIsTiles : true;
-        that.isList        = that.main.config.adaptersIsList        || false;
-        that.onlyInstalled = that.main.config.adaptersOnlyInstalled || false;
-        that.onlyUpdatable = that.main.config.adaptersOnlyUpdatable || false;
-        that.currentFilter = that.main.config.adaptersCurrentFilter || '';
-        that.currentType   = that.main.config.adaptersCurrentType   || '';
-        that.currentOrder  = that.main.config.adaptersCurrentOrder  || 'a-z';
-        that.isCollapsed   = that.main.config.adaptersIsCollapsed ? JSON.parse(that.main.config.adaptersIsCollapsed) : {};
-        if (that.currentFilter) {
-            that.$tab.find('.filter-input').addClass('input-not-empty').val(that.currentFilter);
-            that.$tab.find('.filter-clear').show();
+        this.isTiles       = (this.main.config.adaptersIsTiles !== undefined && this.main.config.adaptersIsTiles !== null) ? this.main.config.adaptersIsTiles : true;
+        this.isList        = this.main.config.adaptersIsList        || false;
+        this.onlyInstalled = this.main.config.adaptersOnlyInstalled || false;
+        this.onlyUpdatable = this.main.config.adaptersOnlyUpdatable || false;
+        this.currentFilter = this.main.config.adaptersCurrentFilter || '';
+        this.currentType   = this.main.config.adaptersCurrentType   || '';
+        this.currentOrder  = this.main.config.adaptersCurrentOrder  || 'a-z';
+        this.isCollapsed   = this.main.config.adaptersIsCollapsed ? JSON.parse(this.main.config.adaptersIsCollapsed) : {};
+        if (this.currentFilter) {
+            this.$tab.find('.filter-input').addClass('input-not-empty').val(that.currentFilter);
+            this.$tab.find('.filter-clear').show();
         } else {
-            that.$tab.find('.filter-clear').hide();
+            this.$tab.find('.filter-clear').hide();
         }
 
-        if (that.onlyInstalled) {
-            that.$tab.find('#btn_filter_adapters').addClass('red lighten-3');
+        if (this.onlyInstalled) {
+            this.$tab.find('#btn_filter_adapters').addClass('red lighten-3');
         } else {
-            that.$tab.find('#btn_filter_adapters').removeClass('red lighten-3');
+            this.$tab.find('#btn_filter_adapters').removeClass('red lighten-3');
+        }
+
+        // fix for IE
+        if (this.main.browser === 'ie' && this.main.browserVersion <= 10) {
+            this.isTiles = false;
+            this.$tab.find('#btn_switch_adapters').hide();
         }
 
         onExpertmodeChanged();
 
-        that.$tab.find('#btn_refresh_adapters').on('click', function () {
+        this.$tab.find('#btn_refresh_adapters').on('click', function () {
             that.init(true, true);
         });
 
         // add filter processing
-        that.$tab.find('.filter-input').on('keyup', function () {
+        this.$tab.find('.filter-input').on('keyup', function () {
             $(this).trigger('change');
         }).on('change', function (event) {
             if (that.filterTimer) {
@@ -512,12 +518,12 @@ function Adapters(main) {
             }, 400);
         });
 
-        that.$tab.find('.filter-clear').on('click', function () {
-            that.$tab.find('.filter-input').val('').trigger('change');
+        this.$tab.find('.filter-clear').on('click', function () {
+            this.$tab.find('.filter-input').val('').trigger('change');
         });
 
         if (this.isTiles) {
-            that.$tab.find('#btn_switch_adapters').find('i').text('view_list');
+            this.$tab.find('#btn_switch_adapters').find('i').text('view_list');
             prepareTiles();
         } else {
             prepareTable();
@@ -738,7 +744,6 @@ function Adapters(main) {
             } else {
                 return x5DaysAgoText.replace('%d', days);
             }
-
         }
     }
 
@@ -819,7 +824,7 @@ function Adapters(main) {
                         '<td title="' + localTexts['Available version:'] + ' ' + title + '" class="actual-version">' + version + '</td>' +
                         '<td style="border: 0; padding: 0; width: 30px" class="update-version">';
                     if (updatable) {    //xxx
-                        version += '<button class="adapter-update-submit small-button" data-adapter-name="' + adapter + '" ' + (updatableError ? ' disabled title="' + updatableError + '"' : 'title="' + localTexts['update'] + '"') + '><i class="material-icons">refresh</i></button>';
+                        version += '<button class="adapter-update-submit small-button m" data-adapter-name="' + adapter + '" ' + (updatableError ? ' disabled title="' + updatableError + '"' : 'title="' + localTexts['update'] + '"') + '><i class="material-icons">refresh</i></button>';
                     }
                     version += '</td></tr></table>';
                     return version;
@@ -927,11 +932,11 @@ function Adapters(main) {
                         versionDate: obj.versionDate,
                         updatable:  updatable,
                         bold:       obj.highlight || false,
-                        install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button" title="' + localTexts['add instance'] + '"><i class="material-icons">add</i></button>' +
-                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
-                        ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-upload-submit small-button" title="' + localTexts['upload'] + '"><i class="material-icons">file_upload</i></button>' : '') +
-                        '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
-                        ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
+                        install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button m" title="' + localTexts['add instance'] + '"><i class="material-icons">add</i></button>' +
+                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button m" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
+                        ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-upload-submit small-button m" title="' + localTexts['upload'] + '"><i class="material-icons">file_upload</i></button>' : '') +
+                        '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button m" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
+                        ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button m" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
                         // platform:   obj.platform, actually there is only one platform
                         group:      group,
                         license:    obj.license || '',
@@ -1010,11 +1015,11 @@ function Adapters(main) {
                             bold:       obj.highlight,
                             installed:  '',
                             versionDate: obj.versionDate,
-                            install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button" title="' + localTexts['add instance'] + '"><i class="material-icons">add</i></button>' +
-                            '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
+                            install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button m" title="' + localTexts['add instance'] + '"><i class="material-icons">add</i></button>' +
+                            '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button m" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
                             '<div class="small-button-empty">&nbsp;</div>' +
-                            '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button disabled" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
-                            ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
+                            '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button disabled m" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
+                            ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button m" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
                             // TODO do not show adapters not for this platform
                             // platform:   obj.platform, // actually there is only one platform
                             license:    obj.license    || '',
@@ -1089,7 +1094,7 @@ function Adapters(main) {
                 }
 
                 // build tiles
-                if (that.isTiles) {
+                if (that.isTiles && (that.main.browser !== 'ie' || that.main.browserVersion > 10)) {
                     var text = '';
                     var types = [];
                     for (var a in that.data) {
@@ -1417,12 +1422,12 @@ function Adapters(main) {
             } else {
                 versions.push(that.main.objects['system.adapter.' + adapter].common.version);
             }
-            var menu = '<ul><li class="adapters-versions-link"><a><i class="material-icons">close</i>' + _('Close') + '</a></li><li class="divider"></li>';
+            var menu = '<ul><li class="adapters-versions-link m"><a><i class="material-icons">close</i>' + _('Close') + '</a></li><li class="divider"></li>';
             for (var v = 0; v < versions.length; v++) {
                 menu += '<li data-version="' + versions[v] + '" data-position="left" data-delay="50" title="' + (news[versions[v]] ? news[versions[v]][systemLang] || news[versions[v]].en : '') + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="adapters-versions-link tooltipped"><a>' + versions[v] + '</a></li>';
             }
             if (versions.length > 5) {
-                menu += '<li class="divider"></li><li class="adapters-versions-link"><a><i class="material-icons">close</i>' + _('Close') + '</a></li></ul>';
+                menu += '<li class="divider"></li><li class="adapters-versions-link m"><a><i class="material-icons">close</i>' + _('Close') + '</a></li></ul>';
             } else {
                 menu += '</ul>'
             }

@@ -14,7 +14,7 @@ body {
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;
-    src: url(./../../lib/fonts/material.woff2) format('woff2');
+    src: url(./../../lib/fonts/material.woff2) format('woff2'), url(./../../lib/fonts/material.woff) format('woff');
 }
 
 .material-icons {
@@ -145,6 +145,9 @@ h4 {
     .page {
         height: calc(~"100% - 70px");
         overflow: auto;
+    }
+    .dropdown-content {
+        max-height: 300px;
     }
 }
 #toast-container {

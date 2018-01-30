@@ -32,9 +32,20 @@ Array.prototype.remove = function () {
     }
     return this;
 };
+// for IE
 if (!console.debug) {
     console.debug = console.log;
 }
+if (typeof Number === 'undefined') {
+    console.log('define Number');
+    Number = function (obj) {
+        return parseFloat(obj);
+    }
+}
+if (!Object.assign) {
+    Object.assign = $.extend;
+}
+
 
 var $iframeDialog = null; // used in adapter settings window
 var showConfig = null; // used in adapter settings window
@@ -52,6 +63,7 @@ var gMain = null; // for google maps
 
 function detectIE() {
     var ua = window.navigator.userAgent;
+
     var msie = ua.indexOf('MSIE ');
     if (msie > 0) {
         // IE 10 or older => return version number
@@ -643,7 +655,9 @@ $(document).ready(function () {
         $('body').addClass('ie');
         // workaround
         main.browser = 'ie';
+        main.browserVersion = detectIE();
         main.noSelect = true;
+        $('#host-adapters-btn').css('margin-top', '10px');
     }
 
     // Read all positions, selected widgets for every view,

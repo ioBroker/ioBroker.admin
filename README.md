@@ -77,7 +77,7 @@ In this project used some icons from Flaticon(c):
 - <img src="src/img/devices/light-bulb.svg" height="48" /> - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 
 ## Changelog
-### 3.1.5 (2018-01-28)
+### 3.1.6 (2018-01-30)
 * (bluefox) Fixes for Firefox and MS-EDGE
 
 ### 3.1.2 (2018-01-25)

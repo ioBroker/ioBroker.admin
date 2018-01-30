@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.1.5",
+    "version": "3.1.6",
     "news": {
-      "3.1.5": {
+      "3.1.6": {
         "en": "Fixes for Firefox",
         "de": "Korrekturen für Firefox",
         "ru": "Исправления для Firefox",

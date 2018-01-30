@@ -264,7 +264,7 @@ function Instances(main) {
         }
     }
 
-    function _createHead() {
+    /*function _createHead() {
         var text = '<tr>';
         // _('name'), _('instance'), _('title'), _('enabled'), _('host'), _('mode'), _('schedule'), '', _('platform'), _('loglevel'), _('memlimit'), _('alive'), _('connected')],
         text += '<th style="width: calc(2em - 6px)"></th>';
@@ -288,7 +288,7 @@ function Instances(main) {
         }
         text += '<th style="width: 8em">' + _('RAM usage') + '</th>';
         that.$gridHead.html(text);
-    }
+    }*/
 
     function createHead() {
         var text = '<tr>';
@@ -385,11 +385,11 @@ function Instances(main) {
         var instance = tmp[3];
 
         if (form === 'tile') {
-            text = justContent ? '' : '<div class="instance-adapter" data-instance-id="' + instanceId + '">';
+            text  = justContent ? '' : '<div class="instance-adapter" data-instance-id="' + instanceId + '">';
             text += justContent ? '' : '</div>';
         } else {
             // table
-            text = justContent ? '' : '<tr class="instance-adapter" data-instance-id="' + instanceId + '">';
+            text  = justContent ? '' : '<tr class="instance-adapter" data-instance-id="' + instanceId + '">';
 
             var link = common.localLinks || common.localLink || '';
             var url  = link ? replaceInLink(link, adapter, instance) : '';
@@ -415,15 +415,13 @@ function Instances(main) {
 
             var isRun = common.onlyWWW || common.enabled;
             // buttons
-            //text += '<td style="text-align: left; padding-left: 1em;">' +
-            //text += '<td style="text-align: left; padding-left: 1px;">' +
-            text += '<td style="text-align: left;">' +
+            text += '<td style="text-align: left;" class="m">' +
                 '<button data-instance-id="' + instanceId + '" class="instance-stop-run small-button ' + (common.onlyWWW  ? 'small-button-empty' : '') + '"                                   title="dynamic"            ><i class="material-icons">pause</i></button>' +
                 '<button data-instance-id="' + instanceId + '" class="instance-settings small-button ' + (common.noConfig ? 'small-button-empty' : '') + '"                                   title="' + _('config') + '"><i class="material-icons">build</i></button>' +
                 '<button data-instance-id="' + instanceId + '" class="instance-reload   small-button ' + (common.onlyWWW  ? 'small-button-empty' : '') + ' ' + (isRun ? '' : 'disabled') + '" title="' + _('reload') + '"><i class="material-icons">refresh</i></button>'+
                 '<button data-instance-id="' + instanceId + '" class="instance-issue    small-button"                                                                                         title="' + _('bug') + '"   ><i class="material-icons">bug_report</i></button>' +
                 '<button data-instance-id="' + instanceId + '" class="instance-del      small-button"                                                                                         title="' + _('delete') + '"><i class="material-icons">delete</i></button>' +
-                '<button data-instance-id="' + instanceId + '" class="instance-web      small-button ' + (!url            ? 'small-button-empty' : '') + ' ' + (isRun ? '' : 'disabled') + '" title="' + _('open web page') + '" data-link="' + (typeof url !== 'object' ? url : '') + '"><i class="material-icons">input</i></button>' +
+                (url ? '<button data-instance-id="' + instanceId + '" class="instance-web      small-button ' + (!url            ? 'small-button-empty' : '') + ' ' + (isRun ? '' : 'disabled') + '" title="' + _('open web page') + '" data-link="' + (typeof url !== 'object' ? url : '') + '"><i class="material-icons">input</i></button>' : '') +
                 '</td>';
 
             var title = common.titleLang || common.title;
@@ -451,7 +449,7 @@ function Instances(main) {
 
             // scheduled restart (only experts)
             if (that.main.config.expertMode) {
-                text += '<td data-name="restartSchedule" data-value="' + (common.restartSchedule || '') + '"  style="text-align: center" class="instance-schedule" data-instance-id="' + instanceId + '">' + (common.restartSchedule || '') + '</td>';
+                text += '<td data-name="restartSchedule" data-value="' + (common.restartSchedule || '') + '"  style="text-align: center" class="instance-schedule m" data-instance-id="' + instanceId + '">' + (common.restartSchedule || '') + '</td>';
                 // debug level (only experts)
                 text += '<td data-name="loglevel" data-value="' + (common.loglevel || '') + '"  style="text-align: center" class="instance-editable" data-instance-id="' + instanceId + '" data-options="silly:silly;debug:debug;info:info;warn:warn;error:error">' + (common.loglevel || '') + '</td>';
                 // Max RAM  (only experts)
@@ -502,7 +500,10 @@ function Instances(main) {
         });
 
         $('.instance-name[data-instance-id="' + instanceId + '"]').on('click', function () {
-            $('.instance-settings[data-instance-id="' + $(this).data('instance-id') + '"]').trigger('click');
+            var $btn = $('.instance-settings[data-instance-id="' + $(this).data('instance-id') + '"]');
+            if (!$btn.hasClass('small-button-empty')) {
+                $('.instance-settings[data-instance-id="' + $(this).data('instance-id') + '"]').trigger('click');
+            }
         }).css('cursor', 'pointer');
     }
 
@@ -552,6 +553,7 @@ function Instances(main) {
         var attr      = $this.data('name');
         var options   = $this.data('options');
         var oldVal    = $this.data('value');
+        var innerHTML = this.innerHTML;
         var textAlign = $this.css('text-align');
         $this.css('text-align', 'left');
 
@@ -580,19 +582,19 @@ function Instances(main) {
 
         var $input = (options) ? $this.find('select') : $this.find('input');
 
-        $this.find('.select-id-quick-edit-cancel').on('click', function (e)  {
+        $this.find('.select-id-quick-edit-cancel').off('click').on('click', function (e)  {
             if (timeout) clearTimeout(timeout);
             timeout = null;
             e.preventDefault();
             e.stopPropagation();
-            if (oldVal === undefined) oldVal = '';
-            $this.html(oldVal)
+            $this.html(innerHTML)
+                .off('click')
                 .on('click', onQuickEditField)
                 .addClass('select-id-quick-edit')
                 .css('text-align', textAlign);
         });
 
-        $this.find('.select-id-quick-edit-ok').on('click', function ()  {
+        $this.find('.select-id-quick-edit-ok').off('click').on('click', function ()  {
             $this.trigger('blur');
         });
 
@@ -610,8 +612,11 @@ function Instances(main) {
                     });
 
                     oldVal = '<span style="color: pink">' + oldVal + '</span>';
+                } else {
+                    oldVal = innerHTML;
                 }
                 $this.html(oldVal)
+                    .off('click')
                     .on('click', onQuickEditField)
                     .addClass('select-id-quick-edit')
                     .css('text-align', textAlign);
@@ -621,6 +626,7 @@ function Instances(main) {
             if (e.which === 27) {
                 if (oldVal === undefined) oldVal = '';
                 $this.html(oldVal)
+                    .off('click')
                     .on('click', onQuickEditField)
                     .addClass('select-id-quick-edit')
                     .css('text-align', textAlign);

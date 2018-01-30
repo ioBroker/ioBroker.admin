@@ -17,7 +17,7 @@ body {
     font-family:    'Material Icons';
     font-style:     normal;
     font-weight:    400;
-    src:            url(./../lib/fonts/material.woff2) format('woff2');
+    src:            url(./../lib/fonts/material.woff2) format('woff2'), url(./../lib/fonts/material.woff) format('woff');
 }
 
 .material-icons {
@@ -126,7 +126,8 @@ body {
     a {
         margin-left: 0.5rem;
     }
-    .safari #host-adapters-btn {
+    .safari #host-adapters-btn,
+    .ie #host-adapters-btn {
         margin-top: 10px !important; // for safari. Safari does not support line-height
     }
 
@@ -156,7 +157,8 @@ body {
             }
         }
     }
-    .safari li {
+    .safari li,
+    .ie li {
         vertical-align: middle; // for safari. Safari does not support line-height
     }
 }
