@@ -352,8 +352,20 @@
         }
     }
 
-    .clippy-button .tiny {
-        font-size: 10px;
+    .clippy-button, .edit-dialog-button {
+        position:       absolute;
+        top:            1px;
+        z-index:        1;
+        margin-top:     1px;
+        .tiny {
+            font-size: 10px;
+        }
+    }
+    .clippy-button {
+        right:          0;
+    }
+    .edit-dialog-button {
+        right:          22px;
     }
 
     .select-value {

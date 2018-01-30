@@ -932,9 +932,7 @@ function filterChanged(e) {
         if ($(this).hasClass('clippy') && !$(this).find('.clippy-button').length) {
             data = data || $(this).data('data');
             text = '<button class="clippy-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button m" ' +
-                'role="button" title="' + data.texts.copyToClipboard + '" ' +
-                //'style="position: absolute; right: 0; top: 0; width: 36px; height: 18px;z-index: 1">' +
-                'style="position: absolute; right: 0; top: 0; z-index: 1; margin-top: 1px;">';
+                'role="button" title="' + data.texts.copyToClipboard + '">';
             if (typeof M !== 'undefined') {
                 text += '<i class="material-icons tiny">content_copy</i>'
             } else {
@@ -950,9 +948,7 @@ function filterChanged(e) {
         if ($(this).hasClass('edit-dialog') && !$(this).find('.edit-dialog-button').length) {
             data = data || $(this).data('data');
             text = '<button class="edit-dialog-button ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only td-button m" ' +
-                'role="button" title="' + (data.texts.editDialog || '') + '" ' +
-                //'style="position: absolute; right: 0; top: 0; width: 36px; height: 18px;z-index: 1">' +
-                'style="position: absolute; right: 22px; top: 0; z-index: 1; margin-top: 1px;">';
+                'role="button" title="' + (data.texts.editDialog || '') + '">';
             if (typeof M !== 'undefined') {
                 text += '<i class="material-icons tiny">edit</i>'
             } else {
