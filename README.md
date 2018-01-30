@@ -71,7 +71,7 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 - tiles for instances (additionally to table - low prior)
 
 ## Used icons
-In this project used some icons from Flaticon(c):
+This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/006-double-bed.svg" height="48" /> - "designed by smalllikeart from Flaticon"
 - <img src="src/img/rooms/016-armchair-1.svg" height="48" /> - "designed by smalllikeart from Flaticon"
 - <img src="src/img/devices/light-bulb.svg" height="48" /> - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
