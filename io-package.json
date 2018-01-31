@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.1.6",
+    "version": "3.1.7",
     "news": {
+      "3.1.7": {
+        "en": "Fixing the role selection\nIt runs even in IE10",
+        "de": "Festlegung der Rollenauswahl\nEs läuft sogar in IE10",
+        "ru": "Фиксирование выбора роли\nОн работает даже в IE10",
+        "pt": "Fixando a seleção de função\nFunciona mesmo no IE10",
+        "nl": "De rolselectie bevestigen\nHet werkt zelfs in IE10",
+        "fr": "Correction de la sélection de rôle\nIl fonctionne même dans IE10",
+        "it": "Correggere la selezione del ruolo\nFunziona anche in IE10",
+        "es": "Corregir la selección de roles\nFunciona incluso en IE10",
+        "pl": "Naprawianie wyboru roli\nDziała nawet w IE10"
+      },
       "3.1.6": {
         "en": "Fixes for Firefox",
         "de": "Korrekturen für Firefox",

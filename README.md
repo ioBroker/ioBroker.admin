@@ -77,6 +77,10 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/devices/light-bulb.svg" height="48" /> - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 
 ## Changelog
+### 3.1.7 (2018-01-31)
+* (bluefox) Fixing the role selection
+* (bluefox) It runs even in IE10
+
 ### 3.1.6 (2018-01-30)
 * (bluefox) Fixes for Firefox and MS-EDGE
 
