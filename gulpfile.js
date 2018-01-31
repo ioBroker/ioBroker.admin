@@ -598,6 +598,7 @@ gulp.task('appCSS', function () {
 gulp.task('vendorJS', function () {
     return gulp.src([
         './src/lib/js/jquery-3.2.1.min.js',
+        './src/lib/js/jquery-migrate-3.0.1.js',
         './src/lib/js/jquery-ui.min.js',
         './src/lib/js/colResizable-1.6.js',
         './src/lib/js/jquery.multiselect-1.13.min.js',
@@ -629,6 +630,7 @@ gulp.task('appCopy', function () {
         './src/**/*.*',
         '!./src/i18n/**/*',
         '!./src/*.html',
+        '!./src/lib/js/jquery.migrate-3.0.1.js',
         '!./src/lib/js/jquery.fancytree-all.js',
         '!./src/**/*.less',
         '!./src/js/**/admin*.js',

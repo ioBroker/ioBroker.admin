@@ -1629,12 +1629,38 @@ function filterChanged(e) {
         }
 
         if (typeof M !== 'undefined' && (!data.noDialog || data.buttonsDlg)) {
-            $dlg.find('.dialog-content').html(text)
+            var $content = $dlg.find('.dialog-content');
+            if (!$content.length) {
+                $dlg.html('<div class="modal-content">\n' +
+                    '                <div class="row">\n' +
+                    '                    <div class="col s12 title"></div>\n' +
+                    '                </div>\n' +
+                    '                <div class="row">\n' +
+                    '                    <div class="col s12 dialog-content">\n' +
+                    '                    </div>\n' +
+                    '                </div>\n' +
+                    '            </div>\n' +
+                    '            <div class="modal-footer">\n' +
+                    '                <a class="modal-action modal-close waves-effect waves-green btn btn-set"  ><i class="large material-icons">check</i><span class="translate">Select</span></a>\n' +
+                    '                <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons">close</i><span class="translate">Cancel</span></a>\n' +
+                    '            </div>');
+                $content = $dlg.find('.dialog-content');
+                if (!$dlg.closest('.m').length) {
+                    var $body = $('body');
+                    $body.append('<div class="m material-dialogs"></div>');
+                    $dlg.appendTo($body.find('.material-dialogs'));
+                }
+            }
+
+            $content.html(text)
         } else {
             $dlg.html(text);
         }
 
         data.$tree = $dlg.find('.objects-list-table');
+        if (!data.$tree.length) {
+
+        }
         data.$tree[0]._onChange = data.onSuccess || data.onChange;
 
         var foptions = {
@@ -3259,7 +3285,7 @@ function filterChanged(e) {
                             $dlg.find('.title').text(data.texts.selectid);
                             $dlg.find('.btn-set').addClass('disabled');
                         }
-                        $dlg.modal('open');
+                        $dlg.show().modal('open');
                     } else {
                         if (data.currentId) {
                             $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + getName(data.objects[data.currentId], data.currentId));
