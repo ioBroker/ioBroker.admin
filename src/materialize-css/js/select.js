@@ -2,7 +2,8 @@
   'use strict';
 
   let _defaults = {
-    classes: ''
+    classes: '',
+    dropdownOptions: {}
   };
 
 
@@ -10,7 +11,7 @@
    * @class
    *
    */
-  class Select {
+  class Select extends Component {
     /**
      * Construct Select instance
      * @constructor
@@ -18,14 +19,13 @@
      * @param {Object} options
      */
     constructor(el, options) {
+      super(Select, el, options);
 
-      // If exists, destroy and reinitialize
-      if (!!el.M_Select) {
-        el.M_Select.destroy();
+      // Don't init if browser default version
+      if (this.$el.hasClass('browser-default')) {
+        return;
       }
 
-      this.el = el;
-      this.$el = $(el);
       this.el.M_Select = this;
 
       /**
@@ -37,6 +37,7 @@
       this.isMultiple = this.$el.prop('multiple');
 
       // Setup
+      this.el.tabIndex = -1;
       this._keysSelected = {};
       this._valueDict = {}; // Maps key to original and generated option element.
       this._setupDropdown();
@@ -48,14 +49,8 @@
       return _defaults;
     }
 
-    static init($els, options) {
-      let arr = [];
-      $els.each(function() {
-        if (!$(this).hasClass('browser-default')) {
-          arr.push(new Select(this, options));
-        }
-      });
-      return arr;
+    static init(els, options) {
+      return super.init(this, els, options);
     }
 
     /**
@@ -99,7 +94,6 @@
       });
       this.el.removeEventListener('change', this._handleSelectChangeBound);
       this.input.removeEventListener('click', this._handleInputClickBound);
-      this.input.removeEventListener('focus', this._handleInputFocusBound);
     }
 
     /**
@@ -122,6 +116,14 @@
         let selected = true;
 
         if (this.isMultiple) {
+          // Deselect placeholder option if still selected.
+          let placeholderOption = $(this.dropdownOptions).find('li.disabled.selected');
+          if (placeholderOption.length) {
+            placeholderOption.removeClass('selected');
+            placeholderOption.find('input[type="checkbox"]').prop('checked', false);
+            this._toggleEntryFromArray(placeholderOption[0].id);
+          }
+
           let checkbox = $(option).find('input[type="checkbox"]');
           checkbox.prop('checked', !checkbox.prop('checked'));
           selected = this._toggleEntryFromArray(key);
@@ -155,7 +157,6 @@
      */
     _setupDropdown() {
       this.wrapper = document.createElement('div');
-      //this.wrapper.classList.add(''); //iob
       $(this.wrapper).addClass('select-wrapper' + ' ' + this.options.classes);
       this.$el.before($(this.wrapper));
       this.wrapper.appendChild(this.el);
@@ -219,11 +220,10 @@
 
       // Initialize dropdown
       if (!this.el.disabled) {
-        let dropdownOptions = {};
         if (this.isMultiple) {
-          dropdownOptions.closeOnClick = false;
+          this.options.dropdownOptions.closeOnClick = false;
         }
-        this.dropdown = new M.Dropdown(this.input, dropdownOptions);
+        this.dropdown = M.Dropdown.init(this.input, this.options.dropdownOptions);
       }
 
       // Add initial selections
@@ -387,4 +387,4 @@
   if (M.jQueryLoaded) {
     M.initializeJqueryWrapper(Select, 'select', 'M_Select');
   }
-}( cash ));
+}(cash));

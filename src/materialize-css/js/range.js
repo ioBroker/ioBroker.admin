@@ -1,15 +1,14 @@
 (function ($, anim) {
   'use strict';
 
-  let _defaults = {
-  };
+  let _defaults = {};
 
 
   /**
    * @class
    *
    */
-  class Range {
+  class Range extends Component {
     /**
      * Construct Range instance
      * @constructor
@@ -17,14 +16,8 @@
      * @param {Object} options
      */
     constructor(el, options) {
+      super(Range, el, options);
 
-      // If exists, destroy and reinitialize
-      if (!!el.M_Range) {
-        el.M_Range.destroy();
-      }
-
-      this.el = el;
-      this.$el = $(el);
       this.el.M_Range = this;
 
       /**
@@ -45,14 +38,8 @@
       return _defaults;
     }
 
-    static init($els, options) {
-      let arr = [];
-      $els.each(function() {
-        if (!$(this).hasClass('browser-default')) {
-          arr.push(new Range(this, options));
-        }
-      });
-      return arr;
+    static init(els, options) {
+      return super.init(this, els, options);
     }
 
     /**
@@ -84,7 +71,7 @@
       this._handleRangeBlurMouseoutTouchleaveBound = this._handleRangeBlurMouseoutTouchleave.bind(this);
 
 
-      
+
       this.el.addEventListener('change', this._handleRangeChangeBound);
       this.el.addEventListener('focus', this._handleRangeFocusBound);
 
@@ -277,4 +264,4 @@
   }
 
   Range.init($('input[type=range]'));
-}( cash, anime));
+}(cash, M.anime));

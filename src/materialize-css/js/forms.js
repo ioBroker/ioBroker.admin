@@ -1,6 +1,6 @@
 (function ($) {
   // Function to update labels of text fields
-  M.updateTextFields = function(formSelector) { // iob
+  M.updateTextFields = function() {
     let input_selector = 'input[type=text], input[type=password], input[type=email], input[type=url], input[type=tel], input[type=number], input[type=search], textarea';
     let $body;                   // iob start
     if (formSelector) {
@@ -48,6 +48,16 @@
 
 
   M.textareaAutoResize = function($textarea) {
+    // Wrap if native element
+    if ($textarea instanceof Element) {
+      $textarea = $($textarea);
+    }
+
+    if (!$textarea.length) {
+      console.error("No textarea element found");
+      return;
+    }
+
     // Textarea Auto Resize
     let hiddenDiv = $('.hiddendiv').first();
     if (!hiddenDiv.length) {
@@ -92,11 +102,11 @@
     // When textarea is hidden, width goes crazy.
     // Approximate with half of window size
 
-    if ($textarea.css('display') !== 'hidden') {
+    if ($textarea[0].offsetWidth > 0 && $textarea[0].offsetHeight > 0) {
       hiddenDiv.css('width', $textarea.width() + 'px');
     }
     else {
-      hiddenDiv.css('width', ($(window).width()/2) + 'px');
+      hiddenDiv.css('width', (window.innerWidth/2) + 'px');
     }
 
 
@@ -205,20 +215,18 @@
     $(text_area_selector).each(function () {
       let $textarea = $(this);
       /**
-       * Instead of resizing textarea on document load,
-       * store the original height and the original length
+       * Resize textarea on document load after storing
+       * the original height and the original length
        */
       $textarea.data('original-height', $textarea.height());
       $textarea.data('previous-length', this.value.length);
+      M.textareaAutoResize($textarea);
     });
 
     $(document).on('keyup', text_area_selector, function () {
       M.textareaAutoResize($(this));
     });
     $(document).on('keydown', text_area_selector, function () {
-      M.textareaAutoResize($(this));
-    });
-    $(document).on('autoresize', text_area_selector, function () {
       M.textareaAutoResize($(this));
     });
 

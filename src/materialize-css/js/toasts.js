@@ -33,7 +33,7 @@
       this.timeRemaining = this.options.displayLength;
 
       if (Toast._toasts.length === 0) {
-        Toast._createContainer(options);
+        Toast._createContainer(options); // iob
       }
 
       // Create new toast
@@ -315,4 +315,4 @@
   M.toast = function(options) {
     return new Toast(options);
   };
-})(cash, anime);
+})(cash, M.anime);

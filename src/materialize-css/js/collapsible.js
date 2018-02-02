@@ -16,7 +16,7 @@
    * @class
    *
    */
-  class Collapsible {
+  class Collapsible extends Component {
     /**
      * Construct Collapsible instance
      * @constructor
@@ -24,14 +24,8 @@
      * @param {Object} options
      */
     constructor(el, options) {
+      super(Collapsible, el, options);
 
-      // If exists, destroy and reinitialize
-      if (!!el.M_Collapsible) {
-        el.M_Collapsible.destroy();
-      }
-
-      this.el = el;
-      this.$el = $(el);
       this.el.M_Collapsible = this;
 
       /**
@@ -63,12 +57,8 @@
       return _defaults;
     }
 
-    static init($els, options) {
-      let arr = [];
-      $els.each(function() {
-        arr.push(new Collapsible(this, options));
-      });
-      return arr;
+    static init(els, options) {
+      return super.init(this, els, options);
     }
 
     /**
@@ -167,7 +157,7 @@
             });
 
             // onOpenEnd callback
-            if (typeof(this.options.onOpenEnd) === 'function') {
+            if (typeof (this.options.onOpenEnd) === 'function') {
               this.options.onOpenEnd.call(this, $collapsibleLi[0]);
             }
           }
@@ -201,7 +191,7 @@
             });
 
             // onCloseEnd callback
-            if (typeof(this.options.onCloseEnd) === 'function') {
+            if (typeof (this.options.onCloseEnd) === 'function') {
               this.options.onCloseEnd.call(this, $collapsibleLi[0]);
             }
           }
@@ -218,7 +208,7 @@
       if ($collapsibleLi.length && !$collapsibleLi[0].classList.contains('active')) {
 
         // onOpenStart callback
-        if (typeof(this.options.onOpenStart) === 'function') {
+        if (typeof (this.options.onOpenStart) === 'function') {
           this.options.onOpenStart.call(this, $collapsibleLi[0]);
         }
 
@@ -247,7 +237,7 @@
       if ($collapsibleLi.length && $collapsibleLi[0].classList.contains('active')) {
 
         // onCloseStart callback
-        if (typeof(this.options.onCloseStart) === 'function') {
+        if (typeof (this.options.onCloseStart) === 'function') {
           this.options.onCloseStart.call(this, $collapsibleLi[0]);
         }
 
@@ -264,4 +254,4 @@
     M.initializeJqueryWrapper(Collapsible, 'collapsible', 'M_Collapsible');
   }
 
-}(cash, anime));
+}(cash, M.anime));

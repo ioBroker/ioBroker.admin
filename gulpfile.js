@@ -468,9 +468,10 @@ gulp.task('materializeCSS', function () {
 
 gulp.task('materializeJS', function () {
     return gulp.src([
+        './src/materialize-css/js/global.js',
+        './src/materialize-css/js/component.js',
         './src/materialize-css/js/anime.min.js',
         './src/materialize-css/js/cash.js',
-        './src/materialize-css/js/global.js',
         './src/materialize-css/js/tabs.js',
         './src/materialize-css/js/dropdown.js',
         './src/materialize-css/js/toasts.js',

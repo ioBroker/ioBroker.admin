@@ -13,7 +13,7 @@
    * @class
    *
    */
-  class Slider {
+  class Slider extends Component {
     /**
      * Construct Slider instance and set up overlay
      * @constructor
@@ -21,14 +21,8 @@
      * @param {Object} options
      */
     constructor(el, options) {
+      super(Slider, el, options);
 
-      // If exists, destroy and reinitialize
-      if (!!el.M_Slider) {
-        el.M_Slider.destroy();
-      }
-
-      this.el = el;
-      this.$el = $(el);
       this.el.M_Slider = this;
 
       /**
@@ -60,7 +54,7 @@
       this.$slides.find('img').each((el) => {
         let placeholderBase64 = 'data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
         if ($(el).attr('src') !== placeholderBase64) {
-          $(el).css('background-image', 'url("' + $(el).attr('src') + '")' );
+          $(el).css('background-image', 'url("' + $(el).attr('src') + '")');
           $(el).attr('src', placeholderBase64);
         }
       });
@@ -70,8 +64,7 @@
       // Show active slide
       if (this.$active) {
         this.$active.css('display', 'block');
-      }
-      else {
+      } else {
         this.$slides.first().addClass('active');
         anim({
           targets: this.$slides.first()[0],
@@ -111,12 +104,8 @@
       return _defaults;
     }
 
-    static init($els, options) {
-      let arr = [];
-      $els.each(function() {
-        arr.push(new Slider(this, options));
-      });
-      return arr;
+    static init(els, options) {
+      return super.init(this, els, options);
     }
 
     /**
@@ -217,8 +206,7 @@
         if (this.options.indicators) {
           // Add height if indicators are present
           this.$el.css('height', (this.options.height + 40) + 'px');
-        }
-        else {
+        } else {
           this.$el.css('height', this.options.height + 'px');
         }
         this.$slider.css('height', this.options.height + 'px');
@@ -254,7 +242,7 @@
     set(index) {
       // Wrap around indices.
       if (index >= this.$slides.length) index = 0;
-      else if (index < 0) index = this.$slides.length -1;
+      else if (index < 0) index = this.$slides.length - 1;
 
       // Only do if index changes
       if (this.activeIndex != index) {
@@ -339,7 +327,7 @@
 
       // Wrap around indices.
       if (newIndex >= this.$slides.length) newIndex = 0;
-      else if (newIndex < 0) newIndex = this.$slides.length -1;
+      else if (newIndex < 0) newIndex = this.$slides.length - 1;
 
       this.set(newIndex);
     }
@@ -352,7 +340,7 @@
 
       // Wrap around indices.
       if (newIndex >= this.$slides.length) newIndex = 0;
-      else if (newIndex < 0) newIndex = this.$slides.length -1;
+      else if (newIndex < 0) newIndex = this.$slides.length - 1;
 
       this.set(newIndex);
     }
@@ -364,4 +352,4 @@
     M.initializeJqueryWrapper(Slider, 'slider', 'M_Slider');
   }
 
-}(cash, anime));
+}(cash, M.anime));

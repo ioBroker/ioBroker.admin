@@ -21,7 +21,7 @@ select {
     width: 0;
     pointer-events: none;
     height: 0;
-    top: 0;
+    bottom: 0;
     left: 0;
     opacity: 0;
   }
@@ -48,7 +48,8 @@ select {
   }
 
   &.invalid {
-    & > input.select-dropdown {
+    & > input.select-dropdown,
+    & > input.select-dropdown:focus {
       @extend %invalid-input-style;
     }
 
@@ -87,6 +88,7 @@ select {
     padding: 0;
     display: block;
     user-select:none;
+    z-index: 1;
   }
 
   .caret {
@@ -95,7 +97,7 @@ select {
     top: 0;
     bottom: 0;
     margin: auto 0;
-    z-index: -1;
+    z-index: 0;
     fill: rgba(0,0,0,.87);
   }
 

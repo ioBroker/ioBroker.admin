@@ -5,8 +5,10 @@
     opacity: 0.5,
     inDuration: 250,
     outDuration: 250,
-    ready: undefined,
-    complete: undefined,
+    onOpenStart: null,
+    onOpenEnd: null,
+    onCloseStart: null,
+    onCloseEnd: null,
     dismissible: true,
     startingTop: '4%',
     endingTop: '10%'
@@ -17,7 +19,7 @@
    * @class
    *
    */
-  class Modal {
+  class Modal extends Component {
     /**
      * Construct Modal instance and set up overlay
      * @constructor
@@ -25,14 +27,8 @@
      * @param {Object} options
      */
     constructor(el, options) {
+      super(Modal, el, options);
 
-      // If exists, destroy and reinitialize
-      if (!!el.M_Modal) {
-        el.M_Modal.destroy();
-      }
-
-      this.el = el;
-      this.$el = $(el);
       this.el.M_Modal = this;
 
       /**
@@ -41,8 +37,10 @@
        * @prop {Number} [opacity=0.5] - Opacity of the modal overlay
        * @prop {Number} [inDuration=250] - Length in ms of enter transition
        * @prop {Number} [outDuration=250] - Length in ms of exit transition
-       * @prop {Function} ready - Callback function called when modal is finished entering
-       * @prop {Function} complete - Callback function called when modal is finished exiting
+       * @prop {Function} onOpenStart - Callback function called before modal is opened
+       * @prop {Function} onOpenEnd - Callback function called after modal is opened
+       * @prop {Function} onCloseStart - Callback function called before modal is closed
+       * @prop {Function} onCloseEnd - Callback function called after modal is closed
        * @prop {Boolean} [dismissible=true] - Allow modal to be dismissed by keyboard or overlay click
        * @prop {String} [startingTop='4%'] - startingTop
        * @prop {String} [endingTop='10%'] - endingTop
@@ -70,12 +68,8 @@
       return _defaults;
     }
 
-    static init($els, options) {
-      let arr = [];
-      $els.each(function() {
-        arr.push(new Modal(this, options));
-      });
-      return arr;
+    static init(els, options) {
+      return super.init(this, els, options);
     }
 
     /**
@@ -196,10 +190,10 @@
         targets: this.el,
         duration: this.options.inDuration,
         easing: 'easeOutCubic',
-        // Handle modal ready callback
+        // Handle modal onOpenEnd callback
         complete: () => {
-          if (typeof(this.options.ready) === 'function') {
-            this.options.ready.call(this, this.el, this._openingTrigger);
+          if (typeof(this.options.onOpenEnd) === 'function') {
+            this.options.onOpenEnd.call(this, this.el, this._openingTrigger);
           }
         }
       };
@@ -244,11 +238,12 @@
         // Handle modal ready callback
         complete: () => {
           this.el.style.display = 'none';
-          // Call complete callback
-          if (typeof(this.options.complete) === 'function') {
-            this.options.complete.call(this, this.el);
-          }
           this.$overlay.remove();
+
+          // Call onCloseEnd callback
+          if (typeof(this.options.onCloseEnd) === 'function') {
+            this.options.onCloseEnd.call(this, this.el);
+          }
         }
       };
 
@@ -283,13 +278,19 @@
       }
 
       this.isOpen = true;
-      let body = document.body;
-      body.style.overflow = 'hidden';
-      this.el.classList.add('open');
-      body.appendChild(this.$overlay[0]);
 
       // Set opening trigger, undefined indicates modal was opened by javascript
       this._openingTrigger = !!$trigger ? $trigger[0] : undefined;
+  
+      // onOpenStart callback
+      if (typeof(this.options.onOpenStart) === 'function') {
+        this.options.onOpenStart.call(this, this.el, this._openingTrigger);
+      }
+
+      let body = document.body;
+      body.style.overflow = 'hidden';
+      this.el.classList.add('open');
+      this.el.insertAdjacentElement('afterend', this.$overlay[0]);
 
       if (this.options.dismissible) {
         this._handleKeydownBound = this._handleKeydown.bind(this);
@@ -311,6 +312,12 @@
       }
 
       this.isOpen = false;
+
+      // Call onCloseStart callback
+      if (typeof(this.options.onCloseStart) === 'function') {
+        this.options.onCloseStart.call(this, this.el);
+      }
+
       this.el.classList.remove('open');
       document.body.style.overflow = '';
 
@@ -343,4 +350,4 @@
     M.initializeJqueryWrapper(Modal, 'modal', 'M_Modal');
   }
 
-})(cash, anime);
+})(cash, M.anime);

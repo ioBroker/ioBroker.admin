@@ -13,7 +13,7 @@
    * @class
    *
    */
-  class FloatingActionButton {
+  class FloatingActionButton extends Component {
     /**
      * Construct FloatingActionButton instance
      * @constructor
@@ -21,14 +21,8 @@
      * @param {Object} options
      */
     constructor(el, options) {
+      super(FloatingActionButton, el, options);
 
-      // If exists, destroy and reinitialize
-      if (!!el.M_FloatingActionButton) {
-        el.M_FloatingActionButton.destroy();
-      }
-
-      this.el = el;
-      this.$el = $(el);
       this.el.M_FloatingActionButton = this;
 
       /**
@@ -67,12 +61,8 @@
       return _defaults;
     }
 
-    static init($els, options) {
-      let arr = [];
-      $els.each(function() {
-        arr.push(new FloatingActionButton(this, options));
-      });
-      return arr;
+    static init(els, options) {
+      return super.init(this, els, options);
     }
 
     /**
@@ -357,4 +347,4 @@
     M.initializeJqueryWrapper(FloatingActionButton, 'floatingActionButton', 'M_FloatingActionButton');
   }
 
-}(cash, anime));
+}(cash, M.anime));

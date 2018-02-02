@@ -519,7 +519,7 @@ function Adapters(main) {
         });
 
         this.$tab.find('.filter-clear').on('click', function () {
-            this.$tab.find('.filter-input').val('').trigger('change');
+            that.$tab.find('.filter-input').val('').trigger('change');
         });
 
         if (this.isTiles) {

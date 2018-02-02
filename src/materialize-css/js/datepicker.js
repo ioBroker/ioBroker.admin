@@ -59,8 +59,8 @@
       nextMonth     : '›',
       months        : ['January','February','March','April','May','June','July','August','September','October','November','December'],
       monthsShort   : ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-      weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
       weekdays      : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+      weekdaysShort : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
       weekdaysAbbrev : ['S','M','T','W','T','F','S']
     },
 
@@ -79,7 +79,7 @@
    * @class
    *
    */
-  class Datepicker {
+  class Datepicker extends Component {
     /**
      * Construct Datepicker instance and set up overlay
      * @constructor
@@ -87,14 +87,8 @@
      * @param {Object} options
      */
     constructor(el, options) {
+      super(Datepicker, el, options);
 
-      // If exists, destroy and reinitialize
-      if (!!el.M_Datepicker) {
-        el.M_Datepicker.destroy();
-      }
-
-      this.el = el;
-      this.$el = $(el);
       this.el.M_Datepicker = this;
 
       this.options = $.extend({}, Datepicker.defaults, options);
@@ -142,12 +136,8 @@
       return _defaults;
     }
 
-    static init($els, options) {
-      let arr = [];
-      $els.each(function() {
-        arr.push(new Datepicker(this, options));
-      });
-      return arr;
+    static init(els, options) {
+      return super.init(this, els, options);
     }
 
     static _isDate(obj) {
@@ -193,7 +183,10 @@
      * Teardown component
      */
     destroy() {
-
+      this._removeEventHandlers();
+      this.modal.destroy();
+      $(this.modalEl).remove();
+      this.el.M_Datepicker = undefined;
     }
 
     _insertHTMLIntoDOM() {
@@ -213,8 +206,8 @@
 
     _setupModal() {
       this.modalEl.id = 'modal-' + this.id;
-      this.modal = new M.Modal(this.modalEl, {
-        complete: () => {
+      this.modal = M.Modal.init(this.modalEl, {
+        onCloseEnd: () => {
           this.isOpen = false;
         }
       });
@@ -230,9 +223,9 @@
       let formattedDate = formatArray.map((label) => {
         if (this.formats[label]) {
           return this.formats[label]();
-        } else {
-          return label;
         }
+
+        return label;
       }).join( '' );
       return formattedDate;
     }
@@ -614,8 +607,8 @@
       // Init Materialize Select
       let yearSelect = this.calendarEl.querySelector('.pika-select-year');
       let monthSelect = this.calendarEl.querySelector('.pika-select-month');
-      new M.Select(yearSelect, {classes: 'select-year'});
-      new M.Select(monthSelect, {classes: 'select-month'});
+      M.Select.init(yearSelect, {classes: 'select-year', dropdownOptions: {container: document.body, constrainWidth: false}});
+      M.Select.init(monthSelect, {classes: 'select-month', dropdownOptions: {container: document.body, constrainWidth: false}});
 
       // Add change handlers for select
       yearSelect.addEventListener('change', this._handleYearChange.bind(this));
@@ -663,8 +656,12 @@
 
       this.formats = {
 
-        dd: () => {
+        d: () => {
           return this.date.getDate();
+        },
+        dd: () => {
+          let d = this.date.getDate();
+          return (d < 10 ? '0' : '') + d;
         },
         ddd: () => {
           return this.options.i18n.weekdaysShort[this.date.getDay()];
@@ -672,17 +669,21 @@
         dddd: () => {
           return this.options.i18n.weekdays[this.date.getDay()];
         },
-        mm: () => {
+        m: () => {
           return this.date.getMonth() + 1;
+        },
+        mm: () => {
+          let m = this.date.getMonth() + 1;
+          return (m < 10 ? '0' : '') + m;
         },
         mmm: () => {
           return this.options.i18n.monthsShort[this.date.getMonth()];
         },
         mmmm: () => {
-          return this.options.i18n.monthsShort[this.date.getMonth()];
+          return this.options.i18n.months[this.date.getMonth()];
         },
         yy: () => {
-          return this.date.getFullYear().slice(2);
+          return ('' + this.date.getFullYear()).slice(2);
         },
         yyyy: () => {
           return this.date.getFullYear();

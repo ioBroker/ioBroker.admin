@@ -10,9 +10,14 @@
     container: null,
     defaultTime: 'now',         // default time, 'now' or '13:14' e.g.
 		fromnow: 0,            // Millisecond offset from the defaultTime
-		doneText: 'Ok',      // done button text
-		clearText: 'Clear',
-		cancelText: 'Cancel',
+
+    // internationalization
+    i18n: {
+      done: 'Ok',
+		  clear: 'Clear',
+		  cancel: 'Cancel',
+    },
+
 		autoClose: false,      // auto close when minute is selected
 		twelveHour: true,      // change to 12 hour AM/PM clock from 24 hour
 		vibrate: true          // vibrate the device when dragging clock hand
@@ -23,15 +28,10 @@
    * @class
    *
    */
-  class Timepicker {
+  class Timepicker extends Component {
     constructor(el, options) {
-      // If exists, destroy and reinitialize
-      if (!!el.M_Timepicker) {
-        el.M_Timepicker.destroy();
-      }
+      super(Timepicker, el, options);
 
-      this.el = el;
-      this.$el = $(el);
       this.el.M_Timepicker = this;
 
       this.options = $.extend({}, Timepicker.defaults, options);
@@ -50,12 +50,8 @@
       return _defaults;
     }
 
-    static init($els, options) {
-      let arr = [];
-      $els.each(function() {
-        arr.push(new Timepicker(this, options));
-      });
-      return arr;
+    static init(els, options) {
+      return super.init(this, els, options);
     }
 
     static _addLeadingZero(num) {
@@ -189,9 +185,9 @@
 
       } else if (this.options.autoClose) {
 				$(this.minutesView).addClass('timepicker-dial-out'); // iob
-				setTimeout(function(that){
-                    that.done(); // iob
-				}, this.options.duration / 2, this);
+				setTimeout(() => { // iob
+                    this.done(); 
+				}, this.options.duration / 2);
       }
 
 			// Unbind mousemove event
@@ -215,8 +211,8 @@
     }
 
     _setupModal() {
-      this.modal = new M.Modal(this.modalEl, {
-        complete: () => {
+      this.modal = M.Modal.init(this.modalEl, {
+        onCloseEnd: () => {
           this.isOpen = false;
         }
       });
@@ -239,13 +235,13 @@
     }
 
     _pickerSetup() {
-      $('<button class="btn-flat timepicker-clear waves-effect" type="button" tabindex="' + (this.options.twelveHour? '3' : '1') + '">' + this.options.clearText + '</button>')
+      $('<button class="btn-flat timepicker-clear waves-effect" type="button" tabindex="' + (this.options.twelveHour? '3' : '1') + '">' + this.options.i18n.clear + '</button>')
         .appendTo(this.footer).on('click', this.clear.bind(this));
 
       let confirmationBtnsContainer = $('<div class="confirmation-btns"></div>');
-		  $('<button class="btn-flat timepicker-close waves-effect" type="button" tabindex="' + (this.options.twelveHour? '3' : '1') + '">' + this.options.cancelText + '</button>')
+		  $('<button class="btn-flat timepicker-close waves-effect" type="button" tabindex="' + (this.options.twelveHour? '3' : '1') + '">' + this.options.i18n.cancel + '</button>')
         .appendTo(confirmationBtnsContainer).on('click', this.close.bind(this));
-		  $('<button class="btn-flat timepicker-close waves-effect" type="button" tabindex="' + (this.options.twelveHour? '3' : '1') + '">' + this.options.doneText + '</button>')
+		  $('<button class="btn-flat timepicker-close waves-effect" type="button" tabindex="' + (this.options.twelveHour? '3' : '1') + '">' + this.options.i18n.done + '</button>')
         .appendTo(confirmationBtnsContainer).on('click', this.done.bind(this));
       confirmationBtnsContainer.appendTo(this.footer);
     }
@@ -364,7 +360,7 @@
       // Get the time
 		  let value = ((this.el.value || this.options.defaultTime || '') + '').split(':');
 		  if (this.options.twelveHour && !(typeof value[1] === 'undefined')) {
-			  if (value[1].indexOf("AM") > 0){
+			  if (value[1].toUpperCase().indexOf("AM") > 0){
 				  this.amOrPm = 'AM';
 			  } else {
 				  this.amOrPm = 'PM';

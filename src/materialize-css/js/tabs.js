@@ -12,7 +12,7 @@
    * @class
    *
    */
-  class Tabs {
+  class Tabs extends Component {
     /**
      * Construct Tabs instance
      * @constructor
@@ -20,18 +20,9 @@
      * @param {Object} options
      */
     constructor(el, options) {
-      // If exists, destroy and reinitialize
-      if (!!el.M_Tabs) {
-        el.M_Tabs.destroy();
-      }
+      super(Tabs, el, options);
 
-      /**
-       * The jQuery element
-       * @type {jQuery}
-       */
-      this.$el = $(el);
-
-      this.el = el;
+      this.el.M_Tabs = this;
 
       /**
        * Options for the Tabs
@@ -42,8 +33,6 @@
        * @prop {Number} responsiveThreshold
        */
       this.options = $.extend({}, Tabs.defaults, options);
-
-      this.el.M_Tabs = this;
 
       // Setup
       this.$tabLinks = this.$el.children('li.tab').children('a');
@@ -67,12 +56,8 @@
       return _defaults;
     }
 
-    static init($els, options) {
-      let arr = [];
-      $els.each(function() {
-        arr.push(new Tabs(this, options));
-      });
-      return arr;
+    static init(els, options) {
+      return super.init(this, els, options);
     }
 
     /**
@@ -127,8 +112,8 @@
       this._setTabsAndTabWidth();
 
       if (this.tabWidth !== 0 && this.tabsWidth !== 0) {
-        // this._indicator.style.left = this._calcLeftPos(this.$activeTabLink) + 'px';
-        // this._indicator.style.right = this._calcRightPos(this.$activeTabLink) + 'px';
+        // this._indicator.style.left = this._calcLeftPos(this.$activeTabLink) + 'px'; // iob
+        // this._indicator.style.right = this._calcRightPos(this.$activeTabLink) + 'px'; // iob
       }
     }
 
@@ -210,16 +195,8 @@
     _createIndicator() {
       // iob
       return;
-      // iob
-      let indicator;
-      indicator = document.getElementsByClassName('indicator');
-      if (indicator.length) {
-        indicator = indicator[0];
-      } else {
-        indicator = document.createElement('li');
-        indicator.classList.add('indicator');
-      }
-      // end iob
+      let indicator = document.createElement('li');
+      indicator.classList.add('indicator');
 
       this.el.appendChild(indicator);
       this._indicator = indicator;
@@ -277,7 +254,7 @@
       $tabsWrapper.append($tabsContent);
       $tabsContent[0].style.display = '';
 
-      this._tabsCarousel = new M.Carousel($tabsWrapper[0], {
+      this._tabsCarousel = M.Carousel.init($tabsWrapper[0], {
         fullWidth: true,
         noWrap: true,
         onCycleTo: (item) => {
@@ -422,4 +399,4 @@
     M.initializeJqueryWrapper(Tabs, 'mtabs', 'M_Tabs'); // iob tabs => mtabs
   }
 
-})(cash, anime);
+})(cash, M.anime);
