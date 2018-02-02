@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.1.9",
+    "version": "3.1.10",
     "news": {
-      "3.1.9": {
+      "3.1.10": {
         "en": "material CSS updated \npermission error fixed\nfilter of adapters corrected",
         "de": "Material CSS aktualisiert\nBerechtigungsfehler behoben\nFilter der Adapter korrigiert",
         "ru": "обновлен материал CSS\nисправлена ​​ошибка разрешения\nфильтр адаптеров исправлен",
