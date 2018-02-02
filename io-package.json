@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.1.7",
+    "version": "3.1.8",
     "news": {
+      "3.1.8": {
+        "en": "material CSS updated \npermission error fixed\nfilter of adapters corrected",
+        "de": "Material CSS aktualisiert\nBerechtigungsfehler behoben\nFilter der Adapter korrigiert",
+        "ru": "обновлен материал CSS\nисправлена ​​ошибка разрешения\nфильтр адаптеров исправлен",
+        "pt": "CSS de material atualizado\nErro de permissão corrigido\nfiltro de adaptadores corrigido",
+        "nl": "materiële CSS bijgewerkt\ntoestemming fout opgelost\nfilter van adapters gecorrigeerd",
+        "fr": "CSS matériel mis à jour\nerreur d'autorisation fixée\nfiltre des adaptateurs corrigé",
+        "it": "materiale aggiornato\nerrore di autorizzazione risolto\nfiltro degli adattatori corretto",
+        "es": "material CSS actualizado\nerror de permiso arreglado\nfiltro de adaptadores corregido",
+        "pl": "Zaktualizowano materiał CSS\nbłąd uprawnień został naprawiony\nfiltr poprawionych adapterów"
+      },
       "3.1.7": {
         "en": "Fixing the role selection\nIt runs even in IE10",
         "de": "Festlegung der Rollenauswahl\nEs läuft sogar in IE10",
