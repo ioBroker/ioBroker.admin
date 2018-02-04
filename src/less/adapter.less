@@ -81,7 +81,7 @@ body {
     font-size: 0.82em;
 }
 .adapter-container>.row {
-    height: 100%;
+    height: auto;
 }
 
 h4 {
@@ -116,6 +116,7 @@ h4 {
 }
 // Materialize settings
 .m {
+    overflow:  hidden;
     .logo-le {
         width: 200px;
     }
@@ -126,7 +127,7 @@ h4 {
     .col {
         position: relative;
         .select-wrapper + label {
-            top: 100%;
+/*             top: 100%; */
         }
     }
     .tooltip {
@@ -149,6 +150,27 @@ h4 {
     .dropdown-content {
         max-height: 300px;
     }
+    span{
+        font-size: 0.9em;
+    }
+    .btn {
+        padding: 0 1rem;
+    }
+    .dialog-config-buttons {
+        .btn-cancel {
+            margin-top: 0.9em;
+        }        
+    }
+    @media only screen and (max-width: 611px){
+        .dialog-config-buttons span {
+            display: none;
+        } 
+        .dialog-config-buttons {
+            .btn-cancel {
+                margin-top: 0.7em;
+            }
+        }               
+     }
 }
 #toast-container {
     bottom: 20%;

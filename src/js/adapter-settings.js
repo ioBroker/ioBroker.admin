@@ -319,7 +319,7 @@ function prepareTooltips() {
             var $logo = $('.logo').first().parent();
 
             if ($logo.length) {
-                $('<div class="col s12 m8 l10 help-link">' +
+                $('<div class="col s6 help-link">' +
                     '   <a class="btn-floating btn-small waves-effect waves-light" href="' + common.readme +'" target="_blank">' +
                     '       <i class="material-icons">live_help</i>' +
                     '   </a>' +

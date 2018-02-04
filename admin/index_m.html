@@ -98,6 +98,7 @@
         });
 
         onChange(false);
+        M.updateTextFields();
 
         fillSelectCertificates('#certPublic',  'public',  settings.certPublic);
         fillSelectCertificates('#certPrivate', 'private', settings.certPrivate);
@@ -169,54 +170,56 @@
         </div>
         <div id="tab-main" class="col s12 page">
             <div class="row">
-                <div class="col s12 m4 l2">
+                <div class="col s6 m4 l2">
                     <img src="admin.png" class="logo">
                 </div>
             </div>
             <div class="row">
-                <div class="col s12 m8 l5">
+                <div class="input-field col s12 m8 l5">
                     <select class="value" id="bind"></select>
                     <label class="translate" for="bind">IP:</label>
                 </div>
-                <div class="col s12 m4 l1">
+                <div class="input-field col s12 m4 l3">
                     <input class="value number" id="port" size="5" maxlength="5" type="number"/>
                     <label class="translate" for="port">Port:</label>
                 </div>
             </div>
             <div class="row">
-                <div class="col s12 m3">
+                <div class="input-field col s12 m6 l4">
                     <input class="value" id="secure" type="checkbox" />
                     <label class="translate" for="secure">Secure(HTTPS):</label>
-                </div>
-                <div class="col s12 m3 col-certPublic">
+                </div>                
+                <div class="input-field col s12 m6 l4 col-certPublic">
                     <select id="certPublic" class="value"></select>
                     <label class="translate" for="certPublic">Public certificate:</label>
                 </div>
-                <div class="col s12 m3 col-certPrivate">
+            </div>
+            <div class="row">   
+                <div class="input-field col s12 m6 l4 col-certPrivate">
                     <select id="certPrivate" class="value"></select>
                     <label class="translate" for="certPrivate">Private certificate:</label>
                 </div>
-                <div class="col s12 m3 col-certChained">
+                <div class="input-field col s12 m6 l4 col-certChained">
                     <select id="certChained" class="value"></select>
                     <label class="translate" for="certChained">Chained certificate:</label>
                 </div>
             </div>
             <div class="row">
-                <div class="col s12 m3">
+                <div class="input-field col s12 m6 l4">
                     <input class="value" id="auth" type="checkbox" />
                     <label class="translate" for="auth">Authentication:</label>
                 </div>
-                <div class="col s12 m3 col-defaultUser">
+                <div class="input-field col s12 m6 l4 col-defaultUser">
                     <select class="value" id="defaultUser"></select>
                     <label class="translate" for="defaultUser">Run as:</label>
                 </div>
-                <div class="col s12 m3 col-ttl">
-                    <input class="value" id="ttl" />
+                <div class="input-field col s12 m6 l4 col-ttl">
+                    <input class="value" type="number" id="ttl" />
                     <label class="translate" for="ttl">Login timeout(sec):</label>
                 </div>
             </div>
             <div class="row">
-                <div class="col s12 m3">
+                <div class="input-field col s12 m6 l4">
                     <select  class="value" id="autoUpdate">
                         <option value="0" class="translate">manually</option>
                         <option value="12" class="translate">every 12 hours</option>
@@ -229,7 +232,7 @@
                     </select>
                     <label class="translate" for="autoUpdate">Auto update:</label>
                 </div>
-                <div class="col s12 m3">
+                <div class="input-field col s12 m6 l4">
                     <input class="value" id="thresholdValue" type="number" min="50"/>
                     <label class="translate" for="thresholdValue">Events threshold value:</label>
                 </div>
@@ -242,19 +245,19 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col s11">
+                <div class="input-field col s11">
                     <input class="value" id="leEnabled" type="checkbox" data-link="lets-encrypt-certificates"/>
                     <label for="leEnabled" class="translate">Use Lets Encrypt certificates:</label>
                 </div>
             </div>
             <div class="row le-sub-settings">
-                <div class="col s11">
+                <div class="input-field col s11">
                     <input class="value" id="leUpdate" type="checkbox" data-link="lets-encrypt-certificates"/>
                     <label for="leUpdate" class="translate">Use this instance for automatic update:</label>
                 </div>
             </div>
             <div class="row le-sub-settings le-sub-settings-update">
-                <div class="col s11 m4 l2">
+                <div class="input-field col s11 m4 l2">
                     <input class="value number" id="lePort" type="number" size="5" maxlength="5" data-link="lets-encrypt-certificates"/>
                     <label for="lePort" class="translate">Port to check the domain:</label>
                 </div>
