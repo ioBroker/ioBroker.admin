@@ -1640,7 +1640,7 @@ $(document).ready(function () {
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !==-1) {
                 elements.push({
                     line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
-                            (tabsInfo[id] && tabsInfo[id].icon ? '<i class="material-icons">' + tabsInfo[id].icon + '</i>' : '<div class="icon-empty">&nbsp;</div>') +
+                            (tabsInfo[id] && tabsInfo[id].icon ? '<i class="material-icons left">' + tabsInfo[id].icon + '</i>' : '<div class="icon-empty">&nbsp;</div>') +
                             '<div class="text">' + _($(this).data('name')) + '</div></a></li>',
                     id: id
                 });
@@ -1661,7 +1661,7 @@ $(document).ready(function () {
 
                 elements.push({
                     line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
-                    (icon ? '<i class="material-icons">' + icon + '</i>' : '<div class="icon-empty">&nbsp;</div>') +
+                    (icon ? '<i class="material-icons left">' + icon + '</i>' : '<div class="icon-empty">&nbsp;</div>') +
                     $(this).data('name') + '</a></li>',
                     id: id
                 });
