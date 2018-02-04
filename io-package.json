@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.1.10",
+    "version": "3.1.11",
     "news": {
+      "3.1.11": {
+        "en": "Connection LED fixed",
+        "de": "Verbindungs-LED ist korrigiert",
+        "ru": "LED индикатор подключения исправлен",
+        "pt": "LED de conexão fixo",
+        "nl": "Verbindings-LED vast",
+        "fr": "LED de connexion fixe",
+        "it": "LED di connessione fisso",
+        "es": "LED de conexión fijo",
+        "pl": "Naprawiono połączenie LED"
+      },
       "3.1.10": {
         "en": "material CSS updated \npermission error fixed\nfilter of adapters corrected",
         "de": "Material CSS aktualisiert\nBerechtigungsfehler behoben\nFilter der Adapter korrigiert",
@@ -192,7 +203,7 @@
     "welcomeScreenPro": {
       "link": "admin/index.html",
       "name": "Admin",
-      "img": "admin/img/gear.png",
+      "img": "admin/img/admin.png",
       "color": "pink",
       "order": 5,
       "localLink": true

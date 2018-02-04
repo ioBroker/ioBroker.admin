@@ -941,26 +941,33 @@ function Instances(main) {
                 if (!res.hasOwnProperty(id)) continue;
                 that.main.objects[id] = res[id];
             }
-            that.main.socket.emit('getForeignStates', 'system.adapter.*',function (err, res) {
+            that.main.socket.emit('getForeignStates', '*.info.connection', function (err, res) {
                 for (var id in res) {
                     if (!res.hasOwnProperty(id)) continue;
                     that.main.states[id] = res[id];
                 }
 
-                that.main.socket.emit('getForeignObjects', 'system.adapter.*', 'instance', function (err, res) {
-                    that.main.instances.splice(0, that.main.instances.length); // because of pointer in admin.main
+                that.main.socket.emit('getForeignStates', 'system.adapter.*', function (err, res) {
                     for (var id in res) {
                         if (!res.hasOwnProperty(id)) continue;
-                        var obj = res[id];
-                        that.main.objects[id] = obj;
-
-                        if (obj.type === 'instance') {
-                            that.main.instances.push(id);
-                        }
+                        that.main.states[id] = res[id];
                     }
-                    if (callback) callback();
-                });
 
+                    that.main.socket.emit('getForeignObjects', 'system.adapter.*', 'instance', function (err, res) {
+                        that.main.instances.splice(0, that.main.instances.length); // because of pointer in admin.main
+                        for (var id in res) {
+                            if (!res.hasOwnProperty(id)) continue;
+                            var obj = res[id];
+                            that.main.objects[id] = obj;
+
+                            if (obj.type === 'instance') {
+                                that.main.instances.push(id);
+                            }
+                        }
+                        if (callback) callback();
+                    });
+
+                });
             });
         });
     };

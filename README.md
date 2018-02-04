@@ -77,6 +77,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/devices/light-bulb.svg" height="48" /> - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 
 ## Changelog
+### 3.1.11 (2018-02-04)
+* (bluefox) Connection LED fixed
+
 ### 3.1.10 (2018-02-02)
 * (bluefox) update material CSS
 * (bluefox) fix permission error
