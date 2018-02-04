@@ -1687,7 +1687,7 @@ $(document).ready(function () {
             $('#admin_sidemenu_menu').toggleClass('admin-sidemenu-closed');
 
             setTimeout(function () {
-                resizeGrids();
+                //resizeGrids();
                 $(window).trigger('resize');
             }, 400);
         });
