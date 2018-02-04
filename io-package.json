@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.1.11",
+    "version": "3.1.12",
     "news": {
+      "3.1.12": {
+        "en": "Configuration dialog updated\nOpen menu button is fixed",
+        "de": "Konfigurationsdialog aktualisiert\nDie Schaltfläche zum Öffnen des Menüs ist korrigiert",
+        "ru": "Обновлен диалог настроек\nКнопка открытия меню исправлена",
+        "pt": "Caixa de diálogo de configuração atualizada\nO botão Abrir do menu é corrigido",
+        "nl": "Configuratiedialoog bijgewerkt\nDe menuknop is vast",
+        "fr": "Dialogue de configuration mis à jour\nLe bouton du menu Ouvrir est fixe",
+        "it": "Finestra di configurazione aggiornata\nIl pulsante del menu Apri è fisso",
+        "es": "Diálogo de configuración actualizado\nEl botón Abrir menú está arreglado",
+        "pl": "Zaktualizowano okno dialogowe konfiguracji\nPrzycisk Otwórz menu jest stały"
+      },
       "3.1.11": {
         "en": "Connection LED fixed",
         "de": "Verbindungs-LED ist korrigiert",
