@@ -910,6 +910,7 @@ function Adapters(main) {
                         installed += '</tr></table>';
                         if (!updatable && that.onlyUpdatable) continue;
                     }
+
                     version = getVersionString(version, updatable, news, updatableError);
 
                     var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
@@ -1017,8 +1018,7 @@ function Adapters(main) {
                             versionDate: obj.versionDate,
                             install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button m" title="' + localTexts['add instance'] + '"><i class="material-icons">add</i></button>' +
                             '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button m" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
-                            '<div class="small-button-empty">&nbsp;</div>' +
-                            '<button disabled="disabled" data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button disabled m" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
+                            '<button data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button hide m" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
                             ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button m" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
                             // TODO do not show adapters not for this platform
                             // platform:   obj.platform, // actually there is only one platform
@@ -1103,25 +1103,44 @@ function Adapters(main) {
                         if (types.indexOf(ad.group) === -1) {
                             types.push(ad.group);
                         }
-                        text += '<div class="tile class-' + ad.group + '" data-id="' + ad.name + '">';
-                        text += '   <div class="card-header">';
-                        text += '       <div class="title">' + ad.title + '</div>';
-                        if (that.currentOrder === 'popular' && ad.stat) {
-                            text += '   <div class="stat" title="' + localTexts['Installations counter'] + '">' + ad.stat + '</div>';
-                        } else if (that.currentOrder === 'updated' && ad.versionDate) {
-                            text += '   <div class="last-update" title="' + localTexts['Last update'] + '">' + getInterval(ad.versionDate, localTexts['today'], localTexts['yesterday'], localTexts['1 %d days ago'], localTexts['2 %d days ago'], localTexts['5 %d days ago'], nowObj) + '</div>';
-                        }
-                        text += '    </div>';
-                        text += '    <div class="card-body">';
-                        text += '       <img onerror="this.src=\'img/info-big.png\';" class="icon" src="' + ad.icon + '" />';
-                        text += '       <div class="desc">' + ad.desc + '</div>';
-                        text += '    </div>';
-                        text += '    <div class="card-action">';
-                        text += '       <div class="version"><table><tr><td>' + ad.version + (ad.installed ? '</td><td class="installed">' + ad.rawInstalled : '')  + '</td></tr></table></div>';
-                        text += '       <div class="buttons">' + ad.install + '</div>';
-                        text += '    </div>';
-                        text += '</div>';
+//                        text += '<div class="tile class-' + ad.group + '" data-id="' + ad.name + '">';
+//                        text += '   <div class="card-header">';
+//                        text += '       <div class="title">' + ad.title + '</div>';
+//                        if (that.currentOrder === 'popular' && ad.stat) {
+//                            text += '   <div class="stat" title="' + localTexts['Installations counter'] + '">' + ad.stat + '</div>';
+//                        } else if (that.currentOrder === 'updated' && ad.versionDate) {
+//                            text += '   <div class="last-update" title="' + localTexts['Last update'] + '">' + getInterval(ad.versionDate, localTexts['today'], localTexts['yesterday'], localTexts['1 %d days ago'], localTexts['2 %d days ago'], localTexts['5 %d days ago'], nowObj) + '</div>';
+//                        }
+//                        text += '    </div>';
+//                        text += '    <div class="card-body">';
+//                        text += '       <img onerror="this.src=\'img/info-big.png\';" class="icon" src="' + ad.icon + '" />';
+//                        text += '       <div class="desc">' + ad.desc + '</div>';
+//                        text += '    </div>';
+//                        text += '    <div class="card-action">';
+//                        text += '       <div class="version"><table><tr><td>' + ad.version + (ad.installed ? '</td><td class="installed">' + ad.rawInstalled : '')  + '</td></tr></table></div>';
+//                        text += '       <div class="buttons">' + ad.install + '</div>';
+//                        text += '    </div>';
+//                        text += '</div>';
+
+    text += '<div class="col s12 m6 l4 xl3 class-' + ad.group + '" data-id="' + ad.name + '">';
+    text += '   <div class="card hoverable card-adapters">';
+    text += '       <div class="card-header gradient-45deg-purple-amber center"></div>';
+    text += '           <div class="card-content">';
+    text += '           <img onerror="this.src=\'img/info-big.png\';" class="card-profile-image" src="' + ad.icon + '">';
+    text += '           <span class="card-title grey-text text-darken-4">' + ad.title + '</span>';
+    text += '           <a class="btn-floating activator btnUp teal lighten-2 z-depth-3"><i class="material-icons">more_vert</i></a>';
+    text += '           <div class="ver valign-wrapper"><a class="black-text" title="Обновить"><i class="material-icons">refresh</i></a><b>'+ (news ? news : " ") +'</b> / <small> 2.4.2</small></div></div>';
+    text += '           <div class="footer right-align">';
+    text += ad.install
+    text += '           </div>';
+    text += '           <div class="card-reveal">';
+    text += '       <i class="card-title material-icons right">close</i>';
+    text += '        <p>' + ad.desc + '</p>';
+    text += '    </div></div></div>';
+
                     }
+
+
                     that.$tiles.html(text);
                     // init buttons
                     for (var b in that.data) {

@@ -27,9 +27,9 @@
     }
     .main-toolbar-table {
         left: -2px;
-        &>div {
-            display: inline-block
-        }
+//        &>div {
+//            display: inline-block
+//        }
         a.btn-small {
             line-height: @admin-small-buttons-size;
             height: @admin-small-buttons-size;
@@ -124,7 +124,7 @@
         border-radius: 2px;
     }
     .small-button {
-        height:     24px;
+//        height:     24px;
         background: @tiles-tile-background;
         color:      @admin-sidemenu-main-items-color;
         padding:    1px 0 0 0;
@@ -133,8 +133,9 @@
             //font-size: 14px;
         }
         &:hover {
-            background: @main-active-color;
-            color: @admin-sidemenu-color;
+            opacity: 0.7;
+//            background: @main-active-color;
+//            color: @admin-sidemenu-color;
         }
         &.disabled {
             opacity: 0.5;
@@ -404,3 +405,64 @@
         align-items:    center;
     }
 }
+
+.card-adapters{
+    min-height: 200px;
+    min-width: 170px;
+    height: 270px;
+    .card-header{
+        min-height: 80px;
+        padding-top: 1px;
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+        background: url(../img/onf.jpg) no-repeat;
+        -moz-background-size: 100%;
+        -webkit-background-size: 100%;
+        -o-background-size: 100%;
+        background-size: 100%;
+    }
+    .card-content {
+        img {
+            width: 70px;
+            position: absolute;
+            top: 5px;
+            left:5px;
+            z-index: 1;
+            cursor: pointer;
+            }
+        span {
+            height: 100px;
+            overflow: hidden;
+            font-weight: 700 !important;
+            }
+        .ver {
+            position: absolute;
+            bottom: 35;
+            font-size: 1.3em;
+            i {
+                font-size: 1.3em;
+                }
+            }
+        .btnUp {
+            position: absolute !important;
+            top: 60px;
+            right: 0px;
+            margin-right: 10px !important;
+            }
+        }
+    .footer {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        padding: 0 6 5 0;
+        a {
+            width: 31%;
+            }
+        a :hover{
+            opacity: 0.7;
+            }
+        i {
+            font-size: 2.2em;
+            }
+        }
+    }

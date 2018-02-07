@@ -472,6 +472,7 @@ gulp.task('materializeJS', function () {
         './src/materialize-css/js/component.js',
         './src/materialize-css/js/anime.min.js',
         './src/materialize-css/js/cash.js',
+        './src/materialize-css/js/cards.js',
         './src/materialize-css/js/tabs.js',
         './src/materialize-css/js/dropdown.js',
         './src/materialize-css/js/toasts.js',
