@@ -140,7 +140,7 @@ function Hosts(main) {
         text += '<td><div class="hosts-led ' + (alive ? 'led-green' : 'led-red') + '" data-host-id="' + obj._id + '"></div></td>';
         // name
         text += '<td class="hosts-name" style="font-weight: bold">' + obj.common.hostname +
-                '<button class="small-button host-restart-submit" style="float: right; ' + (alive ? '' : 'display: none') + '" data-host-id="' + obj._id + '" title="' + _('restart') + '"><i class="material-icons">power_settings_new</i></button></td>' +
+                '<button class="small-button host-restart-submit" style="float: right; ' + (alive ? '' : 'display: none') + '" data-host-id="' + obj._id + '" title="' + _('restart') + '"><i class="material-icons">autorenew</i></button></td>' +
             + '</td>';
         // type
         text += '<td>' + obj.common.type + '</td>';
