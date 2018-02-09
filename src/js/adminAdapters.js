@@ -1128,7 +1128,7 @@ function Adapters(main) {
     text += '           <div class="card-content">';
     text += '           <img onerror="this.src=\'img/info-big.png\';" class="card-profile-image" src="' + ad.icon + '">';
     text += '           <span class="card-title grey-text text-darken-4">' + ad.title + '</span>';
-    text += '           <a class="btn-floating activator btnUp teal lighten-2 z-depth-3"><i class="material-icons">more_vert</i></a>';
+    text += '           <a titel="info" class="btn-floating activator btnUp teal lighten-2 z-depth-3"><i class="material-icons">more_vert</i></a>';
     text += '           <div class="ver valign-wrapper"><a class="black-text" title="Обновить"><i class="material-icons">refresh</i></a><b>'+ (news ? news : " ") +'</b> / <small> 2.4.2</small></div></div>';
     text += '           <div class="footer right-align">';
     text += ad.install
@@ -1512,11 +1512,11 @@ function Adapters(main) {
         var opened;
         if (adapter || typeof group === 'string') {
             if (adapter) {
-                text += '<div class="adapter-upload-progress" data-adapter-name="' + adapter + '"';
+               // text += '<div class="adapter-upload-progress" data-adapter-name="' + adapter + '"';
             } else {
                 text += '<div class="group-upload-progress"';
             }
-            text += ' data-adapter-group="' + group + '" style="position: absolute; width: 100%; height: 100%; opacity: ' + (percent ? 0.7 : 0) + '; top: 0; left: 0">';
+            //text += ' data-adapter-group="' + group + '" style="position: absolute; width: 100%; height: 100%; opacity: ' + (percent ? 0.7 : 0) + '; top: 0; left: 0">';
             opened = true;
         } else {
             percent = group;
@@ -1536,7 +1536,7 @@ function Adapters(main) {
         //text += percent ? '<table title="' + _('Upload') + ' ' + percent + '%" class="no-space" style="width:100%; height: 100%; opacity: 0.7"><tr style="height: 100%" class="no-space"><td class="no-space" style="width:' + percent + '%;background: blue"></td><td style="width:' + (100 - percent) + '%;opacity: 0.1" class="no-space"></td></tr></table>' : '';
 
         if (opened) {
-            text += '</div>';
+            //text += '</div>';
         }
         return text;
     }
