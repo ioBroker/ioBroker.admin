@@ -2086,7 +2086,7 @@ function filterChanged(e) {
 
                                 if (obj && obj.type === 'state' && isCommon && isCommon.type !== 'file') {
                                     addClippyToElement($elem, state.val,
-                                        obj &&
+                                        obj && data.quickEditCallback && 
                                         obj.type === 'state' &&
                                         (data.expertMode || isCommon.write !== false) ? key : undefined);
                                 }
