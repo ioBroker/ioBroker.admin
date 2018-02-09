@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.1.12",
+    "version": "3.2.0",
     "news": {
+      "3.2.0": {
+        "en": "The select ID dialog was fixed",
+        "de": "Der Auswahl-ID-Dialog wurde korrigiert",
+        "ru": "Диалоговое окно выбора ID было исправлено",
+        "pt": "A caixa de diálogo de identificação selecionada foi corrigida",
+        "nl": "Het dialoogvenster voor selectie van ID is hersteld",
+        "fr": "La boîte de dialogue Sélectionner un ID a été corrigée",
+        "it": "La finestra di dialogo di selezione ID è stata corretta",
+        "es": "El diálogo de selección de ID se arregló",
+        "pl": "Okno dialogowe wyboru ID zostało naprawione"
+      },
       "3.1.12": {
         "en": "Configuration dialog updated\nOpen menu button is fixed",
         "de": "Konfigurationsdialog aktualisiert\nDie Schaltfläche zum Öffnen des Menüs ist korrigiert",
