@@ -844,12 +844,13 @@ function Users(main) {
             }
 
             text += '<li class="collection-item avatar users-type-draggable ' + (inverted ? 'inverted' : '') + '" data-tt-id="' + that.list[u] + '" style="' + style + '">';
-            text += '   ' + (that.main.getIcon(that.list[u], null, null, 'circle') || '<img class="circle" src="img/account_circle.png"/>');
-            text += '   <span class="title">' + name + '</span>';
-            text += '   <p>' + that.list[u] + ((common.desc ? ' (' + common.desc + ')' : '') || '') + (tGroups ? tGroups + '<br>' : '') + '</p>';
+            text += '   ' + (that.main.getIcon(that.list[u], null, null, 'icon') || '<img class="icon" src="img/account_circle.png"/>');
+            text += '<span class="title">' + name + '</span>';
+            text += '<p>' + that.list[u] + ((common.desc ? ' (' + common.desc + ')' : '') || '') + '</p>';
             text += '   <a class="secondary-content ' + (!common.dontDelete ? 'tab-users-enabled-user' : 'disabled') + '" data-user="' + that.list[u] + '"><i class="material-icons">' + (common.enabled ? 'check_box' : 'check_box_outline_blank') + '</i></a>';
             text += '   <a class="edit-content" data-user="' + that.list[u] + '"><i class="material-icons">edit</i></a>';
-            text += '   <a class="delete-content' + (common.dontDelete ? ' disabled' : '') + '" data-user="' + that.list[u] + '"><i class="material-icons">delete</i></a>';
+            text += '   <a class="delete-content' + (common.dontDelete ? ' disabled' : '') + '" data-user="' + that.list[u] + '"><i class="material-icons">delete</i></a><br>';
+            text += (tGroups ? tGroups : '');
             text += '</li>';
         }
         text += '</ul>';
@@ -959,12 +960,13 @@ function Users(main) {
             }
 
             text += '<li class="collection-item avatar ' + (inverted ? 'inverted' : '') + '" data-tt-id="' + that.groups[u] + '" style="' + style + '">';
-            // text += '   <img src="images/yuna.jpg" alt="" class="circle">';
-            text += '   ' + (that.main.getIcon(that.groups[u], null, null, 'circle') || '<img class="circle" src="img/group.png"/>');
+            // text += '   <img src="images/yuna.jpg" alt="" class="icon">';
+            text += '   ' + (that.main.getIcon(that.groups[u], null, null, 'icon') || '<img class="icon" src="img/group.png"/>');
             text += '   <span class="title">' + name + '</span>';
-            text += '   <p>' + that.groups[u] + ((common.desc ? ' (' + common.desc + ')' : '') || '') + (tUsers ? tUsers + '<br>' : '') + '</p>';
+            text += '   <p>' + that.groups[u] + ((common.desc ? ' (' + common.desc + ')' : '') || '') + '</p>';
             text += '   <a class="edit-content" data-group="' + that.groups[u] + '"><i class="material-icons">edit</i></a>';
-            text += '   <a class="delete-content' + (common.dontDelete ? ' disabled' : '') + '" data-group="' + that.groups[u] + '"><i class="material-icons">delete</i></a>';
+            text += '   <a class="delete-content' + (common.dontDelete ? ' disabled' : '') + '" data-group="' + that.groups[u] + '"><i class="material-icons">delete</i></a><br>';
+            text += (tUsers ? tUsers : '');
             text += '</li>';
         }
         text += '</ul>';
