@@ -1129,7 +1129,7 @@ function Adapters(main) {
     text += '           <img onerror="this.src=\'img/info-big.png\';" class="card-profile-image" src="' + ad.icon + '">';
     text += '           <span class="card-title grey-text text-darken-4">' + ad.title + '</span>';
     text += '           <a titel="info" class="btn-floating activator btnUp teal lighten-2 z-depth-3"><i class="material-icons">more_vert</i></a>';
-    text += '           <div class="ver valign-wrapper"><a class="black-text" title="Обновить"><i class="material-icons">refresh</i></a><b>'+ (news ? news : " ") +'</b> / <small> 2.4.2</small></div></div>';
+    text += '           <div class="ver valign-wrapper"><!-- <a class="black-text" title="Обновить"><i class="material-icons">refresh</i></a><b>'+ (news ? news : " ") +'</b> /  --> <small></small></div></div>';
     text += '           <div class="footer right-align">';
     text += ad.install
     text += '           </div>';
