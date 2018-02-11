@@ -1,6 +1,16 @@
 @import "commons";
 #tab-enums {
     .tree-table-body{
+        .cron-main-tab{
+            i{
+                float: left;
+            }
+            img{
+                position: relative;
+                top: 7;
+                right: 10;
+            }
+        }
         .enum-buttons{
             a {
                 margin-right: 2px;
@@ -47,6 +57,9 @@
         width: 100%;
         overflow: hidden;
         line-height: 1.5rem;
+        .marg{
+            margin-bottom: 10px;
+        }
         .tree-table-buttons {
             a {
                 margin-right: 5px;
@@ -68,6 +81,7 @@
             overflow: auto;
             li{
                 padding: 5px;
+                margin-bottom: 5px;
             }
 
             .edit-content,
@@ -79,11 +93,15 @@
                 text-decoration: none;
                 cursor: pointer;
             }
+            .delete-content:hover,
+            .edit-content:hover {
+                opacity: 0.7;
+            }
             .edit-content {
-                right: 48px;
+                right: 40px;
             }
             .delete-content {
-                right: 16px;
+                right: 10px;
             }
             .secondary-content {
                 cursor: pointer;
@@ -97,21 +115,25 @@
             }
             .collection-item {
                 img.icon {
-                    position: relative;
+                    position: absolute;
                     width: 42px;
                     height: 42px;
                     overflow: hidden;
                     left: 5px;
                     display: inline-block;
-                    vertical-align: middle;
-                    margin-bottom: 10px;
-                    margin-right: 10px;
                 }
                 p{
                     display: inline-block;
+                    margin-bottom: 20px;
+                    font-size:  1.1rem;
+                    margin-top: 15px;
                 }
-                span{
+                span.title{
+                    margin-left: 50px;
                     margin-right: 10px;
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    text-decoration: underline;
                 }
             }
             .chip {
@@ -204,28 +226,31 @@
     .tab-enums-dialog-new-color {
         width: calc(~"100% - 50px");
     }
+    .tab-enums-dialog-new-icon-clear,
     .tab-enums-dialog-new-color-clear {
         float: right;
         z-index: 0;
     }
-    .tab-enums-dialog-new-upload:hover{
-        background-color: black;
-        opacity: 0.2;
-    }
     .tab-enums-dialog-new-upload{
-        position: relative;
-        left: 0;
-        margin-left: 17%;
-        height: 100px;
-        opacity: 0;
+        position: absolute;
+        left: 80px;
+        height: 3rem;
+        line-height: 3rem;
+        a{
+            height: 3rem;
+            width: 4rem;
+            i{
+                line-height: 50px;
+            }
+        }
     }
     .tab-enums-dialog-new-icon{
         position: absolute;
-        left: 0;
-        margin-left: 17%;
-        height: 100px;
-        img{
-            height: 100px;
+        left: 170;
+        img.treetable-icon{
+            height: 50px;
+            width: 50px;
+            max-height: 50px;
         }
     }
 
