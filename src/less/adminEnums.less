@@ -1,5 +1,28 @@
 @import "commons";
 #tab-enums {
+    .tree-table-body{
+        .enum-buttons{
+            a {
+                margin-right: 2px;
+                height: @admin-small-buttons-size;
+                width: @admin-small-buttons-size;
+            }
+            margin-bottom: 0;
+            margin-top: 5px;
+            line-height: 1.5rem;
+            i {
+                line-height: @admin-small-buttons-size;
+            }
+            ul {
+                min-width: 280px;
+                min-height: 60px;
+                li {
+                    white-space: nowrap;
+                }
+            }
+        }
+
+    }
     .tab-enums-list,
     .tab-enums-objects {
         display: inline-block;
@@ -43,10 +66,14 @@
         }
         .collection {
             overflow: auto;
+            li{
+                padding: 5px;
+            }
+
             .edit-content,
             .delete-content {
                 position: absolute;
-                bottom: 16px;
+                top: 5px;
                 float: right;
                 color: @admin-buttons-color;
                 text-decoration: none;
@@ -69,9 +96,22 @@
                 cursor: inherit;
             }
             .collection-item {
-                //margin-bottom: 1rem;
-                & > img.circle {
-                    border-radius: 0;
+                img.icon {
+                    position: relative;
+                    width: 42px;
+                    height: 42px;
+                    overflow: hidden;
+                    left: 5px;
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin-bottom: 10px;
+                    margin-right: 10px;
+                }
+                p{
+                    display: inline-block;
+                }
+                span{
+                    margin-right: 10px;
                 }
             }
             .chip {

@@ -410,9 +410,9 @@ function Enums(main) {
                 }
 
                 text += '<li class="collection-item avatar" data-id="' + that.list[se] + '" style="' + style + '">' +
-                    that.main.getIcon(that.list[se], null, null, 'circle') +
+                    that.main.getIcon(that.list[se], null, null, 'icon') +
                     '<span class="title">' + getName(that.main.objects, that.list[se]) + '</span>' +
-                    '<p>' + that.list[se] + '</p>';
+                    '<p>' + that.list[se] + '</p><br>';
 
                 if (en && en.common && en.common.members && en.common.members.length) {
                     for (var m = 0; m < en.common.members.length; m++) {
