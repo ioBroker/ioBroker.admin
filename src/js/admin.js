@@ -1685,6 +1685,7 @@ $(document).ready(function () {
         $('.admin-sidemenu-close').off('click').on('click', function () {
             $('#admin_sidemenu_main').toggleClass('admin-sidemenu-closed');
             $('#admin_sidemenu_menu').toggleClass('admin-sidemenu-closed');
+            $('.admin-sidemenu-close i').toggleClass('hide');
 
             setTimeout(function () {
                 //resizeGrids();

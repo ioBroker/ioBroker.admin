@@ -933,11 +933,11 @@ function Adapters(main) {
                         versionDate: obj.versionDate,
                         updatable:  updatable,
                         bold:       obj.highlight || false,
-                        install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button m" title="' + localTexts['add instance'] + '"><i class="material-icons">add</i></button>' +
-                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button m" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
-                        ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-upload-submit small-button m" title="' + localTexts['upload'] + '"><i class="material-icons">file_upload</i></button>' : '') +
-                        '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button m" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
-                        ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button m" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
+                        install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button m" title="' + localTexts['add instance'] + '"><i class="material-icons">add_circle_outline</i></button>' +
+                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
+                        ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-upload-submit small-button" title="' + localTexts['upload'] + '"><i class="material-icons">file_upload</i></button>' : '') +
+                        '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
+                        ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
                         // platform:   obj.platform, actually there is only one platform
                         group:      group,
                         license:    obj.license || '',
@@ -1016,10 +1016,10 @@ function Adapters(main) {
                             bold:       obj.highlight,
                             installed:  '',
                             versionDate: obj.versionDate,
-                            install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button m" title="' + localTexts['add instance'] + '"><i class="material-icons">add</i></button>' +
-                            '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button m" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
-                            '<button data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button hide m" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
-                            ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button m" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
+                            install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button" title="' + localTexts['add instance'] + '"><i class="material-icons">add_circle_outline</i></button>' +
+                            '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
+                            '<button data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button hide" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
+                            ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
                             // TODO do not show adapters not for this platform
                             // platform:   obj.platform, // actually there is only one platform
                             license:    obj.license    || '',
