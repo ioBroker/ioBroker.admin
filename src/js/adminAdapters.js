@@ -1131,11 +1131,13 @@ function Adapters(main) {
     text += '           <a titel="info" class="btn-floating activator btnUp teal lighten-2 z-depth-3"><i class="material-icons">more_vert</i></a>';
     text += '           <div class="ver valign-wrapper"><!-- <a class="black-text" title="Обновить"><i class="material-icons">refresh</i></a><b>'+ (news ? news : " ") +'</b> /  --> <small></small></div></div>';
     text += '           <div class="footer right-align">';
-    text += ad.install
     text += '           </div>';
     text += '           <div class="card-reveal">';
     text += '       <i class="card-title material-icons right">close</i>';
     text += '        <p>' + ad.desc + '</p>';
+    text += '           <div class="footer right-align">';
+    text += ad.install
+    text += '           </div>';
     text += '    </div></div></div>';
 
                     }
