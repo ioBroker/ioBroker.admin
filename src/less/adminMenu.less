@@ -23,7 +23,8 @@
             list-style: none;
             float: left;
             background:#fff;
-            color:#000
+            color:#000;
+            border-radius: 2px;
         }
     }
 }
@@ -70,6 +71,9 @@
         &.admin-sidemenu-active {
             background: @admin-buttons-color;
             color:  @admin-buttons-background !important;
+            a {
+                color: aliceblue !important;
+            }
         }
         &.admin-sidemenu-active:hover {
             background: @admin-buttons-color;
@@ -86,6 +90,9 @@
         height: calc(~"100% - 176px"); // 176 is height of user-view
         margin: 0;
         overflow-y: auto;
+        li a:hover{
+            color: aliceblue !important;
+        }
     }
     a i {
         margin: 0 0.5rem 0 0 !important;
@@ -96,17 +103,26 @@
         margin-left: 8px;
     }
     // Position and style the close button (top right corner)
+    .admin-sidemenu-close:hover {
+        color: aliceblue;
+        cursor: pointer;
+    }
     .admin-sidemenu-close {
-        position:       fixed;
-        left:           calc(@admin-sidemenu-width ~"- 35px");
-        top:            0;
-        line-height:    .8rem;
+        position: fixed;
+        left: calc(180px - 34px);
+        top: 0;
+        /* line-height: .8rem; */
+        padding: 5px;
 
-        span {
-            &:after {
-                content: "×";
-            }
+        i {
+            margin: 0px !important;
         }
+
+//        span {
+//            &:after {
+//                content: "×";
+//            }
+//        }
     }
 
     .choose-tabs-config-button {
@@ -119,9 +135,14 @@
         font-size:      1.2rem;
         line-height:    38px;
         padding:        0;
+        i {
+            margin: 0px !important;
+        }
     }
 
     .choose-tabs-config-button:hover {
+        color: aliceblue;
+        cursor: pointer;
         //background: @admin-sidemenu-background-hover;
     }
     // badge with updates
@@ -132,9 +153,9 @@
     }
 }
 
-.btn {
-    margin-left: 0.5rem;
-}
+//.btn {
+//    margin-left: 0.5rem;  readme
+//}
 
 #admin_sidemenu_main {
     transition: margin-left @admin-sidemenu-transition;
@@ -247,13 +268,12 @@
         //padding-left: 30px;
     }
     .admin-sidemenu-close {
-        left:           0;
-        width:          10px;
-        margin-left:    -5px;
+        left: 0;
         top: 12px;
-        background-color: lightskyblue;
-        border-bottom-right-radius: 10px;
-        border-top-right-radius: 10px;
+        background-color: #87cefa;
+        border-bottom-right-radius: 8px;
+        border-top-right-radius: 8px;
+        padding: 10 5 10 0;
         &:hover {
             background: @admin-sidemenu-user-view-background;
             color: @admin-sidemenu-color;

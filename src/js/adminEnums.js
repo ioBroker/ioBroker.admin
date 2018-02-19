@@ -381,20 +381,20 @@ function Enums(main) {
         var obj = that.main.objects[id];
         var name = id.replace(/[.#\\\/&?]+/g, '-');
         var text =
-            '<div class="raw enum-buttons">' +
+            '<div class="row enum-buttons">' +
             '   <div class="col s12">' +
-            '       <a class="btn-floating waves-effect waves-light blue dropdown-trigger btn-new-group-btn" title="' + _('New enum') + '" href="#" data-target="btn-new-group-' + name + '"><i class="material-icons">library_add</i></a>' +
+            '       <a class="btn-floating waves-effect waves-light blue btn-small dropdown-trigger btn-new-group-btn" title="' + _('New enum') + '" href="#" data-target="btn-new-group-' + name + '"><i class="material-icons">library_add</i></a>' +
             '       <ul id="btn-new-group-' + name + '" class="dropdown-content" data-id="' + id + '"></ul>' +
-            '       <a class="btn-floating waves-effect waves-light btn-edit-category" title="' + _('Edit category') + '" data-id="' + id + '">' +
+            '       <a class="btn-floating waves-effect waves-light btn-small btn-edit-category" title="' + _('Edit category') + '" data-id="' + id + '">' +
             '           <i class="material-icons">edit</i>' +
             '       </a>' +
-            '       <a class="btn-floating waves-effect waves-light red lighten-2 btn-del-category ' + (obj && obj.common && obj.common['object-non-deletable'] ? 'disabled' : '') + '" title="' + _('Delete category') + '" data-id="' + id + '">' +
+            '       <a class="btn-floating waves-effect btn-small waves-light red lighten-2 btn-del-category ' + (obj && obj.common && obj.common['object-non-deletable'] ? 'disabled' : '') + '" title="' + _('Delete category') + '" data-id="' + id + '">' +
             '           <i class="material-icons">delete</i>' +
             '       </a>' +
             '   </div>' +
             '</div>';
 
-        text += '<div class="raw"><div class="col s12 enum-collection" data-id="' + id + '"><ul class="collection">';
+        text += '<div class="row"><div class="col s12 enum-collection" data-id="' + id + '"><ul class="collection">';
 
         for (var se = 0; se < that.list.length; se++) {
             if (that.list[se].substring(0, id.length + 1) === id + '.') {
@@ -410,9 +410,9 @@ function Enums(main) {
                 }
 
                 text += '<li class="collection-item avatar" data-id="' + that.list[se] + '" style="' + style + '">' +
-                    that.main.getIcon(that.list[se], null, null, 'circle') +
+                    that.main.getIcon(that.list[se], null, null, 'icon') +
                     '<span class="title">' + getName(that.main.objects, that.list[se]) + '</span>' +
-                    '<p>' + that.list[se] + '</p>';
+                    '<p>' + that.list[se] + '</p><br>';
 
                 if (en && en.common && en.common.members && en.common.members.length) {
                     for (var m = 0; m < en.common.members.length; m++) {
@@ -786,8 +786,8 @@ function Enums(main) {
                 $dialog.find('.tab-enums-dialog-create').removeClass('disabled');
                 iconVal   = text;
 
-                $dialog.find('.tab-enums-dialog-new-icon').show().html('<img class="treetable-icon" />');
-                $dialog.find('.tab-enums-dialog-new-icon .treetable-icon').attr('src', text);
+                $dialog.find('.tab-enums-dialog-new-icon').show().html('<img class="" />');
+                $dialog.find('.tab-enums-dialog-new-icon').attr('src', text);
                 $dialog.find('.tab-enums-dialog-new-icon-clear').show();
             }
         });

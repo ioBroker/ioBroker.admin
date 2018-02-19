@@ -27,16 +27,16 @@
     }
     .main-toolbar-table {
         left: -2px;
-        &>div {
-            display: inline-block
-        }
+//        &>div {
+//            display: inline-block
+//        }
         a.btn-small {
             line-height: @admin-small-buttons-size;
             height: @admin-small-buttons-size;
             width: @admin-small-buttons-size;
             i {
-                margin-left:    -0.5px;
-                font-size:      1.1rem;
+//                margin-left:    -0.5px;
+//                font-size:      1.1rem;
                 line-height:    @admin-small-buttons-size;
             }
         }
@@ -44,10 +44,11 @@
         .filter-input {
             display:        inline-table;
             padding-left:   6px;
-            margin-left:    20px;
             font-size:      14px;
             height:         24px;
             width:          10rem;
+            margin-top: 5px;
+            margin-bottom: 0px;
             &::placeholder {
                 color: @admin-filter-placeholder-color;
             }
@@ -72,7 +73,8 @@
         }
 
         .main-toolbar-table-types-tools {
-            display: inline-block;
+//            margin-top: 5px;
+//            display: inline-block;
             .dropdown-button {
                 height: @toolbar-size + 4px;
                 line-height: @toolbar-size + 4px;
@@ -124,17 +126,18 @@
         border-radius: 2px;
     }
     .small-button {
-        height:     24px;
+//        height:     24px;
         background: @tiles-tile-background;
         color:      @admin-sidemenu-main-items-color;
         padding:    1px 0 0 0;
         cursor:     pointer;
+        transition: 0.2s linear;
         i {
             //font-size: 14px;
         }
         &:hover {
-            background: @main-active-color;
-            color: @admin-sidemenu-color;
+//            background: @main-active-color;
+//            color: @admin-sidemenu-color;
         }
         &.disabled {
             opacity: 0.5;
@@ -318,7 +321,7 @@
     li.adapters-versions-link {
         text-align: right;
         cursor: pointer;
-        padding: 0.5rem;
+//        padding: 0.5rem;
         &:hover {
             background: @main-active-color;
             a {
@@ -402,5 +405,84 @@
         padding-left:   @line-indent !important;
         display:        inline-flex;
         align-items:    center;
+    }
+}
+
+.card-adapters{
+    min-height: 200px;
+    min-width: 170px;
+    height: 270px;
+    .card-header{
+        background-color: #64b5f6;
+        min-height: 80px;
+        padding-top: 1px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        border-bottom: 2px solid;
+//      background: url(../img/onf.jpg) no-repeat;
+        -moz-background-size: 100%;
+        -webkit-background-size: 100%;
+        -o-background-size: 100%;
+        background-size: 100%;
+    }
+    .card-content {
+        img {
+            width: 70px;
+            position: absolute;
+            top: 5px;
+            left:5px;
+            z-index: 1;
+            border-radius: 5px;
+            }
+        span {
+            height: 100px;
+            overflow: hidden;
+            font-weight: 700 !important;
+            }
+        .ver {
+            position: absolute;
+            bottom: 35;
+            font-size: 1.3em;
+            i {
+                font-size: 1.3em;
+                }
+            }
+        .btnUp {
+            background-color: #2196f3!important;
+            position: absolute !important;
+            top: 60px;
+            right: 0px;
+            margin-right: 10px !important;
+            }
+        }
+    .card-reveal {
+        font-size: 1.3em;
+        .footer{
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            padding: 5 10 5 0;
+            border-top: 1px solid;
+            i {
+                font-size: 1.7em;
+            }
+
+            .adapter-delete-submit:hover {
+                color: red !important;
+            }
+            .adapter-install-submit:hover {
+                color: #00bd00 !important;
+            }
+            .adapter-readme-submit:hover {
+                color: #9c27b0 !important;
+            }
+            .adapter-upload-submit:hover {
+                color: #ff5722 !important;
+            }
+            .adapter-update-custom-submit:hover {
+                color: #00bcd4 !important;
+            }
+        }
     }
 }
