@@ -3,6 +3,12 @@
 @tiles-tile-padding: 1rem;
 
 #tab-adapters {
+    .grid-main-div{
+        th,td{
+            padding-bottom: 0;
+            padding-top: 0;
+        }
+    }    
     .process-adapters {
         position:   absolute;
         top:        45%;
@@ -460,32 +466,55 @@
         }
     .card-reveal {
         font-size: 1.3em;
-        .footer{
+        button{
+            position: absolute !important;
+            bottom: 10px ;
+        }
+        width: 100%;
+        padding: 5 10 5 0;
+        i {
+            font-size: 1.7em;
+        }
+        hr {
+            border: none;
+            background-color: #000;
+            color: #000;
+            height: 1px;
             position: absolute;
-            bottom: 0;
-            right: 0;
+            bottom: 40;            
             width: 100%;
-            padding: 5px 10px 5px 0;
-            border-top: 1px solid;
-            i {
-                font-size: 1.7em;
+            left: 0; 
+        }
+        .adapter-delete-submit {
+            right: 45px;
+        }
+        .adapter-delete-submit:hover {
+            color: red !important;
+                
+        }
+        .adapter-install-submit {
+            right: 105px;
+        }
+        .adapter-install-submit:hover {
+            color: #00bd00 !important;
+        }
+        .adapter-readme-submit {
+            right: 75px;
             }
-
-            .adapter-delete-submit:hover {
-                color: red !important;
+        .adapter-readme-submit:hover {
+            color: #9c27b0 !important;
+        }
+        .adapter-upload-submit {
+            right: 135px;
             }
-            .adapter-install-submit:hover {
-                color: #00bd00 !important;
-            }
-            .adapter-readme-submit:hover {
-                color: #9c27b0 !important;
-            }
-            .adapter-upload-submit:hover {
-                color: #ff5722 !important;
-            }
-            .adapter-update-custom-submit:hover {
-                color: #00bcd4 !important;
-            }
+        .adapter-upload-submit:hover {
+            color: #ff5722 !important;
+        }
+        .adapter-update-custom-submit {
+             right: 15px;
+        }
+        .adapter-update-custom-submit:hover {
+            color: #00bcd4 !important;           
         }
     }
 }
