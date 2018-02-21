@@ -2,8 +2,41 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.1.10",
+    "version": "3.2.0",
     "news": {
+      "3.2.0": {
+        "en": "The select ID dialog was fixed",
+        "de": "Der Auswahl-ID-Dialog wurde korrigiert",
+        "ru": "Диалоговое окно выбора ID было исправлено",
+        "pt": "A caixa de diálogo de identificação selecionada foi corrigida",
+        "nl": "Het dialoogvenster voor selectie van ID is hersteld",
+        "fr": "La boîte de dialogue Sélectionner un ID a été corrigée",
+        "it": "La finestra di dialogo di selezione ID è stata corretta",
+        "es": "El diálogo de selección de ID se arregló",
+        "pl": "Okno dialogowe wyboru ID zostało naprawione"
+      },
+      "3.1.12": {
+        "en": "Configuration dialog updated\nOpen menu button is fixed",
+        "de": "Konfigurationsdialog aktualisiert\nDie Schaltfläche zum Öffnen des Menüs ist korrigiert",
+        "ru": "Обновлен диалог настроек\nКнопка открытия меню исправлена",
+        "pt": "Caixa de diálogo de configuração atualizada\nO botão Abrir do menu é corrigido",
+        "nl": "Configuratiedialoog bijgewerkt\nDe menuknop is vast",
+        "fr": "Dialogue de configuration mis à jour\nLe bouton du menu Ouvrir est fixe",
+        "it": "Finestra di configurazione aggiornata\nIl pulsante del menu Apri è fisso",
+        "es": "Diálogo de configuración actualizado\nEl botón Abrir menú está arreglado",
+        "pl": "Zaktualizowano okno dialogowe konfiguracji\nPrzycisk Otwórz menu jest stały"
+      },
+      "3.1.11": {
+        "en": "Connection LED fixed",
+        "de": "Verbindungs-LED ist korrigiert",
+        "ru": "LED индикатор подключения исправлен",
+        "pt": "LED de conexão fixo",
+        "nl": "Verbindings-LED vast",
+        "fr": "LED de connexion fixe",
+        "it": "LED di connessione fisso",
+        "es": "LED de conexión fijo",
+        "pl": "Naprawiono połączenie LED"
+      },
       "3.1.10": {
         "en": "material CSS updated \npermission error fixed\nfilter of adapters corrected",
         "de": "Material CSS aktualisiert\nBerechtigungsfehler behoben\nFilter der Adapter korrigiert",
@@ -192,7 +225,7 @@
     "welcomeScreenPro": {
       "link": "admin/index.html",
       "name": "Admin",
-      "img": "admin/img/gear.png",
+      "img": "admin/img/admin.png",
       "color": "pink",
       "order": 5,
       "localLink": true

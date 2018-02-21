@@ -1472,6 +1472,7 @@ function Adapters(main) {
                     });
                 }
             });
+            
             $(this).dropdown({
                 onCloseEnd: function () {
                     var $adaptersMenu = $('#adapters-menu');

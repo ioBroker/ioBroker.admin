@@ -626,14 +626,28 @@ gulp.task('vendorJS', function () {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/lib/js'));
 });
+gulp.task('colorpick.min', function () {
+    return gulp.src([
+        './src/lib/js/colResizable-1.6.js'
+    ])
+        .pipe(sourcemaps.init())
+        .pipe(concat('colResizable-1.6.min.js'))
+        .pipe(uglify())
+        .on('error', function (err) {
+            gutil.log(gutil.colors.red('[Error]'), err.toString());
+        })
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('./www/lib/js'));
+});
 
-gulp.task('appCopy', function () {
+gulp.task('appCopy', ['colorpick.min'], function () {
     return gulp.src([
         './src/**/*.*',
         '!./src/i18n/**/*',
         '!./src/*.html',
         '!./src/lib/js/jquery.migrate-3.0.1.js',
         '!./src/lib/js/jquery.fancytree-all.js',
+        '!./src/lib/js/colResizable-1.6.js',
         '!./src/**/*.less',
         '!./src/js/**/admin*.js',
         '!./src/js/**/words.js',

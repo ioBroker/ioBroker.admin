@@ -300,7 +300,11 @@ function filterChanged(e) {
             for (var i = 0, len = nodes.children.length; i < len; i++) {
                 var node = nodes.children[i];
                 if (expandeds[node.key]) {
-                    node.setExpanded();
+                    try {
+                        node.setExpanded();
+                    } catch (e) {
+                        console.log('Cannot expand: ' + e);
+                    }
                     //node.setActive();
                 }
                 setIt(node);
@@ -405,7 +409,11 @@ function filterChanged(e) {
         var sfunc = sortByKey; // sort the root always by key
         return (function sort(tree) {
             if (!tree || !tree.children) return;
-            tree.sortChildren(sfunc);
+            try {
+                tree.sortChildren(sfunc);
+            } catch (e) {
+                console.log(e);
+            }
             sfunc = sortFunc;
             for (var i=tree.children.length-1; i>=0; i--) {
                 sort(tree.children[i]);
@@ -2078,7 +2086,7 @@ function filterChanged(e) {
 
                                 if (obj && obj.type === 'state' && isCommon && isCommon.type !== 'file') {
                                     addClippyToElement($elem, state.val,
-                                        obj &&
+                                        obj && data.quickEditCallback && 
                                         obj.type === 'state' &&
                                         (data.expertMode || isCommon.write !== false) ? key : undefined);
                                 }

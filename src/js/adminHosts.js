@@ -332,7 +332,7 @@ function Hosts(main) {
                 if (!res.hasOwnProperty(id)) continue;
                 that.main.objects[id] = res[id];
             }
-            that.main.socket.emit('getForeignStates', 'system.host.*',function (err, res) {
+            that.main.socket.emit('getForeignStates', 'system.host.*', function (err, res) {
                 for (var id in res) {
                     if (!res.hasOwnProperty(id)) continue;
                     that.main.states[id] = res[id];
