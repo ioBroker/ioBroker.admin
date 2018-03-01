@@ -3,8 +3,8 @@
 @tiles-tile-padding: 1rem;
 
 #tab-adapters {
-    .grid-main-div{
-        th,td{
+    .grid-main-div {
+        th,td {
             padding-bottom: 0;
             padding-top: 0;
         }
@@ -309,30 +309,48 @@
             -o-background-size: 100%;
             background-size: 100%;
         }
+        .card-header.installed {
+            background: @main-background-color;
+        }
+        .card-header.updatable {
+            background: @admin-adapters-updatable-background;
+        }
         .card-content {
             img {
-                width: 70px;
+                height: 70px;
                 position: absolute;
                 top: 5px;
-                left:5px;
+                left: 5px;
                 z-index: 1;
                 border-radius: 5px;
             }
-            span {
+            /*span {
                 height: 100px;
                 overflow: hidden;
                 font-weight: 700 !important;
-            }
+            }*/
             .ver {
                 position: absolute;
-                bottom: 35px;
+                bottom: 5px;
                 font-size: 1.3em;
+                width: calc(100% - 48px);
                 i {
                     font-size: 1.3em;
                 }
+                .data {
+                    float: right;
+                    &.updatable {
+                        color: @admin-adapters-updatable-color;
+                    }
+                }
+                .adapter-update-submit {
+                    float: right;
+                    margin-right: 5px;
+                    height: 20px;
+                    line-height: 20px;
+                }
             }
             .btnUp {
-                background-color: #2196f3!important;
                 position: absolute !important;
                 top: 60px;
                 right: 0;
@@ -343,8 +361,9 @@
             font-size: 1.3em;
             background: #e2e2e2;
             button {
-                position: absolute !important;
-                bottom: 10px ;
+                // position: absolute !important;
+                // bottom: 10px ;
+                margin-right: 5px;
             }
             width: 100%;
             padding: 24px 24px 0 24px;
@@ -359,38 +378,33 @@
                 height: 50px;
                 background: #fff;
                 right: 0;
-            }
-            .adapter-delete-submit {
-                right: 45px;
+                text-align: right;
+                padding: 10px;
             }
             .adapter-delete-submit:hover {
                 color: red !important;
 
             }
             .adapter-install-submit {
-                right: 105px;
-            }
-            .adapter-install-submit:hover {
-                color: #00bd00 !important;
-            }
-            .adapter-readme-submit {
-                right: 75px;
+                float: left;
+                &:hover {
+                    color: #00bd00 !important;
+                }
             }
             .adapter-readme-submit:hover {
                 color: #9c27b0 !important;
             }
-            .adapter-upload-submit {
-                right: 135px;
-            }
             .adapter-upload-submit:hover {
                 color: #ff5722 !important;
-            }
-            .adapter-update-custom-submit {
-                right: 15px;
             }
             .adapter-update-custom-submit:hover {
                 color: #00bcd4 !important;
             }
+        }
+        .stat, .last-update {
+            position: absolute;
+            top: 30px;
+            right: 10px;
         }
     }
 }
@@ -417,39 +431,30 @@
     }
 }
 // adapters dropdown menu
-#adapters-menu p {
-    height: calc(100% - 68px);
-    overflow: auto;
-}
-
-/*#adapters-menu {
-    position:   absolute;
-    z-index:    2;
-    max-height: 200px;
-    overflow:   auto;
-    width:      150px !important;
-    background: white;
-    margin-top: 18px;
-    font-size:  24px;
-    border:     1px dashed gray;
-
-    ul {
-        margin: 0;
+#adapters-menu {
+    p {
+        height: calc(100% - 68px);
+        overflow: auto;
     }
-    li.adapters-versions-link {
-        text-align: right;
+    .adapters-versions-link-version {
+        font-weight: bold;
         cursor: pointer;
-//        padding: 0.5rem;
-        &:hover {
-            background: @main-active-color;
-            a {
-                color: @admin-sidemenu-color !important;
-            }
-        }
     }
-
+    .adapters-versions-link-history {
+        color: #000;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        width: calc(100% - 60px);
+        display: inline-block;
+        line-height: 13px;
+        cursor: pointer;
+    }
+    .collection-item {
+        cursor: pointer;
+    }
 }
-*/
+
 #grid-adapters, .adapters-list-table {
     width:              100%;
     border-collapse:    collapse;
@@ -461,7 +466,7 @@
     font-family:        @iob-font;
 }
 
-#grid-adapters{
+#grid-adapters {
     .fancytree-title {
         padding-left:   @line-indent !important;
         display:        inline-flex;
@@ -526,6 +531,12 @@
         min-height: 22px;
         line-height: 22px;
     }
+    table {
+        tr {
+            border: 0 !important;
+        }
+    }
 }
+
 
 

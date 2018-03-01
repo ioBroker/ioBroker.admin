@@ -757,6 +757,7 @@ function Adapters(main) {
             this.getAdaptersInfo(this.main.currentHost, update, updateRepo, function (repository, installedList) {
                 var obj;
                 var version;
+                var rawVersion;
                 var adapter;
                 var adaptersToUpdate = 0;
 
@@ -861,7 +862,7 @@ function Adapters(main) {
                             adaptersToUpdate++;
                         }
                         // TODO: move style to class
-                        installed = '<table style="min-width: 80px; text-align: center; border: 0; border-spacing: 0;' /*+ (news ? 'font-weight: bold;' : '')*/ + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
+                        installed = '<table style="min-width: 80px; text-align: center; border: 0; border-spacing: 0;" cellspacing="0" cellpadding="0" class="ui-widget">' +
                             '<tr>';
 
                         var _instances = 0;
@@ -905,7 +906,7 @@ function Adapters(main) {
                         installed += '</tr></table>';
                         if (!updatable && that.onlyUpdatable) continue;
                     }
-
+                    rawVersion = version;
                     version = getVersionString(version, updatable, news, updatableError);
 
                     var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
@@ -921,9 +922,12 @@ function Adapters(main) {
                         name:       adapter,
                         title:      (title || '').replace('ioBroker Visualisation - ', ''),
                         desc:       desc,
+                        news:       news,
+                        updatableError: updatableError,
                         keywords:   obj.keywords ? obj.keywords.join(' ') : '',
                         version:    version,
                         installed:  installed,
+                        rawVersion: rawVersion,
                         rawInstalled: rawInstalled,
                         versionDate: obj.versionDate,
                         updatable:  updatable,
@@ -989,6 +993,7 @@ function Adapters(main) {
 
                         if (obj && obj.version) {
                             version = obj.version;
+                            rawVersion = version;
                             version = getVersionString(version);
                         }
 
@@ -1007,6 +1012,7 @@ function Adapters(main) {
                             title:      (title || '').replace('ioBroker Visualisation - ', ''),
                             desc:       desc,
                             keywords:   obj.keywords ? obj.keywords.join(' ') : '',
+                            rawVersion: rawVersion,
                             version:    version,
                             bold:       obj.highlight,
                             installed:  '',
@@ -1119,12 +1125,22 @@ function Adapters(main) {
 
                         text += '<div class="col s12 m6 l4 xl3 class-' + ad.group + '" data-id="' + ad.name + '">';
                         text += '   <div class="card hoverable card-adapters">';
-                        text += '       <div class="card-header gradient-45deg-purple-amber center"></div>';
+                        text += '       <div class="card-header ' + (ad.updatable ? 'updatable' : (ad.installed ? 'installed' : '')) + '"></div>';
                         text += '       <div class="card-content">';
                         text += '           <img onerror="this.src=\'img/info-big.png\';" class="card-profile-image" src="' + ad.icon + '">';
                         text += '           <span class="card-title grey-text text-darken-4">' + ad.title + '</span>';
-                        text += '           <a title="info" class="btn-floating activator btnUp teal lighten-2 z-depth-3"><i class="material-icons">more_vert</i></a>';
-                        text += '           <div class="ver valign-wrapper"> <!-- <a class="black-text" title="Обновить"><i class="material-icons">refresh</i></a><b>'+ (news ? news : " ") +'</b> /  --> <small></small></div>';
+                        text += '           <a title="info" class="btn-floating activator btnUp blue lighten-2 z-depth-3"><i class="material-icons">more_vert</i></a>';
+                        text += '           <ul class="ver">';
+                        text += '               <li>' + localTexts['Available version:']  + ' <span class="data ' + (ad.updatable ? 'updatable' : '') + '" ' + (ad.news ? ' title="' + ad.news + '"' : '') + '>' + ad.rawVersion + '</span>' +
+                            (ad.updatable ? '<button class="adapter-update-submit small-button" data-adapter-name="' + a + '" ' + (updatableError ? ' disabled title="' + ad.updatableError + '"' : 'title="' + localTexts['update'] + '"') + '><i class="material-icons">refresh</i></button>' : '') +
+                            '</li>';
+                        if (ad.installed) {
+                            text += '           <li>' + localTexts['Installed version'] + ': <span class="data">'+ ad.rawInstalled + '</span></li>';
+                        }
+                        if (_instances) {
+                            text += '           <li>' + _('Installed instances') + ': <span class="data">' + _instances + '</span></li>';
+                        }
+                        text += '           </ul>';
                         text += '       </div>';
                         text += '       <div class="footer right-align"></div>';
                         text += '       <div class="card-reveal">';
@@ -1134,9 +1150,16 @@ function Adapters(main) {
                         text += ad.install;
                         text += '           </div>';
                         text += '       </div>';
+
+                        if (that.currentOrder === 'popular' && ad.stat) {
+                            text += '   <div class="stat" title="' + localTexts['Installations counter'] + '">' + ad.stat + '</div>';
+                        } else if (that.currentOrder === 'updated' && ad.versionDate) {
+                            text += '   <div class="last-update" title="' + localTexts['Last update'] + '">' + getInterval(ad.versionDate, localTexts['today'], localTexts['yesterday'], localTexts['1 %d days ago'], localTexts['2 %d days ago'], localTexts['5 %d days ago'], nowObj) + '</div>';
+                        }
+
+
                         text += '   </div>';
                         text += '</div>';
-
                     }
 
 
@@ -1199,7 +1222,7 @@ function Adapters(main) {
                             var $big = $(text);
                             $big.insertAfter($(this));
                             $(this).data('big', $big[0]);
-                            var h = parseFloat($big.height());
+                            var h   = parseFloat($big.height());
                             var top = Math.round($(this).position().top - ((h - parseFloat($(this).height())) / 2));
                             if (h + top > (window.innerHeight || document.documentElement.clientHeight)) {
                                 top = (window.innerHeight || document.documentElement.clientHeight) - h;
@@ -1440,17 +1463,12 @@ function Adapters(main) {
             } else {
                 versions.push(that.main.objects['system.adapter.' + adapter].common.version);
             }
-            var menu = '<div class="collection">';//<li class="adapters-versions-link m"><a>' +
-                //'<i class="material-icons">close</i>' + _('Close') + '</a></li>' +
-                //'<li class="divider"></li>';
+            var menu = '<div class="collection">';
             for (var v = 0; v < versions.length; v++) {
-                menu += '<a data-version="' + versions[v] + '" data-position="left" data-delay="50" title="' + (news[versions[v]] ? news[versions[v]][systemLang] || news[versions[v]].en : '') + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="collection-item adapters-versions-link tooltipped">' + versions[v] + '</a>';
+                var nnews = (news[versions[v]] ? news[versions[v]][systemLang] || news[versions[v]].en : '');
+                menu += '<a data-version="' + versions[v] + '" data-position="left" data-delay="50" title="' + nnews + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="collection-item adapters-versions-link tooltipped"><span class="adapters-versions-link-version">' + versions[v] + '</span> - <div class="adapters-versions-link-history">' + nnews + '</div></a>';
             }
-            //if (versions.length > 5) {
-            //    menu += '<li class="divider"></li><li class="adapters-versions-link m"><a><i class="material-icons">close</i>' + _('Close') + '</a></li></ul>';
-            //} else {
-                menu += '</div>';
-            //}
+            menu += '</div>';
 
             var $adaptersMenu = $('#adapters-menu');
             if (!$adaptersMenu.length) {
@@ -1468,6 +1486,7 @@ function Adapters(main) {
 
             $adaptersMenu.find('.adapters-versions-link').off('click').on('click', function () {
                 //if ($(this).data('link')) window.open($(this).data('link'), $(this).data('instance-id'));
+                $adaptersMenu.modal('close');
                 var adapter = $(this).data('adapter-name');
                 var version = $(this).data('version');
                 if (version && adapter) {
