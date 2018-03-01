@@ -839,11 +839,6 @@ function Adapters(main) {
 
                     obj = installedList ? installedList[adapter] : null;
 
-                    if (obj) {
-                        that.urls[adapter] = installedList[adapter].readme || installedList[adapter].extIcon || installedList[adapter].licenseUrl;
-                        if (!that.urls[adapter]) delete that.urls[adapter];
-                    }
-
                     if (!obj || obj.controller || adapter === 'hosts') continue;
                     var installed = '';
                     var rawInstalled = '';
@@ -992,7 +987,7 @@ function Adapters(main) {
                         version = '';
                         if (installedList && installedList[adapter]) continue;
 
-                        if (repository[adapter] && obj.version) {
+                        if (obj && obj.version) {
                             version = obj.version;
                             version = getVersionString(version);
                         }
@@ -1122,21 +1117,25 @@ function Adapters(main) {
 //                        text += '    </div>';
 //                        text += '</div>';
 
-    text += '<div class="col s12 m6 l4 xl3 class-' + ad.group + '" data-id="' + ad.name + '">';
-    text += '   <div class="card hoverable card-adapters">';
-    text += '       <div class="card-header gradient-45deg-purple-amber center"></div>';
-    text += '           <div class="card-content">';
-    text += '           <img onerror="this.src=\'img/info-big.png\';" class="card-profile-image" src="' + ad.icon + '">';
-    text += '           <span class="card-title grey-text text-darken-4">' + ad.title + '</span>';
-    text += '           <a titel="info" class="btn-floating activator btnUp teal lighten-2 z-depth-3"><i class="material-icons">more_vert</i></a>';
-    text += '           <div class="ver valign-wrapper"> <!-- <a class="black-text" title="Обновить"><i class="material-icons">refresh</i></a><b>'+ (news ? news : " ") +'</b> /  --> <small></small></div></div>';
-    text += '           <div class="footer right-align">';
-    text += '           </div>';
-    text += '           <div class="card-reveal">';
-    text += '       <i class="card-title material-icons right">close</i>';
-    text += '        <p>' + ad.desc + '</p><hr>';
-    text += ad.install
-    text += '    </div></div></div>'; 
+                        text += '<div class="col s12 m6 l4 xl3 class-' + ad.group + '" data-id="' + ad.name + '">';
+                        text += '   <div class="card hoverable card-adapters">';
+                        text += '       <div class="card-header gradient-45deg-purple-amber center"></div>';
+                        text += '       <div class="card-content">';
+                        text += '           <img onerror="this.src=\'img/info-big.png\';" class="card-profile-image" src="' + ad.icon + '">';
+                        text += '           <span class="card-title grey-text text-darken-4">' + ad.title + '</span>';
+                        text += '           <a title="info" class="btn-floating activator btnUp teal lighten-2 z-depth-3"><i class="material-icons">more_vert</i></a>';
+                        text += '           <div class="ver valign-wrapper"> <!-- <a class="black-text" title="Обновить"><i class="material-icons">refresh</i></a><b>'+ (news ? news : " ") +'</b> /  --> <small></small></div>';
+                        text += '       </div>';
+                        text += '       <div class="footer right-align"></div>';
+                        text += '       <div class="card-reveal">';
+                        text += '           <i class="card-title material-icons right">close</i>';
+                        text += '           <p>' + ad.desc + '</p>';
+                        text += '           <div class="card-reveal-buttons">';
+                        text += ad.install;
+                        text += '           </div>';
+                        text += '       </div>';
+                        text += '   </div>';
+                        text += '</div>';
 
                     }
 
@@ -1441,24 +1440,31 @@ function Adapters(main) {
             } else {
                 versions.push(that.main.objects['system.adapter.' + adapter].common.version);
             }
-            var menu = '<ul><li class="adapters-versions-link m"><a><i class="material-icons">close</i>' + _('Close') + '</a></li><li class="divider"></li>';
+            var menu = '<div class="collection">';//<li class="adapters-versions-link m"><a>' +
+                //'<i class="material-icons">close</i>' + _('Close') + '</a></li>' +
+                //'<li class="divider"></li>';
             for (var v = 0; v < versions.length; v++) {
-                menu += '<li data-version="' + versions[v] + '" data-position="left" data-delay="50" title="' + (news[versions[v]] ? news[versions[v]][systemLang] || news[versions[v]].en : '') + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="adapters-versions-link tooltipped"><a>' + versions[v] + '</a></li>';
+                menu += '<a data-version="' + versions[v] + '" data-position="left" data-delay="50" title="' + (news[versions[v]] ? news[versions[v]][systemLang] || news[versions[v]].en : '') + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="collection-item adapters-versions-link tooltipped">' + versions[v] + '</a>';
             }
-            if (versions.length > 5) {
-                menu += '<li class="divider"></li><li class="adapters-versions-link m"><a><i class="material-icons">close</i>' + _('Close') + '</a></li></ul>';
-            } else {
-                menu += '</ul>'
-            }
+            //if (versions.length > 5) {
+            //    menu += '<li class="divider"></li><li class="adapters-versions-link m"><a><i class="material-icons">close</i>' + _('Close') + '</a></li></ul>';
+            //} else {
+                menu += '</div>';
+            //}
 
             var $adaptersMenu = $('#adapters-menu');
             if (!$adaptersMenu.length) {
-                $adaptersMenu = $('<div id="adapters-menu" class="dropdown-content m"></div>');
-                $adaptersMenu.appendTo('body');
+                //$adaptersMenu = $('<div id="adapters-menu" class="dropdown-content m"></div>');
+                $adaptersMenu = $('<div id="adapters-menu" class="modal modal-fixed-footer"><div class="modal-content">' +
+                    '<h4>Modal Header</h4><p></p></div><div class="modal-footer">' +
+                    '<a class="modal-action modal-close waves-effect waves-green btn-flat ">' + _('Close') + '</a></div></div>');
+                $adaptersMenu.appendTo($('.materialize-dialogs').first());
+                $adaptersMenu.modal();
             }
             $adaptersMenu.data('trigger', this);
 
-            $adaptersMenu.html(menu);
+            $adaptersMenu.find('p').html(menu);
+            $adaptersMenu.find('h4').html(_('Versions of %s', adapter));
 
             $adaptersMenu.find('.adapters-versions-link').off('click').on('click', function () {
                 //if ($(this).data('link')) window.open($(this).data('link'), $(this).data('instance-id'));
@@ -1470,8 +1476,8 @@ function Adapters(main) {
                     });
                 }
             });
-            
-            $(this).dropdown({
+
+            /*$(this).dropdown({
                 onCloseEnd: function () {
                     var $adaptersMenu = $('#adapters-menu');
                     var trigger = $adaptersMenu.data('trigger');
@@ -1479,7 +1485,9 @@ function Adapters(main) {
                     $adaptersMenu.data('trigger', null).hide();
                     $adaptersMenu.remove();
                 }
-            }).dropdown('open');
+            }).dropdown('open');*/
+            $adaptersMenu.modal('open');
+
 
             // does not work... must be fixed.
             //$adaptersMenu.find('.tooltipped').tooltip();

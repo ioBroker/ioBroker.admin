@@ -289,6 +289,110 @@
             }
         }
     }
+
+    .card-adapters {
+        min-height: 200px;
+        min-width: 170px;
+        height: 270px;
+        background: #e2e2e2;
+        .card-header {
+            //    background-color: #64b5f6;
+            min-height: 80px;
+            padding-top: 1px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            // border-bottom: 2px solid #c3c3c3;
+            background: white;
+            //      background: url(../img/onf.jpg) no-repeat;
+            -moz-background-size: 100%;
+            -webkit-background-size: 100%;
+            -o-background-size: 100%;
+            background-size: 100%;
+        }
+        .card-content {
+            img {
+                width: 70px;
+                position: absolute;
+                top: 5px;
+                left:5px;
+                z-index: 1;
+                border-radius: 5px;
+            }
+            span {
+                height: 100px;
+                overflow: hidden;
+                font-weight: 700 !important;
+            }
+            .ver {
+                position: absolute;
+                bottom: 35px;
+                font-size: 1.3em;
+                i {
+                    font-size: 1.3em;
+                }
+            }
+            .btnUp {
+                background-color: #2196f3!important;
+                position: absolute !important;
+                top: 60px;
+                right: 0;
+                margin-right: 10px !important;
+            }
+        }
+        .card-reveal {
+            font-size: 1.3em;
+            background: #e2e2e2;
+            button {
+                position: absolute !important;
+                bottom: 10px ;
+            }
+            width: 100%;
+            padding: 24px 24px 0 24px;
+            i {
+                font-size: 1.7em;
+            }
+            .card-reveal-buttons {
+                left: 0;
+                position: absolute;
+                border: none;
+                bottom: 0;
+                height: 50px;
+                background: #fff;
+                right: 0;
+            }
+            .adapter-delete-submit {
+                right: 45px;
+            }
+            .adapter-delete-submit:hover {
+                color: red !important;
+
+            }
+            .adapter-install-submit {
+                right: 105px;
+            }
+            .adapter-install-submit:hover {
+                color: #00bd00 !important;
+            }
+            .adapter-readme-submit {
+                right: 75px;
+            }
+            .adapter-readme-submit:hover {
+                color: #9c27b0 !important;
+            }
+            .adapter-upload-submit {
+                right: 135px;
+            }
+            .adapter-upload-submit:hover {
+                color: #ff5722 !important;
+            }
+            .adapter-update-custom-submit {
+                right: 15px;
+            }
+            .adapter-update-custom-submit:hover {
+                color: #00bcd4 !important;
+            }
+        }
+    }
 }
 #dialog-install-url {
     .with-select {
@@ -313,7 +417,12 @@
     }
 }
 // adapters dropdown menu
-#adapters-menu {
+#adapters-menu p {
+    height: calc(100% - 68px);
+    overflow: auto;
+}
+
+/*#adapters-menu {
     position:   absolute;
     z-index:    2;
     max-height: 200px;
@@ -339,13 +448,8 @@
         }
     }
 
-    /*width: 80px;
-    z-index: 1;
-    background: @admin-buttons-color;
-    color: white;
-    border: 2px solid #605e5e;*/
 }
-
+*/
 #grid-adapters, .adapters-list-table {
     width:              100%;
     border-collapse:    collapse;
@@ -415,106 +519,13 @@
         display:        inline-flex;
         align-items:    center;
     }
+    .dropdown-content a {
+        padding: 5px 10px;
+    }
+    .dropdown-content .adapters-versions-link {
+        min-height: 22px;
+        line-height: 22px;
+    }
 }
 
-.card-adapters {
-    min-height: 200px;
-    min-width: 170px;
-    height: 270px;
-    .card-header {
-    //    background-color: #64b5f6;
-        min-height: 80px;
-        padding-top: 1px;
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        border-bottom: 2px solid #c3c3c3;
-//      background: url(../img/onf.jpg) no-repeat;
-        -moz-background-size: 100%;
-        -webkit-background-size: 100%;
-        -o-background-size: 100%;
-        background-size: 100%;
-    }
-    .card-content {
-        img {
-            width: 70px;
-            position: absolute;
-            top: 5px;
-            left:5px;
-            z-index: 1;
-            border-radius: 5px;
-            }
-        span {
-            height: 100px;
-            overflow: hidden;
-            font-weight: 700 !important;
-            }
-        .ver {
-            position: absolute;
-            bottom: 35px;
-            font-size: 1.3em;
-            i {
-                font-size: 1.3em;
-                }
-            }
-        .btnUp {
-            background-color: #2196f3!important;
-            position: absolute !important;
-            top: 60px;
-            right: 0;
-            margin-right: 10px !important;
-            }
-        }
-    .card-reveal {
-        font-size: 1.3em;
-        button{
-            position: absolute !important;
-            bottom: 10px ;
-        }
-        width: 100%;
-        padding: 5 10 5 0;
-        i {
-            font-size: 1.7em;
-        }
-        hr {
-            border: none;
-            background-color: #000;
-            color: #000;
-            height: 1px;
-            position: absolute;
-            bottom: 40;            
-            width: 100%;
-            left: 0; 
-        }
-        .adapter-delete-submit {
-            right: 45px;
-        }
-        .adapter-delete-submit:hover {
-            color: red !important;
-                
-        }
-        .adapter-install-submit {
-            right: 105px;
-        }
-        .adapter-install-submit:hover {
-            color: #00bd00 !important;
-        }
-        .adapter-readme-submit {
-            right: 75px;
-            }
-        .adapter-readme-submit:hover {
-            color: #9c27b0 !important;
-        }
-        .adapter-upload-submit {
-            right: 135px;
-            }
-        .adapter-upload-submit:hover {
-            color: #ff5722 !important;
-        }
-        .adapter-update-custom-submit {
-             right: 15px;
-        }
-        .adapter-update-custom-submit:hover {
-            color: #00bcd4 !important;           
-        }
-    }
-}
+

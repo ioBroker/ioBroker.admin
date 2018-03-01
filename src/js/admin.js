@@ -115,6 +115,7 @@ $(document).ready(function () {
         dialogs:        {},
         selectId:       null,
         config:         {},
+        ignoreJSupdate: false, // set to true after some global script updated and till system.adapter.javascript.x updated
         addEventMessage: function (id, stateOrObj, isMessage, isState) {
             // cannot directly use tabs.events.add, because to init time not available.
             tabs.events.add(id, stateOrObj, isMessage, isState);
@@ -789,6 +790,9 @@ $(document).ready(function () {
                     }
                 }
             }
+            // show current tab
+            main.currentHash = null;
+            main.navigateDo();
         }
     }
 
@@ -896,6 +900,7 @@ $(document).ready(function () {
 
                 text += '<li><a href="#' + name + '">' + buttonName + '</a></li>\n';
 
+                // noinspection JSJQueryEfficiency
                 if (!$('#' + name).length) {
                     var div = '<div id="' + name + '" data-name="' + buttonName + '" class="tab-custom ' + (isReplace ? 'link-replace' : '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
                         '<iframe class="iframe-in-tab" style="border: 0; solid #FFF; display: block; left: 0; top: 0; width: 100%; height: 100%"' +
@@ -941,8 +946,8 @@ $(document).ready(function () {
                         if (loadTimeout) {
                             clearTimeout(loadTimeout);
                             loadTimeout = null;
+                            initHtmlTabs(/*showTabs*/);
                         }
-                        initHtmlTabs(/*showTabs*/);
                     }
                 });
             });
@@ -1204,12 +1209,21 @@ $(document).ready(function () {
         //tabs.adapters.objectChange(id, obj);
         tabs.instances.objectChange(id, obj);
 
+        if (id.match(/^script\.js\.global\..*/)) {
+            main.ignoreJSupdate = true;
+        }
+
         if (obj && id.match(/^system\.adapter\.[\w-]+\.[0-9]+$/)) {
             if (obj.common &&
                 obj.common.adminTab &&
                 !obj.common.adminTab.ignoreConfigUpdate
             ) {
-                initTabs();
+                // one exception for javascript. To able work with global scripts normally
+                if (!id.match(/^system\.adapter\.javascript\.[0-9]+$/) || !main.ignoreJSupdate) {
+                    initTabs();
+                } else {
+                    main.ignoreJSupdate = false;
+                }
             }
 
             if (obj && obj.type === 'instance') {
@@ -1450,7 +1464,7 @@ $(document).ready(function () {
                 }
 
                 // if tab was changed
-                if (main.currentTab !== tab) {
+                if (main.currentTab !== tab || !$actualTab.length) {
                     // destroy actual tab
                     if (tabs[main.currentTab] && typeof tabs[main.currentTab].destroy === 'function') {
                         tabs[main.currentTab].destroy();
