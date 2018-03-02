@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.2.0",
+    "version": "3.2.1",
     "news": {
+      "3.2.1": {
+        "en": "Many UI fixes",
+        "de": "Viele UI-Fixes",
+        "ru": "Много исправлений пользовательского интерфейса",
+        "pt": "Muitas correções de UI",
+        "nl": "Veel UI-fixes",
+        "fr": "De nombreuses corrections d'interface utilisateur",
+        "it": "Molte correzioni all'interfaccia utente",
+        "es": "Muchas correcciones de UI",
+        "pl": "Wiele poprawek UI"
+      },
       "3.2.0": {
         "en": "The select ID dialog was fixed",
         "de": "Der Auswahl-ID-Dialog wurde korrigiert",

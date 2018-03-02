@@ -1,7 +1,7 @@
 {
   "name": "iobroker.admin",
   "description": "The adapter opens a webserver for the ioBroker admin UI.",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "contributors": [
     "bluefox <dogafox@gmail.com>",
     "apollon77",
