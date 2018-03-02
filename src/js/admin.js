@@ -1018,7 +1018,7 @@ $(document).ready(function () {
             dismissible: false
         });
 
-        $dialogCommand.find('.progress-show-more').on('change', function () {
+        $dialogCommand.find('.progress-show-more').off('change').on('change', function () {
             var val = $(this).prop('checked');
             main.saveConfig('progressMore', val);
             if (val) {
@@ -1036,6 +1036,9 @@ $(document).ready(function () {
         // workaround for materialize checkbox problem
         $dialogCommand.find('input[type="checkbox"]+span').off('click').on('click', function () {
             var $input = $(this).prev();
+            // ignore switch
+            if ($input.parent().parent().hasClass('switch')) return;
+
             if (!$input.prop('disabled')) {
                 $input.prop('checked', !$input.prop('checked')).trigger('change');
             }
@@ -1458,6 +1461,8 @@ $(document).ready(function () {
                 var $adminBody = $('.admin-sidemenu-body');
                 var $actualTab = $adminBody.find('.admin-sidemenu-body-content');
                 var $panel     = $('#tab-' + tab);
+
+                $adminBody.find('.admin-preloader').remove();
 
                 if (!$panel.length) {
                      tab = 'adapters';

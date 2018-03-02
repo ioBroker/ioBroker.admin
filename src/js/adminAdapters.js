@@ -1129,7 +1129,7 @@ function Adapters(main) {
 //                        text += '    </div>';
 //                        text += '</div>';
 
-                        text += '<div class="col s12 m6 l4 xl3 class-' + ad.group + '" data-id="' + ad.name + '">';
+                        text += '<div class="col s12 m6 l4 xl3 tile class-' + ad.group + '" data-id="' + ad.name + '">';
                         text += '   <div class="card hoverable card-adapters">';
                         text += '       <div class="card-header ' + (ad.updatable ? 'updatable' : (ad.installed ? 'installed' : '')) + '"></div>';
                         text += '       <div class="card-content">';

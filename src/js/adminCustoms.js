@@ -792,7 +792,7 @@ function Customs(main) {
                     .on('change', function () {
                         that.main.saveConfig('object-history-table', $historyTableInstance.val());
                         that.loadHistoryTable($(this).data('id'));
-                    });
+                    }).select();
 
                 $historyChartInstance
                     .data('id', ids[0])
@@ -802,7 +802,7 @@ function Customs(main) {
                     .on('change', function () {
                         that.main.saveConfig('object-history-chart', $historyChartInstance.val());
                         that.loadHistoryChart($(this).data('id')); // reinit iframe
-                    });
+                    }).select();
 
                 if (this.main.config['object-history-table'] !== undefined) {
                     $historyTableInstance.val(this.main.config['object-history-table'])

@@ -8,7 +8,8 @@
     .main-toolbar-table {
 //        margin-left: 0.3rem;
         &>div {
-            display: inline-block
+            display: inline-block;
+            width: 100%;
         }
         a.btn-small {
             line-height: @admin-small-buttons-size;
@@ -25,7 +26,7 @@
             display:        inline-table;
             padding-left:   6px;
             margin-left:    20px;
-            font-size:      14px;
+            // font-size:      14px;
             height:         24px;
             width:          10rem;
             &::placeholder {
@@ -62,9 +63,46 @@
         margin:             0;
         overflow:           auto;
 
-
         font-size: 0.9em;
 
+        @media screen and (max-width: 1078px) and (min-width: 900px) {
+            .tab-hosts-header-type {
+                display: none;
+            }
+        }
+        @media screen and (max-width: 900px) and (min-width: 800px) {
+            .tab-hosts-header-type {
+                display: none;
+            }
+            .tab-hosts-header-title {
+                display: none;
+            }
+        }
+        @media screen and (max-width: 800px) and (min-width: 700px) {
+            .tab-hosts-header-type {
+                display: none;
+            }
+            .tab-hosts-header-title {
+                display: none;
+            }
+            .tab-hosts-header-os {
+                display: none;
+            }
+        }
+        @media screen and (max-width: 700px) {
+            .tab-hosts-header-type {
+                display: none;
+            }
+            .tab-hosts-header-title {
+                display: none;
+            }
+            .tab-hosts-header-os {
+                display: none;
+            }
+            .tab-hosts-header-events {
+                display: none;
+            }
+        }
         .hosts-led {
             margin-left: 0.8rem;
         }
@@ -89,18 +127,24 @@
         .tab-hosts-header-events {
             width: 6rem;
         }
+        .tab-hosts-header-restart {
+            width: 6rem;
+        }
         .updateReady {
             font-weight: bold;
             color: #06960E !important;
         }
 
-        .grid-hosts > tr:nth-child(2n) {
-            background-color: @even-bg-color;
-         }
+        .grid-hosts {
+            & > tr:nth-child(2n) {
+                background-color: @even-bg-color;
+            }
+        }
 
         th, td, tr, td {
             border: @td-border;
             padding: 0 0.5rem 0 0.5rem;
+            overflow: hidden;
         }
         &>tbody>tr>td>b {
             font-weight: normal;
