@@ -480,6 +480,12 @@ function Adapters(main) {
             this.$tab.find('#btn_filter_adapters').removeClass('red lighten-3');
         }
 
+        if (this.onlyUpdatable) {
+            this.$tab.find('#btn_filter_updates').addClass('red lighten-3');
+        } else {
+            this.$tab.find('#btn_filter_updates').removeClass('red lighten-3');
+        }
+
         // fix for IE
         if (this.main.browser === 'ie' && this.main.browserVersion <= 10) {
             this.isTiles = false;
