@@ -346,16 +346,16 @@ function Instances(main) {
     function calculateFreeMem() {
         var host = that.main.states['system.host.' + that.main.currentHost + '.freemem'];
         if (host) {
-            that.totalmem = that.totalmem || that.main.objects['system.host.' + that.main.currentHost].native.hardware.totalmem / (1024 * 1024);
+            that.totalmem = (that.totalmem || that.main.objects['system.host.' + that.main.currentHost].native.hardware.totalmem) / (1024 * 1024);
             var percent = Math.round((host.val / that.totalmem) * 100);
-            var $freeMem = $('#freeMem');
-            if (host.val.toString() !== $freeMem.text()) {
-                $freeMem.html('<span class="highlight ' + (percent < 10 ? 'high-mem' : '') + '">' + tdp(host.val) + '</span>');
-                //$('#freeMemPercent').html('<span class="highlight">(' + percent + '%)</span>');
+            var $freeMem = that.$tab.find('#freeMem');
+            var strVal = tdp(host.val);
+            if (strVal !== $freeMem.text()) {
+                $freeMem.html('<span class="highlight ' + (percent < 10 ? 'high-mem' : '') + '">' + strVal + '</span>');
                 $('#freeMemPercent').html('<span class="highlight">' + percent + '%</span>');
             }
         } else {
-            $('.free-mem-label').hide();
+            that.$tab.find('.free-mem-label').hide();
         }
     }
 

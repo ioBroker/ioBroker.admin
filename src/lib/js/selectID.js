@@ -141,8 +141,9 @@
 
 var addAll2FilterCombobox = false;
 
-function tdp(x, nachkomma) {
-    return isNaN(x) ? "" : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+function tdp(x, decimals) {
+    // TODO support of US format too
+    return isNaN(x) ? '' : x.toFixed(decimals || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
 function removeImageFromSettings(data) {

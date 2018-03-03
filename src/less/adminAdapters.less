@@ -33,16 +33,11 @@
     }
     .main-toolbar-table {
         left: -2px;
-//        &>div {
-//            display: inline-block
-//        }
         a.btn-small {
             line-height: @admin-small-buttons-size;
             height: @admin-small-buttons-size;
             width: @admin-small-buttons-size;
             i {
-//                margin-left:    -0.5px;
-//                font-size:      1.1rem;
                 line-height:    @admin-small-buttons-size;
             }
         }
@@ -79,14 +74,28 @@
         }
 
         .main-toolbar-table-types-tools {
-//            margin-top: 5px;
-//            display: inline-block;
+            display: inline-block;
+            white-space: nowrap;
             .dropdown-button {
                 height: @toolbar-size + 4px;
                 line-height: @toolbar-size + 4px;
             }
             #main-toolbar-table-types-btn {
                 margin-right: 5px
+            }
+        }
+        @media screen and (max-width: 992px) { // large material css http://materializecss.com/grid.html
+            .main-toolbar-table-filter {
+                display: none;
+            }
+            .main-toolbar-table-sort {
+                text-align: right;
+            }
+        }
+        @media screen and (max-width: 600px) {
+            // small material css http://materializecss.com/grid.html
+            .main-toolbar-table-sort {
+                display: none;
             }
         }
     }

@@ -35,6 +35,11 @@
       line-height: @toolbar-size + 4px;
     }
 
+    @media screen and (max-width: 600px) {
+      #log-size {
+        display: none;
+      }
+    }
     #log-size {
       text-align: right;
       white-space: nowrap;
@@ -43,6 +48,8 @@
       float: right;
       padding-top: 7px;
     }
+
+
     .btn-pause {
       width: 3em !important;
       border-radius: 25px !important;
