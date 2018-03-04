@@ -77,7 +77,7 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/devices/light-bulb.svg" height="48" /> - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 
 ## Changelog
-### 3.2.2 (2018-03-03)
+### 3.2.3 (2018-03-04)
 * (bluefox) Adjust layout on mobile devices
 
 ### 3.2.1 (2018-03-03)
