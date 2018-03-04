@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.2.3",
+    "version": "3.2.4",
     "news": {
-      "3.2.3": {
+      "3.2.4": {
         "en": "The layout on mobile devices was adjusted",
         "de": "Das Layout auf mobilen Geräten wurde angepasst",
         "ru": "Макет на мобильных устройствах был скорректирован",
