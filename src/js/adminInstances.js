@@ -346,7 +346,7 @@ function Instances(main) {
     function calculateFreeMem() {
         var host = that.main.states['system.host.' + that.main.currentHost + '.freemem'];
         if (host) {
-            that.totalmem = (that.totalmem || that.main.objects['system.host.' + that.main.currentHost].native.hardware.totalmem) / (1024 * 1024);
+            that.totalmem = that.totalmem || (that.main.objects['system.host.' + that.main.currentHost].native.hardware.totalmem / (1024 * 1024));
             var percent = Math.round((host.val / that.totalmem) * 100);
             var $freeMem = that.$tab.find('#freeMem');
             var strVal = tdp(host.val);
