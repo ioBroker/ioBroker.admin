@@ -73,7 +73,7 @@
 @toolbar-filter-active-background: #ffbfb6;
 
 //@toolbar-y-margin: 2px;
-@toolbar-y-margin: 0;
+@toolbar-y-margin: 0px;
 @toolbar-image-size: 16px;
 @toolbar-outer-hover: 1px solid #d0d0d0;
 //@main-toolbar-height: 30px;
@@ -93,4 +93,4 @@
 @header-height: 24px;
 
 @grid-offset: @tabs-padding-top + @tabs-padding + @main-toolbar-full-height;
-@grid-offset-wh: @grid-offset + @header-height;
+@grid-offset-wh: (@grid-offset) + @header-height - 40px;
