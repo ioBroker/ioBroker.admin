@@ -1248,6 +1248,22 @@ function Adapters(main) {
 
                     that.sortTree();
                     that.enableColResize();
+                    var classes = [
+                        'tab-adapters-table-name',
+                        'tab-adapters-table-description',
+                        'tab-adapters-table-keywords',
+                        'tab-adapters-table-installed',
+                        'tab-adapters-table-available',
+                        'tab-adapters-table-license',
+                        'tab-adapters-table-install'
+                    ];
+                    that.$grid.find('tbody tr').each(function () {
+                        var i = 0;
+                        $(this).find('td').each(function () {
+                            $(this).addClass(classes[i]);
+                            i++;
+                        });
+                    })
                 }
                 that.$tab.find('.grid-main-div').removeClass('order-a-z order-popular order-updated').addClass(that.currentOrder ? 'order-' + that.currentOrder : '');
                 that.$tab.find('.process-adapters').hide();
