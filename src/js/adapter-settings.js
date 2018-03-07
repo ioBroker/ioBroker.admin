@@ -1384,25 +1384,25 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
         }
 
         $add.on('click', function () {
-				if (!$add.data('maxraw') || ($add.data('raw') < $add.data('maxraw'))) {
-					var $table = $div.find('.table-values');
-					var values = $table.data('values');
-					var names = $table.data('names');
-					var obj = {};
-					for (var i = 0; i < names.length; i++) {
-						if (!names[i]) continue;
-						obj[names[i].name] = names[i].def;
-					}
-					values.push(obj);
-					onChange && onChange();
-					setTimeout(function () {
-						values2table(divId, values, onChange, onReady);
-					}, 100);
-					$add.data('raw', $add.data('raw') + 1);
-				} else {
-                    confirmMessage(_('maxTableRaw') + ': ' + $add.data('maxraw'), _('maxTableRawInfo'), 'alert', ['Ok']);
-				}
-            });
+            if (!$add.data('maxraw') || ($add.data('raw') < $add.data('maxraw'))) {
+                var $table = $div.find('.table-values');
+                var values = $table.data('values');
+                var names  = $table.data('names');
+                var obj = {};
+                for (var i = 0; i < names.length; i++) {
+                    if (!names[i]) continue;
+                    obj[names[i].name] = names[i].def;
+                }
+                values.push(obj);
+                onChange && onChange();
+                setTimeout(function () {
+                    values2table(divId, values, onChange, onReady);
+                }, 100);
+                $add.data('raw', $add.data('raw') + 1);
+            } else {
+                confirmMessage(_('maxTableRaw') + ': ' + $add.data('maxraw'), _('maxTableRawInfo'), 'alert', ['Ok']);
+            }
+        });
     }
 
     if (values) {
@@ -1523,8 +1523,8 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
             for (var i = 0; i < names.length; i++) {
                 text += '<td';
-                var line = '';
-                var style = '';
+                var line    = '';
+                var style   = '';
 				var tdstyle = '';	  
                 if (names[i]) {
 					if (names[i].name !== '_index') {
@@ -1535,7 +1535,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         style = (names[i].style ? names[i].style : 'text-align: right;');
                         line += (v + 1);
                     } else if (names[i].type === 'checkbox') {
-                        line += '<input style="' + (names[i].style || '') + '" class="values-input" type="checkbox" data-index="' + v + '" data-name="' + names[i].name + '" ' + (values[v][names[i].name] ? 'checked' : '') + '" data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';                    
+                        line += '<input style="' + (names[i].style || '') + '" class="values-input filled-in" type="checkbox" data-index="' + v + '" data-name="' + names[i].name + '" ' + (values[v][names[i].name] ? 'checked' : '') + '" data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';
+                        if (isMaterialize) {
+                            line += '<span></span>';
+                        }
                     } else if (names[i].type.substring(0, 6) === 'select') {                        
                         line += (names[i].type.substring(7, 16) === 'multiple' ? '<select multiple style="' : '<select style="') + (names[i].style ? names[i].style : 'width: 100%') + '" class="values-input" data-index="' + v + '" data-name="' + names[i].name + '">';                        
                         var options;
@@ -1560,7 +1563,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 }
 
                 if (buttons[i]) {
-                    style = 'text-align: center;';
+                    style = 'text-align: center; white-space: nowrap;';
                     for (var b = 0; b < buttons[i].length; b++) {
                         if ((!v && buttons[i][b] === 'up') || v === values.length - 1 && buttons[i][b] === 'down') {
                             if (isMaterialize) {
@@ -1587,10 +1590,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
             text += '</tr>';
         }
-        var $lines = $('.table-lines');
+        var $lines = $div.find('.table-lines');
         if (!$lines.length) {
             $table.append('<tbody class="table-lines"></tbody>');
-            $lines = $('.table-lines');
+            $lines = $div.find('.table-lines');
         }
 
         $lines.html(text);
@@ -1655,7 +1658,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     values.splice(id - 1, 0, elem);
                     onChange && onChange();
                     setTimeout(function () {
-                        values2table(id, values, onChange, onReady);
+                        values2table(divId, values, onChange, onReady);
                     }, 100);
                 });
             } else if (command === 'down') {
@@ -1675,7 +1678,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     values.splice(id + 1, 0, elem);
                     onChange && onChange();
                     setTimeout(function () {
-                        values2table(id, values, onChange, onReady);
+                        values2table(divId, values, onChange, onReady);
                     }, 100);
                 });
             } else if (command === 'pair') {
@@ -1749,10 +1752,23 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             } else {
                 if ($(this).val() !== $(this).data('old-value')) onChange();
                 values[$(this).data('index')][$(this).data('name')] = $(this).val();
-
             }
         }).on('keyup', function () {
             $(this).trigger('change.adaptersettings');
+        });
+    }
+    if (isMaterialize) {
+        if (!divId) {
+            M.updateTextFields();
+        } else {
+            M.updateTextFields('#' + divId);
+        }
+        // workaround for materialize checkbox problem
+        $div.find('input[type="checkbox"]+span').off('click').on('click', function () {
+            var $input = $(this).prev();
+            if (!$input.prop('disabled')) {
+                $input.prop('checked', !$input.prop('checked')).trigger('change');
+            }
         });
     }
     if (typeof onReady === 'function') onReady();
