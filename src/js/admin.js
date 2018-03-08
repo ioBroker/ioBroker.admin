@@ -603,17 +603,19 @@ $(document).ready(function () {
     gMain = main; // for google maps
 
     var tabs = {
+        hosts:      new Hosts(main), // must be first to read the list of hosts
+        objects:    new Objects(main),
         adapters:   new Adapters(main),
         instances:  new Instances(main),
-        logs:       new Logs(main),
-        states:     null,
-        objects:    new Objects(main),
-        events:     new Events(main),
-        hosts:      new Hosts(main),
         users:      new Users(main),
         //groups:     new Groups(main),
-        enums:      new Enums(main)
+        enums:      new Enums(main),
+        events:     new Events(main),
+        logs:       new Logs(main),
+        states:     null,
+        intro:      new Intro(main)
     };
+
     if (typeof States !== 'undefined') {
         tabs.states = new States(main);
     }
@@ -1454,7 +1456,7 @@ $(document).ready(function () {
 
                 // set default page
                 if (!tab || tab === '!') {
-                    tab = 'adapters';
+                    tab = 'intro';
                 }
                 // do tab is not found
 
@@ -1465,7 +1467,7 @@ $(document).ready(function () {
                 $adminBody.find('.admin-preloader').remove();
 
                 if (!$panel.length) {
-                     tab = 'adapters';
+                     tab = 'intro';
                 }
 
                 // if tab was changed
@@ -1629,18 +1631,19 @@ $(document).ready(function () {
     };
 
     var tabsInfo = {
-        'tab-adapters':         {order: 1,   icon: 'store'},
-        'tab-instances':        {order: 2,   icon: 'subtitles'},
-        'tab-objects':          {order: 3,   icon: 'view_list'},
-        'tab-enums':            {order: 4,   icon: 'art_track'},
-        'tab-logs':             {order: 5,   icon: 'view_headline'},
-        'tab-scenes':           {order: 6,   icon: 'subscriptions'},
-        'tab-events':           {order: 7,   icon: 'flash_on'},
-        'tab-users':            {order: 9,   icon: 'person_outline'},
-        'tab-javascript':       {order: 10,  icon: 'code'},
-        'tab-text2command-0':   {order: 11,  icon: 'ac_unit'},
-        'tab-text2command-1':   {order: 11,  icon: 'ac_unit'},
-        'tab-text2command-2':   {order: 11,  icon: 'ac_unit'},
+        'tab-intro':            {order: 1,   icon: 'apps'},
+        'tab-adapters':         {order: 2,   icon: 'store'},
+        'tab-instances':        {order: 3,   icon: 'subtitles'},
+        'tab-objects':          {order: 4,   icon: 'view_list'},
+        'tab-enums':            {order: 5,   icon: 'art_track'},
+        'tab-logs':             {order: 6,   icon: 'view_headline'},
+        'tab-scenes':           {order: 7,   icon: 'subscriptions'},
+        'tab-events':           {order: 8,   icon: 'flash_on'},
+        'tab-users':            {order: 10,   icon: 'person_outline'},
+        'tab-javascript':       {order: 11,  icon: 'code'},
+        'tab-text2command-0':   {order: 12,  icon: 'ac_unit'},
+        'tab-text2command-1':   {order: 12,  icon: 'ac_unit'},
+        'tab-text2command-2':   {order: 12,  icon: 'ac_unit'},
         'tab-node-red-0':       {order: 20,  icon: 'device_hub'},
         'tab-node-red-1':       {order: 21,  icon: 'device_hub'},
         'tab-node-red-2':       {order: 22,  icon: 'device_hub'},
@@ -1961,6 +1964,7 @@ $(document).ready(function () {
                                                 licenseConfirmed: false,        // If license agreement confirmed,
                                                 defaultHistory:   '',           // Default history instance
                                                 tabs: [                         // Show by default only these tabs
+                                                    'tab-intro',
                                                     'tab-adapters',
                                                     'tab-instances',
                                                     'tab-objects',
@@ -1984,16 +1988,12 @@ $(document).ready(function () {
 
                                 // Here we go!
                                 initAllDialogs();
-                                tabs.hosts.prepare();
-                                tabs.objects.prepare();
-                                // if (tabs.states) tabs.states.prepare();
-                                tabs.adapters.prepare();
-                                tabs.instances.prepare();
-                                tabs.users.prepare();
-                                //tabs.groups.prepare();
-                                tabs.enums.prepare();
-                                tabs.events.prepare();
-                                tabs.logs.prepare();
+                                // call prepare
+                                for (var t in tabs) {
+                                    if (tabs.hasOwnProperty(t) && typeof tabs[t].prepare === 'function') {
+                                        tabs[t].prepare();
+                                    }
+                                }
                                 // TABS
                                 // resizeGrids();
 

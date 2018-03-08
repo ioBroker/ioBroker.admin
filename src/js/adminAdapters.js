@@ -917,6 +917,7 @@ function Adapters(main) {
 
                     var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
                     var desc  = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
+                    desc = desc || '';
                     desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
                     var title = obj.titleLang || obj.title;
                     title = (typeof title === 'object') ? (title[systemLang] || title.en) : title;
