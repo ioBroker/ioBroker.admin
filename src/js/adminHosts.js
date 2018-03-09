@@ -155,8 +155,8 @@ function Hosts(main) {
         text += '<td class="tab-hosts-header-os">' + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</td>';
         // Available
         text += '<td class="tab-hosts-header-available"><span data-host-id="' + obj._id + '" data-type="' + obj.common.type + '" class="hosts-version-available"></span>' +
-            '<button class="small-button host-update-submit"      data-host-name="' + obj.common.hostname + '" style="display: none; float: right; opacity: 0;" title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
-            '<button class="small-button host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none; float: right"              title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
+            '<button class="small-button host-update-submit"      data-host-name="' + obj.common.hostname + '" style="display: none; opacity: 0;" title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
+            '<button class="small-button host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none;"             title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
             '</td>';
 
         // installed
