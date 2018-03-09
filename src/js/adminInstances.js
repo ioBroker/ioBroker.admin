@@ -108,9 +108,10 @@ function Instances(main) {
                     };
                 }
             }
+
             var result;
             if (instances) {
-                result = [];
+                result = {};
                 var count = 0;
                 var firtsLink = '';
                 for (var d in links) {
@@ -127,13 +128,13 @@ function Instances(main) {
         return result || link;
     }
 
-    function replaceInLink(link, adapter, instance) {
+    this.replaceInLink = function (link, adapter, instance) {
         if (typeof link === 'object') {
             var links = JSON.parse(JSON.stringify(link));
             var first;
             for (var v in links) {
-                if (links.hasOwnProperty (v)) {
-                    links[v] = resolveLink (links[v], adapter, instance);
+                if (links.hasOwnProperty(v)) {
+                    links[v] = resolveLink(links[v], adapter, instance);
                     if (!first) first = links[v];
                 }
             }
@@ -142,7 +143,7 @@ function Instances(main) {
         } else {
             return resolveLink(link, adapter, instance);
         }
-    }
+    };
 
     function updateLed(instanceId) {
         var tmp      = instanceId.split('.');
@@ -392,7 +393,7 @@ function Instances(main) {
             text  = justContent ? '' : '<tr class="instance-adapter" data-instance-id="' + instanceId + '">';
 
             var link = common.localLinks || common.localLink || '';
-            var url  = link ? replaceInLink(link, adapter, instance) : '';
+            var url  = link ? that.replaceInLink(link, adapter, instance) : '';
             if (link) {
                 if (typeof url === 'object') {
                     link = '<a href="' + url.__first + '" target="_blank">';

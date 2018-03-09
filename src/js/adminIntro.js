@@ -3,202 +3,190 @@ function Intro(main) {
 
     var that = this;
 
-    this.$tab   = $('#tab-intro');
-    this.$tiles = this.$tab.find('.tab-intro-cards');
-    this.main   = main;
-    this.inited = false;
-    this.list   = this.main.instances;
-
-    function getLinkVar(_var, obj, attr, link) {
-        if (attr === 'protocol') attr = 'secure';
-
-        if (_var === 'ip') {
-            link = link.replace('%' + _var + '%', '$host$');
-        } else
-        if (_var === 'instance') {
-            var instance = obj._id.split('.').pop();
-            link = link.replace('%' + _var + '%', instance);
-        } else {
-            if (obj) {
-                if (attr.match(/^native_/)) attr = attr.substring(7);
-
-                var val = obj.native[attr];
-                if (_var === 'bind' && (!val || val === '0.0.0.0')) val = '$host$';
-
-                if (attr === 'secure') {
-                    link = link.replace('%' + _var + '%', val ? 'https' : 'http');
-                } else {
-                    if (link.indexOf('%' + _var + '%') === -1) {
-                        link = link.replace('%native_' + _var + '%', val);
-                    } else {
-                        link = link.replace('%' + _var + '%', val);
-                    }
-                }
-            } else {
-                if (attr === 'secure') {
-                    link = link.replace('%' + _var + '%', 'http');
-                } else {
-                    if (link.indexOf('%' + _var + '%') === -1) {
-                        link = link.replace('%native_' + _var + '%', '');
-                    } else {
-                        link = link.replace('%' + _var + '%', '');
-                    }
-                }
-            }
-        }
-        return link;
-    }
-
-    function resolveLink(link, instanceObj, instancesMap) {
-        var vars = link.match(/%(\w+)%/g);
-        var _var;
-        var v;
-        var parts;
-        if (vars) {
-            // first replace simple patterns
-            for (v = vars.length - 1; v >= 0; v--) {
-                _var = vars[v];
-                _var = _var.replace(/%/g, '');
-
-                parts = _var.split('_');
-                // like "port"
-                if (_var.match(/^native_/)) {
-                    link = getLinkVar(_var, instanceObj, _var, link);
-                    vars.splice(v, 1);
-                } else
-                if (parts.length === 1) {
-                    link = getLinkVar(_var, instanceObj, parts[0], link);
-                    vars.splice(v, 1);
-                } else
-                // like "web.0_port"
-                if (parts[0].match(/\.[0-9]+$/)) {
-                    link = getLinkVar(_var, instancesMap['system.adapter.' + parts[0]], parts[1], link);
-                    vars.splice(v, 1);
-                }
-            }
-            var links = {};
-            var instances;
-            var adptr = parts[0];
-            // process web_port
-            for (v = 0; v < vars.length; v++) {
-                _var = vars[v];
-                _var = _var.replace(/%/g, '');
-                if (_var.match(/^native_/)) _var = _var.substring(7);
-
-                parts = _var.split('_');
-                if (!instances) {
-                    instances = [];
-                    for (var inst = 0; inst < 10; inst++) {
-                        if (that.main.objects['system.adapter.' + adptr + '.' + inst]) instances.push(inst);
-                    }
-                }
-
-                for (var i = 0; i < instances.length; i++) {
-                    links[adptr + '.' + i] = {
-                        instance: adptr + '.' + i,
-                        link: getLinkVar(_var, instancesMap['system.adapter.' + adptr + '.' + i], parts[1], links[adptr + '.' + i] ? links[adptr + '.' + i].link : link)
-                    };
-                }
-            }
-            var result;
-            if (instances) {
-                result = [];
-                var count = 0;
-                var firtsLink = '';
-                for (var d in links) {
-                    result[links[d].instance] = links[d].link;
-                    if (!firtsLink) firtsLink = links[d].link;
-                    count++;
-                }
-                if (count < 2) {
-                    link = firtsLink;
-                    result = null;
-                }
-            }
-        }
-        return result || link;
-    }
+    this.$tab      = $('#tab-intro');
+    this.$tiles    = this.$tab.find('.tab-intro-cards');
+    this.main      = main;
+    this.inited    = false;
+    this.$template = $('#intro-template');
 
     function readInstances(callback) {
-        that.main.socket.emit('getForeignObjects', 'system.instance.*', function (err, instances) {
-            if (instances) {
-                that.list.splice(0, that.list.length);
-
-                for (var id in instances) {
-                    if (!instances.hasOwnProperty(id)) continue;
-                    that.main.objects[id] = instances[id];
-                    that.list.push(id);
+        that.main.socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.', endkey: 'system.adapter.\u9999'}, function (err, doc) {
+            if (err) {
+                if (callback) callback (err, []);
+            } else {
+                if (doc.rows.length === 0) {
+                    if (callback) callback (err, []);
+                } else {
+                    that.main.instances = [];
+                    for (var i = 0; i < doc.rows.length; i++) {
+                        that.main.instances.push(doc.rows[i].id);
+                        that.main.objects[doc.rows[i].id] = doc.rows[i].value;
+                    }
+                    if (callback) callback(err, that.main.instances);
                 }
             }
-            callback(err, that.list);
         });
     }
 
-    function getListOfAllAdapters(instances, callback) {
-        var list = [];
-        var a;
+    /**
+     * Format number in seconds to time text
+     * @param {!number} seconds
+     * @returns {String}
+     */
+    function formatSeconds(seconds) {
+        var days = Math.floor(seconds / (3600 * 24));
+        seconds %= 3600 * 24;
+        var hours = Math.floor(seconds / 3600);
+        if (hours < 10) {
+            hours = '0' + hours;
+        }
+        seconds %= 3600;
+        var minutes = Math.floor(seconds / 60);
+        if (minutes < 10) {
+            minutes = '0' + minutes;
+        }
+        seconds %= 60;
+        seconds = Math.floor(seconds);
+        if (seconds < 10) {
+            seconds = '0' + seconds;
+        }
+        var text = '';
+        if (days) {
+            text += days + ' ' + _('daysShortText') + ' ';
+        }
+        text += hours + ':' + minutes + ':' + seconds;
 
-        for (a = 0; a < that.list.length; a++) {
-            var obj = that.main.objects[that.list[a]];
-            if (obj && obj.common && (obj.common.enabled || obj.common.onlyWWW)) {
-                if (obj.common.welcomeScreen || obj.common.welcomeScreenPro) {
-                    if (obj.common.welcomeScreen) {
-                        if (obj.common.welcomeScreen instanceof Array) {
-                            for (var w = 0; w < obj.common.welcomeScreen.length; w++) {
-                                // temporary disabled
-                                if (obj.common.welcomeScreen[w].name === 'vis editor') {
-                                    continue;
-                                }
-                                if (obj.common.welcomeScreen[w].localLink && typeof obj.common.welcomeScreen[w].localLink === 'boolean') {
-                                    obj.common.welcomeScreen[w].localLink = obj.common.localLink;
-                                }
-                                if (obj.common.welcomeScreen[w].localLink) {
-                                    obj.common.welcomeScreen[w].id = found;
-                                }
-                                list.push(obj.common.welcomeScreen[w]);
-                            }
-                        } else {
-                            if (obj.common.welcomeScreen.localLink && typeof obj.common.welcomeScreen.localLink === 'boolean') {
-                                obj.common.welcomeScreen.localLink = obj.common.localLink;
-                            }
-                            if (obj.common.welcomeScreen.localLink) {
-                                obj.common.welcomeScreen.id = found;
-                            }
-                            list.push(obj.common.welcomeScreen);
-                        }
-                    }
-                    if (obj.common.welcomeScreenPro) {
-                        if (obj.common.welcomeScreenPro instanceof Array) {
-                            for (var ww = 0; ww < obj.common.welcomeScreenPro.length; ww++) {
-                                var tile = Object.assign({}, obj.common.welcomeScreenPro[ww]);
-                                tile.pro = true;
-                                if (tile.localLink && typeof tile.localLink === 'boolean') {
-                                    tile.localLink = obj.common.localLink;
-                                }
-                                if (tile.localLink) {
-                                    tile.id = found;
-                                }
-                                list.push(tile);
-                            }
-                        } else {
-                            var tile_ = Object.assign({}, obj.common.welcomeScreenPro);
-                            tile_.pro = true;
-                            if (tile_.localLink && typeof tile_.localLink === 'boolean') {
-                                tile_.localLink = obj.common.localLink;
-                            }
-                            if (tile_.localLink) {
-                                tile_.id = found;
-                            }
-                            list.push(tile_);
-                        }
-                    }
-                }
+        return text;
+    }
+
+    /**
+     * Format bytes to MB or GB
+     * @param {!number} bytes
+     * @returns {String}
+     */
+    function formatRam(bytes) {
+        var GB = Math.floor(bytes / (1024 * 1024 * 1024) * 10) / 10;
+        bytes %= (1024 * 1024 * 1024);
+        var MB = Math.floor(bytes / (1024 * 1024) * 10) / 10;
+        var text = '';
+        if (GB > 1) {
+            text += GB + ' GB ';
+        } else {
+            text += MB + ' MB ';
+        }
+
+        return text;
+    }
+
+    function formatSpeed(mhz) {
+        return mhz + ' MHz';
+    }
+
+    /**
+     * FormatObject for host informations
+     * @type type
+     */
+    var formatInfo = {
+        'Uptime': formatSeconds,
+        'System uptime': formatSeconds,
+        'RAM': formatRam,
+        'Speed': formatSpeed
+    };
+
+    function buildInfoCard(host) {
+        var $card = that.$template.clone();
+        $card.removeAttr('id');
+        $card.addClass('card-system-info');
+        $card.find('.card-title').text(host.name);
+        $card.find('.btn-card-enabled').data('host', host.id);
+
+        // button enabled
+        if (that.main.objects[host.id] && that.main.objects[host.id].common && that.main.objects[host.id].common.intro === false) {
+            if (that.$tab.hasClass('edit-active')) {
+                $card.addClass('card-disabled').find('.btn-card-enabled').removeClass('blue').addClass('gray').find('i').text('close');
+            } else {
+                return null;
             }
         }
 
-        var indexHtml = '';
+        that.main.socket.emit('sendToHost', host.id, 'getHostInfo', null, function (data) {
+            if (data === 'permissionError') {
+                console.error('May not read "getHostInfo"');
+            } else if (!data) {
+                console.error('Cannot read "getHostInfo"');
+            }
 
+            var text = '<div class="card-content-text">';
+            if (data) {
+                text += '<ul>';
+                for (var item in data) {
+                    if (data.hasOwnProperty(item)) {
+                        text += '<li><b>' + _(item) + ':</b> ';
+                        text += '<span class="system-info" data-attribute="' + item + '">' + (formatInfo[item] ? formatInfo[item](data[item]) : data[item]) + '</span></li>';
+                    }
+                }
+                text += '</ul>';
+            }
+            text += '</div>';
+            $card.find('.card-content-text').replaceWith($(text));
+        });
+        return $card;
+    }
+
+    function buildOneCard(adapter, instance, common, url, web, enabled) {
+        var $card = that.$template.clone();
+        $card.removeAttr('id');
+        var urlText = url.replace(/^https?:\/\//, '');
+        var pos = urlText.indexOf('/');
+        if (pos !== -1) {
+            urlText = urlText.substring(0, pos);
+        }
+        if (adapter === 'admin' && urlText === location.host) return null;
+        if (adapter === 'web') return null;
+
+        $card.find('.btn-card-enabled').data('instance', adapter + '.' + instance).data('web', web);
+
+        // button enabled
+        if (!enabled) {
+            $card.addClass('card-disabled').find('.btn-card-enabled').removeClass('blue').addClass('gray').find('i').text('close');
+        } else {
+            $card.on('click', function () {
+                var editActive = that.$tab.hasClass('edit-active');
+                if (editActive) return;
+                window.open($(this).find('.url').attr('href'));
+            })
+        }
+
+        // link
+        $card.find('.url').attr('href', typeof url === 'object' ? url._first : url || '').text(urlText + (web ? ' (' + web + ')' : ''));
+        // icon
+        $card.find('.card-image-img').attr('src', common.icon ? 'adapter/' + adapter + '/' + common.icon : 'img/no-image.png');
+        // title
+        var title = common.titleLang || common.title;
+        if (typeof title === 'object') {
+            title = title[systemLang] || title.en;
+        }
+        $card.find('.card-title').text(title || adapter);
+
+        var desc = common.desc;
+        if (typeof desc === 'object') {
+            desc = desc[systemLang] || desc.en;
+        }
+        $card.find('.card-content-text').text(desc || '');
+        return $card;
+    }
+
+    function getCards(instances, callback) {
+        var list = JSON.parse(JSON.stringify(instances));
+        var a;
+        var $cards = [];
+        var enabled;
+        var $card;
         list.sort(function (a, b) {
+            a = that.main.objects[a] && that.main.objects[a].common;
+            b = that.main.objects[b] && that.main.objects[b].common;
+            a = a || {};
+            b = b || {};
             if (a.order === undefined && b.order === undefined) {
                 if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
                 if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
@@ -216,20 +204,188 @@ function Intro(main) {
             }
         });
 
-        // calculate localLinks
-        for (var t = 0; t < list.length; t++) {
-            if (list[t].localLink) {
-                list[t].localLink = resolveLink(list[t].localLink, mapInstance[list[t].id], mapInstance);
+        var editActive = that.$tab.hasClass('edit-active');
+
+        for (a = 0; a < list.length; a++) {
+            var obj = that.main.objects[list[a]];
+            var common = obj && obj.common;
+
+            if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
+                var link = common.localLinks || common.localLink || '';
+                var adapter = list[a].substring('system.adapter.'.length).split('.');
+                var instance = adapter[1];
+                adapter = adapter[0];
+                var url = link ? that.main.tabs.instances.replaceInLink(link, adapter, instance) : '';
+                $card = null;
+                if (typeof url === 'object') {
+                    var first = true;
+                    for (var inst in url) {
+                        if (url.hasOwnProperty(inst)) {
+                            enabled = true;
+                            if (common.intro !== undefined) {
+                                if (first && typeof common.intro !== 'object') {
+                                    common.intro = {inst: common.intro};
+                                }
+                                if (common.intro[inst] === false) {
+                                    enabled = false;
+                                }
+                            }
+                            first = false;
+
+                            if (!editActive && !enabled) continue;
+
+                            $card = buildOneCard(adapter, instance, common, url[inst], inst, enabled);
+                            $card && $cards.push($card);
+                        }
+                    }
+                } else {
+                    if (!editActive && common.intro !== undefined) {
+                        enabled = true;
+                        if (typeof common.intro === 'object') {
+                            for (var aa in common.intro) {
+                                if (common.intro.hasOwnProperty(aa)) {
+                                    common.intro = common.intro[aa];
+                                    break;
+                                }
+                            }
+                        }
+                        if (common.intro === false) {
+                            enabled = false;
+                        }
+                    }
+                    if (!editActive && !enabled) continue;
+                    $card = buildOneCard(adapter, instance, common, url, enabled);
+                    $card && $cards.push($card);
+                }
             }
         }
 
-        callback(null, indexHtml);
+        for (var i = 0; i < that.main.tabs.hosts.list.length; i++) {
+            $card = buildInfoCard(that.main.tabs.hosts.list[i]);
+            $card && $cards.push($card);
+        }
+
+        callback(null, $cards);
+    }
+
+    function processTasks(tasks, callback) {
+        if (!tasks || !tasks.length) {
+            return callback && callback();
+        } else {
+            var task = tasks.pop();
+            that.main.socket.emit('getObject', task.id, function (err, obj) {
+                if (obj) {
+                    obj.common.intro = task.intro;
+                    that.main.socket.emit('setObject', obj._id, obj, function (err) {
+                        setTimeout(function () {
+                            processTasks(tasks, callback);
+                        }, 0);
+                    });
+                } else {
+                    setTimeout(function () {
+                        processTasks(tasks, callback);
+                    }, 0);
+                }
+            });
+        }
+    }
+
+    function updateConfig(callback) {
+        var values = [];
+        that.$tiles.find('.btn-card-enabled').each(function () {
+            var inst = $(this).data('instance');
+            if (inst) {
+                values.push({
+                    id: 'system.adapter.' + inst,
+                    enabled: !$(this).hasClass('gray'),
+                    web: $(this).data('web')
+                });
+            } else {
+                values.push({
+                    id: $(this).data('host'),
+                    enabled: !$(this).hasClass('gray'),
+                    host: true
+                });
+            }
+        });
+
+        // update all values
+        var tasks = [];
+        for (var i = 0; i < values.length; i++) {
+            if (that.main.objects[values[i].id] && that.main.objects[values[i].id].common) {
+                var common = JSON.parse(JSON.stringify(that.main.objects[values[i].id].common));
+                var actual;
+                if (values[i].web) {
+                    if (common.intro !== undefined && typeof common.intro !== 'object') {
+                        common.intro = {inst: common.intro};
+                    }
+                    actual = common.intro && common.intro[values[i].web] !== undefined ? common.intro[values[i].web] : true;
+                } else {
+                    if (common.intro !== undefined && typeof common.intro === 'object') {
+                        for (var aa in common.intro) {
+                            if (common.intro.hasOwnProperty(aa)) {
+                                common.intro = common.intro[aa];
+                                break;
+                            }
+                        }
+                    }
+                    actual = common.intro !== undefined ? common.intro : true;
+                }
+                if (values[i].enabled !== actual) {
+                    if (values[i].web) {
+                        common.intro = common.intro || {};
+                        common.intro[values[i].web] = values[i].enabled;
+                    } else {
+                        common.intro = values[i].enabled;
+                    }
+                    tasks.push({id: values[i].id, intro: common.intro});
+                }
+            }
+        }
+        processTasks(tasks, callback);
     }
 
     this.prepare = function () {
-
+        this.$tab.find('.btn-edit').off('click').on('click', function () {
+            that.$tab.addClass('edit-active');
+            showTiles();
+        });
+        this.$tab.find('.btn-edit-ok').off('click').on('click', function () {
+            updateConfig(function () {
+                that.$tab.removeClass('edit-active');
+                showTiles();
+                that.main.showToast(that.$tiles, _('Updated'));
+            });
+        });
+        this.$tab.find('.btn-edit-cancel').off('click').on('click', function () {
+            that.$tab.removeClass('edit-active');
+            showTiles();
+        });
     };
 
+    function showTiles(instances) {
+        instances = instances || that.main.instances;
+
+        getCards(instances, function (err, $cards) {
+            that.$tiles.html('');
+            for (var c = 0; c < $cards.length; c++) {
+                that.$tiles.append($cards[c]);
+            }
+
+            if (that.$tab.hasClass('edit-active')) {
+                that.$tiles.find('.btn-card-enabled').on('click', function () {
+                    var enabled = !$(this).hasClass('gray');
+                    if (enabled) {
+                        $(this).removeClass('blue').addClass('gray').find('i').text('close');
+                        $(this).parent().addClass('card-disabled');
+                    } else {
+                        $(this).addClass('blue').removeClass('gray').find('i').text('check');
+                        $(this).parent().removeClass('card-disabled')
+                    }
+                });
+            }
+        });
+    }
     // ----------------------------- Site cards show and Edit ------------------------------------------------
     this.init = function (update) {
         if (this.inited && !update) {
@@ -244,16 +400,15 @@ function Intro(main) {
         }
 
         // update info
-        readInstances(function (instances) {
-            getListOfAllAdapters(instances, function (text) {
-
-            });
+        readInstances(function (err, instances) {
+            showTiles(instances);
         });
 
         // Required is list of hosts and repository (done in getAdaptersInfo)
         if (!this.inited) {
             this.inited = true;
             this.main.subscribeObjects('system.adapter.*');
+            this.main.subscribeObjects('system.host.*');
         }
     };
 
@@ -261,13 +416,19 @@ function Intro(main) {
         if (this.inited) {
             this.inited = false;
             this.main.unsubscribeObjects('system.adapter.*');
+            this.main.unsubscribeObjects('system.host.*');
         }
     };
 
-    this.objectChange = function (id, obj) {
+    this.objectChange = function (id) {
         // Update Adapter Table
-        if (this.inited && id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.\d+$/)) {
-
+        if (this.inited && (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.\d+$/) || id.match(/^system\.host\./))) {
+            if (this.updateTimeout) {
+                this.updateTimeout = clearTimeout(this.updateTimeout);
+            }
+            this.updateTimeout = setTimeout(function () {
+                showTiles();
+            }, 1000);
         }
     };
 }

@@ -120,7 +120,7 @@ function Adapters(main) {
                         // Calculate total count of adapter and count of installed adapter
                         for (var c = 0; c < that.tree.length; c++) {
                             if (that.tree[c].key === node.key) {
-                                $tdList.eq(1).html(that.tree[c].desc).css({'overflow': 'hidden', 'white-space': 'nowrap', position: 'relative'});
+                                $tdList.eq(1).html(that.tree[c].desc || '').css({'overflow': 'hidden', 'white-space': 'nowrap', position: 'relative'});
                                 var installed = 0;
                                 for (var k = 0; k < that.tree[c].children.length; k++) {
                                     if (that.data[that.tree[c].children[k].key].installed) installed++;
@@ -940,7 +940,7 @@ function Adapters(main) {
                         updatable:  updatable,
                         bold:       obj.highlight || false,
                         install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button m" title="' + localTexts['add instance'] + '"><i class="material-icons">add_circle_outline</i></button>' +
-                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
+                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + (obj.readme || '') + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
                         ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-upload-submit small-button" title="' + localTexts['upload'] + '"><i class="material-icons">file_upload</i></button>' : '') +
                         '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
                         ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
@@ -1006,6 +1006,7 @@ function Adapters(main) {
 
                         var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
                         var desc = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
+                        desc = desc || '';
                         desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
                         title = obj.titleLang || obj.title;
@@ -1025,7 +1026,7 @@ function Adapters(main) {
                             installed:  '',
                             versionDate: obj.versionDate,
                             install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button" title="' + localTexts['add instance'] + '"><i class="material-icons">add_circle_outline</i></button>' +
-                            '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
+                            '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + (obj.readme || '') + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
                             '<button data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button hide" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
                             ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
                             // TODO do not show adapters not for this platform
@@ -1346,10 +1347,6 @@ function Adapters(main) {
             callback(true);
             return;
         }
-        $dialogLicense.find('#license_language').hide();
-        $dialogLicense.find('#license_diag').hide();
-        $dialogLicense.find('#license_language_label').hide();
-        $dialogLicense.find('#license_checkbox').hide();
 
         var timeout = setTimeout(function () {
             timeout = null;
@@ -1357,7 +1354,7 @@ function Adapters(main) {
         }, 10000);
 
         if (!that.data[adapter].licenseUrl) {
-            that.data[adapter].licenseUrl = 'https://raw.githubusercontent.com/ioBroker/ioBroker.' + template.common.name + '/master/LICENSE';
+            that.data[adapter].licenseUrl = 'https://raw.githubusercontent.com/ioBroker/ioBroker.' + (that.data[adapter].name || adapter) + '/master/LICENSE';
         }
         if (typeof that.data[adapter].licenseUrl === 'object') {
             that.data[adapter].licenseUrl = that.data[adapter].licenseUrl[systemLang] || that.data[adapter].licenseUrl.en;
@@ -1378,29 +1375,32 @@ function Adapters(main) {
                     $dialogLicense.css({'z-index': 200});
                     body = body.toString().replace(/\r\n/g, '<br>');
                     body = body.replace(/\n/g, '<br>');
-                    $dialogLicense.find('#license_text').html(body);
+                    $dialogLicense.find('.license_text').html(body);
+                    $dialogLicense.find('.license_agreement_name').text(_(' for %s', adapter));
 
                     $dialogLicense.modal({
                         dismissible: false,
                         complete: function () {
-                            $('#license_text').html('');
+                            $dialogLicense.find('.license_text').html('');
                         }
                     }).modal('open');
-                    $('#license_agree').off('click').on('click', function (e) {
+
+                    $dialogLicense.find('.license_agree').off('click').on('click', function (e) {
                         if (callback) {
                             callback(true);
                             callback = null;
                         }
-                        $('#license_agree').off('click');
-                        $('#license_non_agree').off('click');
+                        $dialogLicense.find('.license_agree').off('click');
+                        $dialogLicense.find('.license_non_agree').off('click');
                     });
-                    $('#license_non_agree').off('click').on('click', function (e) {
+
+                    $dialogLicense.find('.license_non_agree').off('click').on('click', function (e) {
                         if (callback) {
                             callback(false);
                             callback = null;
                         }
-                        $('#license_agree').off('click');
-                        $('#license_non_agree').off('click');
+                        $dialogLicense.find('.license_agree').off('click');
+                        $dialogLicense.find('.license_non_agree').off('click');
                     });
                 } else {
                     callback && callback(true);

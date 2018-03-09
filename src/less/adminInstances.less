@@ -4,12 +4,15 @@
 
 // instances menu
 #instances-menu {
-    position: absolute;
-    width: 150px;
-    z-index: 1;
-    border: 2px solid white;
-    background: @admin-buttons-color;
-    color: white;
+    position:       absolute;
+    width:          150px;
+    z-index:        1;
+    border:         2px solid white;
+    background:     white;
+    li.ui-state-focus {
+        background: @admin-buttons-color;
+        color:      white;
+    }
 }
 
 #tab-instances {

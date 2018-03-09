@@ -637,7 +637,7 @@ $(document).ready(function () {
     var $stdout        = $('#stdout');
 
     var $dialogCommand = $('#dialog-command');
-    var $dialogLicense = $('#dialog-license');
+    var $dialogLicense = $('#dialog-license-main');
     var $dialogMessage = $('#dialog-message');
     var $dialogConfirm = $('#dialog-confirm');
     var $dialogCommandProgress = $dialogCommand.find('.progress div');
@@ -1191,6 +1191,7 @@ $(document).ready(function () {
         }
 
         tabs.enums.objectChange(id, obj);
+        tabs.intro.objectChange(id, obj);
 
         // If system config updated
         if (id === 'system.config') {
@@ -1878,33 +1879,30 @@ $(document).ready(function () {
                                             var language = main.systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
                                             if (language !=='en' && language !=='de' && language !=='ru') language = 'en';
 
-                                            $('#license_text').html(license[language] || license.en);
+                                            $dialogLicense.find('.license_text').html(license[language] || license.en);
 
-                                            $('#license_checkbox')
-                                                .show()
-                                                .prop('checked', false);
+                                            $dialogLicense.find('.license_checkbox').prop('checked', false);
 
                                             // on language change
-                                            $('#license_language')
+                                            $dialogLicense.find('.license_language')
                                                 .data('licenseConfirmed', false)
                                                 .val(language)
-                                                .show()
                                                 .on('change', function () {
                                                     language = $(this).val();
-                                                    $('#license_language_label').html(translateWord('Select language', language));
-                                                    $('#license_text').html(license[language] || license.en);
-                                                    $('#license_checkbox').html(translateWord('license_checkbox', language));
-                                                    $('#license_agree').html(translateWord('agree', language));
-                                                    $('#license_non_agree').html(translateWord('not agree', language));
-                                                    $('#license_terms').html(translateWord('License terms', language));
-                                                    $('#license_agreement_label').html(translateWord('license agreement', language));
-                                                });
+                                                    $dialogLicense.find('.license_language_label').html(translateWord('Select language', language));
+                                                    $dialogLicense.find('.license_text').html(license[language] || license.en);
+                                                    $dialogLicense.find('.license_checkbox').html(translateWord('license_checkbox', language));
+                                                    $dialogLicense.find('.license_agree .translate').html(translateWord('agree', language));
+                                                    $dialogLicense.find('.license_non_agree .translate').html(translateWord('not agree', language));
+                                                    $dialogLicense.find('.license_terms').html(translateWord('License terms', language));
+                                                    $dialogLicense.find('.license_agreement_label').html(translateWord('license agreement', language));
+                                                }).select();
 
-                                            $('#license_diag').on('change', function () {
+                                            $dialogLicense.find('.license_diag').on('change', function () {
                                                 if ($(this).prop('checked')) {
-                                                    $('#license_agree').removeClass('disabled');
+                                                    $dialogLicense.find('.license_agree').removeClass('disabled');
                                                 } else {
-                                                    $('#license_agree').addClass('disabled');
+                                                    $dialogLicense.find('.license_agree').addClass('disabled');
                                                 }
                                             });
 
@@ -1919,12 +1917,12 @@ $(document).ready(function () {
                                             $dialogLicense.modal({
                                                 dismissible: false,
                                                 complete: function () {
-                                                    $('#license_text').html('');
+                                                    $dialogLicense.find('.license_text').html('');
                                                     location.reload();
                                                 }
                                             }).modal('open');
 
-                                            $('#license_agree').addClass('disabled').off('click').on('click', function (e) {
+                                            $dialogLicense.find('.license_agree').addClass('disabled').off('click').on('click', function (e) {
                                                 e.preventDefault();
                                                 e.stopPropagation();
 
@@ -1941,10 +1939,13 @@ $(document).ready(function () {
                                                             main.showError(err);
                                                         }
                                                         $dialogLicense.modal('close');
-                                                        $('#license_agree').off('click');
-                                                        $('#license_non_agree').off('click');
+                                                        $dialogLicense.find('.license_agree').off('click');
+                                                        $dialogLicense.find('.license_non_agree').off('click');
                                                     });
                                                 });
+                                            });
+                                            $dialogLicense.find('.license_non_agree').off('click').on('click', function (e) {
+                                                location.reload();
                                             });
                                         }
                                     } else {
@@ -1990,7 +1991,7 @@ $(document).ready(function () {
                                 initAllDialogs();
                                 // call prepare
                                 for (var t in tabs) {
-                                    if (tabs.hasOwnProperty(t) && typeof tabs[t].prepare === 'function') {
+                                    if (tabs.hasOwnProperty(t) && tabs[t] && typeof tabs[t].prepare === 'function') {
                                         tabs[t].prepare();
                                     }
                                 }

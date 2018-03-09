@@ -853,7 +853,7 @@ function getAdapterInstances(_adapter, callback) {
                 for (var i = 0; i < doc.rows.length; i++) {
                     res.push(doc.rows[i].value);
                 }
-                if (callback) callback (res);
+                if (callback) callback(res);
             }
         }
 
