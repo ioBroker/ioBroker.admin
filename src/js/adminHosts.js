@@ -12,7 +12,7 @@ function Hosts(main) {
         this.$tab.find('.btn-reload')
             .attr('title', _('Update'))
             .on('click', function () {
-                that.init();
+                that.init(true);
             });
 
         this.$tab.find('.filter-clear').on('click', function () {
@@ -53,7 +53,7 @@ function Hosts(main) {
 
         $('.host-update-submit' + selector).off('click').on('click', function () {
             that.main.cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
-                if (!exitCode) that.init();
+                if (!exitCode) that.init(true);
             });
         });
 
@@ -285,17 +285,19 @@ function Hosts(main) {
         }
     };
 
-    this.init = function () {
-        if (this.inited) {
+    this.init = function (update) {
+        if (this.inited && !update) {
             return;
         }
-        this.inited = true;
-        this.main.subscribeObjects('system.host.*');
-        this.main.subscribeStates('system.host.*');
 
         this.getHosts(function () {
             that._postInit();
         });
+        if (!this.inited) {
+            this.inited = true;
+            this.main.subscribeObjects('system.host.*');
+            this.main.subscribeStates('system.host.*');
+        }
     };
 
     this.destroy = function () {

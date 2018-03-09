@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.2.4",
+    "version": "3.3.0",
     "news": {
+      "3.3.0": {
+        "en": "Overview page was added\nMany bugs were fixed",
+        "de": "Übersichtsseite wurde hinzugefügt\nViele Fehler wurden behoben",
+        "ru": "Была добавлена ​​страница обзора\nИсправлено множество ошибок",
+        "pt": "A página de visão geral foi adicionada\nMuitos erros foram corrigidos",
+        "nl": "Overzichtspagina is toegevoegd\nVeel bugs zijn verholpen",
+        "fr": "La page d'aperçu a été ajoutée\nDe nombreux bugs ont été corrigés",
+        "it": "La pagina di panoramica è stata aggiunta\nMolti bug sono stati corretti",
+        "es": "La página de resumen fue agregada\nSe corrigieron muchos errores",
+        "pl": "Strona przeglądu została dodana\nNaprawiono wiele błędów"
+      },
       "3.2.4": {
         "en": "The layout on mobile devices was adjusted",
         "de": "Das Layout auf mobilen Geräten wurde angepasst",
