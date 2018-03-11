@@ -1479,7 +1479,7 @@ function filterChanged(e) {
         }
 
         var text = 
-            '<div class="dialog-select-container ' + (isMaterial ? 'material' : '') + '" style="width: 100%; height: 100%">\n' +
+            '<div class="dialog-select-container' + (isMaterial ? ' material' : ' old-style') + '" style="width: 100%; height: 100%">\n' +
             '    <div class="main-toolbar-table m">' + tds + '</div>\n' +
             '       <table class="main-header-table">\n'
         ;
@@ -2935,7 +2935,7 @@ function filterChanged(e) {
                 $dlg.css({height: '100%'}); //xxx
             }, 500);
         } else if ($dlg.attr('id') === 'dialog-select-members') {
-            $dlg.find('div:first-child').css({height: 'calc(100% - 50px)'});
+            //$dlg.find('div:first-child').css({height: 'calc(100% - 50px)'});
         }
 
         // set preset filters

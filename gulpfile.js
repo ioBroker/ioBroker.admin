@@ -529,6 +529,17 @@ gulp.task('iobCSS', function () {
         .pipe(gulp.dest('./www/lib/css/iob'));
 });
 
+// for older selectID
+gulp.task('adminCSS', function () {
+    return gulp.src(['./src/less/admin.less'])
+        .pipe(sourcemaps.init())
+        .pipe(less({
+            paths: [ ]
+        }))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('./www/css/'));
+});
+
 gulp.task('treeTableCSS', function () {
     return gulp.src(['./src/lib/css/jquery.treetable.theme.less'])
         .pipe(sourcemaps.init())

@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.3.0",
+    "version": "3.3.1",
     "news": {
+      "3.3.1": {
+        "en": "Corrections for scenes\nDowngrade from socket.io 2.0.4 to 1.5.1 because of bug\nsmall fix for hosts",
+        "de": "Korrekturen für Szenen\nDowngrade von socket.io 2.0.4 auf 1.5.1 wegen Fehler\nkleine Lösung für Hosts",
+        "ru": "Исправления для сцен\nПереход от socket.io 2.0.4 до 1.5.1 из-за ошибки\nнебольшое исправление для хостов",
+        "pt": "Correções para cenas\nDowngrade do socket.io 2.0.4 para 1.5.1 por causa do bug\npequena correção para hosts",
+        "nl": "Correcties voor scènes\nDowngrade van socket.io 2.0.4 naar 1.5.1 vanwege bug\nkleine oplossing voor hosts",
+        "fr": "Corrections pour les scènes\nDowngrade de socket.io 2.0.4 à 1.5.1 à cause d'un bug\npetit correctif pour les hôtes",
+        "it": "Correzioni per le scene\nDowngrade da socket.io 2.0.4 a 1.5.1 a causa di bug\npiccola correzione per gli host",
+        "es": "Correcciones para escenas\nVersión anterior de socket.io 2.0.4 a 1.5.1 debido a error\npequeña solución para los hosts",
+        "pl": "Korekty dla scen\nZmień wersję z wersji socket.io z wersji 2.0.4 na 1.5.1 z powodu błędu\nmała poprawka dla hostów"
+      },
       "3.3.0": {
         "en": "Overview page was added\nMany bugs were fixed",
         "de": "Übersichtsseite wurde hinzugefügt\nViele Fehler wurden behoben",

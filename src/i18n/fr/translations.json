@@ -254,6 +254,7 @@
   "Install adapter from URL": "Installer ou mettre à jour l'adaptateur depuis l'URL",
   "Install adapter from github": "Installer ou mettre à jour l'adaptateur depuis github",
   "Install from custom URL": "Installer à partir d'une URL personnalisée",
+  "Install or update from URL...": "Installer ou mettre à jour à partir de l'URL ...",
   "Installation counter": "Compteur d'installation",
   "Installations counter": "Compteur d'installations",
   "Installed from group": "Installé à partir du groupe",

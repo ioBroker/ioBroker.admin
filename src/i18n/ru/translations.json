@@ -254,6 +254,7 @@
   "Install adapter from URL": "Установить или обновить адаптер с URL-адреса",
   "Install adapter from github": "Установить или обновить адаптер с github",
   "Install from custom URL": "Установить из собственного источника",
+  "Install or update from URL...": "Установите или обновите URL-адрес ...",
   "Installation counter": "Счетчик установок",
   "Installations counter": "Счетчик установок",
   "Installed from group": "Установлено из группы",
