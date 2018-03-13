@@ -1457,7 +1457,13 @@ $(document).ready(function () {
 
                 // set default page
                 if (!tab || tab === '!') {
-                    tab = 'intro';
+                    if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf('intro') !== -1) {
+                        tab = 'intro';
+                    } else if (main.systemConfig.common.tabs.indexOf('adapters') !== -1) {
+                        tab = 'adapters';
+                    } else {
+                        tab = main.systemConfig.common.tabs[0];
+                    }
                 }
                 // do tab is not found
 
@@ -1660,7 +1666,7 @@ $(document).ready(function () {
         var elements = [];
         $('.admin-tab').each(function () {
             var id = $(this).attr('id');
-            if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !==-1) {
+            if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !== -1) {
                 elements.push({
                     line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
                             (tabsInfo[id] && tabsInfo[id].icon ? '<i class="material-icons left">' + tabsInfo[id].icon + '</i>' : '<i class="material-icons left">live_help</i>') +

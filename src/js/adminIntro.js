@@ -101,7 +101,7 @@ function Intro(main) {
         $card.find('.btn-card-enabled').data('host', host.id);
 
         // button enabled
-        if (that.main.objects[host.id] && that.main.objects[host.id].common && that.main.objects[host.id].common.intro === false) {
+        if (that.main.systemConfig.common.intro[host.id] === false) {
             if (that.$tab.hasClass('edit-active')) {
                 $card.addClass('card-disabled').find('.btn-card-enabled').removeClass('blue').addClass('gray').find('i').text('close');
             } else {
@@ -227,16 +227,20 @@ function Intro(main) {
                 adapter = adapter[0];
                 var url = link ? that.main.tabs.instances.replaceInLink(link, adapter, instance) : '';
                 $card = null;
+                var intro = that.main.systemConfig.common.intro[adapter + '.' + instance];
                 if (typeof url === 'object') {
                     var first = true;
                     for (var inst in url) {
                         if (url.hasOwnProperty(inst)) {
                             enabled = true;
-                            if (common.intro !== undefined) {
-                                if (first && typeof common.intro !== 'object') {
-                                    common.intro = {inst: common.intro};
+                            if (intro !== undefined) {
+                                if (first && typeof intro !== 'object') {
+                                    var val = intro;
+                                    intro = {};
+                                    that.main.systemConfig.common.intro[adapter + '.' + instance] = intro;
+                                    intro[inst] = val;
                                 }
-                                if (common.intro[inst] === false) {
+                                if (intro[inst] === false) {
                                     enabled = false;
                                 }
                             }
@@ -250,16 +254,17 @@ function Intro(main) {
                     }
                 } else {
                     enabled = true;
-                    if (!editActive && common.intro !== undefined) {
-                        if (typeof common.intro === 'object') {
-                            for (var aa in common.intro) {
-                                if (common.intro.hasOwnProperty(aa)) {
-                                    common.intro = common.intro[aa];
+                    if (!editActive && intro !== undefined) {
+                        if (typeof intro === 'object') {
+                            for (var aa in intro) {
+                                if (intro.hasOwnProperty(aa)) {
+                                    intro = intro[aa];
+                                    that.main.systemConfig.common.intro[adapter + '.' + instance] = intro;
                                     break;
                                 }
                             }
                         }
-                        if (common.intro === false) {
+                        if (intro === false) {
                             enabled = false;
                         }
                     }
@@ -278,81 +283,73 @@ function Intro(main) {
         callback(null, $cards);
     }
 
-    function processTasks(tasks, callback) {
-        if (!tasks || !tasks.length) {
-            return callback && callback();
-        } else {
-            var task = tasks.pop();
-            that.main.socket.emit('getObject', task.id, function (err, obj) {
-                if (obj) {
-                    obj.common.intro = task.intro;
-                    that.main.socket.emit('setObject', obj._id, obj, function (err) {
-                        setTimeout(function () {
-                            processTasks(tasks, callback);
-                        }, 0);
-                    });
-                } else {
-                    setTimeout(function () {
-                        processTasks(tasks, callback);
-                    }, 0);
-                }
-            });
-        }
-    }
-
     function updateConfig(callback) {
         var values = [];
         that.$tiles.find('.btn-card-enabled').each(function () {
             var inst = $(this).data('instance');
             if (inst) {
                 values.push({
-                    id: 'system.adapter.' + inst,
+                    id: inst,
                     enabled: !$(this).hasClass('gray'),
                     web: $(this).data('web')
                 });
             } else {
                 values.push({
                     id: $(this).data('host'),
-                    enabled: !$(this).hasClass('gray'),
-                    host: true
+                    enabled: !$(this).hasClass('gray')
                 });
             }
         });
 
         // update all values
-        var tasks = [];
+        var intro = that.main.systemConfig.common.intro;
+        var changed = true;
         for (var i = 0; i < values.length; i++) {
-            if (that.main.objects[values[i].id] && that.main.objects[values[i].id].common) {
-                var common = JSON.parse(JSON.stringify(that.main.objects[values[i].id].common));
-                var actual;
-                if (values[i].web) {
-                    if (common.intro !== undefined && typeof common.intro !== 'object') {
-                        common.intro = {inst: common.intro};
-                    }
-                    actual = common.intro && common.intro[values[i].web] !== undefined ? common.intro[values[i].web] : true;
-                } else {
-                    if (common.intro !== undefined && typeof common.intro === 'object') {
-                        for (var aa in common.intro) {
-                            if (common.intro.hasOwnProperty(aa)) {
-                                common.intro = common.intro[aa];
-                                break;
-                            }
+            var actual;
+            var id = values[i].id;
+            if (values[i].web) {
+                if (intro[id] !== undefined && typeof intro[id] !== 'object') {
+                    var val = intro[id];
+                    intro[id] = {};
+                    intro[id][values[i].web] = val;
+                }
+                actual = intro[id] && intro[id][values[i].web] !== undefined ? intro[id][values[i].web] : true;
+            } else {
+                if (intro[id] !== undefined && typeof intro[id] === 'object') {
+                    for (var aa in intro[id]) {
+                        if (intro[id].hasOwnProperty(aa)) {
+                            intro[id] = intro[id][aa];
+                            break;
                         }
                     }
-                    actual = common.intro !== undefined ? common.intro : true;
                 }
-                if (values[i].enabled !== actual) {
-                    if (values[i].web) {
-                        common.intro = common.intro || {};
-                        common.intro[values[i].web] = values[i].enabled;
-                    } else {
-                        common.intro = values[i].enabled;
-                    }
-                    tasks.push({id: values[i].id, intro: common.intro});
+                actual = intro[id] !== undefined ? intro[id] : true;
+            }
+            if (values[i].enabled !== actual) {
+                changed = true;
+                if (values[i].web) {
+                    intro[id] = intro[id] || {};
+                    intro[id][values[i].web] = values[i].enabled;
+                } else {
+                    intro[id] = values[i].enabled;
                 }
             }
         }
-        processTasks(tasks, callback);
+
+        if (changed) {
+            that.main.socket.emit('getObject', 'system.config', function (err, obj) {
+                if (obj) {
+                    obj.common.intro = that.main.systemConfig.common.intro;
+                    that.main.socket.emit('setObject', obj._id, obj, function (err) {
+                        callback && callback();
+                    });
+                } else {
+                    callback && callback();
+                }
+            });
+        } else {
+            callback && callback();
+        }
     }
 
     this.prepare = function () {
@@ -408,6 +405,8 @@ function Intro(main) {
             }, 250);
             return;
         }
+
+        that.main.systemConfig.common.intro = that.main.systemConfig.common.intro || {};
 
         // update info
         readInstances(function (err, instances) {
