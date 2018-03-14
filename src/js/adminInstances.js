@@ -602,16 +602,27 @@ function Instances(main) {
         $input.val(oldVal);
 
         $input.blur(function () {
+            if (timeout) clearTimeout(timeout);
+
             timeout = setTimeout(function () {
+                timeout = null;
                 var val = $(this).val();
 
                 if (JSON.stringify(val) !== JSON.stringify(oldVal)) {
-                    var obj = {common: {}};
-                    obj.common[attr] = $(this).val();
-                    that.main.socket.emit('extendObject', id, obj, function (err) {
-                        if (err) that.main.showError(err);
+                    that.main.socket.emit('getObject', id, function (err, obj) {
+                        if (obj) {
+                            obj.common = obj.common || {};
+                            obj.common[attr] = val;
+                            if (attr === 'title' && obj.common.titleLang) {
+                                delete obj.common.titleLang;
+                            }
+                            that.main.socket.emit('setObject', obj._id, obj, function (err) {
+                                if (err) that.main.showError(err);
+                            });
+                        } else {
+                            console.log('Object ' + id + ' does not exist: ' + err);
+                        }
                     });
-
                     oldVal = '<span style="color: pink">' + oldVal + '</span>';
                 } else {
                     oldVal = innerHTML;

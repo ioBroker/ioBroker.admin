@@ -856,6 +856,8 @@ function Adapters(main) {
 
                     if (repository[adapter] && repository[adapter].extIcon) icon = repository[adapter].extIcon;
 
+                    var _instances = 0;
+                    var _enabled   = 0;
                     if (obj.version) {
                         var news = '';
                         var updatable = false;
@@ -871,8 +873,7 @@ function Adapters(main) {
                         installed = '<table style="min-width: 80px; text-align: center; border: 0; border-spacing: 0;" cellspacing="0" cellpadding="0" class="ui-widget">' +
                             '<tr>';
 
-                        var _instances = 0;
-                        var _enabled   = 0;
+
 
                         // Show information about installed and enabled instances
                         for (var z = 0; z < that.main.instances.length; z++) {

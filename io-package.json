@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.3.1",
+    "version": "3.3.2",
     "news": {
+      "3.3.2": {
+        "en": "small UI corrections",
+        "de": "kleine UI-Korrekturen",
+        "ru": "небольшие корректировки пользовательского интерфейса",
+        "pt": "pequenas correções de IU",
+        "nl": "kleine UI-correcties",
+        "fr": "petites corrections d'interface utilisateur",
+        "it": "piccole correzioni all'interfaccia utente",
+        "es": "pequeñas correcciones de UI",
+        "pl": "małe poprawki interfejsu użytkownika"
+      },
       "3.3.1": {
         "en": "Corrections for scenes\nDowngrade from socket.io 2.0.4 to 1.5.1 because of bug\nsmall fix for hosts",
         "de": "Korrekturen für Szenen\nDowngrade von socket.io 2.0.4 auf 1.5.1 wegen Fehler\nkleine Lösung für Hosts",

@@ -16,7 +16,7 @@ const babel       = require('gulp-babel');
 const fs          = require('fs');
 
 gulp.task('1_words',  ['wwwLanguages2words', 'adminLanguages2words']);
-gulp.task('2_css',    ['iobCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS']);
+gulp.task('2_css',    ['iobCSS', 'adminCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS']);
 gulp.task('3_js',     ['vendorJS', 'materializeJS', 'appJS', 'fancyTreeJS']); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
 gulp.task('4_static', ['appHTML', 'aceCopy', 'colorpickerCopy', 'appCopy']);
 const fileName = 'words.js';
