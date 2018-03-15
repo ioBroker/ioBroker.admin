@@ -873,8 +873,6 @@ function Adapters(main) {
                         installed = '<table style="min-width: 80px; text-align: center; border: 0; border-spacing: 0;" cellspacing="0" cellpadding="0" class="ui-widget">' +
                             '<tr>';
 
-
-
                         // Show information about installed and enabled instances
                         for (var z = 0; z < that.main.instances.length; z++) {
                             if (that.main.objects[that.main.instances[z]] &&
@@ -883,6 +881,8 @@ function Adapters(main) {
                                 if (that.main.objects[that.main.instances[z]].common.enabled) _enabled++;
                             }
                         }
+
+
                         if (_instances) {
                             // TODO: move style to class
                             installed += '<td style="border: 0; padding: 0; width: 40px">';
@@ -936,6 +936,7 @@ function Adapters(main) {
                         version:    version,
                         installed:  installed,
                         rawVersion: rawVersion,
+                        instances:  _instances,
                         rawInstalled: rawInstalled,
                         versionDate: obj.versionDate,
                         updatable:  updatable,
@@ -1146,8 +1147,8 @@ function Adapters(main) {
                         if (ad.installed) {
                             text += '           <li>' + localTexts['Installed version'] + ': <span class="data">'+ ad.rawInstalled + '</span></li>';
                         }
-                        if (_instances) {
-                            text += '           <li>' + _('Installed instances') + ': <span class="data">' + _instances + '</span></li>';
+                        if (ad.instances) {
+                            text += '           <li>' + _('Installed instances') + ': <span class="data">' + ad.instances + '</span></li>';
                         }
                         text += '           </ul>';
                         text += '       </div>';
