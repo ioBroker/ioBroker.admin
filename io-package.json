@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.3.2",
+    "version": "3.3.3",
     "news": {
-      "3.3.2": {
+      "3.3.3": {
         "en": "small UI corrections",
         "de": "kleine UI-Korrekturen",
         "ru": "небольшие корректировки пользовательского интерфейса",
