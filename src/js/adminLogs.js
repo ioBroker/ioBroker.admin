@@ -130,6 +130,8 @@ function Logs(main) {                                                           
         }
 
         $table.html('');
+        var doSubscribe = !this.inited;
+        that.inited = true;
 
         this.main.socket.emit('sendToHost', this.main.currentHost, 'getLogs', 200, function (lines) {
             setTimeout(function () {
@@ -168,8 +170,7 @@ function Logs(main) {                                                           
                 filters.host     = hdr.host.val();
                 filters.message  = hdr.message.val();
                 filters.severity = hdr.severity.val();
-                if (!that.inited) {
-                    that.inited = true;
+                if (doSubscribe) {
                     that.main.subscribeLogs(true);
                 }
 

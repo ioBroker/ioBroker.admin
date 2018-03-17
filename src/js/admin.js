@@ -1397,7 +1397,6 @@ $(document).ready(function () {
                 main.socket.emit('requireLog', false);
             }
         }
-
     };
 
     // ---------------------------- Navigation ---------------------------------------------
