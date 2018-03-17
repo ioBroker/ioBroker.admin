@@ -34,14 +34,31 @@
         }
       }
       &.card-system-info {
-        .card-content-text {
-          overflow-y: scroll;
-          height: 140px;;
+        .card-image {
+          background: #e2e2e2;
+          max-width: 30%;
+          img {
+            width: 120px;
+            height: auto;
+            padding: 2rem 0.5rem;
+          }
         }
         .card-content {
           height: 220px;
+									 padding-right: 0;
+          .card-content-text:hover {
+            overflow-y: scroll;
+            padding-right: 0;
+          }
+          .card-content-text {
+            padding-right: 5px;
+            ul{
+              margin: 0;
+            }
+            height: 140px;
+          }
         }
-        .card-action, .card-image {
+        .card-action{
           display: none;
         }
         cursor: inherit;
