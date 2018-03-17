@@ -1456,12 +1456,12 @@ $(document).ready(function () {
 
                 // set default page
                 if (!tab || tab === '!') {
-                    if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf('intro') !== -1) {
+                    if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf('tab-intro') !== -1) {
                         tab = 'intro';
-                    } else if (main.systemConfig.common.tabs.indexOf('adapters') !== -1) {
+                    } else if (main.systemConfig.common.tabs.indexOf('tab-adapters') !== -1) {
                         tab = 'adapters';
                     } else {
-                        tab = main.systemConfig.common.tabs[0];
+                        tab = main.systemConfig.common.tabs[0].replace(/^#/, '').replace(/^tab-/, '');
                     }
                 }
                 // do tab is not found
