@@ -4,6 +4,9 @@
 #tabs-issue {
     overflow: hidden;
     height: calc(~"100% - "@admin-m-footer-height);
+    & > div {
+       maring-bottom: 0;
+    }
     td {
         padding: 0 5px;
     }
@@ -44,10 +47,21 @@
     }
     .page {
         background: #f5f2f0;
-        height: calc(~"100% - "@admin-m-footer-height - 16);
+        height: 100%;
         padding-top: 1rem;
         padding-left: 1rem;
-        overflow: auto;
+        overflow: hidden;
+        #result-issue {
+            width: 100%;
+            height: calc(~"100% - "@admin-m-footer-height);
+            overflow: auto;
+            .col {
+                position: relative;
+                .select-wrapper + label {
+                    top: 100%;
+                }
+            }
+        }
     }
 
     .loader {
@@ -55,14 +69,6 @@
         margin-left: 45%;
     }
 
-    #result-issue {
-        width: 100%;        
-        .col {
-            position: relative;
-            .select-wrapper + label {
-                top: 100%;
-            }
-        }
-    }    
+
 }
 

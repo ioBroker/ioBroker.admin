@@ -77,6 +77,24 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/devices/light-bulb.svg" height="48" /> - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 
 ## Changelog
+### 3.3.3 (2018-03-15)
+* (bluefox) small UI corrections
+
+### 3.3.1 (2018-03-11)
+* (bluefox) Corrections for scenes
+* (bluefox) move from socket.io 2.0.4 to 1.5.1 because of bug
+* (bluefox) small fix for hosts
+
+### 3.3.0 (2018-03-10)
+* (bluefox) Overview page was added
+* (bluefox) Many bugs were fixed
+
+### 3.2.4 (2018-03-04)
+* (bluefox) Adjust layout on mobile devices
+
+### 3.2.1 (2018-03-03)
+* (bluefox) Many UI fixes
+
 ### 3.2.0 (2018-02-09)
 * (bluefox) The select ID dialog was fixed
 

@@ -465,6 +465,9 @@ function EditObject(main) {
         }).on('keyup', function () {
             $(this).trigger('change');
         });
+        this.$dialog.find('select').on('change', function () {
+            that.$dialogSave.removeClass('disabled');
+        });
 
         if (obj.common.color !== undefined) {
             var time = Date.now();

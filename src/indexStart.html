@@ -97,7 +97,13 @@
         </nav>
 
     </div>
-    <div class="admin-sidemenu-body"></div>
+    <div class="admin-sidemenu-body">
+        <div class="m admin-preloader" style="width: 100%">
+            <div class="progress">
+                <div class="indeterminate"></div>
+            </div>
+        </div>
+    </div>
     <div class="admin-sidemenu-footer"></div>
 </div>
 
@@ -171,14 +177,14 @@
         <div class="modal-footer">
         </div>
     </div>
-    <div id="dialog-license"    class="modal modal-fixed-footer">
+    <div id="dialog-license-main"    class="modal modal-fixed-footer">
         <div class="modal-content">
              <div class="col s12 m6 l3">
-                <h5 class="translate" id="license_agreement_label">license agreement</h5>
+                <h5 class="translate license_agreement_label">license agreement</h5>
              </div>
             <div class="row">
                 <div class="col s12 m6 l3">
-                    <select id="license_language">
+                    <select class="license_language">
                         <option value="en">English</option>
                         <option value="de">Deutsch</option>
                         <option value="ru">русский</option>
@@ -188,23 +194,23 @@
                         <option value="it">Italiano</option>
                         <option value="es">Espanol</option>
                     </select>
-                    <label class="translate" for="license_language" id="license_language_label">Select language</label>
+                    <label class="translate">Select language</label>
                 </div>
-                <div class="col s12 m6 l9">
-                    <input id="license_diag" class="filled-in" type="checkbox"/>
-                    <span class="translate" id="license_checkbox" for="license_diag">license_checkbox</span>
+                <div class="col s12 m6 l9 license-checkbox-box">
+                    <input class="license_diag filled-in" type="checkbox"/>
+                    <span class="translate license_checkbox" for="license_diag">license_checkbox</span>
                 </div>
             </div>
-            <div class="row">
+            <div class="row license-text">
                 <div class="col s12">
-                    <h6 id="license_terms" class="translate">License terms</h6>
-                    <div id="license_text"></div>
+                    <h6 class="translate license_terms">License terms</h6>
+                    <div class="license_text"></div>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <a id="license_agree"     class="modal-action modal-close waves-effect waves-green btn-flat"><i class="large material-icons">check</i><span class="translate">agree</span></a>
-            <a id="license_non_agree" class="modal-action modal-close waves-effect waves-green btn-flat btn-gray "><i class="large material-icons">close</i><span class="translate">not agree</span></a>
+            <a class="license_agree modal-action modal-close waves-effect waves-green btn"><span class="translate">agree</span></a>
+            <a class="license_non_agree modal-action modal-close waves-effect waves-green btn-flat btn-gray "><span class="translate">not agree</span></a>
         </div>
     </div>
     <div id="dialog-value-edit" class="modal modal-fixed-footer">

@@ -12,7 +12,7 @@ function Hosts(main) {
         this.$tab.find('.btn-reload')
             .attr('title', _('Update'))
             .on('click', function () {
-                that.init();
+                that.init(true);
             });
 
         this.$tab.find('.filter-clear').on('click', function () {
@@ -53,7 +53,7 @@ function Hosts(main) {
 
         $('.host-update-submit' + selector).off('click').on('click', function () {
             that.main.cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
-                if (!exitCode) that.init();
+                if (!exitCode) that.init(true);
             });
         });
 
@@ -137,38 +137,40 @@ function Hosts(main) {
 
         var text = '<tr class="hosts-host " data-host-id="' + obj._id + '">';
         //LED
-        text += '<td><div class="hosts-led ' + (alive ? 'led-green' : 'led-red') + '" data-host-id="' + obj._id + '"></div></td>';
+        text += '<td class="tab-hosts-header-led"><div class="hosts-led ' + (alive ? 'led-green' : 'led-red') + '" data-host-id="' + obj._id + '"></div></td>';
         // name
-        text += '<td class="hosts-name" style="font-weight: bold">' + obj.common.hostname +
-                '<button class="small-button host-restart-submit" style="float: right; ' + (alive ? '' : 'display: none') + '" data-host-id="' + obj._id + '" title="' + _('restart') + '"><i class="material-icons">autorenew</i></button></td>' +
+        text += '<td class="hosts-name" style="font-weight: bold">' + obj.common.hostname + '</td>' +
             + '</td>';
         // type
-        text += '<td>' + obj.common.type + '</td>';
+        text += '<td class="tab-hosts-header-type">' + obj.common.type + '</td>';
         var title = obj.common.titleLang || obj.common.title;
         if (typeof title === 'object') {
             title = title[systemLang] || title.en;
         }
         // description
-        text += '<td>' + title + '</td>';
+        text += '<td class="tab-hosts-header-title">' + title + '</td>';
         // platform
         // text += '<td>' + obj.common.platform + '</td>'; // actually only one platform
         // OS
-        text += '<td>' + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</td>';
+        text += '<td class="tab-hosts-header-os">' + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</td>';
         // Available
-        text += '<td><span data-host-id="' + obj._id + '" data-type="' + obj.common.type + '" class="hosts-version-available"></span>' +
-            '<button class="small-button host-update-submit"      data-host-name="' + obj.common.hostname + '" style="display: none; float: right; opacity: 0;" title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
-            '<button class="small-button host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none; float: right"              title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
+        text += '<td class="tab-hosts-header-available"><span data-host-id="' + obj._id + '" data-type="' + obj.common.type + '" class="hosts-version-available"></span>' +
+            '<button class="small-button host-update-submit"      data-host-name="' + obj.common.hostname + '" style="display: none; opacity: 0;" title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
+            '<button class="small-button host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none;"             title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
             '</td>';
 
         // installed
-        text += '<td class="hosts-version-installed" data-host-id="' + obj._id + '">' + obj.common.installedVersion + '</td>';
+        text += '<td class="hosts-version-installed tab-hosts-header-installed" data-host-id="' + obj._id + '">' + obj.common.installedVersion + '</td>';
 
         // event rates
         if (that.main.states[obj._id + '.inputCount']) {
-            text += '<td style="text-align: center"><span title="in" data-host-id="' + obj._id + '" class="host-in">&#x21E5;' + that.main.states[obj._id + '.inputCount'].val + '</span> / <span title="out" data-host-id="' + obj._id + '"  class="host-out">&#x21A6;' + that.main.states[obj._id + '.outputCount'].val + '</span></td>';
+            text += '<td class="tab-hosts-header-events" style="text-align: center"><span title="in" data-host-id="' + obj._id + '" class="host-in">&#x21E5;' + that.main.states[obj._id + '.inputCount'].val + '</span> / <span title="out" data-host-id="' + obj._id + '"  class="host-out">&#x21A6;' + that.main.states[obj._id + '.outputCount'].val + '</span></td>';
         } else {
-            text += '<td style="text-align: center"><span title="in" data-host-id="' + obj._id + '" class="host-in"></span> / <span title="out" data-host-id="' + obj._id + '" class="host-out"></span></td>';
+            text += '<td class="tab-hosts-header-events" style="text-align: center"><span title="in" data-host-id="' + obj._id + '" class="host-in"></span> / <span title="out" data-host-id="' + obj._id + '" class="host-out"></span></td>';
         }
+
+        // restart button
+        text += '<td class="tab-hosts-header-restart"><button class="small-button host-restart-submit" style="' + (alive ? '' : 'display: none') + '" data-host-id="' + obj._id + '" title="' + _('restart') + '"><i class="material-icons">autorenew</i></button></td>';
 
         text += '</tr>';
 
@@ -283,17 +285,19 @@ function Hosts(main) {
         }
     };
 
-    this.init = function () {
-        if (this.inited) {
+    this.init = function (update) {
+        if (this.inited && !update) {
             return;
         }
-        this.inited = true;
-        this.main.subscribeObjects('system.host.*');
-        this.main.subscribeStates('system.host.*');
 
         this.getHosts(function () {
             that._postInit();
         });
+        if (!this.inited) {
+            this.inited = true;
+            this.main.subscribeObjects('system.host.*');
+            this.main.subscribeStates('system.host.*');
+        }
     };
 
     this.destroy = function () {

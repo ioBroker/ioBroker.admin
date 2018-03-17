@@ -115,7 +115,7 @@
         padding: 5px;
 
         i {
-            margin: 0px !important;
+            margin: 0 !important;
         }
 
 //        span {
@@ -136,7 +136,7 @@
         line-height:    38px;
         padding:        0;
         i {
-            margin: 0px !important;
+            margin: 0 !important;
         }
     }
 
@@ -180,8 +180,8 @@
     .admin-sidemenu-body {
 
         width:      calc(~"100% - " 2 * @main-frame-distance);
-        //height:     calc(~"100% - " @admin-sidemenu-main-header-height ~" - " @admin-sidemenu-main-footer-height);
-        height:     calc(~"100% - " @admin-sidemenu-main-header-height + @admin-sidemenu-main-footer-height + 2*@main-frame-distance + 2);
+        // height:     calc(~"100% - " @admin-sidemenu-main-header-height + @admin-sidemenu-main-footer-height + (2 * @main-frame-distance) + 2px);
+        height:     calc(~"100% - 70px");
         overflow:   hidden;
         padding:    @main-frame-distance;
 

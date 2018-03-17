@@ -2,8 +2,63 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.2.0",
+    "version": "3.3.3",
     "news": {
+      "3.3.3": {
+        "en": "small UI corrections",
+        "de": "kleine UI-Korrekturen",
+        "ru": "небольшие корректировки пользовательского интерфейса",
+        "pt": "pequenas correções de IU",
+        "nl": "kleine UI-correcties",
+        "fr": "petites corrections d'interface utilisateur",
+        "it": "piccole correzioni all'interfaccia utente",
+        "es": "pequeñas correcciones de UI",
+        "pl": "małe poprawki interfejsu użytkownika"
+      },
+      "3.3.1": {
+        "en": "Corrections for scenes\nDowngrade from socket.io 2.0.4 to 1.5.1 because of bug\nsmall fix for hosts",
+        "de": "Korrekturen für Szenen\nDowngrade von socket.io 2.0.4 auf 1.5.1 wegen Fehler\nkleine Lösung für Hosts",
+        "ru": "Исправления для сцен\nПереход от socket.io 2.0.4 до 1.5.1 из-за ошибки\nнебольшое исправление для хостов",
+        "pt": "Correções para cenas\nDowngrade do socket.io 2.0.4 para 1.5.1 por causa do bug\npequena correção para hosts",
+        "nl": "Correcties voor scènes\nDowngrade van socket.io 2.0.4 naar 1.5.1 vanwege bug\nkleine oplossing voor hosts",
+        "fr": "Corrections pour les scènes\nDowngrade de socket.io 2.0.4 à 1.5.1 à cause d'un bug\npetit correctif pour les hôtes",
+        "it": "Correzioni per le scene\nDowngrade da socket.io 2.0.4 a 1.5.1 a causa di bug\npiccola correzione per gli host",
+        "es": "Correcciones para escenas\nVersión anterior de socket.io 2.0.4 a 1.5.1 debido a error\npequeña solución para los hosts",
+        "pl": "Korekty dla scen\nZmień wersję z wersji socket.io z wersji 2.0.4 na 1.5.1 z powodu błędu\nmała poprawka dla hostów"
+      },
+      "3.3.0": {
+        "en": "Overview page was added\nMany bugs were fixed",
+        "de": "Übersichtsseite wurde hinzugefügt\nViele Fehler wurden behoben",
+        "ru": "Была добавлена ​​страница обзора\nИсправлено множество ошибок",
+        "pt": "A página de visão geral foi adicionada\nMuitos erros foram corrigidos",
+        "nl": "Overzichtspagina is toegevoegd\nVeel bugs zijn verholpen",
+        "fr": "La page d'aperçu a été ajoutée\nDe nombreux bugs ont été corrigés",
+        "it": "La pagina di panoramica è stata aggiunta\nMolti bug sono stati corretti",
+        "es": "La página de resumen fue agregada\nSe corrigieron muchos errores",
+        "pl": "Strona przeglądu została dodana\nNaprawiono wiele błędów"
+      },
+      "3.2.4": {
+        "en": "The layout on mobile devices was adjusted",
+        "de": "Das Layout auf mobilen Geräten wurde angepasst",
+        "ru": "Макет на мобильных устройствах был скорректирован",
+        "pt": "O layout em dispositivos móveis foi ajustado",
+        "nl": "De lay-out op mobiele apparaten is aangepast",
+        "fr": "La disposition sur les appareils mobiles a été ajustée",
+        "it": "Il layout sui dispositivi mobili è stato modificato",
+        "es": "El diseño en los dispositivos móviles se ajustó",
+        "pl": "Układ na urządzeniach mobilnych został dostosowany"
+      },
+      "3.2.1": {
+        "en": "Many UI fixes",
+        "de": "Viele UI-Fixes",
+        "ru": "Много исправлений пользовательского интерфейса",
+        "pt": "Muitas correções de UI",
+        "nl": "Veel UI-fixes",
+        "fr": "De nombreuses corrections d'interface utilisateur",
+        "it": "Molte correzioni all'interfaccia utente",
+        "es": "Muchas correcciones de UI",
+        "pl": "Wiele poprawek UI"
+      },
       "3.2.0": {
         "en": "The select ID dialog was fixed",
         "de": "Der Auswahl-ID-Dialog wurde korrigiert",
@@ -14,114 +69,6 @@
         "it": "La finestra di dialogo di selezione ID è stata corretta",
         "es": "El diálogo de selección de ID se arregló",
         "pl": "Okno dialogowe wyboru ID zostało naprawione"
-      },
-      "3.1.12": {
-        "en": "Configuration dialog updated\nOpen menu button is fixed",
-        "de": "Konfigurationsdialog aktualisiert\nDie Schaltfläche zum Öffnen des Menüs ist korrigiert",
-        "ru": "Обновлен диалог настроек\nКнопка открытия меню исправлена",
-        "pt": "Caixa de diálogo de configuração atualizada\nO botão Abrir do menu é corrigido",
-        "nl": "Configuratiedialoog bijgewerkt\nDe menuknop is vast",
-        "fr": "Dialogue de configuration mis à jour\nLe bouton du menu Ouvrir est fixe",
-        "it": "Finestra di configurazione aggiornata\nIl pulsante del menu Apri è fisso",
-        "es": "Diálogo de configuración actualizado\nEl botón Abrir menú está arreglado",
-        "pl": "Zaktualizowano okno dialogowe konfiguracji\nPrzycisk Otwórz menu jest stały"
-      },
-      "3.1.11": {
-        "en": "Connection LED fixed",
-        "de": "Verbindungs-LED ist korrigiert",
-        "ru": "LED индикатор подключения исправлен",
-        "pt": "LED de conexão fixo",
-        "nl": "Verbindings-LED vast",
-        "fr": "LED de connexion fixe",
-        "it": "LED di connessione fisso",
-        "es": "LED de conexión fijo",
-        "pl": "Naprawiono połączenie LED"
-      },
-      "3.1.10": {
-        "en": "material CSS updated \npermission error fixed\nfilter of adapters corrected",
-        "de": "Material CSS aktualisiert\nBerechtigungsfehler behoben\nFilter der Adapter korrigiert",
-        "ru": "обновлен материал CSS\nисправлена ​​ошибка разрешения\nфильтр адаптеров исправлен",
-        "pt": "CSS de material atualizado\nErro de permissão corrigido\nfiltro de adaptadores corrigido",
-        "nl": "materiële CSS bijgewerkt\ntoestemming fout opgelost\nfilter van adapters gecorrigeerd",
-        "fr": "CSS matériel mis à jour\nerreur d'autorisation fixée\nfiltre des adaptateurs corrigé",
-        "it": "materiale aggiornato\nerrore di autorizzazione risolto\nfiltro degli adattatori corretto",
-        "es": "material CSS actualizado\nerror de permiso arreglado\nfiltro de adaptadores corregido",
-        "pl": "Zaktualizowano materiał CSS\nbłąd uprawnień został naprawiony\nfiltr poprawionych adapterów"
-      },
-      "3.1.7": {
-        "en": "Fixing the role selection\nIt runs even in IE10",
-        "de": "Festlegung der Rollenauswahl\nEs läuft sogar in IE10",
-        "ru": "Фиксирование выбора роли\nОн работает даже в IE10",
-        "pt": "Fixando a seleção de função\nFunciona mesmo no IE10",
-        "nl": "De rolselectie bevestigen\nHet werkt zelfs in IE10",
-        "fr": "Correction de la sélection de rôle\nIl fonctionne même dans IE10",
-        "it": "Correggere la selezione del ruolo\nFunziona anche in IE10",
-        "es": "Corregir la selección de roles\nFunciona incluso en IE10",
-        "pl": "Naprawianie wyboru roli\nDziała nawet w IE10"
-      },
-      "3.1.6": {
-        "en": "Fixes for Firefox",
-        "de": "Korrekturen für Firefox",
-        "ru": "Исправления для Firefox",
-        "pt": "Correções para Firefox",
-        "nl": "Oplossingen voor Firefox",
-        "fr": "Corrections pour Firefox",
-        "it": "Correzioni per Firefox",
-        "es": "Correcciones para Firefox",
-        "pl": "Poprawki dla przeglądarki Firefox"
-      },
-      "3.1.2": {
-        "en": "GUI corrections",
-        "de": "GUI-Korrekturen",
-        "ru": "Исправления GUI",
-        "pt": "Correções GUI",
-        "nl": "GUI-correcties",
-        "fr": "Corrections GUI",
-        "it": "Correzioni della GUI",
-        "es": "Correcciones GUI",
-        "pl": "Poprawki GUI"
-      },
-      "3.0.12": {
-        "en": "Old configuration dialogs are fixed\nConverts strings to booleans by object edit\nUpdates in english, german and french translations\nThe buttons layout fixed\nThe event table is fixed",
-        "de": "Alte Konfigurationsdialoge sind korrigiert\nKonvertiert Strings bei der Objektbearbeitung in boolesche Werte\nUpdates in Englisch, Deutsch und Französisch\nDas Tastenlayout wurde korrigiert\nDie Ereignistabelle ist korrigiert",
-        "ru": "Исправлены старые диалоги конфигурации\nПреобразует строки в boolean при редактировании объектов\nОбновления на английском, немецком и французском языках\nИсправлено расположение кнопок\nТаблица событий исправлена",
-        "pt": "Diálogos de configuração antigos são corrigidos\nConverte strings em booleanos por edição de objeto\nAtualizações em inglês, alemão e francês\nO layout dos botões é corrigido\nA tabela de eventos é fixa",
-        "nl": "Oude configuratiedialogen staan ​​vast\nConverteert strings naar booleans door objectbewerking\nUpdates in Engelse, Duitse en Franse vertalingen\nDe lay-out van de knoppen is opgelost\nDe gebeurtenistabel is vastgesteld",
-        "fr": "Les anciennes boîtes de dialogue de configuration sont corrigées\nConvertit les chaînes en booléens par modification d'objet\nMises à jour en anglais, allemand et français\nLa disposition des boutons est fixe\nLa table des événements est fixée",
-        "it": "Le vecchie finestre di configurazione sono fisse\nConverte stringhe in booleani mediante modifica dell'oggetto\nAggiornamenti in inglese, tedesco e francese\nLa disposizione dei pulsanti è stata corretta\nLa tabella degli eventi è fissa",
-        "es": "Los viejos diálogos de configuración son fijos\nConvierte cadenas en booleanos por edición de objeto\nActualizaciones en inglés, alemán y francés\nLa disposición de los botones está arreglada\nLa tabla de eventos es fija",
-        "pl": "Stare okna dialogowe konfiguracji są poprawione\nKonwertuje łańcuchy znaków na wartości logiczne, edytując obiekt\nAktualizacje w tłumaczeniach na język angielski, niemiecki i francuski\nNaprawiono układ przycisków\nTabela zdarzeń jest naprawiona"
-      },
-      "3.0.11": {
-        "en": "French translations\nthe error with empty ID was fixed\nadded sort by \"recently updated\"\nadded readme and issues viewer",
-        "de": "Französische Übersetzungen\nDer Fehler mit der leeren ID wurde behoben\nSortiert nach \"Zuletzt aktualisiert\"\nViewer für Probleme und Readme hinzugefügt",
-        "ru": "Французские переводы\nисправлена ​​ошибка с пустым идентификатором\nдобавлена сортировка по \"недавно обновленному\"\nдобавлено чтение readme и просмотр открытых проблем",
-        "pt": "Traduções francesas\no erro com ID vazio foi corrigido\nAdicionado por \"atualizado recentemente\"\nadicionou readme e visualizador de problemas",
-        "nl": "Franse vertalingen\nde fout met lege ID was opgelost\nsoort toegevoegd door \"recent bijgewerkt\"\nreadme toegevoegd en issues viewer",
-        "fr": "Traductions en français\nl'erreur avec ID vide a été corrigé\ntri ajouté par \"récemment mis à jour\"\nReadme ajouté et questions spectateur",
-        "it": "Traduzioni francesi\nl'errore con ID vuoto è stato corretto\naggiunto ordina per \"aggiornato di recente\"\naggiunto readme ed emette il visore",
-        "es": "Traducciones francesas\nel error con la ID vacía fue arreglado\nagregado ordenado por \"actualizado recientemente\"\nagregado lector de léame y problemas",
-        "pl": "Francuskie tłumaczenia\nbłąd z pustym identyfikatorem został naprawiony\ndodany sortuj według \"niedawno zaktualizowany\"\ndodano przeglądarkę do odczytu i problemów"
-      },
-      "3.0.10": {
-        "en": "Update indication\nUse jQuery3\nTranslations",
-        "de": "Anzeige aktualisieren\nVerwenden Sie jQuery3\nÜbersetzungen",
-        "ru": "Индикация обновления\nИспользовать jQuery3\nПереводы",
-        "pt": "Indicação de atualização\nUse jQuery3\nTraduções",
-        "nl": "Update indicatie\nGebruik jQuery3\nvertaalwerk",
-        "fr": "Mise à jour indication\nUtilisez jQuery3\nTraductions",
-        "it": "Indicazione di aggiornamento\nUtilizza jQuery3\nTraduzioni",
-        "es": "Indicación de actualización\nUse jQuery3\nTraducciones",
-        "pl": "Wskaźnik aktualizacji\nUżyj jQuery3\nTłumaczenia"
-      },
-      "3.0.8": {
-        "en": "GUI was redesigned",
-        "de": "GUI wurde neu gestaltet",
-        "ru": "Графический интерфейс был обновлён",
-        "pt": "GUI foi redesenhado",
-        "nl": "GUI is opnieuw ontworpen",
-        "fr": "L'interface graphique a été repensée",
-        "it": "La GUI è stata ridisegnata"
       },
       "2.0.11": {
         "en": "Configurable event update disable threshold",

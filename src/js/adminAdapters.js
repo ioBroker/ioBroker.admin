@@ -120,7 +120,7 @@ function Adapters(main) {
                         // Calculate total count of adapter and count of installed adapter
                         for (var c = 0; c < that.tree.length; c++) {
                             if (that.tree[c].key === node.key) {
-                                $tdList.eq(1).html(that.tree[c].desc).css({'overflow': 'hidden', 'white-space': 'nowrap', position: 'relative'});
+                                $tdList.eq(1).html(that.tree[c].desc || '').css({'overflow': 'hidden', 'white-space': 'nowrap', position: 'relative'});
                                 var installed = 0;
                                 for (var k = 0; k < that.tree[c].children.length; k++) {
                                     if (that.data[that.tree[c].children[k].key].installed) installed++;
@@ -480,6 +480,12 @@ function Adapters(main) {
             this.$tab.find('#btn_filter_adapters').removeClass('red lighten-3');
         }
 
+        if (this.onlyUpdatable) {
+            this.$tab.find('#btn_filter_updates').addClass('red lighten-3');
+        } else {
+            this.$tab.find('#btn_filter_updates').removeClass('red lighten-3');
+        }
+
         // fix for IE
         if (this.main.browser === 'ie' && this.main.browserVersion <= 10) {
             this.isTiles = false;
@@ -757,6 +763,7 @@ function Adapters(main) {
             this.getAdaptersInfo(this.main.currentHost, update, updateRepo, function (repository, installedList) {
                 var obj;
                 var version;
+                var rawVersion;
                 var adapter;
                 var adaptersToUpdate = 0;
 
@@ -839,11 +846,6 @@ function Adapters(main) {
 
                     obj = installedList ? installedList[adapter] : null;
 
-                    if (obj) {
-                        that.urls[adapter] = installedList[adapter].readme || installedList[adapter].extIcon || installedList[adapter].licenseUrl;
-                        if (!that.urls[adapter]) delete that.urls[adapter];
-                    }
-
                     if (!obj || obj.controller || adapter === 'hosts') continue;
                     var installed = '';
                     var rawInstalled = '';
@@ -854,6 +856,8 @@ function Adapters(main) {
 
                     if (repository[adapter] && repository[adapter].extIcon) icon = repository[adapter].extIcon;
 
+                    var _instances = 0;
+                    var _enabled   = 0;
                     if (obj.version) {
                         var news = '';
                         var updatable = false;
@@ -866,11 +870,8 @@ function Adapters(main) {
                             adaptersToUpdate++;
                         }
                         // TODO: move style to class
-                        installed = '<table style="min-width: 80px; text-align: center; border: 0; border-spacing: 0;' /*+ (news ? 'font-weight: bold;' : '')*/ + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
+                        installed = '<table style="min-width: 80px; text-align: center; border: 0; border-spacing: 0;" cellspacing="0" cellpadding="0" class="ui-widget">' +
                             '<tr>';
-
-                        var _instances = 0;
-                        var _enabled   = 0;
 
                         // Show information about installed and enabled instances
                         for (var z = 0; z < that.main.instances.length; z++) {
@@ -880,6 +881,8 @@ function Adapters(main) {
                                 if (that.main.objects[that.main.instances[z]].common.enabled) _enabled++;
                             }
                         }
+
+
                         if (_instances) {
                             // TODO: move style to class
                             installed += '<td style="border: 0; padding: 0; width: 40px">';
@@ -910,11 +913,12 @@ function Adapters(main) {
                         installed += '</tr></table>';
                         if (!updatable && that.onlyUpdatable) continue;
                     }
-
+                    rawVersion = version;
                     version = getVersionString(version, updatable, news, updatableError);
 
                     var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
                     var desc  = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
+                    desc = desc || '';
                     desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
                     var title = obj.titleLang || obj.title;
                     title = (typeof title === 'object') ? (title[systemLang] || title.en) : title;
@@ -926,15 +930,19 @@ function Adapters(main) {
                         name:       adapter,
                         title:      (title || '').replace('ioBroker Visualisation - ', ''),
                         desc:       desc,
+                        news:       news,
+                        updatableError: updatableError,
                         keywords:   obj.keywords ? obj.keywords.join(' ') : '',
                         version:    version,
                         installed:  installed,
+                        rawVersion: rawVersion,
+                        instances:  _instances,
                         rawInstalled: rawInstalled,
                         versionDate: obj.versionDate,
                         updatable:  updatable,
                         bold:       obj.highlight || false,
                         install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button m" title="' + localTexts['add instance'] + '"><i class="material-icons">add_circle_outline</i></button>' +
-                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
+                        '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + (obj.readme || '') + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
                         ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-upload-submit small-button" title="' + localTexts['upload'] + '"><i class="material-icons">file_upload</i></button>' : '') +
                         '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
                         ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
@@ -992,13 +1000,15 @@ function Adapters(main) {
                         version = '';
                         if (installedList && installedList[adapter]) continue;
 
-                        if (repository[adapter] && obj.version) {
+                        if (obj && obj.version) {
                             version = obj.version;
+                            rawVersion = version;
                             version = getVersionString(version);
                         }
 
                         var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
                         var desc = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
+                        desc = desc || '';
                         desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
                         title = obj.titleLang || obj.title;
@@ -1012,12 +1022,13 @@ function Adapters(main) {
                             title:      (title || '').replace('ioBroker Visualisation - ', ''),
                             desc:       desc,
                             keywords:   obj.keywords ? obj.keywords.join(' ') : '',
+                            rawVersion: rawVersion,
                             version:    version,
                             bold:       obj.highlight,
                             installed:  '',
                             versionDate: obj.versionDate,
                             install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button" title="' + localTexts['add instance'] + '"><i class="material-icons">add_circle_outline</i></button>' +
-                            '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + obj.readme + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
+                            '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + (obj.readme || '') + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
                             '<button data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button hide" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
                             ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
                             // TODO do not show adapters not for this platform
@@ -1122,22 +1133,43 @@ function Adapters(main) {
 //                        text += '    </div>';
 //                        text += '</div>';
 
-    text += '<div class="col s12 m6 l4 xl3 class-' + ad.group + '" data-id="' + ad.name + '">';
-    text += '   <div class="card hoverable card-adapters">';
-    text += '       <div class="card-header gradient-45deg-purple-amber center"></div>';
-    text += '           <div class="card-content">';
-    text += '           <img onerror="this.src=\'img/info-big.png\';" class="card-profile-image" src="' + ad.icon + '">';
-    text += '           <span class="card-title grey-text text-darken-4">' + ad.title + '</span>';
-    text += '           <a titel="info" class="btn-floating activator btnUp teal lighten-2 z-depth-3"><i class="material-icons">more_vert</i></a>';
-    text += '           <div class="ver valign-wrapper"> <!-- <a class="black-text" title="Обновить"><i class="material-icons">refresh</i></a><b>'+ (news ? news : " ") +'</b> /  --> <small></small></div></div>';
-    text += '           <div class="footer right-align">';
-    text += '           </div>';
-    text += '           <div class="card-reveal">';
-    text += '       <i class="card-title material-icons right">close</i>';
-    text += '        <p>' + ad.desc + '</p><hr>';
-    text += ad.install
-    text += '    </div></div></div>'; 
+                        text += '<div class="col s12 m6 l4 xl3 tile class-' + ad.group + '" data-id="' + ad.name + '">';
+                        text += '   <div class="card hoverable card-adapters">';
+                        text += '       <div class="card-header ' + (ad.updatable ? 'updatable' : (ad.installed ? 'installed' : '')) + '"></div>';
+                        text += '       <div class="card-content">';
+                        text += '           <img onerror="this.src=\'img/info-big.png\';" class="card-profile-image" src="' + ad.icon + '">';
+                        text += '           <span class="card-title grey-text text-darken-4">' + ad.title + '</span>';
+                        text += '           <a title="info" class="btn-floating activator btnUp blue lighten-2 z-depth-3"><i class="material-icons">more_vert</i></a>';
+                        text += '           <ul class="ver">';
+                        text += '               <li>' + localTexts['Available version:']  + ' <span class="data ' + (ad.updatable ? 'updatable' : '') + '" ' + (ad.news ? ' title="' + ad.news + '"' : '') + '>' + ad.rawVersion + '</span>' +
+                            (ad.updatable ? '<button class="adapter-update-submit small-button" data-adapter-name="' + a + '" ' + (updatableError ? ' disabled title="' + ad.updatableError + '"' : 'title="' + localTexts['update'] + '"') + '><i class="material-icons">refresh</i></button>' : '') +
+                            '</li>';
+                        if (ad.installed) {
+                            text += '           <li>' + localTexts['Installed version'] + ': <span class="data">'+ ad.rawInstalled + '</span></li>';
+                        }
+                        if (ad.instances) {
+                            text += '           <li>' + _('Installed instances') + ': <span class="data">' + ad.instances + '</span></li>';
+                        }
+                        text += '           </ul>';
+                        text += '       </div>';
+                        text += '       <div class="footer right-align"></div>';
+                        text += '       <div class="card-reveal">';
+                        text += '           <i class="card-title material-icons right">close</i>';
+                        text += '           <p>' + ad.desc + '</p>';
+                        text += '           <div class="card-reveal-buttons">';
+                        text += ad.install;
+                        text += '           </div>';
+                        text += '       </div>';
 
+                        if (that.currentOrder === 'popular' && ad.stat) {
+                            text += '   <div class="stat" title="' + localTexts['Installations counter'] + '">' + ad.stat + '</div>';
+                        } else if (that.currentOrder === 'updated' && ad.versionDate) {
+                            text += '   <div class="last-update" title="' + localTexts['Last update'] + '">' + getInterval(ad.versionDate, localTexts['today'], localTexts['yesterday'], localTexts['1 %d days ago'], localTexts['2 %d days ago'], localTexts['5 %d days ago'], nowObj) + '</div>';
+                        }
+
+
+                        text += '   </div>';
+                        text += '</div>';
                     }
 
 
@@ -1200,7 +1232,7 @@ function Adapters(main) {
                             var $big = $(text);
                             $big.insertAfter($(this));
                             $(this).data('big', $big[0]);
-                            var h = parseFloat($big.height());
+                            var h   = parseFloat($big.height());
                             var top = Math.round($(this).position().top - ((h - parseFloat($(this).height())) / 2));
                             if (h + top > (window.innerHeight || document.documentElement.clientHeight)) {
                                 top = (window.innerHeight || document.documentElement.clientHeight) - h;
@@ -1220,6 +1252,22 @@ function Adapters(main) {
 
                     that.sortTree();
                     that.enableColResize();
+                    var classes = [
+                        'tab-adapters-table-name',
+                        'tab-adapters-table-description',
+                        'tab-adapters-table-keywords',
+                        'tab-adapters-table-installed',
+                        'tab-adapters-table-available',
+                        'tab-adapters-table-license',
+                        'tab-adapters-table-install'
+                    ];
+                    that.$grid.find('tbody tr').each(function () {
+                        var i = 0;
+                        $(this).find('td').each(function () {
+                            $(this).addClass(classes[i]);
+                            i++;
+                        });
+                    })
                 }
                 that.$tab.find('.grid-main-div').removeClass('order-a-z order-popular order-updated').addClass(that.currentOrder ? 'order-' + that.currentOrder : '');
                 that.$tab.find('.process-adapters').hide();
@@ -1301,10 +1349,6 @@ function Adapters(main) {
             callback(true);
             return;
         }
-        $dialogLicense.find('#license_language').hide();
-        $dialogLicense.find('#license_diag').hide();
-        $dialogLicense.find('#license_language_label').hide();
-        $dialogLicense.find('#license_checkbox').hide();
 
         var timeout = setTimeout(function () {
             timeout = null;
@@ -1312,7 +1356,7 @@ function Adapters(main) {
         }, 10000);
 
         if (!that.data[adapter].licenseUrl) {
-            that.data[adapter].licenseUrl = 'https://raw.githubusercontent.com/ioBroker/ioBroker.' + template.common.name + '/master/LICENSE';
+            that.data[adapter].licenseUrl = 'https://raw.githubusercontent.com/ioBroker/ioBroker.' + (that.data[adapter].name || adapter) + '/master/LICENSE';
         }
         if (typeof that.data[adapter].licenseUrl === 'object') {
             that.data[adapter].licenseUrl = that.data[adapter].licenseUrl[systemLang] || that.data[adapter].licenseUrl.en;
@@ -1333,29 +1377,32 @@ function Adapters(main) {
                     $dialogLicense.css({'z-index': 200});
                     body = body.toString().replace(/\r\n/g, '<br>');
                     body = body.replace(/\n/g, '<br>');
-                    $dialogLicense.find('#license_text').html(body);
+                    $dialogLicense.find('.license_text').html(body);
+                    $dialogLicense.find('.license_agreement_name').text(_(' for %s', adapter));
 
                     $dialogLicense.modal({
                         dismissible: false,
                         complete: function () {
-                            $('#license_text').html('');
+                            $dialogLicense.find('.license_text').html('');
                         }
                     }).modal('open');
-                    $('#license_agree').off('click').on('click', function (e) {
+
+                    $dialogLicense.find('.license_agree').off('click').on('click', function (e) {
                         if (callback) {
                             callback(true);
                             callback = null;
                         }
-                        $('#license_agree').off('click');
-                        $('#license_non_agree').off('click');
+                        $dialogLicense.find('.license_agree').off('click');
+                        $dialogLicense.find('.license_non_agree').off('click');
                     });
-                    $('#license_non_agree').off('click').on('click', function (e) {
+
+                    $dialogLicense.find('.license_non_agree').off('click').on('click', function (e) {
                         if (callback) {
                             callback(false);
                             callback = null;
                         }
-                        $('#license_agree').off('click');
-                        $('#license_non_agree').off('click');
+                        $dialogLicense.find('.license_agree').off('click');
+                        $dialogLicense.find('.license_non_agree').off('click');
                     });
                 } else {
                     callback && callback(true);
@@ -1441,27 +1488,30 @@ function Adapters(main) {
             } else {
                 versions.push(that.main.objects['system.adapter.' + adapter].common.version);
             }
-            var menu = '<ul><li class="adapters-versions-link m"><a><i class="material-icons">close</i>' + _('Close') + '</a></li><li class="divider"></li>';
+            var menu = '<div class="collection">';
             for (var v = 0; v < versions.length; v++) {
-                menu += '<li data-version="' + versions[v] + '" data-position="left" data-delay="50" title="' + (news[versions[v]] ? news[versions[v]][systemLang] || news[versions[v]].en : '') + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="adapters-versions-link tooltipped"><a>' + versions[v] + '</a></li>';
+                var nnews = (news[versions[v]] ? news[versions[v]][systemLang] || news[versions[v]].en : '');
+                menu += '<a data-version="' + versions[v] + '" data-position="left" data-delay="50" title="' + nnews + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="collection-item adapters-versions-link tooltipped"><span class="adapters-versions-link-version">' + versions[v] + '</span> - <div class="adapters-versions-link-history">' + nnews + '</div></a>';
             }
-            if (versions.length > 5) {
-                menu += '<li class="divider"></li><li class="adapters-versions-link m"><a><i class="material-icons">close</i>' + _('Close') + '</a></li></ul>';
-            } else {
-                menu += '</ul>'
-            }
+            menu += '</div>';
 
             var $adaptersMenu = $('#adapters-menu');
             if (!$adaptersMenu.length) {
-                $adaptersMenu = $('<div id="adapters-menu" class="dropdown-content m"></div>');
-                $adaptersMenu.appendTo('body');
+                //$adaptersMenu = $('<div id="adapters-menu" class="dropdown-content m"></div>');
+                $adaptersMenu = $('<div id="adapters-menu" class="modal modal-fixed-footer"><div class="modal-content">' +
+                    '<h4>Modal Header</h4><p></p></div><div class="modal-footer">' +
+                    '<a class="modal-action modal-close waves-effect waves-green btn-flat ">' + _('Close') + '</a></div></div>');
+                $adaptersMenu.appendTo($('.materialize-dialogs').first());
+                $adaptersMenu.modal();
             }
             $adaptersMenu.data('trigger', this);
 
-            $adaptersMenu.html(menu);
+            $adaptersMenu.find('p').html(menu);
+            $adaptersMenu.find('h4').html(_('Versions of %s', adapter));
 
             $adaptersMenu.find('.adapters-versions-link').off('click').on('click', function () {
                 //if ($(this).data('link')) window.open($(this).data('link'), $(this).data('instance-id'));
+                $adaptersMenu.modal('close');
                 var adapter = $(this).data('adapter-name');
                 var version = $(this).data('version');
                 if (version && adapter) {
@@ -1470,8 +1520,8 @@ function Adapters(main) {
                     });
                 }
             });
-            
-            $(this).dropdown({
+
+            /*$(this).dropdown({
                 onCloseEnd: function () {
                     var $adaptersMenu = $('#adapters-menu');
                     var trigger = $adaptersMenu.data('trigger');
@@ -1479,7 +1529,9 @@ function Adapters(main) {
                     $adaptersMenu.data('trigger', null).hide();
                     $adaptersMenu.remove();
                 }
-            }).dropdown('open');
+            }).dropdown('open');*/
+            $adaptersMenu.modal('open');
+
 
             // does not work... must be fixed.
             //$adaptersMenu.find('.tooltipped').tooltip();

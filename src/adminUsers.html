@@ -1,11 +1,17 @@
 <div id="tab-users" class="admin-tab m" style="display: none" data-name="Users">
    <div class="row">
-    <div class="col s12 l6 tab-users-list-groups">
-        <div class="tab-users-header center"><i class="material-icons prefix">group</i><span class="translate">Groups</span></div>
+    <div class="col s6 tab-users-list-groups">
+
+        <div class="tab-users-header center">
+            <a class="btn-floating waves-effect waves-light blue btn-custom-0 translateT" title="New group" id="tab-users-btn-new-group"><i class="material-icons">group_add</i></a>
+            <i class="material-icons prefix">group</i><span class="translate">Groups</span>
+        </div>
       <div class="tab-users-body"></div>
     </div>
-    <div class="col s12 l6 tab-users-list-users">
-        <div class="tab-users-header center"><i class="material-icons prefix">person</i><span class="translate">Users</span></div>
+    <div class="col s6 tab-users-list-users">
+        <div class="tab-users-header center">
+            <a class="btn-floating waves-effect waves-light blue btn-custom-0 translateT" title="New user" id="tab-users-btn-new-user"><i class="material-icons">person_add</i></a>
+            <i class="material-icons prefix">person</i><span class="translate">Users</span></div>
         <div class="tab-users-body"></div>
     </div>
     <div class="tab-dialogs">
@@ -53,7 +59,7 @@
                     <div class="col s6 ">
                         <div class="tab-dialog-new-icon"></div>
                         <div class="tab-dialog-new-upload">
-                        <a class="btn tab-enums-dialog-new-color-btn translate" ><i class="material-icons">add</i></a>
+                        <a class="btn tab-enums-dialog-new-color-btn"><i class="material-icons">add</i></a>
                         </div>
                         <div class="btn-floating tab-dialog-new-icon-clear"><i class="material-icons">delete</i>
                         </div>

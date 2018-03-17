@@ -1,0 +1,102 @@
+@import "commons";
+
+@tiles-tile-padding: 1rem;
+
+#tab-intro {
+  .tab-intro-cards {
+    margin-bottom: 0;
+    height: calc(~"100% - 10px");
+    overflow: auto;
+
+    .tile {
+      min-height: 250px;
+      .card-content {
+        height: 170px;
+        padding: 1rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .card-image {
+        background: #e2e2e2;
+        img {
+          width: 120px;
+          height: auto;
+          padding: 2rem 1rem;
+        }
+      }
+      .dl-horizontal {
+        dt, dd {
+          width: 50%;
+        }
+      }
+      &.card-system-info {
+        .card-content-text {
+          overflow-y: scroll;
+          height: 140px;;
+        }
+        .card-content {
+          height: 220px;
+        }
+        .card-action, .card-image {
+          display: none;
+        }
+        cursor: inherit;
+      }
+    }
+
+    .btn-card-enabled {
+      position: absolute;
+      top:      1rem;
+      right:    1rem;
+      display:  none;
+    }
+    .card-disabled {
+      display: none;
+      opacity: 0.7;
+    }
+  }
+
+  .btn-edit {
+    opacity: 0.7;
+  }
+  .btn-edit, .btn-edit-ok, .btn-edit-cancel {
+    position: absolute;
+    bottom: 1rem;
+  }
+  .btn-edit, .btn-edit-cancel {
+    right: 1rem;
+  }
+  .btn-edit-ok {
+    right: 5rem;
+  }
+  .btn-edit-ok, .btn-edit-cancel {
+    display: none;
+  }
+  .tile {
+    cursor: pointer;
+  }
+  &.edit-active {
+    .tile {
+      cursor: inherit;
+      .card-image, .card-stacked {
+        opacity: 0.6;
+      }
+    }
+    .btn-edit {
+      display: none;
+    }
+    .btn-edit-ok, .btn-edit-cancel {
+      display: block;
+    }
+    .btn-card-enabled {
+      display: block;
+    }
+    .card-disabled {
+      display: flex;
+      opacity: 0.4;
+    }
+  }
+}
+#intro-template {
+  display: none;
+}

@@ -3,8 +3,8 @@
 @tiles-tile-padding: 1rem;
 
 #tab-adapters {
-    .grid-main-div{
-        th,td{
+    .grid-main-div {
+        th,td {
             padding-bottom: 0;
             padding-top: 0;
         }
@@ -33,16 +33,11 @@
     }
     .main-toolbar-table {
         left: -2px;
-//        &>div {
-//            display: inline-block
-//        }
         a.btn-small {
             line-height: @admin-small-buttons-size;
             height: @admin-small-buttons-size;
             width: @admin-small-buttons-size;
             i {
-//                margin-left:    -0.5px;
-//                font-size:      1.1rem;
                 line-height:    @admin-small-buttons-size;
             }
         }
@@ -50,11 +45,11 @@
         .filter-input {
             display:        inline-table;
             padding-left:   6px;
-            font-size:      14px;
+            //font-size:      14px;
             height:         24px;
             width:          10rem;
-            margin-top: 5px;
-            margin-bottom: 0px;
+            margin-top:     5px;
+            margin-bottom:  0;
             &::placeholder {
                 color: @admin-filter-placeholder-color;
             }
@@ -79,14 +74,29 @@
         }
 
         .main-toolbar-table-types-tools {
-//            margin-top: 5px;
-//            display: inline-block;
+            display: inline-block;
+            white-space: nowrap;
+            min-width: 320px;
             .dropdown-button {
                 height: @toolbar-size + 4px;
                 line-height: @toolbar-size + 4px;
             }
             #main-toolbar-table-types-btn {
                 margin-right: 5px
+            }
+        }
+        @media screen and (max-width: 992px) { // large material css http://materializecss.com/grid.html
+            .main-toolbar-table-filter {
+                display: none;
+            }
+            .main-toolbar-table-sort {
+                text-align: right;
+            }
+        }
+        @media screen and (max-width: 600px) {
+            // small material css http://materializecss.com/grid.html
+            .main-toolbar-table-sort {
+                display: none;
             }
         }
     }
@@ -289,6 +299,124 @@
             }
         }
     }
+
+    .card-adapters {
+        min-height: 200px;
+        min-width: 170px;
+        height: 270px;
+        background: #e2e2e2;
+        .card-header {
+            //    background-color: #64b5f6;
+            min-height: 80px;
+            padding-top: 1px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            // border-bottom: 2px solid #c3c3c3;
+            background: @admin-adapters-tiles-background;
+            //      background: url(../img/onf.jpg) no-repeat;
+            -moz-background-size: 100%;
+            -webkit-background-size: 100%;
+            -o-background-size: 100%;
+            background-size: 100%;
+        }
+        .card-header.installed {
+            background: @admin-adapters-installed-background;
+        }
+        .card-header.updatable {
+            background: @admin-adapters-updatable-background;
+        }
+        .card-content {
+            img {
+                height: 70px;
+                position: absolute;
+                top: 5px;
+                left: 5px;
+                z-index: 1;
+                border-radius: 5px;
+            }
+            /*span {
+                height: 100px;
+                overflow: hidden;
+                font-weight: 700 !important;
+            }*/
+            .ver {
+                position: absolute;
+                bottom: 5px;
+                font-size: 1.3em;
+                width: calc(~"100% - 48px");
+                i {
+                    font-size: 1.3em;
+                }
+                .data {
+                    float: right;
+                    &.updatable {
+                        color: @admin-adapters-updatable-color;
+                    }
+                }
+                .adapter-update-submit {
+                    float: right;
+                    margin-right: 5px;
+                    height: 20px;
+                    line-height: 20px;
+                }
+            }
+            .btnUp {
+                position: absolute !important;
+                top: 60px;
+                right: 0;
+                margin-right: 10px !important;
+            }
+        }
+        .card-reveal {
+            font-size: 1.3em;
+            background: #e2e2e2;
+            button {
+                // position: absolute !important;
+                // bottom: 10px ;
+                margin-right: 5px;
+            }
+            width: 100%;
+            padding: 24px 24px 0 24px;
+            i {
+                font-size: 1.7em;
+            }
+            .card-reveal-buttons {
+                left: 0;
+                position: absolute;
+                border: none;
+                bottom: 0;
+                height: 50px;
+                background: #fff;
+                right: 0;
+                text-align: right;
+                padding: 10px;
+            }
+            .adapter-delete-submit:hover {
+                color: red !important;
+
+            }
+            .adapter-install-submit {
+                float: left;
+                &:hover {
+                    color: #00bd00 !important;
+                }
+            }
+            .adapter-readme-submit:hover {
+                color: #9c27b0 !important;
+            }
+            .adapter-upload-submit:hover {
+                color: #ff5722 !important;
+            }
+            .adapter-update-custom-submit:hover {
+                color: #00bcd4 !important;
+            }
+        }
+        .stat, .last-update {
+            position: absolute;
+            top: 30px;
+            right: 10px;
+        }
+    }
 }
 #dialog-install-url {
     .with-select {
@@ -314,36 +442,27 @@
 }
 // adapters dropdown menu
 #adapters-menu {
-    position:   absolute;
-    z-index:    2;
-    max-height: 200px;
-    overflow:   auto;
-    width:      150px !important;
-    background: white;
-    margin-top: 18px;
-    font-size:  24px;
-    border:     1px dashed gray;
-
-    ul {
-        margin: 0;
+    p {
+        height: calc(~"100% - 68px");
+        overflow: auto;
     }
-    li.adapters-versions-link {
-        text-align: right;
+    .adapters-versions-link-version {
+        font-weight: bold;
         cursor: pointer;
-//        padding: 0.5rem;
-        &:hover {
-            background: @main-active-color;
-            a {
-                color: @admin-sidemenu-color !important;
-            }
-        }
     }
-
-    /*width: 80px;
-    z-index: 1;
-    background: @admin-buttons-color;
-    color: white;
-    border: 2px solid #605e5e;*/
+    .adapters-versions-link-history {
+        color: #000;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        width: calc(~"100% - 60px");
+        display: inline-block;
+        line-height: 13px;
+        cursor: pointer;
+    }
+    .collection-item {
+        cursor: pointer;
+    }
 }
 
 #grid-adapters, .adapters-list-table {
@@ -357,7 +476,7 @@
     font-family:        @iob-font;
 }
 
-#grid-adapters{
+#grid-adapters {
     .fancytree-title {
         padding-left:   @line-indent !important;
         display:        inline-flex;
@@ -374,7 +493,7 @@
         background-color:   @list-header-background;
         line-height:        20px;
     }
-    &s>thead>tr>th {
+    &>thead>tr>th {
         background-color: @list-header-background;
         color:          #000;
         text-align:     left;
@@ -382,14 +501,8 @@
         font-size:      @list-font-size;
         padding-left:   @line-indent;
         vertical-align: middle;
-    }
-    &>tbody>tr>td {
-        padding:    0;
-        border:     0;
-        margin:     0;
-        text-align: left;
-        overflow:   hidden;
-        white-space: nowrap;
+        border-radius:  0;
+        overflow:       hidden;
     }
     &>tbody>tr>td {
         padding:    0;
@@ -415,106 +528,56 @@
         display:        inline-flex;
         align-items:    center;
     }
+    .dropdown-content a {
+        padding: 5px 10px;
+    }
+    .dropdown-content .adapters-versions-link {
+        min-height: 22px;
+        line-height: 22px;
+    }
+    table {
+        tr {
+            border: 0 !important;
+        }
+    }
+    /*@media screen and (max-width: 1100px) and (min-width: 900px) {
+        .tab-adapters-table-keywords {
+            display: none;
+        }
+    }
+    @media screen and (max-width: 900px) and (min-width: 800px) {
+        .tab-adapters-table-keywords,
+        .tab-adapters-table-description {
+            display: none;
+        }
+    }
+    @media screen and (max-width: 800px) {
+        .tab-adapters-table-license,
+        .tab-adapters-table-keywords,
+        .tab-adapters-table-description {
+            display: none;
+        }
+    }*/
+}
+#dialog-license {
+    h5 {
+        background: @main-background-color;
+        color:      @admin-buttons-background;
+        padding:    0.5rem;
+    }
+    .license-text {
+        margin-bottom: 0;
+        height: calc(~"100% - 80px");
+    }
+    .license-text>div {
+        height: 100%;
+    }
+    .license_text {
+        width: 100%;
+        height: calc(~"100% - 30px");
+        margin-bottom: 0;
+        overflow: auto;
+    }
 }
 
-.card-adapters {
-    min-height: 200px;
-    min-width: 170px;
-    height: 270px;
-    .card-header {
-    //    background-color: #64b5f6;
-        min-height: 80px;
-        padding-top: 1px;
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        border-bottom: 2px solid #c3c3c3;
-//      background: url(../img/onf.jpg) no-repeat;
-        -moz-background-size: 100%;
-        -webkit-background-size: 100%;
-        -o-background-size: 100%;
-        background-size: 100%;
-    }
-    .card-content {
-        img {
-            width: 70px;
-            position: absolute;
-            top: 5px;
-            left:5px;
-            z-index: 1;
-            border-radius: 5px;
-            }
-        span {
-            height: 100px;
-            overflow: hidden;
-            font-weight: 700 !important;
-            }
-        .ver {
-            position: absolute;
-            bottom: 35px;
-            font-size: 1.3em;
-            i {
-                font-size: 1.3em;
-                }
-            }
-        .btnUp {
-            background-color: #2196f3!important;
-            position: absolute !important;
-            top: 60px;
-            right: 0;
-            margin-right: 10px !important;
-            }
-        }
-    .card-reveal {
-        font-size: 1.3em;
-        button{
-            position: absolute !important;
-            bottom: 10px ;
-        }
-        width: 100%;
-        padding: 5 10 5 0;
-        i {
-            font-size: 1.7em;
-        }
-        hr {
-            border: none;
-            background-color: #000;
-            color: #000;
-            height: 1px;
-            position: absolute;
-            bottom: 40;            
-            width: 100%;
-            left: 0; 
-        }
-        .adapter-delete-submit {
-            right: 45px;
-        }
-        .adapter-delete-submit:hover {
-            color: red !important;
-                
-        }
-        .adapter-install-submit {
-            right: 105px;
-        }
-        .adapter-install-submit:hover {
-            color: #00bd00 !important;
-        }
-        .adapter-readme-submit {
-            right: 75px;
-            }
-        .adapter-readme-submit:hover {
-            color: #9c27b0 !important;
-        }
-        .adapter-upload-submit {
-            right: 135px;
-            }
-        .adapter-upload-submit:hover {
-            color: #ff5722 !important;
-        }
-        .adapter-update-custom-submit {
-             right: 15px;
-        }
-        .adapter-update-custom-submit:hover {
-            color: #00bcd4 !important;           
-        }
-    }
-}
+

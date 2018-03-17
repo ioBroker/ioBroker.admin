@@ -53,7 +53,7 @@ body {
 
 }
 .adapter-body {
-    height: calc(~"100% - 93px");
+    height: calc(~"100% - 100px");
     width: 100%;
     overflow: auto
 }
@@ -82,6 +82,7 @@ body {
 }
 .adapter-container>.row {
     height: auto;
+    margin-bottom: 0;
 }
 
 h4 {
@@ -93,13 +94,19 @@ h4 {
     padding-bottom: 2px;
     background-color: lightblue;
 }
-.table-values th {
-    background: #686868;
-    color: #FFF;
-    font-weight: bold;
-}
-.table-values tr:nth-child(even) {
-    background: #d0d0d0;
+.table-values {
+    width:      100%;
+    th {
+        background: #686868;
+        color: #FFF;
+        font-weight: bold;
+    }
+    tr:nth-child(even) {
+        background: #d0d0d0;
+    }
+    .values-buttons {
+        margin-right: 3px;
+    }
 }
 
 /* tooltips */
@@ -170,8 +177,24 @@ h4 {
                 margin-top: 0.7em;
             }
         }               
-     }
+    }
+    .select-wrapper+label {
+        top: 100%;
+    }
+
+    .table-values {
+        td, th {
+            padding: 2px 4px;
+            input {
+                height: 2rem !important;
+            }
+        }
+    }
 }
+.hiddendiv {
+    display: none;
+}
+
 #toast-container {
     bottom: 20%;
     left: 50%;

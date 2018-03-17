@@ -108,9 +108,10 @@ function Instances(main) {
                     };
                 }
             }
+
             var result;
             if (instances) {
-                result = [];
+                result = {};
                 var count = 0;
                 var firtsLink = '';
                 for (var d in links) {
@@ -127,13 +128,13 @@ function Instances(main) {
         return result || link;
     }
 
-    function replaceInLink(link, adapter, instance) {
+    this.replaceInLink = function (link, adapter, instance) {
         if (typeof link === 'object') {
             var links = JSON.parse(JSON.stringify(link));
             var first;
             for (var v in links) {
-                if (links.hasOwnProperty (v)) {
-                    links[v] = resolveLink (links[v], adapter, instance);
+                if (links.hasOwnProperty(v)) {
+                    links[v] = resolveLink(links[v], adapter, instance);
                     if (!first) first = links[v];
                 }
             }
@@ -142,7 +143,7 @@ function Instances(main) {
         } else {
             return resolveLink(link, adapter, instance);
         }
-    }
+    };
 
     function updateLed(instanceId) {
         var tmp      = instanceId.split('.');
@@ -346,16 +347,16 @@ function Instances(main) {
     function calculateFreeMem() {
         var host = that.main.states['system.host.' + that.main.currentHost + '.freemem'];
         if (host) {
-            that.totalmem = that.totalmem || that.main.objects['system.host.' + that.main.currentHost].native.hardware.totalmem / (1024 * 1024);
+            that.totalmem = that.totalmem || (that.main.objects['system.host.' + that.main.currentHost].native.hardware.totalmem / (1024 * 1024));
             var percent = Math.round((host.val / that.totalmem) * 100);
-            var $freeMem = $('#freeMem');
-            if (host.val.toString() !== $freeMem.text()) {
-                $freeMem.html('<span class="highlight ' + (percent < 10 ? 'high-mem' : '') + '">' + tdp(host.val) + '</span>');
-                //$('#freeMemPercent').html('<span class="highlight">(' + percent + '%)</span>');
+            var $freeMem = that.$tab.find('#freeMem');
+            var strVal = tdp(host.val);
+            if (strVal !== $freeMem.text()) {
+                $freeMem.html('<span class="highlight ' + (percent < 10 ? 'high-mem' : '') + '">' + strVal + '</span>');
                 $('#freeMemPercent').html('<span class="highlight">' + percent + '%</span>');
             }
         } else {
-            $('.free-mem-label').hide();
+            that.$tab.find('.free-mem-label').hide();
         }
     }
 
@@ -392,7 +393,7 @@ function Instances(main) {
             text  = justContent ? '' : '<tr class="instance-adapter" data-instance-id="' + instanceId + '">';
 
             var link = common.localLinks || common.localLink || '';
-            var url  = link ? replaceInLink(link, adapter, instance) : '';
+            var url  = link ? that.replaceInLink(link, adapter, instance) : '';
             if (link) {
                 if (typeof url === 'object') {
                     link = '<a href="' + url.__first + '" target="_blank">';
@@ -601,16 +602,27 @@ function Instances(main) {
         $input.val(oldVal);
 
         $input.blur(function () {
+            if (timeout) clearTimeout(timeout);
+
             timeout = setTimeout(function () {
+                timeout = null;
                 var val = $(this).val();
 
                 if (JSON.stringify(val) !== JSON.stringify(oldVal)) {
-                    var obj = {common: {}};
-                    obj.common[attr] = $(this).val();
-                    that.main.socket.emit('extendObject', id, obj, function (err) {
-                        if (err) that.main.showError(err);
+                    that.main.socket.emit('getObject', id, function (err, obj) {
+                        if (obj) {
+                            obj.common = obj.common || {};
+                            obj.common[attr] = val;
+                            if (attr === 'title' && obj.common.titleLang) {
+                                delete obj.common.titleLang;
+                            }
+                            that.main.socket.emit('setObject', obj._id, obj, function (err) {
+                                if (err) that.main.showError(err);
+                            });
+                        } else {
+                            console.log('Object ' + id + ' does not exist: ' + err);
+                        }
                     });
-
                     oldVal = '<span style="color: pink">' + oldVal + '</span>';
                 } else {
                     oldVal = innerHTML;

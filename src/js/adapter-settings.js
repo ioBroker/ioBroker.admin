@@ -853,7 +853,7 @@ function getAdapterInstances(_adapter, callback) {
                 for (var i = 0; i < doc.rows.length; i++) {
                     res.push(doc.rows[i].value);
                 }
-                if (callback) callback (res);
+                if (callback) callback(res);
             }
         }
 
@@ -1375,32 +1375,34 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
         var addText = $add.text();
 
-        $add.button({
-            icons: {primary: 'ui-icon-plus'},
-            text: !!addText,
-            label: addText ? _(addText) : undefined
-        })
-            //.css({width: '1em', height: '1em'})
-            .on('click', function () {
-				if (!$add.data('maxraw') || ($add.data('raw') < $add.data('maxraw'))) {
-					var $table = $div.find('.table-values');
-					var values = $table.data('values');
-					var names = $table.data('names');
-					var obj = {};
-					for (var i = 0; i < names.length; i++) {
-						if (!names[i]) continue;
-						obj[names[i].name] = names[i].def;
-					}
-					values.push(obj);
-					onChange && onChange();
-					setTimeout(function () {
-						values2table(divId, values, onChange, onReady);
-					}, 100);
-					$add.data('raw', $add.data('raw') + 1);
-				} else {
-                    confirmMessage(_('maxTableRaw') + ': ' + $add.data('maxraw'), _('maxTableRawInfo'), 'alert', ['Ok']);
-				}
+        if (!isMaterialize) {
+            $add.button({
+                icons: {primary: 'ui-icon-plus'},
+                text: !!addText,
+                label: addText ? _(addText) : undefined
             });
+        }
+
+        $add.on('click', function () {
+            if (!$add.data('maxraw') || ($add.data('raw') < $add.data('maxraw'))) {
+                var $table = $div.find('.table-values');
+                var values = $table.data('values');
+                var names  = $table.data('names');
+                var obj = {};
+                for (var i = 0; i < names.length; i++) {
+                    if (!names[i]) continue;
+                    obj[names[i].name] = names[i].def;
+                }
+                values.push(obj);
+                onChange && onChange();
+                setTimeout(function () {
+                    values2table(divId, values, onChange, onReady);
+                }, 100);
+                $add.data('raw', $add.data('raw') + 1);
+            } else {
+                confirmMessage(_('maxTableRaw') + ': ' + $add.data('maxraw'), _('maxTableRawInfo'), 'alert', ['Ok']);
+            }
+        });
     }
 
     if (values) {
@@ -1521,8 +1523,8 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
             for (var i = 0; i < names.length; i++) {
                 text += '<td';
-                var line = '';
-                var style = '';
+                var line    = '';
+                var style   = '';
 				var tdstyle = '';	  
                 if (names[i]) {
 					if (names[i].name !== '_index') {
@@ -1533,7 +1535,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         style = (names[i].style ? names[i].style : 'text-align: right;');
                         line += (v + 1);
                     } else if (names[i].type === 'checkbox') {
-                        line += '<input style="' + (names[i].style || '') + '" class="values-input" type="checkbox" data-index="' + v + '" data-name="' + names[i].name + '" ' + (values[v][names[i].name] ? 'checked' : '') + '" data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';                    
+                        line += '<input style="' + (names[i].style || '') + '" class="values-input filled-in" type="checkbox" data-index="' + v + '" data-name="' + names[i].name + '" ' + (values[v][names[i].name] ? 'checked' : '') + '" data-old-value="' + (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]) + '"/>';
+                        if (isMaterialize) {
+                            line += '<span></span>';
+                        }
                     } else if (names[i].type.substring(0, 6) === 'select') {                        
                         line += (names[i].type.substring(7, 16) === 'multiple' ? '<select multiple style="' : '<select style="') + (names[i].style ? names[i].style : 'width: 100%') + '" class="values-input" data-index="' + v + '" data-name="' + names[i].name + '">';                        
                         var options;
@@ -1558,13 +1563,22 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 }
 
                 if (buttons[i]) {
-                    style = 'text-align: center;';
+                    style = 'text-align: center; white-space: nowrap;';
                     for (var b = 0; b < buttons[i].length; b++) {
                         if ((!v && buttons[i][b] === 'up') || v === values.length - 1 && buttons[i][b] === 'down') {
-                            line += '<button data-command="' + buttons[i][b] + '" class="values-buttons" disabled>&nbsp;</button>';
-                            continue;
+                            if (isMaterialize) {
+                                line += '<a data-command="' + buttons[i][b] + '" class="values-buttons btn-floating btn-small waves-effect waves-light disabled"><i class="material-icons">add</i></a>';
+                            } else {
+                                line += '<button data-command="' + buttons[i][b] + '" class="values-buttons" disabled>&nbsp;</button>';
+                            }
+                        } else {
+                            if (isMaterialize) {
+                                line += '<a data-index="' + v + '" data-command="' + buttons[i][b] + '" class="values-buttons btn-floating btn-small waves-effect waves-light"><i class="material-icons">add</i></a>';
+
+                            } else {
+                                line += '<button data-index="' + v + '" data-command="' + buttons[i][b] + '" class="values-buttons"></button>';
+                            }
                         }
-                        line += '<button data-index="' + v + '" data-command="' + buttons[i][b] + '" class="values-buttons"></button>';
                     }
                 }
                 if (style.length || tdstyle.length) {
@@ -1576,10 +1590,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
             text += '</tr>';
         }
-        var $lines = $('.table-lines');
+        var $lines = $div.find('.table-lines');
         if (!$lines.length) {
             $table.append('<tbody class="table-lines"></tbody>');
-            $lines = $('.table-lines');
+            $lines = $div.find('.table-lines');
         }
 
         $lines.html(text);
@@ -1599,110 +1613,135 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
         $lines.find('.values-buttons').each(function () {
             var command = $(this).data('command');
             if (command === 'delete') {
-                $(this).button({
-                    icons: {primary: 'ui-icon-trash'},
-                    text: false
-                })
-                    .css({width: '1em', height: '1em'})
-                    .on('click', function () {
-                        var id = $(this).data('index');
-                        var elem = values[id];
-                        values.splice(id, 1);
-                        onChange && onChange();
+                if (!isMaterialize) {
+                    $(this).button({
+                        icons: {primary: 'ui-icon-trash'},
+                        text: false
+                    })
+                        .css({width: '1em', height: '1em'});
+                } else {
+                    $(this).addClass('red').find('i').html('delete');
+                }
 
-                        setTimeout(function () {
-                            if (typeof tableEvents === 'function') {
-                                tableEvents(id, elem, 'delete');
-                            }
+                $(this).on('click', function () {
+                    var id = $(this).data('index');
+                    var elem = values[id];
+                    values.splice(id, 1);
+                    onChange && onChange();
 
-                            values2table(divId, values, onChange, onReady);
-                        }, 100);
-                        
-						if ($add.data('maxraw')) {
-                            $add.data('raw', $add.data('raw') - 1);
+                    setTimeout(function () {
+                        if (typeof tableEvents === 'function') {
+                            tableEvents(id, elem, 'delete');
                         }
-                    });
+
+                        values2table(divId, values, onChange, onReady);
+                    }, 100);
+
+                    if ($add.data('maxraw')) {
+                        $add.data('raw', $add.data('raw') - 1);
+                    }
+                });
             } else if (command === 'up') {
-                $(this).button({
-                    icons: {primary: 'ui-icon-triangle-1-n'},
-                    text: false
-                })
-                    .css({width: '1em', height: '1em'})
-                    .on('click', function () {
-                        var id = $(this).data('index');
-                        var elem = values[id];
-                        values.splice(id, 1);
-                        values.splice(id - 1, 0, elem);
-                        onChange && onChange();
-                        setTimeout(function () {
-                            values2table(id, values, onChange, onReady);
-                        }, 100);
-                    });
+                if (!isMaterialize) {
+                    $(this).button({
+                        icons: {primary: 'ui-icon-triangle-1-n'},
+                        text: false
+                    })
+                        .css({width: '1em', height: '1em'})
+                } else {
+                    $(this).find('i').html('arrow_upward');
+                }
+                $(this).on('click', function () {
+                    var id = $(this).data('index');
+                    var elem = values[id];
+                    values.splice(id, 1);
+                    values.splice(id - 1, 0, elem);
+                    onChange && onChange();
+                    setTimeout(function () {
+                        values2table(divId, values, onChange, onReady);
+                    }, 100);
+                });
             } else if (command === 'down') {
-                $(this).button({
-                    icons: {primary: 'ui-icon-triangle-1-s'},
-                    text: false
-                })
-                    .css({width: '1em', height: '1em'})
-                    .on('click', function () {
-                        var id = $(this).data('index');
-                        var elem = values[id];
-                        values.splice(id, 1);
-                        values.splice(id + 1, 0, elem);
-                        onChange && onChange();
-                        setTimeout(function () {
-                            values2table(id, values, onChange, onReady);
-                        }, 100);						
-                    });
+                if (!isMaterialize) {
+                    $(this).button({
+                        icons: {primary: 'ui-icon-triangle-1-s'},
+                        text: false
+                    })
+                        .css({width: '1em', height: '1em'});
+                } else {
+                    $(this).find('i').html('arrow_downward');
+                }
+                $(this).on('click', function () {
+                    var id = $(this).data('index');
+                    var elem = values[id];
+                    values.splice(id, 1);
+                    values.splice(id + 1, 0, elem);
+                    onChange && onChange();
+                    setTimeout(function () {
+                        values2table(divId, values, onChange, onReady);
+                    }, 100);
+                });
             } else if (command === 'pair') {
-                $(this).button({
-                    icons: {primary: 'ui-icon-transferthick-e-w'},
-                    text: false
-                })
-                    .css({width: '1em', height: '1em'})
-                    .on('click', function () {
-                        if (typeof tableEvents === 'function') {
-                            var id = $(this).data('index');
-                            var elem = values[id];
-                            tableEvents(id, elem, 'pair');
-                        }
-                    }).attr('title', _('pair'));
-            } else if (command === 'unpair') {
-                $(this).button({
-                    icons: {primary: 'ui-icon-scissors'},
-                    text: false
-                })
-                    .css({width: '1em', height: '1em'})
-                    .on('click', function () {
-                        if (typeof tableEvents === 'function') {
-                            var id = $(this).data('index');
-                            var elem = values[id];
-                            tableEvents(id, elem, 'unpair');
-                        }
-                    }).attr('title', _('unpair'));
-            } else if (command === 'edit') {
-                $(this).button({
-                    icons: {primary: 'ui-icon-pencil'},
-                    text: false
-                })
-                    .css({width: '1em', height: '1em'})
-                    .on('click', function () {
+                if (!isMaterialize) {
+                    $(this).button({
+                        icons: {primary: 'ui-icon-transferthick-e-w'},
+                        text: false
+                    })
+                        .css({width: '1em', height: '1em'});
+                } else {
+                    $(this).find('i').html('leak_add');
+                }
+                $(this).on('click', function () {
+                    if (typeof tableEvents === 'function') {
                         var id = $(this).data('index');
                         var elem = values[id];
-                        if (typeof editLine === 'function') {
-                            setTimeout(function () {
-                                editLine(id, JSON.parse(JSON.stringify(values[id])), function (err, id, newValues) {
-                                    if (!err) {
-                                        if (JSON.stringify(values[id]) !== JSON.stringify(newValues)) {
-                                            onChange && onChange();
-                                            values[id] = newValues;
-                                            _values2table(id, values, onChange, onReady);
-                                        }
+                        tableEvents(id, elem, 'pair');
+                    }
+                }).attr('title', _('pair'));
+            } else if (command === 'unpair') {
+                if (!isMaterialize) {
+                    $(this).button({
+                        icons: {primary: 'ui-icon-scissors'},
+                        text: false
+                    })
+                        .css({width: '1em', height: '1em'});
+                } else {
+                    $(this).find('i').html('leak_remove');
+                }
+                $(this).on('click', function () {
+                    if (typeof tableEvents === 'function') {
+                        var id = $(this).data('index');
+                        var elem = values[id];
+                        tableEvents(id, elem, 'unpair');
+                    }
+                }).attr('title', _('unpair'));
+            } else if (command === 'edit') {
+                if (!isMaterialize) {
+                    $(this).button({
+                        icons: {primary: 'ui-icon-pencil'},
+                        text: false
+                    })
+                        .css({width: '1em', height: '1em'});
+                } else {
+                    $(this).find('i').html('edit');
+                }
+                $(this).on('click', function () {
+                    var id = $(this).data('index');
+                    var elem = values[id];
+                    if (typeof editLine === 'function') {
+                        setTimeout(function () {
+                            editLine(id, JSON.parse(JSON.stringify(values[id])), function (err, id, newValues) {
+                                if (!err) {
+                                    if (JSON.stringify(values[id]) !== JSON.stringify(newValues)) {
+                                        onChange && onChange();
+                                        values[id] = newValues;
+                                        _values2table(id, values, onChange, onReady);
                                     }
-                                });
-                            }, 100);
-                        }
-                    });
+                                }
+                            });
+                        }, 100);
+                    }
+                });
             }
         });
 
@@ -1713,10 +1752,23 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             } else {
                 if ($(this).val() !== $(this).data('old-value')) onChange();
                 values[$(this).data('index')][$(this).data('name')] = $(this).val();
-
             }
         }).on('keyup', function () {
             $(this).trigger('change.adaptersettings');
+        });
+    }
+    if (isMaterialize) {
+        if (!divId) {
+            M.updateTextFields();
+        } else {
+            M.updateTextFields('#' + divId);
+        }
+        // workaround for materialize checkbox problem
+        $div.find('input[type="checkbox"]+span').off('click').on('click', function () {
+            var $input = $(this).prev();
+            if (!$input.prop('disabled')) {
+                $input.prop('checked', !$input.prop('checked')).trigger('change');
+            }
         });
     }
     if (typeof onReady === 'function') onReady();

@@ -14,17 +14,31 @@
 //            display: block;
             i {
                 position: relative;
-                top: 5;
+                top: 5px;
             }
             span {
                 font-size: 1.2rem;
                 padding-left: 1rem;
             }
+            a.btn-floating {
+                float: left;
+                margin-right: 5px;
+                height: @admin-small-buttons-size;
+                width: @admin-small-buttons-size;
+                i {
+                    position: relative;
+                    top: 0;
+                    line-height: @admin-small-buttons-size;
+                    font-size: 1.2rem;
+                }
+            }
+
         }
         .tab-users-body {
             height: calc(~"100% - "@tab-user-title-height);
+
 //            display: block;
-            .tree-table-buttons {
+            /*.tree-table-buttons {
                 padding-left: 12px;
                 a {
                     margin-right: 5px;
@@ -35,7 +49,7 @@
                     line-height: @admin-small-buttons-size;
                     font-size: 1.2rem;
                 }
-            }
+            }*/
         }
     }
     .tab-users-list-users {

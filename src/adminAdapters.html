@@ -1,7 +1,7 @@
 <div id="tab-adapters"  class="admin-tab" style="display: none" data-name="Adapters">
     <div class="main-toolbar-table m">
-           <div class="row navicon">
-            <div class="col s12 m12 l6 xl4 main-toolbar-table-types-tools">
+        <div class="row navicon">
+            <div class="col s6 l4 main-toolbar-table-types-tools">
                 <a class="btn-floating btn-small translateT" title="change view mode"           id="btn_switch_adapters"><i class="material-icons">view_module</i></a>
                 <a class="btn-floating btn-small translateT" title="update adapter information" id="btn_refresh_adapters"><i class="material-icons">refresh</i></a>
                 <a class="btn-floating btn-small translateT" title="list"                       id="btn_list_adapters"><i class="material-icons">list</i></a>
@@ -13,22 +13,21 @@
                 <a class="btn-floating btn-small translateT" title="_Toggle expert mode"        id="btn_adapters_expert_mode"><i class="material-icons">assignment_ind</i></a>
                 <a class="btn-floating btn-small translateT" title="Upgrade all adapters"       id="btn_upgrade_all"      ><i class="material-icons">flag</i></a>
             </div>
-
-            <div class="col s12 m6 l3 xl4 main-toolbar-table-types-tools">
-                <a id="main-toolbar-table-types-btn" class='dropdown-button btn' href='#' data-target='main-toolbar-table-types'></a>
+            <div class="col l4 main-toolbar-table-types-tools main-toolbar-table-filter">
+                <input class="filter-input translateP" placeholder="Filter" />
+                <a class="filter-clear btn-floating btn-very-small translateT red lighten-3" title="clear"><i class="material-icons">clear</i></a>
+            </div>
+            <div class="col s6 l4 main-toolbar-table-types-tools main-toolbar-table-sort">
+                <a id="main-toolbar-table-types-btn" class="dropdown-button btn" href="#" data-target="main-toolbar-table-types"></a>
                 <!-- Dropdown Structure -->
-                <ul id='main-toolbar-table-types' class='dropdown-content'></ul>
-                <a id="main-toolbar-table-order-btn" class='dropdown-button btn' href='#' data-target='main-toolbar-table-order'></a>
+                <ul id="main-toolbar-table-types" class="dropdown-content"></ul>
+                <a id="main-toolbar-table-order-btn" class='dropdown-button btn' href="#" data-target="main-toolbar-table-order"></a>
                 <!-- Dropdown Structure -->
                 <ul id='main-toolbar-table-order' class='dropdown-content'>
                     <li class="main-toolbar-table-order-item" data-type="a-z"><a class="translate">A-Z</a></li>
                     <li class="main-toolbar-table-order-item" data-type="popular"><a class="translate">Popular first</a></li>
                     <li class="main-toolbar-table-order-item" data-type="updated"><a class="translate">Recently updated</a></li>
                 </ul>
-            </div>
-            <div class="col s12 m6 l3 xl4 main-toolbar-table-types-tools">
-                <input class="filter-input translateP" placeholder="Filter" />
-                <a class="filter-clear btn-floating btn-very-small translateT red lighten-3" title="clear"><i class="material-icons">clear</i></a>
             </div>
         </div>
     </div>
@@ -49,15 +48,15 @@
             </colgroup>
             <thead>
             <tr>
-                <th class="translate ui-widget-header">Name</th>
-                <th class="translate ui-widget-header">description</th>
-                <th class="translate ui-widget-header">keywords</th>
-                <th class="translate ui-widget-header">installed</th>
+                <th class="translate ui-widget-header tab-adapters-table-name">Name</th>
+                <th class="translate ui-widget-header tab-adapters-table-description">description</th>
+                <th class="translate ui-widget-header tab-adapters-table-keywords">keywords</th>
+                <th class="translate ui-widget-header tab-adapters-table-installed">installed</th>
                 <!--<th class="translate ui-widget-header"><div class="translate" style="min-width: 80px;">available</div></th>-->
-                <th class="translate ui-widget-header">available</th>
+                <th class="translate ui-widget-header tab-adapters-table-available">available</th>
                 <!-- th class="translate ui-widget-header">platform</th--> <!-- // actually there is only one platform -->
-                <th class="translate ui-widget-header">license</th>
-                <th class="translate ui-widget-header">install</th>
+                <th class="translate ui-widget-header tab-adapters-table-license">license</th>
+                <th class="translate ui-widget-header tab-adapters-table-install">install</th>
             </tr>
             </thead>
             <tbody></tbody>
@@ -113,6 +112,23 @@
         <div class="modal-footer">
             <a class="modal-action modal-close waves-effect waves-green btn-flat translate btn-install">Install</a>
             <a class="modal-action modal-close waves-effect waves-green btn-flat translate btn-cancel">Cancel</a>
+        </div>
+    </div>
+    <div id="dialog-license" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <div class="col s12 m6 l3">
+                <h5><span class="translate license_agreement_label">license agreement</span><span class="license_agreement_name"></span></h5>
+            </div>
+            <div class="row license-text">
+                <div class="col s12">
+                    <h6 class="license_terms translate">License terms</h6>
+                    <div class="license_text"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a class="license_agree modal-action modal-close waves-effect waves-green btn"><span class="translate">agree</span><i class="large material-icons">check</i></a>
+            <a class="license_non_agree modal-action modal-close waves-effect waves-green btn-flat btn-gray "><span class="translate">not agree</span><i class="large material-icons">close</i></a>
         </div>
     </div>
 </div>

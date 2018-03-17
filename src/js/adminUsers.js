@@ -802,9 +802,9 @@ function Users(main) {
     function buildUserList() {
         that.list.sort();
         that.groups.sort();
-        var text = '<div class="tree-table-buttons m">' +
+        var text = '';/*'<div class="tree-table-buttons m">' +
             '<a class="btn-floating waves-effect waves-light blue btn-custom-0" title="' + _('New user') + '" id="tab-users-btn-new-user">' +
-            '<i class="material-icons">person_add</i></a></div>';
+            '<i class="material-icons">person_add</i></a></div>';*/
 
        text += '<ul class="collection">';
         var users = getUsersGroups(that.main.objects, that.groups);
@@ -855,7 +855,7 @@ function Users(main) {
         }
         text += '</ul>';
         that.$gridUsers.html(text);
-        that.$gridUsers.find('#tab-users-btn-new-user').on('click', function () {
+        that.$grid.find('#tab-users-btn-new-user').on('click', function () {
             createOrEdit(false);
         });
         that.$gridUsers.find('.tab-users-enabled-user').on('click', function () {
@@ -917,9 +917,9 @@ function Users(main) {
     }
 
     function buildGroupsList() {
-        var text = '<div class="tree-table-buttons m">' +
+        var text = '';/*'<div class="tree-table-buttons m">' +
             '<a class="btn-floating waves-effect waves-light blue btn-custom-0" title="' + _('New group') + '" id="tab-users-btn-new-group">' +
-            '<i class="material-icons">group_add</i></a></div>';
+            '<i class="material-icons">group_add</i></a></div>';*/
 
         text += '<ul class="collection">';
         for (var u = 0; u < that.groups.length; u++) {
@@ -971,7 +971,7 @@ function Users(main) {
         }
         text += '</ul>';
         that.$gridGroups.html(text);
-        that.$gridGroups.find('#tab-users-btn-new-group').on('click', function () {
+        that.$grid.find('#tab-users-btn-new-group').on('click', function () {
             createOrEdit(true);
         });
         that.$gridGroups.find('.delete-content').on('click', function () {

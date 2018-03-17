@@ -146,6 +146,16 @@ body {
             width: 32px;
         }
     }
+    @media screen and (min-width: 600px) and (max-width: 700px) {
+        .button-version {
+            display: none;
+        }
+    }
+    @media screen and (max-width: 600px) {
+        .button-icon, .button-version {
+            display: none;
+        }
+    }
     .button-current-user {
         padding-left: 1rem;
         div {
@@ -277,20 +287,19 @@ body {
 }
 
 // License dialog
-#dialog-license {
+#dialog-license-main {
     h5 {
         background: @main-background-color;
         color:      @admin-buttons-background;
         padding:    0.5rem;
     }
-
-    #license_checkbox {
-        color: #ff636e;
+    .license-text {
+        margin-bottom: 0;
     }
-
-    #license_text {
+    .license_text {
         width: 100%;
-        height: calc(~"100% - 230px");
+        height: calc(~"100% - 190px");
+        margin-bottom: 0;
         overflow: auto;
     }
     input[type="checkbox"].filled-in:not(:checked) + span:not(.lever):after {
@@ -299,7 +308,11 @@ body {
         -o-animation: colorBlink 3s ease-out infinite;
         animation: colorBlink 3s ease-out infinite;
     }
+    .license-checkbox-box {
+        color: #ff636e;
+    }
 }
+
 @-webkit-keyframes colorBlink {
     0% {
         border-color: #5a5a5a;
@@ -364,13 +377,16 @@ body {
         color:      @admin-buttons-background;
         padding:    0.5rem;
     }
+    .textarea {
+        margin-bottom: 0;
+    }
     textarea {
         background: #e9e9e9;
         font-family: courier, monospace;
         font-size: 11px;
         resize: none;
         width: 100%;
-        height: calc(~"100% - 210px");
+        height: calc(~"100% - 170px");
     }
     .progress-dont-close {
         float: left;
@@ -432,4 +448,17 @@ body {
     a{
         margin: 0.5em;
     }
+}
+
+.old-style {
+    .main-header-table {
+        width: 100%
+    }
+    .grid-main-wob-div {
+        height: calc(100% - 50px);
+    }
+    .iob-list-icon {
+        height: 16px;
+    }
+
 }

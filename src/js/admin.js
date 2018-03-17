@@ -115,6 +115,7 @@ $(document).ready(function () {
         dialogs:        {},
         selectId:       null,
         config:         {},
+        ignoreJSupdate: false, // set to true after some global script updated and till system.adapter.javascript.x updated
         addEventMessage: function (id, stateOrObj, isMessage, isState) {
             // cannot directly use tabs.events.add, because to init time not available.
             tabs.events.add(id, stateOrObj, isMessage, isState);
@@ -602,17 +603,19 @@ $(document).ready(function () {
     gMain = main; // for google maps
 
     var tabs = {
+        hosts:      new Hosts(main), // must be first to read the list of hosts
+        objects:    new Objects(main),
         adapters:   new Adapters(main),
         instances:  new Instances(main),
-        logs:       new Logs(main),
-        states:     null,
-        objects:    new Objects(main),
-        events:     new Events(main),
-        hosts:      new Hosts(main),
         users:      new Users(main),
         //groups:     new Groups(main),
-        enums:      new Enums(main)
+        enums:      new Enums(main),
+        events:     new Events(main),
+        logs:       new Logs(main),
+        states:     null,
+        intro:      new Intro(main)
     };
+
     if (typeof States !== 'undefined') {
         tabs.states = new States(main);
     }
@@ -634,7 +637,7 @@ $(document).ready(function () {
     var $stdout        = $('#stdout');
 
     var $dialogCommand = $('#dialog-command');
-    var $dialogLicense = $('#dialog-license');
+    var $dialogLicense = $('#dialog-license-main');
     var $dialogMessage = $('#dialog-message');
     var $dialogConfirm = $('#dialog-confirm');
     var $dialogCommandProgress = $dialogCommand.find('.progress div');
@@ -789,6 +792,9 @@ $(document).ready(function () {
                     }
                 }
             }
+            // show current tab
+            main.currentHash = null;
+            main.navigateDo();
         }
     }
 
@@ -896,6 +902,7 @@ $(document).ready(function () {
 
                 text += '<li><a href="#' + name + '">' + buttonName + '</a></li>\n';
 
+                // noinspection JSJQueryEfficiency
                 if (!$('#' + name).length) {
                     var div = '<div id="' + name + '" data-name="' + buttonName + '" class="tab-custom ' + (isReplace ? 'link-replace' : '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
                         '<iframe class="iframe-in-tab" style="border: 0; solid #FFF; display: block; left: 0; top: 0; width: 100%; height: 100%"' +
@@ -941,8 +948,8 @@ $(document).ready(function () {
                         if (loadTimeout) {
                             clearTimeout(loadTimeout);
                             loadTimeout = null;
+                            initHtmlTabs(/*showTabs*/);
                         }
-                        initHtmlTabs(/*showTabs*/);
                     }
                 });
             });
@@ -1013,7 +1020,7 @@ $(document).ready(function () {
             dismissible: false
         });
 
-        $dialogCommand.find('.progress-show-more').on('change', function () {
+        $dialogCommand.find('.progress-show-more').off('change').on('change', function () {
             var val = $(this).prop('checked');
             main.saveConfig('progressMore', val);
             if (val) {
@@ -1031,6 +1038,9 @@ $(document).ready(function () {
         // workaround for materialize checkbox problem
         $dialogCommand.find('input[type="checkbox"]+span').off('click').on('click', function () {
             var $input = $(this).prev();
+            // ignore switch
+            if ($input.parent().parent().hasClass('switch')) return;
+
             if (!$input.prop('disabled')) {
                 $input.prop('checked', !$input.prop('checked')).trigger('change');
             }
@@ -1181,6 +1191,7 @@ $(document).ready(function () {
         }
 
         tabs.enums.objectChange(id, obj);
+        tabs.intro.objectChange(id, obj);
 
         // If system config updated
         if (id === 'system.config') {
@@ -1204,12 +1215,21 @@ $(document).ready(function () {
         //tabs.adapters.objectChange(id, obj);
         tabs.instances.objectChange(id, obj);
 
+        if (id.match(/^script\.js\.global\..*/)) {
+            main.ignoreJSupdate = true;
+        }
+
         if (obj && id.match(/^system\.adapter\.[\w-]+\.[0-9]+$/)) {
             if (obj.common &&
                 obj.common.adminTab &&
                 !obj.common.adminTab.ignoreConfigUpdate
             ) {
-                initTabs();
+                // one exception for javascript. To able work with global scripts normally
+                if (!id.match(/^system\.adapter\.javascript\.[0-9]+$/) || !main.ignoreJSupdate) {
+                    initTabs();
+                } else {
+                    main.ignoreJSupdate = false;
+                }
             }
 
             if (obj && obj.type === 'instance') {
@@ -1437,7 +1457,13 @@ $(document).ready(function () {
 
                 // set default page
                 if (!tab || tab === '!') {
-                    tab = 'adapters';
+                    if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf('intro') !== -1) {
+                        tab = 'intro';
+                    } else if (main.systemConfig.common.tabs.indexOf('adapters') !== -1) {
+                        tab = 'adapters';
+                    } else {
+                        tab = main.systemConfig.common.tabs[0];
+                    }
                 }
                 // do tab is not found
 
@@ -1445,12 +1471,14 @@ $(document).ready(function () {
                 var $actualTab = $adminBody.find('.admin-sidemenu-body-content');
                 var $panel     = $('#tab-' + tab);
 
+                $adminBody.find('.admin-preloader').remove();
+
                 if (!$panel.length) {
-                     tab = 'adapters';
+                     tab = 'intro';
                 }
 
                 // if tab was changed
-                if (main.currentTab !== tab) {
+                if (main.currentTab !== tab || !$actualTab.length) {
                     // destroy actual tab
                     if (tabs[main.currentTab] && typeof tabs[main.currentTab].destroy === 'function') {
                         tabs[main.currentTab].destroy();
@@ -1610,18 +1638,19 @@ $(document).ready(function () {
     };
 
     var tabsInfo = {
-        'tab-adapters':         {order: 1,   icon: 'store'},
-        'tab-instances':        {order: 2,   icon: 'subtitles'},
-        'tab-objects':          {order: 3,   icon: 'view_list'},
-        'tab-enums':            {order: 4,   icon: 'art_track'},
-        'tab-logs':             {order: 5,   icon: 'view_headline'},
-        'tab-scenes':           {order: 6,   icon: 'subscriptions'},
-        'tab-events':           {order: 7,   icon: 'flash_on'},
-        'tab-users':            {order: 9,   icon: 'person_outline'},
-        'tab-javascript':       {order: 10,  icon: 'code'},
-        'tab-text2command-0':   {order: 11,  icon: 'ac_unit'},
-        'tab-text2command-1':   {order: 11,  icon: 'ac_unit'},
-        'tab-text2command-2':   {order: 11,  icon: 'ac_unit'},
+        'tab-intro':            {order: 1,   icon: 'apps'},
+        'tab-adapters':         {order: 2,   icon: 'store'},
+        'tab-instances':        {order: 3,   icon: 'subtitles'},
+        'tab-objects':          {order: 4,   icon: 'view_list'},
+        'tab-enums':            {order: 5,   icon: 'art_track'},
+        'tab-logs':             {order: 6,   icon: 'view_headline'},
+        'tab-scenes':           {order: 7,   icon: 'subscriptions'},
+        'tab-events':           {order: 8,   icon: 'flash_on'},
+        'tab-users':            {order: 10,   icon: 'person_outline'},
+        'tab-javascript':       {order: 11,  icon: 'code'},
+        'tab-text2command-0':   {order: 12,  icon: 'ac_unit'},
+        'tab-text2command-1':   {order: 12,  icon: 'ac_unit'},
+        'tab-text2command-2':   {order: 12,  icon: 'ac_unit'},
         'tab-node-red-0':       {order: 20,  icon: 'device_hub'},
         'tab-node-red-1':       {order: 21,  icon: 'device_hub'},
         'tab-node-red-2':       {order: 22,  icon: 'device_hub'},
@@ -1637,7 +1666,7 @@ $(document).ready(function () {
         var elements = [];
         $('.admin-tab').each(function () {
             var id = $(this).attr('id');
-            if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !==-1) {
+            if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !== -1) {
                 elements.push({
                     line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
                             (tabsInfo[id] && tabsInfo[id].icon ? '<i class="material-icons left">' + tabsInfo[id].icon + '</i>' : '<i class="material-icons left">live_help</i>') +
@@ -1856,33 +1885,30 @@ $(document).ready(function () {
                                             var language = main.systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
                                             if (language !=='en' && language !=='de' && language !=='ru') language = 'en';
 
-                                            $('#license_text').html(license[language] || license.en);
+                                            $dialogLicense.find('.license_text').html(license[language] || license.en);
 
-                                            $('#license_checkbox')
-                                                .show()
-                                                .prop('checked', false);
+                                            $dialogLicense.find('.license_checkbox').prop('checked', false);
 
                                             // on language change
-                                            $('#license_language')
+                                            $dialogLicense.find('.license_language')
                                                 .data('licenseConfirmed', false)
                                                 .val(language)
-                                                .show()
                                                 .on('change', function () {
                                                     language = $(this).val();
-                                                    $('#license_language_label').html(translateWord('Select language', language));
-                                                    $('#license_text').html(license[language] || license.en);
-                                                    $('#license_checkbox').html(translateWord('license_checkbox', language));
-                                                    $('#license_agree').html(translateWord('agree', language));
-                                                    $('#license_non_agree').html(translateWord('not agree', language));
-                                                    $('#license_terms').html(translateWord('License terms', language));
-                                                    $('#license_agreement_label').html(translateWord('license agreement', language));
-                                                });
+                                                    $dialogLicense.find('.license_language_label').html(translateWord('Select language', language));
+                                                    $dialogLicense.find('.license_text').html(license[language] || license.en);
+                                                    $dialogLicense.find('.license_checkbox').html(translateWord('license_checkbox', language));
+                                                    $dialogLicense.find('.license_agree .translate').html(translateWord('agree', language));
+                                                    $dialogLicense.find('.license_non_agree .translate').html(translateWord('not agree', language));
+                                                    $dialogLicense.find('.license_terms').html(translateWord('License terms', language));
+                                                    $dialogLicense.find('.license_agreement_label').html(translateWord('license agreement', language));
+                                                }).select();
 
-                                            $('#license_diag').on('change', function () {
+                                            $dialogLicense.find('.license_diag').on('change', function () {
                                                 if ($(this).prop('checked')) {
-                                                    $('#license_agree').removeClass('disabled');
+                                                    $dialogLicense.find('.license_agree').removeClass('disabled');
                                                 } else {
-                                                    $('#license_agree').addClass('disabled');
+                                                    $dialogLicense.find('.license_agree').addClass('disabled');
                                                 }
                                             });
 
@@ -1897,12 +1923,12 @@ $(document).ready(function () {
                                             $dialogLicense.modal({
                                                 dismissible: false,
                                                 complete: function () {
-                                                    $('#license_text').html('');
+                                                    $dialogLicense.find('.license_text').html('');
                                                     location.reload();
                                                 }
                                             }).modal('open');
 
-                                            $('#license_agree').addClass('disabled').off('click').on('click', function (e) {
+                                            $dialogLicense.find('.license_agree').addClass('disabled').off('click').on('click', function (e) {
                                                 e.preventDefault();
                                                 e.stopPropagation();
 
@@ -1919,10 +1945,13 @@ $(document).ready(function () {
                                                             main.showError(err);
                                                         }
                                                         $dialogLicense.modal('close');
-                                                        $('#license_agree').off('click');
-                                                        $('#license_non_agree').off('click');
+                                                        $dialogLicense.find('.license_agree').off('click');
+                                                        $dialogLicense.find('.license_non_agree').off('click');
                                                     });
                                                 });
+                                            });
+                                            $dialogLicense.find('.license_non_agree').off('click').on('click', function (e) {
+                                                location.reload();
                                             });
                                         }
                                     } else {
@@ -1942,6 +1971,7 @@ $(document).ready(function () {
                                                 licenseConfirmed: false,        // If license agreement confirmed,
                                                 defaultHistory:   '',           // Default history instance
                                                 tabs: [                         // Show by default only these tabs
+                                                    'tab-intro',
                                                     'tab-adapters',
                                                     'tab-instances',
                                                     'tab-objects',
@@ -1965,16 +1995,12 @@ $(document).ready(function () {
 
                                 // Here we go!
                                 initAllDialogs();
-                                tabs.hosts.prepare();
-                                tabs.objects.prepare();
-                                // if (tabs.states) tabs.states.prepare();
-                                tabs.adapters.prepare();
-                                tabs.instances.prepare();
-                                tabs.users.prepare();
-                                //tabs.groups.prepare();
-                                tabs.enums.prepare();
-                                tabs.events.prepare();
-                                tabs.logs.prepare();
+                                // call prepare
+                                for (var t in tabs) {
+                                    if (tabs.hasOwnProperty(t) && tabs[t] && typeof tabs[t].prepare === 'function') {
+                                        tabs[t].prepare();
+                                    }
+                                }
                                 // TABS
                                 // resizeGrids();
 
