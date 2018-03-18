@@ -5,6 +5,58 @@
 
 #tab-hosts {
     // todo combine it with other tabs
+    .host{
+        background-color: white;
+        width: 100%;
+        height: 100px;
+        min-width: 300px;
+        position: relative;
+        margin-top: 10px;
+        .image{
+            float: left;
+            width: 100px;
+            background: #e2e2e2;
+            height: 100%;
+            padding: 10px;
+            img{
+                width: 50px;
+            }
+            .hosts-led{
+                position: relative;
+                height: 8px;
+                width: 50px;
+                border-radius: 5px;
+                top: 15px;
+                left: 8px;
+                box-shadow: #555d0d 0 0 1px 1px, #446f44 0 0 0, inset #e44949 0 0 0;
+            }
+        }
+        .system{
+//            float: left;
+            padding: 10px;
+            margin-left: 100px;
+            .name{
+                font-size: 1rem;
+                font-weight: 700;
+            }
+        }
+        .icon{
+            position: absolute;
+            right: 10px;
+            top: 0;
+            width: 30px;
+            padding: 5px;
+            i:hover{
+                opacity: 0.8;
+                cursor: pointer;
+            }
+            i{
+                margin: 3px;
+                opacity: 0.8;
+            }
+        }
+
+    }
     .main-toolbar-table {
 //        margin-left: 0.3rem;
         &>div {
