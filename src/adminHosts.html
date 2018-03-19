@@ -1,35 +1,94 @@
-<div id="tab-hosts"     class="admin-tab" style="display: none" data-name="Hosts">
-    <div class="main-toolbar-table m">
-       <div class="row navicon">
-        <div class="col s3 m1 main-toolbar-table-types-tools">
-            <a class="btn-floating btn-small translateT btn-reload" title="update adapter information"><i class="material-icons">refresh</i></a>
-            <span class="iob-toolbar-sep">&nbsp;</span>
+<div id="tab-hosts" class="admin-tab m" style="display: none" data-name="Hosts">
+    <div class="main-toolbar-table">
+        <div class="row navicon">
+            <div class="col s3 m1 main-toolbar-table-types-tools">
+                <a class="btn-floating btn-small translateT btn-reload" title="update adapter information"><i class="material-icons">refresh</i></a>
+                <span class="iob-toolbar-sep">&nbsp;</span>
+            </div>
+            <div class="col s9 m11 main-toolbar-table-types-tools">
+                <input class="filter-input translateP" placeholder="Filter" />
+                <a class="filter-clear btn-floating btn-very-small translateT red lighten-3" title="clear"><i class="material-icons">clear</i></a>
+            </div>
         </div>
-        <div class="col s9 m11 main-toolbar-table-types-tools">
-            <input class="filter-input translateP" placeholder="Filter" />
-            <a     class="filter-clear btn-floating btn-very-small translateT red lighten-3" title="clear"><i class="material-icons">clear</i></a>
-        </div>
-       </div>
     </div>
 
+    <div id="hosts" class="row">
+
+<!--
+        <div class="col s12">
+            <div class="host z-depth-1 hoverable">
+                <div class="image center">
+                    <img class="" src="img/no-image.png">
+                    <div class="hosts-led led-green"></div>
+                </div>
+                <div class="system">
+                    <span class="nameHost">OneHost</span>
+                    <ul>
+                        <li>Type : <span class="type">js-controller</span></li>
+                        <li>Title : <span class="title"> JS controller</span></li>
+                        <li>OS : <span class="os"> win32</span></li>
+                        <li>Available : <span class="available"> 1.3.0</span></li>
+                        <li>Installed : <span class="installed"> 1.3.0</span></li>
+                        <li>Events : <span class="events"> ↦3 / ↦10</span></li>
+                    </ul>
+                </div>
+                <div class="icon center">
+                    <i class="material-icons">menu</i>
+                    <i class="material-icons">autorenew</i>
+                    <i class="material-icons">refresh</i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col s12">
+            <div class="host z-depth-1 hoverable">
+                <div class="image center">
+                    <img class="" src="img/no-image.png">
+                    <div class="hosts-led led-red"></div>
+                </div>
+                <div class="system">
+                    <span class="nameHost">TwoHost</span>
+                    <ul>
+                        <li>Type : <span class="type">js-controller</span></li>
+                        <li>Title : <span class="title"> JS controller</span></li>
+                        <li>OS : <span class="os"> win32</span></li>
+                        <li>Available : <span class="available"> 1.3.0</span></li>
+                        <li>Installed : <span class="installed"> 1.3.1</span></li>
+                        <li>Events : <span class="events"> ↦3 / ↦10</span></li>
+                    </ul>
+
+                </div>
+                <div class="icon center">
+                    <i class="material-icons">menu</i>
+                    <i class="material-icons">autorenew</i>
+                    <i class="material-icons">refresh</i>
+                </div>
+            </div>
+        </div>
+-->
+
+    </div>
+
+<!--
     <table class="hosts-table iob-list-table" style="width: 100%; margin-left: 1px">
         <thead id="grid-hosts-head">
-        <tr>
-            <th class="translate tab-hosts-header-led" style="width: 40px"></th>
-            <th class="translate tab-hosts-header-name">name</th>
-            <th class="translate tab-hosts-header-type">type</th>
-            <th class="translate tab-hosts-header-title" style="width: 80px">title</th>
-            <!--th class="translate  tab-hosts-header-led">platform</th-->
-            <th class="translate tab-hosts-header-os text-overflow">os</th>
-            <th class="translate tab-hosts-header-available" style="width: 80px">available</th>
-            <th class="translate tab-hosts-header-installed" style="width: 80px">installed</th>
-            <th class="translate tab-hosts-header-events" style="width: 80px">events</th>
-            <th class="translate tab-hosts-header-restart" style="width: 80px">restart</th>
-        </tr>
+            <tr>
+                <th class="translate tab-hosts-header-led" style="width: 40px"></th>
+                <th class="translate tab-hosts-header-name">name</th>
+                <th class="translate tab-hosts-header-type">type</th>
+                <th class="translate tab-hosts-header-title" style="width: 80px">title</th>
+                <th class="translate  tab-hosts-header-led">platform</th
+                <th class="translate tab-hosts-header-os text-overflow">os</th>
+                <th class="translate tab-hosts-header-available" style="width: 80px">available</th>
+                <th class="translate tab-hosts-header-installed" style="width: 80px">installed</th>
+                <th class="translate tab-hosts-header-events" style="width: 80px">events</th>
+                <th class="translate tab-hosts-header-restart" style="width: 80px">restart</th>
+            </tr>
         </thead>
         <tbody id="grid-hosts">
         </tbody>
     </table>
+-->
     <!--div id="pager-hosts"></div -->
 </div>
 

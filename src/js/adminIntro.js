@@ -108,6 +108,7 @@ function Intro(main) {
                 return null;
             }
         }
+								$card.find('.card-image-img').attr('src', 'img/no-image.png');
         $card.find('.card-content-text').html('<div class="preloader-wrapper small active">\n' +
             '    <div class="spinner-layer spinner-green-only">\n' +
             '      <div class="circle-clipper left">\n' +

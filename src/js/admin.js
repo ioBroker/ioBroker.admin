@@ -983,6 +983,10 @@ $(document).ready(function () {
             .text(_('Host:') + ' ' + main.currentHost)
             .dropdown();
 
+        var imgHost = $('<img class="imgHost left" src="img/no-image.png"/>');
+
+        $selBtn.append(imgHost);
+
         if (main.tabs.hosts.list.length < 2) {
             $selBtn.addClass('disabled');
         } else {

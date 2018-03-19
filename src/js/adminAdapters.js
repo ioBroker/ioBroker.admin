@@ -885,7 +885,7 @@ function Adapters(main) {
 
                         if (_instances) {
                             // TODO: move style to class
-                            installed += '<td style="border: 0; padding: 0; width: 40px">';
+                            installed += '<td style="border: 0; text-align: center; padding: 0; width: 40px">';
                             if (_enabled !== _instances) {
                                 installed += '<span title="' + _ ('Installed instances') + '">' + _instances + '</span>';
                                 if (_enabled) installed += ' ~ ';
