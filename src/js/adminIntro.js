@@ -108,7 +108,11 @@ function Intro(main) {
                 return null;
             }
         }
-								$card.find('.card-image-img').attr('src', 'img/no-image.png');
+		var icon;
+        if (that.main.objects[host.id] && that.main.objects[host.id].common) {
+            icon = that.main.objects[host.id].common.icon;
+        }
+        $card.find('.card-image-img').attr('src', icon || 'img/no-image.png');
         $card.find('.card-content-text').html('<div class="preloader-wrapper small active">\n' +
             '    <div class="spinner-layer spinner-green-only">\n' +
             '      <div class="circle-clipper left">\n' +
@@ -120,6 +124,7 @@ function Intro(main) {
             '      </div>\n' +
             '    </div>\n' +
             '  </div>');
+
         that.main.socket.emit('sendToHost', host.id, 'getHostInfo', null, function (data) {
             if (data === 'permissionError') {
                 console.error('May not read "getHostInfo"');

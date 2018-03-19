@@ -5,7 +5,6 @@ function Hosts(main) {
     this.main     = main;
     this.list     = [];
     this.$tab     = $('#tab-hosts');
-//    this.$grid    = this.$tab.find('#grid-hosts');
     this.$grid    = this.$tab.find('#hosts');
     this.inited   = false;
 
@@ -60,7 +59,14 @@ function Hosts(main) {
 
         $('.host-restart-submit' + selector).off('click').on('click', function () {
             that.main.waitForRestart = true;
-            that.main.cmdExec($(this).attr('data-host-name'), '_restart');
+            that.main.cmdExec($(this).attr('data-host-id'), '_restart');
+        });
+        $('.host-delete' + selector).off('click').on('click', function () {
+            that.main.cmdExec(that.main.currentHost, 'host remove ' + $(this).attr('data-host-name'));
+        });
+
+        $('.host-edit' + selector).off('click').on('click', function () {
+            editHost($(this).attr('data-host-id'));
         });
 
         $('.host-update-hint-submit' + selector).off('click').on('click', function () {
@@ -178,26 +184,31 @@ function Hosts(main) {
 //        return text;
 //    }
 
-        function showOneHost(index) {
+    function showOneHost(index) {
         var obj   = that.main.objects[that.list[index].id];
         var alive = that.main.states[obj._id + '.alive'] && that.main.states[obj._id + '.alive'].val && that.main.states[obj._id + '.alive'].val !== 'null';
         obj.common = obj.common || {};
         obj.native = obj.native || {};
 
-  var text = '  <div class="col s12">'+
-      '      <div class="host z-depth-1 hoverable" data-host-id="' + obj._id + '">'+
-      '          <div class="image center">'+
-      '              <img class="" src="img/no-image.png">'+
-      '              <div class="hosts-led ' + (alive ? 'led-green' : 'led-red') +'" data-host-id="' + obj._id + '"></div>'+
-      '          </div>'+
-      '          <div class="system">'+
-      '              <span class="nameHost" title="name">' + obj.common.hostname + '</span>'+
-      '              <ul>'+
-      '                  <li class="translate tab-hosts-header-title" data-lang="title">Type : <span class="type">' + obj.common.type + '</span></li>'+
-      '                  <li>Title : <span class="title"> JS controller</span></li>'+
-      '                  <li>OS : <span class="os">' + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</span></li>'+
-      '                  <li>Available : <span class="available"> 1.3.0</span></li>'+
-      '                  <li>Installed : <span class="installed"> ' + obj.common.installedVersion + '</span></li>';
+        var color;
+        if (obj.common.color) {
+            color = that.main.invertColor(obj.common.color);
+        }
+
+        var text =  '  <div class="col s12">'+
+                    '      <div class="host z-depth-1 hoverable" data-host-id="' + obj._id + '">'+
+                    '          <div class="image center">'+
+                    '              <img class="" src="' + (obj.common.icon ? obj.common.icon : 'img/no-image.png') + '">' +
+                    '              <div class="hosts-led ' + (alive ? 'led-green' : 'led-red') +'" data-host-id="' + obj._id + '"></div>'+
+                    '          </div>'+
+                    '          <div class="system" style="' + (obj.common.color ? 'color: ' + (color ? 'white' : 'black') + '; background: ' + obj.common.color : '') + '">'+
+                    '              <span class="nameHost" title="name">' + obj.common.hostname + '</span>'+
+                    '              <ul>'+
+                    '                  <li class="translate tab-hosts-header-title" data-lang="title">Type : <span class="type">' + obj.common.type + '</span></li>'+
+                    '                  <li>Title : <span class="title">' + obj.common.title + '</span></li>'+
+                    '                  <li>OS : <span class="os">' + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</span></li>'+
+                    '                  <li>Available : <span class="available"> 1.3.0</span></li>'+
+                    '                  <li>Installed : <span class="installed"> ' + obj.common.installedVersion + '</span></li>';
 
         if (that.main.states[obj._id + '.inputCount']) {
             text += '<li class="tab-hosts-header-events">Events : <span title="in" data-host-id="' + obj._id + '" class="host-in">&#x21E5;' + that.main.states[obj._id + '.inputCount'].val + '</span> / <span title="out" data-host-id="' + obj._id + '"  class="host-out">&#x21A6;' + that.main.states[obj._id + '.outputCount'].val + '</span></li>';
@@ -205,20 +216,154 @@ function Hosts(main) {
             text += '<li class="tab-hosts-header-events">Events : <span title="in" data-host-id="' + obj._id + '" class="host-in"></span> / <span title="out" data-host-id="' + obj._id + '" class="host-out"></span></li>';
         }
 
-
-      text +=    '</ul>'+
-      '          </div>'+
-      '          <div class="icon center">'+
-      '              <i class="material-icons">menu</i>'+
-      '              <i class="material-icons" data-host-id="' + obj._id + '" title="' + _('restart') + '">autorenew</i>'+
-      '              <i class="material-icons" data-host-name="' + obj.common.hostname + '">refresh</i>'+
-      '          </div>'+
-      '      </div>'+
-      '  </div>';
+        text +=    '</ul>'+
+        '          </div>'+
+        '          <div class="icon center">'+
+        '              <i class="material-icons host-edit"               data-host-id="' + obj._id + '">edit</i>'+
+        '              <i class="material-icons host-restart-submit"     data-host-id="' + obj._id + '" title="' + _('restart') + '">autorenew</i>';
+        if (obj.common.hostname !== that.main.currentHost) {
+            text += '  <i class="material-icons host-delete"             data-host-name="' + obj.common.hostname + '" title="' + _('remove') + '">delete</i>';
+        }
+        text +=    '   <i class="material-icons host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none">refresh</i>'+
+        '              <i class="material-icons host-update-submit"      data-host-name="' + obj.common.hostname + '" style="display: none; opacity: 0">refresh</i>'+
+        '          </div>'+
+        '      </div>'+
+        '  </div>';
 
         return text;
     }
 
+    function editHost(id) {
+        var $dialog = $('#tab-host-dialog-edit');
+
+        var titleVal  = '';
+        var iconVal  = '';
+        var colorVal = '';
+
+        installFileUpload($dialog, 50000, function (err, text) {
+            if (err) {
+                showMessage(err, true);
+            } else {
+                if (!text.match(/^data:image\//)) {
+                    showMessage(_('Unsupported image format'), true);
+                    return;
+                }
+                $dialog.find('.tab-host-dialog-ok').removeClass('disabled');
+                iconVal   = text;
+
+                $dialog.find('.tab-host-dialog-edit-icon').show().html('<img class="" />');
+                $dialog.find('.tab-host-dialog-edit-icon img').attr('src', text);
+                $dialog.find('.tab-host-dialog-edit-icon-clear').show();
+            }
+        });
+
+        if (that.main.objects[id] && that.main.objects[id].common) {
+            titleVal      = that.main.objects[id].common.title;
+            if (typeof titleVal === 'object') {
+                titleVal = titleVal[systemLang] || titleVal.en;
+            }
+            iconVal      = that.main.objects[id].common.icon;
+            colorVal     = that.main.objects[id].common.color;
+        }
+
+        $dialog.find('#tab-host-dialog-edit-title')
+            .val(titleVal)
+            .off('change')
+            .on('change', function () {
+                $dialog.find('.tab-host-dialog-ok').removeClass('disabled');
+            }).off('keyup').on('keyup', function () {
+                $(this).trigger('change');
+            });
+
+        $dialog.find('.tab-host-dialog-ok')
+            .addClass('disabled')
+            .off('click')
+            .on('click', function () {
+                var obj = JSON.parse(JSON.stringify(that.main.objects[id]));
+                obj.common.title = $dialog.find('#tab-host-dialog-edit-title').val();
+                obj.common.icon =  iconVal;
+                obj.common.color = colorVal;
+                if (JSON.stringify(obj) !== JSON.stringify(that.main.objects[id])) {
+                    that.main.socket.emit('setObject', obj._id, obj, function (err) {
+                        that.main.showToast($dialog, _('Updated'));
+                    });
+                } else {
+                    that.main.showToast($dialog, _('Nothing changed'));
+                }
+            });
+
+        if (iconVal) {
+            $dialog.find('.tab-host-dialog-edit-icon').show().html(that.main.getIcon(id));
+            $dialog.find('.tab-host-dialog-edit-icon-clear').show();
+        } else {
+            $dialog.find('.tab-host-dialog-edit-icon').hide();
+            $dialog.find('.tab-host-dialog-edit-icon-clear').hide();
+        }
+
+        colorVal = colorVal || false;
+
+        if (colorVal) {
+            $dialog.find('.tab-host-dialog-edit-color').val(colorVal);
+        } else {
+            $dialog.find('.tab-host-dialog-edit-color').val();
+        }
+
+        M.updateTextFields('#tab-host-dialog-edit');
+        that.main.showToast($dialog, _('Drop the icons here'));
+
+        $dialog.find('.tab-host-dialog-edit-upload').off('click').on('click', function () {
+            $dialog.find('.drop-file').trigger('click');
+        });
+
+        $dialog.find('.tab-host-dialog-edit-icon-clear').off('click').on('click', function () {
+            if (iconVal) {
+                iconVal = '';
+                $dialog.find('.tab-host-dialog-edit-icon').hide();
+                $dialog.find('.tab-host-dialog-ok').removeClass('disabled');
+                $dialog.find('.tab-host-dialog-edit-icon-clear').hide();
+            }
+        });
+        $dialog.find('.tab-host-dialog-edit-color-clear').off('click').on('click', function () {
+            if (colorVal) {
+                $dialog.find('.tab-host-dialog-ok').removeClass('disabled');
+                $dialog.find('.tab-host-dialog-edit-color-clear').hide();
+                $dialog.find('.tab-host-dialog-edit-colorpicker').colorpicker({
+                    component: '.btn',
+                    color: colorVal,
+                    container: $dialog.find('.tab-host-dialog-edit-colorpicker')
+                }).colorpicker('setValue', '');
+                colorVal = '';
+            }
+        });
+        var time = Date.now();
+        try {
+            $dialog.find('.tab-host-dialog-edit-colorpicker').colorpicker('destroy');
+        } catch (e) {
+
+        }
+        $dialog.find('.tab-host-dialog-edit-colorpicker').colorpicker({
+            component: '.btn',
+            color: colorVal,
+            container: $dialog.find('.tab-host-dialog-edit-colorpicker')
+        }).colorpicker('setValue', colorVal).on('showPicker.colorpicker', function (/* event */) {
+            //$dialog.find('.tab-host-dialog-edit-colorpicker')[0].scrollIntoView(false);
+            var $modal = $dialog.find('.modal-content');
+            $modal[0].scrollTop = $modal[0].scrollHeight;
+        }).on('changeColor.colorpicker', function (event){
+            if (Date.now() - time > 100) {
+                colorVal = event.color.toHex();
+                $dialog.find('.tab-host-dialog-ok').removeClass('disabled');
+                $dialog.find('.tab-host-dialog-edit-icon-clear').show();
+            }
+        });
+        if (colorVal) {
+            $dialog.find('.tab-host-dialog-edit-color-clear').show();
+        } else {
+            $dialog.find('.tab-host-dialog-edit-color-clear').hide();
+        }
+
+        $dialog.modal().modal('open');
+    }
 
     function showHosts() {
         var text = '';

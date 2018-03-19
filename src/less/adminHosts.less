@@ -5,7 +5,7 @@
 
 #tab-hosts {
     // todo combine it with other tabs
-    .host{
+    .host {
         background-color: white;
         width: 100%;
         height: 100px;
@@ -13,7 +13,7 @@
         position: relative;
         margin-top: 10px;
         border-radius: 3px;
-        .image{
+        .image {
             float: left;
             width: 100px;
             background: #e2e2e2;
@@ -21,10 +21,10 @@
             padding: 10px;
             border-bottom-left-radius: 3px;
             border-top-left-radius: 3px;
-            img{
-                width: 50px;
+            img {
+                max-height: 50px;
             }
-            .hosts-led{
+            .hosts-led {
                 position: relative;
                 height: 8px;
                 width: 50px;
@@ -34,13 +34,13 @@
                 box-shadow: #555d0d 0 0 1px 1px, #446f44 0 0 0, inset #e44949 0 0 0;
             }
         }
-        .system{
+        .system {
             padding: 5px 10px;
             margin-left: 100px;
-            span{
+            span {
                 font-weight: 700;
             }
-            ul{
+            ul {
                 list-style-position: inside;
                 -moz-column-count: 2;
                 -webkit-column-count: 2;
@@ -57,19 +57,19 @@
             }
 
         }
-        .icon{
+        .icon {
             position: absolute;
-            right: 0px;
+            right: 0;
             top: 0;
-            height: 100%;
+            bottom: -2px;
             width: 40px;
-            padding: 8px 0px;
+            padding: 8px 0;
             background-color: #e2e2e2;
-            i:hover{
+            i:hover {
                 opacity: 0.5;
                 cursor: pointer;
             }
-            i{
+            i {
                 transition: 0.5s;
             }
         }
@@ -256,6 +256,42 @@
         &.disabled {
             opacity: 0.5;
             pointer-events: none;
+        }
+    }
+}
+#tab-host-dialog-edit {
+    .tab-host-dialog-edit-color-icon {
+        float: left;
+        padding-right: 4px;
+    }
+    .tab-host-dialog-edit-color {
+        width: calc(~"100% - 50px");
+    }
+    .tab-host-dialog-edit-icon-clear,
+    .tab-host-dialog-edit-color-clear {
+        float: right;
+        z-index: 0;
+    }
+    .tab-host-dialog-edit-upload{
+        position: absolute;
+        left: 80px;
+        height: 3rem;
+        line-height: 3rem;
+        a{
+            height: 3rem;
+            width: 4rem;
+            i{
+                line-height: 50px;
+            }
+        }
+    }
+    .tab-host-dialog-edit-icon{
+        position: absolute;
+        left: 170px;
+        img.treetable-icon{
+            height: 50px;
+            width: 50px;
+            max-height: 50px;
         }
     }
 }

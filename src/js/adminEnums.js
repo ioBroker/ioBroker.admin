@@ -787,7 +787,7 @@ function Enums(main) {
                 iconVal   = text;
 
                 $dialog.find('.tab-enums-dialog-new-icon').show().html('<img class="" />');
-                $dialog.find('.tab-enums-dialog-new-icon').attr('src', text);
+                $dialog.find('.tab-enums-dialog-new-icon img').attr('src', text);
                 $dialog.find('.tab-enums-dialog-new-icon-clear').show();
             }
         });
