@@ -242,10 +242,10 @@ function Hosts(main) {
 
         installFileUpload($dialog, 50000, function (err, text) {
             if (err) {
-                showMessage(err, true);
+                that.main.showToast($dialog, err);
             } else {
                 if (!text.match(/^data:image\//)) {
-                    showMessage(_('Unsupported image format'), true);
+                    that.main.showToast($dialog, _('Unsupported image format'));
                     return;
                 }
                 $dialog.find('.tab-host-dialog-ok').removeClass('disabled');
