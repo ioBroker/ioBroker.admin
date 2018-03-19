@@ -12,12 +12,15 @@
         min-width: 300px;
         position: relative;
         margin-top: 10px;
+        border-radius: 3px;
         .image{
             float: left;
             width: 100px;
             background: #e2e2e2;
             height: 100%;
             padding: 10px;
+            border-bottom-left-radius: 3px;
+            border-top-left-radius: 3px;
             img{
                 width: 50px;
             }
@@ -32,27 +35,42 @@
             }
         }
         .system{
-//            float: left;
-            padding: 10px;
+            padding: 5px 10px;
             margin-left: 100px;
-            .name{
-                font-size: 1rem;
+            span{
                 font-weight: 700;
             }
+            ul{
+                list-style-position: inside;
+                -moz-column-count: 2;
+                -webkit-column-count: 2;
+                column-count: 2;
+                list-style-type: none;
+                height: 60px;
+                margin: 0;
+                width: 300px;
+                font-size: 0.8rem;
+            }
+            .nameHost{
+                font-size: 1.5rem;
+                font-weight: 700;
+            }
+
         }
         .icon{
             position: absolute;
-            right: 10px;
+            right: 0px;
             top: 0;
-            width: 30px;
-            padding: 5px;
+            height: 100%;
+            width: 40px;
+            padding: 8px 0px;
+            background-color: #e2e2e2;
             i:hover{
-                opacity: 0.8;
+                opacity: 0.5;
                 cursor: pointer;
             }
             i{
-                margin: 3px;
-                opacity: 0.8;
+                transition: 0.5s;
             }
         }
 

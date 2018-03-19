@@ -5,7 +5,8 @@ function Hosts(main) {
     this.main     = main;
     this.list     = [];
     this.$tab     = $('#tab-hosts');
-    this.$grid    = this.$tab.find('#grid-hosts');
+//    this.$grid    = this.$tab.find('#grid-hosts');
+    this.$grid    = this.$tab.find('#hosts');
     this.inited   = false;
 
     this.prepare  = function () {
@@ -129,53 +130,88 @@ function Hosts(main) {
         }
     }
 
-    function showOneHost(index) {
+//    function showOneHost(index) {
+//        var obj   = that.main.objects[that.list[index].id];
+//        var alive = that.main.states[obj._id + '.alive'] && that.main.states[obj._id + '.alive'].val && that.main.states[obj._id + '.alive'].val !== 'null';
+//        obj.common = obj.common || {};
+//        obj.native = obj.native || {};
+//
+//        var text = '<tr class="hosts-host " data-host-id="' + obj._id + '">';
+//        //LED
+//        text += '<td class="tab-hosts-header-led"><div class="hosts-led ' + (alive ? 'led-green' : 'led-red') + '" data-host-id="' + obj._id + '"></div></td>';
+//        // name
+//        text += '<td class="hosts-name" style="font-weight: bold">' + obj.common.hostname + '</td>' +
+//            + '</td>';
+//        // type
+//        text += '<td class="tab-hosts-header-type">' + obj.common.type + '</td>';
+//        var title = obj.common.titleLang || obj.common.title;
+//        if (typeof title === 'object') {
+//            title = title[systemLang] || title.en;
+//        }
+//        // description
+//        text += '<td class="tab-hosts-header-title">' + title + '</td>';
+//        // platform
+//        // text += '<td>' + obj.common.platform + '</td>'; // actually only one platform
+//        // OS
+//        text += '<td class="tab-hosts-header-os">' + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</td>';
+//        // Available
+//        text += '<td class="tab-hosts-header-available"><span data-host-id="' + obj._id + '" data-type="' + obj.common.type + '" class="hosts-version-available"></span>' +
+//            '<button class="small-button host-update-submit"      data-host-name="' + obj.common.hostname + '" style="display: none; opacity: 0;" title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
+//            '<button class="small-button host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none;"             title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
+//            '</td>';
+//
+//        // installed
+//        text += '<td class="hosts-version-installed tab-hosts-header-installed" data-host-id="' + obj._id + '">' + obj.common.installedVersion + '</td>';
+//
+//        // event rates
+//        if (that.main.states[obj._id + '.inputCount']) {
+//            text += '<td class="tab-hosts-header-events" style="text-align: center"><span title="in" data-host-id="' + obj._id + '" class="host-in">&#x21E5;' + that.main.states[obj._id + '.inputCount'].val + '</span> / <span title="out" data-host-id="' + obj._id + '"  class="host-out">&#x21A6;' + that.main.states[obj._id + '.outputCount'].val + '</span></td>';
+//        } else {
+//            text += '<td class="tab-hosts-header-events" style="text-align: center"><span title="in" data-host-id="' + obj._id + '" class="host-in"></span> / <span title="out" data-host-id="' + obj._id + '" class="host-out"></span></td>';
+//        }
+//
+//        // restart button
+//        text += '<td class="tab-hosts-header-restart"><button class="small-button host-restart-submit" style="' + (alive ? '' : 'display: none') + '" data-host-id="' + obj._id + '" title="' + _('restart') + '"><i class="material-icons">autorenew</i></button></td>';
+//
+//        text += '</tr>';
+//
+//        return text;
+//    }
+
+        function showOneHost(index) {
         var obj   = that.main.objects[that.list[index].id];
         var alive = that.main.states[obj._id + '.alive'] && that.main.states[obj._id + '.alive'].val && that.main.states[obj._id + '.alive'].val !== 'null';
         obj.common = obj.common || {};
         obj.native = obj.native || {};
 
-        var text = '<tr class="hosts-host " data-host-id="' + obj._id + '">';
-        //LED
-        text += '<td class="tab-hosts-header-led"><div class="hosts-led ' + (alive ? 'led-green' : 'led-red') + '" data-host-id="' + obj._id + '"></div></td>';
-        // name
-        text += '<td class="hosts-name" style="font-weight: bold">' + obj.common.hostname + '</td>' +
-            + '</td>';
-        // type
-        text += '<td class="tab-hosts-header-type">' + obj.common.type + '</td>';
-        var title = obj.common.titleLang || obj.common.title;
-        if (typeof title === 'object') {
-            title = title[systemLang] || title.en;
-        }
-        // description
-        text += '<td class="tab-hosts-header-title">' + title + '</td>';
-        // platform
-        // text += '<td>' + obj.common.platform + '</td>'; // actually only one platform
-        // OS
-        text += '<td class="tab-hosts-header-os">' + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</td>';
-        // Available
-        text += '<td class="tab-hosts-header-available"><span data-host-id="' + obj._id + '" data-type="' + obj.common.type + '" class="hosts-version-available"></span>' +
-            '<button class="small-button host-update-submit"      data-host-name="' + obj.common.hostname + '" style="display: none; opacity: 0;" title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
-            '<button class="small-button host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none;"             title="' + _('update') + '"><i class="material-icons">refresh</i></button>' +
-            '</td>';
-
-        // installed
-        text += '<td class="hosts-version-installed tab-hosts-header-installed" data-host-id="' + obj._id + '">' + obj.common.installedVersion + '</td>';
-
-        // event rates
-        if (that.main.states[obj._id + '.inputCount']) {
-            text += '<td class="tab-hosts-header-events" style="text-align: center"><span title="in" data-host-id="' + obj._id + '" class="host-in">&#x21E5;' + that.main.states[obj._id + '.inputCount'].val + '</span> / <span title="out" data-host-id="' + obj._id + '"  class="host-out">&#x21A6;' + that.main.states[obj._id + '.outputCount'].val + '</span></td>';
-        } else {
-            text += '<td class="tab-hosts-header-events" style="text-align: center"><span title="in" data-host-id="' + obj._id + '" class="host-in"></span> / <span title="out" data-host-id="' + obj._id + '" class="host-out"></span></td>';
-        }
-
-        // restart button
-        text += '<td class="tab-hosts-header-restart"><button class="small-button host-restart-submit" style="' + (alive ? '' : 'display: none') + '" data-host-id="' + obj._id + '" title="' + _('restart') + '"><i class="material-icons">autorenew</i></button></td>';
-
-        text += '</tr>';
+  var text = '  <div class="col s12">'+
+      '      <div class="host z-depth-1 hoverable" data-host-id="' + obj._id + '">'+
+      '          <div class="image center">'+
+      '              <img class="" src="img/no-image.png">'+
+      '              <div class="hosts-led ' + (alive ? 'led-green' : 'led-red') +'" data-host-id="' + obj._id + '"></div>'+
+      '          </div>'+
+      '          <div class="system">'+
+      '              <span class="nameHost">' + obj.common.hostname + '</span>'+
+      '              <ul>'+
+      '                  <li class="translate tab-hosts-header-title" data-lang="title">Type : <span class="type">' + obj.common.type + '</span></li>'+
+      '                  <li>Title : <span class="title"> JS controller</span></li>'+
+      '                  <li>OS : <span class="os">' + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</span></li>'+
+      '                  <li>Available : <span class="available"> 1.3.0</span></li>'+
+      '                  <li>Installed : <span class="installed"> ' + obj.common.installedVersion + '</span></li>'+
+      '                  <li>Events : <span class="events"> ↦3 / ↦10</span></li>'+
+      '              </ul>'+
+      '          </div>'+
+      '          <div class="icon center">'+
+      '              <i class="material-icons">menu</i>'+
+      '              <i class="material-icons" data-host-id="' + obj._id + '" title="' + _('restart') + '">autorenew</i>'+
+      '              <i class="material-icons" data-host-name="' + obj.common.hostname + '">refresh</i>'+
+      '          </div>'+
+      '      </div>'+
+      '  </div>';
 
         return text;
     }
+
 
     function showHosts() {
         var text = '';
