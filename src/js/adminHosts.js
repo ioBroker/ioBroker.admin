@@ -191,15 +191,22 @@ function Hosts(main) {
       '              <div class="hosts-led ' + (alive ? 'led-green' : 'led-red') +'" data-host-id="' + obj._id + '"></div>'+
       '          </div>'+
       '          <div class="system">'+
-      '              <span class="nameHost">' + obj.common.hostname + '</span>'+
+      '              <span class="nameHost" title="name">' + obj.common.hostname + '</span>'+
       '              <ul>'+
       '                  <li class="translate tab-hosts-header-title" data-lang="title">Type : <span class="type">' + obj.common.type + '</span></li>'+
       '                  <li>Title : <span class="title"> JS controller</span></li>'+
       '                  <li>OS : <span class="os">' + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</span></li>'+
       '                  <li>Available : <span class="available"> 1.3.0</span></li>'+
-      '                  <li>Installed : <span class="installed"> ' + obj.common.installedVersion + '</span></li>'+
-      '                  <li>Events : <span class="events"> ↦3 / ↦10</span></li>'+
-      '              </ul>'+
+      '                  <li>Installed : <span class="installed"> ' + obj.common.installedVersion + '</span></li>';
+
+        if (that.main.states[obj._id + '.inputCount']) {
+            text += '<li class="tab-hosts-header-events">Events : <span title="in" data-host-id="' + obj._id + '" class="host-in">&#x21E5;' + that.main.states[obj._id + '.inputCount'].val + '</span> / <span title="out" data-host-id="' + obj._id + '"  class="host-out">&#x21A6;' + that.main.states[obj._id + '.outputCount'].val + '</span></li>';
+        } else {
+            text += '<li class="tab-hosts-header-events">Events : <span title="in" data-host-id="' + obj._id + '" class="host-in"></span> / <span title="out" data-host-id="' + obj._id + '" class="host-out"></span></li>';
+        }
+
+
+      text +=    '</ul>'+
       '          </div>'+
       '          <div class="icon center">'+
       '              <i class="material-icons">menu</i>'+
