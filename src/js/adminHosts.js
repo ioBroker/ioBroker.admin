@@ -16,7 +16,7 @@ function Hosts(main) {
         // fix for IE
         if (this.main.browser === 'ie' && this.main.browserVersion <= 10) {
             this.isTiles = false;
-            this.$tab.find('.switch-tiles').hide();
+            this.$tab.find('.btn-switch-tiles').hide();
         }
 
         this.$tab.find('.btn-reload')
@@ -25,7 +25,7 @@ function Hosts(main) {
                 that.init(true);
             });
 
-        this.$tab.find('.switch-tiles').off('click').on('click', function () {
+        this.$tab.find('.btn-switch-tiles').off('click').on('click', function () {
             that.isTiles = !that.isTiles;
 
             if (that.isTiles) {
@@ -42,8 +42,16 @@ function Hosts(main) {
                 } else {
                     showHostsTable();
                 }
+                applyFilter(that.$tab.find('.filter-input').val());
             }, 50);
         });
+
+        if (this.isTiles) {
+            this.$tab.find('.btn-switch-tiles').find('i').text('view_list');
+        } else {
+            this.$tab.find('.btn-switch-tiles').find('i').text('view_module');
+        }
+
 
         this.$tab.find('.filter-clear').on('click', function () {
             that.$tab.find('.filter-input').val('').trigger('change');
@@ -81,25 +89,25 @@ function Hosts(main) {
     this.initButtons = function (id) {
         var selector = id ? '[data-host-id="' + id + '"]' : '';
 
-        $('.host-update-submit' + selector).off('click').on('click', function () {
+        this.$tab.find('.host-update-submit' + selector).off('click').on('click', function () {
             that.main.cmdExec($(this).attr('data-host-name'), 'upgrade self', function (exitCode) {
                 if (!exitCode) that.init(true);
             });
         });
 
-        $('.host-restart-submit' + selector).off('click').on('click', function () {
+        this.$tab.find('.host-restart-submit' + selector).off('click').on('click', function () {
             that.main.waitForRestart = true;
             that.main.cmdExec($(this).attr('data-host-name'), '_restart');
         });
-        $('.host-delete' + selector).off('click').on('click', function () {
+        this.$tab.find('.host-delete' + selector).off('click').on('click', function () {
             that.main.cmdExec(that.main.currentHost, 'host remove ' + $(this).attr('data-host-name'));
         });
 
-        $('.host-edit' + selector).off('click').on('click', function () {
+        this.$tab.find('.host-edit' + selector).off('click').on('click', function () {
             editHost($(this).attr('data-host-id'));
         });
 
-        $('.host-update-hint-submit' + selector).off('click').on('click', function () {
+        this.$tab.find('.host-update-hint-submit' + selector).off('click').on('click', function () {
             var infoTimeout = setTimeout(function () {
                 showUpdateInfo();
                 infoTimeout = null;
@@ -145,34 +153,34 @@ function Hosts(main) {
         filter = (filter || '').toLowerCase().trim();
 
         if (!filter) {
-            $('.hosts-host').show();
+            that.$tab.find('.hosts-host').show();
+            that.$tab.find('.hosts-host-filtered-out').hide();
         } else {
-            $('.hosts-host').each(function () {
-                var $this = $(this);
-                var found = false;
-                $this.find('td').each(function () {
-                    var text = $(this).text();
-                    if (text.toLowerCase().indexOf(filter) !== -1) {
-                        found = true;
-                        return false;
-                    }
-                });
-                if (!found) {
-                    $this.hide();
+            var someVisible = false;
+            that.$tab.find('.hosts-host').each(function () {
+                var text = $(this).data('host-filter');
+                if (text.toLowerCase().indexOf(filter) !== -1) {
+                    $(this).show();
+                    someVisible = true;
                 } else {
-                    $this.show();
+                    $(this).hide();
                 }
             });
+            if (!someVisible) {
+                that.$tab.find('.hosts-host-filtered-out').show();
+            } else {
+                that.$tab.find('.hosts-host-filtered-out').hide();
+            }
         }
     }
 
-   function showOneHostRow(index) {
+    function showOneHostRow(index) {
        var obj   = that.main.objects[that.list[index].id];
        var alive = that.main.states[obj._id + '.alive'] && that.main.states[obj._id + '.alive'].val && that.main.states[obj._id + '.alive'].val !== 'null';
        obj.common = obj.common || {};
        obj.native = obj.native || {};
 
-       var text = '<tr class="hosts-host " data-host-id="' + obj._id + '">';
+       var text = '<tr class="hosts-host" data-host-id="' + obj._id + '" data-host-filter="' + (obj.common.title || '') + ' ' + (obj.common.hostname || '') + ' ' + (obj.common.name || '') + '">';
        //LED
        text += '<td class="tab-hosts-header-led"><div class="hosts-led ' + (alive ? 'led-green' : 'led-red') + '" data-host-id="' + obj._id + '"></div></td>';
        // name
@@ -225,19 +233,19 @@ function Hosts(main) {
             color = that.main.invertColor(obj.common.color);
         }
 
-        var text =  '  <div class="col s12">'+
-                    '      <div class="host z-depth-1 hoverable" data-host-id="' + obj._id + '">'+
+        var text =  '  <div class="col s12 hosts-host" data-host-id="' + obj._id + '" data-host-filter="' + (obj.common.title || '') + ' ' + (obj.common.hostname || '') + ' ' + (obj.common.name || '') + '">'+
+                    '      <div class="host z-depth-1 hoverable">' +
                     '          <div class="image center">'+
                     '              <img class="" src="' + (obj.common.icon ? obj.common.icon : 'img/no-image.png') + '">' +
-                    '              <div class="hosts-led ' + (alive ? 'led-green' : 'led-red') +'" data-host-id="' + obj._id + '"></div>'+
+                    '              <div class="hosts-led ' + (alive ? 'led-green' : 'led-red') +'" data-host-id="' + obj._id + '"></div>' +
                     '          </div>'+
-                    '          <div class="system" style="' + (obj.common.color ? 'color: ' + (color ? 'white' : 'black') + '; background: ' + obj.common.color : '') + '">'+
-                    '              <span class="nameHost" title="name">' + obj.common.hostname + '</span>'+
+                    '          <div class="system" style="' + (obj.common.color ? 'color: ' + (color ? 'white' : 'black') + '; background: ' + obj.common.color : '') + '">' +
+                    '              <span class="nameHost" title="name">' + obj.common.hostname + '</span>' +
                     '              <ul>'+
-                    '                  <li class="translate tab-hosts-header-title" data-lang="title">Type : <span class="type">' + obj.common.type + '</span></li>'+
-                    '                  <li>Title : <span class="title">' + obj.common.title + '</span></li>'+
-                    '                  <li>OS : <span class="os">' + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</span></li>'+
-                    '                  <li>Available : <span class="available"> 1.3.0</span></li>'+
+                    '                  <li class="translate tab-hosts-header-title" data-lang="title">Type : <span class="type">' + obj.common.type + '</span></li>' +
+                    '                  <li>Title : <span class="title">' + obj.common.title + '</span></li>' +
+                    '                  <li>OS : <span class="os">' + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</span></li>' +
+                    '                  <li>Available : <span class="available"> 1.3.0</span></li>' +
                     '                  <li>Installed : <span class="installed"> ' + obj.common.installedVersion + '</span></li>';
 
         if (that.main.states[obj._id + '.inputCount']) {
@@ -249,13 +257,13 @@ function Hosts(main) {
         text +=    '</ul>'+
         '          </div>'+
         '          <div class="icon center">'+
-        '              <i class="material-icons host-edit"               data-host-id="' + obj._id + '">edit</i>'+
+        '              <i class="material-icons host-edit"               data-host-id="' + obj._id + '">edit</i>' +
         '              <i class="material-icons host-restart-submit"     data-host-name="' + obj.common.hostname + '" title="' + _('restart') + '">autorenew</i>';
         if (obj.common.hostname !== that.main.currentHost) {
             text += '  <i class="material-icons host-delete"             data-host-name="' + obj.common.hostname + '" title="' + _('remove') + '">delete</i>';
         }
-        text +=    '   <i class="material-icons host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none">refresh</i>'+
-        '              <i class="material-icons host-update-submit"      data-host-name="' + obj.common.hostname + '" style="display: none; opacity: 0">refresh</i>'+
+        text +=    '   <i class="material-icons host-update-hint-submit" data-host-name="' + obj.common.hostname + '" style="display: none">refresh</i>' +
+        '              <i class="material-icons host-update-submit"      data-host-name="' + obj.common.hostname + '" style="display: none; opacity: 0">refresh</i>' +
         '          </div>'+
         '      </div>'+
         '  </div>';
@@ -400,8 +408,10 @@ function Hosts(main) {
         for (var i = 0; i < that.list.length; i++) {
             text += showOneHostTile(i);
         }
-        that.$table.html('').hide();
+        that.$table.html('');
+        that.$tab.find('.hosts-table').hide();
         that.$grid.html(text).show();
+        that.$grid.append('<div class="col s12 hosts-host-filtered-out"><div class="host z-depth-1 hoverable">' + _('Filtered out') + '</div></div>');
     }
 
     function showHostsTable() {
@@ -410,7 +420,9 @@ function Hosts(main) {
             text += showOneHostRow(i);
         }
         that.$grid.html('').hide();
-        that.$table.html(text).show();
+        that.$table.html(text);
+        that.$tab.find('.hosts-table').show();
+        that.$table.append('<tr class="hosts-host-filtered-out"><td colspan="9">' + _('Filtered out') + '</td></tr>');
     }
 
     this.updateCounter = function (counter) {
@@ -455,7 +467,7 @@ function Hosts(main) {
             } else {
                 showHostsTable()
             }
-            applyFilter($('#hosts-filter').val());
+            applyFilter(this.$tab.find('.filter-input').val());
 
             var timer = setTimeout(function () {
                 console.warn('Timeout for repository');
@@ -485,10 +497,10 @@ function Hosts(main) {
                     if (!installed && obj.common && obj.common.installedVersion) installed = obj.common.installedVersion;
 
                     id = 'system.host.' + id.replace(/ /g, '_');
-                    $('.hosts-version-installed[data-host-id="' + id + '"]').html(installed);
+                    that.$tab.find('.hosts-version-installed[data-host-id="' + id + '"]').html(installed);
                 }
 
-                $('.hosts-host').each(function () {
+                that.$tab.find('.hosts-host').each(function () {
                     var id = $(this).data('host-id');
                     var obj = that.main.objects[id];
                     var installedVersion = obj.common.installedVersion;
@@ -623,21 +635,21 @@ function Hosts(main) {
         if (id.match(/^system\.host\..+\.alive$/)) {
             id = id.substring(0, id.length - 6);
             if (state && state.val) {
-                $('.hosts-led[data-host-id="' + id + '"]').removeClass('led-red').addClass('led-green');
+                this.$tab.find('.hosts-led[data-host-id="' + id + '"]').removeClass('led-red').addClass('led-green');
             } else {
-                $('.hosts-led[data-host-id="' + id + '"]').removeClass('led-green').addClass('led-red');
-                $('.host-update-submit[data-host-id="' + id + '"]').hide();
-                $('.host-update-hint-submit[data-host-id="' + id + '"]').hide();
-                $('.host-restart-submit[data-host-id="' + id + '"]').hide();
+                this.$tab.find('.hosts-led[data-host-id="' + id + '"]').removeClass('led-green').addClass('led-red');
+                this.$tab.find('.host-update-submit[data-host-id="' + id + '"]').hide();
+                this.$tab.find('.host-update-hint-submit[data-host-id="' + id + '"]').hide();
+                this.$tab.find('.host-restart-submit[data-host-id="' + id + '"]').hide();
             }
         } else if (id.match(/^system\.host\..+\.outputCount$/)) {
             id = id.substring(0, id.length - 12);
 
-            $('.host-out[data-host-id="' + id + '"]').html('<span class="highlight">&#x21A6;' + state.val + '</span>');
+            this.$tab.find('.host-out[data-host-id="' + id + '"]').html('<span class="highlight">&#x21A6;' + state.val + '</span>');
         } else if (id.match(/^system\.host\..+\.inputCount$/)) {
             id = id.substring(0, id.length - 11);
 
-            $('.host-in[data-host-id="' + id + '"]').html('<span class="highlight">&#x21A6;' + state.val + '</span>');
+            this.$tab.find('.host-in[data-host-id="' + id + '"]').html('<span class="highlight">&#x21A6;' + state.val + '</span>');
         }
     };
 }

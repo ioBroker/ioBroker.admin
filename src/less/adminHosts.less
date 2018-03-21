@@ -61,7 +61,7 @@
             position: absolute;
             right: 0;
             top: 0;
-            bottom: -2px;
+            bottom: 0;
             width: 40px;
             padding: 8px 0;
             background-color: #e2e2e2;
@@ -119,6 +119,7 @@
         }
     }
     .hosts-table {
+        width: 100%;
         //.new-iob-list-table;
         // font-size: @list-font-size !important;
         font-weight: normal;
@@ -130,7 +131,7 @@
         border-collapse:    collapse;
         border-spacing:     0;
         padding:            0;
-        margin:             0;
+        margin:             0 0 0 1px;
         overflow:           auto;
 
         font-size: 0.9em;
@@ -227,9 +228,15 @@
             height: 35px;
             border: 0;
         }
-        /*&>tbody>tr>td {
-            padding: 0;
-        }*/
+        .hosts-host-filtered-out {
+            padding-left: 2rem;
+        }
+    }
+    #hosts {
+        .hosts-host-filtered-out>div {
+            padding: 2rem;
+            font-size: 20px;
+        }
     }
     .small-button-empty, .small-button {
         width:      24px;
