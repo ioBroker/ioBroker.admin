@@ -970,10 +970,20 @@ $(document).ready(function () {
         main.currentHost = main.currentHost || main.config.currentHost || '';
 
         var lines = [];
+        var icon;
+        var color;
+        var curId;
         for (var i = 0; i < main.tabs.hosts.list.length; i++) {
-            lines.push('<li><a href="#!" data-value="' + main.tabs.hosts.list[i].name + '">' + main.tabs.hosts.list[i].name + '</a></li>');
+            if (main.objects[main.tabs.hosts.list[i].id] && main.objects[main.tabs.hosts.list[i].id].common) {
+                icon = main.objects[main.tabs.hosts.list[i].id].common.icon;
+            }
+
+            lines.push('<li><a href="#!" data-value="' + main.tabs.hosts.list[i].name + '"><img class="imgHost left" src="' + (icon ? icon : 'img/no-image.png') + '"/>' + main.tabs.hosts.list[i].name + '</a></li>');
             if (!main.currentHost) {
                 main.currentHost = main.tabs.hosts.list[i].name;
+            }
+            if (main.currentHost === main.tabs.hosts.list[i].name) {
+                curId = main.tabs.hosts.list[i].id;
             }
         }
         $selHosts.html(lines);
@@ -982,10 +992,18 @@ $(document).ready(function () {
         $selBtn
             .text(_('Host:') + ' ' + main.currentHost)
             .dropdown();
+        icon = '';
 
-        var imgHost = $('<img class="imgHost left" src="img/no-image.png"/>');
+        if (main.objects[curId] && main.objects[curId].common) {
+            icon = main.objects[curId].common.icon;
+            color = main.objects[curId].common.color;
+        }
 
+        var imgHost = $('<img class="imgHost left" src="' + (icon ? icon : 'img/no-image.png') + '"/>');
         $selBtn.append(imgHost);
+        if (color) {
+
+        }
 
         if (main.tabs.hosts.list.length < 2) {
             $selBtn.addClass('disabled');
@@ -1401,7 +1419,6 @@ $(document).ready(function () {
                 main.socket.emit('requireLog', false);
             }
         }
-
     };
 
     // ---------------------------- Navigation ---------------------------------------------
@@ -1461,12 +1478,12 @@ $(document).ready(function () {
 
                 // set default page
                 if (!tab || tab === '!') {
-                    if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf('intro') !== -1) {
+                    if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf('tab-intro') !== -1) {
                         tab = 'intro';
-                    } else if (main.systemConfig.common.tabs.indexOf('adapters') !== -1) {
+                    } else if (main.systemConfig.common.tabs.indexOf('tab-adapters') !== -1) {
                         tab = 'adapters';
                     } else {
-                        tab = main.systemConfig.common.tabs[0];
+                        tab = main.systemConfig.common.tabs[0].replace(/^#/, '').replace(/^tab-/, '');
                     }
                 }
                 // do tab is not found

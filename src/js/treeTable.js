@@ -261,7 +261,11 @@
                 var users = objects[groups[g]].common.members;
                 for (var u = 0; u < users.length; u++) {
                     usersGroups[users[u]] = usersGroups[users[u]] || [];
-                    usersGroups[users[u]].push({id: groups[g], name: objects[groups[g]].common.name || id.replace('system.group.', '')});
+                    var name = objects[groups[g]].common.name;
+                    if (name && typeof name === 'object') {
+                        name = name[systemLang] || 'en';
+                    }
+                    usersGroups[users[u]].push({id: groups[g], name: name || id.replace('system.group.', '')});
                 }
             }
         }
@@ -513,7 +517,12 @@
                 } else if (aattr === 'icon') {
                     table += getIcon(options.objects, rows[i].id, options.imgPath);
                 } else {
-                    table += '<span>' + (rows[i][aattr] || '') + '</span>';
+                    var vall = rows[i][aattr] || '';
+                    if (vall && typeof vall === 'object' && vall.en) {
+                        vall = vall[systemLang] || vall.en;
+                    }
+
+                    table += '<span>' + vall + '</span>';
                 }
                 table += '</td>';
             }

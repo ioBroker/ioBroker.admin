@@ -1,11 +1,12 @@
 <div id="tab-hosts" class="admin-tab m" style="display: none" data-name="Hosts">
     <div class="main-toolbar-table">
         <div class="row navicon">
-            <div class="col s3 m1 main-toolbar-table-types-tools">
+            <div class="col s3 m2 main-toolbar-table-types-tools">
+                <a class="btn-floating btn-small translateT btn-switch-tiles" title="change view mode"><i class="material-icons">view_module</i></a>
                 <a class="btn-floating btn-small translateT btn-reload" title="update adapter information"><i class="material-icons">refresh</i></a>
                 <span class="iob-toolbar-sep">&nbsp;</span>
             </div>
-            <div class="col s9 m11 main-toolbar-table-types-tools">
+            <div class="col s9 m10 main-toolbar-table-types-tools">
                 <input class="filter-input translateP" placeholder="Filter" />
                 <a class="filter-clear btn-floating btn-very-small translateT red lighten-3" title="clear"><i class="material-icons">clear</i></a>
             </div>
@@ -13,71 +14,16 @@
     </div>
 
     <div id="hosts" class="row">
-
-<!--
-        <div class="col s12">
-            <div class="host z-depth-1 hoverable">
-                <div class="image center">
-                    <img class="" src="img/no-image.png">
-                    <div class="hosts-led led-green"></div>
-                </div>
-                <div class="system">
-                    <span class="nameHost">OneHost</span>
-                    <ul>
-                        <li>Type : <span class="type">js-controller</span></li>
-                        <li>Title : <span class="title"> JS controller</span></li>
-                        <li>OS : <span class="os"> win32</span></li>
-                        <li>Available : <span class="available"> 1.3.0</span></li>
-                        <li>Installed : <span class="installed"> 1.3.0</span></li>
-                        <li>Events : <span class="events"> ↦3 / ↦10</span></li>
-                    </ul>
-                </div>
-                <div class="icon center">
-                    <i class="material-icons">menu</i>
-                    <i class="material-icons">autorenew</i>
-                    <i class="material-icons">refresh</i>
-                </div>
-            </div>
-        </div>
-
-        <div class="col s12">
-            <div class="host z-depth-1 hoverable">
-                <div class="image center">
-                    <img class="" src="img/no-image.png">
-                    <div class="hosts-led led-red"></div>
-                </div>
-                <div class="system">
-                    <span class="nameHost">TwoHost</span>
-                    <ul>
-                        <li>Type : <span class="type">js-controller</span></li>
-                        <li>Title : <span class="title"> JS controller</span></li>
-                        <li>OS : <span class="os"> win32</span></li>
-                        <li>Available : <span class="available"> 1.3.0</span></li>
-                        <li>Installed : <span class="installed"> 1.3.1</span></li>
-                        <li>Events : <span class="events"> ↦3 / ↦10</span></li>
-                    </ul>
-
-                </div>
-                <div class="icon center">
-                    <i class="material-icons">menu</i>
-                    <i class="material-icons">autorenew</i>
-                    <i class="material-icons">refresh</i>
-                </div>
-            </div>
-        </div>
--->
-
     </div>
 
-<!--
-    <table class="hosts-table iob-list-table" style="width: 100%; margin-left: 1px">
+    <table class="hosts-table iob-list-table">
         <thead id="grid-hosts-head">
             <tr>
                 <th class="translate tab-hosts-header-led" style="width: 40px"></th>
                 <th class="translate tab-hosts-header-name">name</th>
                 <th class="translate tab-hosts-header-type">type</th>
                 <th class="translate tab-hosts-header-title" style="width: 80px">title</th>
-                <th class="translate  tab-hosts-header-led">platform</th
+                <!--th class="translate  tab-hosts-header-led">platform</th-->
                 <th class="translate tab-hosts-header-os text-overflow">os</th>
                 <th class="translate tab-hosts-header-available" style="width: 80px">available</th>
                 <th class="translate tab-hosts-header-installed" style="width: 80px">installed</th>
@@ -88,8 +34,6 @@
         <tbody id="grid-hosts">
         </tbody>
     </table>
--->
-    <!--div id="pager-hosts"></div -->
 </div>
 
 
@@ -105,6 +49,39 @@
         </div>
         <div class="modal-footer">
             <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>
+        </div>
+    </div>
+    <div id="tab-host-dialog-edit" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h5 class="translate title">Rename</h5>
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">text_fields</i>
+                    <label for="tab-host-dialog-edit-title" class="translate">Title</label>
+                    <input id="tab-host-dialog-edit-title" autofocus type="text" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s6">
+                    <div class="tab-host-dialog-edit-icon"></div>
+                    <div class="tab-host-dialog-edit-upload">
+                        <a class="btn tab-host-dialog-edit-color-btn"><i class="material-icons">add</i></a>
+                    </div>
+                    <div class="btn-floating tab-host-dialog-edit-icon-clear"><i class="material-icons">delete</i></div>
+                </div>
+                <div class="col s6 file-field tab-host-dialog-edit-colorpicker">
+                    <i class="material-icons prefix tab-host-dialog-edit-color-icon">color_lens</i>
+                    <a class="btn tab-host-dialog-edit-color-btn translate">Color</a>
+                    <div class="file-path-wrapper">
+                        <input type="text" class="tab-host-dialog-edit-color" />
+                        <div class="btn-floating waves-effect waves-light tab-host-dialog-edit-color-clear"><i class="material-icons">delete</i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-green btn-flat translate tab-host-dialog-ok">Change</a>
+            <a class="modal-action modal-close waves-effect waves-green gray btn-flat translate">Cancel</a>
         </div>
     </div>
 </div>

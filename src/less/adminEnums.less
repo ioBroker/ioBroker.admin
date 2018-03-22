@@ -3,7 +3,8 @@
     .tab-enums-list {
         overflow: hidden;
     }
-    .tree-table-body{
+    .tree-table-body {
+        overflow: hidden;
         .cron-main-tab{
             padding: 0;
             i {
@@ -35,7 +36,9 @@
                 }
             }
         }
-
+        .enum-body {
+            margin-bottom: 0;
+        }
     }
     .tab-enums-list,
     .tab-enums-objects {
@@ -50,9 +53,22 @@
             color: white;
         }
     }
+    .tree-table-main-header>th {
+        padding: 0 10px;
+    }
+
+    .treetable-th-name {
+        height: 28px;
+        input {
+            height: 22px;
+            padding: 0;
+            margin: 0;
+        }
+    }
+
     .treetable-icon {
-        width: 32px;
-        max-height: 32px;
+        width: 18px;
+        max-height: 18px;
     }
     .tab-enums-objects {
         display: none;
@@ -61,10 +77,11 @@
         width: 100%;
         overflow: hidden;
         line-height: 1.5rem;
-        .marg{
+        .marg {
             margin-bottom: 5px;
         }
         .tree-table-buttons {
+            margin-bottom: 10px;
             a {
                 margin-right: 5px;
                 height: @admin-small-buttons-size;
@@ -80,6 +97,10 @@
                     white-space: nowrap;
                 }
             }
+        }
+        .tree-table-main.treetable {
+            margin: 0 0 1.8em 0;
+            // line-height: 1.4rem;
         }
         .collection {
             overflow: auto;
@@ -161,7 +182,15 @@
     .tab-enums-objects {
         overflow: hidden;
         .main-toolbar-table {
-            height: 41px;
+            height: 32px;
+            margin-left: 10px;
+            .panel-button {
+                height: 28px;
+                width: 28px !important;
+                i {
+                    margin-top: 0;
+                }
+            }
         }
         /*.grid-main-wob-div {
       height: calc(~"100% - 72px");
@@ -205,8 +234,8 @@
         .tab-enums-list,
         .tab-enums-objects {
             transition: width @admin-sidemenu-transition;
-            width: calc(~"50% - 2px") !important;
             display: inline-block;
+            width: calc(~"50% - 2px") !important;
         }
     }
     .fancytree-container {
