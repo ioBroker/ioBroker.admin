@@ -7,7 +7,9 @@
     margin-bottom: 0;
     height: calc(~"100% - 10px");
     overflow: auto;
-
+      .info{
+          display: none;
+      }
     .tile {
       min-height: 250px;
       .card-content {
@@ -15,6 +17,13 @@
         padding: 1rem;
         overflow: hidden;
         text-overflow: ellipsis;
+          .card-titles{
+              display: block;
+              line-height: 32px;
+              margin-bottom: 8px;
+              font-size: 24px;
+              font-weight: 300;
+          }
       }
       .card-action {
               min-height: 49px;
@@ -34,11 +43,22 @@
         }
       }
       &.card-system-info {
+        .info{
+          display: block;
+          position: absolute;
+          right: 10px;
+          height: 30px;
+          width: 30px;
+          top: 10px;
+          i{
+            line-height: 1.2;
+          }
+        }
         .card-image {
           background: #e2e2e2;
           max-width: 30%;
           img {
-            max-width: 90px;
+//            max-width: 90px;
             height: auto;
             padding: 2rem 0.5rem;
           }
@@ -46,10 +66,6 @@
         .card-content {
           height: 220px;
           padding-right: 0;
-          .card-content-text:hover {
-            overflow-y: scroll;
-            padding-right: 0;
-          }
           .card-content-text {
             padding-right: 5px;
             ul{
@@ -57,6 +73,14 @@
             }
             height: 140px;
           }
+        }
+        .card-reveal {
+          overflow-y: hidden;
+            padding-top: 15px;
+        }
+        .card-reveal:hover {
+          overflow-y: scroll;
+          padding-right: 18px;
         }
         .card-action{
           display: none;

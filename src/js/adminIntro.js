@@ -97,7 +97,7 @@ function Intro(main) {
         var $card = that.$template.clone();
         $card.removeAttr('id');
         $card.addClass('card-system-info');
-        $card.find('.card-title').text(host.name);
+        $card.find('.card-titles').text(host.name);
         $card.find('.btn-card-enabled').data('host', host.id);
 
         // button enabled
@@ -136,7 +136,7 @@ function Intro(main) {
             if (data) {
                 text += '<ul>';
                 for (var item in data) {
-                    if (data.hasOwnProperty(item)) {
+                    if (data.hasOwnProperty(item)&& (item==="Platform" || item==="NPM" ||item==="RAM" || item==="Node.js")) {
                         text += '<li><b>' + _(item) + ':</b> ';
                         text += '<span class="system-info" data-attribute="' + item + '">' + (formatInfo[item] ? formatInfo[item](data[item]) : data[item]) + '</span></li>';
                     }
@@ -145,6 +145,21 @@ function Intro(main) {
             }
             text += '</div>';
             $card.find('.card-content-text').replaceWith($(text));
+
+            text = '<div class="card-reveal"><span class="card-title grey-text text-darken-4">Info<i class="material-icons right">close</i></span>';
+            if (data) {
+                text += '<ul>';
+                for (var item in data) {
+                    if (data.hasOwnProperty(item)) {
+                        text += '<li><b>' + _(item) + ':</b> ';
+                        text += '<span class="system-info" data-attribute="' + item + '">' + (formatInfo[item] ? formatInfo[item](data[item]) : data[item]) + '</span></li>';
+                    }
+                }
+                text += '</ul>';
+            }
+            text += '<a class="waves-effect waves-light btn-small right">Copy</a></div>';
+            $card.find('.card-reveal').replaceWith($(text));
+
         });
         return $card;
     }
@@ -182,7 +197,7 @@ function Intro(main) {
         if (typeof title === 'object') {
             title = title[systemLang] || title.en;
         }
-        $card.find('.card-title').text(title || adapter);
+        $card.find('.card-titles').text(title || adapter);
 
         var desc = common.desc;
         if (typeof desc === 'object') {
