@@ -1897,6 +1897,9 @@ $(document).ready(function () {
                         if (vendor.name) {
                             $('.admin-sidemenu-header .button-version').html(data.native.vendor.name).addClass('vendor');
                         }
+                        if (vendor.admin && vendor.admin.noCustomInstall) {
+                            $('#btn_filter_custom_url').hide();
+                        }
                         if (vendor.admin && vendor.admin.css) {
                             if (vendor.admin.css.sideNavUser) {
                                 $('.side-nav .user-view').css(vendor.admin.css.sideNavUser);
