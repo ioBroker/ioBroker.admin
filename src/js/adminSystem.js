@@ -134,6 +134,18 @@ function System(main) {
                     }
                 }
             });
+            if (that.systemRepos.nonEdit && that.systemRepos.nonEdit.native && that.systemRepos.nonEdit.native.repositories) {
+                var $repos = $dialog.find('#grid-repos');
+                $repos.find('input').each(function () {
+                    $(this).prop('disabled', true).addClass('disabled');
+                });
+                $repos.find('select').each(function () {
+                    $(this).prop('disabled', true).addClass('disabled');
+                });
+                $repos.find('.btn-floating').each(function () {
+                    $(this).addClass('disabled');
+                });
+            }
         } else {
             $('#tab-system-repo').html(_('permissionError'));
         }
@@ -169,11 +181,25 @@ function System(main) {
                     certificate: cert2string(that.systemCerts.native.certificates[cert])
                 });
             }
+
             values2table('tab-system-certs', values, {
                 onChange: function (attr /* , index */) {
                     $dialog.find('.btn-save').removeClass('disabled');
                 }
             });
+
+            if (that.systemCerts.nonEdit && that.systemCerts.nonEdit.native && that.systemCerts.nonEdit.native.certificates) {
+                var $repos = $dialog.find('#grid-certs');
+                $repos.find('input').each(function () {
+                    $(this).prop('disabled', true).addClass('disabled');
+                });
+                $repos.find('select').each(function () {
+                    $(this).prop('disabled', true).addClass('disabled');
+                });
+                $repos.find('.btn-floating').each(function () {
+                    $(this).addClass('disabled');
+                });
+            }
         } else {
             $dropZone.html(_('permissionError'));
         }
@@ -544,6 +570,12 @@ function System(main) {
                         $this.val(that.main.systemConfig.common[id]);
                     }
                 }
+                if (that.main.systemConfig.nonEdit && that.main.systemConfig.nonEdit.common) {
+                    if (that.main.systemConfig.nonEdit.common[id] !== undefined) {
+                        $this.addClass('disabled');
+                        $this.prop('disabled', true);
+                    }
+                }
             });
 
             $dialog.find('#system_latitude').off('change').on('change', function () {
@@ -573,6 +605,12 @@ function System(main) {
                         $this.prop('checked', that.systemCerts.native.letsEncrypt[id]);
                     } else {
                         $this.val(that.systemCerts.native.letsEncrypt[id]);
+                    }
+                }
+                if (that.systemCerts.nonEdit && that.systemCerts.nonEdit.native && that.systemCerts.nonEdit.native.letsEncrypt) {
+                    if (that.systemCerts.nonEdit.native.letsEncrypt[id] !== undefined) {
+                        $this.addClass('disabled');
+                        $this.prop('disabled', true);
                     }
                 }
             });

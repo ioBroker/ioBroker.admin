@@ -493,7 +493,7 @@ $(document).ready(function () {
                 id = idOrList;
             }
 
-            if (main.objects[id] && main.objects[id].common && main.objects[id].common['object-non-deletable']) {
+            if (main.objects[id] && main.objects[id].common && (main.objects[id].common['object-non-deletable'] || main.objects[id].common.dontDelete)) {
                 main.showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
                 if (typeof idOrList === 'object') {
                     setTimeout(function () {
@@ -682,7 +682,10 @@ $(document).ready(function () {
     }
 
     function initHtmlButtons() {
-        $('.button-version').text('ioBroker.admin ' + (main.objects['system.adapter.admin'] && main.objects['system.adapter.admin'].common && main.objects['system.adapter.admin'].common.version));
+        var $versionBtn = $('.button-version');
+        if (!$versionBtn.hasClass('vendor')) {
+            $versionBtn.text('ioBroker.admin ' + (main.objects['system.adapter.admin'] && main.objects['system.adapter.admin'].common && main.objects['system.adapter.admin'].common.version));
+        }
 
         $('.choose-tabs-config-button').off('click').on('click', function(event) {
             var $dialog = $('#admin_sidemenu_dialog');
@@ -1689,7 +1692,7 @@ $(document).ready(function () {
             var id = $(this).attr('id');
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !== -1) {
                 elements.push({
-                    line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
+                    line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a href="#' + id + '">' +
                             (tabsInfo[id] && tabsInfo[id].icon ? '<i class="material-icons left">' + tabsInfo[id].icon + '</i>' : '<i class="material-icons left">live_help</i>') +
                             _($(this).data('name')) + '</a></li>',
                     id: id
@@ -1743,8 +1746,15 @@ $(document).ready(function () {
             }, 400);
         });
 
-        $('.admin-sidemenu-items').off('click').on('click', function () {
+        $('.admin-sidemenu-items').off('click').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
             window.location.hash = '#' + $(this).data('tab');
+        });
+        $('.admin-sidemenu-items a').off('click').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.location.hash = '#' + $(this).parent().data('tab');
         });
 
         // Show if update available
@@ -1877,6 +1887,37 @@ $(document).ready(function () {
                 // Read system configuration
                 main.socket.emit('getObject', 'system.config', function (errConfig, data) {
                     main.systemConfig = data;
+
+                    // set logo and set branding
+                    if (data && data.native && data.native.vendor) {
+                        var vendor = data.native.vendor;
+                        if (vendor.icon) {
+                            $('.admin-sidemenu-header .button-icon img').attr('src', data.native.vendor.icon);
+                        }
+                        if (vendor.name) {
+                            $('.admin-sidemenu-header .button-version').html(data.native.vendor.name).addClass('vendor');
+                        }
+                        if (vendor.admin && vendor.admin.css) {
+                            if (vendor.admin.css.sideNavUser) {
+                                $('.side-nav .user-view').css(vendor.admin.css.sideNavUser);
+                            }
+                            if (vendor.admin.css.sideNavMenu) {
+                                $('.side-nav .admin-sidemenu-menu').css(vendor.admin.css.sideNavMenu);
+                            }
+                            if (vendor.admin.css.header) {
+                                $('#admin_sidemenu_main').find('.admin-sidemenu-header nav').css(vendor.admin.css.header);
+                            }
+                            // apply rules
+                            if (vendor.admin.css.rules) {
+                                for (var r = 0; r < vendor.admin.css.rules.length; r++) {
+                                    $(vendor.admin.css.rules[r].selector).css(vendor.admin.css.rules[r].css);
+                                }
+                            }
+                            if (vendor.admin.styles) {
+                                $('head').append('<style type="text/css">' + vendor.admin.styles + '</style>');
+                            }
+                        }
+                    }
 
                     // rename log => logs (back compatibility)
                     if (main.systemConfig && main.systemConfig.common && main.systemConfig.common.tabs) {

@@ -9,6 +9,7 @@ function Hosts(main) {
     this.$table   = this.$tab.find('#grid-hosts');
     this.inited   = false;
     this.isTiles  = true;
+    this.words    = {};
 
     this.prepare  = function () {
         this.isTiles = (this.main.config.hostsIsTiles !== undefined && this.main.config.hostsIsTiles !== null) ? this.main.config.hostsIsTiles : true;
@@ -37,12 +38,7 @@ function Hosts(main) {
             that.main.saveConfig('hostsIsTiles', that.isTiles);
 
             setTimeout(function () {
-                if (that.isTiles) {
-                    showHostsTile();
-                } else {
-                    showHostsTable();
-                }
-                applyFilter(that.$tab.find('.filter-input').val());
+                that._postInit();
             }, 50);
         });
 
@@ -52,12 +48,11 @@ function Hosts(main) {
             this.$tab.find('.btn-switch-tiles').find('i').text('view_module');
         }
 
-
         this.$tab.find('.filter-clear').on('click', function () {
             that.$tab.find('.filter-input').val('').trigger('change');
         });
 
-        var $hostsFilter = that.$tab.find('.filter-input');
+        var $hostsFilter = this.$tab.find('.filter-input');
         $hostsFilter.on('change', function () {
             var filter = $(this).val();
             if (filter) {
@@ -77,12 +72,21 @@ function Hosts(main) {
             }, 300);
         });
 
-        if (that.main.config.hostsFilter && that.main.config.hostsFilter[0] !== '{') {
+        if (this.main.config.hostsFilter && this.main.config.hostsFilter[0] !== '{') {
             $hostsFilter.val(that.main.config.hostsFilter).addClass('input-not-empty');
-            that.$tab.find('.filter-clear').show();
+            this.$tab.find('.filter-clear').show();
         } else {
-            that.$tab.find('.filter-clear').hide();
+            this.$tab.find('.filter-clear').hide();
         }
+
+        // cache translations
+        this.words['Title']     = _('Title');
+        this.words['OS']        = _('OS');
+        this.words['Available'] = _('Available');
+        this.words['Installed'] = _('Installed');
+        this.words['Events']    = _('Events');
+        this.words['Title']     = _('Title');
+        that.words['Type']      = _('Type');
     };
 
     // ----------------------------- Hosts show and Edit ------------------------------------------------
@@ -242,16 +246,16 @@ function Hosts(main) {
                     '          <div class="system" style="' + (obj.common.color ? 'color: ' + (color ? 'white' : 'black') + '; background: ' + obj.common.color : '') + '">' +
                     '              <span class="nameHost" title="name">' + obj.common.hostname + '</span>' +
                     '              <ul>'+
-                    '                  <li class="translate tab-hosts-header-title" data-lang="title">Type : <span class="type">' + obj.common.type + '</span></li>' +
-                    '                  <li>Title : <span class="title">' + obj.common.title + '</span></li>' +
-                    '                  <li>OS : <span class="os">' + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</span></li>' +
-                    '                  <li>Available : <span class="available"> 1.3.0</span></li>' +
-                    '                  <li>Installed : <span class="installed"> ' + obj.common.installedVersion + '</span></li>';
+                    '                  <li class="tab-hosts-header-title"><span class="title-val">' + that.words['Type'] + ':</span> <span class="type">' + obj.common.type + '</span></li>' +
+                    '                  <li><span class="title-val">' + that.words['Title']     + ':</span> <span class="title">'      + obj.common.title + '</span></li>' +
+                    '                  <li><span class="title-val">' + that.words['OS']        + ':</span> <span class="os">'         + (obj.native.os ? obj.native.os.platform : _('unknown')) + '</span></li>' +
+                    '                  <li><span class="title-val">' + that.words['Available'] + ':</span> <span class="available hosts-version-available"></span></li>' +
+                    '                  <li><span class="title-val">' + that.words['Installed'] + ':</span> <span class="installed"> ' + obj.common.installedVersion + '</span></li>';
 
         if (that.main.states[obj._id + '.inputCount']) {
-            text += '<li class="tab-hosts-header-events">Events : <span title="in" data-host-id="' + obj._id + '" class="host-in">&#x21E5;' + that.main.states[obj._id + '.inputCount'].val + '</span> / <span title="out" data-host-id="' + obj._id + '"  class="host-out">&#x21A6;' + that.main.states[obj._id + '.outputCount'].val + '</span></li>';
+            text += '<li class="tab-hosts-header-events"><span class="title-val">' + that.words['Events'] + ':</span> <span title="in" data-host-id="' + obj._id + '" class="host-in">&#x21E5;' + that.main.states[obj._id + '.inputCount'].val + '</span> / <span title="out" data-host-id="' + obj._id + '"  class="host-out">&#x21A6;' + that.main.states[obj._id + '.outputCount'].val + '</span></li>';
         } else {
-            text += '<li class="tab-hosts-header-events">Events : <span title="in" data-host-id="' + obj._id + '" class="host-in"></span> / <span title="out" data-host-id="' + obj._id + '" class="host-out"></span></li>';
+            text += '<li class="tab-hosts-header-events"><span class="title-val">' + that.words['Events'] + ':</span> <span title="in" data-host-id="' + obj._id + '" class="host-in"></span> / <span title="out" data-host-id="' + obj._id + '" class="host-out"></span></li>';
         }
 
         text +=    '</ul>'+
@@ -512,6 +516,7 @@ function Hosts(main) {
                                 $(this).find('.host-update-submit').show();
                                 $(this).find('.host-update-hint-submit').show();
                                 $(this).find('.hosts-version-installed').addClass('updateReady');
+                                $(this).find('.hosts-version-available').addClass('hosts-version-available-updatable');
                             }
                         }
                     }
@@ -641,6 +646,7 @@ function Hosts(main) {
                 this.$tab.find('.host-update-submit[data-host-id="' + id + '"]').hide();
                 this.$tab.find('.host-update-hint-submit[data-host-id="' + id + '"]').hide();
                 this.$tab.find('.host-restart-submit[data-host-id="' + id + '"]').hide();
+                this.$tab.find('.hosts-version-available[data-host-id="' + id + '"]').removeClass('hosts-version-available-updatable');
             }
         } else if (id.match(/^system\.host\..+\.outputCount$/)) {
             id = id.substring(0, id.length - 12);

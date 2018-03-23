@@ -13,6 +13,13 @@
         position: relative;
         margin-top: 10px;
         border-radius: 3px;
+
+        @media screen and (max-width: 700px) {
+            height: 150px;
+        }
+        @media screen and (min-width: 701px) {
+            height: 100px;
+        }
         .image {
             float: left;
             width: 100px;
@@ -37,21 +44,36 @@
         .system {
             padding: 5px 10px;
             margin-left: 100px;
+            overflow: hidden;
             span {
                 font-weight: 700;
             }
+            .title-val {
+                font-weight: normal;
+                min-width: 100px;
+            }
             ul {
                 list-style-position: inside;
-                -moz-column-count: 2;
-                -webkit-column-count: 2;
-                column-count: 2;
+
                 list-style-type: none;
                 height: 60px;
                 margin: 0;
                 width: 300px;
                 font-size: 0.8rem;
+                @media screen and (max-width: 700px) {
+                    height: 120px;
+                    -moz-column-count: 1;
+                    -webkit-column-count: 1;
+                    column-count: 1;
+                }
+                @media screen and (min-width: 701px) {
+                    height: 60px;
+                    -moz-column-count: 2;
+                    -webkit-column-count: 2;
+                    column-count: 2;
+                }
             }
-            .nameHost{
+            .nameHost {
                 font-size: 1.5rem;
                 font-weight: 700;
             }
@@ -73,7 +95,6 @@
                 transition: 0.5s;
             }
         }
-
     }
     .main-toolbar-table {
 //        margin-left: 0.3rem;
@@ -230,6 +251,10 @@
         }
         .hosts-host-filtered-out {
             padding-left: 2rem;
+        }
+        .hosts-version-available-updatable {
+            float: left;
+            padding-top: 4px;
         }
     }
     #hosts {

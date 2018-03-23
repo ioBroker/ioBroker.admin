@@ -43,7 +43,7 @@ function Enums(main) {
                     "es": "Lista de las habitaciones"
                 },
                 "members": [],
-                "object-non-deletable": true
+                "dontDelete": true
             },
             "type": "enum"
         },
@@ -72,7 +72,7 @@ function Enums(main) {
                     "es": "Lista de las funciones"
                 },
                 "members": [],
-                "object-non-deletable": true
+                "dontDelete": true
             },
             "type": "enum"
         },
@@ -390,7 +390,7 @@ function Enums(main) {
             '       <a class="btn-floating waves-effect waves-light btn-small btn-edit-category" title="' + _('Edit category') + '" data-id="' + id + '">' +
             '           <i class="material-icons">edit</i>' +
             '       </a>' +
-            '       <a class="btn-floating waves-effect btn-small waves-light red lighten-2 btn-del-category ' + (obj && obj.common && obj.common['object-non-deletable'] ? 'disabled' : '') + '" title="' + _('Delete category') + '" data-id="' + id + '">' +
+            '       <a class="btn-floating waves-effect btn-small waves-light red lighten-2 btn-del-category ' + (obj && obj.common && (obj.common.dontDelete || obj.common['object-non-deletable']) ? 'disabled' : '') + '" title="' + _('Delete category') + '" data-id="' + id + '">' +
             '           <i class="material-icons">delete</i>' +
             '       </a>' +
             '   </div>' +
@@ -422,7 +422,7 @@ function Enums(main) {
                     }
                 }
                 text += '<a class="edit-content"   data-id="' + that.list[se] + '"><i class="material-icons">edit</i></a>';
-                text += '<a class="delete-content ' + (en && en.common && en.common['object-non-deletable'] ? 'disabled' : '') + '" data-id="' + that.list[se] + '"><i class="material-icons">delete</i></a>';
+                text += '<a class="delete-content ' + (en && en.common && (en.common.dontDelete || en.common['object-non-deletable']) ? 'disabled' : '') + '" data-id="' + that.list[se] + '"><i class="material-icons">delete</i></a>';
                 text += '</li>';
             }
         }
@@ -960,7 +960,7 @@ function Enums(main) {
                 }
                 iconVal      = that.main.objects[id].common.icon;
                 colorVal     = that.main.objects[id].common.color;
-                isIdEditable = !that.main.objects[id].common['object-non-deletable'];
+                isIdEditable = !that.main.objects[id].common['object-non-deletable'] && !that.main.objects[id].common.dontDelete;
             }
             oldId = id;
             idVal = id;

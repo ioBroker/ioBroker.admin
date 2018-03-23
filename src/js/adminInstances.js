@@ -299,7 +299,11 @@ function Instances(main) {
             '</th>';
         text += '<th style="width: calc(2em - 6px); border-left-color: transparent; border-right-color: transparent;"></th>';
         text += '<th style="width: ' + (that.main.config.expertMode ? 10 : 14) + 'em; border-left-color: transparent;"></th>';
-        text += '<th style="width: 15.8em">' + _('actions') + '</th>';
+        if (that.main.config.expertMode) {
+            text += '<th style="width: 15.8em">' + _('actions') + '</th>';
+        } else {
+            text += '<th style="width: 12.8em">' + _('actions') + '</th>';
+        }
         text += '<th style="text-align: left">' + _('title') + '</th>';
 
         if (that.main.tabs.hosts.list.length > 1) {
@@ -417,12 +421,14 @@ function Instances(main) {
             var isRun = common.onlyWWW || common.enabled;
             // buttons
             text += '<td style="text-align: left;" class="m">' +
-                '<button data-instance-id="' + instanceId + '" class="instance-stop-run small-button ' + (common.onlyWWW  ? 'small-button-empty' : '') + '"                                   title="dynamic"            ><i class="material-icons">pause</i></button>' +
-                '<button data-instance-id="' + instanceId + '" class="instance-settings small-button ' + (common.noConfig ? 'small-button-empty' : '') + '"                                   title="' + _('config') + '"><i class="material-icons">build</i></button>' +
-                '<button data-instance-id="' + instanceId + '" class="instance-reload   small-button ' + (common.onlyWWW  ? 'small-button-empty' : '') + ' ' + (isRun ? '' : 'disabled') + '" title="' + _('reload') + '"><i class="material-icons">refresh</i></button>'+
-                '<button data-instance-id="' + instanceId + '" class="instance-issue    small-button"                                                                                         title="' + _('bug') + '"   ><i class="material-icons">bug_report</i></button>' +
-                '<button data-instance-id="' + instanceId + '" class="instance-del      small-button"                                                                                         title="' + _('delete') + '"><i class="material-icons">delete</i></button>' +
-                (url ? '<button data-instance-id="' + instanceId + '" class="instance-web      small-button ' + (!url            ? 'small-button-empty' : '') + ' ' + (isRun ? '' : 'disabled') + '" title="' + _('open web page') + '" data-link="' + (typeof url !== 'object' ? url : '') + '"><i class="material-icons">input</i></button>' : '') +
+                        '<button data-instance-id="' + instanceId + '" class="instance-stop-run small-button ' + (common.onlyWWW  ? 'small-button-empty' : '') + '"                                   title="dynamic"            ><i class="material-icons">pause</i></button>' +
+                        '<button data-instance-id="' + instanceId + '" class="instance-settings small-button ' + (common.noConfig ? 'small-button-empty' : '') + '"                                   title="' + _('config') + '"><i class="material-icons">build</i></button>' +
+                        '<button data-instance-id="' + instanceId + '" class="instance-reload   small-button ' + (common.onlyWWW  ? 'small-button-empty' : '') + ' ' + (isRun ? '' : 'disabled') + '" title="' + _('reload') + '"><i class="material-icons">refresh</i></button>';
+            if (that.main.config.expertMode) {
+                text += '<button data-instance-id="' + instanceId + '" class="instance-issue    small-button"                                                                                         title="' + _('bug') + '"   ><i class="material-icons">bug_report</i></button>';
+            }
+            text +=     '<button data-instance-id="' + instanceId + '" class="instance-del      small-button"                                                                                         title="' + _('delete') + '"><i class="material-icons">delete</i></button>' +
+                (url ?  '<button data-instance-id="' + instanceId + '" class="instance-web      small-button ' + (!url            ? 'small-button-empty' : '') + ' ' + (isRun ? '' : 'disabled') + '" title="' + _('open web page') + '" data-link="' + (typeof url !== 'object' ? url : '') + '"><i class="material-icons">input</i></button>' : '') +
                 '</td>';
 
             var title = common.titleLang || common.title;

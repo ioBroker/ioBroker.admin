@@ -208,7 +208,15 @@ function values2table(divId, values, options) {
 
         var text = '';
         for (var v = 0; v < values.length; v++) {
-            text += '<tr>';
+            var idName = values[v] && values[v].id;
+            if (!idName && values[v]) {
+                if (names[0] === '_index') {
+                    idName = values[v][names[1]];
+                } else {
+                    idName = values[v][names[0]];
+                }
+            }
+            text += '<tr data-id="' + idName + '" data-index="' + v + '">';
 
             for (var i = 0; i < names.length; i++) {
                 text += '<td';

@@ -159,6 +159,8 @@ function Intro(main) {
         }
         if (adapter === 'admin' && urlText === location.host) return null;
         if (adapter === 'web') return null;
+        if (adapter.match(/^vis-/)) return null; // no widgets
+        if (adapter.match(/^icons-/)) return null; // no icons
 
         $card.find('.btn-card-enabled').data('instance', adapter + '.' + instance).data('web', web);
 
