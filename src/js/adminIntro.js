@@ -146,7 +146,7 @@ function Intro(main) {
             text += '</div>';
             $card.find('.card-content-text').replaceWith($(text));
 
-            text = '<div class="card-reveal"><span class="card-title grey-text text-darken-4">Info<i class="material-icons right">close</i></span>';
+            text = '<div class="card-reveal"><h5>Info</h5><a><i class="material-icons">content_copy</i></a><span class="card-title grey-text text-darken-4"><i class="material-icons right">close</i></span>';
             if (data) {
                 text += '<ul>';
                 for (var item in data) {
@@ -157,7 +157,7 @@ function Intro(main) {
                 }
                 text += '</ul>';
             }
-            text += '<a class="waves-effect waves-light btn-small right">Copy</a></div>';
+            text += '</div>';
             $card.find('.card-reveal').replaceWith($(text));
 
         });
