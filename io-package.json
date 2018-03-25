@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.3.4",
+    "version": "3.3.5",
     "news": {
+      "3.3.5": {
+        "en": "small UI corrections",
+        "de": "kleine UI-Korrekturen",
+        "ru": "небольшие корректировки пользовательского интерфейса",
+        "pt": "pequenas correções de IU",
+        "nl": "kleine UI-correcties",
+        "fr": "petites corrections d'interface utilisateur",
+        "it": "piccole correzioni all'interfaccia utente",
+        "es": "pequeñas correcciones de UI",
+        "pl": "małe poprawki interfejsu użytkownika"
+      },
       "3.3.4": {
         "en": "small UI corrections",
         "de": "kleine UI-Korrekturen",
