@@ -181,35 +181,39 @@
         });
     }
 
-    function getIcon(objects, id, imgPath, addClass) {
+    function getIconFromObj(obj, imgPath, classes) {
         var icon     = '';
         var alt      = '';
-        var obj      = objects[id];
         var isCommon = obj && obj.common;
 
         if (isCommon) {
             if (isCommon.icon) {
-                if (isCommon.icon.length < ICON_MINIMAL_BASE64_SIZE) {
-                    var instance;
-                    if (obj.type === 'instance') {
-                        icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
-                    } else if (id.match(/^system\.adapter\./)) {
-                        instance = node.key.split('.', 3);
-                        if (obj.common.icon[0] === '/') {
-                            instance[2] += obj.common.icon;
+                if (!isCommon.icon.match(/^data:image\//)) {
+                    if (isCommon.icon.indexOf('.') !== -1) {
+                        var instance;
+                        if (obj.type === 'instance') {
+                            icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
+                        } else if (obj._id.match(/^system\.adapter\./)) {
+                            instance = obj._id.split('.', 3);
+                            if (obj.common.icon[0] === '/') {
+                                instance[2] += obj.common.icon;
+                            } else {
+                                instance[2] += '/' + obj.common.icon;
+                            }
+                            icon = '/adapter/' + instance[2];
                         } else {
-                            instance[2] += '/' + obj.common.icon;
+                            instance = obj._id.split('.', 2);
+                            if (obj.common.icon[0] === '/') {
+                                instance[0] += obj.common.icon;
+                            } else {
+                                instance[0] += '/' + obj.common.icon;
+                            }
+                            icon = '/adapter/' + instance[0];
                         }
-                        icon = '/adapter/' + instance[2];
                     } else {
-                        instance = id.split('.', 2);
-                        if (obj.common.icon[0] === '/') {
-                            instance[0] += obj.common.icon;
-                        } else {
-                            instance[0] += '/' + obj.common.icon;
-                        }
-                        icon = '/adapter/' + instance[0];
+                        return '<i class="material-icons ' + (classes || 'treetable-icon') + '">' + isCommon.icon + '</i>';
                     }
+
                 } else {
                     icon = isCommon.icon;
                 }
@@ -229,11 +233,8 @@
             }
         }
 
-        if (icon) {
-            return '<img class="' + (addClass !== undefined ? addClass : 'treetable-icon') + '" src="' + icon + '" alt="' + alt + '" />';
-        } else {
-            return '';
-        }
+        if (icon) return '<img class="' + (classes || 'treetable-icon') + '" src="' + icon + '" alt="' + alt + '" />';
+        return '';
     }
 
     // https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
@@ -490,7 +491,7 @@
                     table += '<div style="background: ' + rows[i].color + '" class="treetable-color"></div>';
                 }
                 if (!c && options.icons) {
-                    table += getIcon(options.objects, rows[i].id, options.imgPath) || '<div class="treetable-icon-empty">&nbsp;</div>';
+                    table += getIconFromObj(options.objects[rows[i].id], options.imgPath) || '<div class="treetable-icon-empty">&nbsp;</div>';
                 }
                 if (aattr === 'enabled') {
                     table += '<input data-attr="' + aattr + '" data-id="' + rows[i].id + '" class="treetable-input" type="checkbox" ' + (rows[i][aattr] ? 'checked' : '') + ' ' + (options.readOnly && options.readOnly[c] !== false ? 'disabled' : '') + '>';
@@ -498,7 +499,7 @@
                 if (aattr === 'groups') {
                     for (var gg = 0; gg < rows[i].groups.length; gg++) {
                         var gId = rows[i].groups[gg].id;
-                        table += '<div class="chip">' + getIcon(options.objects, gId, null, '') + rows[i].groups[gg].name + '</div>'; //<i class="close material-icons" data-group="' + rows[i].groups[gg].id + '" data-user="' + rows[i].id + '">close</i></div>';
+                        table += '<div class="chip">' + getIconFromObj(options.objects[gId], null, '') + rows[i].groups[gg].name + '</div>'; //<i class="close material-icons" data-group="' + rows[i].groups[gg].id + '" data-user="' + rows[i].id + '">close</i></div>';
                     }
                 } else
                 // edit instance
@@ -515,7 +516,7 @@
                         table += '<span>' + (rows[i].instance === undefined ? '' : rows[i].instance) + '</span>';
                     }
                 } else if (aattr === 'icon') {
-                    table += getIcon(options.objects, rows[i].id, options.imgPath);
+                    table += getIconFromObj(options.objects[rows[i].id], options.imgPath);
                 } else {
                     var vall = rows[i][aattr] || '';
                     if (vall && typeof vall === 'object' && vall.en) {

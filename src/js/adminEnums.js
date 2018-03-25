@@ -456,7 +456,7 @@ function Enums(main) {
             if (parts.length !== 2) continue;
             var name = getName(that.main.objects, that.list[e]);
             id = that.list[e].replace(/[#.\s_]/g, '-');
-            text += '<li class="tab col"><a href="#enum-' + id + '">' + that.main.getIcon(that.list[e]) + '<span>' + name + '</span></a></li>';
+            text += '<li class="tab col"><a href="#enum-' + id + '">' + that.main.getIcon(that.list[e]) + '<span class="name">' + name + '</span></a></li>';
         }
         text += '</ul>';
         text += '</div>';

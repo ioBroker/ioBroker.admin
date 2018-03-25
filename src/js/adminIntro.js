@@ -87,11 +87,23 @@ function Intro(main) {
      * @type type
      */
     var formatInfo = {
-        'Uptime': formatSeconds,
-        'System uptime': formatSeconds,
-        'RAM': formatRam,
-        'Speed': formatSpeed
+        'Uptime':           formatSeconds,
+        'System uptime':    formatSeconds,
+        'RAM':              formatRam,
+        'Speed':            formatSpeed
     };
+
+    function copyToClipboard(e) {
+        var $input = $('<textarea>');
+        $(this).append($input);
+        $input.val($(this).data('clippy'));
+        $input.trigger('select');
+        document.execCommand('copy');
+        $input.remove();
+        e.preventDefault();
+        e.stopPropagation();
+        that.main.showToast(that.$tiles, _('copied'))
+    }
 
     function buildInfoCard(host) {
         var $card = that.$template.clone();
@@ -136,8 +148,8 @@ function Intro(main) {
             if (data) {
                 text += '<ul>';
                 for (var item in data) {
-                    if (data.hasOwnProperty(item)&& (item==="Platform" || item==="NPM" ||item==="RAM" || item==="Node.js")) {
-                        text += '<li><b>' + _(item) + ':</b> ';
+                    if (data.hasOwnProperty(item) && (item === 'Platform' || item === 'NPM' || item === 'RAM' || item === 'Node.js')) {
+                        text += '<li><b>' + _(item) + ': </b>';
                         text += '<span class="system-info" data-attribute="' + item + '">' + (formatInfo[item] ? formatInfo[item](data[item]) : data[item]) + '</span></li>';
                     }
                 }
@@ -146,20 +158,23 @@ function Intro(main) {
             text += '</div>';
             $card.find('.card-content-text').replaceWith($(text));
 
-            text = '<div class="card-reveal"><h5>Info</h5><a><i class="material-icons">content_copy</i></a><span class="card-title grey-text text-darken-4"><i class="material-icons right">close</i></span>';
+            text = '<div class="card-reveal"><h5>' + _('Info') + '</h5><a class="btn-info" title="' + _('Copy to clipboard') + '"><i class="material-icons">content_copy</i></a><span class="card-title grey-text text-darken-4"><i class="material-icons right">close</i></span>';
+            var clippy = [];
             if (data) {
                 text += '<ul>';
-                for (var item in data) {
-                    if (data.hasOwnProperty(item)) {
-                        text += '<li><b>' + _(item) + ':</b> ';
-                        text += '<span class="system-info" data-attribute="' + item + '">' + (formatInfo[item] ? formatInfo[item](data[item]) : data[item]) + '</span></li>';
+                for (var item_ in data) {
+                    if (data.hasOwnProperty(item_)) {
+                        text += '<li><b>' + _(item_) + ': </b>';
+                        var formatted = (formatInfo[item_] ? formatInfo[item_](data[item_]) : data[item_]);
+                        clippy.push(item_ + ': ' + formatted);
+                        text += '<span class="system-info" data-attribute="' + item_ + '">' + formatted + '</span></li>';
                     }
                 }
                 text += '</ul>';
             }
             text += '</div>';
             $card.find('.card-reveal').replaceWith($(text));
-
+            $card.find('.btn-info').data('clippy', clippy.join('\r\n')).on('click', copyToClipboard);
         });
         return $card;
     }
