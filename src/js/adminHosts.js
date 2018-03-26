@@ -187,9 +187,10 @@ function Hosts(main) {
        var text = '<tr class="hosts-host" data-host-id="' + obj._id + '" data-host-filter="' + (obj.common.title || '') + ' ' + (obj.common.hostname || '') + ' ' + (obj.common.name || '') + '">';
        //LED
        text += '<td class="tab-hosts-header-led"><div class="hosts-led ' + (alive ? 'led-green' : 'led-red') + '" data-host-id="' + obj._id + '"></div></td>';
+        // icon
+        text += '<td class="hosts-icon">' + that.main.getHostIcon(obj) + '</td>';
        // name
-       text += '<td class="hosts-name" style="font-weight: bold">' + obj.common.hostname + '</td>' +
-           + '</td>';
+       text += '<td class="hosts-name" style="font-weight: bold">' + obj.common.hostname + '</td>';
        // type
        text += '<td class="tab-hosts-header-type">' + obj.common.type + '</td>';
        var title = obj.common.titleLang || obj.common.title;
@@ -240,7 +241,7 @@ function Hosts(main) {
         var text =  '  <div class="col s12 hosts-host" data-host-id="' + obj._id + '" data-host-filter="' + (obj.common.title || '') + ' ' + (obj.common.hostname || '') + ' ' + (obj.common.name || '') + '">'+
                     '      <div class="host z-depth-1 hoverable">' +
                     '          <div class="image center">'+
-                    '              <img class="" src="' + (obj.common.icon ? obj.common.icon : 'img/no-image.png') + '">' +
+                    '              ' + that.main.getHostIcon(obj, ' ') +
                     '              <div class="hosts-led ' + (alive ? 'led-green' : 'led-red') +'" data-host-id="' + obj._id + '"></div>' +
                     '          </div>'+
                     '          <div class="system" style="' + (obj.common.color ? 'color: ' + (color ? 'white' : 'black') + '; background: ' + obj.common.color : '') + '">' +

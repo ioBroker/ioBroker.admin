@@ -973,15 +973,10 @@ $(document).ready(function () {
         main.currentHost = main.currentHost || main.config.currentHost || '';
 
         var lines = [];
-        var icon;
         var color;
         var curId;
         for (var i = 0; i < main.tabs.hosts.list.length; i++) {
-            if (main.objects[main.tabs.hosts.list[i].id] && main.objects[main.tabs.hosts.list[i].id].common) {
-                icon = main.objects[main.tabs.hosts.list[i].id].common.icon;
-            }
-
-            lines.push('<li><a href="#!" data-value="' + main.tabs.hosts.list[i].name + '"><img class="imgHost left" src="' + (icon ? icon : 'img/no-image.png') + '"/>' + main.tabs.hosts.list[i].name + '</a></li>');
+            lines.push('<li><a href="#!" data-value="' + main.tabs.hosts.list[i].name + '">' + main.getHostIcon(main.objects[main.tabs.hosts.list[i].id], 'imgHost left') + main.tabs.hosts.list[i].name + '</a></li>');
             if (!main.currentHost) {
                 main.currentHost = main.tabs.hosts.list[i].name;
             }
@@ -995,17 +990,14 @@ $(document).ready(function () {
         $selBtn
             .text(_('Host:') + ' ' + main.currentHost)
             .dropdown();
-        icon = '';
 
         if (main.objects[curId] && main.objects[curId].common) {
-            icon = main.objects[curId].common.icon;
             color = main.objects[curId].common.color;
         }
 
-        var imgHost = $('<img class="imgHost left" src="' + (icon ? icon : 'img/no-image.png') + '"/>');
-        $selBtn.append(imgHost);
+        $selBtn.append($(main.getHostIcon(main.objects[curId], 'imgHost left')));
         if (color) {
-
+            // set color of button
         }
 
         if (main.tabs.hosts.list.length < 2) {
@@ -1025,7 +1017,9 @@ $(document).ready(function () {
 
             main.currentHost = val;
 
-            $('#host-adapters-btn').text(_('Host:') + ' ' + main.currentHost);
+            $('#host-adapters-btn')
+                .text(_('Host:') + ' ' + main.currentHost)
+                .append($(this).find('.imgHost').clone());
             main.saveConfig('currentHost', main.currentHost);
         });
     };
@@ -1582,43 +1576,54 @@ $(document).ready(function () {
         });
     };
 
+    function getIconHtml(obj) {
+        var icon;
+        var alt;
+        var isCommon = obj && obj.common;
+
+        if (isCommon.icon) {
+            if (!isCommon.icon.match(/^data:image\//)) {
+                if (isCommon.icon.indexOf('.') !== -1) {
+                    var instance;
+                    if (obj.type === 'instance') {
+                        icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
+                    } else if (obj._id.match(/^system\.adapter\./)) {
+                        instance = obj._id.split('.', 3);
+                        if (isCommon.icon[0] === '/') {
+                            instance[2] += isCommon.icon;
+                        } else {
+                            instance[2] += '/' + isCommon.icon;
+                        }
+                        icon = '/adapter/' + instance[2];
+                    } else {
+                        instance = obj._id.split('.', 2);
+                        if (isCommon.icon[0] === '/') {
+                            instance[0] += isCommon.icon;
+                        } else {
+                            instance[0] += '/' + isCommon.icon;
+                        }
+                        icon = '/adapter/' + instance[0];
+                    }
+                } else {
+                    return '<i class="material-icons ' + (classes || 'treetable-icon') + '">' + isCommon.icon + '</i>';
+                }
+
+            } else {
+                icon = isCommon.icon;
+            }
+            alt = obj.type;
+        }
+        return {icon: icon, alt: alt}
+    }
+
     main.getIconFromObj = function (obj, imgPath, classes) {
         var icon     = '';
         var alt      = '';
-        var isCommon = obj && obj.common;
-
-        if (isCommon) {
-            if (isCommon.icon) {
-                if (!isCommon.icon.match(/^data:image\//)) {
-                    if (isCommon.icon.indexOf('.') !== -1) {
-                        var instance;
-                        if (obj.type === 'instance') {
-                            icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
-                        } else if (obj._id.match(/^system\.adapter\./)) {
-                            instance = obj._id.split('.', 3);
-                            if (obj.common.icon[0] === '/') {
-                                instance[2] += obj.common.icon;
-                            } else {
-                                instance[2] += '/' + obj.common.icon;
-                            }
-                            icon = '/adapter/' + instance[2];
-                        } else {
-                            instance = obj._id.split('.', 2);
-                            if (obj.common.icon[0] === '/') {
-                                instance[0] += obj.common.icon;
-                            } else {
-                                instance[0] += '/' + obj.common.icon;
-                            }
-                            icon = '/adapter/' + instance[0];
-                        }
-                    } else {
-                        return '<i class="material-icons ' + (classes || 'treetable-icon') + '">' + isCommon.icon + '</i>';
-                    }
-
-                } else {
-                    icon = isCommon.icon;
-                }
-                alt = obj.type;
+        if (obj && obj.common) {
+            if (obj.common.icon) {
+                var result = getIconHtml(obj);
+                icon = result.icon;
+                alt = result.alt;
             } else {
                 imgPath = imgPath || 'lib/css/fancytree/';
                 if (obj.type === 'device') {
@@ -1634,7 +1639,7 @@ $(document).ready(function () {
             }
         }
 
-        if (icon) return '<img class="' + (classes || 'treetable-icon') + '" src="' + icon + '" alt="' + alt + '" />';
+        if (icon) return '<img class="' + (classes || 'treetable-icon') + '" src="' + icon + '" alt="' + (alt || '') + '" />';
         return '';
     };
 
@@ -1642,6 +1647,22 @@ $(document).ready(function () {
     main.getIcon = function(id, imgPath, objects, classes) {
         return main.getIconFromObj((objects || main.objects)[id], imgPath, classes);
     };
+
+    main.getHostIcon = function (obj, classes) {
+        var icon     = '';
+        var alt      = '';
+
+        if (obj && obj.common && obj.common.icon) {
+            var result = getIconHtml(obj);
+            icon = result.icon;
+            alt = result.alt;
+        }
+        icon = icon || 'img/no-image.png';
+        alt  = alt  || '';
+
+        return '<img class="' + (classes || 'treetable-icon') + '" src="' + icon + '" alt="' + alt + '" />';
+    };
+
     // https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
     main.invertColor = function (hex) {
         if (hex.indexOf('#') === 0) {
