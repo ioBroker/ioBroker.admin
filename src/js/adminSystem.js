@@ -145,6 +145,7 @@ function System(main) {
                 $repos.find('.btn-floating').each(function () {
                     $(this).addClass('disabled');
                 });
+                $dialog.find('#tab-system-repo .table-button-add').addClass('disabled');
             }
         } else {
             $('#tab-system-repo').html(_('permissionError'));
