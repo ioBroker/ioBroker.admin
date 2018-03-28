@@ -1926,7 +1926,7 @@ $(document).ready(function () {
                                 $('.side-nav .user-view').css(vendor.admin.css.sideNavUser);
                             }
                             if (vendor.admin.css.sideNavMenu) {
-                                $('.side-nav .admin-sidemenu-menu').css(vendor.admin.css.sideNavMenu);
+                                $('.side-nav').css(vendor.admin.css.sideNavMenu);
                             }
                             if (vendor.admin.css.header) {
                                 $('#admin_sidemenu_main').find('.admin-sidemenu-header nav').css(vendor.admin.css.header);
