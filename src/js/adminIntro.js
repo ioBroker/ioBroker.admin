@@ -137,7 +137,17 @@ function Intro(main) {
             '    </div>\n' +
             '  </div>');
 
+        var timeout = setTimeout(function () {
+            if (timeout) {
+                timeout = null;
+                $card.find('.btn-small').addClass('disabled');
+                $card.find('.card-content-text').html(_('offline'));
+            }
+        }, 2000);
+
         that.main.socket.emit('sendToHost', host.id, 'getHostInfo', null, function (data) {
+            clearTimeout(timeout);
+            timeout = null;
             if (data === 'permissionError') {
                 console.error('May not read "getHostInfo"');
             } else if (!data) {
@@ -174,7 +184,11 @@ function Intro(main) {
             }
             text += '</div>';
             $card.find('.card-reveal').replaceWith($(text));
-            $card.find('.btn-info').data('clippy', clippy.join('\r\n')).on('click', copyToClipboard);
+            if (that.$tab.hasClass('edit-active')) {
+                $card.find('.btn-small').hide();
+            } else {
+                $card.find('.btn-info').data('clippy', clippy.join('\r\n')).on('click', copyToClipboard);
+            }
         });
         return $card;
     }

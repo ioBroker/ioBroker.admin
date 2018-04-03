@@ -420,6 +420,8 @@ $(document).ready(function () {
                 if (!obj || !obj.common || !obj.common.name) {
                     name = main.currentUser.replace(/^system\.user\./);
                     name = name[0].toUpperCase() + name.substring(1).toLowerCase();
+                } else if (typeof obj.common.name === 'object') {
+                    name = obj.common.name[systemLang] || obj.common.name.en;
                 } else {
                     name = obj.common.name;
                 }
@@ -435,8 +437,12 @@ $(document).ready(function () {
                 for (var i = 0; i < tabs.users.groups.length; i++) {
                     var group = main.objects[tabs.users.groups[i]];
                     if (group && group.common && group.common.members && group.common.members.indexOf(main.currentUser) !== -1) {
+                        if (typeof group.common.name === 'object') {
+                            groups.push(_(group.common.name[systemLang] || group.common.name.en));
+                        } else {
                         groups.push(_(group.common.name));
                     }
+                }
                 }
                 $('#current-group').html(groups.join(', '));
             }
@@ -682,10 +688,12 @@ $(document).ready(function () {
     }
 
     function initHtmlButtons() {
-        var $versionBtn = $('.button-version');
-        if (!$versionBtn.hasClass('vendor')) {
-            $versionBtn.text('ioBroker.admin ' + (main.objects['system.adapter.admin'] && main.objects['system.adapter.admin'].common && main.objects['system.adapter.admin'].common.version));
-        }
+        main.socket.emit('getVersion', function (err, version) {
+			var $versionBtn = $('.button-version');
+	        if (!$versionBtn.hasClass('vendor')) {
+	            $versionBtn.text('ioBroker.admin ' + version);
+	        }
+        });
 
         $('.choose-tabs-config-button').off('click').on('click', function(event) {
             var $dialog = $('#admin_sidemenu_dialog');
