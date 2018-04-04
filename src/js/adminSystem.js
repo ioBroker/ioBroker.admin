@@ -422,11 +422,14 @@ function System(main) {
             });
         }
 
+        // we must to disable save button before the extendObject will be sent, because this is indicator for showing dialog
+
+        $dialog.find('.btn-save').addClass('disabled');
+
         that.main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
             if (!err) {
                 that.main.socket.emit('extendObject', 'system.repositories', that.systemRepos, function () {
                     that.main.socket.emit('extendObject', 'system.certificates', that.systemCerts, function () {
-                        $dialog.find('.btn-save').addClass('disabled');
                         if (languageChanged) {
                             window.location.reload();
                         } else {

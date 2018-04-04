@@ -661,8 +661,9 @@ function Customs(main) {
             }
         }
 
+        that.$dialog.find('.dialog-system-buttons .btn-save').addClass('disabled');
+
         that.setCustoms(ids, function () {
-            that.$dialog.find('.dialog-system-buttons .btn-save').addClass('disabled');
             // disable iframe
             that.loadHistoryChart(); // disable iframe
             that.main.navigate();

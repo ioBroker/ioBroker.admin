@@ -170,17 +170,19 @@ function preInit () {
                     }
                 }
             }
+
+            if (onChangeSupported) {
+                $navButtons.find('.btn-save').addClass('disabled');
+                $navButtons.find('.btn-save-close').addClass('disabled');
+                $navButtons.find('.btn-close').find('span').html(_('close'));
+            }
+
             socket.emit('setObject', id, oldObj, function (err) {
                 if (err) {
                     showMessage(err, _('Error'), 'alert');
                     return;
                 }
                 changed = false;
-                if (onChangeSupported) {
-                    $navButtons.find('.btn-save').addClass('disabled');
-                    $navButtons.find('.btn-save-close').addClass('disabled');
-                    $navButtons.find('.btn-close').find('span').html(_('close'));
-                }
                 if (callback) callback();
             });
         });
@@ -201,7 +203,7 @@ function preInit () {
                             if (!res.native.certificates.hasOwnProperty(c) || !res.native.certificates[c]) continue;
 
                             // If it is filename, it could be everything
-                            if (res.native.certificates[c].lentgh < 700 && res.native.certificates[c].indexOf('/') !== -1 || res.native.certificates[c].indexOf('\\') !== -1) {
+                            if (res.native.certificates[c].length < 700 && (res.native.certificates[c].indexOf('/') !== -1 || res.native.certificates[c].indexOf('\\') !== -1)) {
                                 var __cert = {
                                     name: c,
                                     type: ''

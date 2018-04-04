@@ -1699,7 +1699,7 @@ $(document).ready(function () {
         'tab-logs':             {order: 6,   icon: 'view_headline'},
         'tab-scenes':           {order: 7,   icon: 'subscriptions'},
         'tab-events':           {order: 8,   icon: 'flash_on'},
-        'tab-users':            {order: 10,   icon: 'person_outline'},
+        'tab-users':            {order: 10,  icon: 'person_outline'},
         'tab-javascript':       {order: 11,  icon: 'code'},
         'tab-text2command-0':   {order: 12,  icon: 'ac_unit'},
         'tab-text2command-1':   {order: 12,  icon: 'ac_unit'},
@@ -1708,9 +1708,9 @@ $(document).ready(function () {
         'tab-node-red-1':       {order: 21,  icon: 'device_hub'},
         'tab-node-red-2':       {order: 22,  icon: 'device_hub'},
         'tab-hosts':            {order: 100, icon: 'storage'},
-        'tab-fullcalendar-0':   {order: 30, icon: 'perm_contact_calendar'},
-        'tab-fullcalendar-1':   {order: 31, icon: 'perm_contact_calendar'},
-        'tab-fullcalendar-2':   {order: 32, icon: 'perm_contact_calendar'}
+        'tab-fullcalendar-0':   {order: 30,  icon: 'perm_contact_calendar'},
+        'tab-fullcalendar-1':   {order: 31,  icon: 'perm_contact_calendar'},
+        'tab-fullcalendar-2':   {order: 32,  icon: 'perm_contact_calendar'}
     };
 
     function initSideNav() {
