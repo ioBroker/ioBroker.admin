@@ -1093,7 +1093,7 @@ $(document).ready(function () {
             main.socket.emit('sendToHost', hosts[index].name, 'getHostInfo', null, function (result) {
                 if (result && result['Node.js']) {
                     var major = parseInt(result['Node.js'].split('.').shift().replace('v', ''), 10);
-                    if (major !== 4 && major !== 6 && major !== 8) {
+                    if (major !== 4 && major !== 6 && major < 8) {
                         main.showMessage(_('This version of node.js "%s" on "%s" is deprecated. Please install node.js 6, 8 or newer', result['Node.js'], hosts[index].name), _('Suggestion'), 'error_outline');
                     }
                 }

@@ -5,7 +5,7 @@
 /*
  MIT, Copyright 2014-2018 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
 
- version: 1.1.1 (2018.01.22)
+ version: 1.1.2 (2018.04.06)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -1065,6 +1065,7 @@ function filterChanged(e) {
         type = type === 'boolean' ? 'checkbox' : 'text';
         var text;
         var editType = type;
+        data.editing = true; // ignore pressing of DEL button
 
         switch (attr) {
             case 'value':
@@ -1202,6 +1203,8 @@ function filterChanged(e) {
                 //$(event.currentTarget).parent().trigger('click'); // re-select the line so we can continue using the keyboard
                 $parentTR.trigger('click'); // re-select the line so we can continue using the keyboard
             }, 50);
+
+            data.editing = false;
 
             //var $parentTR = $(event.currentTarget).parent();
             $parentTR.focus().trigger('select');
@@ -2439,14 +2442,14 @@ function filterChanged(e) {
             };
         }
 
-        data.$tree.fancytree(foptions).on('nodeCommand', function (event, data) {
+        data.$tree.fancytree(foptions).on('nodeCommand', function (event, bData) {
             // Custom event handler that is triggered by keydown-handler and
             // context menu:
             var refNode;
             var tree = $(this).fancytree('getTree');
             var node = tree.getActiveNode();
 
-            switch (data.cmd) {
+            switch (bData.cmd) {
                 case 'moveUp':
                     node.moveTo(node.getPrevSibling(), 'before');
                     node.setActive();
@@ -2490,14 +2493,15 @@ function filterChanged(e) {
                     CLIPBOARD = null;
                     break;*/
                 default:
-                    alert('Unhandled command: ' + data.cmd);
+                    alert('Unhandled command: ' + bData.cmd);
                     return;
             }
 
         }).on('keydown', function (e) {
-            var c   = String.fromCharCode(e.which);
+            if (data.editing) {
+                return;
+            }
             var cmd = null;
-
             if (e.ctrlKey) {
                 switch (e.which) {
                     case 'c':
