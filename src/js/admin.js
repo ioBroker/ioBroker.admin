@@ -1976,8 +1976,10 @@ $(document).ready(function () {
 
                                         if (!main.systemConfig.common.licenseConfirmed) {
                                             // Show license agreement
-                                            var language = main.systemConfig.common.language || window.navigator.userLanguage || window.navigator.language;
-                                            if (language !=='en' && language !=='de' && language !=='ru') language = 'en';
+                                            var language = (main.systemConfig.common.language || window.navigator.userLanguage || window.navigator.language || '').substring(0, 2);
+                                            if (language !== 'en' && language !== 'de' && language !== 'ru') language = 'en';
+
+                                            systemLang = language;
 
                                             $dialogLicense.find('.license_text').html(license[language] || license.en);
 
