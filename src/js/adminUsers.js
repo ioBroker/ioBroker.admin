@@ -825,12 +825,21 @@ function Users(main) {
             } else {
                 name = firstUpper(that.list[u].replace(/^system\.user\./));
             }
+
+            if (typeof name === 'object') {
+                name = name[systemLang] || name.en;
+            }
+
             var tGroups = '';
             if (users[that.list[u]]) {
                 var groups = users[that.list[u]];
                 for (var gg = 0; gg < groups.length; gg++) {
                     var gId = groups[gg].id;
-                    tGroups += '<div class="chip">' + that.main.getIcon(gId) + groups[gg].name + '<i class="close material-icons tab-users-remove-group" data-group="' + gId + '" data-user="' + that.list[u] + '">close</i></div>';
+                    var gName = groups[gg].name;
+                    if (typeof gName === 'object') {
+                        gName = gName[systemLang] || gName.en;
+                    }
+                    tGroups += '<div class="chip">' + that.main.getIcon(gId) + gName + '<i class="close material-icons tab-users-remove-group" data-group="' + gId + '" data-user="' + that.list[u] + '">close</i></div>';
                 }
             }
             var style = '';
@@ -842,11 +851,15 @@ function Users(main) {
                     style += 'color: white;';
                 }
             }
+            var desc = common.desc;
+            if (typeof desc === 'object') {
+                desc = desc[systemLang] || desc.en;
+            }
 
             text += '<li class="collection-item avatar users-type-draggable ' + (inverted ? 'inverted' : '') + '" data-tt-id="' + that.list[u] + '" style="' + style + '">';
             text += '   ' + (that.main.getIcon(that.list[u], null, null, 'icon') || '<img class="icon" src="img/account_circle.png"/>');
             text += '<span class="title">' + name + '</span>';
-            text += '<p>' + that.list[u] + ((common.desc ? ' (' + common.desc + ')' : '') || '') + '</p>';
+            text += '<p>' + that.list[u] + ((desc ? ' (' + desc + ')' : '') || '') + '</p>';
             text += '   <a class="secondary-content ' + (!common.dontDelete ? 'tab-users-enabled-user' : 'disabled') + '" data-user="' + that.list[u] + '"><i class="material-icons">' + (common.enabled ? 'check_box' : 'check_box_outline_blank') + '</i></a>';
             text += '   <a class="edit-content" data-user="' + that.list[u] + '"><i class="material-icons">edit</i></a>';
             text += '   <a class="delete-content' + (common.dontDelete ? ' disabled' : '') + '" data-user="' + that.list[u] + '"><i class="material-icons">delete</i></a><br>';
@@ -935,6 +948,11 @@ function Users(main) {
             } else {
                 name = firstUpper(that.groups[u].replace(/^system\.group\./));
             }
+
+            if (typeof name === 'object') {
+                name = name[systemLang] || name.en;
+            }
+
             var tUsers = '';
             if (common.members && common.members.length) {
                 var users = common.members;
@@ -945,6 +963,9 @@ function Users(main) {
                         uName = that.main.objects[uId].common.name;
                     } else {
                         uName = firstUpper(uId.replace(/^system\.user\./));
+                    }
+                    if (typeof uName === 'object') {
+                        uName = uName[systemLang] || uName.en;
                     }
                     tUsers += '<div class="chip">' + that.main.getIcon(uId) + uName + '<i class="close material-icons tab-users-remove-user" data-group="' + that.groups[u] + '" data-user="' + uId + '">close</i></div>';
                 }
@@ -958,12 +979,16 @@ function Users(main) {
                     style += 'color: white;';
                 }
             }
+            var desc = common.desc;
+            if (typeof desc === 'object') {
+                desc = desc[systemLang] || desc.en;
+            }
 
             text += '<li class="collection-item avatar ' + (inverted ? 'inverted' : '') + '" data-tt-id="' + that.groups[u] + '" style="' + style + '">';
             // text += '   <img src="images/yuna.jpg" alt="" class="icon">';
             text += '   ' + (that.main.getIcon(that.groups[u], null, null, 'icon') || '<img class="icon" src="img/group.png"/>');
             text += '   <span class="title">' + name + '</span>';
-            text += '   <p>' + that.groups[u] + ((common.desc ? ' (' + common.desc + ')' : '') || '') + '</p>';
+            text += '   <p>' + that.groups[u] + ((desc ? ' (' + desc + ')' : '') || '') + '</p>';
             text += '   <a class="edit-content" data-group="' + that.groups[u] + '"><i class="material-icons">edit</i></a>';
             text += '   <a class="delete-content' + (common.dontDelete ? ' disabled' : '') + '" data-group="' + that.groups[u] + '"><i class="material-icons">delete</i></a><br>';
             text += (tUsers ? tUsers : '');

@@ -61,6 +61,7 @@ function Customs(main) {
 
     this.initCustomsTabs = function (ids, instances) {
         var $customTabs = this.$dialog.find('#customs-tabs');
+        ids = ids || [];
         $customTabs.html('');
         var wordDifferent = _(STR_DIFFERENT);
         this.defaults = {};
@@ -258,7 +259,12 @@ function Customs(main) {
         that.$dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
             var $input = $(this).prev();//.addClass('filled-in');
             if (!$input.prop('disabled')) {
-                $input.prop('checked', !$input.prop('checked')).trigger('change');
+                if ($input[0].indeterminate) {
+                    $input[0].indeterminate = false;
+                    $input.prop('checked', true).trigger('change');
+                } else {
+                    $input.prop('checked', !$input.prop('checked')).trigger('change');
+                }
             }
         });
         $customTabs.find('select').select();

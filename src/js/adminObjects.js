@@ -159,6 +159,7 @@ function Objects(main) {
     this.reinit = function () {
         this.main.dialogs.customs.check();
         if (this.$grid) {
+            selectId('option', 'useHistory', this.main.dialogs.customs.customEnabled);
             selectId('reinit');
         }
     };

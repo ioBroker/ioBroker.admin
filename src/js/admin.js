@@ -1584,7 +1584,7 @@ $(document).ready(function () {
         });
     };
 
-    function getIconHtml(obj) {
+    function getIconHtml(obj, classes) {
         var icon;
         var alt;
         var isCommon = obj && obj.common;
