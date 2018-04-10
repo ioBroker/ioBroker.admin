@@ -11,6 +11,7 @@ function Instances(main) {
     this.main          = main;
     this.list          = [];
     this.hostsText     = null;
+    this.filterHost    = false;
 
     if (!window.tdp) {
         window.tdp = function (x, nachkomma) {
@@ -546,11 +547,27 @@ function Instances(main) {
                 if (filter === 'false') {
                     isShow = that.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]').find('instance-led').hasClass('led-green') ? 'hide' : 'show';
                 }
+
+                if (isShow === 'show' && that.filterHost && obj.common.host !== that.main.currentHost) isShow = 'hide';
+
                 if (isShow === 'hide') invisible.push(that.list[i]);
                 that.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]')[isShow]();
             }
         } else {
-            that.$grid.find('.instance-adapter').show();
+            if (that.filterHost) {
+                for (var i = 0; i < that.list.length; i++) {
+                    var obj = that.main.objects[that.list[i]];
+                    if (!obj || !obj.common) {
+                        that.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]').hide();
+                        continue;
+                    }
+                    var isShow = 'hide';
+                    if (obj.common.host === that.main.currentHost) isShow = 'show';
+                    that.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]')[isShow]();
+                }
+            } else {
+                that.$grid.find('.instance-adapter').show();
+            }
         }
     }
 
@@ -768,6 +785,28 @@ function Instances(main) {
         $filterClear.on('click', function () {
             $filter.val('').trigger('change');
         });
+
+        this.$tab.find('.btn-instances-host').off('click').on('click', function () {
+            that.filterHost = !that.filterHost;
+            if (that.filterHost) {
+                that.$tab.find('.btn-instances-host').addClass('red lighten-3');
+            } else {
+                that.$tab.find('.btn-instances-host').removeClass('red lighten-3');
+            }
+            that.main.saveConfig('instancesFilterHost', that.filterHost);
+
+            setTimeout(function () {
+                applyFilter();
+            }, 50);
+        });
+
+        this.filterHost = this.main.config.instancesFilterHost || false;
+
+        if (this.filterHost) {
+            this.$tab.find('.btn-instances-host').addClass('red lighten-3');
+        } else {
+            this.$tab.find('.btn-instances-host').removeClass('red lighten-3');
+        }
     };
 
     this.updateExpertMode   = function () {
@@ -945,9 +984,19 @@ function Instances(main) {
                 if (!obj) continue;
                 showOneAdapter(this.$grid, this.list[i], this.main.config.instanceForm);
             }
-            applyFilter();
 
             $('#currentHost').html(this.main.currentHost);
+
+
+            if (that.main.tabs.hosts.list.length > 1) {
+                this.$tab.find('.btn-instances-host').show();
+            } else {
+                this.$tab.find('.btn-instances-host').hide();
+                this.filterHost = false;
+            }
+
+            applyFilter();
+
             calculateTotalRam();
             calculateFreeMem();
         }
@@ -1024,6 +1073,7 @@ function Instances(main) {
 
     this.destroy            = function () {
         if (this.inited) {
+            this.$grid.data('inited', false);
             this.inited = false;
             // subscribe objects and states
             this.main.unsubscribeObjects('system.adapter.*');

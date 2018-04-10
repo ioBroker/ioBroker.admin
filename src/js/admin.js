@@ -984,7 +984,7 @@ $(document).ready(function () {
         var color;
         var curId;
         for (var i = 0; i < main.tabs.hosts.list.length; i++) {
-            lines.push('<li><a href="#!" data-value="' + main.tabs.hosts.list[i].name + '">' + main.getHostIcon(main.objects[main.tabs.hosts.list[i].id], 'imgHost left') + main.tabs.hosts.list[i].name + '</a></li>');
+            lines.push('<li><a data-value="' + main.tabs.hosts.list[i].name + '">' + main.getHostIcon(main.objects[main.tabs.hosts.list[i].id], 'imgHost left') + main.tabs.hosts.list[i].name + '</a></li>');
             if (!main.currentHost) {
                 main.currentHost = main.tabs.hosts.list[i].name;
             }
@@ -1028,6 +1028,20 @@ $(document).ready(function () {
             $('#host-adapters-btn')
                 .text(_('Host:') + ' ' + main.currentHost)
                 .append($(this).find('.imgHost').clone());
+            // destroy current view and load anew
+            console.log(main.currentTab);
+            if (tabsInfo['tab-' + main.currentTab] && tabsInfo['tab-' + main.currentTab].host) {
+                // destroy actual tab
+                if (main.tabs[main.currentTab] && typeof main.tabs[main.currentTab].destroy === 'function') {
+                    main.tabs[main.currentTab].destroy();
+                }
+
+                // init new tab
+                if (main.tabs[main.currentTab] && typeof main.tabs[main.currentTab].init === 'function') {
+                    main.tabs[main.currentTab].init();
+                }
+            }
+
             main.saveConfig('currentHost', main.currentHost);
         });
     };
@@ -1559,6 +1573,12 @@ $(document).ready(function () {
                 $('.admin-sidemenu-items').not($tab).removeClass('admin-sidemenu-active');
                 $tab.addClass('admin-sidemenu-active');
 
+                if (tabsInfo['tab-' + tab] && tabsInfo['tab-' + tab].host) {
+                    $('#host-adapters-btn').css('opacity', 1);
+                } else {
+                    $('#host-adapters-btn').css('opacity', 0.3);
+                }
+
                 // if some dialog opened or must be shown
                 if (main.currentDialog !== dialog) {
                     // destroy it
@@ -1692,11 +1712,11 @@ $(document).ready(function () {
 
     var tabsInfo = {
         'tab-intro':            {order: 1,   icon: 'apps'},
-        'tab-adapters':         {order: 2,   icon: 'store'},
-        'tab-instances':        {order: 3,   icon: 'subtitles'},
+        'tab-adapters':         {order: 2,   icon: 'store',             host: true},
+        'tab-instances':        {order: 3,   icon: 'subtitles',         host: true},
         'tab-objects':          {order: 4,   icon: 'view_list'},
         'tab-enums':            {order: 5,   icon: 'art_track'},
-        'tab-logs':             {order: 6,   icon: 'view_headline'},
+        'tab-logs':             {order: 6,   icon: 'view_headline',     host: true},
         'tab-scenes':           {order: 7,   icon: 'subscriptions'},
         'tab-events':           {order: 8,   icon: 'flash_on'},
         'tab-users':            {order: 10,  icon: 'person_outline'},

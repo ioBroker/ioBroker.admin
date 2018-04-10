@@ -6,6 +6,8 @@ function Adapters(main) {
     this.curRepository     = null;
     this.curRepoLastUpdate = null;
     this.curInstalled      = null;
+    this.curRepoLastHost   = null;
+
     this.list   = [];
     this.$tab   = $('#tab-adapters');
     this.$grid  = this.$tab.find('#grid-adapters');
@@ -586,7 +588,8 @@ function Adapters(main) {
             return;
         }
 
-        if (!this.curRepository) {
+        if (!this.curRepository || this.curRepoLastHost !== host) {
+            this.curRepository = null;
             this.main.socket.emit('sendToHost', host, 'getRepository', {repo: this.main.systemConfig.common.activeRepo, update: updateRepo}, function (_repository) {
                 if (_repository === 'permissionError') {
                     console.error('May not read "getRepository"');
@@ -605,7 +608,8 @@ function Adapters(main) {
                 }
             });
         }
-        if (!this.curInstalled) {
+        if (!this.curInstalled || this.curRepoLastHost !== host) {
+            this.curInstalled = null;
             this.main.socket.emit('sendToHost', host, 'getInstalled', null, function (_installed) {
                 if (_installed === 'permissionError') {
                     console.error('May not read "getInstalled"');
@@ -624,6 +628,8 @@ function Adapters(main) {
                 }
             });
         }
+
+        this.curRepoLastHost = host;
 
         if (this.curInstalled && this.curRepository) {
             setTimeout(function () {
@@ -1342,6 +1348,62 @@ function Adapters(main) {
         }
     };
 
+    function showAddInstanceDialog(adapter, callback) {
+        var $dialogAddInstance = $('#dialog-add-instance');
+        $dialogAddInstance.find('.dialog-add-instance-name').html(adapter);
+        // fill the hosts
+        var text = '';
+        for (var h = 0; h < that.main.tabs.hosts.list.length; h++) {
+            var host = that.main.tabs.hosts.list[h];
+            text += '<option ' + (host.name === that.main.currentHost ? 'selected' : '') + ' value="' + host.name + '">' + host.name + '</option>';
+        }
+        $dialogAddInstance.find('.dialog-add-instance-host').html(text).select();
+
+        // find free instance numbers
+        var min = -1;
+        var used = [];
+        for (var i = 0; i < that.main.tabs.instances.list.length; i++) {
+            var parts = that.main.tabs.instances.list[i].split('.');
+            if (parts[parts.length - 2] === adapter) {
+                var index = parseInt(parts[parts.length - 1], 10);
+                used.push(index);
+                if (index > min) {
+                    min = index;
+                }
+            }
+        }
+        min += 10;
+        text = '<option selected value="">' + _('auto') + '</option>';
+        for (var m = 0; m < min; m++) {
+            if (used.indexOf(m) !== -1) continue;
+            text += '<option value="' + m + '">' + m + '</option>';
+        }
+        $dialogAddInstance.find('.dialog-add-instance-number').html(text).select();
+        $dialogAddInstance.find('.dialog-add-install-btn').off('click').on('click', function (e) {
+            if (callback) {
+                callback(true, $dialogAddInstance.find('.dialog-add-instance-host').val(), $dialogAddInstance.find('.dialog-add-instance-number').val());
+                callback = null;
+            }
+            $dialogAddInstance.find('.dialog-add-cancel-btn').off('click');
+            $dialogAddInstance.find('.dialog-add-instance-number').off('click');
+        });
+
+        $dialogAddInstance.find('.dialog-add-cancel-btn').off('click').on('click', function (e) {
+            if (callback) {
+                callback(false);
+                callback = null;
+            }
+            $dialogAddInstance.find('.dialog-add-cancel-btn').off('click');
+            $dialogAddInstance.find('.dialog-add-instance-number').off('click');
+        });
+        $dialogAddInstance.modal({
+            dismissible: false,
+            complete: function () {
+                $dialogAddInstance.find('.dialog-add-instance-name').html('');
+            }
+        }).modal('open');
+    }
+
     function showLicenseDialog(adapter, callback) {
         var $dialogLicense = $('#dialog-license');
         // Is adapter installed
@@ -1415,27 +1477,33 @@ function Adapters(main) {
     this.initButtons = function (adapter) {
         this.$tab.find('.adapter-install-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
             var adapter = $(this).attr('data-adapter-name');
-            that.getAdaptersInfo(that.main.currentHost, false, false, function (repo, installed) {
-                var obj = repo[adapter];
 
-                if (!obj) obj = installed[adapter];
+            // show config dialog
+            showAddInstanceDialog(adapter, function (result, host, index) {
+                if (!result) return;
 
-                if (!obj) return;
+                that.getAdaptersInfo(host, false, false, function (repo, installed) {
+                    var obj = repo[adapter];
 
-                if (obj.license && obj.license !== 'MIT') {
-                    // Show license dialog!
-                    showLicenseDialog(adapter, function (isAgree) {
-                        if (isAgree) {
-                            that.main.cmdExec(null, 'add ' + adapter, function (exitCode) {
-                                if (!exitCode) that._postInit(true);
-                            });
-                        }
-                    });
-                } else {
-                    that.main.cmdExec(null, 'add ' + adapter, function (exitCode) {
-                        if (!exitCode) that._postInit(true);
-                    });
-                }
+                    if (!obj) obj = installed[adapter];
+
+                    if (!obj) return;
+
+                    if (obj.license && obj.license !== 'MIT') {
+                        // Show license dialog!
+                        showLicenseDialog(adapter, function (isAgree) {
+                            if (isAgree) {
+                                that.main.cmdExec(null, 'add ' + adapter, function (exitCode) {
+                                    if (!exitCode) that._postInit(true);
+                                });
+                            }
+                        });
+                    } else {
+                        that.main.cmdExec(null, 'add ' + adapter + ' ' + index, function (exitCode) {
+                            if (!exitCode) that._postInit(true);
+                        });
+                    }
+                });
             });
         });
 
