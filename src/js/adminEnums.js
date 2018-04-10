@@ -434,6 +434,7 @@ function Enums(main) {
 
     function drawEnumsTiles() {
         var $tableBody = that.$gridList.find('.tree-table-body');
+        that.$gridList.removeClass('tree-table-list').addClass('tree-table-tiles');
         that.$gridList.find('.tree-table-buttons').remove();
 
         // create buttons for panels
@@ -527,7 +528,8 @@ function Enums(main) {
 
     function drawEnumsTable() {
         // extract all enums
-        that.$gridList.html('');
+        that.$gridList.html('').removeClass('tree-table-tiles').addClass('tree-table-list');
+
 
         that.$gridList.treeTable({
             objects:    that.main.objects,
