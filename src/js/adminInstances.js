@@ -555,15 +555,15 @@ function Instances(main) {
             }
         } else {
             if (that.filterHost) {
-                for (var i = 0; i < that.list.length; i++) {
-                    var obj = that.main.objects[that.list[i]];
-                    if (!obj || !obj.common) {
-                        that.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]').hide();
+                for (var j = 0; j < that.list.length; j++) {
+                    var _obj = that.main.objects[that.list[j]];
+                    if (!_obj || !_obj.common) {
+                        that.$grid.find('.instance-adapter[data-instance-id="' + that.list[j] + '"]').hide();
                         continue;
                     }
-                    var isShow = 'hide';
-                    if (obj.common.host === that.main.currentHost) isShow = 'show';
-                    that.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]')[isShow]();
+                    var _isShow = 'hide';
+                    if (_obj.common.host === that.main.currentHost) _isShow = 'show';
+                    that.$grid.find('.instance-adapter[data-instance-id="' + that.list[j] + '"]')[_isShow]();
                 }
             } else {
                 that.$grid.find('.instance-adapter').show();

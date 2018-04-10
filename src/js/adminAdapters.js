@@ -947,7 +947,7 @@ function Adapters(main) {
                         versionDate: obj.versionDate,
                         updatable:  updatable,
                         bold:       obj.highlight || false,
-                        install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button m" title="' + localTexts['add instance'] + '"><i class="material-icons">add_circle_outline</i></button>' +
+                        install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button m" title="' + localTexts['add instance'] + '" data-adapter-desc="' + desc + '"><i class="material-icons">add_circle_outline</i></button>' +
                         '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" data-adapter-url="' + (obj.readme || '') + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
                         ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" class="adapter-upload-submit small-button" title="' + localTexts['upload'] + '"><i class="material-icons">file_upload</i></button>' : '') +
                         '<button ' + (installed ? '' : 'disabled="disabled" ') + 'data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
@@ -1033,7 +1033,7 @@ function Adapters(main) {
                             bold:       obj.highlight,
                             installed:  '',
                             versionDate: obj.versionDate,
-                            install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button" title="' + localTexts['add instance'] + '"><i class="material-icons">add_circle_outline</i></button>' +
+                            install: '<button data-adapter-name="' + adapter + '" class="adapter-install-submit small-button" title="' + localTexts['add instance'] + '" data-adapter-desc="' + desc + '"><i class="material-icons">add_circle_outline</i></button>' +
                             '<button ' + (obj.readme ? '' : 'disabled="disabled" ') + ' data-adapter-name="' + adapter + '" data-adapter-url="' + (obj.readme || '') + '" class="adapter-readme-submit small-button" title="' + localTexts['readme'] + '"><i class="material-icons">help_outline</i></button>' +
                             '<button data-adapter-name="' + adapter + '" class="adapter-delete-submit small-button hide" title="' + localTexts['delete adapter'] + '"><i class="material-icons">delete_forever</i></button>' +
                             ((that.main.config.expertMode) ? '<button data-adapter-name="' + adapter + '" data-target="adapters-menu" class="adapter-update-custom-submit small-button" title="' + localTexts['install specific version'] + '"><i class="material-icons">add_to_photos</i></button>' : ''),
@@ -1348,14 +1348,22 @@ function Adapters(main) {
         }
     };
 
-    function showAddInstanceDialog(adapter, callback) {
+    function showAddInstanceDialog(adapter, desc, callback) {
         var $dialogAddInstance = $('#dialog-add-instance');
         $dialogAddInstance.find('.dialog-add-instance-name').html(adapter);
+        $dialogAddInstance.find('.dialog-add-description').html(desc);
+
         // fill the hosts
         var text = '';
         for (var h = 0; h < that.main.tabs.hosts.list.length; h++) {
             var host = that.main.tabs.hosts.list[h];
             text += '<option ' + (host.name === that.main.currentHost ? 'selected' : '') + ' value="' + host.name + '">' + host.name + '</option>';
+        }
+
+        if (that.main.tabs.hosts.list.length <= 1) {
+            $dialogAddInstance.find('.dialog-add-instance-host').addClass('disabled').prop('disabled', true);
+        } else {
+            $dialogAddInstance.find('.dialog-add-instance-host').removeClass('disabled').prop('disabled', false);
         }
         $dialogAddInstance.find('.dialog-add-instance-host').html(text).select();
 
@@ -1477,9 +1485,10 @@ function Adapters(main) {
     this.initButtons = function (adapter) {
         this.$tab.find('.adapter-install-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
             var adapter = $(this).attr('data-adapter-name');
+            var desc = $(this).attr('data-adapter-desc');
 
             // show config dialog
-            showAddInstanceDialog(adapter, function (result, host, index) {
+            showAddInstanceDialog(adapter, desc, function (result, host, index) {
                 if (!result) return;
 
                 that.getAdaptersInfo(host, false, false, function (repo, installed) {
