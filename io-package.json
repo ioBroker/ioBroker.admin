@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.3.7",
+    "version": "3.3.8",
     "news": {
+      "3.3.8": {
+        "en": "Hosts selection is improved",
+        "de": "Die Auswahl der Hosts wurde verbessert",
+        "ru": "Улучшен выбор хостов",
+        "pt": "A seleção de hosts é melhorada",
+        "nl": "Hosts selectie is verbeterd",
+        "fr": "La sélection des hôtes est améliorée",
+        "it": "La selezione degli host è migliorata",
+        "es": "La selección de hosts se mejora",
+        "pl": "Poprawiono wybór hostów"
+      },
       "3.3.6": {
         "en": "small UI corrections",
         "de": "kleine UI-Korrekturen",
