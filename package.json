@@ -1,7 +1,7 @@
 {
   "name": "iobroker.admin",
   "description": "The adapter opens a webserver for the ioBroker admin UI.",
-  "version": "3.3.6",
+  "version": "3.3.7",
   "contributors": [
     "bluefox <dogafox@gmail.com>",
     "apollon77",
@@ -50,7 +50,7 @@
     "gulp-concat": "^2.6.1",
     "gulp-htmlmin": "^4.0.0",
     "gulp-less": "^4.0.0",
-    "gulp-sass": "^4.0.1",
+    "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.8",

@@ -2,7 +2,7 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.3.6",
+    "version": "3.3.7",
     "news": {
       "3.3.6": {
         "en": "small UI corrections",
