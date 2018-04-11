@@ -77,6 +77,10 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/devices/light-bulb.svg" height="48" /> - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 
 ## Changelog
+### 3.3.9 (2018-04-12)
+* (bluefox) The user and groups deletion was corrected
+* (bluefox) Force using of socket.io 2.1.0
+
 ### 3.3.8 (2018-04-10)
 * (bluefox) Hosts selection is improved
 

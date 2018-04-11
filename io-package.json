@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.3.8",
+    "version": "3.3.9",
     "news": {
+      "3.3.9": {
+        "en": "The user and groups deletion was corrected",
+        "de": "Die Löschung von Benutzern und Gruppen wurde korrigiert",
+        "ru": "Исправлено удаление пользователя и групп",
+        "pt": "A exclusão de usuários e grupos foi corrigida",
+        "nl": "Het verwijderen van gebruikers en groepen is gecorrigeerd",
+        "fr": "La suppression de l'utilisateur et des groupes a été corrigée",
+        "it": "La cancellazione di utenti e gruppi è stata corretta",
+        "es": "Se corrigió la eliminación de usuarios y grupos",
+        "pl": "Usunięcie użytkowników i grup zostało poprawione"
+      },
       "3.3.8": {
         "en": "Hosts selection is improved",
         "de": "Die Auswahl der Hosts wurde verbessert",
