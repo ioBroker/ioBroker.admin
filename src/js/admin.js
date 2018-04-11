@@ -848,7 +848,12 @@ $(document).ready(function () {
         for (var a = 0; a < addTabs.length; a++) {
             var tab   = main.objects[addTabs[a]];
             var name  = 'tab-' + tab.common.name;
+
             var link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
+            if (tab.common.materilizeTab) {
+                link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';
+            }
+
             var parts = addTabs[a].split('.');
             var buttonName;
 
@@ -903,6 +908,9 @@ $(document).ready(function () {
                 var isReplace = false;
                 if (!link) {
                     link = '/adapter/' + parts[2] + '/tab.html';
+                    if (tab.common.materilizeTab) {
+                        link = '/adapter/' + parts[2] + '/tab_m.html';
+                    }
                 } else {
                     // convert "http://%ip%:%port%" to "http://localhost:1880"
                     /*main.tabs.instances._replaceLinks(link, parts[2], parts[3], name, function (link, adapter, instance, arg) {

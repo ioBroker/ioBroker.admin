@@ -1,8 +1,6 @@
 (function ($) {
     'use strict';
 
-    var ICON_MINIMAL_BASE64_SIZE = 312;
-
     if ($.fn.treeTable) return;
 
     function nodeExpand() {
