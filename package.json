@@ -34,7 +34,7 @@
     "passport-local": "^1.0.0",
     "passport.socketio": "^3.7.0",
     "request": "^2.85.0",
-    "socket.io": "^1.5.1",
+    "socket.io": ">=2.1.0",
     "xtend": "^4.0.1"
   },
   "devDependencies": {

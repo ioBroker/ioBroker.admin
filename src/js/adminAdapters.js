@@ -1349,6 +1349,10 @@ function Adapters(main) {
     };
 
     function showAddInstanceDialog(adapter, desc, callback) {
+        if (that.main.tabs.hosts.list.length <= 1 && !that.main.config.expertMode) {
+            return callback(true, that.main.currentHost, '');
+        }
+
         var $dialogAddInstance = $('#dialog-add-instance');
         $dialogAddInstance.find('.dialog-add-instance-name').html(adapter);
         $dialogAddInstance.find('.dialog-add-description').html(desc);

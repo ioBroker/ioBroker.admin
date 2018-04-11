@@ -25,7 +25,9 @@ function Users(main) {
                         showMessageInDialog(err, true, 5000);
                         if (callback) callback(err);
                     } else {
-                        setTimeout(synchronizeUser, 0, userId, userGroups, callback);
+                        setTimeout(function () {
+                            synchronizeUser(userId, userGroups, callback);
+                        }, 0);
                     }
                 });
                 return;
@@ -41,7 +43,9 @@ function Users(main) {
                         showMessageInDialog(err, true, 5000);
                         if (callback) callback(err);
                     } else {
-                        setTimeout(synchronizeUser, 0, userId, userGroups, callback);
+                        setTimeout(function () {
+                            synchronizeUser(userId, userGroups, callback);
+                        }, 0);
                     }
                 });
                 return;
@@ -102,23 +106,25 @@ function Users(main) {
     }
 
     function delUserFromGroups(id, callback) {
-        var someDeleted = false;
+        var count = 0;
         for (var i = 0; i < that.groups.length; i++) {
+            var group = that.main.objects[that.groups[i]];
             // If user has no group, but group has user => delete user from group
-            if (that.main.objects[that.groups[i]].common.members && that.main.objects[that.groups[i]].common.members.indexOf(id) !== -1) {
-                that.main.objects[that.groups[i]].common.members.splice(that.main.objects[that.groups[i]].common.members.indexOf(id), 1);
+            if (group && group.common && group.common.members && group.common.members.indexOf(id) !== -1) {
+                group.common.members.splice(group.common.members.indexOf(id), 1);
                 that.main.socket.emit('extendObject', that.groups[i], {
                     common: {
-                        members: that.main.objects[that.groups[i]].common.members
+                        members: group.common.members
                     }
                 }, function (err) {
                     if (err) {
                         showMessage(_('Cannot modify groups: %s', err), true);
                     } else {
-                        setTimeout(delUserFromGroups, 0, id);
+                        setTimeout(function () {
+                            delUserFromGroups(id, callback);
+                        }, 0);
                     }
                 });
-                someDeleted = true;
                 return;
             }
         }
@@ -138,6 +144,24 @@ function Users(main) {
                             showMessage(_('User deleted'));
                         }
                     });
+                });
+            }
+        } else {
+            showMessage(_('Invalid object: %s', id), true);
+        }
+    }
+
+    function deleteGroup(id) {
+        if (that.main.objects[id] && that.main.objects[id].type === 'group') {
+            if (that.main.objects[id].common && that.main.objects[id].common.dontDelete) {
+                showMessage(_('Object may not be deleted'), true);
+            } else {
+                that.main.socket.emit('delObject', id, function (err) {
+                    if (err) {
+                        showMessage(_('Group may not be deleted: %s', err), true);
+                    } else {
+                        showMessage(_('Group deleted'));
+                    }
                 });
             }
         } else {
@@ -889,8 +913,11 @@ function Users(main) {
                 }
             });
         });
-        that.$gridUsers.find('.delete-content').on('click', function () {
+        that.$gridUsers.find('.delete-content').off('click').on('click', function () {
             var id = $(this).data('user');
+
+            if ($(this).hasClass('disabled')) return;
+
             if (that.main.objects[id] && that.main.objects[id].type === 'user') {
                 that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
                     // If all
@@ -1001,11 +1028,13 @@ function Users(main) {
         });
         that.$gridGroups.find('.delete-content').on('click', function () {
             var id = $(this).data('group');
-            if (that.main.objects[id] && that.main.objects[id].type === 'user') {
+            if ($(this).hasClass('disabled')) return;
+
+            if (that.main.objects[id] && that.main.objects[id].type === 'group') {
                 that.main.confirmMessage(_('Are you sure to delete %s?', id), null, 'help', function (result) {
                     // If all
                     if (result) {
-                        deleteUser(id);
+                        deleteGroup(id);
                     }
                 });
             } else {
@@ -1098,7 +1127,7 @@ function Users(main) {
                 if (this.groups.indexOf(id) === -1) this.groups.push(id);
             } else {
                 var i = this.groups.indexOf(id);
-                if (i !== -1) this.groups.splice(j, 1);
+                if (i !== -1) this.groups.splice(i, 1);
             }
             if (this.timer) {
                 clearTimeout(this.timer);

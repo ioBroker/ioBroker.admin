@@ -1762,7 +1762,7 @@ $(document).ready(function () {
                 }
 
                 elements.push({
-                    line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a>' +
+                    line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a href="#' + id + '">' +
                     (icon ? '<i class="material-icons left">' + icon + '</i>' : '<i class="material-icons left">live_help</i>') +
                     $(this).data('name') + '</a></li>',
                     id: id

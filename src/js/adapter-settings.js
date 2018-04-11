@@ -761,9 +761,32 @@ function getUsers(callback) {
 
 function fillUsers(elemId, current, callback) {
     getUsers(function (err, users) {
+        // Answer is like
+        // {
+        //     "admin": {  <<=== This is a common.name!
+        //         "type": "user",
+        //         "common": {
+        //             "name": "admin",
+        //             "password": "aaa",
+        //             "dontDelete": true,
+        //             "enabled": true,
+        //             "icon": "data:image/png;base64,xxx",
+        //             "color": "#ca0808",
+        //             "desc": ""
+        //         },
+        //         "_id": "system.user.admin"
+        //     },
+        //     ...
+        // }
+
         var text = '';
+        // Warning u is name of user and not ID.
+        var len = 'system.user.'.length;
         for (var u in users) {
-            text += '<option value="' + u + '" ' + ((current === u) ? 'selected' : '') + ' >' + users[u].common.name[0].toUpperCase() + users[u].common.name.substring(1)  + '</option>\n';
+            if (users.hasOwnProperty(u)) {
+                var id = users[u]._id.substring(len);
+                text += '<option value="' + id + '" ' + (current === id ? 'selected' : '') + ' >' + u[0].toUpperCase() + u.substring(1)  + '</option>\n';
+            }
         }
         $(elemId).html(text);
         if (isMaterialize) {
