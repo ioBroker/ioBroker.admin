@@ -1129,6 +1129,14 @@ $(document).ready(function () {
     // ----------------------------- Objects show and Edit ------------------------------------------------
     function getObjects(callback) {
         main.socket.emit('getAllObjects', function (err, res) {
+            if (err) {
+                // following errors are possible
+                // permissionError
+                // Admin is not enabled in cloud settings!
+                window.alert(_(err));
+                return;
+            }
+
             setTimeout(function () {
                 var obj;
                 main.objects = res;
