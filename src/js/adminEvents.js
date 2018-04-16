@@ -80,7 +80,7 @@ function Events(main) {
 
     this.init    = function () {
         if (isRemote) {
-            $('#grid-events').html(_('You can\'t see events via cloud'));
+            $('#grid-events').html(_('You can\'t see events via cloud') + '<br><i class="large material-icons">cloud_off</i>').addClass('no-cloud-events');
             return;
         }
         if (!hdr) return;
