@@ -346,15 +346,18 @@ function EditObject(main) {
 
         // fill users
         var text = '';
+        var name;
         for (var u = 0; u < this.main.tabs.users.list.length; u++) {
-            text += '<option value="' + this.main.tabs.users.list[u] + '">' + (this.main.objects[this.main.tabs.users.list[u]].common.name || this.main.tabs.users.list[u]) + '</option>';
+            name = translateName(this.main.objects[this.main.tabs.users.list[u]].common.name);
+            text += '<option value="' + this.main.tabs.users.list[u] + '">' + (name || this.main.tabs.users.list[u]) + '</option>';
         }
         this.$dialog.find('.object-tab-acl-owner').html(text);
 
         // fill groups
         text = '';
         for (u = 0; u < this.main.tabs.users.groups.length; u++) {
-            text += '<option value="' + this.main.tabs.users.groups[u] + '">' + (this.main.objects[this.main.tabs.users.groups[u]].common.name || this.main.tabs.users.groups[u]) + '</option>';
+            name = translateName(this.main.objects[this.main.tabs.users.groups[u]].common.name);
+            text += '<option value="' + this.main.tabs.users.groups[u] + '">' + (name || this.main.tabs.users.groups[u]) + '</option>';
         }
         this.$dialog.find('.object-tab-acl-group').html(text);
         this.load(obj);
@@ -388,7 +391,7 @@ function EditObject(main) {
         obj.native = obj.native || {};
         obj.acl    = obj.acl || {};
         this.$dialog.find('.title-id').text(obj._id);
-        this.$dialog.find('.edit-object-name').val(obj.common ? obj.common.name : obj._id);
+        this.$dialog.find('.edit-object-name').val(obj.common ? translateName(obj.common.name) : obj._id);
         this.$dialog.find('.edit-object-type').val(obj.type);
         this.$dialog.find('.object-tab-acl-owner').val(obj.acl.owner      || 'system.user.admin');
         this.$dialog.find('.object-tab-acl-group').val(obj.acl.ownerGroup || 'system.group.administrator');
@@ -506,7 +509,7 @@ function EditObject(main) {
         obj.native = {};
         obj.acl    = {};
         obj._id    = this.$dialog.find('.title-id').text();
-        obj.common.name = this.$dialog.find('.edit-object-name').val();
+        obj.common.name = this.$dialog.find('.edit-object-name').val(); // no support of multilanguage if edited
         obj.type   = this.$dialog.find('.edit-object-type').val();
         var err = saveObjectFields('.object-tab-common-table', obj.common);
         if (err) {

@@ -88,6 +88,14 @@ function translateAll(selector, lang, dictionary) {
     });
 }
 
+function translateName(name) {
+    if (name && typeof name === 'object') {
+        return name[systemLang] || name.en;
+    } else {
+        return name;
+    }
+}
+
 // make possible _('words to translate')
 var _ = function (text, arg1, arg2, arg3) {
     text = translateWord(text);

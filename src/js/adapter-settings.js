@@ -1099,7 +1099,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
         if (cols[i] === 'room') {
             var list = {'': _('none')};
             for (room in rooms) {
-                list[room] = _(rooms[room].common.name);
+                list[room] = _(translateName(rooms[room].common.name));
             }
             _obj.stype =         'select';
             _obj.edittype =      'select';
@@ -1109,7 +1109,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
                 value: ':' + _('all')
             };
             for (room in rooms) {
-                _obj.searchoptions.value += ';' + _(rooms[room].common.name) + ':' + _(rooms[room].common.name);
+                _obj.searchoptions.value += ';' + _(translateName(rooms[room].common.name)) + ':' + _(translateName(rooms[room].common.name));
             }
         }
         colModel.push(_obj);
@@ -1254,8 +1254,8 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
 // As input gets the list from getEnum
 function enumName2Id(enums, name) {
     for (var enumId in enums) {
-        if (enums[enumId].common.name === name) return enumId;
-        if (enums[enumId].name && enums[enumId].name === name) return enumId;
+        if (translateName(enums[enumId].common.name) === name) return enumId;
+        if (enums[enumId].name && translateName(enums[enumId].name) === name) return enumId;
     }
     return '';
 }

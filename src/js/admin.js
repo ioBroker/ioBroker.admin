@@ -14,7 +14,6 @@
 /* global license */
 /* global translateAll */
 /* global initGridLanguage */
-/* global systemLang */
 'use strict';
 
 //if (typeof Worker === 'undefined') alert('your browser does not support WebWorkers :-(');
@@ -420,10 +419,8 @@ $(document).ready(function () {
                 if (!obj || !obj.common || !obj.common.name) {
                     name = main.currentUser.replace(/^system\.user\./);
                     name = name[0].toUpperCase() + name.substring(1).toLowerCase();
-                } else if (typeof obj.common.name === 'object') {
-                    name = obj.common.name[systemLang] || obj.common.name.en;
                 } else {
-                    name = obj.common.name;
+                    name = translateName(obj.common.name);
                 }
                 if (obj && obj.common && obj.common.icon) {
                     var objs = {};
@@ -437,12 +434,8 @@ $(document).ready(function () {
                 for (var i = 0; i < tabs.users.groups.length; i++) {
                     var group = main.objects[tabs.users.groups[i]];
                     if (group && group.common && group.common.members && group.common.members.indexOf(main.currentUser) !== -1) {
-                        if (typeof group.common.name === 'object') {
-                            groups.push(_(group.common.name[systemLang] || group.common.name.en));
-                        } else {
-                        groups.push(_(group.common.name));
+                        groups.push(_(translateName(group.common.name)));
                     }
-                }
                 }
                 $('#current-group').html(groups.join(', '));
             }

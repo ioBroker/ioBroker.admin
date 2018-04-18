@@ -252,15 +252,18 @@ function System(main) {
 
         // fill users
         var text = '';
+        var name;
         for (var u = 0; u < that.main.tabs.users.list.length; u++) {
-            text += '<option value="' + that.main.tabs.users.list[u] + '">' + (that.main.objects[that.main.tabs.users.list[u]].common.name || that.main.tabs.users.list[u]) + '</option>';
+            name = translateName(that.main.objects[that.main.tabs.users.list[u]].common.name);
+            text += '<option value="' + that.main.tabs.users.list[u] + '">' + (name || that.main.tabs.users.list[u]) + '</option>';
         }
         $dialog.find('#tab-system-acl-owner').html(text).val(acl.owner || 'system.user.admin');
 
         // fill groups
         text = '';
         for (u = 0; u < that.main.tabs.users.groups.length; u++) {
-            text += '<option value="' + that.main.tabs.users.groups[u] + '">' + (that.main.objects[that.main.tabs.users.groups[u]].common.name || that.main.tabs.users.groups[u]) + '</option>';
+            name = translateName(that.main.objects[that.main.tabs.users.groups[u]].common.name);
+            text += '<option value="' + that.main.tabs.users.groups[u] + '">' + (name || that.main.tabs.users.groups[u]) + '</option>';
         }
         $dialog.find('#tab-system-acl-group').html(text).val(acl.ownerGroup || 'system.group.administrator');
 

@@ -486,7 +486,7 @@ function Users(main) {
             parent = parts.join('.');
         }
         $dialog.find('#tab-users-dialog-new-name')
-            .val(options.name)
+            .val(translateName(options.name))
             .off('change')
             .on('change', function () {
                 var $id = $('#tab-users-dialog-new-id');
@@ -845,13 +845,9 @@ function Users(main) {
             }
 
             if (common.name) {
-                name = common.name;
+                name = translateName(common.name);
             } else {
                 name = firstUpper(that.list[u].replace(/^system\.user\./));
-            }
-
-            if (typeof name === 'object') {
-                name = name[systemLang] || name.en;
             }
 
             var tGroups = '';
@@ -859,10 +855,7 @@ function Users(main) {
                 var groups = users[that.list[u]];
                 for (var gg = 0; gg < groups.length; gg++) {
                     var gId = groups[gg].id;
-                    var gName = groups[gg].name;
-                    if (typeof gName === 'object') {
-                        gName = gName[systemLang] || gName.en;
-                    }
+                    var gName = translateName(groups[gg].name);
                     tGroups += '<div class="chip">' + that.main.getIcon(gId) + gName + '<i class="close material-icons tab-users-remove-group" data-group="' + gId + '" data-user="' + that.list[u] + '">close</i></div>';
                 }
             }
@@ -971,13 +964,9 @@ function Users(main) {
                 common = {};
             }
             if (common.name) {
-                name = common.name;
+                name = translateName(common.name);
             } else {
                 name = firstUpper(that.groups[u].replace(/^system\.group\./));
-            }
-
-            if (typeof name === 'object') {
-                name = name[systemLang] || name.en;
             }
 
             var tUsers = '';
@@ -987,12 +976,9 @@ function Users(main) {
                     var uId = users[gg];
                     var uName;
                     if (that.main.objects[uId] && that.main.objects[uId].common && that.main.objects[uId].common.name) {
-                        uName = that.main.objects[uId].common.name;
+                        uName = translateName(that.main.objects[uId].common.name);
                     } else {
                         uName = firstUpper(uId.replace(/^system\.user\./));
-                    }
-                    if (typeof uName === 'object') {
-                        uName = uName[systemLang] || uName.en;
                     }
                     tUsers += '<div class="chip">' + that.main.getIcon(uId) + uName + '<i class="close material-icons tab-users-remove-user" data-group="' + that.groups[u] + '" data-user="' + uId + '">close</i></div>';
                 }

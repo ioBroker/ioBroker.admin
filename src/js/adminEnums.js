@@ -354,10 +354,7 @@ function Enums(main) {
             name = objects[id];
         }
         if (name && name.common && name.common.name) {
-            name = name.common.name;
-            if (typeof name === 'object') {
-                name = name[systemLang] || name.en;
-            }
+            name = translateName(name.common.name);
         } else {
             var parts = id.split('.');
             name = parts.pop();
@@ -956,10 +953,7 @@ function Enums(main) {
 
         if (id) {
             if (that.main.objects[id] && that.main.objects[id].common) {
-                nameVal      = that.main.objects[id].common.name;
-                if (typeof nameVal === 'object') {
-                    nameVal = nameVal[systemLang] || nameVal.en;
-                }
+                nameVal      = translateName(that.main.objects[id].common.name);
                 iconVal      = that.main.objects[id].common.icon;
                 colorVal     = that.main.objects[id].common.color;
                 isIdEditable = !that.main.objects[id].common['object-non-deletable'] && !that.main.objects[id].common.dontDelete;
