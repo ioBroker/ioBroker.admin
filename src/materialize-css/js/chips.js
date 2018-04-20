@@ -249,6 +249,10 @@
      * Handle Input Blur
      */
     _handleInputBlur() {
+      this.addChip({
+        tag: this.$input[0].value
+      });
+      this.$input[0].value = '';
       this.$el.removeClass('focus');
     }
 
