@@ -263,8 +263,8 @@
     _handleInputKeydown(e) {
       Chips._keydown = true;
 
-      // enter
-      if (e.keyCode === 13) {
+      // enter - comma - semicolon - space
+      if (e.keyCode === 13 || e.keyCode === 188 || e.keyCode === 32) {
         // Override enter if autocompleting.
         if (this.hasAutocomplete &&
           this.autocomplete &&
