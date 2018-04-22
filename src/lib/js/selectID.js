@@ -5,7 +5,7 @@
 /*
  MIT, Copyright 2014-2018 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
 
- version: 1.1.2 (2018.04.06)
+ version: 1.1.3 (2018.04.21)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -40,6 +40,7 @@
              onSuccess:  null,     // callback function to be called if user press "Select". Can be overwritten in "show" - function (newId, oldId, newObj)
              onChange:   null,     // called every time the new object selected - function (newId, oldId, newObj)
              noDialog:   false,    // do not make dialog
+             stats:      false,    // show objects statistics
              noMultiselect: false, // do not make multiselect
              buttons:    null,     // array with buttons, that should be shown in last column
                                    // if array is not empty it can has following fields
@@ -105,7 +106,9 @@
                  copyToClipboard: 'Copy to clipboard',
                  expertMode: 'Toggle expert mode',
                  button:    'Settings',
-                 noData:    'No data'
+                 noData:    'No data',
+                 Objects:   'Objects',
+                 States:    'States'
              },
              columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button'],
                                 // some elements of columns could be an object {name: field, data: function (id, name){}, title: function (id, name) {}}
@@ -441,6 +444,7 @@ function filterChanged(e) {
     }
 
     function getAllStates(data) {
+        var stats   = {objs: 0, states: 0};
         var objects = data.objects;
         var isType  = data.columns.indexOf('type') !== -1;
         var isRoom  = data.columns.indexOf('room') !== -1;
@@ -459,6 +463,11 @@ function filterChanged(e) {
                 console.error('Invalid empty ID found! Please fix it');
                 continue;
             }
+            stats.objs++;
+            if (objects[id].type === 'states') {
+                stats.states++;
+            }
+
             if (isRoom) {
                 if (objects[id].type === 'enum' && data.regexEnumRooms.test(id) && data.roomEnums.indexOf(id) === -1) data.roomEnums.push(id);
                 if (objects[id].enums) {
@@ -540,6 +549,7 @@ function filterChanged(e) {
                     }
                 }
             }
+
             // fill counters
             if (data.expertMode) {
                 data.ids.push(id);
@@ -552,6 +562,7 @@ function filterChanged(e) {
         data.funcEnums.sort();
         data.histories.sort();
         data.ids.sort();
+        data.stats = stats;
     }
 
     function treeSplit(data, id) {
@@ -1316,6 +1327,7 @@ function filterChanged(e) {
         }
 
         removeImageFromSettings (data);
+
         //var noStates = (data.objects && !data.states);
         var multiselect = (!data.noDialog && !data.noMultiselect);
 
@@ -1479,6 +1491,13 @@ function filterChanged(e) {
 
         if (data.useHistory) {
             tds += '<button class="panel-button btn-history"></button>\n';
+        }
+        if (data.stats) {
+            tds += '<div class="objects-info">' +
+            '<span class="objects-title">' + data.texts['Objects'] + ': </span>' +
+            '<span class="objects-val-objs">' + data.stats.objs + '</span>, ' +
+            '<span class="objects-title">' + data.texts['States'] + ': </span>' +
+            '<span class="objects-val-states">' + data.stats.states + '</span></div>';
         }
 
         var text = 
@@ -3022,6 +3041,11 @@ function filterChanged(e) {
         return cnt;
     }
 
+    function updateStats(data) {
+        data.$tree.find('.objects-info .objects-val-objs').text(data.stats.objs);
+        data.$tree.find('.objects-info .objects-val-states').text(data.stats.states);
+    }
+
     function recalcChildrenCounters(node, data) {
         var id  = node.key;
         var $tr = $(node.tr);
@@ -3103,7 +3127,9 @@ function filterChanged(e) {
                 copyToClipboard: 'Copy to clipboard',
                 expertMode: 'Toggle expert mode',
                 button:    'Settings',
-                noData:   'No data'
+                noData:   'No data',
+                Objects:   'Objects',
+                States:    'States'
             }, settings.texts);
 
             var that = this;
@@ -3478,6 +3504,11 @@ function filterChanged(e) {
                 // If new node
                 if (!node && obj) {
                     // Filter it
+                    data.stats.objs++;
+                    if (obj.type === 'state') {
+                        data.stats.states++;
+                    }
+                    updateStats();
 
                     data.objects[id] = obj;
                     var addedNodes = [];
@@ -3535,6 +3566,14 @@ function filterChanged(e) {
                         }
                     }
                 } else if (!obj) {
+                    if (data.objects[id]) {
+                        data.stats.objs--;
+                        if (data.objects[id] && data.objects[id].type === 'state') {
+                            data.stats.states--;
+                        }
+                        updateStats(data);
+                    }
+
                     // object deleted
                     delete data.objects[id];
                     deleteTree(data, id);
