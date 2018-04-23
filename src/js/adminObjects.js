@@ -371,6 +371,7 @@ function Objects(main) {
                 objects:  this.main.objects,
                 states:   this.main.states,
                 noDialog: true,
+                stats:    true,
                 name:     'admin-objects',
                 useHistory: this.main.dialogs.customs.customEnabled,
                 showButtonsForNotExistingObjects: true,
@@ -403,11 +404,12 @@ function Objects(main) {
                     without:            _('Without'),
                     copyToClipboard:    _('Copy to clipboard'),
                     expertMode:         _('Toggle expert mode'),
-                    refresh:	        _('Update'),
                     sort:               _('Sort alphabetically'),
                     button:             _('Settings'),
                     editDialog:         _('Edit in dialog'),
                     noData:             _('No data'),
+                    Objects:            _('Objects'),
+                    States:             _('States')
                 },
                 columns: ['ID', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
                 expandedCallback: function (id, childrenCount, hasStates) {
@@ -544,7 +546,6 @@ function Objects(main) {
                         },
                         title: _('Add Objecttree from JSON File'), // let Objecttree be (fixed in translation)
                         click: function () {
-                            var id = selectId('getActual') || '';
                             var input = document.createElement('input');
                             input.setAttribute('type', 'file');
                             input.setAttribute('id', 'files');
