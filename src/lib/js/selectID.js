@@ -1030,7 +1030,7 @@ function filterChanged(e) {
                     states = null;
                 }
             } else
-            // if odl format val1:text1;val2:text2
+            // if old format val1:text1;val2:text2
             if (typeof states === 'string') {
                 var parts = states.split(';');
                 states = {};
