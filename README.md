@@ -77,6 +77,14 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/devices/light-bulb.svg" height="48" /> - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 
 ## Changelog
+### 3.4.0 (2018-04-23)
+* (bluefox) show error about not activated admin for cloud
+* (bluefox) handle mutlilanguage names
+* (bluefox) show number of objects
+* (BuZZy1337) always addChips when input blurs
+* (bluefox) fix select ID dialog for old styles
+* (bluefox) add states view for object tab
+
 ### 3.3.9 (2018-04-12)
 * (bluefox) The user and groups deletion was corrected
 * (bluefox) Force using of socket.io 2.1.0

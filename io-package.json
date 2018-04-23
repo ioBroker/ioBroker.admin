@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.3.9",
+    "version": "3.4.0",
     "news": {
+      "3.4.0": {
+        "en": "showed error about not activated admin for cloud\nhandles the mutli-language names\nshows number of objects\nalways addChips when input blurs\nfix select ID dialog for old styles\nadded states view for object tab",
+        "de": "Fehler bei nicht aktiviertem Admin für Cloud angezeigt\nverarbeitet die Namen mehrerer Sprachen\nZeigt die Anzahl der Objekte an\nAddChips immer wenn die Eingabe verwischt\nFix Auswahl ID-Dialog für alte Stile\nStatusansicht für Objekt-Registerkarte hinzugefügt",
+        "ru": "показывает ошибку об отключенном админе для облака\nуправляет именами mutli-language\nпоказывает количество объектов\nвсегда addChips при потере фокуса\nисправлен диалог выбора идентификатора для старых стилей\nпредставление добавленных состояний для вкладки объекта",
+        "pt": "mostrou erro sobre o administrador não ativado para nuvem\nlida com os nomes multilíngues\nmostra o número de objetos\nsempre addChips quando a entrada borra\ncorrija a caixa de diálogo ID de seleção para estilos antigos\nvisualização de estados adicionados para a guia do objeto",
+        "nl": "toonde fout over niet-geactiveerde admin voor cloud\nbehandelt de mutli-taalnamen\ntoont het aantal objecten\naltijd addChips wanneer invoer verdwijnt\nfix select ID-dialoogvenster voor oude stijlen\ntoegevoegde statusweergave voor objecttab",
+        "fr": "a montré une erreur à propos de l'administrateur non activé pour le cloud\ngère les noms en plusieurs langues\nmontre le nombre d'objets\ntoujours ajouterChips lorsque le flou d'entrée\nCorrection de la boîte de dialogue Sélectionner un ID pour les anciens styles\nvue des états ajoutés pour l'onglet objet",
+        "it": "ha mostrato errore su admin non attivato per cloud\ngestisce i nomi multilingue\nmostra il numero di oggetti\naggiungi sempreChip quando l'input è sfocato\ncorregge la finestra di dialogo Seleziona ID per i vecchi stili\nvista degli stati aggiunti per la scheda oggetto",
+        "es": "mostró un error sobre el administrador no activado para la nube\nmaneja los nombres de varios idiomas\nmuestra la cantidad de objetos\nsiempre agregaChips cuando las fallas de entrada\ncorregir el diálogo de selección de ID para estilos antiguos\nvista de estados añadidos para la pestaña de objetos",
+        "pl": "pokazał błąd dotyczący nieuaktywnionego administratora dla chmury\nobsługuje nazwy mutli-language\npokazuje liczbę obiektów\nzawsze addChips, gdy wejście zaciera się\nnapraw wybrane okno dialogowe ID dla starych stylów\ndodano widok stanów dla zakładki obiektu"
+      },
       "3.3.9": {
         "en": "The user and groups deletion was corrected",
         "de": "Die Löschung von Benutzern und Gruppen wurde korrigiert",
