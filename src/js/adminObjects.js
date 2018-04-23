@@ -373,6 +373,7 @@ function Objects(main) {
                 noDialog: true,
                 stats:    true,
                 name:     'admin-objects',
+                useValues: ['ID', 'name', 'value.from', 'value.q', 'value.ts', 'value.lc', 'value.val', 'button'],
                 useHistory: this.main.dialogs.customs.customEnabled,
                 showButtonsForNotExistingObjects: true,
                 expertModeRegEx: /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin|^script\./,
@@ -409,7 +410,8 @@ function Objects(main) {
                     editDialog:         _('Edit in dialog'),
                     noData:             _('No data'),
                     Objects:            _('Objects'),
-                    States:             _('States')
+                    States:             _('States'),
+                    toggleValues:       _('Toggle states view')
                 },
                 columns: ['ID', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
                 expandedCallback: function (id, childrenCount, hasStates) {
@@ -419,7 +421,7 @@ function Objects(main) {
                     }
                 },
                 collapsedCallback: function (id, childrenCount, hasStates) {
-                    // unregister this in subscription
+                    // un-register this in subscription
                     unsubscribe(id);
                 },
                 buttons: [
@@ -578,7 +580,7 @@ function Objects(main) {
                         }
                     }
                 ],
-                quickEdit: ['name', 'value', 'role', 'function', 'room'],
+                quickEdit: ['name', 'value', 'role', 'function', 'room', 'value.val'],
                 quickEditCallback: function (id, attr, newValue, oldValue) {
                     if (attr === 'room') {
                         syncEnum(id, 'rooms', newValue);
