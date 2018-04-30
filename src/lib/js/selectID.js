@@ -2188,7 +2188,7 @@ function filterChanged(e) {
                                     val = '&nbsp;';
                                 }
 
-                                $elem.html('<span class="highlight select-value" style="' + (ack ? '' : '#c00000') + '">' + val + '</span>');
+                                $elem.html('<span class="highlight select-value" style="' + (ack ? '' : '#c00000') + '">' + val.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>');
 
                                 if (obj && obj.type === 'state' && isCommon && isCommon.type !== 'file') {
                                     addClippyToElement($elem, val,
@@ -2298,7 +2298,7 @@ function filterChanged(e) {
                                     state.val = '&nbsp;';
                                 }
 
-                                $elem.html('<span class="highlight select-value">' + state.val + '</span>')
+                                $elem.html('<span class="highlight select-value">' + state.val.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>')
                                     .attr('title', fullVal);
 
                                 var $span = $elem.find('span');
