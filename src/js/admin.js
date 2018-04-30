@@ -1587,7 +1587,7 @@ $(document).ready(function () {
                 } else {
                     $('#host-adapters-btn').css('opacity', 0.3);
                 }
-
+                document.title = 'ioBroker.' + tab;
                 // if some dialog opened or must be shown
                 if (main.currentDialog !== dialog) {
                     // destroy it
