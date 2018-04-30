@@ -473,15 +473,17 @@ function Enums(main) {
         });
         $tableBody.html(text);
 
-        $tableBody.find('.tabs').mtabs({
-            onShow: function (tab) {
-                that.main.saveConfig('enums-active', $(tab).attr('id'));
+        if ($tableBody.find('.tabs li').length > 0) {
+            $tableBody.find('.tabs').mtabs({
+                onShow: function (tab) {
+                    that.main.saveConfig('enums-active', $(tab).attr('id'));
+                }
+            });
+            if (that.main.config['enums-active'] && !that.main.noSelect) {
+                $tableBody.find('.tabs').mtabs('select', that.main.config['enums-active']);
             }
-        });
-
-        if (that.main.config['enums-active'] && !that.main.noSelect) {
-            $tableBody.find('.tabs').mtabs('select', that.main.config['enums-active']);
         }
+
 
         $tableBody.find('.page').each(function () {
             drawEnum($(this).data('id'), $(this), scrollTop[$(this).data('id')]);

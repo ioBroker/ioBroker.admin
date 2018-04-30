@@ -5,7 +5,7 @@
 /*
  MIT, Copyright 2014-2018 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
 
- version: 1.1.2 (2018.04.06)
+ version: 1.1.3 (2018.04.21)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -40,7 +40,9 @@
              onSuccess:  null,     // callback function to be called if user press "Select". Can be overwritten in "show" - function (newId, oldId, newObj)
              onChange:   null,     // called every time the new object selected - function (newId, oldId, newObj)
              noDialog:   false,    // do not make dialog
+             stats:      false,    // show objects statistics
              noMultiselect: false, // do not make multiselect
+             useValues:  false,    // show button to toggle objects<=>values
              buttons:    null,     // array with buttons, that should be shown in last column
                                    // if array is not empty it can has following fields
                                    // [{
@@ -105,9 +107,12 @@
                  copyToClipboard: 'Copy to clipboard',
                  expertMode: 'Toggle expert mode',
                  button:    'Settings',
-                 noData:    'No data'
+                 noData:    'No data',
+                 Objects:   'Objects',
+                 States:    'States',
+                 toggleValues: 'Toggle states view'
              },
-             columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button'],
+             columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button', 'value.val', 'value.ts', 'value.lc', 'value.from', 'value.q'],
                                 // some elements of columns could be an object {name: field, data: function (id, name){}, title: function (id, name) {}}
              widths:    null,   // array with width for every column
              editEnd:   null,   // function (id, newValues) for edit lines (only id and name can be edited)
@@ -181,13 +186,9 @@ function filterChanged(e) {
 
     var isMaterial;
 
-    function getName(obj, id) {
+    function getNameObj(obj, id) {
         if (obj && obj.common) {
-            var rName = obj.common.name || (id || '').split('.').pop();
-            if (typeof rName === 'object') {
-                rName = rName[systemLang] || rName.en;
-            }
-            return rName;
+            return getName(obj.common.name || (id || '').split('.').pop());
         } else {
             return (id || '').split('.').pop();
         }
@@ -441,6 +442,7 @@ function filterChanged(e) {
     }
 
     function getAllStates(data) {
+        var stats   = data.stats ? {objs: 0, states: 0} : null;
         var objects = data.objects;
         var isType  = data.columns.indexOf('type') !== -1;
         var isRoom  = data.columns.indexOf('room') !== -1;
@@ -459,6 +461,14 @@ function filterChanged(e) {
                 console.error('Invalid empty ID found! Please fix it');
                 continue;
             }
+            stats && stats.objs++;
+
+            if (objects[id].type === 'state') {
+                stats && stats.states++;
+            } else if (data.valuesActive) {
+                continue;
+            }
+
             if (isRoom) {
                 if (objects[id].type === 'enum' && data.regexEnumRooms.test(id) && data.roomEnums.indexOf(id) === -1) data.roomEnums.push(id);
                 if (objects[id].enums) {
@@ -540,6 +550,7 @@ function filterChanged(e) {
                     }
                 }
             }
+
             // fill counters
             if (data.expertMode) {
                 data.ids.push(id);
@@ -552,6 +563,7 @@ function filterChanged(e) {
         data.funcEnums.sort();
         data.histories.sort();
         data.ids.sort();
+        if (stats) data.stats = stats;
     }
 
     function treeSplit(data, id) {
@@ -784,6 +796,14 @@ function filterChanged(e) {
         }
     }
 
+    function getName(name) {
+        if (name && typeof name === 'object') {
+            return name[systemLang] || name.en;
+        } else {
+            return name || '';
+        }
+    }
+
     function findRoomsForObject(data, id, withParentInfo, rooms) {
         if (!id) {
             return [];
@@ -791,10 +811,7 @@ function filterChanged(e) {
         rooms = rooms || [];
         for (var i = 0; i < data.roomEnums.length; i++) {
             var common = data.objects[data.roomEnums[i]] && data.objects[data.roomEnums[i]].common;
-            var name = common.name;
-            if (typeof name === 'object') {
-                name = name[systemLang] || name.en;
-            }
+            var name = getName(common.name);
 
             if (common.members && common.members.indexOf(id) !== -1 && rooms.indexOf(name) === -1) {
                 if (!withParentInfo) {
@@ -834,10 +851,7 @@ function filterChanged(e) {
         funcs = funcs || [];
         for (var i = 0; i < data.funcEnums.length; i++) {
             var common = data.objects[data.funcEnums[i]] && data.objects[data.funcEnums[i]].common;
-            var name = common.name;
-            if (typeof name === 'object') {
-                name = name[systemLang] || name.en;
-            }
+            var name = getName(common.name);
             if (common && common.members && common.members.indexOf(id) !== -1 && funcs.indexOf(name) === -1) {
                 if (!withParentInfo) {
                     funcs.push(name);
@@ -1016,7 +1030,7 @@ function filterChanged(e) {
                     states = null;
                 }
             } else
-            // if odl format val1:text1;val2:text2
+            // if old format val1:text1;val2:text2
             if (typeof states === 'string') {
                 var parts = states.split(';');
                 states = {};
@@ -1087,10 +1101,7 @@ function filterChanged(e) {
                     var room = data.objects[data.roomEnums[ee]];
                     var rName;
                     if (room && room.common && room.common.name) {
-                        rName = room.common.name;
-                        if (typeof rName === 'object') {
-                            rName = rName[systemLang] || rName.en;
-                        }
+                        rName = getName(room.common.name);
                     } else {
                         rName = data.roomEnums[ee].split('.').pop();
                     }
@@ -1107,10 +1118,7 @@ function filterChanged(e) {
                     var func = data.objects[data.funcEnums[e]];
                     var fName;
                     if (func && func.common && func.common.name) {
-                        fName = func.common.name;
-                        if (typeof fName === 'object') {
-                            fName = fName[systemLang] || fName.en;
-                        }
+                        fName = getName(func.common.name);
                     } else {
                         fName = data.funcEnums[e].split('.').pop();
                     }
@@ -1306,28 +1314,44 @@ function filterChanged(e) {
         if ($dlg.attr('id') !== 'dialog-select-member' && $dlg.attr('id') !== 'dialog-select-members') {
             $dlg.css({height: '100%', width: '100%'});
         } else {
-            $dlg.css({height: 'calc(100% - 110px)', width: 'calc(100%- 20px)'});
+            $dlg.css({height: 'calc(100% - 110px)', width: 'calc(100% - 20px)'});
         }
         var data = $dlg.data('selectId');
         if (!data) return;
+
+        //var noStates = (data.objects && !data.states);
+        var multiselect = (!data.noDialog && !data.noMultiselect);
+
+        // load expert mode flag
+        if (typeof Storage !== 'undefined') {
+            if (data.name) {
+                if (data.expertModeRegEx) {
+                    data.expertMode = window.localStorage.getItem(data.name + '-expert');
+                    data.expertMode = (data.expertMode === true || data.expertMode === 'true');
+                }
+                data.sort = window.localStorage.getItem(data.name + '-sort');
+                data.sort = (data.sort === true || data.sort === 'true');
+
+                if (data.useValues) {
+                    data.valuesActive = window.localStorage.getItem(data.name + '-values');
+                    data.valuesActive = (data.valuesActive === true || data.valuesActive === 'true');
+                }
+            }
+        }
+        // switch columns
+        if (data.useValues && data.valuesActive) {
+            data._columns = data._columns || data.columns;
+            data.columns = data.useValues === true ? ['ID', 'name', 'value.from', 'value.q', 'value.ts', 'value.lc', 'value.val', 'button'] : data.useValues;
+        } else if (data._columns) {
+            data.columns = data._columns;
+        }
+
         if (data.columns && data.columns[0] !== 'ID') {
             data.columns.unshift('ID');
             if (data.widths) data.widths.unshift('200px');
         }
 
-        removeImageFromSettings (data);
-        //var noStates = (data.objects && !data.states);
-        var multiselect = (!data.noDialog && !data.noMultiselect);
-
-        // load expert mode flag
-        if (typeof Storage !== 'undefined' && data.name && data.expertModeRegEx) {
-            data.expertMode = window.localStorage.getItem(data.name + '-expert');
-            data.expertMode = (data.expertMode === true || data.expertMode === 'true');
-        }
-        if (typeof Storage !== 'undefined' && data.name) { //} && data.sort) {
-            data.sort = window.localStorage.getItem(data.name + '-sort');
-            data.sort = (data.sort === true || data.sort === 'true');
-        }
+        removeImageFromSettings(data);
 
         // Get all states
         var expandeds = getExpandeds(data);
@@ -1391,6 +1415,7 @@ function filterChanged(e) {
                 $dlg.dialog ({
                     autoOpen: false,
                     modal: true,
+                    resizable: false,
                     width: '90%',
                     open: function (event) {
                         $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
@@ -1398,7 +1423,6 @@ function filterChanged(e) {
                     close: function () {
                         storeSettings (data);
                     },
-                    height: 500,
                     buttons: data.buttonsDlg
                 });
                 if (data.zindex !== null) {
@@ -1417,14 +1441,14 @@ function filterChanged(e) {
             switch (kind) {
                 case 'room':
                     for (i = 0; i < data.roomEnums.length; i++) {
-                        ret.push(getName(data.objects[data.roomEnums[i]], data.roomEnums[i]));
+                        ret.push(getNameObj(data.objects[data.roomEnums[i]], data.roomEnums[i]));
                     }
                     // if (data.rooms) delete data.rooms;
                     // if (data.roomsColored) delete data.roomsColored;
                     return ret;
                 case 'function':
                     for (i = 0; i < data.funcEnums.length; i++) {
-                        ret.push(getName(data.objects[data.funcEnums[i]], data.funcEnums[i]));
+                        ret.push(getNameObj(data.objects[data.funcEnums[i]], data.funcEnums[i]));
                     }
                     // if (data.funcs) delete data.funcs;
                     // if (data.funcsColored) delete data.funcsColored;
@@ -1458,6 +1482,11 @@ function filterChanged(e) {
             '<button class="panel-button btn-collapse"></button>\n'  +
             '<button class="panel-button btn-expand"></button>\n' +
             '<div class="select-id-custom-buttons"></div>\n';
+
+        if (data.useValues) {
+            tds += '<button class="panel-button btn-values"></button>\n';
+        }
+
         if (data.filter && data.filter.type === 'state' && multiselect) {
             tds += 
                 '<div class="iob-toolbar-sep"></div>\n' +
@@ -1480,9 +1509,21 @@ function filterChanged(e) {
         if (data.useHistory) {
             tds += '<button class="panel-button btn-history"></button>\n';
         }
+        if (data.stats) {
+            tds += '<div class="objects-info">' +
+            '<span class="objects-title">' + data.texts['Objects'] + ': </span>' +
+            '<span class="objects-val-objs">' + data.stats.objs + '</span>, ' +
+            '<span class="objects-title">' + data.texts['States'] + ': </span>' +
+            '<span class="objects-val-states">' + data.stats.states + '</span></div>';
+        }
+
+        var height = '100%';
+        if (!data.noDialog && !isMaterial) {
+            height = Math.round(window.innerHeight * 0.6) + 'px';
+        }
 
         var text = 
-            '<div class="dialog-select-container' + (isMaterial ? ' material' : ' old-style') + '" style="width: 100%; height: 100%">\n' +
+            '<div class="dialog-select-container' + (isMaterial ? ' material' : ' old-style') + '" style="width: 100%; height: ' + height + '">\n' +
             '    <div class="main-toolbar-table m">' + tds + '</div>\n' +
             '       <table class="main-header-table">\n'
         ;
@@ -1596,14 +1637,30 @@ function filterChanged(e) {
 
         var thead = '<thead class="grid-objects-head"><tr>\n';
 
-
-        var widths = {ID: data.firstMinWidth ? data.firstMinWidth : '20%', name: '20%', type: '6%', role: '10%', room: '10%', 'function': '10%', value: '10%', button: '9%', enum: '2%'};
+        var widths = {
+            ID: data.firstMinWidth ? data.firstMinWidth : '20%',
+            name: '20%',
+            type: '6%',
+            role: '10%',
+            room: '10%',
+            'function': '10%',
+            value: '10%',
+            button: '9%',
+            enum: '2%',
+            'value.val': '10%',
+            'value.ts': '15%',
+            'value.lc': '15%',
+            'value.from': '10%',
+            'value.q': '10%',
+            'value.ack': '2%',
+        };
 
         forEachColumn(data, function (name, i) {
             var w = data.widths ? data.widths[i] : widths[name] || '2%';
             text  += '<col width="' + w + '"/>';
             thead += '<th style="width: ' + w + ';"></th>';
         });
+
 
         text += '        </colgroup>\n';
         text += thead + '</tr>\n</thead>\n';
@@ -1744,7 +1801,7 @@ function filterChanged(e) {
                     _data.selectedID = newId;
                     if (!_data.noDialog) {
                         // Set title of dialog box
-                        var title = _data.texts.selectid + ' - ' + getName(_data.objects[newId], newId);
+                        var title = _data.texts.selectid + ' - ' + getNameObj(_data.objects[newId], newId);
                         if (typeof M !== 'undefined') {
                             $dlg.find('.title').text(title);
                         } else {
@@ -1850,7 +1907,7 @@ function filterChanged(e) {
                 }
 
                 if (data.useNameAsId) {
-                    $firstTD.find('.fancytree-title').html(getName(obj, key));
+                    $firstTD.find('.fancytree-title').html(getNameObj(obj, key));
                 }
 
                 function getIcon() {
@@ -1938,13 +1995,11 @@ function filterChanged(e) {
                         case 'id':
                         case 'ID':
                             break;
+
                         case 'name':
                             var icon = getIcon();
                             //$elem = $tdList.eq(base);
-                            var t = isCommon ? (obj.common.name || '') : '';
-                            if (typeof t === 'object') {
-                                t = t[systemLang] || t.en;
-                            }
+                            var t = isCommon ? getName(obj.common.name || '') : '';
 
                             $elem.html('<span style="padding-left: ' + (icon ? lineIndent : 0) + '; height: 100%; width: 100%">' +
                                 (icon ? '<span class="objects-name-coll-icon" style="vertical-align: middle">' + icon + '</span>' : '') +
@@ -1962,9 +2017,11 @@ function filterChanged(e) {
                                 $e.on('click', onQuickEditField).data('id', node.key).data('name', 'name').data('selectId', data).addClass('select-id-quick-edit');
                             }
                             break;
+
                         case 'type':
                             setText(obj ? obj.type || '' : '');
                             break;
+
                         case 'role':
                             val = isCommon ? obj.common.role || '' : '';
                             setText(val);
@@ -1974,17 +2031,14 @@ function filterChanged(e) {
                                 $elem.on('click', onQuickEditField).data('id', node.key).data('name', 'role').data('selectId', data).addClass('select-id-quick-edit');
                             }
                             break;
+
                         case 'room':
                             // Try to find room
                             if (data.roomsColored) {
                                 var room = data.roomsColored[node.key];
                                 if (!room) room = data.roomsColored[node.key] = findRoomsForObject(data, node.key, true);
                                 val = room.map(function (e) {
-                                    if (typeof e.name === 'object') {
-                                        return e.name[systemLang] || e.name.en;
-                                    } else {
-                                        return e.name;
-                                    }
+                                    return getName(e.name);
                                 }).join(', ');
 
                                 if (room.length && room[0].origin !== node.key) {
@@ -2006,16 +2060,13 @@ function filterChanged(e) {
                                     .addClass('select-id-quick-edit');
                             }
                             break;
+
                         case 'function':
                             // Try to find function
                             if (data.funcsColored) {
                                 if (!data.funcsColored[node.key]) data.funcsColored[node.key] = findFunctionsForObject(data, node.key, true);
                                 val = data.funcsColored[node.key].map(function (e) {
-                                    if (typeof e.name === 'object') {
-                                        return e.name[systemLang] || e.name.en;
-                                    } else {
-                                        return e.name;
-                                    }
+                                    return getName(e.name);
                                 }).join (', ');
                                 if (data.funcsColored[node.key].length && data.funcsColored[node.key][0].origin !== node.key) {
                                     $elem.css({color: 'gray'}).attr('title', data.funcsColored[node.key][0].origin);
@@ -2036,6 +2087,171 @@ function filterChanged(e) {
                                     .addClass('select-id-quick-edit');
                             }
                             break;
+
+                        case 'value.ts':
+                            if (data.states && obj && obj.type === 'state') {
+                                var state = data.states[node.key];
+                                state = state || {ts: data.states[node.key  + '.ts']};
+                                var val = state.ts;
+
+                                if (val === undefined) {
+                                    val = '&nbsp;';
+                                } else {
+                                    val = val ? formatDate(new Date(val)) : '';
+                                }
+
+                                $elem.html('<span class="highlight select-value">' + val + '</span>');
+                            } else {
+                                $elem.text('');
+                            }
+                            break;
+
+                        case 'value.lc':
+                            if (data.states && obj && obj.type === 'state') {
+                                var state = data.states[node.key] || {};
+                                state = state || {lc: data.states[node.key  + '.lc']};
+                                var val = state.lc;
+
+                                if (val === undefined) {
+                                    val = '&nbsp;';
+                                } else {
+                                    val = val ? formatDate(new Date(val)) : '';
+                                }
+
+                                $elem.html('<span class="highlight select-value">' + val + '</span>');
+                            } else {
+                                $elem.text('');
+                            }
+                            break;
+
+                        case 'value.from':
+                            if (data.states && obj && obj.type === 'state') {
+                                var state = data.states[node.key] || {};
+                                state = state || {from: data.states[node.key  + '.from']};
+                                var val = state.from;
+
+                                if (val === undefined) {
+                                    val = '&nbsp;';
+                                } else {
+                                    val = val ? val.replace(/^system\.adapter\.|^system\./, '') : '';
+                                }
+
+                                $elem.html('<span class="highlight select-value">' + val + '</span>');
+                            } else {
+                                $elem.text('');
+                            }
+                            break;
+
+                        case 'value.q':
+                            if (data.states && obj && obj.type === 'state') {
+                                var state = data.states[node.key] || {};
+                                state = state || {q: data.states[node.key  + '.q']};
+                                var q = state.q;
+                                var val = q;
+
+                                if (val === undefined) {
+                                    val = '&nbsp;';
+                                } else {
+                                    val = quality2text(val);
+                                }
+                                $elem.html('<span class="highlight select-value" style="' + (q ? 'orange' : '') + '">' + val + '</span>');
+                            } else {
+                                $elem.text('');
+                            }
+                            break;
+
+                        case 'value.val':
+                            if (data.states && obj && obj.type === 'state') {
+                                var state = data.states[node.key] || {};
+                                if (!state) {
+                                    state = {
+                                        val:  data.states[node.key  + '.val'],
+                                        ack:  (data.states[node.key + '.ack'] === undefined) ? '' : data.states[node.key + '.ack']
+                                    };
+                                }
+                                var val = state.val;
+                                var ack = state.ack;
+
+                                var states = getStates(data, node.key);
+
+                                if (isCommon && isCommon.role === 'value.time') {
+                                    val = val ? (new Date(val)).toString() : val;
+                                }
+                                if (states && states[val] !== undefined) {
+                                    val = states[val] + '(' + val + ')';
+                                }
+
+                                if (val === undefined) {
+                                    val = '&nbsp;';
+                                } else
+                                if (val === null || val === '') {
+                                    val = '&nbsp;';
+                                }
+
+                                $elem.html('<span class="highlight select-value" style="' + (ack ? '' : '#c00000') + '">' + val + '</span>');
+
+                                if (obj && obj.type === 'state' && isCommon && isCommon.type !== 'file') {
+                                    addClippyToElement($elem, val,
+                                        obj && data.quickEditCallback &&
+                                        obj.type === 'state' &&
+                                        (data.expertMode || isCommon.write !== false) ? key : undefined);
+                                }
+                            } else {
+                                $elem.text('')
+                                    .removeClass('clippy');
+                            }
+                            $elem.dblclick (function (e) {
+                                e.preventDefault ();
+                            });
+
+                            if (data.quickEdit &&
+                                isCommon &&
+                                obj.type === 'state' &&
+                                data.quickEdit.indexOf('value') !== -1 &&
+                                (data.expertMode || isCommon.write !== false)
+                            ) {
+                                if (isCommon.role === 'button' && !data.expertMode) {
+                                    $elem.html('<button data-id="' + node.key + '" class="select-button-push"></button>');
+                                } else if (!isCommon || isCommon.type !== 'file') {
+                                    var val_    = data.states[node.key];
+                                    val_        = val_ ? val_.val : '';
+                                    var $span_  = $elem.find('span');
+                                    $span_.data('old-value', val_).data('type', isCommon.type || typeof val_);
+
+                                    $span_.on('click', onQuickEditField)
+                                        .data('id', node.key)
+                                        .data('name', 'value')
+                                        .data('selectId', data)
+                                        .addClass('select-id-quick-edit');
+                                }
+
+                                var $btnPush = $tr.find('.select-button-push[data-id="' + node.key + '"]');
+                                $btnPush.on('click', function () {
+                                    var id = $(this).data('id');
+                                    data.quickEditCallback(id, 'value', true);
+                                }).attr('title', data.texts.push);
+
+                                if (!isMaterial) {
+                                    $btnPush.button({
+                                        text: false,
+                                        icons: {
+                                            primary: 'ui-icon-arrowthickstop-1-s'
+                                        }
+                                    });
+                                } else {
+                                    $btnPush.prepend('<i class="material-icons">room_service</i>')
+                                }
+                            }
+
+                            if (isCommon && isCommon.type === 'file') {
+                                data.webServer = data.webServer || (window.location.protocol + '//' + window.location.hostname + ':8082');
+
+                                // link
+                                $elem.html('<a href="' + data.webServer + '/state/' + node.key + '" target="_blank">' + data.webServer + '/state/' + node.key + '</a>')
+                                    .attr('title', data.texts.linkToFile);
+                            }
+                            break;
+
                         case 'value':
                             var state;
                             if (data.states && obj && obj.type === 'state') {
@@ -2149,8 +2365,8 @@ function filterChanged(e) {
                                 $elem.html('<a href="' + data.webServer + '/state/' + node.key + '" target="_blank">' + data.webServer + '/state/' + node.key + '</a>')
                                     .attr('title', data.texts.linkToFile);
                             }
-
                             break;
+
                         case 'button':
                             // Show buttons
                             var text;
@@ -2258,6 +2474,7 @@ function filterChanged(e) {
                                 }
                             }
                             break;
+
                         case 'enum':
                             if (isCommon && obj.common.members && obj.common.members.length > 0) {
                                 var te;
@@ -2273,12 +2490,15 @@ function filterChanged(e) {
                                 $elem.attr('title', '');
                             }
                             break;
+
                         default:
                             if (typeof data.columns[c].data === 'function') {
                                 //$elem = $tdList.eq(base);
                                 var val = data.columns[c].data(node.key, data.columns[c].name);
                                 var title = '';
-                                if (data.columns[c].title) title = data.columns[c].title (node.key, data.columns[c].name);
+                                if (data.columns[c].title) {
+                                    title = data.columns[c].title(node.key, data.columns[c].name);
+                                }
                                 $elem.html(val).attr('title', title);
                                 if (data.quickEdit && data.objects[node.key]) {
                                     for (var q = 0; q < data.quickEdit.length; q++) {
@@ -2902,6 +3122,31 @@ function filterChanged(e) {
             $btn.prepend('<i class="material-icons">invert_colors</i>'); // todo
         }
 
+        if (data.useValues) {
+            $btn = $dlg.find('.btn-values');
+            $btn.on('click', function () {
+                data.valuesActive = !data.valuesActive;
+                updateValuesButton(data);
+                window.localStorage && window.localStorage.setItem(data.name + '-values', data.valuesActive ? 'true' : 'false');
+
+                $dlg.find('.objects-list-running').show();
+
+                setTimeout(function () {
+                    data.inited = false;
+                    initTreeDialog(data.$dlg);
+                    $dlg.find('.objects-list-running').hide();
+                }, 100);
+
+            }).attr('title', data.texts.toggleValues);
+            updateValuesButton(data);
+        }
+
+        if (!isMaterial) {
+            $btn.button({icons: {primary: 'ui-icon-tag'}, text: false});
+        } else {
+            $btn.prepend('<i class="material-icons">looks_one</i>');
+        }
+
         for (var f in filter) {
             try {
                 if (f) setFilterVal(data, f, filter[f]);
@@ -2931,7 +3176,6 @@ function filterChanged(e) {
         }*/
 
         showActive($dlg);
-        //loadSettings(data);
         installColResize(data, $dlg);
         loadSettings(data);
         if ($dlg.attr('id') !== 'dialog-select-member' && $dlg.attr('id') !== 'dialog-select-members') {
@@ -2963,12 +3207,14 @@ function filterChanged(e) {
             window.localStorage.setItem(data.name + '-filter', JSON.stringify(data.filterVals));
             window.localStorage.setItem(data.name + '-expert', JSON.stringify(data.expertMode));
             window.localStorage.setItem(data.name + '-sort', JSON.stringify(data.sort));
+            window.localStorage.setItem(data.name + '-values', data.valuesActive ? 'true' : 'false');
             data.timer = null;
         } else {
             data.timer = setTimeout(function () {
                 window.localStorage.setItem(data.name + '-filter', JSON.stringify(data.filterVals));
                 window.localStorage.setItem(data.name + '-expert', JSON.stringify(data.expertMode));
                 window.localStorage.setItem(data.name + '-sort', JSON.stringify(data.sort));
+                window.localStorage.setItem(data.name + '-values', data.valuesActive ? 'true' : 'false');
             }, 500);
         }
     }
@@ -2997,6 +3243,14 @@ function filterChanged(e) {
         }
     }
 
+    function updateValuesButton(data) {
+        if (data.valuesActive) {
+            data.$dlg.find('.btn-values').addClass('ui-state-error red lighten-3');
+        } else {
+            data.$dlg.find('.btn-values').removeClass('ui-state-error red lighten-3');
+        }
+    }
+
     function countChildren(id, data) {
         var pos = data.ids.indexOf(id);
         var len = data.ids.length;
@@ -3020,6 +3274,11 @@ function filterChanged(e) {
             }
         }
         return cnt;
+    }
+
+    function updateStats(data) {
+        data.$dlg.find('.objects-info .objects-val-objs').text('<span class="highlight">' + data.stats.objs + '</span>');
+        data.$dlg.find('.objects-info .objects-val-states').text('<span class="highlight">' + data.stats.states + '</span>');
     }
 
     function recalcChildrenCounters(node, data) {
@@ -3103,7 +3362,10 @@ function filterChanged(e) {
                 copyToClipboard: 'Copy to clipboard',
                 expertMode: 'Toggle expert mode',
                 button:    'Settings',
-                noData:   'No data'
+                noData:   'No data',
+                Objects:   'Objects',
+                States:    'States',
+                toggleValues: 'Toggle states view'
             }, settings.texts);
 
             var that = this;
@@ -3292,7 +3554,7 @@ function filterChanged(e) {
                 if (!data.noDialog) {
                     if (typeof M !== 'undefined') {
                         if (data.currentId) {
-                            $dlg.find('.title').text(data.texts.selectid +  ' - ' + getName(data.objects[data.currentId], data.currentId));
+                            $dlg.find('.title').text(data.texts.selectid +  ' - ' + getNameObj(data.objects[data.currentId], data.currentId));
                             $dlg.find('.btn-set').removeClass('disabled');
                         } else {
                             $dlg.find('.title').text(data.texts.selectid);
@@ -3301,7 +3563,7 @@ function filterChanged(e) {
                         $dlg.show().modal('open');
                     } else {
                         if (data.currentId) {
-                            $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + getName(data.objects[data.currentId], data.currentId));
+                            $dlg.dialog('option', 'title', data.texts.selectid +  ' - ' + getNameObj(data.objects[data.currentId], data.currentId));
                             $dlg.find('#button-ok').removeClass('ui-state-disabled');
                         } else {
                             $dlg.dialog('option', 'title', data.texts.selectid);
@@ -3478,6 +3740,13 @@ function filterChanged(e) {
                 // If new node
                 if (!node && obj) {
                     // Filter it
+                    if (data.stats) {
+                        data.stats.objs++;
+                        if (obj.type === 'state') {
+                            data.stats.states++;
+                        }
+                        updateStats(data);
+                    }
 
                     data.objects[id] = obj;
                     var addedNodes = [];
@@ -3535,6 +3804,14 @@ function filterChanged(e) {
                         }
                     }
                 } else if (!obj) {
+                    if (data.stats && data.objects[id]) {
+                        data.stats.objs--;
+                        if (data.objects[id] && data.objects[id].type === 'state') {
+                            data.stats.states--;
+                        }
+                        updateStats(data);
+                    }
+
                     // object deleted
                     delete data.objects[id];
                     deleteTree(data, id);

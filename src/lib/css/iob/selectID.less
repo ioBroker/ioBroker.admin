@@ -40,13 +40,11 @@
     @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
     @keyframes spin         { 100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
 
-
     .objects-folder {
         height: 0.8em;
         width: 0.8em;
         margin: 0.3em;
     }
-
 
     .objects-name-coll-table-td {
         border-spacing: 0;
@@ -205,14 +203,13 @@
         top: 50%;
         left: 50%;
         width: 5rem;
-        height: 5rem;
         padding: 12px;
         background: rgba(185, 185, 185, 0.5);
         text-align:center;
-        font-size: 1.2em;
         color: white;
         font-weight: bold;
-        border-radius: 5px
+        border-radius: 5px;
+        font-size: 10px; // old style has text, new style has cycle
     }
 
     .ui-state-active.fancytree-active {
@@ -227,7 +224,7 @@
         background-color: @admin-sidemenu-background;
     }
     *::-webkit-scrollbar {
-        width: 6px;
+        width: 10px;
         background-color: @admin-sidemenu-background;
     }
     *::-webkit-scrollbar-thumb {
@@ -261,7 +258,6 @@
             overflow:       hidden;
             z-index:        1;
             padding:        0;
-            background-color: #2196f3;
             border-radius:  50%;
             transition:     background-color .3s;
             cursor:         pointer;
@@ -284,8 +280,40 @@
             top:        0;
             right:      20px;
         }
+        .objects-info {
+            display: inline-block;
+            float: right;
+            padding-right: 1rem;
+            margin-top: 5px;
+        }
     }
+
+    .old-style {
+        .main-header-table {
+            width: 100%;
+            th span {
+                font-size: 11px;
+                font-weight: normal;
+            }
+        }
+        .grid-main-wob-div {
+            height: calc(100% - 50px);
+        }
+        .iob-list-icon {
+            height: 16px;
+        }
+        .clippy-button {
+            height: 16px;
+        }
+        .ui-state-active, .ui-widget-content .ui-state-active {
+            background: inherit !important;
+        }
+    }
+
     .material {
+        .objects-list-running {
+            height: 5rem;
+        }
         .filter-btn {
             i {
                 font-size: 12px;
@@ -308,6 +336,15 @@
 
             i {
                 font-size: 12px;
+            }
+        }
+        .iob-list-icon, .instance-image {
+            width:  18px;
+            height: 18px;
+        }
+        .main-toolbar-table {
+            .panel-button {
+                background-color: #2196f3;
             }
         }
     }
@@ -373,6 +410,21 @@
         width:          100%;
         padding-left:   5px;
         position:       relative;
+    }
+
+    @keyframes highlight {
+        0% {
+            color: #00f900
+        }
+        80% {
+            color: green
+        }
+        100% {
+            color: black;
+        }
+    }
+    .highlight {
+        animation: highlight 2s;
     }
 }
 

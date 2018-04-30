@@ -371,7 +371,9 @@ function Objects(main) {
                 objects:  this.main.objects,
                 states:   this.main.states,
                 noDialog: true,
+                stats:    true,
                 name:     'admin-objects',
+                useValues: ['ID', 'name', 'value.from', 'value.q', 'value.ts', 'value.lc', 'value.val', 'button'],
                 useHistory: this.main.dialogs.customs.customEnabled,
                 showButtonsForNotExistingObjects: true,
                 expertModeRegEx: /^system\.|^iobroker\.|^_|^[\w-]+$|^enum\.|^[\w-]+\.admin|^script\./,
@@ -403,11 +405,13 @@ function Objects(main) {
                     without:            _('Without'),
                     copyToClipboard:    _('Copy to clipboard'),
                     expertMode:         _('Toggle expert mode'),
-                    refresh:	        _('Update'),
                     sort:               _('Sort alphabetically'),
                     button:             _('Settings'),
                     editDialog:         _('Edit in dialog'),
                     noData:             _('No data'),
+                    Objects:            _('Objects'),
+                    States:             _('States'),
+                    toggleValues:       _('Toggle states view')
                 },
                 columns: ['ID', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
                 expandedCallback: function (id, childrenCount, hasStates) {
@@ -417,7 +421,7 @@ function Objects(main) {
                     }
                 },
                 collapsedCallback: function (id, childrenCount, hasStates) {
-                    // unregister this in subscription
+                    // un-register this in subscription
                     unsubscribe(id);
                 },
                 buttons: [
@@ -544,7 +548,6 @@ function Objects(main) {
                         },
                         title: _('Add Objecttree from JSON File'), // let Objecttree be (fixed in translation)
                         click: function () {
-                            var id = selectId('getActual') || '';
                             var input = document.createElement('input');
                             input.setAttribute('type', 'file');
                             input.setAttribute('id', 'files');
@@ -577,7 +580,7 @@ function Objects(main) {
                         }
                     }
                 ],
-                quickEdit: ['name', 'value', 'role', 'function', 'room'],
+                quickEdit: ['name', 'value', 'role', 'function', 'room', 'value.val'],
                 quickEditCallback: function (id, attr, newValue, oldValue) {
                     if (attr === 'room') {
                         syncEnum(id, 'rooms', newValue);

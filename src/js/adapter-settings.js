@@ -107,7 +107,7 @@ function preInit () {
         '<div class="m"><nav class="dialog-config-buttons nav-wrapper footer">' +
         '   <a class="btn btn-active btn-save"><i class="material-icons left">save</i><span class="translate">save</span></a> ' +
         '   <a class="btn btn-save-close"><i class="material-icons left">save</i><i class="material-icons left">close</i><span class="translate">saveclose</span></a> ' +
-        '   <a class="btn btn-cancel"><i class="material-icons left">close</i><span class="translate">cancel</span></a>' +
+        '   <a class="btn btn-cancel"><i class="material-icons left">close</i><span class="translate">close</span></a>' +
         '</nav></div>');
 
     var $navButtons = $('.dialog-config-buttons');
@@ -174,7 +174,7 @@ function preInit () {
             if (onChangeSupported) {
                 $navButtons.find('.btn-save').addClass('disabled');
                 $navButtons.find('.btn-save-close').addClass('disabled');
-                $navButtons.find('.btn-close').find('span').html(_('close'));
+                $navButtons.find('.btn-cancel').find('span').html(_('close'));
             }
 
             socket.emit('setObject', id, oldObj, function (err) {
@@ -250,12 +250,12 @@ function preInit () {
             changed = false;
             $navButtons.find('.btn-save').addClass('disabled');
             $navButtons.find('.btn-save-close').addClass('disabled');
-            $navButtons.find('.btn-close').find('span').html(_('close'));
+            $navButtons.find('.btn-cancel').find('span').html(_('close'));
         } else {
             changed = true;
             $navButtons.find('.btn-save').removeClass('disabled');
             $navButtons.find('.btn-save-close').removeClass('disabled');
-            $navButtons.find('.btn-close').find('span').html(_('cancel'));
+            $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
         }
     }
 
@@ -977,7 +977,7 @@ function _editInitButtons($grid, tabId, objId) {
         $navButtons.find('.btn-save').removeClass('disabled');
         $navButtons.find('.btn-save-close').removeClass('disabled');
         if (onChangeSupported) {
-            $navButtons.find('.btn-close').find('span').html(_('cancel'));
+            $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
         }
     }).css({'height': '18px', width: '22px'});
 
@@ -993,7 +993,7 @@ function _editInitButtons($grid, tabId, objId) {
         $navButtons.find('.btn-save').removeClass('disabled');
         $navButtons.find('.btn-save-close').removeClass('disabled');
         if (onChangeSupported) {
-            $navButtons.find('.btn-close').find('span').html(_('cancel'));
+            $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
         }
 
         var pos = $grid[0]._edited.indexOf(id);
@@ -1021,7 +1021,7 @@ function _editInitButtons($grid, tabId, objId) {
         $navButtons.find('.btn-save').removeClass('disabled');
         $navButtons.find('.btn-save-close').removeClass('disabled');
         if (onChangeSupported) {
-            $navButtons.find('.btn-close').find('span').html(_('cancel'));
+            $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
         }
 
         var pos = $grid[0]._edited.indexOf(id);
@@ -1147,7 +1147,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             $navButtons.find('.btn-save').removeClass('disabled');
             $navButtons.find('.btn-save-close').removeClass('disabled');
             if (onChangeSupported) {
-                $navButtons.find('.btn-close').find('span').html(_('cancel'));
+                $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
             }
         },
         sortname:  'id',
@@ -1167,7 +1167,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             $navButtons.find('.btn-save').removeClass('disabled');
             $navButtons.find('.btn-save-close').removeClass('disabled');
             if (onChangeSupported) {
-                $navButtons.find('.btn-close').find('span').html(_('cancel'));
+                $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
             }
         }
     }).jqGrid('filterToolbar', {
@@ -1222,7 +1222,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
                 $navButtons.find('.btn-save').removeClass('disabled');
                 $navButtons.find('.btn-save-close').removeClass('disabled');
                 if (onChangeSupported) {
-                    $navButtons.find('.btn-close').find('span').html(_('cancel'));
+                    $navButtons.find('.btn-cancel').find('span').html(_('cancel'));
                 }
 
                 addToTable(tabId, obj, $grid);
