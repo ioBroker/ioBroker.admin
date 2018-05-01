@@ -2187,6 +2187,9 @@ function filterChanged(e) {
                                 if (val === null || val === '') {
                                     val = '&nbsp;';
                                 }
+                                if (typeof val === 'string' && val !== '$nbsp;') {
+                                    val = val.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                                }
 
                                 $elem.html('<span class="highlight select-value" style="' + (ack ? '' : '#c00000') + '">' + val + '</span>');
 
@@ -2296,6 +2299,9 @@ function filterChanged(e) {
                                 }
                                 if (state.val === null || state.val === '') {
                                     state.val = '&nbsp;';
+                                }
+                                if (typeof state.val === 'string' && state.val !== '&nbsp;') {
+                                    state.val = state.val.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
                                 }
 
                                 $elem.html('<span class="highlight select-value">' + state.val + '</span>')
