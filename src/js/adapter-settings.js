@@ -6,12 +6,12 @@ if (location.pathname.match(/^\/admin\//)) {
     parts = [];
 }
 
+var systemConfig;
 var socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
 var instance = window.location.search.slice(1);
 var common   = null; // common information of adapter
 var host     = null; // host object on which the adapter runs
 var changed  = false;
-var systemConfig;
 var certs    = [];
 var adapter  = '';
 var onChangeSupported = false;
