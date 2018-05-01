@@ -3283,8 +3283,8 @@ function filterChanged(e) {
     }
 
     function updateStats(data) {
-        data.$dlg.find('.objects-info .objects-val-objs').text('<span class="highlight">' + data.stats.objs + '</span>');
-        data.$dlg.find('.objects-info .objects-val-states').text('<span class="highlight">' + data.stats.states + '</span>');
+        data.$dlg.find('.objects-info .objects-val-objs').html('<span class="highlight">' + data.stats.objs + '</span>');
+        data.$dlg.find('.objects-info .objects-val-states').html('<span class="highlight">' + data.stats.states + '</span>');
     }
 
     function recalcChildrenCounters(node, data) {
