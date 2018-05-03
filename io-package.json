@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.4.0",
+    "version": "3.4.1",
     "news": {
+      "3.4.1": {
+        "en": "Fix: Unable to scroll trough Dropdown on Touchscreens\nAdded: Show current Tab in Pagetitle",
+        "de": "Fix: Scrollen durch Dropdown auf Touchscreens nicht möglich\nHinzugefügt: Zeige den aktuellen Tab in Pagetitle",
+        "ru": "Исправлено: Не удалось прокрутить прокрутку вниз по сенсорным экранам\nДобавлено: Показать текущую вкладку в Pagetitle",
+        "pt": "Correção: Não é possível rolar pela lista suspensa em telas sensíveis ao toque\nAdicionado: Mostrar guia atual no Pagetitle",
+        "nl": "Oplossing: kan niet bladeren door Dropdown op touchscreens\nToegevoegd: Toon het huidige tabblad in Pagetitle",
+        "fr": "Corrigé: Impossible de faire défiler la liste déroulante sur les écrans tactiles\nAjouté: Afficher l'onglet actuel dans Pagetitle",
+        "it": "Correzione: impossibile scorrere attraverso il menu a discesa sui touchscreen.\nAggiunta: mostra la scheda corrente in Pagetitle",
+        "es": "Solución: no se puede desplazar a través de la lista desplegable en pantallas táctiles.\nAgregado: muestra la pestaña actual en el título.",
+        "pl": "Poprawka: Nie można przewijać listy rozwijanej na ekranach dotykowych\nDodano: Pokaż bieżącą kartę w oknie Pagetitle"
+      },
       "3.4.0": {
         "en": "showed error about not activated admin for cloud\nhandles the mutli-language names\nshows number of objects\nalways addChips when input blurs\nfix select ID dialog for old styles\nadded states view for object tab",
         "de": "Fehler bei nicht aktiviertem Admin für Cloud angezeigt\nverarbeitet die Namen mehrerer Sprachen\nZeigt die Anzahl der Objekte an\nAddChips immer wenn die Eingabe verwischt\nFix Auswahl ID-Dialog für alte Stile\nStatusansicht für Objekt-Registerkarte hinzugefügt",
