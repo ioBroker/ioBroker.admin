@@ -3201,9 +3201,6 @@ function filterChanged(e) {
                 setFilterVal(data, field, data.filterPresets[field]);
             }
         }
-        if (data.useHistory) {
-            $('.objects-info').css('padding-right','3.5rem');
-        }
         sortTree(data);
     }
 
