@@ -80,6 +80,15 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 3.4.1 (2018-05-03)
+* (bluefox) fix wait popup
+* (bluefox) fix button name in config dialog
+* (BuZZy1337) escape html from log entries
+* (bluefox) fix objects counter
+* (BuZZy1337) show current Tab in Page-Title
+* (BuZZy1337) escape HTML Tags from selectID.js
+* (bluefox) GUI bugfixes
+
 ### 3.4.0 (2018-04-23)
 * (bluefox) show error about not activated admin for cloud
 * (bluefox) handle mutlilanguage names

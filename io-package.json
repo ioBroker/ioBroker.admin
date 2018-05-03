@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.4.0",
+    "version": "3.4.1",
     "news": {
+      "3.4.1": {
+        "en": "Many GUI fixes",
+        "de": "Viele GUI Fixes",
+        "ru": "Многие исправления GUI",
+        "pt": "Muitas correções de GUI",
+        "nl": "Veel GUI-oplossingen",
+        "fr": "De nombreuses corrections de GUI",
+        "it": "Molte correzioni della GUI",
+        "es": "Muchas correcciones de GUI",
+        "pl": "Wiele poprawek GUI"
+      },
       "3.4.0": {
         "en": "showed error about not activated admin for cloud\nhandles the mutli-language names\nshows number of objects\nalways addChips when input blurs\nfix select ID dialog for old styles\nadded states view for object tab",
         "de": "Fehler bei nicht aktiviertem Admin für Cloud angezeigt\nverarbeitet die Namen mehrerer Sprachen\nZeigt die Anzahl der Objekte an\nAddChips immer wenn die Eingabe verwischt\nFix Auswahl ID-Dialog für alte Stile\nStatusansicht für Objekt-Registerkarte hinzugefügt",
