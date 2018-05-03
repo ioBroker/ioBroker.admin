@@ -88,6 +88,8 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 * (BuZZy1337) show current Tab in Page-Title
 * (BuZZy1337) escape HTML Tags from selectID.js
 * (bluefox) GUI bugfixes
+* (BuZZy1337) Fix: Unable to scroll trough Dropdown on Touchscreens
+* (BuZZy1337) Enhancement: Show current Tab in Pagetitle
 
 ### 3.4.0 (2018-04-23)
 * (bluefox) show error about not activated admin for cloud
