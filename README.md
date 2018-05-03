@@ -72,9 +72,12 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 
 ## Used icons
 This project uses some icons from [Flaticon](https://www.flaticon.com/):
-- <img src="src/img/rooms/006-double-bed.svg" height="48" /> - "designed by smalllikeart from Flaticon"
-- <img src="src/img/rooms/016-armchair-1.svg" height="48" /> - "designed by smalllikeart from Flaticon"
+- <img src="src/img/rooms/006-double-bed.svg" height="48" /> - designed by [smalllikeart](https://www.flaticon.com/authors/smalllikeart) from [Flaticon](https://www.flaticon.com/)
+- <img src="src/img/rooms/016-armchair-1.svg" height="48" /> - designed by [smalllikeart](https://www.flaticon.com/authors/smalllikeart) from [Flaticon](https://www.flaticon.com/)
+- <img src="src/img/rooms/022-armchair-1.svg" height="48" /> - designed by [smalllikeart](https://www.flaticon.com/authors/smalllikeart) from [Flaticon](https://www.flaticon.com/)
 - <img src="src/img/devices/light-bulb.svg" height="48" /> - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
+- <img src="src/img/rooms/garage.svg" height="48" /> - designed by [Pause08](https://www.flaticon.com/authors/Pause08) from [Flaticon](https://www.flaticon.com/)
+- <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
 ### 3.4.0 (2018-04-23)

@@ -109,12 +109,18 @@ function EditObject(main) {
             if (object.read === 'true'  || object.read === '1' || object.read === 1) object.read = true;
         }
 
+        if (object.min === null) {
+            delete object.min;
+        }
         if (object.min !== undefined) {
             var f = parseFloat(object.min);
             if (f.toString() === object.min.toString()) object.min = f;
 
             if (object.min === 'false') object.min = false;
             if (object.min === 'true')  object.min = true;
+        }
+        if (object.max === null) {
+            delete object.max;
         }
         if (object.max !== undefined) {
             var m = parseFloat(object.max);
@@ -123,6 +129,10 @@ function EditObject(main) {
             if (object.max === 'false') object.max = false;
             if (object.max === 'true')  object.max = true;
         }
+        if (object.def === null) {
+            delete object.def;
+        }
+
         if (object.def !== undefined) {
             var d = parseFloat(object.def);
             if (d.toString() === object.def.toString()) object.def = d;

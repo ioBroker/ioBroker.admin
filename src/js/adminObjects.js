@@ -152,8 +152,8 @@ function Objects(main) {
         if (this.$grid) selectId('state', id, state);
     };
 
-    this.objectChange = function (id, obj) {
-        if (this.$grid) selectId('object', id, obj);
+    this.objectChange = function (id, obj, action) {
+        if (this.$grid) selectId('object', id, obj, action);
     };
 
     this.reinit = function () {

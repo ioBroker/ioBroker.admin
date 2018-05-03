@@ -3,6 +3,9 @@
 
 #tabs-customs {
   overflow: hidden;
+  &>.row {
+    height: 100%;
+  }
   height: calc(~"100% - "@admin-m-footer-height);
   td {
     padding: 0 5px;
@@ -35,12 +38,12 @@
   }
   .page {
     background: #f5f2f0;
-    height: calc(~"100% - "@admin-m-footer-height ~" - 16px");
+    height: calc(~"100% - "@admin-m-footer-height);
     padding-top: 1rem;
     padding-left: 1rem;
     overflow: auto;
   }
-  #tab-customs-chart.page, #tab-customs-table.page{
+  #tab-customs-chart.page, #tab-customs-table.page {
     overflow: hidden;
   }
 
@@ -85,7 +88,7 @@
     }
     #grid-history-inner {
       overflow: auto;
-      height: calc(~"100% - 10px");
+      height: calc(~"100% - 20px");
       width: 100%;
     }
 
@@ -116,7 +119,8 @@
 
   #tab-customs-table {
     .body {
-      height: calc(~"100% - "@admin-toolbar-height~" - 85px");
+      height: calc(~"100% - "@admin-toolbar-height~" - 75px");
+      margin-bottom: 0;
     }
     #grid-history {
       thead tr, thead th {
@@ -132,7 +136,7 @@
       margin-bottom: 3rem;
     }
     .body {
-      height: calc(~"100% - " @admin-toolbar-height~" - 64px");
+      height: calc(~"100% - " @admin-toolbar-height~" - 14px");
     }
     iframe {
       border: 0;

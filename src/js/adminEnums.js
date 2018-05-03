@@ -125,7 +125,123 @@ function Enums(main) {
                     "members": []
                 },
                 "type": "enum"
+            },
+            "enum.rooms.sleeping_room": {
+                "_id": "enum.rooms.sleeping_room",
+                "common": {
+                    "icon": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNDgwIDQ4MCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDgwIDQ4MDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPHBhdGggZD0iTTQ2NCwyNjRWODhIMTZ2MTc2SDB2ODBoNDh2NDhoNjR2LTQ4aDI1NnY0OGg2NHYtNDhoNDh2LTgwSDQ2NHogTTMyLDEwNGg0MTZ2MTYwaC0xNnYtMjRjMC0yMi4wOTEtMTcuOTA5LTQwLTQwLTQwDQoJCWgtMTIuNDhjMi45MDgtNC44MzIsNC40NTYtMTAuMzYsNC40OC0xNmMwLTE3LjY3My0xNC4zMjctMzItMzItMzJoLTY0Yy0xNy42NzMsMC0zMiwxNC4zMjctMzIsMzINCgkJYzAuMDI0LDUuNjQsMS41NzIsMTEuMTY4LDQuNDgsMTZoLTQwLjk2YzIuOTA4LTQuODMyLDQuNDU2LTEwLjM2LDQuNDgtMTZjMC0xNy42NzMtMTQuMzI3LTMyLTMyLTMyaC02NA0KCQljLTE3LjY3MywwLTMyLDE0LjMyNy0zMiwzMmMwLjAyNCw1LjY0LDEuNTcyLDExLjE2OCw0LjQ4LDE2SDg4Yy0yMi4wOTEsMC00MCwxNy45MDktNDAsNDB2MjRIMzJWMTA0eiBNMzkyLDIxNg0KCQljMTMuMjU1LDAsMjQsMTAuNzQ1LDI0LDI0djI0SDY0di0yNGMwLTEzLjI1NSwxMC43NDUtMjQsMjQtMjRIMzkyeiBNMTEyLDE4NGMwLTguODM3LDcuMTYzLTE2LDE2LTE2aDY0YzguODM3LDAsMTYsNy4xNjMsMTYsMTYNCgkJcy03LjE2MywxNi0xNiwxNmgtNjRDMTE5LjE2MywyMDAsMTEyLDE5Mi44MzcsMTEyLDE4NHogTTI3MiwxODRjMC04LjgzNyw3LjE2My0xNiwxNi0xNmg2NGM4LjgzNywwLDE2LDcuMTYzLDE2LDE2DQoJCXMtNy4xNjMsMTYtMTYsMTZoLTY0QzI3OS4xNjMsMjAwLDI3MiwxOTIuODM3LDI3MiwxODR6IE05NiwzNzZINjR2LTMyaDMyVjM3NnogTTQxNiwzNzZoLTMydi0zMmgzMlYzNzZ6IE00NjQsMzI4SDE2di00OGg0NDhWMzI4DQoJCXoiLz4NCjwvZz4NCjxnPg0KCTxyZWN0IHg9IjQ4IiB5PSIxMjAiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIvPg0KPC9nPg0KPGc+DQoJPHJlY3QgeD0iNDE2IiB5PSIxMjAiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIvPg0KPC9nPg0KPGc+DQoJPHJlY3QgeD0iODAiIHk9IjEyMCIgd2lkdGg9IjMyMCIgaGVpZ2h0PSIxNiIvPg0KPC9nPg0KPGc+DQoJPHJlY3QgeD0iNDgiIHk9IjE1MiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjQwIi8+DQo8L2c+DQo8Zz4NCgk8cmVjdCB4PSI0MTYiIHk9IjE1MiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjQwIi8+DQo8L2c+DQoNCjwvc3ZnPg0K",
+                    "name": {
+                        "en": "Sleeping room",
+                        "de": "Schlafzimmer",
+                        "ru": "Спальня",
+                        "pt": "Quarto de dormir",
+                        "nl": "Slaapkamer",
+                        "fr": "Chambre à coucher",
+                        "it": "Camera da letto",
+                        "es": "Dormitorio",
+                        "pl": "Sypialnia"
+                    },
+                    "members": []
+                },
+                "type": "enum"
+            },
+            "enum.rooms.kitchen": {
+                "_id": "enum.rooms.kitchen",
+                "common": {
+                    "icon": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNDgwIDQ4MCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDgwIDQ4MDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPHBhdGggZD0iTTAsMjA4djQ4aDE2djIyNGg0NDhWMjU2aDE2di00OEgweiBNMjA4LDQ2NEgzMlYyNTZoMTc2VjQ2NHogTTI4OCw0NjRoLTY0VjMyMGg2NFY0NjR6IE0zNjgsNDY0aC02NFYzMjBoNjRWNDY0eg0KCQkgTTQ0OCw0NjRoLTY0VjMyMGg2NFY0NjR6IE00NDgsMzA0SDIyNHYtNDhoMjI0VjMwNHogTTQ2NCwyNDBIMTZ2LTE2aDQ0OFYyNDB6Ii8+DQo8L2c+DQo8Zz4NCgk8cGF0aCBkPSJNNDgsMzM2djExMmgxNDRWMzM2SDQ4eiBNMTc2LDQzMkg2NHYtODBoMTEyVjQzMnoiLz4NCjwvZz4NCjxnPg0KCTxwYXRoIGQ9Ik03MiwyNzJjLTEzLjI1NSwwLTI0LDEwLjc0NS0yNCwyNHMxMC43NDUsMjQsMjQsMjRzMjQtMTAuNzQ1LDI0LTI0Uzg1LjI1NSwyNzIsNzIsMjcyeiBNNzIsMzA0Yy00LjQxOCwwLTgtMy41ODItOC04DQoJCQlzMy41ODItOCw4LThzOCwzLjU4Miw4LDhTNzYuNDE4LDMwNCw3MiwzMDR6Ii8+DQo8L2c+DQo8Zz4NCgk8cGF0aCBkPSJNMTY4LDI3MmMtMTMuMjU1LDAtMjQsMTAuNzQ1LTI0LDI0czEwLjc0NSwyNCwyNCwyNHMyNC0xMC43NDUsMjQtMjRTMTgxLjI1NSwyNzIsMTY4LDI3MnogTTE2OCwzMDRjLTQuNDE4LDAtOC0zLjU4Mi04LTgNCgkJczMuNTgyLTgsOC04czgsMy41ODIsOCw4UzE3Mi40MTgsMzA0LDE2OCwzMDR6Ii8+DQo8L2c+DQo8Zz4NCgk8cmVjdCB4PSIzMDQiIHk9IjI3MiIgd2lkdGg9IjY0IiBoZWlnaHQ9IjE2Ii8+DQo8L2c+DQo8Zz4NCgk8cmVjdCB4PSIyNTYiIHk9IjMzNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2Ii8+DQo8L2c+DQo8Zz4NCgk8cmVjdCB4PSIzMzYiIHk9IjM2OCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjMyIi8+DQo8L2c+DQo8Zz4NCgk8cmVjdCB4PSI0MDAiIHk9IjM2OCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjMyIi8+DQo8L2c+DQo8Zz4NCgk8cGF0aCBkPSJNMjA4LDB2ODYuMDhsLTI0LTQ4VjBINDB2MzguMDhMMC44OCwxMTYuNGMtMS45ODgsMy45NDYtMC40MDEsOC43NTYsMy41NDQsMTAuNzQ0QzUuNTM0LDEyNy43MDMsNi43NTgsMTI3Ljk5Niw4LDEyOGg0NzINCgkJVjBIMjA4eiBNNTYsMTZoMTEydjE2SDU2VjE2eiBNMjAuOTYsMTEybDMyLTY0aDExOC4wOGwzMiw2NEgyMC45NnogTTMzNiwxMTJIMjI0VjE2aDExMlYxMTJ6IE00NjQsMTEySDM1MlYxNmgxMTJWMTEyeiIvPg0KPC9nPg0KPGc+DQoJPHJlY3QgeD0iMzA0IiB5PSI4MCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2Ii8+DQo8L2c+DQo8Zz4NCgk8cmVjdCB4PSIzNjgiIHk9IjgwIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiLz4NCjwvZz4NCjxnPg0KCTxyZWN0IHg9Ijk2IiB5PSIzNjgiIHdpZHRoPSI0OCIgaGVpZ2h0PSIxNiIvPg0KPC9nPg0KPC9zdmc+DQo=",
+                    "name": {
+                        "en": "Kitchen",
+                        "de": "Küche",
+                        "ru": "Кухня",
+                        "pt": "Cozinha",
+                        "nl": "Keuken",
+                        "fr": "Cuisine",
+                        "it": "Cucina",
+                        "es": "Cocina",
+                        "pl": "Kuchnia"
+                    },
+                    "members": []
+                },
+                "type": "enum"
+            },
+            "enum.rooms.office": {
+                "_id": "enum.rooms.office",
+                "common": {
+                    "icon": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNDgwIDQ4MCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDgwIDQ4MDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJCTxwYXRoIGQ9Ik0yMjQsMTIwdjExMmgyMjRWMTIwSDIyNHogTTQzMiwyMTZIMjQwdi04MGgxOTJWMjE2eiIvPg0KPC9nPg0KPGc+DQoJCTxwYXRoIGQ9Ik0zMzYsMTUyYy0xMy4yNTUsMC0yNCwxMC43NDUtMjQsMjRzMTAuNzQ1LDI0LDI0LDI0czI0LTEwLjc0NSwyNC0yNFMzNDkuMjU1LDE1MiwzMzYsMTUyeiBNMzM2LDE4NGMtNC40MTgsMC04LTMuNTgyLTgtOA0KCQkJczMuNTgyLTgsOC04czgsMy41ODIsOCw4UzM0MC40MTgsMTg0LDMzNiwxODR6Ii8+DQo8L2c+DQo8Zz4NCgkJPHBhdGggZD0iTTE3Niw4OFY0OGMwLTQuNDE4LTMuNTgyLTgtOC04aC04VjE2YzAtNC40MTgtMy41ODItOC04LThINDBjLTQuNDE4LDAtOCwzLjU4Mi04LDh2MjRoLThjLTQuNDE4LDAtOCwzLjU4Mi04LDh2NDBIMHYzODQNCgkJCWgyMDhWMjY0aDIwOHYyMDhoNjRWODhIMTc2eiBNNDgsMjRoOTZ2MTZINDhWMjR6IE0zMiw1NmgxMjh2MzJIMzJWNTZ6IE0xOTIsNDU2SDE2VjIwMGgxNzZWNDU2eiBNMTkyLDE4NEgxNnYtODBoMTc2VjE4NHoNCgkJCSBNNDY0LDQ1NmgtMzJWMjY0aDMyVjQ1NnogTTQ2NCwyNDhIMjA4VjEwNGgyNTZWMjQ4eiIvPg0KPC9nPg0KPGc+DQoJCTxyZWN0IHg9IjgwIiB5PSIxMzYiIHdpZHRoPSI0OCIgaGVpZ2h0PSIxNiIvPg0KPC9nPg0KPGc+DQoJCTxwYXRoIGQ9Ik0xNTIsMjE2Yy0xMy4yNTUsMC0yNCwxMC43NDUtMjQsMjRzMTAuNzQ1LDI0LDI0LDI0czI0LTEwLjc0NSwyNC0yNFMxNjUuMjU1LDIxNiwxNTIsMjE2eiBNMTUyLDI0OGMtNC40MTgsMC04LTMuNTgyLTgtOA0KCQkJczMuNTgyLTgsOC04czgsMy41ODIsOCw4UzE1Ni40MTgsMjQ4LDE1MiwyNDh6Ii8+DQo8L2c+DQo8L3N2Zz4NCg==",
+                    "name": {
+                        "en": "Office",
+                        "de": "Büro",
+                        "ru": "офис",
+                        "pt": "Escritório",
+                        "nl": "Kantoor",
+                        "fr": "Bureau",
+                        "it": "Ufficio",
+                        "es": "Oficina",
+                        "pl": "Gabinet"
+                    },
+                    "members": []
+                },
+                "type": "enum"
+            },
+            "enum.rooms.nursery": {
+                "_id": "enum.rooms.nursery",
+                "common": {
+                    "icon": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB2aWV3Qm94PSIwIDAgNDgwIDQ4MCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDgwIDQ4MDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGc+DQoJPHBhdGggZD0iTTQwLDQzMmMtMTMuMjU1LDAtMjQsMTAuNzQ1LTI0LDI0czEwLjc0NSwyNCwyNCwyNHMyNC0xMC43NDUsMjQtMjRTNTMuMjU1LDQzMiw0MCw0MzJ6IE00MCw0NjRjLTQuNDE4LDAtOC0zLjU4Mi04LTgNCgkJczMuNTgyLTgsOC04czgsMy41ODIsOCw4UzQ0LjQxOCw0NjQsNDAsNDY0eiIvPg0KPC9nPg0KPGc+DQoJPHBhdGggZD0iTTQ0MCw0MzJjLTEzLjI1NSwwLTI0LDEwLjc0NS0yNCwyNHMxMC43NDUsMjQsMjQsMjRzMjQtMTAuNzQ1LDI0LTI0UzQ1My4yNTUsNDMyLDQ0MCw0MzJ6IE00NDAsNDY0Yy00LjQxOCwwLTgtMy41ODItOC04DQoJCXMzLjU4Mi04LDgtOHM4LDMuNTgyLDgsOFM0NDQuNDE4LDQ2NCw0NDAsNDY0eiIvPg0KPC9nPg0KPGc+DQoJPHBhdGggZD0iTTQxNiwxMTJ2NDhINjR2LTQ4SDE2djMyMGg0OHYtNDhoMzUydjQ4aDQ4VjExMkg0MTZ6IE00OCw0MTZIMzJWMTI4aDE2VjQxNnogTTY0LDIwOGgyNHY4MEg2NFYyMDh6IE02NCwzMDRoMjR2MzJINjRWMzA0DQoJCXogTTQxNiwzNjhINjR2LTE2aDM1MlYzNjh6IE0xMjAsMzA0djMyaC0xNnYtMzJIMTIweiBNMTA0LDI4OHYtODBoMTZ2ODBIMTA0eiBNMTUyLDMwNHYzMmgtMTZ2LTMySDE1MnogTTEzNiwyODh2LTgwaDE2djgwSDEzNnoNCgkJIE0xODQsMzA0djMyaC0xNnYtMzJIMTg0eiBNMTY4LDI4OHYtODBoMTZ2ODBIMTY4eiBNMjE2LDMwNHYzMmgtMTZ2LTMySDIxNnogTTIwMCwyODh2LTgwaDE2djgwSDIwMHogTTI0OCwzMDR2MzJoLTE2di0zMkgyNDh6DQoJCSBNMjMyLDI4OHYtODBoMTZ2ODBIMjMyeiBNMjgwLDMwNHYzMmgtMTZ2LTMySDI4MHogTTI2NCwyODh2LTgwaDE2djgwSDI2NHogTTMxMiwzMDR2MzJoLTE2di0zMkgzMTJ6IE0yOTYsMjg4di04MGgxNnY4MEgyOTZ6DQoJCSBNMzQ0LDMwNHYzMmgtMTZ2LTMySDM0NHogTTMyOCwyODh2LTgwaDE2djgwSDMyOHogTTM3NiwzMDR2MzJoLTE2di0zMkgzNzZ6IE0zNjAsMjg4di04MGgxNnY4MEgzNjB6IE00MTYsMzM2aC0yNHYtMzJoMjRWMzM2eg0KCQkgTTQxNiwyODhoLTI0di04MGgyNFYyODh6IE00MTYsMTkySDY0di0xNmgzNTJWMTkyeiBNNDQ4LDQxNmgtMTZWMTI4aDE2VjQxNnoiLz4NCjwvZz4NCjxnPg0KCTxwYXRoIGQ9Ik0yOTYsNTAuNzJjLTQuNTA5LDAuMDM0LTguOTE3LDEuMzM3LTEyLjcyLDMuNzZjLTEwLjMxMy03LjY4MS0yMi40OTUtMTIuNDYtMzUuMjgtMTMuODRWMGgtMTZ2NDAuNjQNCgkJYy0xMi43ODUsMS4zOC0yNC45NjcsNi4xNTktMzUuMjgsMTMuODRjLTMuODAzLTIuNDIzLTguMjExLTMuNzI2LTEyLjcyLTMuNzZjLTEzLjI1NSwwLTI0LDEwLjc0NS0yNCwyNGMwLDEzLjI1NSwxMC43NDUsMjQsMjQsMjQNCgkJczI0LTEwLjc0NSwyNC0yNGMtMC4wMTUtMi43MjMtMC40NzUtNS40MjUtMS4zNi04YzE5Ljg1NS0xNC41NjUsNDYuODY1LTE0LjU2NSw2Ni43MiwwYy0wLjg4NSwyLjU3NS0xLjM0NSw1LjI3Ny0xLjM2LDgNCgkJYzAsMTMuMjU1LDEwLjc0NSwyNCwyNCwyNHMyNC0xMC43NDUsMjQtMjRDMzIwLDYxLjQ2NSwzMDkuMjU1LDUwLjcyLDI5Niw1MC43MnogTTE4NCw4Mi43MmMtNC40MTgsMC04LTMuNTgyLTgtOA0KCQljMC00LjQxOCwzLjU4Mi04LDgtOHM4LDMuNTgyLDgsOEMxOTIsNzkuMTM4LDE4OC40MTgsODIuNzIsMTg0LDgyLjcyeiBNMjk2LDgyLjcyYy00LjQxOCwwLTgtMy41ODItOC04YzAtNC40MTgsMy41ODItOCw4LTgNCgkJczgsMy41ODIsOCw4QzMwNCw3OS4xMzgsMzAwLjQxOCw4Mi43MiwyOTYsODIuNzJ6Ii8+DQo8L2c+DQoNCjwvc3ZnPg0K",
+                    "name": {
+                        "en": "Nursery",
+                        "de": "Kinderzimmer",
+                        "ru": "Детская",
+                        "pt": "Berçário",
+                        "nl": "Kwekerij",
+                        "fr": "Garderie",
+                        "it": "Asilo nido",
+                        "es": "Guardería",
+                        "pl": "Żłobek"
+                    },
+                    "members": []
+                },
+                "type": "enum"
+            },
+            "enum.rooms.wc": {
+                "_id": "enum.rooms.wc",
+                "common": {
+                    "icon": "data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDUxMiA1MTI7IiB4bWw6c3BhY2U9InByZXNlcnZlIiB3aWR0aD0iMjU2cHgiIGhlaWdodD0iMjU2cHgiPgo8Zz4KCTxnPgoJCTxwYXRoIGQ9Ik00NTEsMzE3di0zMGMwLTI0LjgxMy0yMC4xODctNDUtNDUtNDVIMjI2Yy01LjI1OSwwLTEwLjMwNSwwLjkxNS0xNSwyLjU4Vjg3LjQyYzE3LjQ1OS02LjE5MiwzMC0yMi44NjUsMzAtNDIuNDIgICAgYzAtMjQuODEzLTIwLjE4Ny00NS00NS00NUg3NmMtOC4yODQsMC0xNSw2LjcxNi0xNSwxNWMwLDI3LjcxLDAsMjQ2LjM4NSwwLDI3MmMwLDE5LjU1NSwxMi41NDEsMzYuMjI4LDMwLDQyLjQyVjM3NyAgICBjMCwyNy41MTksMTAuODU1LDUzLjkyNywzMCw3My40ODJWNDk3YzAsOC4yODQsNi43MTYsMTUsMTUsMTVjMTcuMzMsMCwyNTQuODQ2LDAsMjcwLDBjOC4yODQsMCwxNS02LjcxNiwxNS0xNXMtNi43MTYtMTUtMTUtMTUgICAgaC00NXYtMTcuOTkxQzQxNS45ODgsNDM1Ljk0Myw0NTEsMzc5LjI4Myw0NTEsMzE3eiBNMjI2LDI3MmgxODBjOC4yNzEsMCwxNSw2LjcyOSwxNSwxNXYxNUgyMTF2LTE1ICAgIEMyMTEsMjc4LjcyOSwyMTcuNzI5LDI3MiwyMjYsMjcyeiBNOTEsMzBoMTA1YzguMjcxLDAsMTUsNi43MjksMTUsMTVzLTYuNzI5LDE1LTE1LDE1SDkxVjMweiBNMTA2LDMwMmMtOC4yNzEsMC0xNS02LjcyOS0xNS0xNSAgICBWOTBoOTBjMCwxNy4zOSwwLDIwMC4yNzEsMCwyMTJIMTA2eiBNMzM5Ljk5NCw0NDAuNzczYy01LjQ2MywyLjM4Ny04Ljk5NCw3Ljc4My04Ljk5NCwxMy43NDVWNDgySDE1MXYtMzcuOTE3ICAgIGMwLTQuMjY3LTEuODE3LTguMzMyLTQuOTk2LTExLjE3N0MxMzAuMTEzLDQxOC42ODQsMTIxLDM5OC4zMDcsMTIxLDM3N3YtNDUuMWMzNC41MzUsMCwyOTYuNTQ1LDAsMjk5LjE2OCwwICAgIEM0MTQuODY0LDM3OS40OTMsMzg0LjU3NSw0MjEuMjk1LDMzOS45OTQsNDQwLjc3M3oiIGZpbGw9IiMwMDAwMDAiLz4KCTwvZz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K",
+                    "name": {
+                        "en": "WC",
+                        "de": "Toilette",
+                        "ru": "Туалет",
+                        "pt": "Banheiro",
+                        "nl": "WC",
+                        "fr": "Toilettes",
+                        "it": "Bagno",
+                        "es": "Baño",
+                        "pl": "Toaleta"
+                    },
+                    "members": []
+                },
+                "type": "enum"
+            },
+            "enum.rooms.garage": {
+                "_id": "enum.rooms.kitchen",
+                "common": {
+                    "icon": "data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDQ4MC4wMTMgNDgwLjAxMyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDgwLjAxMyA0ODAuMDEzOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjI1NnB4IiBoZWlnaHQ9IjI1NnB4Ij4KPGc+Cgk8Zz4KCQk8cGF0aCBkPSJNMzkwLjk5OSwzMTYuOTUybC0zMC4yOTYtMjQuMjMyYy0xLjExMy0wLjg4Ny0xLjk2OS0yLjA1NS0yLjQ4LTMuMzg0bC0xMS42OC01NC40ICAgIGMtMi40MzItMTEuMDItMTIuMTc5LTE4Ljg4My0yMy40NjQtMTguOTI4SDE1Ni44MDdjLTExLjI2OC0wLjA1Mi0yMS4wMzYsNy43ODgtMjMuNDI0LDE4LjhsLTEyLDUzLjk1MiAgICBjLTAuNDAzLDEuNzgzLTEuMzk5LDMuMzc2LTIuODI0LDQuNTJsLTI5LjYsMjMuNjhjLTUuNjg3LDQuNTUyLTguOTg0LDExLjQ1Mi04Ljk1MiwxOC43MzZ2ODAuMzEyICAgIGMwLjAyMSw2Ljc4OCwyLjkzLDEzLjI0Niw4LDE3Ljc2djMwLjI0YzAsOC44MzcsNy4xNjMsMTYsMTYsMTZoMzJjOC44MzcsMCwxNi03LjE2MywxNi0xNnYtMjRoMTc2djI0YzAsOC44MzcsNy4xNjMsMTYsMTYsMTZoMzIgICAgYzguODM3LDAsMTYtNy4xNjMsMTYtMTZ2LTMwLjI0YzUuMDctNC41MTQsNy45NzktMTAuOTcyLDgtMTcuNzZ2LTgwLjMxMkM0MDAuMDI0LDMyOC40LDM5Ni43MDcsMzIxLjQ5NiwzOTAuOTk5LDMxNi45NTJ6ICAgICBNMjE4LjE0MywyMzguMzI4bDAtMC4wMDhsNC4yMDgtNi4zMmgxMDAuNzI4YzMuNzcyLTAuMDAxLDcuMDMyLDIuNjMyLDcuODI0LDYuMzJsMTAuNzA0LDQ5LjY4OEgyMjQuNzAzICAgIGM1Ljg4OC0xMS4wOTgsMy44NzEtMjQuNzM2LTQuOTc2LTMzLjY1NkMyMTUuNDYxLDI1MC4wNjQsMjE0Ljc5OSwyNDMuMzY4LDIxOC4xNDMsMjM4LjMyOHogTTE4NC4wNzksMjM4LjMyOHYtMC4wMDhsNC4yMDgtNi4zMiAgICBoMTUuMTQ0Yy01Ljg4LDExLjEwMS0zLjg2MSwyNC43MzYsNC45ODQsMzMuNjU2YzQuMjU4LDQuMjgsNC45MjYsMTAuOTYyLDEuNiwxNmwtNC4yMDgsNi4zMmgtMTUuMTYgICAgYzUuODgtMTEuMTAxLDMuODYxLTI0LjczNi00Ljk4NC0zMy42NTZDMTgxLjQxNCwyNTAuMDM3LDE4MC43NTMsMjQzLjM2MSwxODQuMDc5LDIzOC4zMjh6IE0xNDkuMDM5LDIzOC4yNjQgICAgYzAuNzkyLTMuNjU1LDQuMDI4LTYuMjYyLDcuNzY4LTYuMjU2aDEyLjU2Yy01Ljg4LDExLjEwMS0zLjg2MSwyNC43MzYsNC45ODQsMzMuNjU2YzQuMjU4LDQuMjgsNC45MjYsMTAuOTYyLDEuNiwxNmwtNC4yMDgsNi4zMiAgICBoLTMzLjc2TDE0OS4wMzksMjM4LjI2NHogTTEzNi4wMDcsNDY0LjAwOGgtMzJ2LTI0aDMyVjQ2NC4wMDh6IE0zNzYuMDA3LDQ2NC4wMDhoLTMydi0yNGgzMlY0NjQuMDA4eiBNMzg0LjAwNyw0MTYuMDA4ICAgIGMwLDQuNDE4LTMuNTgyLDgtOCw4aC0yNzJjLTQuNDE4LDAtOC0zLjU4Mi04LTh2LThoMjg4VjQxNi4wMDh6IE0zODQuMDA3LDM5Mi4wMDhoLTI4OHYtNTYuMzEyICAgIGMtMC4wMDYtMi40MzEsMS4xMDMtNC43MywzLjAwOC02LjI0bDI5LjYtMjMuNjhjMC42NDktMC41NTYsMS4yNjktMS4xNDYsMS44NTYtMS43NjhoMjE4LjkyOGMwLjQzMiwwLjQsMC44LDAuOCwxLjI5NiwxLjIgICAgbDMwLjMwNCwyNC4yNGMxLjksMS41MTcsMy4wMDcsMy44MTYsMy4wMDgsNi4yNDhWMzkyLjAwOHoiIGZpbGw9IiMwMDAwMDAiLz4KCTwvZz4KPC9nPgo8Zz4KCTxnPgoJCTxwYXRoIGQ9Ik0xMzIuMDA3LDMyOC4wMDhjLTE1LjQ2NCwwLTI4LDEyLjUzNi0yOCwyOGMwLDE1LjQ2NCwxMi41MzYsMjgsMjgsMjhzMjgtMTIuNTM2LDI4LTI4ICAgIEMxNjAuMDA3LDM0MC41NDQsMTQ3LjQ3MSwzMjguMDA4LDEzMi4wMDcsMzI4LjAwOHogTTEzMi4wMDcsMzY4LjAwOGMtNi42MjcsMC0xMi01LjM3My0xMi0xMmMwLTYuNjI3LDUuMzczLTEyLDEyLTEyICAgIGM2LjYyNywwLDEyLDUuMzczLDEyLDEyQzE0NC4wMDcsMzYyLjYzNSwxMzguNjM0LDM2OC4wMDgsMTMyLjAwNywzNjguMDA4eiIgZmlsbD0iIzAwMDAwMCIvPgoJPC9nPgo8L2c+CjxnPgoJPGc+CgkJPHBhdGggZD0iTTM0OC4wMDcsMzI4LjAwOGMtMTUuNDY0LDAtMjgsMTIuNTM2LTI4LDI4YzAsMTUuNDY0LDEyLjUzNiwyOCwyOCwyOGMxNS40NjQsMCwyOC0xMi41MzYsMjgtMjggICAgQzM3Ni4wMDcsMzQwLjU0NCwzNjMuNDcxLDMyOC4wMDgsMzQ4LjAwNywzMjguMDA4eiBNMzQ4LjAwNywzNjguMDA4Yy02LjYyNywwLTEyLTUuMzczLTEyLTEyYzAtNi42MjcsNS4zNzMtMTIsMTItMTIgICAgYzYuNjI3LDAsMTIsNS4zNzMsMTIsMTJDMzYwLjAwNywzNjIuNjM1LDM1NC42MzQsMzY4LjAwOCwzNDguMDA3LDM2OC4wMDh6IiBmaWxsPSIjMDAwMDAwIi8+Cgk8L2c+CjwvZz4KPGc+Cgk8Zz4KCQk8cGF0aCBkPSJNMjg4LjAwNywzMjguMDA4aC05NmMtOC44MzcsMC0xNiw3LjE2My0xNiwxNnYyNGMwLDguODM3LDcuMTYzLDE2LDE2LDE2aDk2YzguODM3LDAsMTYtNy4xNjMsMTYtMTZ2LTI0ICAgIEMzMDQuMDA3LDMzNS4xNzEsMjk2Ljg0NCwzMjguMDA4LDI4OC4wMDcsMzI4LjAwOHogTTI4OC4wMDcsMzY4LjAwOGgtOTZ2LTI0aDk2VjM2OC4wMDh6IiBmaWxsPSIjMDAwMDAwIi8+Cgk8L2c+CjwvZz4KPGc+Cgk8Zz4KCQk8cGF0aCBkPSJNNDc1Ljg3MSwxMjlsLTIzMi0xMjhjLTIuNDA1LTEuMzI3LTUuMzIzLTEuMzI3LTcuNzI4LDBsLTIzMiwxMjhjLTMuODcsMi4xMzEtNS4yODEsNi45OTYtMy4xNSwxMC44NjYgICAgYzEuNDA3LDIuNTU2LDQuMDk1LDQuMTQ0LDcuMDEzLDQuMTQyaDh2MzM2aDQ4di0yOTZoMzUydjI5Nmg0OHYtMzM2aDhjNC40MTgsMC4wMDMsOC4wMDMtMy41NzYsOC4wMDYtNy45OTUgICAgQzQ4MC4wMTUsMTMzLjA5NSw0NzguNDI3LDEzMC40MDcsNDc1Ljg3MSwxMjl6IE0yNDAuMDA3LDE3LjE1MmwyMDAuOTM2LDExMC44NTZIMzkuMDcxTDI0MC4wMDcsMTcuMTUyeiBNNDQ4LjAwNyw0NjQuMDA4aC0xNiAgICB2LTI5NmgtMzg0djI5NmgtMTZ2LTMyMGg0MTZWNDY0LjAwOHoiIGZpbGw9IiMwMDAwMDAiLz4KCTwvZz4KPC9nPgo8Zz4KCTxnPgoJCTxwYXRoIGQ9Ik0xNjguMDA3LDc1LjA2NHY0NC45NDRoNjRWNDMuMDY0TDE2OC4wMDcsNzUuMDY0eiBNMjE2LjAwNywxMDQuMDA4aC0zMlY4NC45NTJsMzItMTZWMTA0LjAwOHoiIGZpbGw9IiMwMDAwMDAiLz4KCTwvZz4KPC9nPgo8Zz4KCTxnPgoJCTxwYXRoIGQ9Ik0yNDguMDA3LDQzLjA2NHY3Ni45NDRoNjRWNzUuMDY0TDI0OC4wMDcsNDMuMDY0eiBNMjk2LjAwNywxMDQuMDA4aC0zMlY2OC45NTJsMzIsMTZWMTA0LjAwOHoiIGZpbGw9IiMwMDAwMDAiLz4KCTwvZz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K",
+                    "name": {
+                        "en": "Garage",
+                        "de": "Garage",
+                        "ru": "Гараж",
+                        "pt": "Garagem",
+                        "nl": "Garage",
+                        "fr": "Garage",
+                        "it": "Box auto",
+                        "es": "Garaje",
+                        "pl": "Garaż"
+                    },
+                    "members": []
+                },
+                "type": "enum"
             }
+
+
             // todo
             //
         },
@@ -209,47 +325,39 @@ function Enums(main) {
                 that.init(true);
                 if (callback) callback();
             } else {
-                var leaf = that.$grid.selectId('getTreeInfo', oldId);
-                //var leaf = treeFindLeaf(oldId);
-                if (leaf && leaf.children) {
-                    that.main.socket.emit('getObject', oldId, function (err, obj) {
-                        setTimeout(function () {
-                            if (obj) {
-                                obj._id = newId;
-                                if (obj._rev) delete obj._rev;
-                                if (newCommon && newCommon.name  !== undefined) obj.common.name  = newCommon.name;
-                                if (newCommon && newCommon.icon  !== undefined) obj.common.icon  = newCommon.icon;
-                                if (newCommon && newCommon.color !== undefined) obj.common.color = newCommon.color;
-                                tasks.push({name: 'delObject', id: oldId});
-                                tasks.push({name: 'setObject', id: newId, obj: obj});
-                                // Rename all children
-                                var count = 0;
-                                for (var i = 0; i < leaf.children.length; i++) {
-                                    var n = leaf.children[i].replace(oldId, newId);
-                                    count++;
-                                    _enumRename(leaf.children[i], n, null, function () {
-                                        if (!--count && callback) callback();
-                                    });
-                                }
-                            }
-                        }, 0);
-                    });
-                } else {
-                    that.main.socket.emit('getObject', oldId, function (err, obj) {
-                        if (obj) {
-                            setTimeout(function () {
-                                obj._id = newId;
-                                if (obj._rev) delete obj._rev;
-                                if (newCommon && newCommon.name  !== undefined) obj.common.name  = newCommon.name;
-                                if (newCommon && newCommon.icon  !== undefined) obj.common.icon  = newCommon.icon;
-                                if (newCommon && newCommon.color !== undefined) obj.common.color = newCommon.color;
-                                tasks.push({name: 'delObject', id: oldId});
-                                tasks.push({name: 'setObject', id: newId, obj: obj});
-                                if (callback) callback();
-                            }, 0);
-                        }
-                    });
+                var len = oldId.length + 1;
+                var children = [];
+                for (var e = 0; e < that.list.length; e++) {
+                    if (that.list[e].substring(0, len) === oldId + '.') {
+                        children.push(that.list[e]);
+                    }
                 }
+
+                that.main.socket.emit('getObject', oldId, function (err, obj) {
+                    setTimeout(function () {
+                        if (obj) {
+                            obj._id = newId;
+                            if (obj._rev) delete obj._rev;
+                            if (newCommon && newCommon.name  !== undefined) obj.common.name  = newCommon.name;
+                            if (newCommon && newCommon.icon  !== undefined) obj.common.icon  = newCommon.icon;
+                            if (newCommon && newCommon.color !== undefined) obj.common.color = newCommon.color;
+                            tasks.push({name: 'delObject', id: oldId});
+                            tasks.push({name: 'setObject', id: newId, obj: obj});
+                            // Rename all children
+                            var count = 0;
+                            for (var i = 0; i < children.length; i++) {
+                                var n = children[i].replace(oldId + '.', newId + '.');
+                                count++;
+                                _enumRename(children[i], n, null, function () {
+                                    if (!--count && callback) callback();
+                                });
+                            }
+                            if (!children.length && callback) {
+                                callback();
+                            }
+                        }
+                    }, 0);
+                });
             }
         }
     }
@@ -647,10 +755,10 @@ function Enums(main) {
                     that.enumEdit = id;
                     var obj = that.main.objects[id];
                     if (obj && obj.type === 'enum') {
-                        $('#tab-enums-list-new-enum').removeClass('disabled').attr('title', _('Create new enum, like %s', id + '.newEnum'));
+                        $('#tab-enums-list-new-enum').removeClass('disabled').attr('title', _('Create new enum, like %s', 'enum.newCategory'));
                         var parts = id.split('.');
                         if (parts.length === 2) {
-                            that.$gridList.find('#tab-enums-list-new-category').removeClass('disabled').attr('title', _('Create new category, like %s', 'enum.newCategory'));
+                            that.$gridList.find('#tab-enums-list-new-category').removeClass('disabled').attr('title', _('Create new category, like %s', id + '.newEnum'));
                         } else {
                             that.$gridList.find('#tab-enums-list-new-category').addClass('disabled');
                         }
@@ -1210,7 +1318,7 @@ function Enums(main) {
         this.$gridList.treeTable('destroy');
     };
 
-    this.objectChange = function (id, obj) {
+    this.objectChange = function (id, obj, action) {
         //Update enums
         if (id.match(/^enum\./)) {
             if (obj) {
@@ -1228,6 +1336,6 @@ function Enums(main) {
             }, 200);
         }
 
-        if (this.$grid) selectId('object', id, obj);
+        if (this.$grid) selectId('object', id, obj, action);
     };
 }
