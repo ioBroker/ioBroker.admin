@@ -203,7 +203,7 @@ function Intro(main) {
         }
         if (adapter === 'admin' && urlText === location.host) return null;
         if (adapter === 'web') return null;
-        if (adapter.match(/^vis-/)) return null; // no widgets
+        if (adapter !== 'vis-web-admin' && adapter.match(/^vis-/)) return null; // no widgets
         if (adapter.match(/^icons-/)) return null; // no icons
 
         $card.find('.btn-card-enabled').data('instance', adapter + '.' + instance).data('web', web);
@@ -481,7 +481,7 @@ function Intro(main) {
         }
     };
 
-    this.objectChange = function (id) {
+    this.objectChange = function (id /*, obj, action*/) {
         // Update Adapter Table
         if (this.inited && (id.match(/^system\.adapter\.[a-zA-Z0-9-_]+\.\d+$/) || id.match(/^system\.host\./))) {
             if (this.updateTimeout) {

@@ -610,7 +610,7 @@ function Hosts(main) {
         });
     };
 
-    this.objectChange = function (id, obj) {
+    this.objectChange = function (id, obj, action) {
         // Update hosts
         if (id.match(/^system\.host\.[-\w]+$/)) {
             var found = false;

@@ -1125,7 +1125,7 @@ function Instances(main) {
         }
     };
 
-    this.objectChange       = function (id, obj) {
+    this.objectChange       = function (id, obj, action) {
         // Update Instance Table
         if (id.match(/^system\.adapter\.[-\w]+\.[0-9]+$/)) {
             if (obj) {

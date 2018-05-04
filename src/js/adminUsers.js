@@ -1091,7 +1091,7 @@ function Users(main) {
         }
     };
 
-    this.objectChange = function (id, obj) {
+    this.objectChange = function (id, obj, action) {
         if (id.match(/^system\.user\./)) {
             if (obj) {
                 if (this.list.indexOf(id) === -1) this.list.push(id);

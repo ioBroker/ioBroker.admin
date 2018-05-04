@@ -89,6 +89,7 @@
                  value:    'Value',
                  selectid: 'Select ID',
                  from:     'From',
+                 user:     'user',
                  lc:       'Last changed',
                  ts:       'Time stamp',
                  ack:      'Acknowledged',
@@ -2127,15 +2128,18 @@ function filterChanged(e) {
                         case 'value.from':
                             if (data.states && obj && obj.type === 'state') {
                                 var state = data.states[node.key] || {};
-                                state = state || {from: data.states[node.key  + '.from']};
+                                state = state || {from: data.states[node.key  + '.from'], user: data.states[node.key  + '.user']};
                                 var val = state.from;
+
 
                                 if (val === undefined) {
                                     val = '&nbsp;';
                                 } else {
                                     val = val ? val.replace(/^system\.adapter\.|^system\./, '') : '';
                                 }
-
+                                if (state.user) {
+                                    val += '/' + state.user.replace('system.user.', '');
+                                }
                                 $elem.html('<span class="highlight select-value">' + val + '</span>');
                             } else {
                                 $elem.text('');
@@ -2267,6 +2271,7 @@ function filterChanged(e) {
                                         ts:   data.states[node.key  + '.ts'],
                                         lc:   data.states[node.key  + '.lc'],
                                         from: data.states[node.key  + '.from'],
+                                        user: data.states[node.key  + '.user'],
                                         ack:  (data.states[node.key + '.ack'] === undefined) ? '' : data.states[node.key + '.ack'],
                                         q:    (data.states[node.key + '.q']   === undefined) ? 0  : data.states[node.key + '.q']
                                     };
@@ -2295,6 +2300,7 @@ function filterChanged(e) {
                                     fullVal += '\x0A' + data.texts.ts      + ': ' + (state.ts ? formatDate(new Date(state.ts)) : '');
                                     fullVal += '\x0A' + data.texts.lc      + ': ' + (state.lc ? formatDate(new Date(state.lc)) : '');
                                     fullVal += '\x0A' + data.texts.from    + ': ' + (state.from || '');
+                                    if (state.user) fullVal += '\x0A' + data.texts.user    + ': ' + (state.user || '');
                                     fullVal += '\x0A' + data.texts.quality + ': ' + quality2text(state.q || 0);
                                 }
                                 if (state.val === null || state.val === '') {
@@ -3717,7 +3723,7 @@ function filterChanged(e) {
             return this;
         },
         // update objects
-        object: function (id, obj) {
+        object: function (id, obj, action) {
             for (var k = 0, len = this.length; k < len; k++) {
                 var dlg = this[k];
                 var $dlg = $(dlg);
@@ -3746,7 +3752,7 @@ function filterChanged(e) {
                 // If new node
                 if (!node && obj) {
                     // Filter it
-                    if (data.stats) {
+                    if (data.stats && action === 'add') {
                         data.stats.objs++;
                         if (obj.type === 'state') {
                             data.stats.states++;
@@ -3810,7 +3816,7 @@ function filterChanged(e) {
                         }
                     }
                 } else if (!obj) {
-                    if (data.stats && data.objects[id]) {
+                    if (data.stats && action === 'delete') {
                         data.stats.objs--;
                         if (data.objects[id] && data.objects[id].type === 'state') {
                             data.stats.states--;

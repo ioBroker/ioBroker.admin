@@ -1212,36 +1212,31 @@ $(document).ready(function () {
     function objectChange(id, obj) {
         //var changed = false;
         //var oldObj = null;
-        var isNew = false;
+        var action = 'update';
 
         // update main.objects cache
         if (obj) {
             if (obj._rev && main.objects[id]) main.objects[id]._rev = obj._rev;
             if (!main.objects[id]) {
-                isNew = true;
-                //treeInsert(id);
+                action = 'add';
             }
-            if (isNew || JSON.stringify(main.objects[id]) !== JSON.stringify(obj)) {
+            if (action === 'add' || JSON.stringify(main.objects[id]) !== JSON.stringify(obj)) {
                 main.objects[id] = obj;
-                //changed = true;
             }
         } else if (main.objects[id]) {
-            //changed = true;
-            //oldObj = {_id: id, type: main.objects[id].type};
+            action = 'delete';
             delete main.objects[id];
         }
 
         // update to event table
         main.addEventMessage(id, obj, false, false);
 
-        tabs.objects.objectChange(id, obj);
+        tabs.objects.objectChange(id, obj, action);
 
-        if (main.selectId) {
-            main.selectId.selectId('object', id, obj);
-        }
+        main.selectId && main.selectId.selectId('object', id, obj, action);
 
-        tabs.enums.objectChange(id, obj);
-        tabs.intro.objectChange(id, obj);
+        tabs.enums.objectChange(id, obj, action);
+        tabs.intro.objectChange(id, obj, action);
 
         // If system config updated
         if (id === 'system.config') {
@@ -1262,8 +1257,7 @@ $(document).ready(function () {
             main.initHostsList();
         }
 
-        //tabs.adapters.objectChange(id, obj);
-        tabs.instances.objectChange(id, obj);
+        tabs.instances.objectChange(id, obj, action);
 
         if (id.match(/^script\.js\.global\..*/)) {
             main.ignoreJSupdate = true;
@@ -1282,21 +1276,16 @@ $(document).ready(function () {
                 }
             }
 
-            if (obj && obj.type === 'instance') {
-                if (obj.common.supportCustoms ||
-                    id.match(/^system\.adapter\.history\.[0-9]+$/) ||
-                    id.match(/^system\.adapter\.influxdb\.[0-9]+$/) ||
-                    id.match(/^system\.adapter\.sql\.[0-9]+$/)) {
-                    // Update all states if customs enabled or disabled
-                    tabs.objects.reinit();
-                }
+            if (obj && obj.type === 'instance' && obj.common.supportCustoms) {
+                // Update all states if customs enabled or disabled
+                tabs.objects.reinit();
             }
         }
 
-        tabs.hosts.objectChange(id, obj);
+        tabs.hosts.objectChange(id, obj, action);
 
         // Update users
-        tabs.users.objectChange(id, obj);
+        tabs.users.objectChange(id, obj, action);
 
         // update user in side menu
         if (id === main.currentUser) {
