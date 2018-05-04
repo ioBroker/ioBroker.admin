@@ -80,6 +80,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 3.4.2 (2018-05-04)
+* (BuZZy1337) fix wrong height calculation in select id dialog
+
 ### 3.4.1 (2018-05-03)
 * (bluefox) fix wait popup
 * (bluefox) fix button name in config dialog

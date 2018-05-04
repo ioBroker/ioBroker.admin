@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.4.1",
+    "version": "3.4.2",
     "news": {
+      "3.4.2": {
+        "en": "Fix: height of Select ID Dialog calculated wrong",
+        "de": "Fix: Höhe des Select ID Dialoges falsch berechnet",
+        "ru": "Исправлено: высота диалогового окна «Выбор идентификатора»",
+        "pt": "Correção: altura da caixa de diálogo Selecionar ID calculada errada",
+        "nl": "Fix: hoogte van Selecteer ID Dialoog berekend verkeerd",
+        "fr": "Correction: hauteur de la boîte de dialogue Select ID calculée incorrect",
+        "it": "Correzione: altezza della finestra di dialogo Seleziona ID calcolata erroneamente",
+        "es": "Solución: altura del cuadro de diálogo Seleccionar ID calculado incorrectamente",
+        "pl": "Napraw: wysokość okna dialogowego Wybierz identyfikator obliczono nieprawidłowo"
+      },
       "3.4.1": {
         "en": "Fix: Unable to scroll trough Dropdown on Touchscreens\nAdded: Show current Tab in Pagetitle",
         "de": "Fix: Scrollen durch Dropdown auf Touchscreens nicht möglich\nHinzugefügt: Zeige den aktuellen Tab in Pagetitle",
