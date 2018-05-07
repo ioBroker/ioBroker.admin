@@ -381,6 +381,8 @@ function Instances(main) {
             var size = (Math.round((diskFree.val / diskSize.val) * 1000) / 10);
             $diskFree.html('<span class="highlight ' + (size < diskWarning ? 'system-warning': '') + '">' + size + '</span>');
             $diskFree.parent().attr('title', _('Size: %s, Free: %s', that.main.formatBytes(diskSize.val * 1024 * 1024), that.main.formatBytes(diskFree.val * 1024 * 1024)));
+        } else {
+            that.$tab.find('.tab-instances-info-disk').hide();
         }
     }
 
@@ -529,7 +531,7 @@ function Instances(main) {
         $('.instance-name[data-instance-id="' + instanceId + '"]').on('click', function () {
             var $btn = $('.instance-settings[data-instance-id="' + $(this).data('instance-id') + '"]');
             if (!$btn.hasClass('small-button-empty')) {
-                $('.instance-settings[data-instance-id="' + $(this).data('instance-id') + '"]').trigger('click');
+                $btn.trigger('click');
             }
         }).css('cursor', 'pointer');
     }
