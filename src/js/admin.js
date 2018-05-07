@@ -1689,6 +1689,19 @@ $(document).ready(function () {
         return '<img class="' + (classes || 'treetable-icon') + '" src="' + icon + '" alt="' + alt + '" />';
     };
 
+    main.formatBytes = function (bytes) {
+        if (Math.abs(bytes) < 1024) {
+            return bytes + ' B';
+        }
+        var units = ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+        var u = -1;
+        do {
+            bytes /= 1024;
+            ++u;
+        } while (Math.abs(bytes) >= 1024 && u < units.length - 1);
+        return bytes.toFixed(1) + ' ' + units[u];
+    };
+
     // https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
     main.invertColor = function (hex) {
         if (hex.indexOf('#') === 0) {

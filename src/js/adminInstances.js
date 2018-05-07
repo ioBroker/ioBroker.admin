@@ -365,6 +365,25 @@ function Instances(main) {
         }
     }
 
+    function calculateDiskMem() {
+        var diskSize    = that.main.states['system.host.' + that.main.currentHost + '.diskSize'];
+        var diskFree    = that.main.states['system.host.' + that.main.currentHost + '.diskFree'];
+        var diskWarning = that.main.states['system.host.' + that.main.currentHost + '.diskWarning'];
+
+        if (diskFree && diskFree.val && diskSize && diskSize.val) {
+            if (diskWarning) {
+                diskWarning = parseFloat(diskWarning.val);
+            } else {
+                diskWarning = 5;
+            }
+
+            var $diskFree = that.$tab.find('#diskFree');
+            var size = (Math.round((diskFree.val / diskSize.val) * 1000) / 10);
+            $diskFree.html('<span class="highlight ' + (size < diskWarning ? 'system-warning': '') + '">' + size + '</span>');
+            $diskFree.parent().attr('title', _('Size: %s, Free: %s', that.main.formatBytes(diskSize.val * 1024 * 1024), that.main.formatBytes(diskFree.val * 1024 * 1024)));
+        }
+    }
+
     function calculateRam(instanceId) {
         var mem;
         var common   = that.main.objects[instanceId] ? that.main.objects[instanceId].common || {} : {};
@@ -999,6 +1018,7 @@ function Instances(main) {
 
             calculateTotalRam();
             calculateFreeMem();
+            calculateDiskMem();
         }
     };
 
@@ -1092,7 +1112,10 @@ function Instances(main) {
             id = parts.join('.');
 
             if (state) {
-                if (last === 'freemem') {
+                if (last === 'diskFree' || last === 'diskWarning') {
+                    // update disk size
+                    calculateDiskMem();
+                } else if (last === 'freemem') {
                     // update total ram
                     calculateFreeMem();
                 } else if (last === 'memRss') {

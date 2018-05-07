@@ -87,10 +87,12 @@ function Intro(main) {
      * @type type
      */
     var formatInfo = {
-        'Uptime':           formatSeconds,
-        'System uptime':    formatSeconds,
-        'RAM':              formatRam,
-        'Speed':            formatSpeed
+        'Uptime':        formatSeconds,
+        'System uptime': formatSeconds,
+        'RAM':           formatRam,
+        'Speed':         formatSpeed,
+        'Disk size':     that.main.formatBytes,
+        'Disk free':     that.main.formatBytes
     };
 
     function copyToClipboard(e) {
@@ -109,6 +111,7 @@ function Intro(main) {
         var $card = that.$template.clone();
         $card.removeAttr('id');
         $card.addClass('card-system-info');
+        $card.find('.btn-small').addClass('disabled');
         $card.find('.card-titles').text(host.name);
         $card.find('.btn-card-enabled').data('host', host.id);
 
@@ -143,7 +146,10 @@ function Intro(main) {
                 $card.find('.btn-small').addClass('disabled');
                 $card.find('.card-content-text').html(_('offline'));
             }
-        }, 2000);
+        }, 6000);
+
+        formatInfo['Disk size'] = formatInfo['Disk size'] || that.main.formatBytes;
+        formatInfo['Disk free'] = formatInfo['Disk size'] || that.main.formatBytes;
 
         that.main.socket.emit('sendToHost', host.id, 'getHostInfo', null, function (data) {
             clearTimeout(timeout);
@@ -152,7 +158,17 @@ function Intro(main) {
                 console.error('May not read "getHostInfo"');
             } else if (!data) {
                 console.error('Cannot read "getHostInfo"');
+            } else {
+                $card.find('.btn-small').removeClass('disabled');
             }
+
+            var diskWarning = that.main.states['system.host.' + that.main.currentHost + '.diskWarning'];
+            if (diskWarning) {
+                diskWarning = parseFloat(diskWarning.val);
+            } else {
+                diskWarning = 5;
+            }
+            var hasWarning = data['Disk size'] > 0 && data['Disk free'] && Math.round((data['Disk free'] / data['Disk size']) * 100) < diskWarning;
 
             var text = '<div class="card-content-text">';
             if (data) {
@@ -160,9 +176,16 @@ function Intro(main) {
                 for (var item in data) {
                     if (data.hasOwnProperty(item) && (item === 'Platform' || item === 'NPM' || item === 'RAM' || item === 'Node.js')) {
                         text += '<li><b>' + _(item) + ': </b>';
-                        text += '<span class="system-info" data-attribute="' + item + '">' + (formatInfo[item] ? formatInfo[item](data[item]) : data[item]) + '</span></li>';
+                        text += '<span class="system-info" data-attribute="' + item + '">' + (formatInfo[item] ? formatInfo[item](data[item]) : data[item] || ' --') + '</span></li>';
                     }
                 }
+                if (hasWarning) {
+                    text += '<li><b>' + _('Disk free') + ': </b>';
+                    text += '<span class="system-info system-warning" data-attribute="Disk free">' + (formatInfo['Disk free'] ? formatInfo['Disk free'](data['Disk free']) : data['Disk free'] || ' --') + '</span></li>';
+                    text += '<li><b>' + _('Disk size') + ': </b>';
+                    text += '<span class="system-info" data-attribute="Disk size">' + (formatInfo['Disk size'] ? formatInfo['Disk size'](data['Disk size']) : data['Disk size'] || ' --') + '</span></li>';
+                }
+
                 text += '</ul>';
             }
             text += '</div>';
@@ -170,6 +193,7 @@ function Intro(main) {
 
             text = '<div class="card-reveal"><h5>' + _('Info') + '</h5><a class="btn-info" title="' + _('Copy to clipboard') + '"><i class="material-icons">content_copy</i></a><span class="card-title grey-text text-darken-4"><i class="material-icons right">close</i></span>';
             var clippy = [];
+
             if (data) {
                 text += '<ul>';
                 for (var item_ in data) {
@@ -177,7 +201,11 @@ function Intro(main) {
                         text += '<li><b>' + _(item_) + ': </b>';
                         var formatted = (formatInfo[item_] ? formatInfo[item_](data[item_]) : data[item_]);
                         clippy.push(item_ + ': ' + formatted);
-                        text += '<span class="system-info" data-attribute="' + item_ + '">' + formatted + '</span></li>';
+                        if (item_ === 'Disk free' && hasWarning) {
+                            text += '<span class="system-info system-warning" data-attribute="' + item_ + '">' + formatted + '</span></li>';
+                        } else {
+                            text += '<span class="system-info" data-attribute="' + item_ + '">' + formatted + '</span></li>';
+                        }
                     }
                 }
                 text += '</ul>';
