@@ -12,10 +12,11 @@ function Instances(main) {
     this.list          = [];
     this.hostsText     = null;
     this.filterHost    = false;
+    this.memState      = 'memAvailable';
 
     if (!window.tdp) {
         window.tdp = function (x, nachkomma) {
-            return isNaN(x) ? "" : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            return isNaN(x) ? '' : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
     }
 
@@ -350,7 +351,13 @@ function Instances(main) {
     }
 
     function calculateFreeMem() {
-        var host = that.main.states['system.host.' + that.main.currentHost + '.freemem'];
+        if (that.main.states['system.host.' + that.main.currentHost + '.memAvailable']) {
+            that.memState =  'memAvailable';
+        } else if (that.main.states['system.host.' + that.main.currentHost + '.freemem']) {
+            that.memState =  'freemem';
+        }
+
+        var host = that.main.states['system.host.' + that.main.currentHost + '.' + that.memState];
         if (host) {
             that.totalmem = that.totalmem || (that.main.objects['system.host.' + that.main.currentHost].native.hardware.totalmem / (1024 * 1024));
             var percent = Math.round((host.val / that.totalmem) * 100);
@@ -1117,7 +1124,7 @@ function Instances(main) {
                 if (last === 'diskFree' || last === 'diskWarning') {
                     // update disk size
                     calculateDiskMem();
-                } else if (last === 'freemem') {
+                } else if (last === that.memState) {
                     // update total ram
                     calculateFreeMem();
                 } else if (last === 'memRss') {
