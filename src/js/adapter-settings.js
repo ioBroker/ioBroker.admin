@@ -1793,9 +1793,12 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
     if (isMaterialize) {
         if (!divId) {
             M.updateTextFields();
+            $('select').select();
         } else {
             M.updateTextFields('#' + divId);
+            $('#' + divId).find('select').select();
         }
+
         // workaround for materialize checkbox problem
         $div.find('input[type="checkbox"]+span').off('click').on('click', function () {
             var $input = $(this).prev();
