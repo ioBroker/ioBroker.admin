@@ -76,13 +76,22 @@
         .main-toolbar-table-types-tools {
             display: inline-block;
             white-space: nowrap;
-            min-width: 250px;
+            min-width: 320px;
             .dropdown-button {
                 height: @toolbar-size + 4px;
                 line-height: @toolbar-size + 4px;
             }
             #main-toolbar-table-types-btn {
                 margin-right: 5px
+            }
+        }
+    }
+
+    &.view-tiles {
+        @media screen and (max-width: 830px) {
+            // small material css http://materializecss.com/grid.html
+            .main-toolbar-table-sort {
+                display: none;
             }
         }
         @media screen and (max-width: 992px) { // large material css http://materializecss.com/grid.html
@@ -93,14 +102,17 @@
                 text-align: right;
             }
         }
-        @media screen and (max-width: 600px) {
-            // small material css http://materializecss.com/grid.html
-            .main-toolbar-table-sort {
+    }
+    &.view-table {
+        .main-toolbar-table-sort {
+            display: none;
+        }
+        @media screen and (max-width: 570px) { // large material css http://materializecss.com/grid.html
+            .main-toolbar-table-filter {
                 display: none;
             }
         }
     }
-
     .plannedBg, .planned {
         background-color: rgba(255, 0, 0, 0.1);
     }

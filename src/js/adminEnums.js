@@ -999,6 +999,8 @@ function Enums(main) {
     function setupDroppableTiles($collection) {
         if (!that.editMode) return;
 
+        $collection = $collection || that.$gridEnum.find('.tree-table-body .collection');
+
         $collection.find('.collection-item').droppable({
             accept: '.fancytree-type-draggable',
             over: function (e, ui) {

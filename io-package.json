@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.4.2",
+    "version": "3.4.3",
     "news": {
+      "3.4.3": {
+        "en": "The button in selectID was fixed\ndisk info was added\nThe filter in table mode on adapter tab was showed\nmemAvailable for RAM monitoring is used\nfix select problem in config dialog\nadded the asking about unsaved scripts",
+        "de": "Die Schaltfläche in selectID wurde behoben\nDatenträgerinfo wurde hinzugefügt\nDer Filter im Tabellenmodus auf der Adapterregisterkarte wurde angezeigt\nmemAvailable für die RAM-Überwachung wird verwendet\nBehebung eines Problems im Konfigurationsdialog\ndie Frage nach nicht gespeicherten Skripten hinzugefügt",
+        "ru": "Кнопка в selectID была исправлена\nбыла добавлена ​​информация о диске\nБыл показан фильтр в режиме таблицы на вкладке адаптера\nmemAvailable для мониторинга ОЗУ\nисправить проблему выбора в диалоговом окне конфигурации\nдобавлен запрос о несохраненных скриптах",
+        "pt": "O botão no selectID foi corrigido\ninformação de disco foi adicionada\nO filtro no modo de tabela na guia do adaptador foi mostrado\nmemAvailable for RAM monitoring is used\ncorrija o problema de seleção no diálogo de configuração\nadicionou a pergunta sobre scripts não salvos",
+        "nl": "De knop in selectID is hersteld\nschijfinfo is toegevoegd\nHet filter in de tabelmodus op het tabblad met de adapter werd getoond\nmemBeschikbaar voor RAM-bewaking wordt gebruikt\nfix select probleem in configuratiedialoog\nhet vragen over niet-opgeslagen scripts toegevoegd",
+        "fr": "Le bouton dans selectID a été corrigé\ninformations sur le disque a été ajouté\nLe filtre en mode table sur l'onglet de l'adaptateur a été affiché\nmemAvailable pour la surveillance de la RAM est utilisé\nréparer le problème de sélection dans la boîte de dialogue de configuration\najouté la question sur les scripts non sauvegardés",
+        "it": "Il pulsante in selectID è stato risolto\nsono state aggiunte informazioni sul disco\nÈ stato mostrato il filtro in modalità tabella sulla scheda dell'adattatore\nmemAvailable per il monitoraggio RAM viene utilizzato\nrisolve il problema di selezione nella finestra di configurazione\nha aggiunto la richiesta di script non salvati",
+        "es": "El botón en selectID fue arreglado\nse agregó información de disco\nSe mostró el filtro en el modo de tabla en la pestaña del adaptador\nmemDisponible para la supervisión de RAM se utiliza\ncorregir el problema de selección en el diálogo de configuración\nagregó la pregunta sobre los guiones no guardados",
+        "pl": "Przycisk w selectID został naprawiony\ninformacje o dysku zostały dodane\nPokazano filtr w trybie tabeli na karcie adaptera\nmem Dostępne dla monitorowania pamięci RAM\nnapraw wybrany problem w oknie konfiguracji\ndodano pytanie o niezapisane skrypty"
+      },
       "3.4.2": {
         "en": "Fix: height of Select ID Dialog calculated wrong",
         "de": "Fix: Höhe des Select ID Dialoges falsch berechnet",

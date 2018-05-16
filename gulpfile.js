@@ -621,6 +621,7 @@ gulp.task('vendorJS', function () {
         './src/lib/js/translate.js',
         './src/lib/js/jquery.fancytree-all.js',
         './src/lib/js/jquery.treetable.js',
+        './src/lib/js/jquery.ui.touch-punch.min.js',
         './src/lib/js/selectID.js',
         './src/lib/js/cron/jquery.cron.locale.js',
         './src/lib/js/cron/jquery.cron.words.js',

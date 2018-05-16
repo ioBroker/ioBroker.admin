@@ -80,6 +80,14 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 3.4.3 (2018-05-13)
+* (bluefox) The button in selectID was fixed
+* (bluefox) disk info was added
+* (bluefox) The filter in table mode on adapter tab was showed
+* (bluefox) memAvailable for RAM monitoring is used
+* (bluefox) fix select problem in config dialog
+* (bluefox) added the asking about unsaved scripts
+
 ### 3.4.2 (2018-05-04)
 * (BuZZy1337) fix wrong height calculation in select id dialog
 

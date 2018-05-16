@@ -310,9 +310,11 @@ function Adapters(main) {
             that.isTiles = !that.isTiles;
 
             if (that.isTiles) {
+                that.$tab.removeClass('view-table').addClass('view-tiles');
                 $(this).find('i').text('view_list');
             } else {
                 $(this).find('i').text('view_module');
+                that.$tab.removeClass('view-tiles').addClass('view-table');
             }
 
             that.main.saveConfig('adaptersIsTiles', that.isTiles);
@@ -532,8 +534,10 @@ function Adapters(main) {
 
         if (this.isTiles) {
             this.$tab.find('#btn_switch_adapters').find('i').text('view_list');
+            that.$tab.removeClass('view-table').addClass('view-tiles');
             prepareTiles();
         } else {
+            that.$tab.removeClass('view-tiles').addClass('view-table');
             prepareTable();
         }
     };

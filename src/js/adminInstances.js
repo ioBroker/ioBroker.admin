@@ -12,10 +12,11 @@ function Instances(main) {
     this.list          = [];
     this.hostsText     = null;
     this.filterHost    = false;
+    this.memState      = 'memAvailable';
 
     if (!window.tdp) {
         window.tdp = function (x, nachkomma) {
-            return isNaN(x) ? "" : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            return isNaN(x) ? '' : x.toFixed(nachkomma || 0).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
     }
 
@@ -350,7 +351,13 @@ function Instances(main) {
     }
 
     function calculateFreeMem() {
-        var host = that.main.states['system.host.' + that.main.currentHost + '.freemem'];
+        if (that.main.states['system.host.' + that.main.currentHost + '.memAvailable']) {
+            that.memState =  'memAvailable';
+        } else if (that.main.states['system.host.' + that.main.currentHost + '.freemem']) {
+            that.memState =  'freemem';
+        }
+
+        var host = that.main.states['system.host.' + that.main.currentHost + '.' + that.memState];
         if (host) {
             that.totalmem = that.totalmem || (that.main.objects['system.host.' + that.main.currentHost].native.hardware.totalmem / (1024 * 1024));
             var percent = Math.round((host.val / that.totalmem) * 100);
@@ -362,6 +369,27 @@ function Instances(main) {
             }
         } else {
             that.$tab.find('.free-mem-label').hide();
+        }
+    }
+
+    function calculateDiskMem() {
+        var diskSize    = that.main.states['system.host.' + that.main.currentHost + '.diskSize'];
+        var diskFree    = that.main.states['system.host.' + that.main.currentHost + '.diskFree'];
+        var diskWarning = that.main.states['system.host.' + that.main.currentHost + '.diskWarning'];
+
+        if (diskFree && diskFree.val && diskSize && diskSize.val) {
+            if (diskWarning) {
+                diskWarning = parseFloat(diskWarning.val);
+            } else {
+                diskWarning = 5;
+            }
+
+            var $diskFree = that.$tab.find('#diskFree');
+            var size = (Math.round((diskFree.val / diskSize.val) * 1000) / 10);
+            $diskFree.html('<span class="highlight ' + (size < diskWarning ? 'system-warning': '') + '">' + size + '</span>');
+            $diskFree.parent().attr('title', _('Size: %s, Free: %s', that.main.formatBytes(diskSize.val * 1024 * 1024), that.main.formatBytes(diskFree.val * 1024 * 1024)));
+        } else {
+            that.$tab.find('.tab-instances-info-disk').hide();
         }
     }
 
@@ -510,7 +538,7 @@ function Instances(main) {
         $('.instance-name[data-instance-id="' + instanceId + '"]').on('click', function () {
             var $btn = $('.instance-settings[data-instance-id="' + $(this).data('instance-id') + '"]');
             if (!$btn.hasClass('small-button-empty')) {
-                $('.instance-settings[data-instance-id="' + $(this).data('instance-id') + '"]').trigger('click');
+                $btn.trigger('click');
             }
         }).css('cursor', 'pointer');
     }
@@ -999,6 +1027,7 @@ function Instances(main) {
 
             calculateTotalRam();
             calculateFreeMem();
+            calculateDiskMem();
         }
     };
 
@@ -1092,7 +1121,10 @@ function Instances(main) {
             id = parts.join('.');
 
             if (state) {
-                if (last === 'freemem') {
+                if (last === 'diskFree' || last === 'diskWarning') {
+                    // update disk size
+                    calculateDiskMem();
+                } else if (last === that.memState) {
                     // update total ram
                     calculateFreeMem();
                 } else if (last === 'memRss') {

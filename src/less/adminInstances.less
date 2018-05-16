@@ -36,6 +36,11 @@
         font-size:      12px;
         padding-top:    7px;
         text-align:     right;
+
+        .system-warning {
+            color: red;
+            font-weight: bold;
+        }
     }
     .instances-filter {
         padding-left:   5px;
@@ -241,17 +246,17 @@
     }
 
     @media screen and (max-width: 1000px) and (min-width: 800px) {
-        .tab-instances-info-processes {
+        .tab-instances-info-processes, .tab-instances-info-disk {
             display: none;
         }
     }
     @media screen and (max-width: 800px) and (min-width: 700px) {
-        .tab-instances-info-free-ram, .tab-instances-info-processes {
+        .tab-instances-info-free-ram, .tab-instances-info-processes, .tab-instances-info-disk {
             display: none;
         }
     }
     @media screen and (max-width: 700px) {
-        .tab-instances-info-total-ram, .tab-instances-info-free-ram, .tab-instances-info-processes {
+        .tab-instances-info-total-ram, .tab-instances-info-free-ram, .tab-instances-info-processes, .tab-instances-info-disk {
             display: none;
         }
     }

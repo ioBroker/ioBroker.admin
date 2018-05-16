@@ -47,6 +47,7 @@ if (!Object.assign) {
 
 
 var $iframeDialog = null; // used in adapter settings window
+var configNotSaved = null; // used in adapter settings window
 var showConfig = null; // used in adapter settings window
 var defaults = {};
 var adapterRedirect = function (redirect, timeout) { // used in adapter settings window
@@ -1442,10 +1443,15 @@ $(document).ready(function () {
     main.navigateCheckDialog = function (callback) {
         if (main.currentDialog && main.dialogs[main.currentDialog] && typeof main.dialogs[main.currentDialog].allStored === 'function') {
             if (main.dialogs[main.currentDialog].allStored() === false) {
-                main.confirmMessage(_('Some data are not stored. Discard?'), _('Please confirm'), null, function (result) {
+                return main.confirmMessage(_('Some data are not stored. Discard?'), _('Please confirm'), null, function (result) {
                     callback(!result);
                 });
-                return;
+            }
+        } else {
+            if (configNotSaved) {
+                return main.confirmMessage(_('Some data are not stored. Discard?'), _('Please confirm'), null, function (result) {
+                    callback(!result);
+                });
             }
         }
         callback(false);
@@ -1486,6 +1492,7 @@ $(document).ready(function () {
         // if config dialog opened and has some unsaved data
         main.navigateCheckDialog(function (err) {
             if (!err) {
+                configNotSaved = null;
                 main.currentHash = window.location.hash;
                 // hash has following structure => #tabName/dialogName/ids
                 var parts  = main.currentHash.split('/');
@@ -1687,6 +1694,19 @@ $(document).ready(function () {
         alt  = alt  || '';
 
         return '<img class="' + (classes || 'treetable-icon') + '" src="' + icon + '" alt="' + alt + '" />';
+    };
+
+    main.formatBytes = function (bytes) {
+        if (Math.abs(bytes) < 1024) {
+            return bytes + ' B';
+        }
+        var units = ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+        var u = -1;
+        do {
+            bytes /= 1024;
+            ++u;
+        } while (Math.abs(bytes) >= 1024 && u < units.length - 1);
+        return bytes.toFixed(1) + ' ' + units[u];
     };
 
     // https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
