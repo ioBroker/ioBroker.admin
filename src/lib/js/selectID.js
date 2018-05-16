@@ -1179,7 +1179,6 @@ function filterChanged(e) {
                 }
             });
         } else if (attr === 'role')  {
-            
             // remove jquery UI - todo
             $input.autocomplete({
                 minLength:  0,
@@ -2198,7 +2197,7 @@ function filterChanged(e) {
                                 $elem.html('<span class="highlight select-value" style="' + (ack ? '' : '#c00000') + '">' + val + '</span>');
 
                                 if (obj && obj.type === 'state' && isCommon && isCommon.type !== 'file') {
-                                    addClippyToElement($elem, val,
+                                    addClippyToElement($elem, state.val === undefined || state.val === null ? '' : state.val.toString(),
                                         obj && data.quickEditCallback &&
                                         obj.type === 'state' &&
                                         (data.expertMode || isCommon.write !== false) ? key : undefined);
