@@ -5,7 +5,7 @@
 /*
  MIT, Copyright 2014-2018 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
 
- version: 1.1.3 (2018.04.21)
+ version: 1.1.4 (2018.05.18)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -904,18 +904,31 @@ function filterChanged(e) {
         var $dlg    = $('#dialog-value-edit');
         if (typeof M !== 'undefined' && $dlg.length) {
             $dlg.find('textarea').val(value);
+            $dlg.find('input[type="checkbox"]').prop('checked', false);
+
+            // workaround for materialize checkbox problem
+            $dlg.find('input[type="checkbox"]+span').off('click').on('click', function () {
+                var $input = $(this).prev();
+                if (!$input.prop('disabled')) {
+                    $input.prop('checked', !$input.prop('checked')).trigger('change');
+                }
+            });
+
             $dlg.find('.btn-set').off('click').on('click', function () {
                 var val = $dlg.find('textarea').val();
-                if (val !== value) {
-                    data.quickEditCallback(id, 'value', val, value);
+                var ack = $dlg.find('input[type="checkbox"]').prop('checked');
+                if (val !== value || ack) {
+                    data.quickEditCallback(id, 'value', val, value, ack);
                     value = '<span style="color: darkviolet; width: 100%;">' + value + '</span>';
                     $parent.html(value);
                 }
-                $dlg.modal('close').remove();
+                $dlg.modal('close');
             });
             $dlg.modal().modal('open');
         } else {
-            $('<div position: absolute;left: 5px; top: 5px; right: 5px; bottom: 5px; border: 1px solid #CCC;"><textarea style="margin: 0; border: 0;background: white;width: 100%; height: 100%; resize: none;" ></textarea></div>')
+            $('<div position: absolute;left: 5px; top: 5px; right: 5px; bottom: 5px; border: 1px solid #CCC;">' +
+                '<textarea style="margin: 0; border: 0;background: white; width: 100%; height: calc(100% - 50px); resize: none;" ></textarea><br>' +
+                '<input type="checkbox" /><span>' + _('ack') + '</span></div>')
                 .dialog({
                     autoOpen: true,
                     modal: true,
@@ -924,6 +937,7 @@ function filterChanged(e) {
                     height: 200,
                     open: function (event) {
                         $(this).find('textarea').val(value);
+                        $(this).find('input[type="checkbox"]').prop('checked', false);
                         $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
                     },
                     buttons: [
@@ -931,8 +945,9 @@ function filterChanged(e) {
                             text: data.texts.select,
                             click: function () {
                                 var val = $(this).find('textarea').val();
-                                if (val !== value) {
-                                    data.quickEditCallback(id, 'value', val, value);
+                                var ack = $(this).find('input[type="checkbox"]').prop('checked');
+                                if (val !== value || ack) {
+                                    data.quickEditCallback(id, 'value', val, value, ack);
                                     value = '<span style="color: darkviolet; width: 100%;">' + value + '</span>';
                                     $parent.html(value);
                                 }
@@ -1075,6 +1090,8 @@ function filterChanged(e) {
             $thisParent.find('.edit-dialog-button').remove(); // delete edit buttons because they overlay the edit field
         }
         $thisParent.css({overflow: 'visible'});
+        $this.css({overflow: 'visible'});
+        $this.closest('td').css({overflow: 'visible'});
         $this.off('click').removeClass('select-id-quick-edit').css('position', 'relative');
 
         type = type === 'boolean' ? 'checkbox' : 'text';
@@ -1204,6 +1221,8 @@ function filterChanged(e) {
                 $thisParent.addClass('edit-dialog');
             }
             $thisParent.css({overflow: 'hidden'});
+            $this.css({overflow: 'hidden'});
+            $this.closest('td').css({overflow: 'hidden'});
             $this.css({'padding-left': oldLeftPadding, width: oldWidth ? oldWidth: null});
             $this.html(ot).off('click').on('click', onQuickEditField).addClass('select-id-quick-edit');
             //if (activeNode && activeNode.length) activeNode.setActive();
@@ -2011,8 +2030,8 @@ function filterChanged(e) {
                             if (!t) $e.css({'vertical-align': 'middle'});
 
                             $e.attr('title', t);
-                            if (data.quickEdit /*&& obj*/ && data.quickEdit.indexOf('name') !== -1) {
-
+                            // why here was the obj commented ??
+                            if (data.quickEdit && obj && data.quickEdit.indexOf('name') !== -1) {
                                 $e.data('old-value', t);
                                 $e.on('click', onQuickEditField).data('id', node.key).data('name', 'name').data('selectId', data).addClass('select-id-quick-edit');
                             }
@@ -2051,7 +2070,7 @@ function filterChanged(e) {
                             }
                             setText(val);
 
-                            if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('room') !== -1) {
+                            if (data.quickEdit && obj && data.quickEdit.indexOf('room') !== -1) {
                                 $elem.data('old-value', val);
                                 $elem.on('click', onQuickEditField)
                                     .data('id', node.key)
@@ -2078,7 +2097,7 @@ function filterChanged(e) {
                             }
                             setText(val);
 
-                            if (data.quickEdit && data.objects[node.key] && data.quickEdit.indexOf('function') !== -1) {
+                            if (data.quickEdit && obj && data.quickEdit.indexOf('function') !== -1) {
                                 $elem.data('old-value', val);
                                 $elem.on('click', onQuickEditField)
                                     .data('id', node.key)
@@ -2511,7 +2530,7 @@ function filterChanged(e) {
                                     title = data.columns[c].title(node.key, data.columns[c].name);
                                 }
                                 $elem.html(val).attr('title', title);
-                                if (data.quickEdit && data.objects[node.key]) {
+                                if (data.quickEdit && obj) {
                                     for (var q = 0; q < data.quickEdit.length; q++) {
                                         if (data.quickEdit[q] === data.columns[c].name ||
                                             data.quickEdit[q].name === data.columns[c].name) {

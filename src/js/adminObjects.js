@@ -411,7 +411,8 @@ function Objects(main) {
                     noData:             _('No data'),
                     Objects:            _('Objects'),
                     States:             _('States'),
-                    toggleValues:       _('Toggle states view')
+                    toggleValues:       _('Toggle states view'),
+                    user:               _('User')
                 },
                 columns: ['ID', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
                 expandedCallback: function (id, childrenCount, hasStates) {
@@ -581,7 +582,7 @@ function Objects(main) {
                     }
                 ],
                 quickEdit: ['name', 'value', 'role', 'function', 'room', 'value.val'],
-                quickEditCallback: function (id, attr, newValue, oldValue) {
+                quickEditCallback: function (id, attr, newValue, oldValue, newAck) {
                     if (attr === 'room') {
                         syncEnum(id, 'rooms', newValue);
                     } else if (attr === 'function') {
@@ -615,7 +616,8 @@ function Objects(main) {
                                     break;
                             }
                         }
-                        that.main.socket.emit('setState', id, newValue, function (err) {
+                        newAck = newAck || false;
+                        that.main.socket.emit('setState', id, {val: newValue, ack: newAck}, function (err) {
                             if (err) return that.main.showError(err);
                         });
                     } else {
