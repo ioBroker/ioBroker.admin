@@ -836,6 +836,9 @@ function fillSelectIPs(id, actualAddr, noIPv4, noIPv6, callback) {
         }
 
         $(id).html(str);
+        if (isMaterialize) {
+            $(id).select();
+        }
         if (typeof callback === 'function') {
             callback();
         }
@@ -859,6 +862,10 @@ function fillSelectCertificates(id, type, actualValued) {
     }
 
     $(id).html(str);
+    if (isMaterialize) {
+        $(id).select();
+    }
+
 }
 
 function getAdapterInstances(_adapter, callback) {
