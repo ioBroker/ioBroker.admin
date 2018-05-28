@@ -261,3 +261,8 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 * (bluefox) fix acl error
 * (bluefox) fix license agree button
 
+## License
+
+The MIT License (MIT)
+
+Copyright (c) 2014-2018 bluefox <dogafox@gmail.com>
