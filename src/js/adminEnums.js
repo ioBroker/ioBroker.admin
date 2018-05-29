@@ -1278,6 +1278,85 @@ function Enums(main) {
 
     this._postInit = function () {
         if (typeof this.$gridList !== 'undefined') {
+            if (!this.main.objects['enum.rooms']) {
+                this.main.objects['enum.rooms'] = {
+                    "_id": "enum.rooms",
+                    "common": {
+                        "icon": "home",
+                        "name": {
+                            "en": "Rooms",
+                            "de": "Räume",
+                            "ru": "Комнаты",
+                            "pt": "Quartos",
+                            "nl": "Kamers",
+                            "fr": "Pièces",
+                            "it": "Camere",
+                            "es": "Habitaciones",
+                            "pl": "Pokoje"
+                        },
+                        "desc": {
+                            "en": "List of the rooms",
+                            "de": "Liste der Räumen",
+                            "ru": "Список комнат",
+                            "pt": "Lista dos quartos",
+                            "nl": "Lijst met kamers",
+                            "fr": "Liste des chambres",
+                            "it": "Elenco delle stanze",
+                            "es": "Lista de las habitaciones",
+                            "pl": "Lista pokoi"
+                        },
+                        "members": [],
+                        "dontDelete": true
+                    },
+                    "type": "enum",
+                    "acl": {
+                        "owner": "system.user.admin",
+                        "ownerGroup": "system.group.administrator",
+                        "permissions": 1911
+                    }
+                };
+                this.list.unshift('enum.rooms');
+            }
+            if (!this.main.objects['enum.functions']) {
+                this.main.objects['enum.functions'] = {
+                    "_id": "enum.functions",
+                    "common": {
+                        "icon": "lightbulb_outline",
+                        "name": {
+                            "en": "Functions",
+                            "de": "Funktionen",
+                            "ru": "функции",
+                            "pt": "Funções",
+                            "nl": "functies",
+                            "fr": "Les fonctions",
+                            "it": "funzioni",
+                            "es": "Funciones",
+                            "pl": "Funkcje"
+                        },
+                        "desc": {
+                            "en": "List of the functions",
+                            "de": "Liste der Funktionen",
+                            "ru": "Список функций",
+                            "pt": "Lista das funções",
+                            "nl": "Lijst met functies",
+                            "fr": "Liste des fonctions",
+                            "it": "Elenco delle funzioni",
+                            "es": "Lista de las funciones",
+                            "pl": "Lista funkcji"
+                        },
+                        "members": [],
+                        "dontDelete": true
+                    },
+                    "type": "enum",
+                    "acl": {
+                        "owner": "system.user.admin",
+                        "ownerGroup": "system.group.administrator",
+                        "permissions": 1911
+                    }
+                };
+                this.list.unshift('enum.functions');
+            }
+
             if (this.isTiles) {
                 drawEnumsTiles();
             } else {
