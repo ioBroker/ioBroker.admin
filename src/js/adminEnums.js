@@ -1315,6 +1315,7 @@ function Enums(main) {
                         "permissions": 1911
                     }
                 };
+                that.main.socket.emit('setObject', 'enum.rooms', this.main.objects['enum.rooms']);
                 this.list.unshift('enum.rooms');
             }
             if (!this.main.objects['enum.functions']) {
@@ -1355,6 +1356,7 @@ function Enums(main) {
                     }
                 };
                 this.list.unshift('enum.functions');
+                that.main.socket.emit('setObject', 'enum.functions', this.main.objects['enum.functions']);
             }
 
             if (this.isTiles) {
