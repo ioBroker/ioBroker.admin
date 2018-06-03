@@ -367,47 +367,47 @@ function languages2words(src) {
     writeWordJs(bigOne, src);
 }
 
-gulp.task('wwwWords2languages', function (done) {
+gulp.task('wwwWords2languages', done => {
     words2languages('./src/');
     done();
 });
 
-gulp.task('wwwWords2languagesFlat', function (done) {
+gulp.task('wwwWords2languagesFlat', done => {
     words2languagesFlat('./src/');
     done();
 });
 
-gulp.task('wwwLanguagesFlat2words', function (done) {
+gulp.task('wwwLanguagesFlat2words', done => {
     languagesFlat2words('./src/');
     done();
 });
 
-gulp.task('wwwLanguages2words', function (done) {
+gulp.task('wwwLanguages2words', done => {
     languages2words('./src/');
     done();
 });
 
-gulp.task('adminWords2languages', function (done) {
+gulp.task('adminWords2languages', done => {
     words2languages('./admin/');
     done();
 });
 
-gulp.task('adminWords2languagesFlat', function (done) {
+gulp.task('adminWords2languagesFlat', done => {
     words2languagesFlat('./admin/');
     done();
 });
 
-gulp.task('adminLanguagesFlat2words', function (done) {
+gulp.task('adminLanguagesFlat2words', done => {
     languagesFlat2words('./admin/');
     done();
 });
 
-gulp.task('adminLanguages2words', function (done) {
+gulp.task('adminLanguages2words', done => {
     languages2words('./admin/');
     done();
 });
 
-gulp.task('updatePackages', function (done) {
+gulp.task('updatePackages', done => {
     iopackage.common.version = pkg.version;
     iopackage.common.news = iopackage.common.news || {};
     if (!iopackage.common.news[pkg.version]) {
@@ -431,7 +431,7 @@ gulp.task('updatePackages', function (done) {
     done();
 });
 
-gulp.task('updateReadme', function (done) {
+gulp.task('updateReadme', done => {
     var readme = fs.readFileSync('README.md').toString();
     var pos = readme.indexOf('## Changelog\n');
     if (pos !== -1) {
@@ -455,7 +455,7 @@ gulp.task('updateReadme', function (done) {
     done();
 });
 
-gulp.task('materializeCSS', function () {
+gulp.task('materializeCSS', () => {
     gulp.src(['./src/materialize-css/sass/**/*.scss'])
         .pipe(sass({
             paths: [ ]
@@ -466,7 +466,7 @@ gulp.task('materializeCSS', function () {
 
 });
 
-gulp.task('materializeJS', function () {
+gulp.task('materializeJS', () => {
     return gulp.src([
         './src/materialize-css/js/global.js',
         './src/materialize-css/js/component.js',
@@ -504,7 +504,7 @@ gulp.task('materializeJS', function () {
     .pipe(gulp.dest('./www/lib/js'));
 });
 
-gulp.task('configCSS', function () {
+gulp.task('configCSS', () => {
     gulp.src([
         './src/lib/css/iob/selectID.less',
         './src/less/adapter.less',
@@ -520,7 +520,7 @@ gulp.task('configCSS', function () {
         .pipe(gulp.dest('./www/css'));
 });
 
-gulp.task('iobCSS', function () {
+gulp.task('iobCSS', () => {
     return gulp.src(['./src/lib/css/iob/*.less'])
         .pipe(sourcemaps.init())
         .pipe(less({
@@ -531,7 +531,7 @@ gulp.task('iobCSS', function () {
 });
 
 // for older selectID
-gulp.task('adminCSS', function () {
+gulp.task('adminCSS', () => {
     return gulp.src(['./src/less/admin.less'])
         .pipe(sourcemaps.init())
         .pipe(less({
@@ -541,7 +541,7 @@ gulp.task('adminCSS', function () {
         .pipe(gulp.dest('./www/css/'));
 });
 
-gulp.task('treeTableCSS', function () {
+gulp.task('treeTableCSS', () => {
     return gulp.src(['./src/lib/css/jquery.treetable.theme.less'])
         .pipe(sourcemaps.init())
         .pipe(less({
@@ -551,7 +551,7 @@ gulp.task('treeTableCSS', function () {
         .pipe(gulp.dest('./www/lib/css'));
 });
 
-gulp.task('fancyTreeJS', function () {
+gulp.task('fancyTreeJS', () => {
     return gulp.src([
         './src/lib/js/jquery.fancytree-all.js'
     ])
@@ -565,7 +565,7 @@ gulp.task('fancyTreeJS', function () {
         .pipe(gulp.dest('./www/lib/js'));
 });
 
-gulp.task('appJS', function () {
+gulp.task('appJS', () => {
     return gulp.src([
         './src/js/*.js',
         '!./src/js/adapter-settings.js'
@@ -580,7 +580,7 @@ gulp.task('appJS', function () {
         .pipe(gulp.dest('./www/js'));
 });
 
-gulp.task('appHTML', function () {
+gulp.task('appHTML', () => {
     return gulp.src([
         './src/indexStart.html',
         './src/admin*.html',
@@ -593,7 +593,7 @@ gulp.task('appHTML', function () {
         .pipe(gulp.dest('./www/'));
 });
 
-gulp.task('appCSS', function () {
+gulp.task('appCSS', () => {
     gulp.src([
         './src/less/*.less',
         './src/colorpicker/less/*.less',
@@ -609,7 +609,7 @@ gulp.task('appCSS', function () {
         .pipe(gulp.dest('./www/css'));
 });
 
-gulp.task('vendorJS', function () {
+gulp.task('vendorJS', () => {
     return gulp.src([
         './src/lib/js/jquery-3.2.1.min.js',
         './src/lib/js/jquery-migrate-3.0.1.js',
@@ -639,7 +639,7 @@ gulp.task('vendorJS', function () {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/lib/js'));
 });
-gulp.task('colorpick.min', function () {
+gulp.task('colorpick.min', () => {
     return gulp.src([
         './src/lib/js/colResizable-1.6.js'
     ])
@@ -653,7 +653,7 @@ gulp.task('colorpick.min', function () {
         .pipe(gulp.dest('./www/lib/js'));
 });
 
-gulp.task('appCopy', ['colorpick.min'], function () {
+gulp.task('appCopy', ['colorpick.min'], () => {
     return gulp.src([
         './src/**/*.*',
         '!./src/i18n/**/*',
@@ -670,13 +670,13 @@ gulp.task('appCopy', ['colorpick.min'], function () {
     .pipe(gulp.dest('./www'));
 });
 
-gulp.task('colorpickerCopy', function () {
+gulp.task('colorpickerCopy', () => {
     return gulp.src([
         './src/colorpicker/**/*.png'
     ])
         .pipe(gulp.dest('./www'));
 });
-gulp.task('aceCopy', function () {
+gulp.task('aceCopy', () => {
     return gulp.src([
         './src/lib/js/ace-1.2.0/mode-json.js',
         './src/lib/js/ace-1.2.0/worker-json.js'
@@ -685,14 +685,14 @@ gulp.task('aceCopy', function () {
 });
 gulp.task('copy', ['appCopy', 'aceCopy', 'colorpickerCopy']);
 
-gulp.task('watch', function () {
+gulp.task('watch', () => {
     gulp.watch('./src/css/*.less', ['lessApp']);
     gulp.watch('./src/lib/css/iob/*.less', ['lessApp']);
     gulp.watch(['./src/materialize-css/sass/**/*.scss'], ['sassMaterialize']);
     gulp.watch(['./src/js/*.js'], ['compressApp']);
 });
 
-gulp.task('beta', function (done) {
+gulp.task('beta', done => {
     var ioPack = require('./io-package.json');
     var pack = require('./package.json');
     ioPack.common.name = 'admin-beta';
