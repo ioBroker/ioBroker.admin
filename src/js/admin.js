@@ -844,7 +844,7 @@ $(document).ready(function () {
             var name  = 'tab-' + tab.common.name;
 
             var link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
-            if (tab.common.materilizeTab) {
+            if (tab.common.materializeTab) {
                 link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';
             }
 
