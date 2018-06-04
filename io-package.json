@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.4.3",
+    "version": "3.4.4",
     "news": {
+      "3.4.4": {
+        "en": "Minor GUI fixes",
+        "de": "Minor GUI Fixes",
+        "ru": "Незначительные исправления GUI",
+        "pt": "Correções de GUI menores",
+        "nl": "Kleine GUI-oplossingen",
+        "fr": "Corrections mineures de l'interface graphique",
+        "it": "Correzioni minori della GUI",
+        "es": "Correcciones menores de GUI",
+        "pl": "Drobne poprawki GUI"
+      },
       "3.4.3": {
         "en": "The button in selectID was fixed\ndisk info was added\nThe filter in table mode on adapter tab was showed\nmemAvailable for RAM monitoring is used\nfix select problem in config dialog\nadded the asking about unsaved scripts",
         "de": "Die Schaltfläche in selectID wurde behoben\nDatenträgerinfo wurde hinzugefügt\nDer Filter im Tabellenmodus auf der Adapterregisterkarte wurde angezeigt\nmemAvailable für die RAM-Überwachung wird verwendet\nBehebung eines Problems im Konfigurationsdialog\ndie Frage nach nicht gespeicherten Skripten hinzugefügt",

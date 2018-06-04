@@ -1459,7 +1459,7 @@ $(document).ready(function () {
 
     main.navigateGetParams = function () {
         var parts = decodeURI(window.location.hash).split('/');
-        return parts[2];
+        return decodeURIComponent(parts[2]);
     };
 
     main.navigate = function (options) {
@@ -1480,7 +1480,7 @@ $(document).ready(function () {
             options.tab = parts[0].replace(/^#/, '').replace(/^tab-/, '');
         }
 
-        window.location.hash = '#tab-' + options.tab + (options.dialog ? '/' + options.dialog + (options.params ? '/' + options.params : '') : '');
+        window.location.hash = '#tab-' + options.tab + (options.dialog ? '/' + options.dialog + (options.params ? '/' + encodeURIComponent(options.params) : '') : '');
     };
 
     // Router
@@ -1498,7 +1498,7 @@ $(document).ready(function () {
                 var parts  = main.currentHash.split('/');
                 var tab    = parts[0].replace(/^#/, '').replace(/^tab-/, '');
                 var dialog = parts[1];
-                var params = parts[2];
+                var params = decodeURIComponent(parts[2]);
 
                 // set default page
                 if (!tab || tab === '!') {

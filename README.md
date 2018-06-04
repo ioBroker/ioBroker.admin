@@ -80,6 +80,15 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 3.4.4 (2018-06-04)
+* (bluefox) add touch support for draggable and droppable
+* (bluefox) edit raw value and not escaped in selectID.js
+* (bluefox) allow edit of empty names in selectID.less
+* (bluefox) add change with ack=true to selectID
+* (bluefox) fix select for admin3 in configuration dialog
+* (bluefox) add autocomplete for configs
+* (bluefox) fix enums
+
 ### 3.4.3 (2018-05-13)
 * (bluefox) The button in selectID was fixed
 * (bluefox) disk info was added
