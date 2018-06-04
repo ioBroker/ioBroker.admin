@@ -3,8 +3,8 @@
 'use strict';
 
 const adapterName = require(__dirname + '/package.json').name.split('.').pop();
-const utils 		= require(__dirname + '/lib/utils'); // Get common adapter utils
-const tools 		= require(utils.controllerDir + '/lib/tools.js');
+const utils 	  = require(__dirname + '/lib/utils'); // Get common adapter utils
+const tools 	  = require(utils.controllerDir + '/lib/tools.js');
 const SocketIO    = require(__dirname + '/lib/socket');
 const Web         = require(__dirname + '/lib/web');
 
