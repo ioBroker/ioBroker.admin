@@ -37,7 +37,7 @@ function Objects(main) {
 
             var type  = $dialogNewObject.find('#object-tab-new-object-type').val();
             var stype = $dialogNewObject.find('#object-tab-new-state-type').val();
-            id = id.replace(/\s/g, '_');
+            id = id.replace(FORBIDDEN_CHARS, '_');
 
             if (that.main.objects[id]) {
                 that.main.showError(_('Object "%s" yet exists!', id));

@@ -492,7 +492,7 @@ function Users(main) {
                 var $id = $('#tab-users-dialog-new-id');
                 var id = $id.val();
                 var val = $(this).val();
-                val = val.replace(/[.\s]/g, '_').trim().toLowerCase();
+                val = val.trim().replace(FORBIDDEN_CHARS, '_').replace(/\./g, '_').toLowerCase();
                 if ((!id || !idChanged) &&
                     ((isGroup  && id !== 'administrator' && id !== 'user') ||
                      (!isGroup && id !== 'admin')))

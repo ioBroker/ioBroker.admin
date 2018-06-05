@@ -444,7 +444,7 @@ function Hosts(main) {
                     var availableVersion = obj.common ? (repository && repository[obj.common.type] ? repository[obj.common.type].version : '') : '';
 
                     if (installedVersion && availableVersion && !that.main.upToDate(availableVersion, installedVersion)) {
-                        id = 'system.host.' + id.replace(/\s/g, '_');
+                        id = 'system.host.' + id.trim().replace(FORBIDDEN_CHARS, '_').replace(/\./g, '_');
                         if (that.main.states[id + '.alive'] && that.main.states[id + '.alive'].val && that.main.states[id + '.alive'].val !== 'null') {
                             hostsToUpdate++;
                         }
@@ -501,7 +501,7 @@ function Hosts(main) {
                     if (installed !== installedList.hosts[id].runningVersion)   installed += '(' + _('Running: ') + installedList.hosts[id].runningVersion + ')';
                     if (!installed && obj.common && obj.common.installedVersion) installed = obj.common.installedVersion;
 
-                    id = 'system.host.' + id.replace(/ /g, '_');
+                    id = 'system.host.' + id.trim().replace(FORBIDDEN_CHARS, '_').replace(/\./g, '_');
                     that.$tab.find('.hosts-version-installed[data-host-id="' + id + '"]').html(installed);
                 }
 

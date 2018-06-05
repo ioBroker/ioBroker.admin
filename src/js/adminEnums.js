@@ -561,8 +561,7 @@ function Enums(main) {
             parts = that.list[e].split('.');
             if (parts.length !== 2) continue;
             var name = getName(that.main.objects, that.list[e]);
-            id = that.list[e].replace(/[#.\s_]/g, '-');
-            text += '<li class="tab col"><a href="#enum-' + id + '">' + that.main.getIcon(that.list[e]) + '<span class="name">' + name + '</span></a></li>';
+            text += '<li class="tab col"><a href="#enum-' + encodeURIComponent(that.list[e]).replace(/%/g, '-') + '">' + that.main.getIcon(that.list[e]) + '<span class="name">' + name + '</span></a></li>';
         }
         text += '</ul>';
         text += '</div>';
@@ -570,8 +569,7 @@ function Enums(main) {
             parts = that.list[se].split('.');
             if (parts.length !== 2) continue;
 
-            id = that.list[se].replace(/[#.\s_]/g, '-');
-            text += '<div id="enum-' + id + '" class="col s12 page" data-id="' + that.list[se] + '" data-type="second">';
+            text += '<div id="enum-' + encodeURIComponent(that.list[se]).replace(/%/g, '-') + '" class="col s12 page" data-id="' + that.list[se] + '" data-type="second">';
             text += '</div>';
         }
         var scrollTop = {};
@@ -1092,7 +1090,7 @@ function Enums(main) {
                 var $id = $('#tab-enums-dialog-new-id');
                 var id = $id.val();
                 var val = $(this).val();
-                val = val.replace(/[.\s]/g, '_').trim().toLowerCase();
+                val = val.replace(FORBIDDEN_CHARS, '_').replace(/\./g, '_').trim().toLowerCase();
                 if (isIdEditable && (!id || !idChanged)) {
                     $id.val(val);
                     $dialog.find('#tab-enums-dialog-new-preview').val((parentId || 'enum') + '.' + (val || '#'));

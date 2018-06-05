@@ -50,6 +50,8 @@ var $iframeDialog = null; // used in adapter settings window
 var configNotSaved = null; // used in adapter settings window
 var showConfig = null; // used in adapter settings window
 var defaults = {};
+var FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g;
+
 var adapterRedirect = function (redirect, timeout) { // used in adapter settings window
     if (redirect) {
         setTimeout(function () {
@@ -1187,7 +1189,7 @@ $(document).ready(function () {
     }
 
     function stateChange(id, state) {
-        id = id ? id.replace(/ /g, '_') : '';
+        id = id ? id.replace(/\s/g, '_') : '';
 
         if (!id || !id.match(/\.messagebox$/)) {
             if (tabs.states) {
@@ -1480,7 +1482,7 @@ $(document).ready(function () {
             options.tab = parts[0].replace(/^#/, '').replace(/^tab-/, '');
         }
 
-        window.location.hash = '#tab-' + options.tab + (options.dialog ? '/' + options.dialog + (options.params ? '/' + encodeURIComponent(options.params) : '') : '');
+        window.location.hash = '#tab-' + encodeURIComponent(options.tab) + (options.dialog ? '/' + options.dialog + (options.params ? '/' + encodeURIComponent(options.params) : '') : '');
     };
 
     // Router
