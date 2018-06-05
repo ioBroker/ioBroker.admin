@@ -532,7 +532,7 @@
   "Tanzania": "Tanzania",
   "Temperature units:": "Unidades de temperatura:",
   "Thailand": "Tailandia",
-  "This version of node.js \"%s\" on \"%s\" is deprecated. Please install node.js 6, 8 or newer": "ioBroker soporta las versiones LTS 4, 6 y 8 de Node.js. Actualice su versión (\"%s\") en el host \"%s\" para una de las versiones soportadas. Recomendamos usar Node.js 6.",
+  "This version of node.js \"%s\" on \"%s\" is deprecated. Please install node.js 6, 8 or newer": "ioBroker soporta las versiones LTS 6, 8 y 10 de Node.js. Actualice su versión (\"%s\") en el host \"%s\" para una de las versiones soportadas. Recomendamos usar Node.js 6.",
   "Thu": "Jue",
   "Time": "Tiempo",
   "Time From": "Tiempo desde",
