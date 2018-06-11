@@ -1461,7 +1461,7 @@ $(document).ready(function () {
 
     main.navigateGetParams = function () {
         var parts = decodeURI(window.location.hash).split('/');
-        return decodeURIComponent(parts[2]);
+        return parts[2] ? decodeURIComponent(parts[2]) : null;
     };
 
     main.navigate = function (options) {
