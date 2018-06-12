@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.4.4",
+    "version": "3.4.5",
     "news": {
-      "3.4.4": {
+      "3.4.5": {
         "en": "Minor GUI fixes",
         "de": "Minor GUI Fixes",
         "ru": "Незначительные исправления GUI",

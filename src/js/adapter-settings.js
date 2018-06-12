@@ -1356,7 +1356,7 @@ function getTableResult(tabId, cols) {
  *                      <th data-name="regex"     class="translate" style="width: 30%" data-style="text-align: right">Context</th>
  *                      <th data-name="room"      class="translate" data-type="select">Room</th>
  *                      <th data-name="aaa"       class="translate" data-options="1/A;2/B;3/C;4" data-type="select">Room</th>
- *                      <th data-name="enabled"   class="translate" data-type="checkbox">Enabled</th>
+ *                      <th data-name="enabled"   class="translate" data-type="checkbox" data-default="true">Enabled</th>
  *                      <th data-buttons="delete up down" style="width: 32px"></th>
  *                  </tr>
  *              </thead>
@@ -1851,10 +1851,12 @@ function table2values(divId) {
             var $input = $(this).find('input');
             if ($input.length) {
                 var name = $input.data('name');
-                if ($input.attr('type') === 'checkbox') {
-                    values[j][name] = $input.prop('checked');
-                } else {
-                    values[j][name] = $input.val();
+                if (name) {
+                    if ($input.attr('type') === 'checkbox') {
+                        values[j][name] = $input.prop('checked');
+                    } else {
+                        values[j][name] = $input.val();
+                    }
                 }
             }
             var $select = $(this).find('select');
