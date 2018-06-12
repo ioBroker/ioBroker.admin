@@ -478,8 +478,15 @@ function EditObject(main) {
         }).on('keyup', function () {
             $(this).trigger('change');
         });
+
         this.$dialog.find('select').on('change', function () {
             that.$dialogSave.removeClass('disabled');
+        });
+
+        this.$dialog.find('textarea').on('change', function () {
+            that.$dialogSave.removeClass('disabled');
+        }).on('keyup', function () {
+            $(this).trigger('change');
         });
 
         if (obj.common.color !== undefined) {
