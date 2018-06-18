@@ -2300,6 +2300,9 @@ function filterChanged(e) {
                                 if (isCommon && isCommon.role === 'value.time') {
                                     state.val = state.val ? (new Date(state.val)).toString() : state.val;
                                 }
+
+                                var originalVal = state.val;
+
                                 if (states && states[state.val] !== undefined) {
                                     state.val = states[state.val] + '(' + state.val + ')';
                                 }
@@ -2335,13 +2338,14 @@ function filterChanged(e) {
                                 $span.css({color: state.ack ? (state.q ? 'orange' : '') : '#c00000'});
 
                                 if (obj && obj.type === 'state' && isCommon && isCommon.type !== 'file') {
-                                    addClippyToElement($elem, state.val,
+                                    addClippyToElement($elem, originalVal === undefined || originalVal === null ? '' : originalVal.toString(),
                                         obj && data.quickEditCallback && 
                                         obj.type === 'state' &&
                                         (data.expertMode || isCommon.write !== false) ? key : undefined);
                                 }
                             } else {
-                                $elem.text('')
+                                $elem
+                                    .text('')
                                     .attr('title', '')
                                     .removeClass('clippy');
                             }
