@@ -853,6 +853,25 @@ function sendToHost(host, command, message, callback) {
     socket.emit('sendToHost', host || common.host, command, message, callback);
 }
 
+function getInterfaces(onlyNames, callback) {
+    if (typeof onlyNames === 'function') {
+        callback = onlyNames;
+        onlyNames = false;
+    }
+
+    socket.emit('sendToHost', common.host, 'getInterfaces', null, function (result) {
+        if (result && result.result) {
+            if (onlyNames) {
+                callback(null, Object.keys(result.result));
+            } else {
+                callback(null, result);
+            }
+        } else {
+            callback((result && result.error) || 'cannot read');
+        }
+    });
+}
+
 // fills select with names of the certificates and preselect it
 function fillSelectCertificates(id, type, actualValued) {
     var str = '<option value="">' + _('none') + '</option>';
