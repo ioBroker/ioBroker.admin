@@ -52,7 +52,8 @@ var showConfig = null; // used in adapter settings window
 var defaults = {};
 var FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g;
 
-var adapterRedirect = function (redirect, timeout) { // used in adapter settings window
+// used in adapter settings window
+var adapterRedirect = function (redirect, timeout) {
     if (redirect) {
         setTimeout(function () {
             redirect += document.location.pathname;
@@ -1555,24 +1556,6 @@ $(document).ready(function () {
                             $('#admin_sidemenu_menu').data('problem-link', 'tab-' + tab);
                         }
                     }
-
-                    // trigger resize
-                    /*var func;
-                    if ((func = tabs[tab.substr(4)]) && func.resize) {
-                        func.onSelected && func.onSelected();
-
-                        setTimeout(function () {
-                            var x = $(window).width();
-                            var y = $(window).height();
-                            if (x < 720) {
-                                x = 720;
-                            }
-                            if (y < 480) {
-                                y = 480;
-                            }
-                            func.resize(x,y);
-                        }, 10);
-                    }*/
                 }
 
                 // select menu element

@@ -1028,6 +1028,10 @@ function Instances(main) {
             calculateTotalRam();
             calculateFreeMem();
             calculateDiskMem();
+
+            if (this.scrollTop) {
+                this.$tab.find('.grid-main-div').scrollTop(this.scrollTop);
+            }
         }
     };
 
@@ -1102,6 +1106,7 @@ function Instances(main) {
 
     this.destroy            = function () {
         if (this.inited) {
+            this.scrollTop = this.$tab.find('.grid-main-div').scrollTop();
             this.$grid.data('inited', false);
             this.inited = false;
             // subscribe objects and states

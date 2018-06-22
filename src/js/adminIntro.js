@@ -221,7 +221,7 @@ function Intro(main) {
         return $card;
     }
 
-    function buildOneCard(adapter, instance, common, url, web, enabled) {
+    function buildOneCard(adapter, instance, welcomeScreen, common, url, web, enabled) {
         var $card = that.$template.clone();
         $card.removeAttr('id');
         var urlText = url.replace(/^https?:\/\//, '');
@@ -234,7 +234,7 @@ function Intro(main) {
         if (adapter !== 'vis-web-admin' && adapter.match(/^vis-/)) return null; // no widgets
         if (adapter.match(/^icons-/)) return null; // no icons
 
-        $card.find('.btn-card-enabled').data('instance', adapter + '.' + instance).data('web', web);
+        $card.find('.btn-card-enabled').data('instance', adapter + '.' + instance + (welcomeScreen && welcomeScreen.name ? '.' + welcomeScreen.name : '')).data('web', web);
 
         // button enabled
         if (!enabled) {
@@ -251,6 +251,10 @@ function Intro(main) {
         $card.find('.url').attr('href', typeof url === 'object' ? url._first : url || '').text(urlText + (web ? ' (' + web + ')' : ''));
         // icon
         $card.find('.card-image-img').attr('src', common.icon ? 'adapter/' + adapter + '/' + common.icon : 'img/no-image.png');
+        if (welcomeScreen && welcomeScreen.color) {
+            $card.find('.card-image').css('background', welcomeScreen.color);
+        }
+
         // title
         var title = common.titleLang || common.title;
         if (typeof title === 'object') {
@@ -328,7 +332,7 @@ function Intro(main) {
 
                             if (!editActive && !enabled) continue;
 
-                            $card = buildOneCard(adapter, instance, common, url[inst], inst, enabled);
+                            $card = buildOneCard(adapter, instance, null, common, url[inst], inst, enabled);
                             $card && $cards.push($card);
                         }
                     }
@@ -348,8 +352,41 @@ function Intro(main) {
                             enabled = false;
                         }
                     }
+                    if (common.welcomeScreen) {
+                        intro = that.main.systemConfig.common.intro[adapter + '.' + instance + '.' + common.welcomeScreen.name];
+                        if (!editActive && intro !== undefined) {
+                            if (typeof intro === 'object') {
+                                for (var aaa in intro) {
+                                    if (intro.hasOwnProperty(aaa)) {
+                                        intro = intro[aaa];
+                                        that.main.systemConfig.common.intro[adapter + '.' + instance + '.' + common.welcomeScreen.name] = intro;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (intro === false) {
+                                enabled = false;
+                            }
+                        }
+                        that.main.systemConfig.common.intro[adapter + '.' + instance + '.' + common.welcomeScreen.name] = intro;
+                        if (editActive || enabled) {
+                            var welcomeUrl = url;
+                            var m = welcomeUrl.match(/https?:\/\/[.\w\d-]+:\d+\/(.*)$/);
+                            if (m) {
+                                welcomeUrl = welcomeUrl.replace(m[1], common.welcomeScreen.link);
+                            } else {
+                                welcomeUrl += common.welcomeScreen.link;
+                            }
+                            if (welcomeUrl !== url) {
+                                $card = buildOneCard(adapter, instance, common.welcomeScreen, common, welcomeUrl, null, enabled, common.welcomeScreen);
+                                $card && $cards.push($card);
+                            }
+                        }
+                    }
+
+
                     if (!editActive && !enabled) continue;
-                    $card = buildOneCard(adapter, instance, common, url, null, enabled);
+                    $card = buildOneCard(adapter, instance, null, common, url, null, enabled);
                     $card && $cards.push($card);
                 }
             }
@@ -450,7 +487,7 @@ function Intro(main) {
         });
     };
 
-    function showTiles(instances) {
+    function showTiles(instances, callback) {
         instances = instances || that.main.instances;
 
         getCards(instances, function (err, $cards) {
@@ -471,6 +508,7 @@ function Intro(main) {
                     }
                 });
             }
+            callback && callback();
         });
     }
     // ----------------------------- Site cards show and Edit ------------------------------------------------
@@ -490,7 +528,11 @@ function Intro(main) {
 
         // update info
         readInstances(function (err, instances) {
-            showTiles(instances);
+            showTiles(instances, function () {
+                if (that.scrollTop) {
+                    that.$tiles.scrollTop(that.scrollTop);
+                }
+            });
         });
 
         // Required is list of hosts and repository (done in getAdaptersInfo)
@@ -503,6 +545,7 @@ function Intro(main) {
 
     this.destroy = function () {
         if (this.inited) {
+            this.scrollTop = this.$tiles.scrollTop();
             this.inited = false;
             this.main.unsubscribeObjects('system.adapter.*');
             this.main.unsubscribeObjects('system.host.*');
