@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.4.6",
+    "version": "3.4.7",
     "news": {
+      "3.4.7": {
+        "en": "getInterfaces function was added\nScroll position for some tables is saved\nAdded \"filtered out\" information",
+        "de": "getInterfaces Funktion wurde hinzugefügt\nScroll-Position für einige Tabellen wird gespeichert\nHinzugefügt \"ausgefiltert\" Informationen",
+        "ru": "Добавлена ​​функция getInterfaces\nПоложение прокрутки для некоторых таблиц сохраняется\nДобавлена ​​информация «отфильтрована»",
+        "pt": "A função getInterfaces foi adicionada\nPosição de rolagem para algumas tabelas é salva\nAdicionadas informações \"filtradas\"",
+        "nl": "de functie getInterfaces is toegevoegd\nDe schuifpositie voor sommige tabellen is opgeslagen\nToegevoegd \"gefilterd\" informatie",
+        "fr": "La fonction getInterfaces a été ajoutée\nLa position de défilement de certaines tables est enregistrée\nAjout d'informations \"filtrées\"",
+        "it": "è stata aggiunta la funzione getInterfaces\nLa posizione di scorrimento per alcune tabelle viene salvata\nAggiunte informazioni \"filtrate\"",
+        "es": "Se agregó la función getInterfaces\nLa posición de desplazamiento para algunas tablas se guarda\nSe agregó información \"filtrada\"",
+        "pl": "Funkcja getInterfaces została dodana\nPozycja przewijania dla niektórych tabel zostaje zapisana\nDodano informacje \"przefiltrowane\""
+      },
       "3.4.6": {
         "en": "Minor GUI fixes",
         "de": "Minor GUI Fixes",
