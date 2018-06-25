@@ -345,6 +345,15 @@ function Objects(main) {
         }
     }
 
+    this.saveScroll = function () {
+        this.scrollTop = this.$grid.find('.grid-main-wh-div').scrollTop();
+    };
+    this.restoreScroll = function () {
+        if (this.scrollTop) {
+            this.$grid.find('.grid-main-wh-div').scrollTop(this.scrollTop);
+        }
+    };
+
     this.init = function (update) {
         if (this.inited && !update) {
             return;
@@ -674,7 +683,9 @@ function Objects(main) {
             }
 
             selectId('init', settings)
-                .selectId('show');
+                .selectId('show', null, null, function () {
+                    that.restoreScroll();
+                });
         }
 
         if (!this.inited) {
@@ -687,6 +698,7 @@ function Objects(main) {
 
     this.destroy = function () {
         if (this.inited) {
+            this.saveScroll();
             that.main.unsubscribeObjects('*');
             this.inited = false;
             unsubscribeAll();

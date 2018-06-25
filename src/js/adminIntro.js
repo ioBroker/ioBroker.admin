@@ -529,9 +529,7 @@ function Intro(main) {
         // update info
         readInstances(function (err, instances) {
             showTiles(instances, function () {
-                if (that.scrollTop) {
-                    that.$tiles.scrollTop(that.scrollTop);
-                }
+                that.restoreScroll();
             });
         });
 
@@ -542,10 +540,17 @@ function Intro(main) {
             this.main.subscribeObjects('system.host.*');
         }
     };
-
+    this.saveScroll         = function () {
+        this.scrollTop = this.$tiles.scrollTop();
+    };
+    this.restoreScroll         = function () {
+        if (that.scrollTop) {
+            that.$tiles.scrollTop(that.scrollTop);
+        }
+    };
     this.destroy = function () {
         if (this.inited) {
-            this.scrollTop = this.$tiles.scrollTop();
+            this.saveScroll();
             this.inited = false;
             this.main.unsubscribeObjects('system.adapter.*');
             this.main.unsubscribeObjects('system.host.*');

@@ -1318,6 +1318,12 @@ function Adapters(main) {
         } else {
             this.enableColResize();
         }
+        this.restoreScroll();
+    };
+    this.saveScroll         = function () {
+        this.scrollTop = this.$tab.find('.grid-main-div').scrollTop();
+    };
+    this.restoreScroll         = function () {
         if (this.scrollTop) {
             this.$tab.find('.grid-main-div').scrollTop(this.scrollTop);
         }
@@ -1381,7 +1387,7 @@ function Adapters(main) {
 
     this.destroy = function () {
         if (this.inited) {
-            this.scrollTop = this.$tab.find('.grid-main-div').scrollTop();
+            this.saveScroll();
             this.inited = false;
             this.main.unsubscribeObjects('system.host.*');
             this.main.unsubscribeStates('system.host.*');

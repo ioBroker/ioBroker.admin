@@ -1029,7 +1029,7 @@ function Instances(main) {
             this.$grid.append('<tr class="filtered-out"><td></td><td></td><td colspan="20" style="padding-left: 1em">' + _('Filtered out') + '</td></tr>');
 
             $('#currentHost').html(this.main.currentHost);
-            
+
             if (that.main.tabs.hosts.list.length > 1) {
                 this.$tab.find('.btn-instances-host').show();
             } else {
@@ -1042,10 +1042,7 @@ function Instances(main) {
             calculateTotalRam();
             calculateFreeMem();
             calculateDiskMem();
-
-            if (this.scrollTop) {
-                this.$tab.find('.grid-main-div').scrollTop(this.scrollTop);
-            }
+            that.restoreScroll();
         }
     };
 
@@ -1118,9 +1115,17 @@ function Instances(main) {
         }
     };
 
+    this.saveScroll         = function () {
+        this.scrollTop = this.$tab.find('.grid-main-div').scrollTop();
+    };
+    this.restoreScroll         = function () {
+        if (this.scrollTop) {
+            this.$tab.find('.grid-main-div').scrollTop(this.scrollTop);
+        }
+    };
     this.destroy            = function () {
         if (this.inited) {
-            this.scrollTop = this.$tab.find('.grid-main-div').scrollTop();
+            this.saveScroll();
             this.$grid.data('inited', false);
             this.inited = false;
             // subscribe objects and states

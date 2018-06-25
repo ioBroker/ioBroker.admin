@@ -1580,11 +1580,13 @@ $(document).ready(function () {
                         if (typeof main.dialogs[dialog].init === 'function') {
                             main.dialogs[dialog].init(params ? params.split(',') : undefined);
                         }
+                        tabs[main.currentTab] && tabs[main.currentTab].saveScroll && tabs[main.currentTab].saveScroll();
                         $actualTab.hide().appendTo('body');
                         $('#dialog-' + dialog).addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
                     } else if ($actualTab.attr('id') !== $panel.attr('id')) {
                         $actualTab.hide().appendTo('body');
                         $panel.addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
+                        tabs[main.currentTab] && tabs[main.currentTab].restoreScroll && tabs[main.currentTab].restoreScroll();
                     }
                 }
             } else {
