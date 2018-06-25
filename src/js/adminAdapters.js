@@ -278,6 +278,7 @@ function Adapters(main) {
     }
 
     function filterTiles() {
+        var anyVisible = false;
         // filter
         if (that.currentFilter) {
             that.$tiles.find('.tile').each(function () {
@@ -288,6 +289,7 @@ function Adapters(main) {
                 }
 
                 if (customFilter({key: $this.data('id')})) {
+                    anyVisible = true;
                     $this.show();
                 } else {
                     $this.hide();
@@ -295,12 +297,30 @@ function Adapters(main) {
             });
         } else {
             if (!that.currentType) {
-                that.$tiles.find('.tile').show();
+                that.$tiles.find('.tile')
+                    .show()
+                    .each(function () {
+                        if ($(this).is(':visible')) {
+                            anyVisible = true;
+                            return false;
+                        }
+                    });
             } else {
                 that.$tiles.find('.tile').hide();
                 that.$tiles.find('.class-' + that.currentType).show();
-
+                that.$tiles.find('.tile').each(function () {
+                    if ($(this).is(':visible')) {
+                        anyVisible = true;
+                        return false;
+                    }
+                });
             }
+        }
+
+        if (anyVisible) {
+            that.$tiles.find('.filtered-out').hide();
+        } else {
+            that.$tiles.find('.filtered-out').show();
         }
     }
 
@@ -1182,6 +1202,18 @@ function Adapters(main) {
                         text += '</div>';
                     }
 
+
+                    // Add filtered out tile
+                    text += '<div class="col s12 m6 l4 xl3 filtered-out">';
+                    text += '   <div class="card hoverable card-adapters">';
+                    text += '       <div class="card-header"></div>';
+                    text += '       <div class="card-content">';
+                    //text += '           <img onerror="this.src=\'img/info-big.png\';" class="card-profile-image" src="' + ad.icon + '">';
+                    text += '           <span class="card-title grey-text text-darken-4">' + _('Filtered out') + '</span>';
+                    text += '       </div>';
+                    text += '       <div class="footer right-align"></div>';
+                    text += '   </div>';
+                    text += '</div>';
 
                     that.$tiles.html(text);
                     // init buttons

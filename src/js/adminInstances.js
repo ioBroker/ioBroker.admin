@@ -597,6 +597,19 @@ function Instances(main) {
                 that.$grid.find('.instance-adapter').show();
             }
         }
+        var anyVisible = false;
+        that.$grid.find('.instance-adapter').each(function () {
+            if ($(this).is(':visible')) {
+                anyVisible = true;
+                return false;
+            }
+        });
+
+        if (anyVisible) {
+            that.$grid.find('.filtered-out').hide();
+        } else {
+            that.$grid.find('.filtered-out').show();
+        }
     }
 
     function onQuickEditField(e) {
@@ -1013,9 +1026,10 @@ function Instances(main) {
                 showOneAdapter(this.$grid, this.list[i], this.main.config.instanceForm);
             }
 
+            this.$grid.append('<tr class="filtered-out"><td></td><td></td><td colspan="20" style="padding-left: 1em">' + _('Filtered out') + '</td></tr>');
+
             $('#currentHost').html(this.main.currentHost);
-
-
+            
             if (that.main.tabs.hosts.list.length > 1) {
                 this.$tab.find('.btn-instances-host').show();
             } else {
