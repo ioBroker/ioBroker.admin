@@ -651,29 +651,32 @@ function Customs(main) {
             }
         });
 
-        for (var i = 0; i < ids.length; i++) {
-            var found = false;
-            var custom_ = that.main.objects[ids[i]].common.custom;
-            for (var inst in custom_) {
-                if (!custom_.hasOwnProperty(inst)) continue;
-                if (!custom_[inst].enabled) {
-                    delete custom_[inst];
-                } else {
-                    found = true;
+
+        if (ids) {
+            that.$dialog.find('.dialog-system-buttons .btn-save').addClass('disabled');
+
+            for (var i = 0; i < ids.length; i++) {
+                var found = false;
+                var custom_ = that.main.objects[ids[i]].common.custom;
+                for (var inst in custom_) {
+                    if (!custom_.hasOwnProperty(inst)) continue;
+                    if (!custom_[inst].enabled) {
+                        delete custom_[inst];
+                    } else {
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    that.main.objects[ids[i]].common.custom = null;
                 }
             }
-            if (!found) {
-                that.main.objects[ids[i]].common.custom = null;
-            }
+            that.setCustoms(ids, function () {
+                // disable iframe
+                that.loadHistoryChart(); // disable iframe
+                that.main.navigate();
+            });
         }
 
-        that.$dialog.find('.dialog-system-buttons .btn-save').addClass('disabled');
-
-        that.setCustoms(ids, function () {
-            // disable iframe
-            that.loadHistoryChart(); // disable iframe
-            that.main.navigate();
-        });
     }
 
     // return true if all data are stored
