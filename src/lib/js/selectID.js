@@ -5,7 +5,7 @@
 /*
  MIT, Copyright 2014-2018 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
 
- version: 1.1.4 (2018.05.18)
+ version: 1.1.5 (2018.07.14)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -259,6 +259,11 @@ function filterChanged(e) {
         // ignore system objects in expert mode
         if (data.expertModeRegEx && !data.expertMode && data.expertModeRegEx.test(id)) {
             return false;
+        }
+
+        // ignore exeprt objects in expert mode
+        if (!data.expertMode && data.objects[id] && data.objects[id].common && data.objects[id].common.expert) {
+            return;
         }
 
         if (data.filter) {
