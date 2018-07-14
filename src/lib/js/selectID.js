@@ -569,7 +569,9 @@ function filterChanged(e) {
         data.funcEnums.sort();
         data.histories.sort();
         data.ids.sort();
-        if (stats) data.stats = stats;
+        if (stats) {
+            data.stats = stats;
+        }
     }
 
     function treeSplit(data, id) {
@@ -1533,7 +1535,7 @@ function filterChanged(e) {
         if (data.useHistory) {
             tds += '<button class="panel-button btn-history"></button>\n';
         }
-        if (data.stats) {
+        if (typeof data.stats === 'object') {
             tds += '<div class="objects-info">' +
             '<span class="objects-title">' + data.texts['Objects'] + ': </span>' +
             '<span class="objects-val-objs">' + data.stats.objs + '</span>, ' +
@@ -3779,7 +3781,7 @@ function filterChanged(e) {
                 // If new node
                 if (!node && obj) {
                     // Filter it
-                    if (data.stats && action === 'add') {
+                    if (typeof data.stats === 'object' && action === 'add') {
                         data.stats.objs++;
                         if (obj.type === 'state') {
                             data.stats.states++;
@@ -3843,7 +3845,7 @@ function filterChanged(e) {
                         }
                     }
                 } else if (!obj) {
-                    if (data.stats && action === 'delete') {
+                    if (typeof data.stats === 'object' && action === 'delete') {
                         data.stats.objs--;
                         if (data.objects[id] && data.objects[id].type === 'state') {
                             data.stats.states--;
