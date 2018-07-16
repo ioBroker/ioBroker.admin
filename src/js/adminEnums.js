@@ -1126,6 +1126,7 @@ function Enums(main) {
 
         var nameVal  = '';
         var idVal    = '';
+        var originalIdVal = '';
         var iconVal  = '';
         var colorVal = '';
 
@@ -1153,10 +1154,14 @@ function Enums(main) {
                 nameVal      = translateName(that.main.objects[id].common.name);
                 iconVal      = that.main.objects[id].common.icon;
                 colorVal     = that.main.objects[id].common.color;
-                isIdEditable = !that.main.objects[id].common['object-non-deletable'] && !that.main.objects[id].common.dontDelete;
             }
             oldId = id;
             idVal = id;
+            $dialog.find('#tab-enums-dialog-preserve-id').prop('checked', true);
+            isIdEditable = false;
+        } else {
+            $dialog.find('#tab-enums-dialog-preserve-id').prop('checked', false);
+            isIdEditable = true;
         }
 
         $dialog.find('.tab-enums-dialog-new-title').text(parentId ? _('Create new category') : (idVal ? _('Rename') : _('Create new enum')));
@@ -1168,6 +1173,7 @@ function Enums(main) {
             }
             idVal = parts.pop();
             parentId = parts.join('.');
+            originalIdVal = idVal;
         }
 
         $dialog.find('#tab-enums-dialog-new-name')
@@ -1199,6 +1205,7 @@ function Enums(main) {
             .val(idVal)
             .off('change')
             .on('change', function () {
+                if ($dialog.find('#tab-enums-dialog-preserve-id').prop('checked')) return;
                 idChanged = true;
                 var val = $(this).val();
                 $dialog.find('#tab-enums-dialog-new-preview').val((parentId || 'enum') + '.' + ($(this).val() || '#'));
@@ -1223,21 +1230,33 @@ function Enums(main) {
             .text(oldId ? _('Change') : _('Create'))
             .on('click', function () {
                 if (oldId) {
+                    var name;
+                    if ($dialog.find('#tab-enums-dialog-preserve-id').prop('checked')) {
+                        if (typeof that.main.objects[oldId].common.name === 'object') {
+                            name = that.main.objects[oldId].common.name;
+                        } else {
+                            name = {'en': oldId.split('.').pop()};
+                        }
+                        name[systemLang] = $('#tab-enums-dialog-new-name').val();
+                    } else {
+                        name = $('#tab-enums-dialog-new-name').val();
+                    }
                     enumRename(
                         oldId,
                         parentId + '.' + $('#tab-enums-dialog-new-id').val(),
                         {
-                            name:  $('#tab-enums-dialog-new-name').val(),
+                            name:  name,
                             icon:  iconVal,
                             color: colorVal
                         },
                         function (err) {
-                        if (err) {
-                            showMessage(_('Error: %s', err), true);
-                        } else {
-                            showMessage(_('Updated'));
+                            if (err) {
+                                showMessage(_('Error: %s', err), true);
+                            } else {
+                                showMessage(_('Updated'));
+                            }
                         }
-                    });
+                    );
                 } else {
                     enumAddChild(
                         parentId,
@@ -1325,6 +1344,35 @@ function Enums(main) {
         } else {
             $dialog.find('.tab-enums-dialog-new-color-clear').hide();
         }
+
+        $dialog.find('#tab-enums-dialog-preserve-id').off('change').on('change', function () {
+            if ($(this).prop('checked')) {
+                $dialog.find('#tab-enums-dialog-new-id').prop('disabled', true)
+                    .val(originalIdVal);
+                idVal = originalIdVal;
+                isIdEditable = false;
+            } else {
+                if (that.main.objects[id] && that.main.objects[id].common) {
+                    isIdEditable = !that.main.objects[id].common['object-non-deletable'] && !that.main.objects[id].common.dontDelete;
+                }
+                if (isIdEditable) {
+                    idVal = $dialog.find('#tab-enums-dialog-new-name').val();
+                    idVal = idVal.replace(FORBIDDEN_CHARS, '_').replace(/\./g, '_').trim().toLowerCase();
+                    $dialog.find('#tab-enums-dialog-new-id').prop('disabled', false)
+                        .val(idVal);
+                }
+            }
+            idChanged = false;
+            $dialog.find('#tab-enums-dialog-new-preview').val((parentId || 'enum') + '.' + (idVal || '#'));
+        });
+
+        // workaround for materialize checkbox problem
+        $dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
+            var $input = $(this).prev();
+            if (!$input.prop('disabled')) {
+                $input.prop('checked', !$input.prop('checked')).trigger('change');
+            }
+        });
 
         $dialog.modal().modal('open');
     }
