@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.4.7",
+    "version": "3.4.8",
     "news": {
+      "3.4.8": {
+        "en": "Small GUI corrections",
+        "de": "Kleine GUI-Korrekturen",
+        "ru": "Небольшие корректировки GUI",
+        "pt": "Correções de GUI pequenas",
+        "nl": "Kleine GUI-correcties",
+        "fr": "Petites corrections GUI",
+        "it": "Piccole correzioni della GUI",
+        "es": "Pequeñas correcciones GUI",
+        "pl": "Małe poprawki GUI"
+      },
       "3.4.7": {
         "en": "getInterfaces function was added\nScroll position for some tables is saved\nAdded \"filtered out\" information",
         "de": "getInterfaces Funktion wurde hinzugefügt\nScroll-Position für einige Tabellen wird gespeichert\nHinzugefügt \"ausgefiltert\" Informationen",

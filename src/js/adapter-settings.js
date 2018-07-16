@@ -273,6 +273,15 @@ function preInit () {
                     // init selects
                     if (isMaterialize) {
                         $('select').select();
+                        M.updateTextFields();
+
+                        // workaround for materialize checkbox problem
+                        $('input[type="checkbox"]+span').off('click').on('click', function () {
+                            var $input = $(this).prev();
+                            if (!$input.prop('disabled')) {
+                                $input.prop('checked', !$input.prop('checked')).trigger('change');
+                            }
+                        });
                     }
                 }
                 if (typeof callback === 'function') {
@@ -1279,9 +1288,31 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
 // converts "enum.room.Sleeping_room" to "Sleeping room"
 // As input gets the list from getEnum
 function enumName2Id(enums, name) {
+    name = name.toLowerCase();
     for (var enumId in enums) {
-        if (translateName(enums[enumId].common.name) === name) return enumId;
-        if (enums[enumId].name && translateName(enums[enumId].name) === name) return enumId;
+        if (!enums.hasOwnProperty(enumId)) continue;
+        if (enums[enumId] && enums[enumId].common && enums[enumId].common.name) {
+            if (typeof enums[enumId].common.name === 'object') {
+                for (var lang in enums[enumId].common.name) {
+                    if (enums[enumId].common.name.hasOwnProperty(lang) && enums[enumId].common.name[lang].toLowerCase() === name) {
+                        return enumId;
+                    }
+                }
+            } else {
+                if (enums[enumId].common.name && enums[enumId].common.name.toLowerCase() === name) return enumId;
+            }
+        }
+        if (enums[enumId] && enums[enumId].name) {
+            if (typeof enums[enumId].name === 'object') {
+                for (var lang in enums[enumId].name) {
+                    if (enums[enumId].name.hasOwnProperty(lang) && enums[enumId].name[lang].toLowerCase() === name) {
+                        return enumId;
+                    }
+                }
+            } else {
+                if (enums[enumId].name.toLowerCase() === name) return enumId;
+            }
+        }
     }
     return '';
 }
@@ -1487,6 +1518,9 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
                 for (var l = 0; l < nnames.length; l++) {
                     result[nnames[l]] = list[nnames[l]].common.name || l;
+                    if (typeof result[nnames[l]] === 'object') {
+                        result[nnames[l]] = result[nnames[l]][systemLang] || result[nnames[l]].en;
+                    }
                 }
                 $table.data('rooms', result);
                 values2table(divId, values, onChange, onReady);
@@ -1520,6 +1554,9 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
                 for (var l = 0; l < nnames.length; l++) {
                     result[nnames[l]] = list[nnames[l]].common.name || l;
+                    if (typeof result[nnames[l]] === 'object') {
+                        result[nnames[l]] = result[nnames[l]][systemLang] || result[nnames[l]].en;
+                    }
                 }
                 $table.data('functions', result);
                 values2table(divId, values, onChange, onReady);

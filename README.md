@@ -80,6 +80,13 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 3.4.8 (2018-07-17)
+* (bluefox) fix error with add new enum
+* (bluefox) try to fix error with custom settings
+* (bluefox) place all titles at the top in the config
+* (bluefox) add expert mode to common
+* (bluefox) allow edit of enum's names in many languages
+
 ### 3.4.7 (2018-06-25)
 * (bluefox) add getInterfaces function
 * (bluefox) save scroll position for some tables
