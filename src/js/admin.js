@@ -1522,14 +1522,25 @@ $(document).ready(function () {
                 $adminBody.find('.admin-preloader').remove();
 
                 if (!$panel.length) {
-                     tab = 'intro';
+                    tab = 'intro';
                 }
 
                 // if tab was changed
                 if (main.currentTab !== tab || !$actualTab.length) {
+                    var link;
                     // destroy actual tab
-                    if (tabs[main.currentTab] && typeof tabs[main.currentTab].destroy === 'function') {
+                    if (main.currentTab && tabs[main.currentTab] && typeof tabs[main.currentTab].destroy === 'function') {
                         tabs[main.currentTab].destroy();
+                    } else if (main.currentTab) {
+                        var $oldPanel = $('#tab-' + main.currentTab);
+                        // destroy current iframe
+                        if ($oldPanel.length && (link = $oldPanel.data('src'))) {
+                            var $iframe_ = $oldPanel.find('>iframe');
+                            if ($iframe_.attr('src')) {
+                                console.log('clear');
+                                $iframe_.attr('src', '');
+                            }
+                        }
                     }
                     main.currentTab = tab;
 
@@ -1544,7 +1555,6 @@ $(document).ready(function () {
                         tabs[tab].init();
                     }
 
-                    var link;
                     // if iframe like node-red
                     if ($panel.length && (link = $panel.data('src'))) {
                         if (link.indexOf('%') === -1) {
