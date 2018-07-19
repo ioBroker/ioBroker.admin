@@ -811,7 +811,7 @@ function Instances(main) {
         }
 
         that.$tab.find('.btn-instances-reload').on('click', function () {
-            that.init(true);
+            that.init(true, true);
         });
 
         /*that.$grid.find('#btn-instances-form').button({
@@ -994,7 +994,7 @@ function Instances(main) {
         }.bind(this));
     };
 
-    this._postInit          = function (update) {
+    this._postInit          = function (update, showTip) {
         if (this.main.currentHost && typeof this.$grid !== 'undefined' && (!this.$grid.data('inited') || update)) {
             this.$grid.data('inited', true);
             this.list.sort();
@@ -1043,6 +1043,9 @@ function Instances(main) {
             calculateFreeMem();
             calculateDiskMem();
             that.restoreScroll();
+            if (showTip) {
+                that.main.showToast(that.$tab.find('.main-toolbar-table'), _('Updated'));
+            }
         }
     };
 
@@ -1083,13 +1086,13 @@ function Instances(main) {
         });
     };
 
-    this.init               = function (update) {
+    this.init               = function (update, showMessage) {
         if (this.inited && !update) {
             return;
         }
         if (!this.main.objectsLoaded) {
             setTimeout(function () {
-                that.init(update);
+                that.init(update, showMessage);
             }, 250);
             return;
         }
@@ -1097,11 +1100,11 @@ function Instances(main) {
 
         count++;
         this.getInstances(function () {
-            if (!--count) that._postInit(update);
+            if (!--count) that._postInit(update, showMessage);
         });
         count++;
         this.main.tabs.hosts.getHosts(function () {
-            if (!--count) that._postInit(update);
+            if (!--count) that._postInit(update, showMessage);
         });
 
         if (!this.inited) {
