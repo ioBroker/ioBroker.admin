@@ -15,7 +15,7 @@ const iopackage   = require('./io-package.json');
 const babel       = require('gulp-babel');
 const fs          = require('fs');
 
-gulp.task('1_words',  ['wwwLanguages2words', 'adminLanguages2words']);
+gulp.task('1_words',  ['www (json => words.js)', 'admin (json => words.js)']);
 gulp.task('2_css',    ['iobCSS', 'adminCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS']);
 gulp.task('3_js',     ['vendorJS', 'materializeJS', 'appJS', 'fancyTreeJS']); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
 gulp.task('4_static', ['appHTML', 'aceCopy', 'colorpickerCopy', 'appCopy']);
@@ -25,17 +25,17 @@ const noSort   = false;
 /* How to work with language scripts
 --------------------------------------------------------
     you can use for edit this tool https://github.com/ldittmar81/ioBroker-i18n-editor
-    to do that you can convert words from words.js into 6 json files, that i18n editor can understand. Use wwwWords2languages.
+    to do that you can convert words from words.js into 6 json files, that i18n editor can understand. Use "www (words.js => json).
 
-    To combine from json files the words.js again, just call wwwLanguages2words
+    To combine from json files the words.js again, just call www (json => words.js)
 
     wwwWords2languages - converts src/js/words.js into 6 different json files in src/i18n/xxx/translations.json
     wwwLanguages2words - converts 6 different json files from src/i18n/xxx/translations.json into src/js/words.js
 --------------------------------------------------------
     You can export just a flat texts and translate them with e.g. google translator.
-    to do that you can convert words from words.js into 7 txt files. Use wwwWords2languagesFlat.
+    to do that you can convert words from words.js into 7 txt files. www (words.js => flat)
 
-    To combine from json files the words.js again, just call wwwLanguagesFlat2words
+    To combine from json files the words.js again, just call www (flat => words.js)
 
     wwwWords2languagesFlat - converts src/js/words.js into 6 different txt files in src/i18n/xxx/flat.txt. Additionally it creates extra files with keys in src/i18n/flat.txt
     wwwLanguagesFlat2words - converts src/i18n/xxx/flat.txt into src/js/words.js
@@ -639,6 +639,7 @@ gulp.task('vendorJS', () => {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/lib/js'));
 });
+
 gulp.task('colorpick.min', () => {
     return gulp.src([
         './src/lib/js/colResizable-1.6.js'
