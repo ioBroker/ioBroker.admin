@@ -367,42 +367,42 @@ function languages2words(src) {
     writeWordJs(bigOne, src);
 }
 
-gulp.task('wwwWords2languages', done => {
+gulp.task('www (words.js => json)', done => {
     words2languages('./src/');
     done();
 });
 
-gulp.task('wwwWords2languagesFlat', done => {
+gulp.task('www (words.js => flat)', done => {
     words2languagesFlat('./src/');
     done();
 });
 
-gulp.task('wwwLanguagesFlat2words', done => {
+gulp.task('www (flat => words.js)', done => {
     languagesFlat2words('./src/');
     done();
 });
 
-gulp.task('wwwLanguages2words', done => {
+gulp.task('www (json => words.js)', done => {
     languages2words('./src/');
     done();
 });
 
-gulp.task('adminWords2languages', done => {
+gulp.task('admin (words.js => json)', done => {
     words2languages('./admin/');
     done();
 });
 
-gulp.task('adminWords2languagesFlat', done => {
+gulp.task('admin (words.js => flat)', done => {
     words2languagesFlat('./admin/');
     done();
 });
 
-gulp.task('adminLanguagesFlat2words', done => {
+gulp.task('admin (flat => words.js)', done => {
     languagesFlat2words('./admin/');
     done();
 });
 
-gulp.task('adminLanguages2words', done => {
+gulp.task('admin (json => words.js)', done => {
     languages2words('./admin/');
     done();
 });

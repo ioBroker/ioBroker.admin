@@ -17,16 +17,117 @@
     var oldBind;
     var oldSecure;
     var oldPort;
+    var BACK_FILE_NAME = 'login-bg.png';
 
-    function showHideSettings() {
+    function initDropZone() {
+        document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+        var dropZone = document.getElementById('drop_zone');
+        if (dropZone) {
+            dropZone.addEventListener('dragover', handleDragOver,   false);
+            dropZone.addEventListener('drop',     handleFileSelect, false);
+            dropZone.addEventListener('dragend', function () {
+                $(this).css({background: 'white'});
+                console.log('dragend');
+                return false;
+            }, false);
+            dropZone.addEventListener('dragstart', function () {
+                console.log('dragstart');
+            }, false);
+            dropZone.addEventListener('dragleave', function () {
+                $(this).css({background: 'white'});
+            }, false);
+            dropZone.addEventListener('dragenter', function () {
+                $(this).css({background: 'gray'});
+            }, false);
+        }
+    }
+
+    function showBackImage() {
+        // Read names of files for gong
+        socket.emit('readFile', 'admin.' + instance, BACK_FILE_NAME, function (err, file) {
+            if (!err && file) {
+                var arrayBufferView = new Uint8Array(file);
+                var blob = new Blob([arrayBufferView], {type: 'image/png'});
+                var urlCreator = window.URL || window.webkitURL;
+                var imageUrl = urlCreator.createObjectURL( blob );
+                $('#login_image').attr('src', imageUrl).show();
+            } else {
+                $('#login_image').hide();
+            }
+        });
+    }
+
+    function uploadFile(file, callback) {
+        var reader = new FileReader();
+
+        // Closure to capture the file information.
+        reader.onload = function(e) {
+            socket.emit('writeFile', 'admin.' + instance, BACK_FILE_NAME, e.target.result, function () {
+                if (callback) callback(BACK_FILE_NAME);
+            });
+        };
+
+        // Read in the image file as a data URL.
+        reader.readAsArrayBuffer(file);
+    }
+
+    function handleFileSelect(evt) {
+        evt.preventDefault();
+        var files = evt.target.files || evt.dataTransfer.files; // FileList object
+
+        $('#drop_indcator').hide();
+
+        // files is a FileList of File objects. List some properties.
+        if (!files.length) return;
+
+        var f = files[0];
+        if (f.size > 5 * 1024 * 1024) {
+            showMessage(_('File %s is too big. Maximum 5MB', escape(f.name)));
+            $('#files').val('');
+            return;
+        }
+
+        uploadFile(f, function (name) {
+            $('#files').val('');
+            showBackImage();
+        });
+    }
+
+    function handleFileSelectDrop(evt) {
+        $('#drop_indcator').hide();
+        evt.stopPropagation();
+        evt.preventDefault();
+
+        var files = evt.dataTransfer.files; // FileList object.
+
+        // files is a FileList of File objects. List some properties.
+        var output = [];
+        for (var i = 0, f; f = files[i]; i++) {
+            if (f.size > 1024 * 1024) {
+                showMessage(_('File %s is too big. Maximum 1MB', escape(f.name)));
+                return;
+            }
+            console.log(escape(f.name));
+        }
+    }
+
+    function handleDragOver(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        $('#drop_indcator').show();
+    }
+
+    function showHideSettings(id) {
         var $secure = $('#secure');
         var $auth   = $('#auth');
+
         if ($secure.prop('checked')) {
             $('.col-certPublic').show();
             $('.col-certPrivate').show();
             $('.col-certChained').show();
             $('.le-settings').removeClass('disabled');
-            $auth.removeClass('disabled');
             if ($('#leEnabled').prop('checked')) {
                 $('.le-sub-settings').show();
                 if ($('#leUpdate').prop('checked')) {
@@ -37,26 +138,35 @@
             } else {
                 $('.le-sub-settings').hide();
             }
-
         } else {
             $('.col-certPublic').hide();
             $('.col-certPrivate').hide();
             $('.col-certChained').hide();
-            if ($auth.prop('checked')) {
-                showToast(_('Please activate secure communication'));
-                $auth.prop('checked', false);
-            }
-            $auth.addClass('disabled');
             $('.le-settings').addClass('disabled');
         }
         if ($auth.prop('checked')) {
-            $secure.prop('checked', true);
+            $('.tab-login').removeClass('disabled');
             $('#defaultUser').val('admin');
             $('.col-defaultUser').hide();
             $('.col-ttl').show();
+
+            if ((id === 'auth' || id === 'secure') && !$secure.prop('checked')) {
+                confirmMessage(_('Unsecure_Auth'), _('Warning!'), 'security', [_('Ignore warning'), _('Disable authentication')], function (result) {
+                    if (result === 1) {
+                        $('#auth').prop('checked', false).trigger('change');
+                        showToast(null, _('Authentication was deactivated'));
+                    }
+                });
+            }
         } else {
+            $('.tab-login').addClass('disabled');
             $('.col-defaultUser').show();
             $('.col-ttl').hide();
+        }
+        if ($('#loginBackgroundImage').prop('checked')) {
+            $('.background').show();
+        } else {
+            $('.background').hide();
         }
     }
 
@@ -87,7 +197,7 @@
             var $value = $('#' + key + '.value');
             if ($value.attr('type') === 'checkbox') {
                 $value.prop('checked', settings[key]).on('change', function() {
-                    showHideSettings();
+                    showHideSettings($(this).attr('id'));
                     onChange();
                 });
             } else {
@@ -105,13 +215,21 @@
         fillSelectCertificates('#certChained', 'chained', settings.certChained);
         fillUsers('#defaultUser', settings.defaultUser);
 
+        initDropZone();
+        showBackImage();
+
         showHideSettings();
 
-        $('#auth').change(function () {
-            if ($(this).prop('checked')) {
-                $('#secure').prop('checked', true);
-                showHideSettings();
-            }
+        $('#loginBackgroundColorHelper').on('change', function () {
+            $('#loginBackgroundColor').val($(this).val());
+        });
+
+        if (settings.loginBackgroundColor) {
+            $('#loginBackgroundColorHelper').val(settings.loginBackgroundColor);
+        }
+
+        $('#loginBackgroundColor').on('change', function () {
+            $('#loginBackgroundColorHelper').val($(this).val() || 'black');
         });
     }
 
@@ -156,6 +274,28 @@
     .adapter-body {
         overflow: hidden !important;
     }
+    #drop_zone {
+        border: 2px dashed #bbb;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        padding: 25px;
+        text-align: center;
+        font-size: 20pt;
+        font-weight: bold;
+        font-family:  'Arial';
+        color: #bbb;
+        min-width: 320px;
+        min-height: 200px
+    }
+
+    .error {
+        border: 2px solid red;
+    }
+    #login_image {
+        width: 320px;
+        height: auto;
+    }
 </style>
 </head>
 <body>
@@ -166,6 +306,7 @@
             <ul class="tabs">
                 <li class="tab col s2"><a href="#tab-main"  class="translate active">Main settings</a></li>
                 <li class="tab col s2 le-settings"><a href="#tab-le"    class="translate">Let's Encrypt SSL</a></li>
+                <li class="tab col s2 tab-login"><a href="#tab-login" class="translate">Background</a></li>
             </ul>
         </div>
         <div id="tab-main" class="col s12 page">
@@ -180,7 +321,7 @@
                     <label class="translate" for="bind">IP:</label>
                 </div>
                 <div class="input-field col s12 m4 l3">
-                    <input class="value number" id="port" size="5" maxlength="5" type="number"/>
+                    <input class="value" id="port" size="5" maxlength="5" type="number"/>
                     <label class="translate" for="port">Port:</label>
                 </div>
             </div>
@@ -258,8 +399,52 @@
             </div>
             <div class="row le-sub-settings le-sub-settings-update">
                 <div class="input-field col s11 l4">
-                    <input class="value number" id="lePort" type="number" size="5" maxlength="5" data-link="lets-encrypt-certificates"/>
+                    <input class="value" id="lePort" type="number" size="5" maxlength="5" data-link="lets-encrypt-certificates"/>
                     <label for="lePort" class="translate">Port to check the domain:</label>
+                </div>
+            </div>
+        </div>
+        <div id="tab-login" class="col s12 page">
+            <div class="row">
+                <div class="col s12 m8 l4">
+                    <input class="value" id="loginBackgroundColor" type="text"/>
+                    <label class="translate" for="loginBackgroundColor">Background color of the login screen</label>
+                    <input id="loginBackgroundColorHelper" type="color"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m4 l4">
+                    <input class="value" id="loginHideLogo" type="checkbox"/>
+                    <span class="translate" for="loginHideLogo">Hide logo</span>
+                </div>
+                <div class="col s12 m4 l4">
+                    <input class="value" id="loginMotto" type="text"/>
+                    <label class="translate" for="loginMotto">Own motto</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m4 l4">
+                    <input class="value" id="loginBackgroundImage" type="checkbox"/>
+                    <span class="translate" for="loginBackgroundImage">Background image</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m4 l4 file-field input-field background">
+                    <div class="btn">
+                        <span class="translate">Upload image</span>
+                        <input type="file" accept=".png,image/png" id="files" name="files" />
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m4 l4 background">
+                    <div id="drop_zone">
+                        <span class="translate">place here</span>
+                        <img id="login_image" src="" />
+                    </div>
                 </div>
             </div>
         </div>

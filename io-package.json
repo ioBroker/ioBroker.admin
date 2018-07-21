@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.4.8",
+    "version": "3.4.9",
     "news": {
+      "3.4.9": {
+        "en": "Support of the custom login screen background\nshow tooltip about refresh on instances page\ntabs are now destroyed after they left",
+        "de": "Unterstützung des benutzerdefinierten Anmeldebildschirmhintergrunds\nzeige Tooltip zum Aktualisieren auf der Instanzenseite\nTabs werden jetzt zerstört, nachdem sie gegangen sind",
+        "ru": "Поддержка пользовательского экрана экрана входа в систему\nпоказать подсказку об обновлении на странице экземпляров\nвкладки теперь уничтожаются после того, как они ушли",
+        "pt": "Suporte do plano de fundo de tela de login personalizado\nmostre a dica de ferramenta sobre a atualização na página de instâncias\nguias agora são destruídas depois que eles saíram",
+        "nl": "Ondersteuning van de aangepaste inlogschermachtergrond\ntooltip weergeven voor vernieuwen op pagina met instanties\ntabbladen worden nu vernietigd nadat ze zijn vertrokken",
+        "fr": "Prise en charge de l'arrière-plan de l'écran de connexion personnalisé\naffiche une info-bulle sur l'actualisation de la page des instances\nles onglets sont maintenant détruits après leur départ",
+        "it": "Supporto dello sfondo della schermata di accesso personalizzato\nmostra tooltip sull'aggiornamento nella pagina delle istanze\nle schede sono ora distrutte dopo che se ne sono andati",
+        "es": "Soporte del fondo de pantalla de inicio de sesión personalizado\nmostrar información sobre herramientas sobre la actualización en la página de instancias\nlas pestañas ahora se destruyen después de que se fueron",
+        "pl": "Obsługa niestandardowego tła ekranu logowania\nwyświetl podpowiedź na temat odświeżania strony instancji\nKarty są teraz niszczone po ich odejściu"
+      },
       "3.4.8": {
         "en": "Small GUI corrections",
         "de": "Kleine GUI-Korrekturen",
@@ -161,17 +172,25 @@
     "secure": false,
     "bind": "0.0.0.0",
     "cache": false,
+
     "certPublic": "",
     "certPrivate": "",
     "certChained": "",
+
     "ttl": 3600,
     "defaultUser": "admin",
     "tmpPath": "/tmp",
     "tmpPathAllow": false,
     "thresholdValue": 200,
+
     "leEnabled": false,
     "leUpdate": false,
-    "leCheckPort": 80
+    "leCheckPort": 80,
+
+    "loginBackgroundColor": "",
+    "loginBackgroundImage": false,
+    "loginHideLogo": false,
+    "loginMotto": ""
   },
   "objects": [],
   "instanceObjects": [
@@ -180,6 +199,15 @@
       "type": "channel",
       "common": {
         "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "",
+      "type": "meta",
+      "common": {
+        "name": "user files and images for background image",
+        "type": "meta.user"
       },
       "native": {}
     }
