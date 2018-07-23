@@ -692,13 +692,14 @@ function Enums(main) {
         var $filter = that.$gridList.find('.enum-buttons[data-id="' + id + '"] .filter-input');
         var data = {};
         for (var se = 0; se < that.list.length; se++) {
-            if (that.list[se].substring(0, id.length + 1) === id + '.') {
-                var name = getName(that.main.objects, that.list[se]);
+            var eid = that.list[se];
+            if (eid.substring(0, id.length + 1) === id + '.') {
+                var name = getName(that.main.objects, eid);
                 var icon = null;
-                if (that.main.objects[that.list[se]] &&
-                    that.main.objects[that.list[se]].common &&
-                    that.main.objects[that.list[se]].common.icon) {
-                    icon = that.main.objects[that.list[se]].common.icon;
+                if (that.main.objects[eid] &&
+                    that.main.objects[eid].common &&
+                    that.main.objects[eid].common.icon) {
+                    icon = that.main.objects[eid].common.icon;
                 }
 
                 data[name] = icon;
