@@ -614,8 +614,8 @@ function Enums(main) {
         var obj = that.main.objects[id];
         var name = id.replace(/[.#\\\/&?]+/g, '-');
         var text =
-            '<div class="row enum-buttons">' +
-            '   <div class="col s12">' +
+            '<div class="row enum-buttons" data-id="' + id + '">' +
+            '   <div class="col s12 ">' +
             '       <a class="btn-floating waves-effect waves-light blue btn-small dropdown-trigger btn-new-group-btn" title="' + _('New enum') + '" data-target="btn-new-group-' + name + '"><i class="material-icons">library_add</i></a>' +
             '       <ul id="btn-new-group-' + name + '" class="dropdown-content" data-id="' + id + '"></ul>' +
             '       <a class="btn-floating waves-effect waves-light btn-small btn-edit-category" title="' + _('Edit category') + '" data-id="' + id + '">' +
@@ -624,6 +624,8 @@ function Enums(main) {
             '       <a class="btn-floating waves-effect btn-small waves-light red lighten-2 btn-del-category ' + (obj && obj.common && (obj.common.dontDelete || obj.common['object-non-deletable']) ? 'disabled' : '') + '" title="' + _('Delete category') + '" data-id="' + id + '">' +
             '           <i class="material-icons">delete</i>' +
             '       </a>' +
+            '       <div class="input-field"><input type="text" class="filter-input autocomplete" placeholder="' + _('Filter') + '"><label></label>\n' +
+            '       <a class="filter-clear btn-floating btn-very-small red lighten-3" title="' + _('clear') + '"><i class="material-icons">clear</i></a></div>\n' +
             '   </div>' +
             '</div>';
 
@@ -661,6 +663,72 @@ function Enums(main) {
         $page.html(text);
         prepareNewEnum(id);
         scrollTop && $page.find('.enum-collection').scrollTop(scrollTop);
+        initFilter(id);
+    }
+    function applyFilter(id, filter) {
+        var $tiles = that.$gridList.find('.enum-collection[data-id="' + id + '"] .collection-item');
+        if (!filter) {
+            $tiles.show();
+        } else {
+            filter = filter.toLowerCase();
+            $tiles.each(function () {
+                var $this = $(this);
+                var eid = $this.data('id');
+                var name = getName(that.main.objects, eid);
+                if (name.toLowerCase().indexOf(filter) !== -1) {
+                    $this.show();
+                } else {
+                    if (eid.substring(id.length).toLowerCase().indexOf(filter) !== -1) {
+                        $this.show();
+                    } else {
+                        $this.hide();
+                    }
+                }
+            });
+        }
+    }
+
+    function initFilter(id) {
+        var $filter = that.$gridList.find('.enum-buttons[data-id="' + id + '"] .filter-input');
+        var data = {};
+        for (var se = 0; se < that.list.length; se++) {
+            if (that.list[se].substring(0, id.length + 1) === id + '.') {
+                var name = getName(that.main.objects, that.list[se]);
+                var icon = null;
+                if (that.main.objects[that.list[se]] &&
+                    that.main.objects[that.list[se]].common &&
+                    that.main.objects[that.list[se]].common.icon) {
+                    icon = that.main.objects[that.list[se]].common.icon;
+                }
+
+                data[name] = icon;
+            }
+        }
+        var $btn = that.$gridList.find('.enum-buttons[data-id="' + id + '"] .filter-clear');
+        $filter.mautocomplete({
+            data: data,
+            minLength: 0,
+            limit: 10
+        }).on('change', function () {
+            var val = $(this).val();
+            applyFilter(id, val);
+            if ($(this).val()) {
+                $btn.show();
+            } else {
+                $btn.hide();
+            }
+            that.main.saveConfig('filter-' + id, val);
+        }).on('keyup', function () {
+            $(this).trigger('change');
+        });
+        $btn.off('click').on('click', function () {
+            $filter.val('').trigger('change');
+        });
+        if (that.main.config['filter-' + id]) {
+            $filter.val(that.main.config['filter-' + id]).trigger('change');
+        } else {
+            $btn.hide();
+        }
     }
 
     function drawEnumsTiles() {
@@ -671,7 +739,7 @@ function Enums(main) {
         // create buttons for panels
         that.$gridList.prepend('<div class="row tree-table-buttons">\n' +
             '           <a class="btn-floating btn-small translateT btn-switch-tiles" title="change view mode"><i class="material-icons">view_list</i></a>\n' +
-            '           <a class="btn-floating waves-effect waves-light btn-small blue dropdown-trigger btn-new-enum-btn translationT" title="New enum" data-target="btn-new-enum"><i class="material-icons">note_add</i></a>\n' +
+            '           <a class="btn-floating waves-effect waves-light btn-small blue dropdown-trigger btn-new-enum-btn translationT" title="' + _('New enum') + '" data-target="btn-new-enum"><i class="material-icons">note_add</i></a>\n' +
             '           <ul id="btn-new-enum" class="dropdown-content"></ul>\n' +
             '           <a class="btn-floating waves-effect waves-light blue btn-small btn-edit translateT" title="Edit" id="tab-enums-list-edit">\n' +
             '               <i class="material-icons">edit</i>\n' +
@@ -702,6 +770,19 @@ function Enums(main) {
             // remember actual offset
             scrollTop[$(this).data('id')] = $(this).scrollTop();
         });
+
+        // destroy droppable
+        try {
+            var $items = that.$gridEnum.find('.tree-table-body .collection').find('.collection-item');
+            try {
+                $items.droppable('destroy');
+            } catch (e) {
+
+            }
+        } catch (e) {
+
+        }
+
         $tableBody.html(text);
 
         if ($tableBody.find('.tabs li').length > 0) {
@@ -757,9 +838,12 @@ function Enums(main) {
     }
 
     function drawEnumsTable() {
+        try {
+            that.$gridEnum.find('.tree-table-main').find('tbody>tr.treetable-enum').droppable.droppable('destroy')
+        } catch (e) {
+        }
         // extract all enums
         that.$gridList.html('').removeClass('tree-table-tiles').addClass('tree-table-list');
-
 
         that.$gridList.treeTable({
             objects:    that.main.objects,
@@ -1124,7 +1208,14 @@ function Enums(main) {
 
         $collection = $collection || that.$gridEnum.find('.tree-table-body .collection');
 
-        $collection.find('.collection-item').droppable({
+        var $items = $collection.find('.collection-item');
+        try {
+            $items.droppable('destroy');
+        } catch (e) {
+
+        }
+
+        $items.droppable({
             accept: '.fancytree-type-draggable',
             over: function (e, ui) {
                 $(this).addClass('tab-accept-item');
@@ -1432,12 +1523,12 @@ function Enums(main) {
         } else {
             selectId('destroy');
             try {
-                that.$gridEnum.find('.treetable-list').droppable('destroy');
+                that.$gridEnum.find('.collection-item').droppable('destroy');
             } catch (e) {
                 console.error(e);
             }
             try {
-                that.$gridEnum.find('.treetable-list').droppable('destroy');
+                that.$gridEnum.find('tbody>tr.treetable-enum').droppable('destroy');
             } catch (e) {
                 console.error(e);
             }

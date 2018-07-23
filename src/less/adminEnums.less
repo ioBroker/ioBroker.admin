@@ -57,6 +57,44 @@
             margin-bottom: 0;
             height: 100%;
         }
+        .input-field {
+            width:          10rem;
+            display: inline-block;
+            white-space: nowrap;
+            .autocomplete-content {
+                position: absolute;
+            }
+            &.opened {
+                .autocomplete-content {
+                    display: block;
+                }
+            }
+            &.closed {
+                .autocomplete-content {
+                    display: none;
+                }
+            }
+        }
+        .filter-input {
+            display:        inline-table;
+            padding-left:   6px;
+            //font-size:      14px;
+            height:         24px;
+            margin-top:     5px;
+            margin-bottom:  0;
+            &::placeholder {
+                color: @admin-filter-placeholder-color;
+            }
+        }
+        .filter-clear {
+            width:          18px !important;
+            height:         18px !important;
+            border:         0;
+            i {
+                font-size:  0.8rem;
+                line-height: 1.2rem;
+            }
+        }
     }
     .tab-enums-list,
     .tab-enums-objects {
