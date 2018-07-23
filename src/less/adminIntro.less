@@ -7,11 +7,13 @@
     margin-bottom: 0;
     height: calc(~"100% - 10px");
     overflow: auto;
-      .info {
-          display: none;
-      }
+    .info {
+        display: none;
+    }
     .tile {
-      min-height: 250px;
+      .card {
+        min-height: 235px;
+      }
       .card-content {
         height: 170px;
         padding: 1rem;
@@ -146,6 +148,9 @@
   }
   .tile {
     cursor: pointer;
+    .card {
+      min-height: 235px;
+    }
   }
   &.edit-active {
     .tile {
