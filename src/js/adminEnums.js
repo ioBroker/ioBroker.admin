@@ -739,11 +739,11 @@ function Enums(main) {
 
         // create buttons for panels
         that.$gridList.prepend('<div class="row tree-table-buttons">\n' +
-            '           <a class="btn-floating btn-small translateT btn-switch-tiles" title="change view mode"><i class="material-icons">view_list</i></a>\n' +
+            '           <a class="btn-floating btn-small translateT btn-switch-tiles" title="' + _('change view mode') + '"><i class="material-icons">view_list</i></a>\n' +
             '           <a class="btn-floating waves-effect waves-light btn-small blue dropdown-trigger btn-new-enum-btn translationT" title="' + _('New enum') + '" data-target="btn-new-enum"><i class="material-icons">note_add</i></a>\n' +
             '           <ul id="btn-new-enum" class="dropdown-content"></ul>\n' +
-            '           <a class="btn-floating waves-effect waves-light blue btn-small btn-edit translateT" title="Edit" id="tab-enums-list-edit">\n' +
-            '               <i class="material-icons">edit</i>\n' +
+            '           <a class="btn-floating waves-effect waves-light blue btn-small btn-edit translateT" title="' + _('Edit') + '" id="tab-enums-list-edit">\n' +
+            '               <i class="material-icons">queue_play_next</i>\n' +
             '           </a>\n' +
             '        </div>');
 

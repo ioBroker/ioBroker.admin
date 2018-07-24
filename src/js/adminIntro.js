@@ -233,6 +233,7 @@ function Intro(main) {
         if (adapter === 'web') return null;
         if (adapter !== 'vis-web-admin' && adapter.match(/^vis-/)) return null; // no widgets
         if (adapter.match(/^icons-/)) return null; // no icons
+        if (common && common.noIntro) return null;
 
         $card.find('.btn-card-enabled').data('instance', adapter + '.' + instance + (welcomeScreen && welcomeScreen.name ? '.' + welcomeScreen.name : '')).data('web', web);
 
@@ -256,7 +257,7 @@ function Intro(main) {
         }
 
         // title
-        var title = common.titleLang || common.title;
+        var title = (welcomeScreen && welcomeScreen.name) || common.titleLang || common.title;
         if (typeof title === 'object') {
             title = title[systemLang] || title.en;
         }
@@ -300,6 +301,8 @@ function Intro(main) {
 
         var editActive = that.$tab.hasClass('edit-active');
 
+        var urls = [];
+
         for (a = 0; a < list.length; a++) {
             var obj = that.main.objects[list[a]];
             var common = obj && obj.common;
@@ -331,9 +334,11 @@ function Intro(main) {
                             first = false;
 
                             if (!editActive && !enabled) continue;
-
-                            $card = buildOneCard(adapter, instance, null, common, url[inst], inst, enabled);
-                            $card && $cards.push($card);
+                            if (urls.indexOf(url[inst]) === -1) {
+                                $card = buildOneCard(adapter, instance, null, common, url[inst], inst, enabled);
+                                $card && $cards.push($card);
+                                urls.push(url[inst]);
+                            }
                         }
                     }
                 } else {
@@ -352,14 +357,15 @@ function Intro(main) {
                             enabled = false;
                         }
                     }
-                    if (common.welcomeScreen) {
-                        intro = that.main.systemConfig.common.intro[adapter + '.' + instance + '.' + common.welcomeScreen.name];
+                    var welcomeScreen = common.welcomeScreen; //common.welcomeScreenPro || common.welcomeScreen;
+                    while (welcomeScreen) {
+                        intro = that.main.systemConfig.common.intro[adapter + '.' + instance + '.' + welcomeScreen.name];
                         if (!editActive && intro !== undefined) {
                             if (typeof intro === 'object') {
                                 for (var aaa in intro) {
                                     if (intro.hasOwnProperty(aaa)) {
                                         intro = intro[aaa];
-                                        that.main.systemConfig.common.intro[adapter + '.' + instance + '.' + common.welcomeScreen.name] = intro;
+                                        that.main.systemConfig.common.intro[adapter + '.' + instance + '.' + welcomeScreen.name] = intro;
                                         break;
                                     }
                                 }
@@ -368,26 +374,36 @@ function Intro(main) {
                                 enabled = false;
                             }
                         }
-                        that.main.systemConfig.common.intro[adapter + '.' + instance + '.' + common.welcomeScreen.name] = intro;
+                        that.main.systemConfig.common.intro[adapter + '.' + instance + '.' + welcomeScreen.name] = intro;
                         if (editActive || enabled) {
                             var welcomeUrl = url;
                             var m = welcomeUrl.match(/https?:\/\/[.\w\d-]+:\d+\/(.*)$/);
                             if (m) {
-                                welcomeUrl = welcomeUrl.replace(m[1], common.welcomeScreen.link);
+                                welcomeUrl = welcomeUrl.replace(m[1], welcomeScreen.link);
                             } else {
-                                welcomeUrl += common.welcomeScreen.link;
+                                welcomeUrl += welcomeScreen.link;
                             }
-                            if (welcomeUrl !== url) {
-                                $card = buildOneCard(adapter, instance, common.welcomeScreen, common, welcomeUrl, null, enabled, common.welcomeScreen);
+                            if (welcomeUrl !== url && urls.indexOf(welcomeUrl) === -1) {
+                                $card = buildOneCard(adapter, instance, welcomeScreen, common, welcomeUrl, null, enabled, welcomeScreen);
                                 $card && $cards.push($card);
+                                urls.push(welcomeUrl);
                             }
+                        }
+
+                        if (welcomeScreen === common.welcomeScreenPro) {
+                            welcomeScreen = common.welcomeScreen;
+                        } else {
+                            welcomeScreen = null;
                         }
                     }
 
-
                     if (!editActive && !enabled) continue;
-                    $card = buildOneCard(adapter, instance, null, common, url, null, enabled);
-                    $card && $cards.push($card);
+
+                    if (urls.indexOf(url) === -1) {
+                        $card = buildOneCard(adapter, instance, null, common, url, null, enabled);
+                        $card && $cards.push($card);
+                        urls.push(url);
+                    }
                 }
             }
         }
