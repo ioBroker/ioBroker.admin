@@ -2279,7 +2279,7 @@ function filterChanged(e) {
                                 data.webServer = data.webServer || (window.location.protocol + '//' + window.location.hostname + ':8082');
 
                                 // link
-                                $elem.html('<a href="' + data.webServer + '/state/' + node.key + '" target="_blank">' + data.webServer + '/state/' + node.key + '</a>')
+                                $elem.html('<a href="' + data.webServer + '/state/' + encodeURIComponent(node.key) + '" target="_blank">' + data.webServer + '/state/' + node.key + '</a>')
                                     .attr('title', data.texts.linkToFile);
                             }
                             break;
@@ -2403,7 +2403,7 @@ function filterChanged(e) {
                                 data.webServer = data.webServer || (window.location.protocol + '//' + window.location.hostname + ':8082');
 
                                 // link
-                                $elem.html('<a href="' + data.webServer + '/state/' + node.key + '" target="_blank">' + data.webServer + '/state/' + node.key + '</a>')
+                                $elem.html('<a href="' + data.webServer + '/state/' + encodeURIComponent(node.key) + '" target="_blank">' + data.webServer + '/state/' + node.key + '</a>')
                                     .attr('title', data.texts.linkToFile);
                             }
                             break;
