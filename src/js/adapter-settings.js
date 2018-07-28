@@ -325,7 +325,7 @@ function prepareTooltips() {
         // init tabs
         $('.tabs').mtabs();
 
-        if (common.readme) {
+        if (common && common.readme) {
             // add help link after logo
             var $logo = $('.logo').first().parent();
 
