@@ -5,7 +5,7 @@
 /*
  MIT, Copyright 2014-2018 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
 
- version: 1.1.5 (2018.07.14)
+ version: 1.1.6 (2018.08.03)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -2317,7 +2317,7 @@ function filterChanged(e) {
                                 data.quickEdit.indexOf('value') !== -1 &&
                                 (data.expertMode || isCommon.write !== false)
                             ) {
-                                if (isCommon.role === 'button' && !data.expertMode) {
+                                if (isCommon.role && isCommon.role.match(/^button/) && !data.expertMode) {
                                     $elem.html('<button data-id="' + node.key + '" class="select-button-push"></button>');
                                 } else if (!isCommon || isCommon.type !== 'file') {
                                     var val_    = data.states[node.key];
@@ -2441,7 +2441,7 @@ function filterChanged(e) {
                                 data.quickEdit.indexOf('value') !== -1 &&
                                 (data.expertMode || isCommon.write !== false)
                             ) {
-                                if (isCommon.role === 'button' && !data.expertMode) {
+                                if (isCommon.role && isCommon.role.match(/^button/) && !data.expertMode) {
                                     $elem.html('<button data-id="' + node.key + '" class="select-button-push"></button>');
                                 } else if (!isCommon || isCommon.type !== 'file') {
                                     var val_    = data.states[node.key];
