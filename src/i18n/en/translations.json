@@ -695,6 +695,7 @@
   "diag-note": "We worked hard to create this project. In return we expect from you some usage statistics.<br>Every time the adapter list is updated, the anonymized statistics are sent. We respect your privacy, so no private information will be transmitted.<br>Thank you!",
   "edit": "edit",
   "edit enum": "edit enum",
+  "edit enums": "Edit enumerations for",
   "edit file": "edit file",
   "edit group": "edit group",
   "edit instance": "edit instance",

@@ -300,8 +300,9 @@ function Instances(main) {
             '<span style="overflow:visible;" >' + _('instance') + '</span>' +
             '</th>';
         text += '<th style="width: calc(2em - 6px); border-left-color: transparent; border-right-color: transparent;"></th>';
-        text += '<th style="width: ' + (that.main.config.expertMode ? 10 : 14) + 'em; border-left-color: transparent;"></th>';
-        if (that.main.config.expertMode) {
+        text += '<th style="width: ' + (that.main.config.expertMode ? 10 : 12) + 'em; border-left-color: transparent;"></th>';
+        // disabled, because no one use it
+        if (false && that.main.config.expertMode) {
             text += '<th style="width: 15.8em">' + _('actions') + '</th>';
         } else {
             text += '<th style="width: 12.8em">' + _('actions') + '</th>';
@@ -453,7 +454,8 @@ function Instances(main) {
                         '<button data-instance-id="' + instanceId + '" class="instance-stop-run small-button ' + (common.onlyWWW  ? 'small-button-empty' : '') + '"                                   title="dynamic"            ><i class="material-icons">pause</i></button>' +
                         '<button data-instance-id="' + instanceId + '" class="instance-settings small-button ' + (common.noConfig ? 'small-button-empty' : '') + '"                                   title="' + _('config') + '"><i class="material-icons">build</i></button>' +
                         '<button data-instance-id="' + instanceId + '" class="instance-reload   small-button ' + (common.onlyWWW  ? 'small-button-empty' : '') + ' ' + (isRun ? '' : 'disabled') + '" title="' + _('reload') + '"><i class="material-icons">refresh</i></button>';
-            if (that.main.config.expertMode) {
+            // disable, because no one use it
+            if (false && that.main.config.expertMode) {
                 text += '<button data-instance-id="' + instanceId + '" class="instance-issue    small-button"                                                                                         title="' + _('bug') + '"   ><i class="material-icons">bug_report</i></button>';
             }
             text +=     '<button data-instance-id="' + instanceId + '" class="instance-del      small-button"                                                                                         title="' + _('delete') + '"><i class="material-icons">delete</i></button>' +

@@ -695,6 +695,7 @@
   "diag-note": "Trabajamos duro para crear este proyecto. En cambio, pedimos que nos envíe las estadísticas de uso. <br>Ninguna información privada será enviada a ioBroker.net. Cada vez que se actualiza la lista del adaptador, también se enviarán las estadísticas anónimas. - <br>¡Gracias!",
   "edit": "editar",
   "edit enum": "editar la clasificación",
+  "edit enums": "Editar enumeraciones para",
   "edit file": "editar archivo",
   "edit group": "editar grupo",
   "edit instance": "editar instancia",

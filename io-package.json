@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.4.9",
+    "version": "3.5.0",
     "news": {
+      "3.5.0": {
+        "en": "Editing of enums was changed\nLogo was updated\nThe function icons were added",
+        "de": "Die Bearbeitung der Enums wurde geändert\nDas Logo wurde aktualisiert\nDie Funktionssymbole wurden hinzugefügt",
+        "ru": "Изменено редактирование перечислений\nЛоготип обновлен\nЗначки функций добавлены",
+        "pt": "Edição de enums foi alterada\nLogo foi atualizado\nOs ícones de função foram adicionados",
+        "nl": "Het bewerken van de enums is gewijzigd\nLogo is bijgewerkt\nDe functiepictogrammen zijn toegevoegd",
+        "fr": "L'édition des énumérations a été modifiée\nLe logo a été mis à jour\nLes icônes de fonctions ont été ajoutées",
+        "it": "La modifica delle enumerazioni è stata modificata\nIl logo è stato aggiornato\nLe icone delle funzioni sono state aggiunte",
+        "es": "Se modificó la edición de enumeraciones\nLogotipo fue actualizado\nSe agregaron los íconos de función",
+        "pl": "Zmieniono edycję wyliczeń\nLogo zostało zaktualizowane\nDodano ikony funkcji"
+      },
       "3.4.9": {
         "en": "Support of the custom login screen background\nshow tooltip about refresh on instances page\ntabs are now destroyed after they left",
         "de": "Unterstützung des benutzerdefinierten Anmeldebildschirmhintergrunds\nzeige Tooltip zum Aktualisieren auf der Instanzenseite\nTabs werden jetzt zerstört, nachdem sie gegangen sind",

@@ -695,6 +695,7 @@
   "diag-note": "Ciężko pracowaliśmy, aby stworzyć ten projekt. W zamian spodziewamy się pewnych statystyk użytkowania. <br> Za każdym razem, gdy lista adapterów jest aktualizowana, wysyłane są anonimowe statystyki. Szanujemy twoją prywatność, więc żadne prywatne informacje nie będą przekazywane. <br> Dziękuję!",
   "edit": "edytować",
   "edit enum": "edytuj wyliczenie",
+  "edit enums": "Edytuj wyliczenia dla",
   "edit file": "edytuj plik",
   "edit group": "edytuj grupę",
   "edit instance": "edytuj instancję",

@@ -407,6 +407,12 @@
         right:          22px;
     }
 
+    .edit-enum {
+        .edit-dialog-button {
+            right:          0;
+        }
+    }
+
     .select-value {
         display:        inline-block;
         width:          100%;
@@ -467,6 +473,38 @@
             .grid-main-wob-div {
                 height:         calc(~"100% - 103px");
             }
+        }
+    }
+    #dialog-enum-edit {
+        top: 1rem !important;
+        height: calc(~"100% - 2rem");
+        max-height:  calc(~"100% - 2rem");
+        .dialog-enum-list-row {
+
+        }
+        .dialog-enum-list-col {
+            height: calc(100% - 81px);
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            .dialog-enum-list-id {
+                margin-left: 10px;
+                font-size: 10px;
+            }
+            .iob-list-icon {
+                height: 24px;
+                width: 24px;
+            }
+            .title {
+                padding-left: 10px;
+                font-size: 18px;
+            }
+        }
+        .btn-close {
+            background-color: #b5b5b5
+        }
+        .name {
+            margin-left: 10px
         }
     }
 }

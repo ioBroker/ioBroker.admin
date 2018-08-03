@@ -776,9 +776,11 @@ function Enums(main) {
         try {
             var $items = that.$gridEnum.find('.tree-table-body .collection').find('.collection-item');
             try {
-                $items.droppable('destroy');
+                if ($items.droppable('instance')) {
+                    $items.droppable('destroy');
+                }
             } catch (e) {
-
+                console.error(e);
             }
         } catch (e) {
 
@@ -840,8 +842,12 @@ function Enums(main) {
 
     function drawEnumsTable() {
         try {
-            that.$gridEnum.find('.tree-table-main').find('tbody>tr.treetable-enum').droppable.droppable('destroy')
+            var $items = that.$gridEnum.find('.tree-table-main').find('tbody>tr.treetable-enum');
+            if ($items.droppable('instance')) {
+                $items.droppable('destroy');
+            }
         } catch (e) {
+            console.log(e);
         }
         // extract all enums
         that.$gridList.html('').removeClass('tree-table-tiles').addClass('tree-table-list');
@@ -1080,6 +1086,15 @@ function Enums(main) {
     }
 
     function setupDraggable() {
+        var $trs = that.$gridEnum.find('.fancytree-container>tbody');
+        try {
+            if ($trs.sortable('instance')) {
+                $trs.sortable('destroy');
+            }
+        } catch (e) {
+            console.error(e);
+        }
+
         that.$gridEnum.find('.fancytree-container>tbody')
             .sortable({
                 connectWith:    '#tab-enums .tab-enums-list .tree-table-main.treetable',
@@ -1211,33 +1226,20 @@ function Enums(main) {
 
         var $items = $collection.find('.collection-item');
         try {
-            $items.droppable('destroy');
+            if ($items.droppable('instance')) {
+                $items.droppable('destroy');
+            }
         } catch (e) {
-
+            console.error(e);
         }
 
         $items.droppable({
             accept: '.fancytree-type-draggable',
             over: function (e, ui) {
                 $(this).addClass('tab-accept-item');
-                /*if ($(this).hasClass('not-empty') && !$(this).hasClass('expanded')) {
-                    var id = $(this).data('tt-id');
-                    var timer;
-                    if ((timer = $(this).data('timer'))) {
-                        clearTimeout(timer);
-                    }
-                    $(this).data('timer', setTimeout(function () {
-                        that.$gridList.treeTable('expand', $(this).data('tt-id'));
-                    }, 1000));
-                }*/
             },
             out: function (e, ui) {
                 $(this).removeClass('tab-accept-item');
-                /*var timer;
-                if ((timer = $(this).data('timer'))) {
-                    clearTimeout(timer);
-                    $(this).data('timer', null);
-                }*/
             },
             tolerance: 'pointer',
             drop: function (e, ui) {
@@ -1524,12 +1526,18 @@ function Enums(main) {
         } else {
             selectId('destroy');
             try {
-                that.$gridEnum.find('.collection-item').droppable('destroy');
+                var _$items = that.$gridEnum.find('.collection-item');
+                if (_$items.droppable('instance')) {
+                    _$items.droppable('destroy');
+                }
             } catch (e) {
                 console.error(e);
             }
             try {
-                that.$gridEnum.find('tbody>tr.treetable-enum').droppable('destroy');
+                var $trs = that.$gridEnum.find('tbody>tr.treetable-enum');
+                if ($trs.droppable('instance')) {
+                    $trs.droppable('destroy');
+                }
             } catch (e) {
                 console.error(e);
             }

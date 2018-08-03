@@ -80,6 +80,11 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 3.5.0 (2018-08-03)
+* (bluefox) Editing of enums was changed
+* (bluefox) Logo was updated
+* (bluefox) The function icons were added
+
 ### 3.4.9 (2018-07-17)
 * (bluefox) Support of the custom login screen background
 * (bluefox) show tooltip about refresh on instances page

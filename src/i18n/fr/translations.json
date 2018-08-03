@@ -695,6 +695,7 @@
   "diag-note": "Nous avons travaillé dur pour créer ce projet. A charge de revanche, nous attendons de vous des statistiques sur l'utilisation.<br>Aucune information privée ne sera envoyée à ioBroker.net. Chaque fois que vous appuyez sur Mettre à jour la liste des adaptateurs, les statistiques anonymisées seront envoyées.<br>Merci!",
   "edit": "modifier",
   "edit enum": "éditer enum",
+  "edit enums": "Modifier les énumérations pour",
   "edit file": "modifier le fichier",
   "edit group": "modifier le groupe",
   "edit instance": "instance de modification",

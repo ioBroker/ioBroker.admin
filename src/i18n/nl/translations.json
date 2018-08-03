@@ -695,6 +695,7 @@
   "diag-note": "We hebben hard gewerkt om dit project mogelijk te maken. Als equivalent verwachten we van u enkele statistieken over het gebruik. <br> Er zal geen persoonlijke informatie naar ioBroker.net worden verzonden. Telkens wanneer u op de update-adapterlijst klikt, worden de geanonimiseerde statistieken verzonden. <br> Dankjewel!",
   "edit": "bewerken",
   "edit enum": "bewerk enum",
+  "edit enums": "Bewerk opsommingen voor",
   "edit file": "bestand bewerken",
   "edit group": "groep bewerken",
   "edit instance": "bewerk instantie",

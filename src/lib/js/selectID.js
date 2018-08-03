@@ -933,7 +933,7 @@ function filterChanged(e) {
             });
             $dlg.modal().modal('open');
         } else {
-            $('<div position: absolute;left: 5px; top: 5px; right: 5px; bottom: 5px; border: 1px solid #CCC;">' +
+            $('<div style="position: absolute;left: 5px; top: 5px; right: 5px; bottom: 5px; border: 1px solid #CCC;">' +
                 '<textarea style="margin: 0; border: 0;background: white; width: 100%; height: calc(100% - 50px); resize: none;" ></textarea><br>' +
                 '<input type="checkbox" /><span>' + _('ack') + '</span></div>')
                 .dialog({
@@ -972,6 +972,136 @@ function filterChanged(e) {
         }
     }
 
+    function editEnumsDialog() {
+        var data    = $(this).data('data');
+        var $parent = $(this).parent();
+        var id      = $parent.data('id');
+        var oldVal  = $parent.data('old-value');
+        var $dlg    = $('#dialog-enum-edit');
+        var attr    = $parent.data('name');
+        if (typeof M !== 'undefined' && $dlg.length) {
+            var funcs = [];
+            var text = '';
+            $dlg.find('.name').html(getNameObj(data.objects[id], id));
+            var enums = attr === 'function' ? data.funcEnums : data.roomEnums;
+            for (var i = 0; i < enums.length; i++) {
+                var common = data.objects[enums[i]] && data.objects[enums[i]].common;
+                var name = getName(common.name);
+                if (funcs.indexOf(name) === -1) {
+                    funcs.push(name);
+                    var checked = common && common.members && common.members.indexOf(id) !== -1;
+                    text +=
+                        '<li class="collection-item">' +
+                        getSelectIdIcon(data, data.objects[enums[i]]) +
+                        '   <span class="title">' + name + '<span class="dialog-enum-list-id">' + enums[i] + '</span></span>' +
+                        '   ' +
+                        '   <label class="secondary-content">' +
+                        '       <input class="filled-in" type="checkbox" ' + (checked ? 'checked' : '') + ' data-id="' + enums[i] + '" data-name="' + name + '"/>' +
+                        '       <span></span>' +
+                        '   </label>' +
+                        '</li>';
+                }
+            }
+
+            $dlg.find('.collection').html(text);
+
+            // workaround for materialize checkbox problem
+            $dlg.find('input[type="checkbox"]').off('click').on('click', function () {
+                var $input = $(this).prev();
+                if (!$input.prop('disabled')) {
+                    $input.prop('checked', !$input.prop('checked')).trigger('change');
+                }
+            });
+
+            $dlg.find('.btn-set').off('click').on('click', function () {
+                var checks = $dlg.find('input[type="checkbox"]');
+                var val = [];
+                var names = [];
+                checks.each(function () {
+                    if ($(this).prop('checked')) {
+                        val.push($(this).data('id'));
+                        names.push($(this).data('name'))
+                    }
+                });
+
+                if (JSON.stringify(oldVal) !== JSON.stringify(val)) {
+                    data.quickEditCallback(id, attr, val, oldVal);
+                    var value = '<span style="color: darkviolet; width: 100%;">' + names.join(', ') + '</span>';
+                    $parent.html(value);
+                }
+                $dlg.modal('close');
+            });
+            $dlg.modal().modal('open');
+        } else {
+            // todo
+        }
+    }
+    function getSelectIdIcon(data, obj, key) {
+        var icon = '';
+        var alt  = '';
+        var _id_ = 'system.adapter.' + key;
+        if (key && data.objects[_id_] && data.objects[_id_].common && data.objects[_id_].common.icon) {
+            // if not BASE64
+            if (!data.objects[_id_].common.icon.match(/^data:image\//)) {
+                if (data.objects[_id_].common.icon.indexOf('.') !== -1) {
+                    icon = '/adapter/' + data.objects[_id_].common.name + '/' + data.objects[_id_].common.icon;
+                } else {
+                    return '<i class="material-icons iob-list-icon">' + data.objects[_id_].common.icon + '</i>';
+                }
+            } else {
+                icon = data.objects[_id_].common.icon;
+            }
+        } else
+        if (obj && obj.common) {
+            if (obj.common.icon) {
+                if (!obj.common.icon.match(/^data:image\//)) {
+                    if (obj.common.icon.indexOf('.') !== -1) {
+                        var instance;
+                        if (obj.type === 'instance') {
+                            icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
+                        } else if (key && key.match(/^system\.adapter\./)) {
+                            instance = key.split('.', 3);
+                            if (obj.common.icon[0] === '/') {
+                                instance[2] += obj.common.icon;
+                            } else {
+                                instance[2] += '/' + obj.common.icon;
+                            }
+                            icon = '/adapter/' + instance[2];
+                        } else {
+                            instance = key.split('.', 2);
+                            if (obj.common.icon[0] === '/') {
+                                instance[0] += obj.common.icon;
+                            } else {
+                                instance[0] += '/' + obj.common.icon;
+                            }
+                            icon = '/adapter/' + instance[0];
+                        }
+                    } else {
+                        return '<i class="material-icons iob-list-icon">' + obj.common.icon + '</i>';
+                    }
+                } else {
+                    // base 64 image
+                    icon = obj.common.icon;
+                }
+            } else if (obj.type === 'device') {
+                icon = data.imgPath + 'device.png';
+                alt  = 'device';
+            } else if (obj.type === 'channel') {
+                icon = data.imgPath + 'channel.png';
+                alt  = 'channel';
+            } else if (obj.type === 'state') {
+                icon = data.imgPath + 'state.png';
+                alt  = 'state';
+            }
+        }
+
+        if (icon) {
+            return '<img class="iob-list-icon" src="' + icon + '" alt="' + alt + '"/>';
+        } else {
+            return '';
+        }
+    }
+
     function clippyShow(e) {
         var text;
         var data;
@@ -1002,7 +1132,12 @@ function filterChanged(e) {
             }
             text += '</button>';
             $(this).append(text);
-            $(this).find('.edit-dialog-button').on('click', editValueDialog).data('data', data);
+            var name = $(this).data('name');
+            if (name === 'function' || name === 'room') {
+                $(this).find('.edit-dialog-button').on('click', editEnumsDialog).data('data', data);
+            } else {
+                $(this).find('.edit-dialog-button').on('click', editValueDialog).data('data', data);
+            }
         }
     }
 
@@ -1687,7 +1822,6 @@ function filterChanged(e) {
             thead += '<th style="width: ' + w + ';"></th>';
         });
 
-
         text += '        </colgroup>\n';
         text += thead + '</tr>\n</thead>\n';
 
@@ -1706,7 +1840,12 @@ function filterChanged(e) {
 
         function addClippyToElement($elem, key, objectId) {
             if (!data.noCopyToClipboard) {
-                $elem.addClass('clippy' + (objectId ? ' edit-dialog' : ''));
+                var name = $elem.data('name');
+                if (name === 'function' || name === 'room') {
+                    $elem.addClass('edit-enum edit-dialog');
+                } else {
+                    $elem.addClass('clippy' + (objectId ? ' edit-dialog' : ''));
+                }
 
                 if (key !== undefined) {
                     $elem.data('clippy', key);
@@ -1936,69 +2075,6 @@ function filterChanged(e) {
                     $firstTD.find('.fancytree-title').html(getNameObj(obj, key));
                 }
 
-                function getIcon() {
-                    var icon = '';
-                    var alt  = '';
-                    var _id_ = 'system.adapter.' + key;
-                    if (data.objects[_id_] && data.objects[_id_].common && data.objects[_id_].common.icon) {
-                        // if not BASE64
-                        if (!data.objects[_id_].common.icon.match(/^data:image\//)) {
-                            if (data.objects[_id_].common.icon.indexOf('.') !== -1) {
-                                icon = '/adapter/' + data.objects[_id_].common.name + '/' + data.objects[_id_].common.icon;
-                            } else {
-                                return '<i class="material-icons iob-list-icon">' + data.objects[_id_].common.icon + '</i>';
-                            }
-                        } else {
-                            icon = data.objects[_id_].common.icon;
-                        }
-                    } else
-                    if (isCommon) {
-                        if (obj.common.icon) {
-                            if (!obj.common.icon.match(/^data:image\//)) {
-                                if (obj.common.icon.indexOf('.') !== -1) {
-                                    var instance;
-                                    if (obj.type === 'instance') {
-                                        icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
-                                    } else if (node.key.match(/^system\.adapter\./)) {
-                                        instance = node.key.split('.', 3);
-                                        if (obj.common.icon[0] === '/') {
-                                            instance[2] += obj.common.icon;
-                                        } else {
-                                            instance[2] += '/' + obj.common.icon;
-                                        }
-                                        icon = '/adapter/' + instance[2];
-                                    } else {
-                                        instance = key.split('.', 2);
-                                        if (obj.common.icon[0] === '/') {
-                                            instance[0] += obj.common.icon;
-                                        } else {
-                                            instance[0] += '/' + obj.common.icon;
-                                        }
-                                        icon = '/adapter/' + instance[0];
-                                    }
-                                } else {
-                                    return '<i class="material-icons iob-list-icon">' + obj.common.icon + '</i>';
-                                }
-                            } else {
-                                // base 64 image
-                                icon = obj.common.icon;
-                            }
-                        } else if (obj.type === 'device') {
-                            icon = data.imgPath + 'device.png';
-                            alt  = 'device';
-                        } else if (obj.type === 'channel') {
-                            icon = data.imgPath + 'channel.png';
-                            alt  = 'channel';
-                        } else if (obj.type === 'state') {
-                            icon = data.imgPath + 'state.png';
-                            alt  = 'state';
-                        }
-                    }
-
-                    if (icon) return '<img class="iob-list-icon" src="' + icon + '" alt="' + alt + '"/>';
-                    return ''
-                }
-
                 var $elem;
                 var val;
                 for (var c = 0; c < data.columns.length; c++) {
@@ -2023,8 +2099,7 @@ function filterChanged(e) {
                             break;
 
                         case 'name':
-                            var icon = getIcon();
-                            //$elem = $tdList.eq(base);
+                            var icon = getSelectIdIcon(data, obj, key);
                             var t = isCommon ? getName(obj.common.name || '') : '';
 
                             $elem.html('<span style="padding-left: ' + (icon ? lineIndent : 0) + '; height: 100%; width: 100%">' +
@@ -2078,12 +2153,12 @@ function filterChanged(e) {
                             setText(val);
 
                             if (data.quickEdit && obj && data.quickEdit.indexOf('room') !== -1) {
-                                $elem.data('old-value', val);
-                                $elem.on('click', onQuickEditField)
+                                $elem
+                                    .data('old-value', val)
                                     .data('id', node.key)
                                     .data('name', 'room')
-                                    .data('selectId', data)
-                                    .addClass('select-id-quick-edit');
+                                    .data('selectId', data);
+                                addClippyToElement($elem, val, obj && data.quickEditCallback ? key : undefined);
                             }
                             break;
 
@@ -2105,12 +2180,12 @@ function filterChanged(e) {
                             setText(val);
 
                             if (data.quickEdit && obj && data.quickEdit.indexOf('function') !== -1) {
-                                $elem.data('old-value', val);
-                                $elem.on('click', onQuickEditField)
+                                $elem
+                                    .data('old-value', val)
                                     .data('id', node.key)
                                     .data('name', 'function')
-                                    .data('selectId', data)
-                                    .addClass('select-id-quick-edit');
+                                    .data('selectId', data);
+                                addClippyToElement($elem, val, obj && data.quickEditCallback ? key : undefined);
                             }
                             break;
 
@@ -2203,7 +2278,7 @@ function filterChanged(e) {
 
                                 var states = getStates(data, node.key);
 
-                                if (isCommon && isCommon.role === 'value.time') {
+                                if (isCommon && isCommon.role && isCommon.role.match(/^value\.time|^date/)) {
                                     val = val ? (new Date(val)).toString() : val;
                                 }
                                 if (states && states[val] !== undefined) {
@@ -2304,7 +2379,7 @@ function filterChanged(e) {
                                     state = Object.assign({}, state);
                                 }
 
-                                if (isCommon && isCommon.role === 'value.time') {
+                                if (isCommon && isCommon.role && isCommon.role.match(/^value\.time|^date/)) {
                                     state.val = state.val ? (new Date(state.val)).toString() : state.val;
                                 }
 

@@ -695,6 +695,7 @@
   "diag-note": "Abbiamo lavorato sodo per creare questo progetto. In cambio ci aspettiamo da voi alcune statistiche di utilizzo. <br> Ogni volta che la lista dell'adattatore viene aggiornata, vengono inviate le statistiche anonime. Rispettiamo la tua privacy, quindi non verranno trasmesse informazioni private. <br> Grazie!",
   "edit": "modificare",
   "edit enum": "modifica enum",
+  "edit enums": "Modifica enumerazioni per",
   "edit file": "modifica file",
   "edit group": "modifica gruppo",
   "edit instance": "modifica istanza",
