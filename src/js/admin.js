@@ -50,6 +50,7 @@ var $iframeDialog = null; // used in adapter settings window
 var configNotSaved = null; // used in adapter settings window
 var showConfig = null; // used in adapter settings window
 var defaults = {};
+var customPostInits = {};
 var FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g;
 
 // used in adapter settings window

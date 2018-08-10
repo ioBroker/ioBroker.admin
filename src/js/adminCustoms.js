@@ -69,13 +69,28 @@ function Customs(main) {
         collapsed = collapsed ? collapsed.split(',') : [];
 
         var commons = {};
+        var type = null;
+        var role = null;
         // calculate common settings
         for (var i = 0; i < instances.length; i++) {
-            var inst = instances[i].replace('system.adapter.', '');
+            var inst = instances[i].replace(/^system\.adapter\./, '');
             commons[inst] = {};
             for (var id = 0; id < ids.length; id++) {
                 var custom = main.objects[ids[id]].common.custom;
                 var sett   = custom ? custom[inst] : null;
+
+                if (main.objects[ids[id]].common) {
+                    if (type === null) {
+                        type = main.objects[ids[id]].common.type;
+                    } else if (type !== '' && type !== main.objects[ids[id]].common.type) {
+                        type = '';
+                    }
+                    if (role === null) {
+                        role = main.objects[ids[id]].common.role;
+                    } else if (role !== '' && role !== main.objects[ids[id]].common.role) {
+                        role = '';
+                    }
+                }
 
                 if (sett) {
                     for (var _attr in sett) {
@@ -120,7 +135,7 @@ function Customs(main) {
             var instance = parts[3];
             var data = adapter + '.' + instance;
             var img = this.main.objects['system.adapter.' + adapter].common.icon;
-            img = '/adapter/' + adapter + '/' +img;
+            img = '/adapter/' + adapter + '/' + img;
             var tab =
                 '<li data-adapter="' + data + '" class="' + (collapsed.indexOf(data) === -1 ? 'active' : '') + '">' +
                 '   <div class="collapsible-header">' +
@@ -158,7 +173,12 @@ function Customs(main) {
                     });
                 }
             });
+
             $customTabs.append($tab);
+            // post init => add custom logic
+            if (customPostInits.hasOwnProperty(adapter) && typeof customPostInits[adapter] === 'function') {
+                customPostInits[adapter]($tab, commons[adapter + '.' + instance], that.main.objects['system.adapter.' + adapter + '.' + instance], type, role);
+            }
         }
 
         // set values
@@ -256,6 +276,7 @@ function Customs(main) {
                 that.main.saveConfig('object-customs-collapsed', _collapsed.join(','));
             }
         });
+
         that.$dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
             var $input = $(this).prev();//.addClass('filled-in');
             if (!$input.prop('disabled')) {
@@ -268,6 +289,7 @@ function Customs(main) {
             }
         });
         $customTabs.find('select').select();
+        M.updateTextFields('#dialog-customs');
 
         this.resizeHistory();
     };
@@ -538,7 +560,7 @@ function Customs(main) {
                 callback(null, _data);
             },
             error: function (jqXHR) {
-                // todo: remove some days 2017.12.19
+                // todo: remove some days 2017.12.19 (for admin2)
                 $.ajax({
                     headers: {
                         Accept: 'text/html'
