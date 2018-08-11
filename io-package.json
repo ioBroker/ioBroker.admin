@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.5.0",
+    "version": "3.5.1",
     "news": {
+      "3.5.1": {
+        "en": "Error in custom settings was fixed",
+        "de": "Fehler in benutzerdefinierten Einstellungen wurde behoben",
+        "ru": "Исправлена ​​ошибка в пользовательских настройках",
+        "pt": "Erro nas configurações personalizadas foi corrigido",
+        "nl": "Fout in aangepaste instellingen was opgelost",
+        "fr": "Une erreur dans les paramètres personnalisés a été corrigée",
+        "it": "Errore nelle impostazioni personalizzate è stato corretto",
+        "es": "Se corrigió el error en la configuración personalizada",
+        "pl": "Naprawiono błąd w ustawieniach niestandardowych"
+      },
       "3.5.0": {
         "en": "Editing of enums was changed\nLogo was updated\nThe function icons were added",
         "de": "Die Bearbeitung der Enums wurde geändert\nDas Logo wurde aktualisiert\nDie Funktionssymbole wurden hinzugefügt",

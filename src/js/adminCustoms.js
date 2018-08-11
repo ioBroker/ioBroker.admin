@@ -642,6 +642,8 @@ function Customs(main) {
             // if not changed
             if (val === wordDifferent) return;
 
+            if (val === null) val = '';
+            if (val === undefined) val = '';
             if (val === 'false') val = false;
             if (val === 'true')  val = true;
             var f = parseFloat(val);
