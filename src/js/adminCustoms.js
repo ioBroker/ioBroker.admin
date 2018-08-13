@@ -36,7 +36,9 @@ function Customs(main) {
                 if (this.customEnabled !== null && this.customEnabled !== true) {
                     this.customEnabled = true;
                     // update customs buttons
-                    this.init(true);
+                    if (this.inited) {
+                        this.init(null, true);
+                    }
                 } else {
                     this.customEnabled = true;
                 }
@@ -47,7 +49,9 @@ function Customs(main) {
         if (this.customEnabled !== null && this.customEnabled !== false) {
             this.customEnabled = false;
             // update custom button
-            this.init(true);
+            if (this.inited) {
+                this.init(null, true);
+            }
         } else {
             this.customEnabled = false;
         }
@@ -727,11 +731,10 @@ function Customs(main) {
         }
     }
 
-    this.init = function () {
-        if (this.inited) {
+    this.init = function (_ids, isUpdate) {
+        if (this.inited && !isUpdate) {
             return;
         }
-        this.inited = true;
 
         var ids = this.main.navigateGetParams();
 
@@ -995,7 +998,6 @@ function Customs(main) {
             }
             this.$dialog.find('#tab-customs-table .title').html(_('Values of %s', ids[0]));
             this.$dialog.find('#tab-customs-chart .title').html(_('Chart for %s', ids[0]));
-
         } else if (ids) {
             $historyTableInstance.hide();
             $historyChartInstance.hide();
@@ -1023,6 +1025,7 @@ function Customs(main) {
             if (!that.$dialog.find('.dialog-system-buttons .btn-save').hasClass('disabled')) {
                 that.main.confirmMessage(_('Are you sure? Changes are not saved.'), _('Please confirm'), 'error_outline', function (result) {
                     if (result) {
+                        that.$dialog.find('.dialog-system-buttons .btn-save').addClass('disabled');
                         // disable iframe
                         that.loadHistoryChart();
                         that.main.navigate();
