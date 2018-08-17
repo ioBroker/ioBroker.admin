@@ -10,28 +10,28 @@
    * @class
    *
    */
-  class Select extends Component {
+  class FormSelect extends Component {
     /**
-     * Construct Select instance
+     * Construct FormSelect instance
      * @constructor
      * @param {Element} el
      * @param {Object} options
      */
     constructor(el, options) {
-      super(Select, el, options);
+      super(FormSelect, el, options);
 
       // Don't init if browser default version
       if (this.$el.hasClass('browser-default')) {
         return;
       }
 
-      this.el.M_Select = this;
+      this.el.M_FormSelect = this;
 
       /**
        * Options for the select
-       * @member Select#options
+       * @member FormSelect#options
        */
-      this.options = $.extend({}, Select.defaults, options);
+      this.options = $.extend({}, FormSelect.defaults, options);
 
       this.isMultiple = this.$el.prop('multiple');
 
@@ -57,7 +57,7 @@
      */
     static getInstance(el) {
       let domElem = !!el.jquery ? el[0] : el;
-      return domElem.M_Select;
+      return domElem.M_FormSelect;
     }
 
     /**
@@ -66,7 +66,7 @@
     destroy() {
       this._removeEventHandlers();
       this._removeDropdown();
-      this.el.M_Select = undefined;
+      this.el.M_FormSelect = undefined;
     }
 
     /**
@@ -81,6 +81,7 @@
         .find('li:not(.optgroup)')
         .each((el) => {
           el.addEventListener('click', this._handleOptionClickBound);
+          el.addEventListener('touchend', this._handleOptionClickBound);//iob
         });
       this.el.addEventListener('change', this._handleSelectChangeBound);
       this.input.addEventListener('click', this._handleInputClickBound);
@@ -94,6 +95,7 @@
         .find('li:not(.optgroup)')
         .each((el) => {
           el.removeEventListener('click', this._handleOptionClickBound);
+          el.addEventListener('touchend', this._handleOptionClickBound);//iob
         });
       this.el.removeEventListener('change', this._handleSelectChangeBound);
       this.input.removeEventListener('click', this._handleInputClickBound);
@@ -112,7 +114,7 @@
      * @param {Event} e
      */
     _handleOptionClick(e) {
-      e.preventDefault();
+      //e.preventDefault();
       let option = $(e.target).closest('li')[0];
       let key = option.id;
       if (!$(option).hasClass('disabled') && !$(option).hasClass('optgroup') && key.length) {
@@ -135,8 +137,12 @@
         }
 
         // Set selected on original select option
-        $(this._valueDict[key].el).prop('selected', selected);
-        this.$el.trigger('change');
+        // Only trigger if selected state changed
+        let prevSelected = $(this._valueDict[key].el).prop('selected');
+        if (prevSelected !== selected) {
+          $(this._valueDict[key].el).prop('selected', selected);
+          this.$el.trigger('change');
+        }
       }
 
       e.stopPropagation();
@@ -231,12 +237,22 @@
           let selectedOption = $(this.dropdownOptions)
             .find('.selected')
             .first();
-          if (this.dropdown.isScrollable && selectedOption.length) {
-            let scrollOffset =
-              selectedOption[0].getBoundingClientRect().top -
-              this.dropdownOptions.getBoundingClientRect().top; // scroll to selected option
-            scrollOffset -= this.dropdownOptions.clientHeight / 2; // center in dropdown
-            this.dropdownOptions.scrollTop = scrollOffset;
+
+          if (selectedOption.length) {
+            // Focus selected option in dropdown
+            M.keyDown = true;
+            this.dropdown.focusedIndex = selectedOption.index();
+            this.dropdown._focusFocusedItem();
+            M.keyDown = false;
+
+            // Handle scrolling to selected option
+            if (this.dropdown.isScrollable) {
+              let scrollOffset =
+                selectedOption[0].getBoundingClientRect().top -
+                this.dropdownOptions.getBoundingClientRect().top; // scroll to selected option
+              scrollOffset -= this.dropdownOptions.clientHeight / 2; // center in dropdown
+              this.dropdownOptions.scrollTop = scrollOffset;
+            }
           }
         };
 
@@ -410,9 +426,9 @@
     }
   }
 
-  M.Select = Select;
+  M.FormSelect = FormSelect;
 
   if (M.jQueryLoaded) {
-    M.initializeJqueryWrapper(Select, 'select', 'M_Select');
+    M.initializeJqueryWrapper(FormSelect, 'select', 'M_FormSelect');//iob
   }
 })(cash);

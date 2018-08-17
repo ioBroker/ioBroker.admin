@@ -175,7 +175,7 @@ $(document).ready(function () {
             $dialogCommand.data('finished', false).find('.btn').html(_('In background'));
             $dialogCommand.find('.command').html(stdout);
             $dialogCommand.find('.progress-dont-close').removeClass('disabled');
-            $('#admin_sidemenu_main').find('.button-command').removeClass('error').addClass('in-progress');
+            $adminSideMain.find('.button-command').removeClass('error').addClass('in-progress');
             $dialogCommand.data('max', null);
             $dialogCommand.data('error', '');
             $dialogCommandProgress.addClass('indeterminate').removeClass('determinate');
@@ -646,6 +646,9 @@ $(document).ready(function () {
     var $dialogConfirm = $('#dialog-confirm');
     var $dialogCommandProgress = $dialogCommand.find('.progress div');
 
+    var $adminSideMenu = $('#admin_sidemenu_menu');
+    var $adminSideMain = $('#admin_sidemenu_main');
+
     var firstConnect   = true;
 
     // detect touch devices
@@ -685,6 +688,11 @@ $(document).ready(function () {
         }
     }
 
+    function globalClickHandler(event){
+        $('#admin_sidemenu_dialog').html('');
+        $('html').off('click', globalClickHandler);
+    }
+
     function initHtmlButtons() {
         main.socket.emit('getVersion', function (err, version) {
 			var $versionBtn = $('.button-version');
@@ -698,14 +706,13 @@ $(document).ready(function () {
             var html = $dialog.html();
             if (html) {
                 $dialog.html('');
-                $('html').off('click');
+                // disable global handler
+                $('html').off('click', globalClickHandler);
                 return;
             }
             setTimeout(function () {
-                $('html').on('click', function (event){
-                    $dialog.html('');
-                    $('html').off('click');
-                });
+                // enable global handler
+                $('html').on('click', globalClickHandler);
             }, 100);
             var $e = $(event.target);
             var offs = $e.offset();
@@ -716,12 +723,12 @@ $(document).ready(function () {
                 '<div>' +
                 '<ul style="">';
 
-            var $lis = $('#admin_sidemenu_menu');
+            var $lis = $adminSideMenu;
             for (var tid in allTabs) {
                 var name = allTabs[tid];
-                var found = $lis.find('.admin-sidemenu-items[data-tab="' + tid + '"]').length;
+                var found = $adminSideMenu.find('.admin-sidemenu-items[data-tab="' + tid + '"]').length;
                 // TABS
-                /*$lis.each(function (i, e) {
+                /*$adminSideMenu.each(function (i, e) {
                     if (tid === $(e).attr('aria-controls')) {
                         found = $(e);
                         return false;
@@ -785,7 +792,7 @@ $(document).ready(function () {
                 main.socket.emit('eventsThreshold', false);
             });
         } else {
-            var $menu = $('#admin_sidemenu_menu');
+            var $menu = $adminSideMenu;
             var panelSelector = $menu.data('problem-link');
             if (panelSelector) {
                 var $panel = $(panelSelector);
@@ -1096,13 +1103,13 @@ $(document).ready(function () {
         $dialogCommand.find('.progress-show-more').prop('checked', !!main.config.progressMore).trigger('change');
         $dialogCommand.find('.btn').on('click', function () {
             if ($dialogCommand.data('finished')) {
-                $('#admin_sidemenu_main').find('.button-command').hide();
+                $adminSideMain.find('.button-command').hide();
             } else {
-                $('#admin_sidemenu_main').find('.button-command').show();
+                $adminSideMain.find('.button-command').show();
             }
         });
 
-        $('#admin_sidemenu_main').find('.button-command').on('click', function () {
+        $adminSideMain.find('.button-command').on('click', function () {
             $dialogCommand.modal('open');
         });
     }
@@ -1564,14 +1571,14 @@ $(document).ready(function () {
                                 $iframe.attr('src', link);
                             }
                         } else {
-                            $('#admin_sidemenu_menu').data('problem-link', 'tab-' + tab);
+                            $adminSideMenu.data('problem-link', 'tab-' + tab);
                         }
                     }
                 }
 
                 // select menu element
-                var  $tab = $('.admin-sidemenu-items[data-tab="tab-' + tab + '"]');
-                $('.admin-sidemenu-items').not($tab).removeClass('admin-sidemenu-active');
+                var  $tab = $adminSideMenu.find('.admin-sidemenu-items[data-tab="tab-' + tab + '"]');
+                $adminSideMenu.find('.admin-sidemenu-items').not($tab).removeClass('admin-sidemenu-active');
                 $tab.addClass('admin-sidemenu-active');
 
                 if (tabsInfo['tab-' + tab] && tabsInfo['tab-' + tab].host) {
@@ -1798,11 +1805,11 @@ $(document).ready(function () {
         for (var e = 0; e < elements.length; e++) {
             lines += elements[e].line;
         }
-        $('#admin_sidemenu_menu').find('.admin-sidemenu-menu').html(lines);
+        $adminSideMenu.find('.admin-sidemenu-menu').html(lines);
 
         $('.admin-sidemenu-close').off('click').on('click', function () {
-            $('#admin_sidemenu_main').toggleClass('admin-sidemenu-closed');
-            $('#admin_sidemenu_menu').toggleClass('admin-sidemenu-closed');
+            $adminSideMain.toggleClass('admin-sidemenu-closed');
+            $adminSideMenu.toggleClass('admin-sidemenu-closed');
             $('.admin-sidemenu-close i').toggleClass('hide');
 
             setTimeout(function () {
@@ -1901,7 +1908,7 @@ $(document).ready(function () {
             $dialogCommand.find('.btn').html(_('Close'));
             $dialogCommand.data('finished', true);
             $dialogCommand.data('max', true);
-            var $backButton = $('#admin_sidemenu_main').find('.button-command');
+            var $backButton = $adminSideMain.find('.button-command');
             $backButton.removeClass('in-progress');
 
             if (!exitCode) {
@@ -1973,7 +1980,7 @@ $(document).ready(function () {
                                 $('.side-nav').css(vendor.admin.css.sideNavMenu);
                             }
                             if (vendor.admin.css.header) {
-                                $('#admin_sidemenu_main').find('.admin-sidemenu-header nav').css(vendor.admin.css.header);
+                                $adminSideMain.find('.admin-sidemenu-header nav').css(vendor.admin.css.header);
                             }
                             // apply rules
                             if (vendor.admin.css.rules) {

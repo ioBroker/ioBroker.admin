@@ -11,7 +11,6 @@ function Enums(main) {
     this.$gridEnum    = $('#tab-enums');
     this.$gridList    = this.$gridEnum.find('.tab-enums-list');
     this.$grid        = this.$gridEnum.find('.tab-enums-objects');
-    //this.enumEdit     = null;
     this.updateTimers = null;
     this.editMode     = false;
     this.isTiles      = false;
@@ -1312,7 +1311,7 @@ function Enums(main) {
             .val(nameVal)
             .off('change')
             .on('change', function () {
-                var $id = $('#tab-enums-dialog-new-id');
+                var $id = $dialog.find('#tab-enums-dialog-new-id');
                 var id = $id.val();
                 var val = $(this).val();
                 val = val.replace(FORBIDDEN_CHARS, '_').replace(/\./g, '_').trim().toLowerCase();
@@ -1369,13 +1368,13 @@ function Enums(main) {
                         } else {
                             name = {'en': oldId.split('.').pop()};
                         }
-                        name[systemLang] = $('#tab-enums-dialog-new-name').val();
+                        name[systemLang] = $dialog.find('#tab-enums-dialog-new-name').val();
                     } else {
-                        name = $('#tab-enums-dialog-new-name').val();
+                        name = $dialog.find('#tab-enums-dialog-new-name').val();
                     }
                     enumRename(
                         oldId,
-                        parentId + '.' + $('#tab-enums-dialog-new-id').val(),
+                        parentId + '.' + $dialog.find('#tab-enums-dialog-new-id').val(),
                         {
                             name:  name,
                             icon:  iconVal,
@@ -1392,7 +1391,7 @@ function Enums(main) {
                 } else {
                     enumAddChild(
                         parentId,
-                        (parentId || 'enum') + '.' + $('#tab-enums-dialog-new-id').val(),
+                        (parentId || 'enum') + '.' + $dialog.find('#tab-enums-dialog-new-id').val(),
                         {
                             name:  $dialog.find('#tab-enums-dialog-new-name').val(),
                             icon:  iconVal,

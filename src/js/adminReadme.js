@@ -32,7 +32,7 @@ function Readme(main) {
 
         var adapterName = this.main.navigateGetParams();
 
-        var url = $('.adapter-readme-submit[data-adapter-name="' + adapterName + '"]').data('adapter-url');
+        var url = that.main.tabs.adapters.$tab.find('.adapter-readme-submit[data-adapter-name="' + adapterName + '"]').data('adapter-url');
         if (!url) {
             url = localStorage.getItem('original-md-url');
         }

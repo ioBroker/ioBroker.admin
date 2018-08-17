@@ -255,8 +255,8 @@ function Users(main) {
     }
 
     function updateUser(event, oldId, options) {
-        var password    = $('#tab-users-dialog-new-password').val();
-        var passwordRep = $('#tab-users-dialog-new-password-repeat').val();
+        var password    = that.$grid.find('#tab-users-dialog-new-password').val();
+        var passwordRep = that.$grid.find('#tab-users-dialog-new-password-repeat').val();
 
         if (password !== '__pass_not_set__' && password !== passwordRep) {
             event.stopPropagation();
@@ -421,7 +421,7 @@ function Users(main) {
     }
 
     function checkValidId($dialog) {
-        var $id = $('#tab-users-dialog-new-id');
+        var $id = that.$grid.find('#tab-users-dialog-new-id');
         var id = $id.val();
         if (id && !id.match(/[.\s]/)) {
             $dialog.find('.tab-dialog-create').removeClass('disabled');
@@ -489,7 +489,7 @@ function Users(main) {
             .val(translateName(options.name))
             .off('change')
             .on('change', function () {
-                var $id = $('#tab-users-dialog-new-id');
+                var $id = that.$grid.find('#tab-users-dialog-new-id');
                 var id = $id.val();
                 var val = $(this).val();
                 val = val.trim().replace(FORBIDDEN_CHARS, '_').replace(/\./g, '_').toLowerCase();

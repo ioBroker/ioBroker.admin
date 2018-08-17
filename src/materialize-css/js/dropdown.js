@@ -124,6 +124,7 @@
 
       // Item click handler
       this.dropdownEl.addEventListener('click', this._handleDropdownClickBound);
+      this.dropdownEl.addEventListener('touchend', this._handleDropdownClickBound); //iob
 
       // Hover event handlers
       if (this.options.hover) {
@@ -146,6 +147,7 @@
     _removeEventHandlers() {
       this.el.removeEventListener('keydown', this._handleTriggerKeydownBound);
       this.dropdownEl.removeEventListener('click', this._handleDropdownClickBound);
+      this.dropdownEl.removeEventListener('touchend', this._handleDropdownClickBound);//iob
 
       if (this.options.hover) {
         this.el.removeEventListener('mouseenter', this._handleMouseEnterBound);
@@ -295,7 +297,11 @@
           .first();
 
         // Click a or button tag if exists, otherwise click li tag
-        !!$activatableElement.length ? $activatableElement[0].click() : focusedElement.click();
+        if (!!$activatableElement.length) {
+          $activatableElement[0].click();
+        } else if (!!focusedElement) {
+          focusedElement.click();
+        }
 
         // Close dropdown on ESC
       } else if (e.which === M.keys.ESC && this.isOpen) {
@@ -391,8 +397,11 @@
         width: idealWidth
       };
 
-      // Countainer here will be closest ancestor with overflow: hidden
-      let closestOverflowParent = this.dropdownEl.offsetParent;
+      // Container here will be closest ancestor with overflow: hidden
+      let closestOverflowParent = !!this.dropdownEl.offsetParent
+        ? this.dropdownEl.offsetParent
+        : this.dropdownEl.parentNode;
+
       let alignments = M.checkPossibleAlignments(
         this.el,
         closestOverflowParent,
@@ -481,8 +490,7 @@
 
           // onOpenEnd callback
           if (typeof this.options.onOpenEnd === 'function') {
-            let elem = anim.animatables[0].target;
-            this.options.onOpenEnd.call(elem, this.el);
+            this.options.onOpenEnd.call(this, this.el);
           }
         }
       });
@@ -508,7 +516,6 @@
 
           // onCloseEnd callback
           if (typeof this.options.onCloseEnd === 'function') {
-            let elem = anim.animatables[0].target;
             this.options.onCloseEnd.call(this, this.el);
           }
         }

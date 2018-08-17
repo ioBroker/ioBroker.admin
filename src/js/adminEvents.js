@@ -74,13 +74,13 @@ function Events(main) {
             .off('click').on('click', function () {
                 list.count = 0;
                 list.start = 0;
-                $('#event-table').html('');
+                that.$tab.find('#event-table').html('');
             });
     };
 
     this.init    = function () {
         if (isRemote) {
-            $('#grid-events').html(_('You can\'t see events via cloud') + '<br><i class="large material-icons">cloud_off</i>').addClass('no-cloud-events');
+            that.$tab.find('#grid-events').html(_('You can\'t see events via cloud') + '<br><i class="large material-icons">cloud_off</i>').addClass('no-cloud-events');
             return;
         }
         if (!hdr) return;

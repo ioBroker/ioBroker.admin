@@ -25,7 +25,7 @@ function Issue(main) {
         var adapter = this.main.objects[id];
         if (adapter && adapter.common && adapter.common.extIcon) {
             var tmp = adapter.common.extIcon.split('/');
-            var $table = $('#result-issue');
+            var $table = that.$dialogIssue.find('#result-issue');
             $table.html(
                 '<div class="loader"><svg class="spinner" width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">\n' +
                 '      <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>\n' +

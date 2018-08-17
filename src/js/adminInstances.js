@@ -117,9 +117,11 @@ function Instances(main) {
                 var count = 0;
                 var firtsLink = '';
                 for (var d in links) {
-                    result[links[d].instance] = links[d].link;
-                    if (!firtsLink) firtsLink = links[d].link;
-                    count++;
+                    if (links.hasOwnProperty(d)) {
+                        result[links[d].instance] = links[d].link;
+                        if (!firtsLink) firtsLink = links[d].link;
+                        count++;
+                    }
                 }
                 if (count < 2) {
                     link = firtsLink;
@@ -152,7 +154,7 @@ function Instances(main) {
         var adapter  = tmp[2];
         var instance = tmp[3];
 
-        var $led = $('.instance-led[data-instance-id="' + instanceId + '"]');
+        var $led = that.$tab.find('.instance-led[data-instance-id="' + instanceId + '"]');
 
         var common   = that.main.objects[instanceId] ? that.main.objects[instanceId].common || {} : {};
         var state = (common.mode === 'daemon') ? 'green' : 'blue';
@@ -340,12 +342,12 @@ function Instances(main) {
             }
         }
         mem = Math.round(mem);
-        var $totalRam = $('#totalRam');
+        var $totalRam = that.$tab.find('#totalRam');
         if (mem.toString() !== $totalRam.text()) {
             $totalRam.html('<span class="highlight">' + mem + '</span>');
         }
         var text = _('%s processes', processes);
-        var $running_processes = $('#running_processes');
+        var $running_processes = that.$tab.find('#running_processes');
         if (text !== $running_processes.text()) {
             $running_processes.html('<span class="highlight">' + text + '</span>')
         }
@@ -366,7 +368,7 @@ function Instances(main) {
             var strVal = tdp(host.val);
             if (strVal !== $freeMem.text()) {
                 $freeMem.html('<span class="highlight ' + (percent < 10 ? 'high-mem' : '') + '">' + strVal + '</span>');
-                $('#freeMemPercent').html('<span class="highlight">' + percent + '%</span>');
+                that.$tab.find('#freeMemPercent').html('<span class="highlight">' + percent + '%</span>');
             }
         } else {
             that.$tab.find('.free-mem-label').hide();
@@ -507,18 +509,18 @@ function Instances(main) {
         if (!justContent) {
             rootElem.append(text);
         } else {
-            $('.instance-adapter[data-instance-id="' + instanceId + '"]').html(text);
+            that.$tab.find('.instance-adapter[data-instance-id="' + instanceId + '"]').html(text);
         }
         // init buttons
         that.initButtons(instanceId, url);
         updateLed(instanceId);
         // init links
-        $('.instance-editable[data-instance-id="' + instanceId + '"]')
+        that.$tab.find('.instance-editable[data-instance-id="' + instanceId + '"]')
             .on('click', onQuickEditField)
             .addClass('select-id-quick-edit');
 
         // init schedule editor
-        $('.instance-schedule[data-instance-id="' + instanceId + '"]').each(function () {
+        that.$tab.find('.instance-schedule[data-instance-id="' + instanceId + '"]').each(function () {
             if (!$(this).find('button').length) {
                 $(this).append('<button class="instance-schedule-button small-button" data-instance-id="' + instanceId + '" data-name="' + $(this).data('name') + '" title="' + _('Set CRON schedule for restarts') + '"><i class="material-icons">schedule</i></button>');
                 $(this).find('button').on('click', function () {
@@ -537,8 +539,8 @@ function Instances(main) {
             }
         });
 
-        $('.instance-name[data-instance-id="' + instanceId + '"]').on('click', function () {
-            var $btn = $('.instance-settings[data-instance-id="' + $(this).data('instance-id') + '"]');
+        that.$tab.find('.instance-name[data-instance-id="' + instanceId + '"]').on('click', function () {
+            var $btn = that.$tab.find('.instance-settings[data-instance-id="' + $(this).data('instance-id') + '"]');
             if (!$btn.hasClass('small-button-empty')) {
                 $btn.trigger('click');
             }
@@ -883,16 +885,16 @@ function Instances(main) {
             setTimeout(function () {
                 var link;
                 if (elem) {
-                    link = $('#' + elem).data('src');
+                    link = that.$tab.find('#' + elem).data('src');
                 } else {
-                    link = $('#a_' + adapter + '_' + instance).attr('href');
+                    link = that.$tab.find('#a_' + adapter + '_' + instance).attr('href');
                 }
 
                 link = link.replace('%instance%', instance);
                 if (elem) {
-                    $('#' + elem).data('src', link);
+                    that.$tab.find('#' + elem).data('src', link);
                 } else {
-                    $('#a_' + adapter + '_' + instance).attr('href', link);
+                    that.$tab.find('#a_' + adapter + '_' + instance).attr('href', link);
                 }
             }, 0);
             return;
@@ -903,9 +905,9 @@ function Instances(main) {
                 setTimeout(function () {
                     var link;
                     if (elem) {
-                        link = $('#' + elem).data('src');
+                        link = that.$tab.find('#' + elem).data('src');
                     } else {
-                        link = $('#a_' + adapter + '_' + instance).attr('href');
+                        link = that.$tab.find('#a_' + adapter + '_' + instance).attr('href');
                     }
                     if (link) {
                         if (parts[1] === 'secure') {
@@ -918,9 +920,9 @@ function Instances(main) {
                             }
                         }
                         if (elem) {
-                            $('#' + elem).data('src', link);
+                            that.$tab.find('#' + elem).data('src', link);
                         } else {
-                            $('#a_' + adapter + '_' + instance).attr('href', link);
+                            that.$tab.find('#a_' + adapter + '_' + instance).attr('href', link);
                         }
                     }
                 }, 0);
@@ -1021,16 +1023,17 @@ function Instances(main) {
 
             createHead();
             this.$grid.html('');
-
+            var ts = Date.now();
             for (var i = 0; i < this.list.length; i++) {
                 var obj = this.main.objects[this.list[i]];
                 if (!obj) continue;
                 showOneAdapter(this.$grid, this.list[i], this.main.config.instanceForm);
             }
+            console.log(Date.now() - ts);
 
             this.$grid.append('<tr class="filtered-out"><td></td><td></td><td colspan="20" style="padding-left: 1em">' + _('Filtered out') + '</td></tr>');
 
-            $('#currentHost').html(this.main.currentHost);
+            that.$tab.find('#currentHost').html(this.main.currentHost);
 
             if (that.main.tabs.hosts.list.length > 1) {
                 this.$tab.find('.btn-instances-host').show();
@@ -1404,7 +1407,7 @@ function Instances(main) {
                     }
                     menu += '<li class="instances-menu-link">' + _('Close') + '</li>';
 
-                    var $instancesMenu = $('#instances-menu');
+                    var $instancesMenu = that.$tab.find('#instances-menu');
                     if ($instancesMenu.data('inited')) $instancesMenu.menu('destroy');
 
                     var pos = $(this).position();
@@ -1421,9 +1424,9 @@ function Instances(main) {
                         top:    pos.top
                     }).show();
 
-                    $('.instances-menu-link').off('click').on('click', function () {
+                    that.$tab.find('.instances-menu-link').off('click').on('click', function () {
                         if ($(this).data('link')) window.open($(this).data('link'), $(this).data('instance-id'));
-                        $('#instances-menu').hide();
+                        that.$tab.find('#instances-menu').hide();
                     });
 
                 } else {

@@ -6,7 +6,7 @@ function initMap () {
 function System(main) {
     'use strict';
     var that    = this;
-    var $dialog = $('#dialog-system');
+    this.$dialog = $('#dialog-system');
     this.main   = main;
 
     this.systemRepos  = null;
@@ -128,14 +128,14 @@ function System(main) {
 
             values2table('tab-system-repo', values, {
                 onChange: function (attr /* , index */) {
-                    $dialog.find('.btn-save').removeClass('disabled');
+                    that.$dialog.find('.btn-save').removeClass('disabled');
                     if (!attr || attr === 'name') {
                         updateRepoListSelect();
                     }
                 }
             });
             if (that.systemRepos.nonEdit && that.systemRepos.nonEdit.native && that.systemRepos.nonEdit.native.repositories) {
-                var $repos = $dialog.find('#grid-repos');
+                var $repos = that.$dialog.find('#grid-repos');
                 $repos.find('input').each(function () {
                     $(this).prop('disabled', true).addClass('disabled');
                 });
@@ -145,15 +145,15 @@ function System(main) {
                 $repos.find('.btn-floating').each(function () {
                     $(this).addClass('disabled');
                 });
-                $dialog.find('#tab-system-repo .table-button-add').addClass('disabled');
+                that.$dialog.find('#tab-system-repo .table-button-add').addClass('disabled');
             }
         } else {
-            $('#tab-system-repo').html(_('permissionError'));
+            that.$dialog.find('#tab-system-repo').html(_('permissionError'));
         }
     }
 
     function updateRepoListSelect() {
-        var $system_activeRepo = $('#system_activeRepo');
+        var $system_activeRepo = that.$dialog.find('#system_activeRepo');
         var selectedRepo = $system_activeRepo.val();
         var isFound = false;
         $system_activeRepo.html('');
@@ -170,7 +170,7 @@ function System(main) {
 
     // ----------------------------- Certificates show and Edit ------------------------------------------------
     function initCertsGrid() {
-        var $dropZone = $('#tab-system-certs');
+        var $dropZone = that.$dialog.find('#tab-system-certs');
         if (that.systemCerts && that.systemCerts.native.certificates) {
             var values = [];
             // list of the repositories
@@ -185,12 +185,12 @@ function System(main) {
 
             values2table('tab-system-certs', values, {
                 onChange: function (attr /* , index */) {
-                    $dialog.find('.btn-save').removeClass('disabled');
+                    that.$dialog.find('.btn-save').removeClass('disabled');
                 }
             });
 
             if (that.systemCerts.nonEdit && that.systemCerts.nonEdit.native && that.systemCerts.nonEdit.native.certificates) {
-                var $repos = $dialog.find('#grid-certs');
+                var $repos = that.$dialog.find('#grid-certs');
                 $repos.find('input').each(function () {
                     $(this).prop('disabled', true).addClass('disabled');
                 });
@@ -243,7 +243,7 @@ function System(main) {
     }
 
     function showMessage(text, isError, duration) {
-        that.main.showToast($('#tab-system-certs'), text, null, duration, isError);
+        that.main.showToast(that.$dialog.find('#tab-system-certs'), text, null, duration, isError);
     }
 
     function initRights() {
@@ -257,7 +257,7 @@ function System(main) {
             name = translateName(that.main.objects[that.main.tabs.users.list[u]].common.name);
             text += '<option value="' + that.main.tabs.users.list[u] + '">' + (name || that.main.tabs.users.list[u]) + '</option>';
         }
-        $dialog.find('#tab-system-acl-owner').html(text).val(acl.owner || 'system.user.admin');
+        that.$dialog.find('#tab-system-acl-owner').html(text).val(acl.owner || 'system.user.admin');
 
         // fill groups
         text = '';
@@ -265,36 +265,36 @@ function System(main) {
             name = translateName(that.main.objects[that.main.tabs.users.groups[u]].common.name);
             text += '<option value="' + that.main.tabs.users.groups[u] + '">' + (name || that.main.tabs.users.groups[u]) + '</option>';
         }
-        $dialog.find('#tab-system-acl-group').html(text).val(acl.ownerGroup || 'system.group.administrator');
+        that.$dialog.find('#tab-system-acl-group').html(text).val(acl.ownerGroup || 'system.group.administrator');
 
         if (acl.object === undefined) acl.object = 0x664;
 
-        $dialog.find('#tab-system-acl-obj-owner-read') .prop('checked', acl.object & 0x400);
-        $dialog.find('#tab-system-acl-obj-owner-write').prop('checked', acl.object & 0x200);
-        $dialog.find('#tab-system-acl-obj-group-read'). prop('checked', acl.object & 0x40);
-        $dialog.find('#tab-system-acl-obj-group-write').prop('checked', acl.object & 0x20);
-        $dialog.find('#tab-system-acl-obj-every-read'). prop('checked', acl.object & 0x4);
-        $dialog.find('#tab-system-acl-obj-every-write').prop('checked', acl.object & 0x2);
+        that.$dialog.find('#tab-system-acl-obj-owner-read') .prop('checked', acl.object & 0x400);
+        that.$dialog.find('#tab-system-acl-obj-owner-write').prop('checked', acl.object & 0x200);
+        that.$dialog.find('#tab-system-acl-obj-group-read'). prop('checked', acl.object & 0x40);
+        that.$dialog.find('#tab-system-acl-obj-group-write').prop('checked', acl.object & 0x20);
+        that.$dialog.find('#tab-system-acl-obj-every-read'). prop('checked', acl.object & 0x4);
+        that.$dialog.find('#tab-system-acl-obj-every-write').prop('checked', acl.object & 0x2);
 
         if (acl.state === undefined) acl.state = 0x664;
 
-        $dialog.find('#tab-system-acl-state-owner-read') .prop('checked', acl.state & 0x400);
-        $dialog.find('#tab-system-acl-state-owner-write').prop('checked', acl.state & 0x200);
-        $dialog.find('#tab-system-acl-state-group-read'). prop('checked', acl.state & 0x40);
-        $dialog.find('#tab-system-acl-state-group-write').prop('checked', acl.state & 0x20);
-        $dialog.find('#tab-system-acl-state-every-read'). prop('checked', acl.state & 0x4);
-        $dialog.find('#tab-system-acl-state-every-write').prop('checked', acl.state & 0x2);
+        that.$dialog.find('#tab-system-acl-state-owner-read') .prop('checked', acl.state & 0x400);
+        that.$dialog.find('#tab-system-acl-state-owner-write').prop('checked', acl.state & 0x200);
+        that.$dialog.find('#tab-system-acl-state-group-read'). prop('checked', acl.state & 0x40);
+        that.$dialog.find('#tab-system-acl-state-group-write').prop('checked', acl.state & 0x20);
+        that.$dialog.find('#tab-system-acl-state-every-read'). prop('checked', acl.state & 0x4);
+        that.$dialog.find('#tab-system-acl-state-every-write').prop('checked', acl.state & 0x2);
 
         if (acl.file === undefined) acl.file = 0x664;
-        $dialog.find('#tab-system-acl-file-owner-read') .prop('checked', acl.file & 0x400);
-        $dialog.find('#tab-system-acl-file-owner-write').prop('checked', acl.file & 0x200);
-        $dialog.find('#tab-system-acl-file-group-read'). prop('checked', acl.file & 0x40);
-        $dialog.find('#tab-system-acl-file-group-write').prop('checked', acl.file & 0x20);
-        $dialog.find('#tab-system-acl-file-every-read'). prop('checked', acl.file & 0x4);
-        $dialog.find('#tab-system-acl-file-every-write').prop('checked', acl.file & 0x2);
+        that.$dialog.find('#tab-system-acl-file-owner-read') .prop('checked', acl.file & 0x400);
+        that.$dialog.find('#tab-system-acl-file-owner-write').prop('checked', acl.file & 0x200);
+        that.$dialog.find('#tab-system-acl-file-group-read'). prop('checked', acl.file & 0x40);
+        that.$dialog.find('#tab-system-acl-file-group-write').prop('checked', acl.file & 0x20);
+        that.$dialog.find('#tab-system-acl-file-every-read'). prop('checked', acl.file & 0x4);
+        that.$dialog.find('#tab-system-acl-file-every-write').prop('checked', acl.file & 0x2);
 
         // workaround for materialize checkbox problem
-        $dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
+        that.$dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
             var $input = $(this).prev();
             if (!$input.prop('disabled')) {
                 $input.prop('checked', !$input.prop('checked')).trigger('change');
@@ -307,31 +307,31 @@ function System(main) {
         var acl = that.main.systemConfig.common.defaultNewAcl;
         var old = JSON.stringify(acl);
         acl.object = 0;
-        acl.object |= $dialog.find('#tab-system-acl-obj-owner-read').prop('checked')  ? 0x400 : 0;
-        acl.object |= $dialog.find('#tab-system-acl-obj-owner-write').prop('checked') ? 0x200 : 0;
-        acl.object |= $dialog.find('#tab-system-acl-obj-group-read').prop('checked')  ? 0x40  : 0;
-        acl.object |= $dialog.find('#tab-system-acl-obj-group-write').prop('checked') ? 0x20  : 0;
-        acl.object |= $dialog.find('#tab-system-acl-obj-every-read').prop('checked')  ? 0x4   : 0;
-        acl.object |= $dialog.find('#tab-system-acl-obj-every-write').prop('checked') ? 0x2   : 0;
+        acl.object |= that.$dialog.find('#tab-system-acl-obj-owner-read').prop('checked')  ? 0x400 : 0;
+        acl.object |= that.$dialog.find('#tab-system-acl-obj-owner-write').prop('checked') ? 0x200 : 0;
+        acl.object |= that.$dialog.find('#tab-system-acl-obj-group-read').prop('checked')  ? 0x40  : 0;
+        acl.object |= that.$dialog.find('#tab-system-acl-obj-group-write').prop('checked') ? 0x20  : 0;
+        acl.object |= that.$dialog.find('#tab-system-acl-obj-every-read').prop('checked')  ? 0x4   : 0;
+        acl.object |= that.$dialog.find('#tab-system-acl-obj-every-write').prop('checked') ? 0x2   : 0;
 
-        acl.owner = $dialog.find('#tab-system-acl-owner').val();
-        acl.ownerGroup = $dialog.find('#tab-system-acl-group').val();
+        acl.owner = that.$dialog.find('#tab-system-acl-owner').val();
+        acl.ownerGroup = that.$dialog.find('#tab-system-acl-group').val();
 
         acl.state = 0;
-        acl.state |= $dialog.find('#tab-system-acl-state-owner-read').prop('checked')  ? 0x400 : 0;
-        acl.state |= $dialog.find('#tab-system-acl-state-owner-write').prop('checked') ? 0x200 : 0;
-        acl.state |= $dialog.find('#tab-system-acl-state-group-read').prop('checked')  ? 0x40  : 0;
-        acl.state |= $dialog.find('#tab-system-acl-state-group-write').prop('checked') ? 0x20  : 0;
-        acl.state |= $dialog.find('#tab-system-acl-state-every-read').prop('checked')  ? 0x4   : 0;
-        acl.state |= $dialog.find('#tab-system-acl-state-every-write').prop('checked') ? 0x2   : 0;
+        acl.state |= that.$dialog.find('#tab-system-acl-state-owner-read').prop('checked')  ? 0x400 : 0;
+        acl.state |= that.$dialog.find('#tab-system-acl-state-owner-write').prop('checked') ? 0x200 : 0;
+        acl.state |= that.$dialog.find('#tab-system-acl-state-group-read').prop('checked')  ? 0x40  : 0;
+        acl.state |= that.$dialog.find('#tab-system-acl-state-group-write').prop('checked') ? 0x20  : 0;
+        acl.state |= that.$dialog.find('#tab-system-acl-state-every-read').prop('checked')  ? 0x4   : 0;
+        acl.state |= that.$dialog.find('#tab-system-acl-state-every-write').prop('checked') ? 0x2   : 0;
 
         acl.file = 0;
-        acl.file |= $dialog.find('#tab-system-acl-file-owner-read').prop('checked')  ? 0x400 : 0;
-        acl.file |= $dialog.find('#tab-system-acl-file-owner-write').prop('checked') ? 0x200 : 0;
-        acl.file |= $dialog.find('#tab-system-acl-file-group-read').prop('checked')  ? 0x40  : 0;
-        acl.file |= $dialog.find('#tab-system-acl-file-group-write').prop('checked') ? 0x20  : 0;
-        acl.file |= $dialog.find('#tab-system-acl-file-every-read').prop('checked')  ? 0x4   : 0;
-        acl.file |= $dialog.find('#tab-system-acl-file-every-write').prop('checked') ? 0x2   : 0;
+        acl.file |= that.$dialog.find('#tab-system-acl-file-owner-read').prop('checked')  ? 0x400 : 0;
+        acl.file |= that.$dialog.find('#tab-system-acl-file-owner-write').prop('checked') ? 0x200 : 0;
+        acl.file |= that.$dialog.find('#tab-system-acl-file-group-read').prop('checked')  ? 0x40  : 0;
+        acl.file |= that.$dialog.find('#tab-system-acl-file-group-write').prop('checked') ? 0x20  : 0;
+        acl.file |= that.$dialog.find('#tab-system-acl-file-every-read').prop('checked')  ? 0x4   : 0;
+        acl.file |= that.$dialog.find('#tab-system-acl-file-every-write').prop('checked') ? 0x2   : 0;
         return old !== JSON.stringify(acl);
     }
 
@@ -355,7 +355,7 @@ function System(main) {
 
         finishEditingRights();
 
-        $dialog.find('.system-settings.value').each(function () {
+        that.$dialog.find('.system-settings.value').each(function () {
             var $this = $(this);
             var id = $this.attr('id');
             if (!id) return;
@@ -403,7 +403,7 @@ function System(main) {
                 common.activeRepo = first;
             }
         }
-        common.diag = $dialog.find('#diagMode').val();
+        common.diag = that.$dialog.find('#diagMode').val();
 
         if (that.systemCerts) {
             // Fill the certificates list
@@ -413,7 +413,7 @@ function System(main) {
                 that.systemCerts.native.certificates[data[j].name] = string2cert(data[j].name, data[j].certificate);
             }
 
-            $dialog.find('.system-le-settings.value').each(function () {
+            that.$dialog.find('.system-le-settings.value').each(function () {
                 var $this = $(this);
                 var id = $this.data('name');
 
@@ -427,7 +427,7 @@ function System(main) {
 
         // we must to disable save button before the extendObject will be sent, because this is indicator for showing dialog
 
-        $dialog.find('.btn-save').addClass('disabled');
+        that.$dialog.find('.btn-save').addClass('disabled');
 
         that.main.socket.emit('extendObject', 'system.config', {common: common}, function (err) {
             if (!err) {
@@ -466,7 +466,7 @@ function System(main) {
         }
 
         if (latitude || longitude) {
-            var map = new google.maps.Map($dialog.find('.map')[0], {
+            var map = new google.maps.Map(that.$dialog.find('.map')[0], {
                 zoom:       14,
                 center:     {lat: parseFloat(latitude), lng: parseFloat(longitude)}
             });
@@ -504,7 +504,7 @@ function System(main) {
         // Detect materialize
         if ((id === 'tab-system-letsencrypt' || id === 'tab-system-main' || id === 'tab-system-acl') && window.M && window.M.toast) {
             M.updateTextFields('#' + id);
-            $dialog.find('optgroup').each(function () {
+            that.$dialog.find('optgroup').each(function () {
                 if (!$(this).data('lang')) {
                     var label = $(this).attr('label');
                     $(this).data('lang', label);
@@ -512,7 +512,7 @@ function System(main) {
                 }
             });
 
-            $dialog.find('select').select();
+            that.$dialog.find('select').select();
         } else
         if (id === 'tab-system-certs') {
             showMessage(_('Drop the files here'));
@@ -531,27 +531,27 @@ function System(main) {
                 showMessage(error, true);
                 return;
             }
-            var $system_activeRepo = $dialog.find('#system_activeRepo');
+            var $system_activeRepo = that.$dialog.find('#system_activeRepo');
             $system_activeRepo.html('');
             if (that.systemRepos && that.systemRepos.native.repositories) {
                 for (var repo in that.systemRepos.native.repositories) {
                     $system_activeRepo.append('<option value="' + repo + '">' + repo + '</option>');
                 }
             } else {
-                $dialog.find('#tab-system-repo').html(_('permissionError'));
+                that.$dialog.find('#tab-system-repo').html(_('permissionError'));
             }
 
-            $dialog.find('#diagMode')
+            that.$dialog.find('#diagMode')
                 .val(that.main.systemConfig.common.diag)
                 .on('change', function () {
                     that.main.socket.emit('sendToHost', that.main.currentHost, 'getDiagData', $(this).val(), function (obj) {
-                        $dialog.find('#diagSample').html(JSON.stringify(obj, null, 2));
+                        that.$dialog.find('#diagSample').html(JSON.stringify(obj, null, 2));
                     });
                 })
                 .trigger('change');
 
             // collect all history instances
-            var $system_defaultHistory = $dialog.find('#system_defaultHistory');
+            var $system_defaultHistory = that.$dialog.find('#system_defaultHistory');
             $system_defaultHistory.html('<option value=""></option>');
             for (var id = 0; id < that.main.instances.length; id++) {
                 if (main.objects[main.instances[id]].common.type === 'storage') {
@@ -562,7 +562,7 @@ function System(main) {
             latitude  = that.main.systemConfig.common.latitude;
             preInitMap();
 
-            $dialog.find('.system-settings.value').each(function () {
+            that.$dialog.find('.system-settings.value').each(function () {
                 var $this = $(this);
                 var id = $this.attr('id');
                 if (!id) return;
@@ -585,14 +585,14 @@ function System(main) {
                 }
             });
 
-            $dialog.find('#system_latitude').off('change').on('change', function () {
+            that.$dialog.find('#system_latitude').off('change').on('change', function () {
                 latitude = $(this).val();
                 that.updateMap();
             }).off('keyup').on('keyup', function () {
                 $(this).trigger('change');
             });
 
-            $dialog.find('#system_longitude').off('change').on('change', function () {
+            that.$dialog.find('#system_longitude').off('change').on('change', function () {
                 longitude = $(this).val();
                 that.updateMap();
             }).off('keyup').on('keyup', function () {
@@ -604,7 +604,7 @@ function System(main) {
                 };
             }
 
-            $dialog.find('.system-le-settings.value').each(function () {
+            that.$dialog.find('.system-le-settings.value').each(function () {
                 var $this = $(this);
                 var id = $this.data('name');
                 if (that.systemCerts && that.systemCerts.native.letsEncrypt) {
@@ -622,7 +622,7 @@ function System(main) {
                 }
             });
 
-            var $tabs = $dialog.find('#tabs-system');
+            var $tabs = that.$dialog.find('#tabs-system');
 
             $tabs.find('.tabs').mtabs({
                 onShow: function (tab)  {
@@ -631,8 +631,8 @@ function System(main) {
                 }
             });
 
-            $dialog.find('.dialog-system-buttons .btn-save').off('click').on('click', onButtonSave);
-            $dialog.find('.dialog-system-buttons .btn-cancel').off('click').on('click', function () {
+            that.$dialog.find('.dialog-system-buttons .btn-save').off('click').on('click', onButtonSave);
+            that.$dialog.find('.dialog-system-buttons .btn-cancel').off('click').on('click', function () {
                 that.main.navigate();
             });
 
@@ -640,13 +640,13 @@ function System(main) {
             initRights();
             initCertsGrid();
 
-            $dialog.find('.value').on('change', function () {
-                $dialog.find('.btn-save').removeClass('disabled');
+            that.$dialog.find('.value').on('change', function () {
+                that.$dialog.find('.btn-save').removeClass('disabled');
             }).on('keyup', function () {
                 $(this).trigger('change');
             });
 
-            $dialog.find('.btn-save').addClass('disabled');
+            that.$dialog.find('.btn-save').addClass('disabled');
 
             initTab('tab-system-main');
         });
@@ -659,7 +659,7 @@ function System(main) {
     };
 
     this.allStored = function () {
-        return $dialog.find('.btn-save').hasClass('disabled');
+        return that.$dialog.find('.btn-save').hasClass('disabled');
     };
 
     this.prepare = function () {

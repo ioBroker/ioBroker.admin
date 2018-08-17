@@ -139,13 +139,13 @@ function Objects(main) {
             }
         });
 
-        $dialogNewObject.find('.btn-add').on('keydown', function (e) {
+        /*$dialogNewObject.find('.btn-add').on('keydown', function (e) {
             if (e.keyCode === 13) {
                 setTimeout(function () {
                     $('#dialog-object-tab-new').trigger('click');
                 }, 100);
             }
-        });
+        });*/
     };
 
     this.stateChange = function (id, state) {
@@ -532,18 +532,18 @@ function Objects(main) {
                         title: _('Add new child object to selected parent'),
                         click: function () {
                             var id = selectId('getActual') || '';
-                            $('#object-tab-new-object-parent').val(id);
-                            $('#object-tab-new-object-name').val(_('newObject'));
+                            var $dialog = $('#dialog-new-object');
+                            $dialog.find('#object-tab-new-object-parent').val(id);
+                            $dialog.find('#object-tab-new-object-name').val(_('newObject'));
 
                             if (that.main.objects[id] && that.main.objects[id].type === 'device') {
-                                $('#object-tab-new-object-type').val('channel');
+                                $dialog.find('#object-tab-new-object-type').val('channel');
                             } else if (that.main.objects[id] && that.main.objects[id].type === 'channel') {
-                                $('#object-tab-new-object-type').val('state');
+                                $dialog.find('#object-tab-new-object-type').val('state');
                             } else {
-                                $('#object-tab-new-object-type').val('state');
+                                $dialog.find('#object-tab-new-object-type').val('state');
                             }
 
-                            var $dialog = $('#dialog-new-object');
                             $dialog.modal('open');
                             $dialog.find('h6').html(_('Add new object: %s', (id ? id + '.' : '') + _('newObject')));
                             $dialog.find('#object-tab-new-object-name').focus();

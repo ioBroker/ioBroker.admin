@@ -1227,7 +1227,7 @@ function Adapters(main) {
                     for (var g = 0; g < types.length; g++) {
                         tTypes += '<li class="main-toolbar-table-types-item" data-type="' + types[g] + '"><a>' + _(types[g]) + '</a></li>\n';
                     }
-                    var $types = $('#main-toolbar-table-types');
+                    var $types = that.$tab.find('#main-toolbar-table-types');
                     $types.html(tTypes);
                     $types.find('.main-toolbar-table-types-item').show().off('click').on('click', function () {
                         that.currentType = $(this).data('type') || '';
@@ -1242,7 +1242,7 @@ function Adapters(main) {
                         gutter: 0
                     });
 
-                    $types = $('#main-toolbar-table-order');
+                    $types = that.$tab.find('#main-toolbar-table-order');
                     $types.find('.main-toolbar-table-order-item').off('click').on('click', function () {
                         that.currentOrder = $(this).data('type') || '';
                         //filterTiles();

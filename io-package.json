@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.5.1",
+    "version": "3.5.2",
     "news": {
+      "3.5.2": {
+        "en": "Dropdown was fixed on touch devices\nSpeedup build of instances",
+        "de": "Drop-down wurde auf Touch-Geräten behoben\nBeschleunigen Sie das Build von Instanzen",
+        "ru": "Распаковка была зафиксирована на сенсорных устройствах\nУскорение сборки экземпляров",
+        "pt": "O menu suspenso foi corrigido em dispositivos sensíveis ao toque\nSpeedup build de instâncias",
+        "nl": "Dropdown is opgelost op touch-apparaten\nSpeedup build van instanties",
+        "fr": "Dropdown était fixé sur les appareils tactiles\nAccélération de la création d'instances",
+        "it": "Il menu a discesa è stato corretto sui dispositivi touch\nSpeedup build di istanze",
+        "es": "El menú desplegable se corrigió en dispositivos táctiles\nSpeedup construcción de instancias",
+        "pl": "Rozwinięcie zostało naprawione na urządzeniach dotykowych\nPrzyspieszenie kompilacji wystąpień"
+      },
       "3.5.1": {
         "en": "Error in custom settings was fixed",
         "de": "Fehler in benutzerdefinierten Einstellungen wurde behoben",

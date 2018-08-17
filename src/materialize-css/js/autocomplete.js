@@ -1,4 +1,4 @@
-(function ($) {
+(function($) {
   'use strict';
 
   let _defaults = {
@@ -6,7 +6,8 @@
     limit: Infinity, // Limit of results the autocomplete shows
     onAutocomplete: null, // Callback for when autocompleted
     minLength: 1, // Min characters before autocomplete starts
-    sortFunction: function (a, b, inputString) { // Sort function for sorting autocomplete results
+    sortFunction: function(a, b, inputString) {
+      // Sort function for sorting autocomplete results
       return a.indexOf(inputString) - b.indexOf(inputString);
     }
   };
@@ -45,7 +46,7 @@
       this.isOpen = false;
       this.count = 0;
       this.activeIndex = -1;
-      this.oldVal = null;
+      this.oldVal;
       this.$inputField = this.$el.closest('.input-field');
       this.$active = $();
       this._mousedown = false;
@@ -449,5 +450,4 @@
   if (M.jQueryLoaded) {
     M.initializeJqueryWrapper(Autocomplete, 'mautocomplete', 'M_Autocomplete'); //iob
   }
-
-}(cash));
+})(cash);
