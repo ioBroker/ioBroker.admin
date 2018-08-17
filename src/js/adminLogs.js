@@ -131,7 +131,7 @@ function Logs(main) {                                                           
 
         $table.html('');
         var doSubscribe = !this.inited;
-        that.inited = true;
+        this.inited = true;
 
         this.main.socket.emit('sendToHost', this.main.currentHost, 'getLogs', 200, function (lines) {
             setTimeout(function () {
@@ -139,7 +139,7 @@ function Logs(main) {                                                           
                 var size = lines ? lines.pop() : -1;
                 if (size !== -1) {
                     size = parseInt(size);
-                    this.$tab.find('#log-size').html((_('Log size:') + ' ' + ((size / (1024 * 1024)).toFixed(2) + ' MB ')).replace(/ /g, '&nbsp;'));
+                    that.$tab.find('#log-size').html((_('Log size:') + ' ' + ((size / (1024 * 1024)).toFixed(2) + ' MB ')).replace(/ /g, '&nbsp;'));
                 }
                 for (var i = 0, len = lines.length; i < len; i++) {
                     if (!lines[i]) continue;

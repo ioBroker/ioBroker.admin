@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.5.2",
+    "version": "3.5.3",
     "news": {
-      "3.5.2": {
+      "3.5.3": {
         "en": "Dropdown was fixed on touch devices\nSpeedup build of instances",
         "de": "Drop-down wurde auf Touch-Geräten behoben\nBeschleunigen Sie das Build von Instanzen",
         "ru": "Распаковка была зафиксирована на сенсорных устройствах\nУскорение сборки экземпляров",

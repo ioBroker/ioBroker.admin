@@ -80,7 +80,7 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
-### 3.5.2 (2018-08-17)
+### 3.5.3 (2018-08-18)
 * (bluefox) Dropdown was fixed on touch devices
 * (bluefox) Speedup build of instances
 
