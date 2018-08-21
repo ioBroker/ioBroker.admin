@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.5.4",
+    "version": "3.5.5",
     "news": {
-      "3.5.4": {
+      "3.5.5": {
         "en": "Upload of files was corrected.",
         "de": "Upload von Dateien wurde korrigiert.",
         "ru": "Исправлена ​​загрузка файлов.",
