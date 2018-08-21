@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.5.3",
+    "version": "3.5.4",
     "news": {
+      "3.5.4": {
+        "en": "Upload of files was corrected.",
+        "de": "Upload von Dateien wurde korrigiert.",
+        "ru": "Исправлена ​​загрузка файлов.",
+        "pt": "Upload de arquivos foi corrigido.",
+        "nl": "Upload van bestanden is gecorrigeerd.",
+        "fr": "Le téléchargement de fichiers a été corrigé.",
+        "it": "Il caricamento dei file è stato corretto.",
+        "es": "La carga de archivos fue corregida.",
+        "pl": "Przesyłanie plików zostało poprawione."
+      },
       "3.5.3": {
         "en": "Dropdown was fixed on touch devices\nSpeedup build of instances",
         "de": "Drop-down wurde auf Touch-Geräten behoben\nBeschleunigen Sie das Build von Instanzen",
