@@ -1226,7 +1226,6 @@ function Instances(main) {
                             that.init(true);
                         }, 200);
                     } else {
-                        debugger;
                         // update just one line or
                         this.$grid.find('.instance-adapter[data-instance-id="' + id + '"]').html(showOneAdapter(this.$grid, id, this.main.config.instanceForm, true));
                     }
@@ -1407,7 +1406,7 @@ function Instances(main) {
                     }
                     menu += '<li class="instances-menu-link">' + _('Close') + '</li>';
 
-                    var $instancesMenu = that.$tab.find('#instances-menu');
+                    var $instancesMenu = $('#instances-menu');
                     if ($instancesMenu.data('inited')) $instancesMenu.menu('destroy');
 
                     var pos = $(this).position();
@@ -1424,9 +1423,9 @@ function Instances(main) {
                         top:    pos.top
                     }).show();
 
-                    that.$tab.find('.instances-menu-link').off('click').on('click', function () {
+                    $instancesMenu.find('.instances-menu-link').off('click').on('click', function () {
                         if ($(this).data('link')) window.open($(this).data('link'), $(this).data('instance-id'));
-                        that.$tab.find('#instances-menu').hide();
+                        $('#instances-menu').hide();
                     });
 
                 } else {

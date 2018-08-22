@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.5.5",
+    "version": "3.5.6",
     "news": {
+      "3.5.6": {
+        "en": "Import and export of the instance configuration was implemented.",
+        "de": "Import und Export der Instanzkonfiguration wurde implementiert.",
+        "ru": "Был реализован импорт и экспорт конфигурации экземпляра.",
+        "pt": "Importação e exportação da configuração da instância foi implementada.",
+        "nl": "Import en export van de instance-configuratie is geïmplementeerd.",
+        "fr": "L'importation et l'exportation de la configuration d'instance ont été implémentées.",
+        "it": "È stata implementata l'importazione e l'esportazione della configurazione dell'istanza.",
+        "es": "Se implementó la importación y exportación de la configuración de la instancia.",
+        "pl": "Zaimplementowano import i eksport konfiguracji instancji."
+      },
       "3.5.5": {
         "en": "Upload of files was corrected.",
         "de": "Upload von Dateien wurde korrigiert.",
