@@ -354,6 +354,19 @@ function Objects(main) {
         }
     };
 
+    function generateFile(filename, obj) {
+        var el = document.createElement('a');
+        el.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj, null, 2)));
+        el.setAttribute('download', filename);
+
+        el.style.display = 'none';
+        document.body.appendChild(el);
+
+        el.click();
+
+        document.body.removeChild(el);
+    }
+
     this.init = function (update) {
         if (this.inited && !update) {
             return;
@@ -583,7 +596,7 @@ function Objects(main) {
                                 if (!key.search(id)) result[key] = val;
                             });
                             if (result !== undefined) {
-                                window.open('data:application/iobroker; content-disposition=attachment; filename=' + id + '.json,' + JSON.stringify(result));
+                                generateFile(id + '.json', result);
                             } else {
                                 alert(_('Save of objects-tree is not possible'));
                             }
@@ -705,6 +718,32 @@ function Objects(main) {
         }
     };
 
+    function loadObjects(objs, callback) {
+        if (objs) {
+            for (var id in objs) {
+                if (!objs.hasOwnProperty(id) || !objs[id]) continue;
+                var obj = objs[id];
+                objs[id] = null;
+                that.main.socket.emit('setObject', id, obj, function (err) {
+                    if (err) {
+                        that.main.showError(err);
+                    } else if (obj.type === 'state') {
+                        that.main.socket.emit('getState', obj._id, function (err, state) {
+                            if (!state || state.val === null) {
+                                that.main.socket.emit('setState', obj._id, !obj.common || obj.common.def === undefined ? null : obj.common.def, true);
+                            }
+                            setTimeout(loadObjects, 0, objs, callback);
+                        });
+                    } else {
+                        setTimeout(loadObjects, 0, objs, callback);
+                    }
+                });
+                return;
+            }
+        }
+        callback && callback();
+    }
+
     function handleFileSelect(evt) {
         var f = evt.target.files[0];
         if (f) {
@@ -715,31 +754,19 @@ function Objects(main) {
                 var len = Object.keys(json).length;
                 var id = json._id;
                 if (id === undefined && len > 1) {
-                    for (var obj in (json)) {
-                        id = json[obj]._id;
-                        that.main.socket.emit('setObject', id, json[obj], function (err) {
-                            if (err) {
-                                that.main.showError(err);
-                                return;
-                            }
-                            var _obj = json[obj];
-                            //console.log(id + ' = ' + _obj.type);
-                            if (json[obj].type === 'state') {
-                                that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
-                            }
-                        });
-                    }
+                    loadObjects(json, function () {
+                        that.main.showToast(that.$grid.find('.main-toolbar-table'), _('%s object(s) processed', Object.keys(json).length));
+                    });
                 } else {
-                    that.main.socket.emit('setObject', id, json, function (err) {
+                    that.main.socket.emit('setObject', json._id, json, function (err) {
                         if (err) {
                             that.main.showError(err);
                             return;
                         }
-                        var _obj = json[obj];
-                        //console.log(id + ' = ' + _obj.type);
-                        if (json[obj].type === 'state') {
-                            that.main.socket.emit('setState', _obj._id, _obj.common.def === undefined ? null : _obj.common.def, true);
+                        if (json.type === 'state') {
+                            that.main.socket.emit('setState', json._id, json.common.def === undefined ? null : json.common.def, true);
                         }
+                        that.main.showToast(that.$grid.find('.main-toolbar-table'), _('%s was imported', json._id));
                     });
                 }
             };

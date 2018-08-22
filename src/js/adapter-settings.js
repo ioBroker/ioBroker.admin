@@ -16,6 +16,7 @@ var certs    = [];
 var adapter  = '';
 var onChangeSupported = false;
 var isMaterialize = false;
+var ___onChange = null;
 
 function preInit () {
     'use strict';
@@ -43,6 +44,61 @@ function preInit () {
     systemDictionary.Message =        {"en": "Message",        "fr": "Message",                         "nl": "Bericht",             "es": "Mensaje",                     "pt": "Mensagem",                "it": "Messaggio",                   "de": "Mitteilung",               "pl": "Wiadomość",                    "ru": "Сообщение"};
     systemDictionary.close =          {"en": "Close",          "fr": "Fermer",                          "nl": "Dichtbij",            "es": "Cerca",                       "pt": "Fechar",                  "it": "Vicino",                      "de": "Schließen",                "pl": "Blisko",                       "ru": "Закрыть"};
     systemDictionary.htooltip =       {"en": "Click for help", "fr": "Cliquez pour obtenir de l'aide",  "nl": "Klik voor hulp",      "es": "Haz clic para obtener ayuda", "pt": "Clique para ajuda",       "it": "Fai clic per chiedere aiuto", "de": "Anklicken",                "pl": "Kliknij, aby uzyskać pomoc",   "ru": "Перейти по ссылке"};
+    systemDictionary.saveConfig =     {
+        "en": "Save configuration to file",
+        "de": "Speichern Sie die Konfiguration in der Datei",
+        "ru": "Сохранить конфигурацию в файл",
+        "pt": "Salvar configuração no arquivo",
+        "nl": "Sla configuratie op naar bestand",
+        "fr": "Enregistrer la configuration dans un fichier",
+        "it": "Salva la configurazione nel file",
+        "es": "Guardar configuración en archivo",
+        "pl": "Zapisz konfigurację do pliku"
+    };
+    systemDictionary.loadConfig =     {
+        "en": "Load configuration from file",
+        "de": "Laden Sie die Konfiguration aus der Datei",
+        "ru": "Загрузить конфигурацию из файла",
+        "pt": "Carregar configuração do arquivo",
+        "nl": "Laad de configuratie uit het bestand",
+        "fr": "Charger la configuration à partir du fichier",
+        "it": "Carica la configurazione dal file",
+        "es": "Cargar configuración desde archivo",
+        "pl": "Załaduj konfigurację z pliku"
+    };
+    systemDictionary.otherConfig = {
+        "en": "Configuration from other adapter %s",
+        "de": "Konfiguration von anderem Adapter %s",
+        "ru": "Конфигурация из другого адаптера %s",
+        "pt": "Configuração de outro adaptador %s",
+        "nl": "Configuratie vanaf andere adapter %s",
+        "fr": "Configuration à partir d'un autre adaptateur %s",
+        "it": "Configurazione da altro adattatore %s",
+        "es": "Configuración desde otro adaptador %s",
+        "pl": "Konfiguracja z innego adaptera %s"
+    };
+    systemDictionary.invalidConfig = {
+        "en": "Invalid JSON file",
+        "de": "Ungültige JSON-Datei",
+        "ru": "Недопустимый файл JSON",
+        "pt": "Arquivo JSON inválido",
+        "nl": "Ongeldig JSON-bestand",
+        "fr": "Fichier JSON non valide",
+        "it": "File JSON non valido",
+        "es": "Archivo JSON no válido",
+        "pl": "Nieprawidłowy plik JSON"
+    };
+    systemDictionary.configLoaded = {
+        "en": "Configuration was successfully loaded",
+        "de": "Die Konfiguration wurde erfolgreich geladen",
+        "ru": "Конфигурация успешно загружена",
+        "pt": "Configuração foi carregada com sucesso",
+        "nl": "Configuratie is succesvol geladen",
+        "fr": "La configuration a été chargée avec succès",
+        "it": "La configurazione è stata caricata correttamente",
+        "es": "La configuración se cargó correctamente",
+        "pl": "Konfiguracja została pomyślnie załadowana"
+    };
     systemDictionary.maxTableRaw =    {
         "en": "Maximum number of allowed raws",
         "de": "Maximale Anzahl von erlaubten Tabellenzeilen",
@@ -295,6 +351,7 @@ function preInit () {
             }
         });
     }
+    ___onChange = onChange;
 }
 
 $(document).ready(function () {
@@ -320,22 +377,127 @@ $(document).ready(function () {
     }
 });
 
+function handleFileSelect(evt) {
+    var f = evt.target.files[0];
+    if (f) {
+        var r = new FileReader();
+        r.onload = function(e) {
+            var contents = e.target.result;
+            try {
+                var json = JSON.parse(contents);
+                if (json.native && json.common) {
+                    if (json.common.name !== common.name) {
+                        showError(_('otherConfig', json.common.name));
+                    } else {
+                        load(json.native, ___onChange);
+                        // init selects
+                        if (isMaterialize) {
+                            $('select').select();
+                            M.updateTextFields();
+
+                            // workaround for materialize checkbox problem
+                            $('input[type="checkbox"]+span').off('click').on('click', function () {
+                                var $input = $(this).prev();
+                                if (!$input.prop('disabled')) {
+                                    $input.prop('checked', !$input.prop('checked')).trigger('change');
+                                }
+                            });
+                        }
+                        ___onChange();
+                        showToast(null, _('configLoaded'));
+                    }
+                } else {
+                    showError(_('invalidConfig'));
+                }
+            } catch (e) {
+                showError(e.toString());
+            }
+        };
+        r.readAsText(f);
+    } else {
+        alert('Failed to open JSON File');
+    }
+}
+
+function generateFile(filename, obj) {
+    var el = document.createElement('a');
+    el.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj, null, 2)));
+    el.setAttribute('download', filename);
+
+    el.style.display = 'none';
+    document.body.appendChild(el);
+
+    el.click();
+
+    document.body.removeChild(el);
+}
+
 function prepareTooltips() {
     if (isMaterialize) {
         // init tabs
         $('.tabs').mtabs();
 
+        var buttonsText = '';
         if (common && common.readme) {
+            buttonsText += '   <a class="btn-floating btn-small waves-effect waves-light" href="' + common.readme +'" target="_blank">' +
+                '       <i class="material-icons">live_help</i>' +
+                '   </a>';
+        }
+
+        buttonsText += '   <a class="btn-floating btn-small waves-effect waves-light adapter-config-load" title="' + _('loadConfig') + '">' +
+            '       <i class="material-icons">file_upload</i>' +
+            '   </a>';
+
+        buttonsText += '   <a class="btn-floating btn-small waves-effect waves-light adapter-config-save" title="' + _('saveConfig') + '">' +
+            '       <i class="material-icons">file_download</i>' +
+            '   </a>';
+
+
+        if (buttonsText) {
             // add help link after logo
             var $logo = $('.logo').first().parent();
-
             if ($logo.length) {
-                $('<div class="col s6 help-link">' +
-                    '   <a class="btn-floating btn-small waves-effect waves-light" href="' + common.readme +'" target="_blank">' +
-                    '       <i class="material-icons">live_help</i>' +
-                    '   </a>' +
-                    '</div>').insertAfter($logo);
+                $('<div class="col s6 help-link">' + buttonsText + '</div>').insertAfter($logo);
             }
+            $('.adapter-config-load').click(function () {
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('id', 'files');
+                input.setAttribute('opacity', 0);
+                input.addEventListener('change', function (e) {
+                    handleFileSelect(e, function () {});
+                }, false);
+                (input.click)();
+            });
+            $('.adapter-config-save').click(function () {
+                save(function (native, cmn) {
+                    var result = {
+                        _id: 'system.adapter.' + common.name + '.' + instance,
+                        common: JSON.parse(JSON.stringify(common)),
+                        native: native
+                    };
+                    // remove unimportant information
+                    if (result.common.news) {
+                        delete result.common.news;
+                    }
+                    if (result.common.titleLang) {
+                        delete result.common.titleLang;
+                    }
+                    if (result.common.desc) {
+                        delete result.common.desc;
+                    }
+                    if (cmn) {
+                        for (var b in cmn) {
+                            if (cmn.hasOwnProperty(b)) {
+                                result.common[b] = cmn[b];
+                            }
+                        }
+                    }
+
+                    //window.open('data:application/iobroker; content-disposition=attachment; filename=' + result._id + '.json,' + JSON.stringify(result, null, 2));
+                    generateFile(result._id + '.json', result);
+                });
+            })
         }
 
         $('.value').each(function () {
@@ -366,7 +528,7 @@ function prepareTooltips() {
             }
 
             var link = $this.data('link');
-            if (link) {
+            if (link && common) {
                 if (link === true) {
                     if (common.readme) {
                         link = common.readme + '#' + id;
@@ -416,7 +578,7 @@ function prepareTooltips() {
 
             var icon = '';
             var link = $(this).data('link');
-            if (link) {
+            if (link && common) {
                 if (link === true) {
                     if (common.readme) {
                         link = common.readme + '#' + id;

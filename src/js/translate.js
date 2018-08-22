@@ -78,12 +78,12 @@ function translateAll(selector, lang, dictionary) {
         //<span class="ui-button-text translateP" placeholder="TextToTranslate">Save</span>
         var text = $(this).attr('data-lang-placeholder');
         if (!text) {
-            text = $(this).attr('title');
+            text = $(this).attr('placeholder');
             $(this).attr('data-lang-placeholder', text);
         }
         var transText = translateWord(text, lang, dictionary);
         if (transText) {
-            $(this).attr('title', transText);
+            $(this).attr('placeholder', transText);
         }
     });
 }

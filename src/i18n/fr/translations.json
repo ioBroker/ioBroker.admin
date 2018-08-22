@@ -1,7 +1,9 @@
 {
   " for %s": " pour %s",
   "%s added to %s": "%s ajouté à %s",
+  "%s object(s) processed": "%s objets ont été traités",
   "%s processes": "%s processus",
+  "%s was imported": "%s a été importé",
   "(without prefix)": "(sans préfixe)",
   "1 %d days ago": "il y a %d jours",
   "2 %d days ago": "il y a %d jours",
@@ -213,6 +215,7 @@
   "Fiji": "Fidji",
   "File is too big!": "Le fichier est trop grand!",
   "File rights": "Droits du fichier",
+  "Filter": "Filtre",
   "Filter:": "Filtre",
   "Filtered out": "Tout est filtré",
   "Find coordinates...": "Trouver les coordonnées ...",
