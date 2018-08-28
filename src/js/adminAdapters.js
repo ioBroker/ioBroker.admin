@@ -1552,13 +1552,13 @@ function Adapters(main) {
                         // Show license dialog!
                         showLicenseDialog(adapter, function (isAgree) {
                             if (isAgree) {
-                                that.main.cmdExec(null, 'add ' + adapter, function (exitCode) {
+                                that.main.cmdExec(null, 'add ' + adapter + ' ' + index + ' --host ' + host, function (exitCode) {
                                     if (!exitCode) that._postInit(true);
                                 });
                             }
                         });
                     } else {
-                        that.main.cmdExec(null, 'add ' + adapter + ' ' + index, function (exitCode) {
+                        that.main.cmdExec(null, 'add ' + adapter + ' ' + index + ' --host ' + host, function (exitCode) {
                             if (!exitCode) that._postInit(true);
                         });
                     }
