@@ -1545,7 +1545,7 @@ function getTableResult(tabId, cols) {
  <th data-name="room"      class="translate" data-type="select">Room</th>
  <th data-name="aaa"       class="translate" data-options="1/A;2/B;3/C;4" data-type="select">Room</th>
  <th data-name="enabled"   class="translate" data-type="checkbox">Enabled</th>
- <th data-buttons="delete up down" style="width: 32px"></th>
+ <th data-buttons="delete up down copy" style="width: 32px"></th>
  </tr>
  </thead>
  </table>
@@ -1569,7 +1569,7 @@ function getTableResult(tabId, cols) {
  *                      <th data-name="room"      class="translate" data-type="select">Room</th>
  *                      <th data-name="aaa"       class="translate" data-options="1/A;2/B;3/C;4" data-type="select">Room</th>
  *                      <th data-name="enabled"   class="translate" data-type="checkbox" data-default="true">Enabled</th>
- *                      <th data-buttons="delete up down" style="width: 32px"></th>
+ *                      <th data-buttons="delete up down copy" style="width: 32px"></th>
  *                  </tr>
  *              </thead>
  *          </table>
@@ -1823,7 +1823,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 if (buttons[i]) {
                     style = 'text-align: center; white-space: nowrap;';
                     for (var b = 0; b < buttons[i].length; b++) {
-                        if ((!v && buttons[i][b] === 'up') || v === values.length - 1 && buttons[i][b] === 'down') {
+                        if ((!v && buttons[i][b] === 'up') || (v === values.length - 1 && buttons[i][b] === 'down')) {
                             if (isMaterialize) {
                                 line += '<a data-command="' + buttons[i][b] + '" class="values-buttons btn-floating btn-small waves-effect waves-light disabled"><i class="material-icons">add</i></a>';
                             } else {
@@ -1832,7 +1832,6 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         } else {
                             if (isMaterialize) {
                                 line += '<a data-index="' + v + '" data-command="' + buttons[i][b] + '" class="values-buttons btn-floating btn-small waves-effect waves-light"><i class="material-icons">add</i></a>';
-
                             } else {
                                 line += '<button data-index="' + v + '" data-command="' + buttons[i][b] + '" class="values-buttons"></button>';
                             }
@@ -1870,6 +1869,38 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
         });
         $lines.find('.values-buttons').each(function () {
             var command = $(this).data('command');
+            if (command === 'copy') {
+                if (!isMaterialize) {
+                    $(this).button({
+                        icons: {primary: 'ui-icon-copy'},
+                        text: false
+                    })
+                        .css({width: '1em', height: '1em'});
+                } else {
+                    $(this).find('i').html('content_copy');
+                }
+
+                $(this).on('click', function () {
+                    if (!$add.data('maxraw') || ($add.data('raw') < $add.data('maxraw'))) {
+                        var id = $(this).data('index');
+                        var elem = JSON.parse(JSON.stringify(values[id]));
+                        values.push(elem);
+                        onChange && onChange();
+
+                        setTimeout(function () {
+                            if (typeof tableEvents === 'function') {
+                                tableEvents(values.length - 1, elem, 'add');
+                            }
+
+                            values2table(divId, values, onChange, onReady);
+                        }, 100);
+
+                        if ($add.data('maxraw')) {
+                            $add.data('raw', $add.data('raw') + 1);
+                        }
+                    }
+                });
+            } else
             if (command === 'delete') {
                 if (!isMaterialize) {
                     $(this).button({
@@ -1985,7 +2016,6 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 }
                 $(this).on('click', function () {
                     var id = $(this).data('index');
-                    var elem = values[id];
                     if (typeof editLine === 'function') {
                         setTimeout(function () {
                             editLine(id, JSON.parse(JSON.stringify(values[id])), function (err, id, newValues) {
@@ -1993,7 +2023,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                                     if (JSON.stringify(values[id]) !== JSON.stringify(newValues)) {
                                         onChange && onChange();
                                         values[id] = newValues;
-                                        _values2table(id, values, onChange, onReady);
+                                        values2table(divId, values, onChange, onReady);
                                     }
                                 }
                             });

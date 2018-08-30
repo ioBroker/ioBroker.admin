@@ -80,6 +80,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 3.5.7 (2018-08-30)
+* (bluefox) Edit of the table entries in configuration dialog was corrected.
+
 ### 3.5.6 (2018-08-22)
 * (bluefox) Import and export of the instance configuration was implemented.
 

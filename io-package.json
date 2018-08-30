@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.5.6",
+    "version": "3.5.7",
     "news": {
+      "3.5.7": {
+        "en": "Edit of the table entries in configuration dialog was corrected",
+        "de": "Die Bearbeitung der Tabelleneinträge im Konfigurationsdialog wurde korrigiert",
+        "ru": "Исправлено редактирование записей таблицы в диалоговом окне конфигурации",
+        "pt": "A edição das entradas da tabela na caixa de diálogo de configuração foi corrigida",
+        "nl": "Bewerking van de tabelitems in het configuratiedialoogvenster is gecorrigeerd",
+        "fr": "L'édition des entrées de la table de dialogue de configuration a été corrigée",
+        "it": "La modifica delle voci della tabella nella finestra di configurazione è stata corretta",
+        "es": "Se corrigió la edición de las entradas de la tabla en el cuadro de diálogo de configuración",
+        "pl": "Edytowano wpisy tabeli w oknie dialogowym konfiguracji"
+      },
       "3.5.6": {
         "en": "Import and export of the instance configuration was implemented.",
         "de": "Import und Export der Instanzkonfiguration wurde implementiert.",
