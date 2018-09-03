@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.5.7",
+    "version": "3.5.8",
     "news": {
+      "3.5.8": {
+        "en": "Google map was replaces with open street map",
+        "de": "Google Karte wurde durch open street map ersetzt",
+        "ru": "Карта Google заменяет собой open street map",
+        "pt": "Mapa do Google foi substituído por open street map",
+        "nl": "Google-kaart werd vervangen door open street map",
+        "fr": "Google map était remplacé par open street map",
+        "it": "La mappa di Google è stata sostituita con open street map",
+        "es": "El mapa de Google fue reemplazado por open street map",
+        "pl": "Mapa Google została zamieniona na open street map"
+      },
       "3.5.7": {
         "en": "Edit of the table entries in configuration dialog was corrected",
         "de": "Die Bearbeitung der Tabelleneinträge im Konfigurationsdialog wurde korrigiert",
