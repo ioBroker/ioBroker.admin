@@ -16,6 +16,7 @@ function System(main) {
     var mapInited;
     var longitude;
     var latitude;
+    var useOpenLayers = true;
 
     function string2cert(name, str) {
         if (str.length < 700 && (str.indexOf('/') !== -1 || str.indexOf('\\') !== -1)) {
@@ -452,47 +453,124 @@ function System(main) {
     }
 
     this.updateMap = function (immediately) {
-        if (!this.mapLoaded) return;
-        if (!immediately) {
-            clearTimeout(mapTimer);
-            mapTimer = setTimeout(function () {
-                that.updateMap(true);
-            }, 1000);
-            return;
-        }
-        if (mapTimer) {
-            clearTimeout(mapTimer);
-            mapTimer = null;
-        }
+        if (useOpenLayers) {
+            // OPEN STREET MAPS
+            if (typeof ol === 'undefined') {
+                return setTimeout(that.updateMap, 200);
+            }
+            var point = ol.proj.fromLonLat([parseFloat(longitude), parseFloat(latitude)]);
+            if (!that.OSM) {
+                that.OSM = {};
+                that.OSM.markerSource = new ol.source.Vector();
 
-        if (latitude || longitude) {
-            var map = new google.maps.Map(that.$dialog.find('.map')[0], {
-                zoom:       14,
-                center:     {lat: parseFloat(latitude), lng: parseFloat(longitude)}
-            });
+                that.OSM.markerStyle = new ol.style.Style({
+                    image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+                        anchor: [0.5, 49],
+                        anchorXUnits: 'fraction',
+                        anchorYUnits: 'pixels',
+                        opacity: 0.75,
+                        src: 'img/pin.png'
+                    }))
+                });
 
-            var marker = new google.maps.Marker({
-                position:   {lat: parseFloat(latitude), lng: parseFloat(longitude)},
-                map:        map,
-                title:      _('Your home')
-            });
+                that.OSM.oMap = new ol.Map({
+                    target: 'map',
+                    layers: [
+                        new ol.layer.Tile({source: new ol.source.OSM()}),
+                        new ol.layer.Vector({
+                            source: that.OSM.markerSource,
+                            style:  that.OSM.markerStyle,
+                        })
+                    ],
+                    view: new ol.View({center: point, zoom: 18})
+                });
+
+                that.OSM.marker = new ol.Feature({
+                    geometry: new ol.geom.Point(point),
+                    name:  _('Your home')
+                });
+
+                that.OSM.markerSource.addFeature(that.OSM.marker);
+
+                that.OSM.oMap.on('singleclick', function (event){
+                    var lonLat = ol.proj.toLonLat(event.coordinate);
+                    longitude = lonLat[0];
+                    that.$dialog.find('#system_longitude').val(lonLat[0]);
+                    latitude = lonLat[1];
+                    that.$dialog.find('#system_latitude').val(lonLat[1]).trigger('change');
+                });
+            }
+            var zoom = that.OSM.oMap.getView().getZoom();
+            that.OSM.marker.setGeometry(new ol.geom.Point(point));
+            that.OSM.oMap.setView(new ol.View({center: point, zoom: zoom}));
+            //var position = new OpenLayers.LonLat(parseFloat(longitude), parseFloat(latitude)).transform(that.OSM.fromProjection, that.OSM.toProjection);
+            //that.OSM.marker.setPosition(position);
+
+            //that.OSM.oMap.setCenter(position, 18);
+        } else {
+            //  GOOGLE MAPS
+            if (!this.mapLoaded) return;
+            if (!immediately) {
+                clearTimeout(mapTimer);
+                mapTimer = setTimeout(function () {
+                    that.updateMap(true);
+                }, 1000);
+                return;
+            }
+            if (mapTimer) {
+                clearTimeout(mapTimer);
+                mapTimer = null;
+            }
+
+            if (latitude || longitude) {
+                var map = new google.maps.Map(that.$dialog.find('.map')[0], {
+                    zoom:       14,
+                    center:     {lat: parseFloat(latitude), lng: parseFloat(longitude)}
+                });
+
+                var marker = new google.maps.Marker({
+                    position:   {lat: parseFloat(latitude), lng: parseFloat(longitude)},
+                    map:        map,
+                    title:      _('Your home')
+                });
+            }
         }
     };
 
     function preInitMap() {
         if (!mapInited) {
             mapInited = true;
-            var key1 = 'AIzaSyCIrBRZfZAE';
-            var key2 = '_0C1OplAUy7OXhiWLoZc3eY';
-            var key = key1 + key2;
+            if (useOpenLayers) {
+                that.mapLoaded = true;
+                // load google API
+                $.ajax({
+                    // please do not miss use this api key!
+                    url: 'lib/js/ol.js',
+                    dataType: 'script',
+                    cache: true
+                }).done(function() {
+                    setTimeout(that.updateMap, 500);
+                });
 
-            // load google API
-            $.ajax({
-                // please do not miss use this api key!
-                url: 'https://maps.googleapis.com/maps/api/js?key=' + key + '&signed_in=true&callback=initMap',
-                dataType: 'script',
-                cache: true
-            });
+                $.ajax({
+                    url: 'lib/css/ol.css',
+                    success: function(data){
+                        $('head').append('<style>' + data + '</style>');
+                    }
+                });
+            } else {
+                var key1 = 'AIzaSyCIrBRZfZAE';
+                var key2 = '_0C1OplAUy7OXhiWLoZc3eY';
+                var key = key1 + key2;
+
+                // load google API
+                $.ajax({
+                    // please do not miss use this api key!
+                    url: 'https://maps.googleapis.com/maps/api/js?key=' + key + '&signed_in=true&callback=initMap',
+                    dataType: 'script',
+                    cache: true
+                });
+            }
         }
     }
 
