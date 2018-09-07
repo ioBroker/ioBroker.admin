@@ -482,7 +482,7 @@ function System(main) {
                             style:  that.OSM.markerStyle,
                         })
                     ],
-                    view: new ol.View({center: point, zoom: 18})
+                    view: new ol.View({center: point, zoom: 17})
                 });
 
                 that.OSM.marker = new ol.Feature({
