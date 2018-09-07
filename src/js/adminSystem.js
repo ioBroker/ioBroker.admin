@@ -503,10 +503,6 @@ function System(main) {
             var zoom = that.OSM.oMap.getView().getZoom();
             that.OSM.marker.setGeometry(new ol.geom.Point(point));
             that.OSM.oMap.setView(new ol.View({center: point, zoom: zoom}));
-            //var position = new OpenLayers.LonLat(parseFloat(longitude), parseFloat(latitude)).transform(that.OSM.fromProjection, that.OSM.toProjection);
-            //that.OSM.marker.setPosition(position);
-
-            //that.OSM.oMap.setCenter(position, 18);
         } else {
             //  GOOGLE MAPS
             if (!this.mapLoaded) return;
