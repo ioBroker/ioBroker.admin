@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.5.8",
+    "version": "3.5.9",
     "news": {
+      "3.5.9": {
+        "en": "The log output problem was fixed",
+        "de": "Das Protokollausgabe-Problem wurde behoben",
+        "ru": "Проблема с выводом журнала была исправлена",
+        "pt": "O problema de saída de log foi corrigido",
+        "nl": "Het probleem met de uitvoer van de log is opgelost",
+        "fr": "Le problème de sortie du journal a été résolu",
+        "it": "Il problema di output del log è stato risolto",
+        "es": "El problema de salida del registro fue arreglado",
+        "pl": "Problem z wyjściem dziennika został naprawiony"
+      },
       "3.5.8": {
         "en": "Google map was replaces with open street map",
         "de": "Google Karte wurde durch open street map ersetzt",

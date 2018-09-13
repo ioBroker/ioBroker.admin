@@ -20,14 +20,10 @@ let adapter = new utils.Adapter({
     dirname:        __dirname,   // say own position
     logTransporter: true,        // receive the logs
     systemConfig:   true,
-    install: function (callback) {
-        if (typeof callback === 'function') {
-            callback();
-        }
-    }
+    install:        callback => typeof callback === 'function' && callback()
 });
 
-adapter.on('objectChange', function (id, obj) {
+adapter.on('objectChange', (id, obj) => {
     if (obj) {
         //console.log('objectChange: ' + id);
         objects[id] = obj;
@@ -48,7 +44,7 @@ adapter.on('objectChange', function (id, obj) {
     }
 });
 
-adapter.on('stateChange', function (id, state) {
+adapter.on('stateChange', (id, state) => {
     if (!state) {
         if (states[id]) {
             delete states[id];
@@ -61,12 +57,12 @@ adapter.on('stateChange', function (id, state) {
     }
 });
 
-adapter.on('ready', function () {
-    adapter.getForeignObject('system.config', function (err, obj) {
+adapter.on('ready', () => {
+    adapter.getForeignObject('system.config', (err, obj) => {
         if (!err && obj) {
             obj.native = obj.native || {};
             if (!obj.native.secret) {
-                require('crypto').randomBytes(24, function (ex, buf) {
+                require('crypto').randomBytes(24, (ex, buf) => {
                     adapter.config.secret = buf.toString('hex');
                     adapter.extendForeignObject('system.config', {native: {secret: adapter.config.secret}});
                     main();
@@ -82,7 +78,7 @@ adapter.on('ready', function () {
     });
 });
 
-adapter.on('message', function (obj) {
+adapter.on('message', obj => {
     if (!obj || !obj.message) {
         return false;
     }
@@ -94,7 +90,7 @@ adapter.on('message', function (obj) {
     return true;
 });
 
-adapter.on('unload', function (callback) {
+adapter.on('unload', callback => {
     if (socket) {
         // unsubscribe all
         socket.unsubscribeAll();
@@ -109,12 +105,8 @@ adapter.on('unload', function (callback) {
     }
 });
 
-adapter.on('log', function (obj) {
-    // obj = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
-    if (socket) {
-        socket.sendLog(obj);
-    }
-});
+// obj = {message: msg, severity: level, from: this.namespace, ts: (new Date()).getTime()}
+adapter.on('log', obj => socket && socket.sendLog(obj));
 
 function createUpdateInfo() {
     // create connected object and state
@@ -284,30 +276,24 @@ function main() {
 
     if (adapter.config.secure) {
         // Load certificates
-        adapter.getCertificates(function (err, certificates, leConfig) {
+        adapter.getCertificates((err, certificates, leConfig) => {
             adapter.config.certificates = certificates;
             adapter.config.leConfig     = leConfig;
 
-            getData(function () {
-                webServer = new Web(adapter.config, adapter, initSocket);
-            });
+            getData(() => webServer = new Web(adapter.config, adapter, initSocket));
         });
     } else {
-        getData(function () {
-            webServer = new Web(adapter.config, adapter, initSocket);
-        });
+        getData(() => webServer = new Web(adapter.config, adapter, initSocket));
     }
 
-    patchRepos(function () {
+    patchRepos(() => {
         // By default update repository every 24 hours
         if (adapter.config.autoUpdate === undefined) {
             adapter.config.autoUpdate = 24;
         }
         adapter.config.autoUpdate = parseInt(adapter.config.autoUpdate, 10) || 0;
         if (adapter.config.autoUpdate) {
-            setInterval(function () {
-                updateRegister();
-            }, adapter.config.autoUpdate * 3600000);
+            setInterval(() => updateRegister(), adapter.config.autoUpdate * 3600000);
             updateRegister();
         }
     });
@@ -318,14 +304,14 @@ function getData(callback) {
     adapter.log.info('requesting all states');
     let tasks = 0;
     tasks++;
-    adapter.getForeignStates('*', function (err, res) {
+    adapter.getForeignStates('*', (err, res) => {
         adapter.log.info('received all states');
         states = res;
         if (!--tasks && callback) callback();
     });
     adapter.log.info('requesting all objects');
     tasks++;
-    adapter.objects.getObjectList({include_docs: true}, function (err, res) {
+    adapter.objects.getObjectList({include_docs: true}, (err, res) => {
         adapter.log.info('received all objects');
         res = res.rows;
         objects = {};
@@ -355,13 +341,13 @@ function getData(callback) {
 // read repository information from active repository
 function updateRegister() {
     adapter.log.info('Request actual repository...');
-    adapter.getForeignObject('system.config', function (err, data) {
+    adapter.getForeignObject('system.config', (err, data) => {
         if (data && data.common) {
 
             adapter.sendToHost(adapter.host, 'getRepository', {
                 repo:   data.common.activeRepo,
                 update: true
-            }, function (_repository) {
+            }, _repository => {
                 if (_repository === 'permissionError') {
                     adapter.log.error('May not read "getRepository"');
                 } else {
