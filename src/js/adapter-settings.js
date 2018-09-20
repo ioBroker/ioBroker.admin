@@ -180,6 +180,19 @@ function preInit () {
         });
     });
 
+    function close() {
+        if (typeof parent !== 'undefined' && parent && parent.$iframeDialog && typeof parent.$iframeDialog.close === 'function') {
+            try {
+                parent.$iframeDialog.close();
+            } catch (e) {
+                console.error(JSON.stringify(e));
+                parent.postMessage('close', '*');
+            }
+        } else if (typeof parent !== 'undefined' && parent) {
+            parent.postMessage('close', '*');
+        }
+    }
+
     $navButtons.find('.btn-save-close').on('click', function () {
         if (typeof save === 'undefined') {
             alert('Please implement save function in your admin/index.html');
@@ -191,17 +204,13 @@ function preInit () {
             }
             saveSettings(obj, common, function () {
                 // window.close();
-                if (typeof parent !== 'undefined' && parent && parent.$iframeDialog && typeof parent.$iframeDialog.close === 'function') {
-                    parent.$iframeDialog.close();
-                }
+                close();
             });
         });
     });
 
     $navButtons.find('.btn-cancel').on('click', function () {
-        if (typeof parent !== 'undefined' && parent && parent.$iframeDialog && typeof parent.$iframeDialog.close === 'function') {
-            parent.$iframeDialog.close();
-        }
+        close();
     });
 
     function saveSettings(native, common, callback) {

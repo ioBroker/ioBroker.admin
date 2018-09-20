@@ -8,6 +8,17 @@ function Config(main) {
     this.prepare = function () {
         // id = 'system.adapter.NAME.X'
         $iframeDialog = this;
+        var eventFunc = window.addEventListener ? 'addEventListener' : 'attachEvent';
+        var emit = window[eventFunc];
+        var eventName = eventFunc === 'attachEvent' ? 'onmessage' : 'message';
+
+        // receive messages from IFRAME
+        emit(eventName, function (event) {
+            console.log(event.data);
+            if (event.data === 'close' || event.message === 'close') {
+                that.main.navigate();
+            }
+        },false);
     };
 
     this.init = function () {
