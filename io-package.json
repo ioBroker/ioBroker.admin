@@ -2,8 +2,19 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.5.9",
+    "version": "3.5.10",
     "news": {
+      "3.5.10": {
+        "en": "Too many debug outputs were disabled",
+        "de": "Zu viele Debug-Ausgaben wurden deaktiviert",
+        "ru": "Отключена отладочная информация",
+        "pt": "Muitas saídas de depuração foram desativadas",
+        "nl": "Te veel foutopsporingsuitgangen waren uitgeschakeld",
+        "fr": "Trop de sorties de débogage ont été désactivées",
+        "it": "Troppe uscite di debug sono state disabilitate",
+        "es": "Demasiadas salidas de depuración fueron deshabilitadas",
+        "pl": "Zbyt wiele wyników debugowania zostało wyłączonych"
+      },
       "3.5.9": {
         "en": "The log output problem was fixed",
         "de": "Das Protokollausgabe-Problem wurde behoben",

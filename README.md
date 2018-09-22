@@ -80,7 +80,10 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
-### 3.5.9 (2018-12-09)
+### 3.5.10 (2018-09-22)
+* (bluefox) Disable too many debug outputs
+
+### 3.5.9 (2018-09-12)
 * (bluefox) The log output problem was fixed
 
 ### 3.5.8 (2018-09-03)

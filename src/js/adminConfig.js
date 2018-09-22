@@ -17,6 +17,12 @@ function Config(main) {
             console.log(event.data);
             if (event.data === 'close' || event.message === 'close') {
                 that.main.navigate();
+            } else {
+                try {
+                    window.showConfig = JSON.parse(event.data|| event.message);
+                } catch (e) {
+                    console.log('Unknown event: ' + (event.data|| event.message));
+                }
             }
         },false);
     };

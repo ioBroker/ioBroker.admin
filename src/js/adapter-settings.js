@@ -181,15 +181,16 @@ function preInit () {
     });
 
     function close() {
-        if (typeof parent !== 'undefined' && parent && parent.$iframeDialog && typeof parent.$iframeDialog.close === 'function') {
+        if (typeof parent !== 'undefined' && parent) {
             try {
-                parent.$iframeDialog.close();
+                if (parent.$iframeDialog && typeof parent.$iframeDialog.close === 'function') {
+                    parent.$iframeDialog.close();
+                } else {
+                    parent.postMessage('close', '*');
+                }
             } catch (e) {
-                console.error(JSON.stringify(e));
                 parent.postMessage('close', '*');
             }
-        } else if (typeof parent !== 'undefined' && parent) {
-            parent.postMessage('close', '*');
         }
     }
 
