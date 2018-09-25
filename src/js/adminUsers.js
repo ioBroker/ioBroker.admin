@@ -187,7 +187,7 @@ function Users(main) {
         }
         if (oldId) {
 
-            var obj = {common: options/*{desc: desc, acl: acl}*/};
+            //var obj = {common: options/*{desc: desc, acl: acl}*/};
 
             // If ID changed
             if ('system.group.' + options.id !== oldId) {
@@ -394,7 +394,18 @@ function Users(main) {
     function fillAcl(id, acl) {
         // Fill the checkboxes
         if (id === 'system.group.administrator') {
-            acl = {};
+            for (var a in acl) {
+                if (!acl.hasOwnProperty(a)) continue;
+                if (typeof acl[a] === 'object') {
+                    for (var b in acl[a]) {
+                        if (!acl[a].hasOwnProperty(b)) continue;
+                        acl[a][b] = true;
+                    }
+                } else {
+                    acl[a] = true;
+                }
+            }
+
             for (var gg in that.aclGroups) {
                 if (that.aclGroups.hasOwnProperty(gg)) {
                     acl[gg] = {};
@@ -415,6 +426,7 @@ function Users(main) {
         that.$grid.find('.edit-group-permissions').each(function () {
             var type      = $(this).data('type');
             var operation = $(this).data('operation');
+            acl = acl || {};
             acl[type] = acl[type] || {};
             acl[type][operation] = $(this).prop('checked');
         });
@@ -472,7 +484,7 @@ function Users(main) {
                 options.desc  = that.main.objects[isGroupOrId].common.desc;
                 isGroup = that.main.objects[isGroupOrId].type === 'group';
                 if (isGroup) {
-                    options.acl = that.main.objects[isGroupOrId].common.acl;
+                    options.acl = that.main.objects[isGroupOrId].common.acl || {};
                 }
             }
             oldId = isGroupOrId;
@@ -543,6 +555,7 @@ function Users(main) {
                 options.desc = $dialog.find('#tab-users-dialog-new-desc').val();
                 // if change Group
                 if (isGroup) {
+                    options.acl = options.acl || {};
                     readAcl(options.acl);
                     updateGroup(event, oldId, options);
                 } else {
@@ -645,6 +658,7 @@ function Users(main) {
             }
         }
         if (isGroup) {
+            options.acl = options.acl || {};
             if (!that.aclGroups) {
                 // Fill the rights
                 that.main.socket.emit('listPermissions', function (permissions) {
