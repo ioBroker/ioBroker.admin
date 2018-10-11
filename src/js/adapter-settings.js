@@ -2128,3 +2128,31 @@ function table2values(divId) {
 
     return values;
 }
+
+/**
+ * Encrypt the password/value with given key
+ * @param {string} key - Secret key
+ * @param {string} value - value to encrypt
+ * @returns {string}
+ */
+function encrypt(key, value) {
+    let result = '';
+    for(let i = 0; i < value.length; i++) {
+        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+    }
+    return result;
+}
+
+/**
+ * Decrypt the password/value with given key
+ * @param {string} key - Secret key
+ * @param {string} value - value to decript
+ * @returns {string}
+ */
+function decrypt(key, value) {
+    let result = '';
+    for(let i = 0; i < value.length; i++) {
+        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+    }
+    return result;
+}

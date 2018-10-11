@@ -383,7 +383,7 @@ function Adapters(main) {
             .off('click')
             .on('click', function () {
                 // prepare adapters
-                var text  = '<option value="">' + _('none') + '</option>';
+                var data = {};
                 var order = [];
                 var url;
                 for (url in that.urls) {
@@ -396,10 +396,18 @@ function Adapters(main) {
                 for (var o = 0; o < order.length; o++) {
                     var user = that.urls[order[o]].match(/\.com\/([-_$§A-Za-z0-9]+)\/([-._$§A-Za-z0-9]+)\//);
                     if (user && user.length >= 2 && (that.main.config.expertMode || order[o].indexOf('js-controller') === -1)) {
-                        text += '<option value="https://github.com/' + user[1] + '/ioBroker.' + order[o] + '/tarball/master ' + order[o] + '">' + order[o] + '</option>';
+                        //text += '<option value="https://github.com/' + user[1] + '/ioBroker.' + order[o] + '/tarball/master ' + order[o] + '">' + order[o] + '</option>';
+                        data[order[o] + ' [' + user[1] + ']'] = null;
+
                     }
                 }
-                that.$installDialog.find('#install-github-link').html(text).val(that.main.config.adaptersGithub || '');
+                that.$installDialog.find('#install-github-link').mautocomplete({
+                    data: data,
+                    minLength: 0,
+                    sortFunction: function (a, b, inputString) {
+                        return a.indexOf(inputString) - b.indexOf(inputString);
+                    }
+                });
 
                 that.$installDialog.modal();
 
@@ -414,9 +422,9 @@ function Adapters(main) {
                         adapter = '';
                     } else {
                         var parts = that.$installDialog.find('#install-github-link').val().split(' ');
-                        url     = parts[0];
+                        url     = 'https://github.com/' + parts[1].replace(/^\[|]$/g, '') + '/ioBroker.' + parts[0] + '/tarball/master';
                         debug   = that.$installDialog.find('#install-github-debug').prop('checked') ? ' --debug' : '';
-                        adapter = ' ' + parts[1];
+                        adapter = ' ' + parts[0];
                     }
 
                     if (!url) {
@@ -430,7 +438,6 @@ function Adapters(main) {
                         }
                     });
                 });
-                that.$installDialog.find('#install-github-link').select();
                 // workaround for materialize checkbox problem
                 that.$installDialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
                     var $input = $(this).prev();

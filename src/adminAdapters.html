@@ -80,15 +80,17 @@
                 <div id="tabs-install-github"  class="col s12 page">
                     <h6 class="translate">Install adapter from github</h6>
                     <div class="row">
-                        <div class="col s12 m8 l8 with-select">
-                            <select id="install-github-link"></select>
-                            <label for="install-github-link" class="translate">Select adapter:</label>
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="col s12 m4 l4">
                             <input id="install-github-debug" type="checkbox" class="filled-in" />
                             <span for="install-github-debug" class="translate">Debug outputs:</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12 m8 l8 with-select input-field">
+                            <!--select id="install-github-link"></select-->
+                            <i class="material-icons prefix">textsms</i>
+                            <input type="text" id="install-github-link" class="autocomplete">
+                            <label for="install-github-link" class="translate">Select adapter:</label>
                         </div>
                     </div>
                 </div>

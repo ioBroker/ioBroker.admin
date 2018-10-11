@@ -3,6 +3,12 @@ function initMap () {
     gMain.dialogs.system.updateMap(true);
 }
 
+function positionReady(position) {
+    $('#system_latitude').val(position.coords.latitude.toFixed(8));
+    $('#system_longitude').val(position.coords.longitude.toFixed(8)).trigger('change');
+    M.updateTextFields('#dialog-system');
+}
+
 function System(main) {
     'use strict';
     var that    = this;
@@ -459,6 +465,12 @@ function System(main) {
                 return setTimeout(that.updateMap, 200);
             }
             var point = ol.proj.fromLonLat([parseFloat(longitude), parseFloat(latitude)]);
+
+            // get the coordinates from browser
+            if (navigator.geolocation && (!longitude || !latitude)) {
+                navigator.geolocation.getCurrentPosition(positionReady);
+            }
+
             if (!that.OSM) {
                 that.OSM = {};
                 that.OSM.markerSource = new ol.source.Vector();
@@ -498,6 +510,7 @@ function System(main) {
                     that.$dialog.find('#system_longitude').val(lonLat[0]);
                     latitude = lonLat[1];
                     that.$dialog.find('#system_latitude').val(lonLat[1]).trigger('change');
+                    M.updateTextFields('#dialog-system');
                 });
             }
             var zoom = that.OSM.oMap.getView().getZoom();
