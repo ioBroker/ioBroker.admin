@@ -2,6 +2,8 @@ function Intro(main) {
     'use strict';
 
     var that = this;
+    var isCloud = document.location.hostname === 'iobroker.pro' || document.location.hostname === 'iobroker.net';
+
 
     this.$tab      = $('#tab-intro');
     this.$tiles    = this.$tab.find('.tab-intro-cards');
@@ -248,8 +250,12 @@ function Intro(main) {
             })
         }
 
+        url = typeof url === 'object' ? url._first : url || '';
+        if (isCloud) {
+            url = url.replace(/^https?:\/\/iobroker\.\w\w\w(:\d+)?/, '');
+        }
         // link
-        $card.find('.url').attr('href', typeof url === 'object' ? url._first : url || '').text(urlText + (web ? ' (' + web + ')' : ''));
+        $card.find('.url').attr('href', url).text(urlText + (web ? ' (' + web + ')' : ''));
         // icon
         $card.find('.card-image-img').attr('src', common.icon ? 'adapter/' + adapter + '/' + common.icon : 'img/no-image.png');
         if (welcomeScreen && welcomeScreen.color) {
