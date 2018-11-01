@@ -558,9 +558,7 @@ function filterChanged(e) {
             }
 
             // fill counters
-            if (data.expertMode) {
-                data.ids.push(id);
-            }
+            data.expertMode && data.ids.push(id);
         }
         data.inited = true;
         data.roles.sort();
