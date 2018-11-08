@@ -2,8 +2,12 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.5.10",
+    "version": "3.6.0",
     "news": {
+      "3.6.0": {
+        "en": "New update info states added",
+        "de": "Neue informative states über Updates hinzugefügt"
+      },
       "3.5.10": {
         "en": "Too many debug outputs were disabled",
         "de": "Zu viele Debug-Ausgaben wurden deaktiviert",

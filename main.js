@@ -110,10 +110,10 @@ adapter.on('log', obj => socket && socket.sendLog(obj));
 
 function createUpdateInfo() {
     // create connected object and state
-    let obj = objects[adapter.namespace + '.info.updatesNumber'];
+    let updatesNumberObj = objects[adapter.namespace + '.info.updatesNumber'];
 
-    if (!obj || !obj.common || obj.common.type !== 'number') {
-        obj = {
+    if (!updatesNumberObj || !updatesNumberObj.common || updatesNumberObj.common.type !== 'number') {
+        let obj = {
             _id:  'info.updatesNumber',
             type: 'state',
             common: {
@@ -129,9 +129,11 @@ function createUpdateInfo() {
 
         adapter.setObject(obj._id, obj);
     }
-    obj = objects[adapter.namespace + '.info.updatesList'];
-    if (!obj || !obj.common || obj.common.type !== 'string') {
-        obj = {
+
+    let updatesListObj = objects[adapter.namespace + '.info.updatesList'];
+
+    if (!updatesListObj || !updatesListObj.common || updatesListObj.common.type !== 'string') {
+        let obj = {
             _id:  'info.updatesList',
             type: 'state',
             common: {
@@ -141,6 +143,66 @@ function createUpdateInfo() {
                 read:  true,
                 write: false,
                 def:   ''
+            },
+            native: {}
+        };
+
+        adapter.setObject(obj._id, obj);
+    }
+
+    let newUpdatesObj = objects[adapter.namespace + '.info.newUpdates'];
+
+    if (!newUpdatesObj || !newUpdatesObj.common || newUpdatesObj.common.type !== 'boolean') {
+        let obj = {
+            _id:  'info.newUpdates',
+            type: 'state',
+            common: {
+                role:  'indicator.updates',
+                name:  'Indicator if new adapter updates are available',
+                type:  'boolean',
+                read:  true,
+                write: false,
+                def:   false
+            },
+            native: {}
+        };
+
+        adapter.setObject(obj._id, obj);
+    }
+
+    let updatesJsonObj = objects[adapter.namespace + '.info.updatesJson'];
+
+    if (!updatesJsonObj || !updatesJsonObj.common || updatesJsonObj.common.type !== 'string') {
+        let obj = {
+            _id:  'info.updatesJson',
+            type: 'state',
+            common: {
+                role:  'indicator.updates',
+                name:  'JSON string with adapter update information',
+                type:  'string',
+                read:  true,
+                write: false,
+                def:   '{}'
+            },
+            native: {}
+        };
+
+        adapter.setObject(obj._id, obj);
+    }
+
+    let lastUpdateCheckObj = objects[adapter.namespace + '.info.lastUpdateCheck'];
+
+    if (!lastUpdateCheckObj || !lastUpdateCheckObj.common || lastUpdateCheckObj.common.type !== 'string') {
+        let obj = {
+            _id:  'info.lastUpdateCheck',
+            type: 'state',
+            common: {
+                role:  'value.datetime',
+                name:  'Timestamp of last update check',
+                type:  'string',
+                read:  true,
+                write: false,
+                def:   '{}'
             },
             native: {}
         };
@@ -192,6 +254,8 @@ function writeUpdateInfo(sources) {
         } else {
             adapter.setState('info.updatesNumber', 0, true);
             adapter.setState('info.updatesList',  '', true);
+            adapter.setState('info.newUpdates', false, true);
+            adapter.setState('info.updatesJson', '{}', true);
             if (obj && obj.native && obj.native.repositories && obj.native.repositories[activeRepo]) {
                 adapter.log.warn('Repository cannot be read');
             } else {
@@ -203,20 +267,38 @@ function writeUpdateInfo(sources) {
 
     let installed = tools.getInstalledInfo();
     let list  = [];
-
-    for (let name in sources) {
-        if (!sources.hasOwnProperty(name)) continue;
-        if (installed[name] && installed[name].version && sources[name].version) {
-            if (sources[name].version !== installed[name].version &&
-                !upToDate(sources[name].version, installed[name].version)) {
-                // remove first part of the name
-                const n = name.indexOf('.');
-                list.push(n === -1 ? name : name.substring(n + 1));
+    let updatesJson = {};
+    let newUpdateIndicator = false;
+    adapter.getState('info.updatesJson', (err, state) => {
+        let oldUpdates;
+        if (state && state.val) oldUpdates = JSON.parse(state.val) || {};
+        else oldUpdates = {};
+        for (let name in sources) {
+            if (!sources.hasOwnProperty(name)) continue;
+            if (installed[name] && installed[name].version && sources[name].version) {
+                if (sources[name].version !== installed[name].version &&
+                    !upToDate(sources[name].version, installed[name].version)) {
+                    // Check if updates are new or already known to user
+                    if (!oldUpdates || !oldUpdates[name] || oldUpdates[name].availableVersion !== sources[name].version) {
+                        newUpdateIndicator = true;
+                    } // endIf
+                    updatesJson[name] = {
+                        availableVersion: sources[name].version,
+                        installedVersion: installed[name].version
+                    };
+                    // remove first part of the name
+                    const n = name.indexOf('.');
+                    list.push(n === -1 ? name : name.substring(n + 1));
+                }
             }
         }
-    }
-    adapter.setState('info.updatesNumber', list.length, true);
-    adapter.setState('info.updatesList', list.join(', '), true);
+        adapter.setState('info.updatesNumber', list.length, true);
+        adapter.setState('info.updatesList', list.join(', '), true);
+        adapter.setState('info.newUpdates', newUpdateIndicator, true);
+        adapter.setState('info.updatesJson', JSON.stringify(updatesJson), true);
+        adapter.setState('info.lastUpdateCheck', new Date().toISOString(), true);
+    });
+
 }
 
 // to do => remove it later, when all repositories patched.
