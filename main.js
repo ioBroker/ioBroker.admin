@@ -256,6 +256,7 @@ function writeUpdateInfo(sources) {
             adapter.setState('info.updatesList',  '', true);
             adapter.setState('info.newUpdates', false, true);
             adapter.setState('info.updatesJson', '{}', true);
+            adapter.setState('info.lastUpdateCheck', new Date().toISOString(), true);
             if (obj && obj.native && obj.native.repositories && obj.native.repositories[activeRepo]) {
                 adapter.log.warn('Repository cannot be read');
             } else {
