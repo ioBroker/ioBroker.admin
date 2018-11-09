@@ -256,7 +256,8 @@ function writeUpdateInfo(sources) {
             adapter.setState('info.updatesList',  '', true);
             adapter.setState('info.newUpdates', false, true);
             adapter.setState('info.updatesJson', '{}', true);
-            adapter.setState('info.lastUpdateCheck', new Date().toISOString(), true);
+            let updateTime = new Date();
+            adapter.setState('info.lastUpdateCheck', new Date(updateTime - updateTime.getTimezoneOffset() * 60000).toISOString(), true);
             if (obj && obj.native && obj.native.repositories && obj.native.repositories[activeRepo]) {
                 adapter.log.warn('Repository cannot be read');
             } else {
@@ -297,7 +298,8 @@ function writeUpdateInfo(sources) {
         adapter.setState('info.updatesList', list.join(', '), true);
         adapter.setState('info.newUpdates', newUpdateIndicator, true);
         adapter.setState('info.updatesJson', JSON.stringify(updatesJson), true);
-        adapter.setState('info.lastUpdateCheck', new Date().toISOString(), true);
+        let updateTime = new Date();
+        adapter.setState('info.lastUpdateCheck', new Date(updateTime - updateTime.getTimezoneOffset() * 60000).toISOString(), true);
     });
 
 }
