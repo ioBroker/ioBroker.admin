@@ -23,3 +23,5 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
+after_success:
+  - bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)
