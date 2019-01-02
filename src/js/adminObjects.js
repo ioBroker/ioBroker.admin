@@ -408,6 +408,8 @@ function Objects(main) {
                     name:               _('Name'),
                     role:               _('Role'),
                     room:               _('Room'),
+                    floor:              _('Floor'),
+                    flat:               _('Flat'),
                     'function':         _('Function'),
                     value:              _('Value'),
                     type:               _('Type'),
@@ -436,7 +438,7 @@ function Objects(main) {
                     toggleValues:       _('Toggle states view'),
                     user:               _('User')
                 },
-                columns: ['ID', 'name', 'type', 'role', 'room', 'function', 'value', 'button'],
+                columns: ['ID', 'name', 'type', 'role', 'room', 'flat', 'floor', 'function', 'value', 'button'],
                 expandedCallback: function (id, childrenCount, hasStates) {
                     // register this in subscription
                     if (hasStates) {
@@ -603,10 +605,14 @@ function Objects(main) {
                         }
                     }
                 ],
-                quickEdit: ['name', 'value', 'role', 'function', 'room', 'value.val'],
+                quickEdit: ['name', 'value', 'role', 'function', 'room', 'flat', 'floor, 'value.val'],
                 quickEditCallback: function (id, attr, newValue, oldValue, newAck) {
                     if (attr === 'room') {
                         syncEnum(id, 'rooms', newValue);
+                    }else if (attr === 'flat') {
+                        syncEnum(id, 'flats', newValue);
+                    }else if (attr === 'floor') {
+                        syncEnum(id, 'floors');
                     } else if (attr === 'function') {
                         syncEnum(id, 'functions', newValue);
                     } else
