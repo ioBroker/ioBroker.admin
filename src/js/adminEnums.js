@@ -46,6 +46,68 @@ function Enums(main) {
             },
             "type": "enum"
         },
+        'enum.floors': {
+            "_id": "enum.floors",
+            "common": {
+                "icon": "home",
+                "name": {
+                    "en": "Floors",
+                    "de": "Stockwerke",
+                    "ru": "этажей",
+                    "pt": "pavimentos",
+                    "nl": "vloeren",
+                    "fr": "les planchers",
+                    "it": "piani",
+                    "es": "pisos",
+                    "pl": "podłogi"
+                },
+                "desc": {
+                    "en": "List of the floors in the building",
+                    "de": "Liste der Etagen im Gebäude",
+                    "ru": "Список этажей в здании",
+                    "pt": "Lista dos andares do edifício",
+                    "nl": "Lijst van de verdiepingen in het gebouw",
+                    "fr": "Liste des étages de l'immeuble",
+                    "it": "Elenco dei piani nell'edificio",
+                    "es": "Lista de los pisos en el edificio.",
+                    "pl": "Lista pięter w budynku"
+                },
+                "members": [],
+                "dontDelete": true
+            },
+            "type": "enum"
+        },
+        'enum.flats': {
+            "_id": "enum.flats",
+            "common": {
+                "icon": "home",
+                "name": {
+                    "en": "Flats",
+                    "de": "Wohnungen",
+                    "ru": "квартиры",
+                    "pt": "apartamentos",
+                    "nl": "flats",
+                    "fr": "des appartements",
+                    "it": "appartamenti",
+                    "es": "pisos",
+                    "pl": "mieszkania"
+                },
+                "desc": {
+                    "en": "List of the flats in the building",
+                    "de": "Liste der Wohnungen im Gebäude",
+                    "ru": "Список квартир в здании",
+                    "pt": "Lista dos apartamentos no edifício",
+                    "nl": "Lijst van de flats in het gebouw",
+                    "fr": "Liste des appartements dans l'immeuble",
+                    "it": "Elenco degli appartamenti nell'edificio",
+                    "es": "Lista de los pisos en el edificio.",
+                    "pl": "Lista mieszkań w budynku"
+                },
+                "members": [],
+                "dontDelete": true
+            },
+            "type": "enum"
+        },
         'enum.functions': {
             "_id": "enum.functions",
             "common": {
@@ -1587,6 +1649,86 @@ function Enums(main) {
                 };
                 that.main.socket.emit('setObject', 'enum.rooms', this.main.objects['enum.rooms']);
                 this.list.unshift('enum.rooms');
+            }
+            if (!this.main.objects['enum.floors']) {
+                this.main.objects['enum.floors'] = {
+                    "_id": "enum.floors",
+                    "common": {
+                        "icon": "home",
+                        "name": {
+                            "en": "Floors",
+                            "de": "Stockwerke",
+                            "ru": "этажей",
+                            "pt": "pavimentos",
+                            "nl": "vloeren",
+                            "fr": "les planchers",
+                            "it": "piani",
+                            "es": "pisos",
+                            "pl": "podłogi"
+                        },
+                        "desc": {
+                            "en": "List of the floors",
+                            "de": "Liste der Stockwerke",
+                            "ru": "Список этажей",
+                            "pt": "Lista dos andares",
+                            "nl": "Lijst van de verdiepingen",
+                            "fr": "Liste des étages",
+                            "it": "Elenco dei piani",
+                            "es": "Lista de los pisos",
+                            "pl": "Lista pięter"
+                        },
+                        "members": [],
+                        "dontDelete": true
+                    },
+                    "type": "enum",
+                    "acl": {
+                        "owner": "system.user.admin",
+                        "ownerGroup": "system.group.administrator",
+                        "permissions": 1911
+                    }
+                };
+                that.main.socket.emit('setObject', 'enum.floors', this.main.objects['enum.floors']);
+                this.list.unshift('enum.floors');
+            }
+            if (!this.main.objects['enum.flats']) {
+                this.main.objects['enum.flats'] = {
+                    "_id": "enum.flats",
+                    "common": {
+                        "icon": "home",
+                        "name": {
+                            "en": "Flats",
+                            "de": "Wohnungen",
+                            "ru": "квартиры",
+                            "pt": "apartamentos",
+                            "nl": "flats",
+                            "fr": "des appartements",
+                            "it": "appartamenti",
+                            "es": "pisos",
+                            "pl": "mieszkania"
+                        },
+                        "desc": {
+                            "en": "List of the flats",
+                            "de": "Liste der Wohnungen",
+                            "ru": "Список квартир",
+                            "pt": "Lista dos apartamentos",
+                            "nl": "Lijst van de flats",
+                            "fr": "Liste des appartements",
+                            "it": "Elenco degli appartamenti",
+                            "es": "Lista de los pisos",
+                            "pl": "Lista mieszkań"
+                        },
+                        "members": [],
+                        "dontDelete": true
+                    },
+                    "type": "enum",
+                    "acl": {
+                        "owner": "system.user.admin",
+                        "ownerGroup": "system.group.administrator",
+                        "permissions": 1911
+                    }
+                };
+                that.main.socket.emit('setObject', 'enum.flats', this.main.objects['enum.flats']);
+                this.list.unshift('enum.flats');
             }
             if (!this.main.objects['enum.functions']) {
                 this.main.objects['enum.functions'] = {
