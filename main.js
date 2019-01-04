@@ -2,11 +2,11 @@
 /*jslint node: true */
 'use strict';
 
-const adapterName = require(__dirname + '/package.json').name.split('.').pop();
-const utils 	  = require(__dirname + '/lib/utils'); // Get common adapter utils
+const adapterName = require('./package.json').name.split('.').pop();
+const utils 	  = require('./lib/utils'); // Get common adapter utils
 const tools 	  = require(utils.controllerDir + '/lib/tools.js');
-const SocketIO    = require(__dirname + '/lib/socket');
-const Web         = require(__dirname + '/lib/web');
+const SocketIO    = require('./lib/socket');
+const Web         = require('./lib/web');
 
 let socket      = null;
 let webServer   = null;
@@ -25,7 +25,6 @@ function startAdapter(options) {
 	    systemConfig:   true,
 	    install:        callback => typeof callback === 'function' && callback()
 	});
-
 
     adapter = new utils.Adapter(options);
 
