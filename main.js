@@ -456,7 +456,7 @@ function updateRegister() {
 }
 
 // If started as allInOne mode => return function to create instance
-if (typeof module !== undefined && module.parent) {
+if (module && module.parent) {
     module.exports = startAdapter;
 } else {
     // or start the instance directly
