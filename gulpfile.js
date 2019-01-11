@@ -144,7 +144,8 @@ function words2languages(src) {
         'fr': {},
         'it': {},
         'es': {},
-        'pl': {}
+        'pl': {},
+        'zh-cn': {}
     };
     var data = readWordJs(src);
     if (data) {
@@ -193,7 +194,8 @@ function words2languagesFlat(src) {
         'fr': {},
         'it': {},
         'es': {},
-        'pl': {}
+        'pl': {},
+        'zh-cn': {}
     };
     var data = readWordJs(src);
     if (data) {
@@ -240,7 +242,7 @@ function languagesFlat2words(src) {
     var dirs = fs.readdirSync(src + 'i18n/');
     var langs = {};
     var bigOne = {};
-    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it', 'es', 'pl'];
+    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it', 'es', 'pl', 'zh-cn'];
     dirs.sort(function (a, b) {
         var posA = order.indexOf(a);
         var posB = order.indexOf(b);
@@ -308,7 +310,7 @@ function languages2words(src) {
     var dirs = fs.readdirSync(src + 'i18n/');
     var langs = {};
     var bigOne = {};
-    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it', 'es', 'pl'];
+    var order = ['en', 'de', 'ru', 'pt', 'nl', 'fr', 'it', 'es', 'pl', 'zh-cn'];
     dirs.sort(function (a, b) {
         var posA = order.indexOf(a);
         var posB = order.indexOf(b);
@@ -423,7 +425,8 @@ gulp.task('updatePackages', done => {
             fr: 'nouvelles',
             it: 'notizie',
             es: 'noticias',
-            pl: 'aktualności'
+            pl: 'aktualności',
+            'zh-cn': '消息'
         };
         iopackage.common.news = Object.assign(newNews, news);
     }
