@@ -203,7 +203,8 @@
       "pt": "A configuração do ioBroker via Web-Interface",
       "fr": "La configuration de ioBroker via Web-Interface",
       "nl": "De configuratie van ioBroker via de webinterface",
-      "it": "La configurazione di ioBroker tramite interfaccia Web"
+      "it": "La configurazione di ioBroker tramite interfaccia Web",
+      "zh-cn": "配置ioBroker的Web界面"
     },
     "docs": {
       "en": "docs/en/admin.md",
