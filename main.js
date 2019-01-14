@@ -1,5 +1,16 @@
-/* jshint -W097 */// jshint strict:false
-/*jslint node: true */
+/**
+ *      Admin backend
+ *
+ *      Controls Adapter-Processes
+ *
+ *      Copyright 2014-2019 bluefox <dogafox@gmail.com>,
+ *      MIT License
+ *
+ */
+
+/* jshint -W097 */
+/* jshint strict: false */
+/* jslint node: true */
 'use strict';
 
 const adapterName = require('./package.json').name.split('.').pop();
@@ -353,6 +364,7 @@ function patchRepos(callback) {
         }
     });*/
 }
+
 function initSocket(server, store) {
     socket = new SocketIO(server, adapter.config, adapter, objects, states, store);
     socket.subscribe(null, 'objectChange', '*');
@@ -391,7 +403,6 @@ function main() {
         }
     });
 }
-
 
 function getData(callback) {
     adapter.log.info('requesting all states');

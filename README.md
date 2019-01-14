@@ -331,4 +331,4 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2018 bluefox <dogafox@gmail.com>
+Copyright (c) 2014-2019 bluefox <dogafox@gmail.com>
