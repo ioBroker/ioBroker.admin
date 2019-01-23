@@ -31,6 +31,8 @@ function preInit () {
     systemDictionary.saveclose =      {"en": "Save and close", "fr": "Sauver et fermer",                "nl": "Opslaan en afsluiten","es": "Guardar y cerrar",            "pt": "Salvar e fechar",         "it": "Salva e chiudi",              "de": "Speichern und schließen",  "pl": "Zapisz i zamknij",             "ru": "Сохранить и выйти"};
     systemDictionary.none =           {"en": "none",           "fr": "aucun",                           "nl": "geen",                "es": "ninguna",                     "pt": "Nenhum",                  "it": "nessuna",                     "de": "keins",                    "pl": "Żaden",                        "ru": ""};
     systemDictionary.nonerooms =      {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": ""};
+    systemDictionary.noneflats =      {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": ""};
+    systemDictionary.nonefloors =     {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": ""};
     systemDictionary.nonefunctions =  {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": ""};
     systemDictionary.all =            {"en": "all",            "fr": "tout",                            "nl": "alle",                "es": "todas",                       "pt": "todos",                   "it": "tutti",                       "de": "alle",                     "pl": "wszystko",                     "ru": "все"};
     systemDictionary['Device list'] = {"en": "Device list",    "fr": "Liste des périphériques",         "nl": "Lijst met apparaten", "es": "Lista de dispositivos",       "pt": "Lista de dispositivos",   "it": "Elenco dispositivi",          "de": "Geräteliste",              "pl": "Lista urządzeń",               "ru": "Список устройств"};
@@ -1144,7 +1146,11 @@ function addToTable(tabId, value, $grid, _isInitial) {
     for (var i = 0; i < cols.length; i++) {
         if (cols[i] === 'room') {
             obj[cols[i]] = ($grid[0]._rooms[value[cols[i]]]) ? $grid[0]._rooms[value[cols[i]]].common.name : value[cols[i]];
-        } else {
+	}else if (cols[i] === 'flat') {
+            obj[cols[i]] = ($grid[0]._flats[value[cols[i]]]) ? $grid[0]._flats[value[cols[i]]].common.name : value[cols[i]];
+	} else if (cols[i] === 'floor') {
+            obj[cols[i]] = ($grid[0]._floors[value[cols[i]]]) ? $grid[0]._floors[value[cols[i]]].common.name : value[cols[i]];
+	} else {
             obj[cols[i]] = value[cols[i]];
         }
     }
@@ -1257,12 +1263,14 @@ function _editInitButtons($grid, tabId, objId) {
     }).css({'height': '18px', width: '22px'});
 }
 
-function _editTable(tabId, cols, values, rooms, top, onChange) {
+function _editTable(tabId, cols, values, rooms, flats, floors, top, onChange) {
     var title = 'Device list';
     if (typeof tabId === 'object') {
         cols     = tabId.cols;
         values   = tabId.values;
         rooms    = tabId.rooms;
+	flats	 = tabId.flats;
+	floors   = tabId.floors;
         top      = tabId.top;
         onChange = tabId.onChange;
         if (tabId.title) title = tabId.title;
@@ -1274,6 +1282,8 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
     var colModel = [];
     var $grid = $('#' + tabId);
     var room;
+    var flat;
+    var floor;
 
     colNames.push('id');
     colModel.push({
@@ -1319,6 +1329,40 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
                 _obj.searchoptions.value += ';' + _(translateName(rooms[room].common.name)) + ':' + _(translateName(rooms[room].common.name));
             }
         }
+	
+	if (cols[i] === 'flat') {
+            var list = {'': _('none')};
+            for (flat in flats) {
+                list[flat] = _(translateName(flats[flat].common.name));
+            }
+            _obj.stype =         'select';
+            _obj.edittype =      'select';
+            _obj.editoptions =   {value: list};
+            _obj.searchoptions = {
+                sopt:  ['eq'],
+                value: ':' + _('all')
+            };
+            for (flat in flats) {
+                _obj.searchoptions.value += ';' + _(translateName(flats[flat].common.name)) + ':' + _(translateName(flats[flat].common.name));
+            }
+        }
+	    
+	if (cols[i] === 'flat') {
+            var list = {'': _('none')};
+            for (flat in flats) {
+                list[flat] = _(translateName(flats[flat].common.name));
+            }
+            _obj.stype =         'select';
+            _obj.edittype =      'select';
+            _obj.editoptions =   {value: list};
+            _obj.searchoptions = {
+                sopt:  ['eq'],
+                value: ':' + _('all')
+            };
+            for (flat in flats) {
+                _obj.searchoptions.value += ';' + _(translateName(flats[flat].common.name)) + ':' + _(translateName(flats[flat].common.name));
+            }
+        }
         colModel.push(_obj);
     }
     colNames.push('');
@@ -1326,6 +1370,8 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
 
     $grid[0]._cols     = cols;
     $grid[0]._rooms    = rooms;
+    $grid[0]._flats    = flats;
+    $grid[0]._floors   = floors;
     $grid[0]._maxIdx   = 0;
     $grid[0]._top      = top;
     $grid[0]._edited   = [];
@@ -1508,6 +1554,14 @@ function editTable(tabId, cols, values, top, onChange) {
         getEnums('rooms', function (err, list) {
             return _editTable(tabId, cols, values, list, top, onChange);
         });
+    } else if (cols.indexOf('flat') !== -1) {
+        getEnums('flats', function (err, list) {
+            return _editTable(tabId, cols, values, list, top, onChange);
+        });
+    } else if (cols.indexOf('floor') !== -1) {
+        getEnums('floors', function (err, list) {
+            return _editTable(tabId, cols, values, list, top, onChange);
+        });
     } else {
         return _editTable(tabId, cols, values, null, top, onChange);
     }
@@ -1536,6 +1590,10 @@ function getTableResult(tabId, cols) {
         for (var z = 0; z < cols.length; z++) {
             if (cols[z] === 'room') {
                 obj[cols[z]] = enumName2Id($grid[0]._rooms, data[i][cols[z]]);
+	    } else if (cols[z] === 'flat') {
+                obj[cols[z]] = enumName2Id($grid[0]._flats, data[i][cols[z]]);
+	    } else if (cols[z] === 'floor') {
+                obj[cols[z]] = enumName2Id($grid[0]._floors, data[i][cols[z]]);
             } else {
                 obj[cols[z]] = data[i][cols[z]];
             }
@@ -1699,6 +1757,79 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             });
             return;
         }
+	    
+	// load flats
+        if (!$table.data('flats') && $table.find('th[data-name="flat"]').length) {
+            getEnums('flats', function (err, list) {
+                var result = {};
+                var trflats = _('noneflats');
+				if (trflats !== 'noneflats') {
+                    result[_('none')] = trflats;
+                } else {
+                    result[_('none')] = '';
+                }
+                var nnames = [];
+                for (var n in list) {
+                    if (list.hasOwnProperty(n)) {
+                        nnames.push(n);
+                    }
+                }
+                nnames.sort(function (a, b) {
+                    a = a.toLowerCase();
+                    b = b.toLowerCase();
+                    if (a > b) return 1;
+                    if (a < b) return -1;
+                    return 0;
+                });
+
+                for (var l = 0; l < nnames.length; l++) {
+                    result[nnames[l]] = list[nnames[l]].common.name || l;
+                    if (typeof result[nnames[l]] === 'object') {
+                        result[nnames[l]] = result[nnames[l]][systemLang] || result[nnames[l]].en;
+                    }
+                }
+                $table.data('flats', result);
+                values2table(divId, values, onChange, onReady);
+            });
+            return;
+        }
+	    
+	// load floors
+        if (!$table.data('floors') && $table.find('th[data-name="floor"]').length) {
+            getEnums('floors', function (err, list) {
+                var result = {};
+                var trfloors = _('nonefloors');
+				if (trfloors !== 'nonefloors') {
+                    result[_('none')] = trfloors;
+                } else {
+                    result[_('none')] = '';
+                }
+                var nnames = [];
+                for (var n in list) {
+                    if (list.hasOwnProperty(n)) {
+                        nnames.push(n);
+                    }
+                }
+                nnames.sort(function (a, b) {
+                    a = a.toLowerCase();
+                    b = b.toLowerCase();
+                    if (a > b) return 1;
+                    if (a < b) return -1;
+                    return 0;
+                });
+
+                for (var l = 0; l < nnames.length; l++) {
+                    result[nnames[l]] = list[nnames[l]].common.name || l;
+                    if (typeof result[nnames[l]] === 'object') {
+                        result[nnames[l]] = result[nnames[l]][systemLang] || result[nnames[l]].en;
+                    }
+                }
+                $table.data('floors', result);
+                values2table(divId, values, onChange, onReady);
+            });
+            return;
+        }
+	    
         // load functions
         if (!$table.data('functions') && $table.find('th[data-name="func"]').length) {
             getEnums('functions', function (err, list) {
@@ -1812,6 +1943,10 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         var options;
                         if (names[i].name === 'room') {
                             options = $table.data('rooms');
+			} else if (names[i].name === 'flat') {
+                            options = $table.data('flats');
+			} else if (names[i].name === 'floor') {
+                            options = $table.data('floors');
                         } else if (names[i].name === 'func') {
                             options = $table.data('functions');
 							if (names[i].type === 'select multiple') delete options[_('none')];									   
