@@ -1,12 +1,23 @@
-/* jshint -W097 */// jshint strict:false
-/*jslint node: true */
+/**
+ *      Admin backend
+ *
+ *      Controls Adapter-Processes
+ *
+ *      Copyright 2014-2019 bluefox <dogafox@gmail.com>,
+ *      MIT License
+ *
+ */
+
+/* jshint -W097 */
+/* jshint strict: false */
+/* jslint node: true */
 'use strict';
 
-const adapterName = require(__dirname + '/package.json').name.split('.').pop();
-const utils 	  = require(__dirname + '/lib/utils'); // Get common adapter utils
+const adapterName = require('./package.json').name.split('.').pop();
+const utils 	  = require('./lib/utils'); // Get common adapter utils
 const tools 	  = require(utils.controllerDir + '/lib/tools.js');
-const SocketIO    = require(__dirname + '/lib/socket');
-const Web         = require(__dirname + '/lib/web');
+const SocketIO    = require('./lib/socket');
+const Web         = require('./lib/web');
 
 let socket      = null;
 let webServer   = null;
@@ -25,7 +36,6 @@ function startAdapter(options) {
 	    systemConfig:   true,
 	    install:        callback => typeof callback === 'function' && callback()
 	});
-
 
     adapter = new utils.Adapter(options);
 
@@ -354,6 +364,7 @@ function patchRepos(callback) {
         }
     });*/
 }
+
 function initSocket(server, store) {
     socket = new SocketIO(server, adapter.config, adapter, objects, states, store);
     socket.subscribe(null, 'objectChange', '*');
@@ -392,7 +403,6 @@ function main() {
         }
     });
 }
-
 
 function getData(callback) {
     adapter.log.info('requesting all states');
@@ -457,7 +467,7 @@ function updateRegister() {
 }
 
 // If started as allInOne mode => return function to create instance
-if (typeof module !== undefined && module.parent) {
+if (module && module.parent) {
     module.exports = startAdapter;
 } else {
     // or start the instance directly

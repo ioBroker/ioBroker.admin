@@ -1,4 +1,14 @@
-# How to show help information in configuration dialog
+## How to install from Github
+
+```
+npm install <GitHub URL>
+cd node_modules/iobroker.admin
+npm install
+gulp
+iobroker upload admin
+```
+
+## How to show help information in configuration dialog
 
 Help can be a combination of tooltip, link and text.
 
