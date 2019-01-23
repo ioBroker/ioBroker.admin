@@ -84,6 +84,8 @@
                  role:     'Role',
                  type:     'Type',
                  room:     'Room',
+                 flat:     'Flat',
+                 floor:    'Floor',
                  'function': 'Function',
                  enum:     'Members',
                  value:    'Value',
@@ -113,7 +115,7 @@
                  States:    'States',
                  toggleValues: 'Toggle states view'
              },
-             columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button', 'value.val', 'value.ts', 'value.lc', 'value.from', 'value.q'],
+             columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'flat', 'floor', 'function', 'value', 'button', 'value.val', 'value.ts', 'value.lc', 'value.from', 'value.q'],
                                 // some elements of columns could be an object {name: field, data: function (id, name){}, title: function (id, name) {}}
              widths:    null,   // array with width for every column
              editEnd:   null,   // function (id, newValues) for edit lines (only id and name can be edited)
@@ -452,12 +454,16 @@ function filterChanged(e) {
         var objects = data.objects;
         var isType  = data.columns.indexOf('type') !== -1;
         var isRoom  = data.columns.indexOf('room') !== -1;
+        var isFlat  = data.columns.indexOf('flat') !== -1;
+        var isFloor = data.columns.indexOf('floor') !== -1;
         var isFunc  = data.columns.indexOf('function') !== -1;
         var isRole  = data.columns.indexOf('role') !== -1;
         var isHist  = data.columns.indexOf('button') !== -1;
 
         data.tree = {title: '', children: [], count: 0, root: true};
         data.roomEnums = [];
+        data.flatEnums = [];
+        data.floorEnums = [];
         data.funcEnums = [];
         data.ids       = [];
 
@@ -481,6 +487,48 @@ function filterChanged(e) {
                     for (var e in objects[id].enums) {
                         if (data.regexEnumRooms.test(e) && data.roomEnums.indexOf(e) === -1) {
                             data.roomEnums.push(e);
+                        }
+                        data.objects[e] = data.objects[e] || {
+                            _id: e,
+                            common: {
+                                name: objects[id].enums[e],
+                                members: [id]
+                            }
+                        };
+                        data.objects[e].common.members = data.objects[e].common.members || [];
+                        if (data.objects[e].common.members.indexOf(id) === -1) {
+                            data.objects[e].common.members.push(id);
+                        }
+                    }
+                }
+            }
+            if (isFlat) {
+                if (objects[id].type === 'enum' && data.regexEnumFlats.test(id) && data.flatEnums.indexOf(id) === -1) data.flatEnums.push(id);
+                if (objects[id].enums) {
+                    for (var e in objects[id].enums) {
+                        if (data.regexEnumFlats.test(e) && data.flatEnums.indexOf(e) === -1) {
+                            data.flatEnums.push(e);
+                        }
+                        data.objects[e] = data.objects[e] || {
+                            _id: e,
+                            common: {
+                                name: objects[id].enums[e],
+                                members: [id]
+                            }
+                        };
+                        data.objects[e].common.members = data.objects[e].common.members || [];
+                        if (data.objects[e].common.members.indexOf(id) === -1) {
+                            data.objects[e].common.members.push(id);
+                        }
+                    }
+                }
+            }
+            if (isFloor) {
+                if (objects[id].type === 'enum' && data.regexEnumFloors.test(id) && data.floorEnums.indexOf(id) === -1) data.floorEnums.push(id);
+                if (objects[id].enums) {
+                    for (var e in objects[id].enums) {
+                        if (data.regexEnumFloors.test(e) && data.floorEnums.indexOf(e) === -1) {
+                            data.floorEnums.push(e);
                         }
                         data.objects[e] = data.objects[e] || {
                             _id: e,
@@ -564,6 +612,8 @@ function filterChanged(e) {
         data.roles.sort();
         data.types.sort();
         data.roomEnums.sort();
+        data.flatEnums.sort();
+        data.floorEnums.sort();
         data.funcEnums.sort();
         data.histories.sort();
         data.ids.sort();
@@ -850,6 +900,87 @@ function filterChanged(e) {
         return rooms;
     }
 
+    function findFlatsForObject(data, id, withParentInfo, flats) {
+        if (!id) {
+            return [];
+        }
+        flats = flats || [];
+        for (var i = 0; i < data.flatEnums.length; i++) {
+            var common = data.objects[data.flatEnums[i]] && data.objects[data.flatEnums[i]].common;
+            var name = getName(common.name);
+
+            if (common.members && common.members.indexOf(id) !== -1 && flats.indexOf(name) === -1) {
+                if (!withParentInfo) {
+                    flats.push(name);
+                } else {
+                    flats.push({name: name, origin: id});
+                }
+            }
+        }
+        var parts = id.split('.');
+        parts.pop();
+        id = parts.join('.');
+        if (data.objects[id]) findFlatsForObject(data, id, withParentInfo, flats);
+
+        return flats;
+    }
+
+
+    function findFlatsForObjectAsIds(data, id, flats) {
+        if (!id) {
+            return [];
+        }
+        flats = flats || [];
+        for (var i = 0; i < data.flatEnums.length; i++) {
+            var common = data.objects[data.flatEnums[i]] && data.objects[data.flatEnums[i]].common;
+            if (common && common.members && common.members.indexOf(id) !== -1 &&
+                flats.indexOf(data.flatEnums[i]) === -1) {
+                flats.push(data.flatEnums[i]);
+            }
+        }
+        return flats;
+    }
+
+    function findFloorsForObject(data, id, withParentInfo, floors) {
+        if (!id) {
+            return [];
+        }
+        floors = floors || [];
+        for (var i = 0; i < data.floorEnums.length; i++) {
+            var common = data.objects[data.floorEnums[i]] && data.objects[data.floorEnums[i]].common;
+            var name = getName(common.name);
+
+            if (common.members && common.members.indexOf(id) !== -1 && floors.indexOf(name) === -1) {
+                if (!withParentInfo) {
+                    floors.push(name);
+                } else {
+                    floors.push({name: name, origin: id});
+                }
+            }
+        }
+        var parts = id.split('.');
+        parts.pop();
+        id = parts.join('.');
+        if (data.objects[id]) findFloorsForObject(data, id, withParentInfo, floors);
+
+        return floors;
+    }
+
+    function findFloorsForObjectAsIds(data, id, floors) {
+        if (!id) {
+            return [];
+        }
+        floors = floors || [];
+        for (var i = 0; i < data.floorEnums.length; i++) {
+            var common = data.objects[data.floorEnums[i]] && data.objects[data.floorEnums[i]].common;
+            if (common && common.members && common.members.indexOf(id) !== -1 &&
+                floors.indexOf(data.floorEnums[i]) === -1) {
+                floors.push(data.floorEnums[i]);
+            }
+        }
+        return floors;
+    }
+
     function findFunctionsForObject(data, id, withParentInfo, funcs) {
         if (!id) {
             return [];
@@ -981,7 +1112,23 @@ function filterChanged(e) {
             var funcs = [];
             var text = '';
             $dlg.find('.name').html(getNameObj(data.objects[id], id));
-            var enums = attr === 'function' ? data.funcEnums : data.roomEnums;
+            //var enums = attr === 'function' ? data.funcEnums : data.roomEnums;
+            var enums;
+            switch(attr){
+                case 'room':
+                    enums = data.roomEnums;
+                    break;
+                case 'flat':
+                    enums = data.flatEnums;
+                    break;
+                case 'floor':
+                    enums = data.floorEnums;
+                    break;
+                case 'function':
+                    enums = data.funcEnums;
+                    break;
+            }
+            console.log('ternär :' + enums);
             for (var i = 0; i < enums.length; i++) {
                 var common = data.objects[enums[i]] && data.objects[enums[i]].common;
                 var name = getName(common.name);
@@ -1131,7 +1278,7 @@ function filterChanged(e) {
             text += '</button>';
             $(this).append(text);
             var name = $(this).data('name');
-            if (name === 'function' || name === 'room') {
+            if (name === 'function' || name === 'room' || name === 'flat' || name === 'floor') {
                 $(this).find('.edit-dialog-button').on('click', editEnumsDialog).data('data', data);
             } else {
                 $(this).find('.edit-dialog-button').on('click', editValueDialog).data('data', data);
@@ -1269,6 +1416,40 @@ function filterChanged(e) {
                 text += '</select>';
                 editType = 'select';
                 break;
+            case 'flat':
+                states = findFlatsForObjectAsIds (data, id) || [];
+                text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
+                for (var ee = 0; ee < data.flatEnums.length; ee++) {
+                    var flat = data.objects[data.flatEnums[ee]];
+                    var fName;
+                    if (flat && flat.common && flat.common.name) {
+                        fName = getName(flat.common.name);
+                    } else {
+                        fName = data.flatEnums[ee].split('.').pop();
+                    }
+
+                    text += '<option value="' + data.flatEnums[ee] + '" ' + (states.indexOf(data.flatEnums[ee]) !== -1 ? 'selected' : '') + '>' + fName + '</option>';
+                }
+                text += '</select>';
+                editType = 'select';
+                break;
+            case 'floor':
+                states = findFloorsForObjectAsIds (data, id) || [];
+                text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
+                for (var ee = 0; ee < data.floorEnums.length; ee++) {
+                    var floor = data.objects[data.floorEnums[ee]];
+                    var fName;
+                    if (floor && floor.common && floor.common.name) {
+                        fName = getName(floor.common.name);
+                    } else {
+                        fName = data.floorEnums[ee].split('.').pop();
+                    }
+
+                    text += '<option value="' + data.floorEnums[ee] + '" ' + (states.indexOf(data.floorEnums[ee]) !== -1 ? 'selected' : '') + '>' + fName + '</option>';
+                }
+                text += '</select>';
+                editType = 'select';
+                break;
             case 'function':
                 states = findFunctionsForObjectAsIds (data, id) || [];
                 text = '<select style="width: calc(100% - 50px); z-index: 2" multiple="multiple">';
@@ -1310,7 +1491,7 @@ function filterChanged(e) {
 
         var timeout = null;
 
-        if (attr === 'room' || attr === 'function' || attr === 'role') {
+        if (attr === 'room' || attr === 'flat' || attr === 'floor' || attr === 'function' || attr === 'role') {
             editType = 'select';
         }
 
@@ -1326,9 +1507,9 @@ function filterChanged(e) {
 
         $this.css({'padding-left': 2, width: isTitleEdit ? 'calc(100% - 28px)' : '100%'});
 
-        var $input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
+        var $input = (attr === 'function' || attr === 'room' || attr === 'flat' || attr === 'floor' || states) ? $this.find('select') : $this.find('input');
 
-        if (attr === 'room' || attr === 'function') {
+        if (attr === 'room' || attr === 'flat' || attr === 'floor' || attr === 'function') {
             $input.multiselect({
                 autoOpen: true,
                 close: function () {
@@ -1396,14 +1577,14 @@ function filterChanged(e) {
         $this
             .find('.select-id-quick-edit-ok')
             .on('click', function ()  {
-                var _$input = (attr === 'function' || attr === 'room' || states) ? $this.find('select') : $this.find('input');
+                var _$input = (attr === 'function' || attr === 'room' || attr === 'flat' || attr === 'floor' || states) ? $this.find('select') : $this.find('input');
                 _$input.trigger('blur');
             });
 
         if (type === 'checkbox') {
             $input.prop('checked', oldVal);
         } else {
-            if (attr !== 'room' && attr !== 'function') {
+            if (attr !== 'room' && attr !== 'flat' && attr !== 'floor' && attr !== 'function') {
                 $input.val(oldVal);
             }
         }
@@ -1413,7 +1594,7 @@ function filterChanged(e) {
             timeout = setTimeout(function () {
                 var _oldText = $this.data('old-value');
                 var val = $(this).attr('type') === 'checkbox' ? $(this).prop('checked') : $(this).val();
-                if ((attr === 'room' || attr === 'function') && !val) {
+                if ((attr === 'room' || attr === 'flat' || attr === 'floor' || attr === 'function') && !val) {
                     val = [];
                 }
 
@@ -1605,6 +1786,20 @@ function filterChanged(e) {
                     // if (data.rooms) delete data.rooms;
                     // if (data.roomsColored) delete data.roomsColored;
                     return ret;
+                case 'flat':
+                    for (i = 0; i < data.flatEnums.length; i++) {
+                        ret.push(getNameObj(data.objects[data.flatEnums[i]], data.flatEnums[i]));
+                    }
+                    // if (data.flats) delete data.flats;
+                    // if (data.flatsColored) delete data.flatsColored;
+                    return ret;
+                case 'floor':
+                    for (i = 0; i < data.floorEnums.length; i++) {
+                        ret.push(getNameObj(data.objects[data.floorEnums[i]], data.floorEnums[i]));
+                    }
+                    // if (data.floors) delete data.floors;
+                    // if (data.floorsColored) delete data.floorsColored;
+                    return ret;
                 case 'function':
                     for (i = 0; i < data.funcEnums.length; i++) {
                         ret.push(getNameObj(data.objects[data.funcEnums[i]], data.funcEnums[i]));
@@ -1726,6 +1921,12 @@ function filterChanged(e) {
                 if (filterNo === 'room') {
                     if (data.rooms) delete data.rooms;
                     if (data.roomsColored) delete data.roomsColored;
+                } else if (filterNo === 'flat') {
+                    if (data.flats) delete data.flats;
+                    if (data.flatsColored) delete data.flatsColored;
+                } else if (filterNo === 'floor') {
+                    if (data.floors) delete data.floor;
+                    if (data.floorsColored) delete data.floorsColored;
                 } else if (filterNo === 'function') {
                     if (data.funcs) delete data.funcs;
                     if (data.funcsColored) delete data.funcsColored;
@@ -1768,7 +1969,7 @@ function filterChanged(e) {
             // we may not search by value
             if (name === 'ID' || name === 'name' || name === 'enum') {
                 text += textFilterText(name);
-            } else if (name === 'type' || name === 'role' || name === 'room' || name === 'function') {
+            } else if (name === 'type' || name === 'role' || name === 'room' || name === 'flat' || name === 'floor' || name === 'function') {
                 text += textCombobox(name);
             } else if (name === 'button') {
                 if (data.customButtonFilter) {
@@ -1802,6 +2003,8 @@ function filterChanged(e) {
             type: '6%',
             role: '10%',
             room: '10%',
+            flat: '10%',
+            floor: '10%',
             'function': '10%',
             value: '10%',
             button: '9%',
@@ -1839,7 +2042,7 @@ function filterChanged(e) {
         function addClippyToElement($elem, key, objectId) {
             if (!data.noCopyToClipboard) {
                 var name = $elem.data('name');
-                if (name === 'function' || name === 'room') {
+                if (name === 'function' || name === 'room' || name === 'flat' || name === 'floor') {
                     $elem.addClass('edit-enum edit-dialog');
                 } else {
                     $elem.addClass('clippy' + (objectId ? ' edit-dialog' : ''));
@@ -2155,6 +2358,64 @@ function filterChanged(e) {
                                     .data('old-value', val)
                                     .data('id', node.key)
                                     .data('name', 'room')
+                                    .data('selectId', data);
+                                addClippyToElement($elem, val, obj && data.quickEditCallback ? key : undefined);
+                            }
+                            break;
+
+                        case 'flat':
+                            // Try to find flat
+                            if (data.flatsColored) {
+                                var flat = data.flatsColored[node.key];
+                                if (!flat) flat = data.flatsColored[node.key] = findFlatsForObject(data, node.key, true);
+                                val = flat.map(function (e) {
+                                    return getName(e.name);
+                                }).join(', ');
+
+                                if (flat.length && flat[0].origin !== node.key) {
+                                    $elem.css({color: 'gray'}).attr('title', flat[0].origin);
+                                } else {
+                                    $elem.css({color: 'inherit'}).attr('title', null);
+                                }
+                            } else {
+                                val = '';
+                            }
+                            setText(val);
+
+                            if (data.quickEdit && obj && data.quickEdit.indexOf('flat') !== -1) {
+                                $elem
+                                    .data('old-value', val)
+                                    .data('id', node.key)
+                                    .data('name', 'flat')
+                                    .data('selectId', data);
+                                addClippyToElement($elem, val, obj && data.quickEditCallback ? key : undefined);
+                            }
+                            break;
+
+                        case 'floor':
+                            // Try to find floor
+                            if (data.floorsColored) {
+                                var floor = data.floorsColored[node.key];
+                                if (!floor) floor = data.floorsColored[node.key] = findFloorsForObject(data, node.key, true);
+                                val = floor.map(function (e) {
+                                    return getName(e.name);
+                                }).join(', ');
+
+                                if (floor.length && floor[0].origin !== node.key) {
+                                    $elem.css({color: 'gray'}).attr('title', floor[0].origin);
+                                } else {
+                                    $elem.css({color: 'inherit'}).attr('title', null);
+                                }
+                            } else {
+                                val = '';
+                            }
+                            setText(val);
+
+                            if (data.quickEdit && obj && data.quickEdit.indexOf('floor') !== -1) {
+                                $elem
+                                    .data('old-value', val)
+                                    .data('id', node.key)
+                                    .data('name', 'floor')
                                     .data('selectId', data);
                                 addClippyToElement($elem, val, obj && data.quickEditCallback ? key : undefined);
                             }
@@ -2881,7 +3142,7 @@ function filterChanged(e) {
                 forEachColumn (data, function (name) {
                     //if (name === 'image') return;
                     value_ = $dlg.find('.filter[data-index="' + name + '"]').val();
-                    if (name !== 'role' && name !== 'type' && name !== 'room' && name !== 'function' && value_) {
+                    if (name !== 'role' && name !== 'type' && name !== 'room' && name !== 'flat' && name !== 'floor' && name !== 'function' && value_) {
                         value_ = value_.toLowerCase();
                     }
                     if (value_) {
@@ -2948,6 +3209,20 @@ function filterChanged(e) {
                         // Try to find room
                         if (!data.rooms[node.key]) data.rooms[node.key] = findRoomsForObject(data, node.key);
                         if (data.rooms[node.key].indexOf(data.filterVals[f]) === -1) return false;
+                        break;
+                    case 'flat':
+                        if (!obj || !data.flats) return false;
+
+                        // Try to find flat
+                        if (!data.flats[node.key]) data.flats[node.key] = findFlatsForObject(data, node.key);
+                        if (data.flats[node.key].indexOf(data.filterVals[f]) === -1) return false;
+                        break;
+                    case 'floor':
+                        if (!obj || !data.floors) return false;
+
+                        // Try to find floor
+                        if (!data.floors[node.key]) data.floors[node.key] = findFloorsForObject(data, node.key);
+                        if (data.floors[node.key].indexOf(data.filterVals[f]) === -1) return false;
                         break;
                     case 'function':
                         if (!obj || !data.funcs) return false;
@@ -3439,7 +3714,7 @@ function filterChanged(e) {
                     ignoreSortOrder: false
                 },
                 //columns: ['image', 'name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button']
-                columns: ['name', 'type', 'role', 'enum', 'room', 'function', 'value', 'button']
+                columns: ['name', 'type', 'role', 'enum', 'room', 'flat', 'floor', 'function', 'value', 'button']
             }, options);
 
             settings.texts = settings.texts || {};
@@ -3452,6 +3727,8 @@ function filterChanged(e) {
                 role:     'Role',
                 type:     'Type',
                 room:     'Room',
+                flat:     'Flat',
+                floor:    'Floor',
                 'function': 'Function',
                 enum:     'Members',
                 value:    'Value',
@@ -3494,6 +3771,12 @@ function filterChanged(e) {
                         roomEnums:          [],
                         rooms:              {},
                         roomsColored:       {},
+                        flatEnums:          [],
+                        flats:              {},
+                        flatsColored:       {},
+                        floorEnums:         [],
+                        floors:             {},
+                        floorsColored:      {},
                         funcEnums:          [],
                         funcs:              {},
                         funcsColored:       {},
@@ -3503,6 +3786,8 @@ function filterChanged(e) {
                         regexSystemAdapter: new RegExp('^system\\.adapter\\.'),
                         regexSystemHost:    new RegExp('^system\\.host\\.'),
                         regexEnumRooms:     new RegExp('^enum\\.rooms\\.'),
+                        regexEnumFlats:     new RegExp('^enum\\.flats\\.'),
+                        regexEnumFloors:    new RegExp('^enum\\.floors\\.'),
                         regexEnumFuncs:     new RegExp('^enum\\.functions\\.'),
                         inited:             false,
                         filterPresets:      {}
@@ -3717,6 +4002,10 @@ function filterChanged(e) {
                     data.tree      = {title: '', children: [], count: 0, root: true};
                     data.rooms     = {};
                     data.roomEnums = [];
+                    data.flats     = {};
+                    data.flatEnums = [];
+                    data.floors    = {};
+                    data.floorEnums = [];
                     data.funcs     = {};
                     data.funcEnums = [];
                     data.roles     = [];
@@ -3835,6 +4124,14 @@ function filterChanged(e) {
                 if (id.match(/^enum\.rooms/))     {
                     data.rooms = {};
                     data.roomsColored = {};
+                }
+                if (id.match(/^enum\.flats/))     {
+                    data.flats = {};
+                    data.flatsColored = {};
+                }
+                if (id.match(/^enum\.floors/))     {
+                    data.floors = {};
+                    data.floorsColored = {};
                 }
                 if (id.match(/^enum\.functions/)) {
                     data.funcs = {};
