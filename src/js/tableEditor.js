@@ -125,6 +125,70 @@ function values2table(divId, values, options) {
             });
             return;
         }
+        // load flats
+        if (!$table.data('flats') && $table.find('th[data-name="flat"]').length) {
+            getEnums('flats', function (err, list) {
+                var result = {};
+                var trFlats = _('noneflats');
+                if (trFlats !== 'noneflats') {
+                    result[_('none')] = trFlats;
+                } else {
+                    result[_('none')] = '';
+                }
+                var nnames = [];
+                for (var n in list) {
+                    if (list.hasOwnProperty(n)) {
+                        nnames.push(n);
+                    }
+                }
+                nnames.sort(function (a, b) {
+                    a = a.toLowerCase();
+                    b = b.toLowerCase();
+                    if (a > b) return 1;
+                    if (a < b) return -1;
+                    return 0;
+                });
+
+                for (var l = 0; l < nnames.length; l++) {
+                    result[nnames[l]] = list[nnames[l]].common.name || l;
+                }
+                $table.data('flats', result);
+                values2table(divId, values, onChange, onReady, maxRaw);
+            });
+            return;
+        }
+        // load floors
+        if (!$table.data('floors') && $table.find('th[data-name="floor"]').length) {
+            getEnums('floors', function (err, list) {
+                var result = {};
+                var trFloors = _('nonefloors');
+                if (trFloors !== 'nonefloors') {
+                    result[_('none')] = trFloors;
+                } else {
+                    result[_('none')] = '';
+                }
+                var nnames = [];
+                for (var n in list) {
+                    if (list.hasOwnProperty(n)) {
+                        nnames.push(n);
+                    }
+                }
+                nnames.sort(function (a, b) {
+                    a = a.toLowerCase();
+                    b = b.toLowerCase();
+                    if (a > b) return 1;
+                    if (a < b) return -1;
+                    return 0;
+                });
+
+                for (var l = 0; l < nnames.length; l++) {
+                    result[nnames[l]] = list[nnames[l]].common.name || l;
+                }
+                $table.data('floors', result);
+                values2table(divId, values, onChange, onReady, maxRaw);
+            });
+            return;
+        }
         // load functions
         if (!$table.data('functions') && $table.find('th[data-name="func"]').length) {
             getEnums('functions', function (err, list) {
