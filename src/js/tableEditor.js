@@ -307,10 +307,8 @@ function values2table(divId, values, options) {
                             options = $table.data('rooms');
                         } else if (names[i].name === 'flat') {
                             options = $table.data('flats');
-                            if (names[i].type === 'select multiple') delete options[_('none')];
                         } else if (names[i].name === 'floor') {
                             options = $table.data('floors');
-                            if (names[i].type === 'select multiple') delete options[_('none')];
                         } else if (names[i].name === 'func') {
                             options = $table.data('functions');
                             if (names[i].type === 'select multiple') delete options[_('none')];
