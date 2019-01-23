@@ -5,8 +5,16 @@
     "version": "3.6.0",
     "news": {
       "3.6.0": {
-        "en": "New update info states added",
-        "de": "Neue informative states über Updates hinzugefügt"
+        "en": "Added Chinese translations\nNew informative states added about updates",
+        "de": "Chinesische Übersetzungen hinzugefügt\nNeue Informationsstände zu Updates hinzugefügt",
+        "ru": "Добавлены китайские переводы\nДобавлены новые информационные состояния об обновлениях",
+        "pt": "Adicionado traduções chinesas\nNovos estados informativos adicionados sobre atualizações",
+        "nl": "Chinese vertalingen toegevoegd\nNieuwe informatieve staten toegevoegd over updates",
+        "fr": "Ajout de traductions chinoises\nNouveaux états informatifs ajoutés à propos des mises à jour",
+        "it": "Aggiunte traduzioni in cinese\nNuovi stati informativi aggiunti sugli aggiornamenti",
+        "es": "Traducciones en chino añadido\nNuevos estados informativos añadidos sobre actualizaciones.",
+        "pl": "Dodano chińskie tłumaczenia\nDodano nowe informacje informacyjne o aktualizacjach",
+        "zh-cn": "增加了中文翻译\n新的信息状态增加了更新"
       },
       "3.5.10": {
         "en": "Too many debug outputs were disabled",
