@@ -29,7 +29,9 @@ function Enums(main) {
                     "nl": "Kamers",
                     "fr": "Pièces",
                     "it": "Camere",
-                    "es": "Habitaciones"
+                    "es": "Habitaciones",
+                    "pl": "Pokoi",
+                    "zh-cn": "客房"
                 },
                 "desc": {
                     "en": "List of the rooms",
@@ -39,7 +41,9 @@ function Enums(main) {
                     "nl": "Lijst met kamers",
                     "fr": "Liste des chambres",
                     "it": "Elenco delle stanze",
-                    "es": "Lista de las habitaciones"
+                    "es": "Lista de las habitaciones",
+                    "pl": "Lista pokoi",
+                    "zh-cn": "房间清单"
                 },
                 "members": [],
                 "dontDelete": true
@@ -53,13 +57,14 @@ function Enums(main) {
                 "name": {
                     "en": "Floors",
                     "de": "Stockwerke",
-                    "ru": "этажей",
+                    "ru": "Этажи",
                     "pt": "pavimentos",
                     "nl": "vloeren",
                     "fr": "les planchers",
                     "it": "piani",
                     "es": "pisos",
-                    "pl": "podłogi"
+                    "pl": "podłogi",
+                    "zh-cn": "地板"
                 },
                 "desc": {
                     "en": "List of the floors in the building",
@@ -70,7 +75,8 @@ function Enums(main) {
                     "fr": "Liste des étages de l'immeuble",
                     "it": "Elenco dei piani nell'edificio",
                     "es": "Lista de los pisos en el edificio.",
-                    "pl": "Lista pięter w budynku"
+                    "pl": "Lista pięter w budynku",
+                    "zh-cn": "建筑物中的楼层列表"
                 },
                 "members": [],
                 "dontDelete": true
@@ -84,13 +90,14 @@ function Enums(main) {
                 "name": {
                     "en": "Flats",
                     "de": "Wohnungen",
-                    "ru": "квартиры",
+                    "ru": "Квартиры",
                     "pt": "apartamentos",
                     "nl": "flats",
                     "fr": "des appartements",
                     "it": "appartamenti",
                     "es": "pisos",
-                    "pl": "mieszkania"
+                    "pl": "mieszkania",
+                    "zh-cn": "公寓"
                 },
                 "desc": {
                     "en": "List of the flats in the building",
@@ -101,7 +108,8 @@ function Enums(main) {
                     "fr": "Liste des appartements dans l'immeuble",
                     "it": "Elenco degli appartamenti nell'edificio",
                     "es": "Lista de los pisos en el edificio.",
-                    "pl": "Lista mieszkań w budynku"
+                    "pl": "Lista mieszkań w budynku",
+                    "zh-cn": "建筑物中的单位列表"
                 },
                 "members": [],
                 "dontDelete": true
@@ -120,7 +128,9 @@ function Enums(main) {
                     "nl": "functies",
                     "fr": "Les fonctions",
                     "it": "funzioni",
-                    "es": "Funciones"
+                    "es": "Funciones",
+                    "pl": "Funkcje",
+                    "zh-cn": "功能"
                 },
                 "desc": {
                     "en": "List of the functions",
@@ -130,7 +140,9 @@ function Enums(main) {
                     "nl": "Lijst met functies",
                     "fr": "Liste des fonctions",
                     "it": "Elenco delle funzioni",
-                    "es": "Lista de las funciones"
+                    "es": "Lista de las funciones",
+                    "pl": "Lista funkcji",
+                     "zh-cn": "功能列表"
                 },
                 "members": [],
                 "dontDelete": true
@@ -149,7 +161,9 @@ function Enums(main) {
                     "nl": "favorieten",
                     "fr": "Favoris",
                     "it": "Preferiti",
-                    "es": "Favoritos"
+                    "es": "Favoritos",
+                    "pl": "Ulubione",
+                    "zh-cn": "最爱"
                 },
                 "desc": {
                     "en": "List of favorites objects",
@@ -159,7 +173,9 @@ function Enums(main) {
                     "nl": "Lijst met favorietenobjecten",
                     "fr": "Liste des objets favoris",
                     "it": "Elenco di oggetti preferiti",
-                    "es": "Lista de objetos favoritos"
+                    "es": "Lista de objetos favoritos",
+                    "pl": "Lista ulubionych obiektów",
+                    "zh-cn": "收藏夹对象列表"
                 },
                 "members": []
             },
