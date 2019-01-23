@@ -612,7 +612,7 @@ function Objects(main) {
                     }else if (attr === 'flat') {
                         syncEnum(id, 'flats', newValue);
                     }else if (attr === 'floor') {
-                        syncEnum(id, 'floors');
+                        syncEnum(id, 'floors', newValue);
                     } else if (attr === 'function') {
                         syncEnum(id, 'functions', newValue);
                     } else
