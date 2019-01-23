@@ -605,7 +605,7 @@ function Objects(main) {
                         }
                     }
                 ],
-                quickEdit: ['name', 'value', 'role', 'function', 'room', 'flat', 'floor, 'value.val'],
+                quickEdit: ['name', 'value', 'role', 'function', 'room', 'flat', 'floor', 'value.val'],
                 quickEditCallback: function (id, attr, newValue, oldValue, newAck) {
                     if (attr === 'room') {
                         syncEnum(id, 'rooms', newValue);
