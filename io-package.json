@@ -231,7 +231,13 @@
         "docs/de/admin/tab-log.md",
         "docs/de/admin/tab-system.md"
       ],
-      "pt": "docs/pt/admin.md"
+      "pt": "docs/pt/admin.md",
+      "nl": "docs/nl/admin.md",
+      "es": "docs/es/admin.md",
+      "fr": "docs/fr/admin.md",
+      "it": "docs/it/admin.md",
+      "pl": "docs/pl/admin.md",
+      "zh-cn": "docs/zh-cn/admin.md"            
     },
     "materialize": true,
     "mode": "daemon",
