@@ -1,10 +1,10 @@
-#Administrator
+# Administrator
 
 Adapter administratora służy do konfigurowania całej instalacji ioBroker i wszystkich jej adapterów.
 Udostępnia interfejs WWW, który można otworzyć za pomocą "http://<adres IP serwera>:8081"
 w przeglądarce internetowej. Ten adapter jest automatycznie instalowany razem z programem ioBroker.
 
-##Konfiguracja:
+## Konfiguracja:
 
 Okno konfiguracji adaptera "admin" zawiera następujące ustawienia:
 ![img_002](img/admin_img_002.png)
@@ -21,7 +21,7 @@ podwójnego przydziału portów. **Kodowanie:** włącz tę opcję, jeśli ma by
 Domyślne hasło dla użytkownika "admin" to "iobroker" **Bufor:** aby przyspieszyć ładowanie stron włącz tę opcję.
 Zwykle tylko programista chce, aby ta opcja była niezaznaczona.
 
-##Obsługa:
+## Obsługa:
 
 Strona główna administratora składa się z kilku zakładek. **Adapter:** Tutaj występują instancje
 Adaptery można instalować lub usuwać. Za pomocą przycisku aktualizacji

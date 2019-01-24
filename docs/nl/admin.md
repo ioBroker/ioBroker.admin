@@ -1,10 +1,10 @@
-#Beheerder
+# Beheerder
 
 De admin-adapter wordt gebruikt om de hele ioBroker-installatie en alle bijbehorende adapters te configureren.
 Het biedt een webinterface die kan worden geopend met "http://<IP-adres van de server>:8081"
 in de webbrowser. Deze adapter wordt automatisch geïnstalleerd samen met ioBroker.
 
-##Configuratie:
+## Configuratie:
 
 Het configuratiedialoog van de adapter "admin" biedt de volgende instellingen:
 ![Img_002](img/admin_img_002.png)
@@ -21,7 +21,7 @@ van een dubbele poorttoewijzing. **Codering:** schakel deze optie in als een bev
 Standaard wachtwoord voor gebruiker "admin" is "iobroker" **Buffer:** om het laden van de pagina's te versnellen, schakel deze optie in.
 Normaal wil alleen de ontwikkelaar deze optie niet aangevinkt hebben.
 
-##Afhandeling:
+## Afhandeling:
 
 De hoofdpagina van de beheerder bestaat uit verschillende tabbladen. **Adapter:** Hier de instanties van
 een adapter kan worden geïnstalleerd of verwijderd. Met de updateknop

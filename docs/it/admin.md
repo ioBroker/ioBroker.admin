@@ -1,10 +1,10 @@
-#Admin
+# Admin
 
 L'adattatore di amministrazione viene utilizzato per configurare l'intera ioBroker-Installazione e tutti i suoi adattatori.
 Fornisce un'interfaccia web, che può essere aperta da "http://<indirizzo IP del server>:8081"
 nel browser web. Questo adattatore viene installato automaticamente insieme a ioBroker.
 
-##Configurazione:
+## Configurazione:
 
 La finestra di configurazione dell'adattatore "admin" fornisce le seguenti impostazioni:
 ![Img_002](img/admin_img_002.png)
@@ -21,7 +21,7 @@ di un'allocazione a doppia porta. **Coding:** abilita questa opzione se deve ess
 La password predefinita per l'utente "admin" è "iobroker" **Buffer:** per accelerare il caricamento delle pagine abilitare questa opzione.
 Normalmente solo lo sviluppatore vuole avere questa opzione deselezionata.
 
-##Gestione:
+## Gestione:
 
 La pagina principale dell'amministratore è composta da diverse schede. **Adattatore:** Qui le istanze di
 un adattatore può essere installato o cancellato. Con il pulsante di aggiornamento
