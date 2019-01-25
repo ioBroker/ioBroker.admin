@@ -10,17 +10,21 @@ var jQueryCronWords = {
 		"nl": "April",
 		"fr": "Avril",
 		"it": "Aprile",
-		"es": "Abril"
+		"es": "Abril",
+                "pl": "kwiecień",
+                "zh-cn": "四月"
 	},
     "Aug": {
 		"en": "Aug",
 		"de": "Aug",
 		"ru": "Авг",
 		"pt": "Ago",
-		"nl": "Augustus",
+		"nl": "Aug",
 		"fr": "Août",
-		"it": "Agosto",
-		"es": "Ago"
+		"it": "Ago",
+		"es": "Ago",
+                "pl": "Sier",
+                "zh-cn": "八月"
 	},
     "CRON Every": {
 		"en": "Every",
@@ -30,7 +34,9 @@ var jQueryCronWords = {
 		"nl": "Elk",
 		"fr": "Chaque",
 		"it": "Ogni",
-		"es": "Cada"
+		"es": "Cada",
+                "pl": "Każdy",
+                "zh-cn": "一切"
 	},
     "CRON Every day": {
 		"en": "Every day",
@@ -40,7 +46,9 @@ var jQueryCronWords = {
 		"nl": "Elke dag",
 		"fr": "Tous les jours",
 		"it": "Ogni giorno",
-		"es": "Cada día"
+		"es": "Cada día",
+                "pl": "Codzienny",
+                "zh-cn": "每天"
 	},
     "CRON Every hour": {
 		"en": "Every hour",
@@ -50,7 +58,9 @@ var jQueryCronWords = {
 		"nl": "Elk uur",
 		"fr": "Toutes les heures",
 		"it": "Ogni ora",
-		"es": "Cada hora"
+		"es": "Cada hora",
+                "pl": "Co godzinę",
+                "zh-cn": "每隔一小时"
 	},
     "CRON Every minute": {
 		"en": "Every minute",
@@ -60,7 +70,9 @@ var jQueryCronWords = {
 		"nl": "Elke minuut",
 		"fr": "Chaque minute",
 		"it": "Ogni minuto",
-		"es": "Cada minuto"
+		"es": "Cada minuto",
+                "pl": "Każda minuta",
+                "zh-cn": "每一分钟"
 	},
     "CRON Every month": {
 		"en": "Every month",
@@ -70,7 +82,9 @@ var jQueryCronWords = {
 		"nl": "Elke maand",
 		"fr": "Chaque mois",
 		"it": "Ogni mese",
-		"es": "Cada mes"
+		"es": "Cada mes",
+                "pl": "Każdego miesiąca",
+                "zh-cn": "每个月"
 	},
     "CRON Every second": {
 		"en": "Every second",
@@ -80,7 +94,9 @@ var jQueryCronWords = {
 		"nl": "Elke seconde",
 		"fr": "Chaque seconde",
 		"it": "Ogni secondo",
-		"es": "Cada segundo"
+		"es": "Cada segundo",
+                "pl": "Każda sekunda",
+                "zh-cn": "每一秒"
 	},
     "CRON Every week day": {
 		"en": "Every week day",
@@ -90,7 +106,9 @@ var jQueryCronWords = {
 		"nl": "Elke weekdag",
 		"fr": "Tous les jours de la semaine",
 		"it": "Ogni giorno della settimana",
-		"es": "Todos los días de la semana"
+		"es": "Todos los días de la semana",
+                "pl": "W każdy dzień roboczy",
+                "zh-cn": "每个工作日"
 	},
     "CRON day": {
 		"en": "day",
@@ -100,7 +118,9 @@ var jQueryCronWords = {
 		"nl": "dag",
 		"fr": "jour",
 		"it": "giorno",
-		"es": "día"
+		"es": "día",
+                "pl": "dzień",
+                "zh-cn": "天"
 	},
     "CRON days": {
 		"en": "days",
@@ -110,7 +130,9 @@ var jQueryCronWords = {
 		"nl": "Dagen",
 		"fr": "jours",
 		"it": "giorni",
-		"es": "dias"
+		"es": "dias",
+                "pl": "dni",
+                "zh-cn": "天"
 	},
     "CRON hour": {
 		"en": "hour",
@@ -120,7 +142,9 @@ var jQueryCronWords = {
 		"nl": "uur",
 		"fr": "heure",
 		"it": "ora",
-		"es": "hora"
+		"es": "hora",
+                "pl": "godzina",
+                "zh-cn": "小时"
 	},
     "CRON hours": {
 		"en": "hours",
@@ -130,7 +154,9 @@ var jQueryCronWords = {
 		"nl": "Uren",
 		"fr": "heures",
 		"it": "ore",
-		"es": "horas"
+		"es": "horas",
+                "pl": "godziny",
+                "zh-cn": "小时"
 	},
     "CRON minute": {
 		"en": "minute",
@@ -140,7 +166,9 @@ var jQueryCronWords = {
 		"nl": "minuut",
 		"fr": "minute",
 		"it": "Minuto",
-		"es": "minuto"
+		"es": "minuto",
+                "pl": "minuta",
+                "zh-cn": "分钟"
 	},
     "CRON minutes": {
 		"en": "minutes",
@@ -150,7 +178,9 @@ var jQueryCronWords = {
 		"nl": "notulen",
 		"fr": "minutes",
 		"it": "minuti",
-		"es": "minutos"
+		"es": "minutos",
+                "pl": "minuty",
+                "zh-cn": "分钟"
 	},
     "CRON month": {
 		"en": "month",
@@ -160,7 +190,9 @@ var jQueryCronWords = {
 		"nl": "maand",
 		"fr": "mois",
 		"it": "mese",
-		"es": "mes"
+		"es": "mes",
+                "pl": "miesiąc",
+                "zh-cn": "月"
 	},
     "CRON months": {
 		"en": "months",
@@ -170,7 +202,9 @@ var jQueryCronWords = {
 		"nl": "maanden",
 		"fr": "mois",
 		"it": "mesi",
-		"es": "meses"
+		"es": "meses",
+                "pl": "miesięcy",
+                "zh-cn": "个月"
 	},
     "CRON second": {
 		"en": "second",
@@ -180,7 +214,9 @@ var jQueryCronWords = {
 		"nl": "tweede",
 		"fr": "seconde",
 		"it": "secondo",
-		"es": "segundo"
+		"es": "segundo",
+                "pl": "druga",
+                "zh-cn": "第二"
 	},
     "CRON seconds": {
 		"en": "seconds",
@@ -190,7 +226,9 @@ var jQueryCronWords = {
 		"nl": "Seconden",
 		"fr": "secondes",
 		"it": "secondi",
-		"es": "segundos"
+		"es": "segundos",
+                "pl": "sekundy",
+                "zh-cn": "秒"
 	},
     "CRON Clear": {
 		"en": "Clear",
@@ -200,7 +238,9 @@ var jQueryCronWords = {
 		"nl": "Duidelijk",
 		"fr": "Effacer",
 		"it": "Pulito",
-		"es": "Limpio"
+		"es": "Limpio",
+                "pl": "Jasny",
+                "zh-cn": "明确"
 	},
     "CRON Day of Month": {
 		"en": "Day of Month",
@@ -210,7 +250,9 @@ var jQueryCronWords = {
 		"nl": "Dag van de maand",
 		"fr": "Jour du mois",
 		"it": "Giorno del mese",
-		"es": "Dia del mes"
+		"es": "Dia del mes",
+                "pl": "",
+                "zh-cn": ""
 		},
     "CRON Day of Week": {
 		"en": "Day of Week",
@@ -220,47 +262,57 @@ var jQueryCronWords = {
 		"nl": "Dag van de week",
 		"fr": "Jour de la semaine",
 		"it": "Giorno della settimana",
-		"es": "Día de la semana"
+		"es": "Día de la semana",
+                "pl": "Dzień miesiąca",
+                "zh-cn": "一个月的一天"
 	},
     "CRON dialog": {
 		"en": "CRON dialog",
 		"de": "CRON Dialog",
-        "ru": "CRON диалог",
-        "pt": "CRON diálogo",
-        "nl": "CRON dialoog",
-        "fr": "Dialogue CRON",
-        "it": "CRON dialogo",
-        "es": "CRON diálogo"
+                "ru": "CRON диалог",
+                "pt": "CRON diálogo",
+                "nl": "CRON dialoog",
+                "fr": "Dialogue CRON",
+                "it": "CRON dialogo",
+                "es": "CRON diálogo",
+                "pl": "Okno dialogowe CRON",
+                "zh-cn": "CRON对话框"
     },
     "CRON Type": {
-        "en": "Type",
-        "de": "Art",
-        "ru": "Тип",
-        "pt": "Tipo",
-        "nl": "Type",
-        "fr": "Type",
-        "it": "Genere",
-        "es": "Tipo"
+                "en": "Type",
+                "de": "Art",
+                "ru": "Тип",
+                "pt": "Tipo",
+                "nl": "Type",
+                "fr": "Type",
+                "it": "Genere",
+                "es": "Tipo",
+                "pl": "Rodzaj",
+                "zh-cn": "类型"
     },
     "CRON Apply": {
-        "en": "Apply",
-        "de": "Anwenden",
-        "ru": "Перенять",
-        "pt": "Aplique",
-        "nl": "Toepassen",
-        "fr": "Appliquer",
-        "it": "Applicare",
-        "es": "Aplicar"
+                "en": "Apply",
+                "de": "Anwenden",
+                "ru": "Перенять",
+                "pt": "Aplique",
+                "nl": "Toepassen",
+                "fr": "Appliquer",
+                "it": "Applicare",
+                "es": "Aplicar",
+                "pl": "Zastosować",
+                "zh-cn": "应用"
     },
     "CRON Cancel": {
-        "en": "Cancel",
-        "de": "Abbrechen",
-        "ru": "Отмена",
-        "pt": "Cancelar",
-        "nl": "Annuleer",
-        "fr": "Annuler",
-        "it": "Annulla",
-        "es": "Cancelar"
+                "en": "Cancel",
+                "de": "Abbrechen",
+                "ru": "Отмена",
+                "pt": "Cancelar",
+                "nl": "Annuleer",
+                "fr": "Annuler",
+                "it": "Annulla",
+                "es": "Cancelar",
+                "pl": "Anuluj",
+                "zh-cn": "取消"
     },
     "Dec": {
 		"en": "Dec",
@@ -270,7 +322,9 @@ var jQueryCronWords = {
 		"nl": "DEC",
 		"fr": "Déc.",
 		"it": "Dec",
-		"es": "Dic"
+		"es": "Dic",
+                "pl": "Grud",
+                "zh-cn": "十二月"
 	},
     "Each day": {
 		"en": "Each Day",
@@ -280,7 +334,9 @@ var jQueryCronWords = {
 		"nl": "Elke dag",
 		"fr": "Chaque jour",
 		"it": "Ogni giorno",
-		"es": "Cada día"
+		"es": "Cada día",
+                "pl": "Każdego dnia",
+                "zh-cn": "每天"
 	},
     "Each month": {
 		"en": "Each Month",
@@ -290,7 +346,9 @@ var jQueryCronWords = {
 		"nl": "Elke maand",
 		"fr": "Chaque mois",
 		"it": "Ogni mese",
-		"es": "Cada mes"
+		"es": "Cada mes",
+                "pl": "Każdego miesiąca",
+                "zh-cn": "每月"
 	},
     "CRON Each selected day": {
 		"en": "Each selected Day",
@@ -300,7 +358,9 @@ var jQueryCronWords = {
 		"nl": "Elke geselecteerde dag",
 		"fr": "Chaque jour sélectionné",
 		"it": "Ogni giorno selezionato",
-		"es": "Cada día seleccionado"
+		"es": "Cada día seleccionado",
+                "pl": "Każdy wybrany dzień",
+                "zh-cn": "每个选定日"
 	},
     "CRON Each selected hour": {
 		"en": "Each Selected Hour",
@@ -310,7 +370,9 @@ var jQueryCronWords = {
 		"nl": "Elk geselecteerd uur",
 		"fr": "Chaque heure sélectionnée",
 		"it": "Ogni ora selezionata",
-		"es": "Cada hora seleccionada"
+		"es": "Cada hora seleccionada",
+                "pl": "Każda wybrana godzina",
+                "zh-cn": "每个选定的小时"
 	},
     "CRON Each selected minute": {
 		"en": "Each selected minute",
@@ -320,7 +382,9 @@ var jQueryCronWords = {
 		"nl": "Elke geselecteerde minuut",
 		"fr": "Chaque minute sélectionnée",
 		"it": "Ogni minuto selezionato",
-		"es": "Cada minuto seleccionado"
+		"es": "Cada minuto seleccionado",
+                "pl": "Każda wybrana minuta",
+                "zh-cn": "每个选定的分钟"
 	},
     "CRON Each selected month": {
 		"en": "Each selected month",
@@ -330,7 +394,9 @@ var jQueryCronWords = {
 		"nl": "Elke geselecteerde maand",
 		"fr": "Chaque mois sélectionné",
 		"it": "Ogni mese selezionato",
-		"es": "Cada mes seleccionado"
+		"es": "Cada mes seleccionado",
+                "pl": "Każdy wybrany miesiąc",
+                "zh-cn": "每个选定的月份"
 	},
     "CRON Each selected second": {
 		"en": "Each selected second",
@@ -340,7 +406,9 @@ var jQueryCronWords = {
 		"nl": "Elke geselecteerde seconde",
 		"fr": "Chaque seconde sélectionnée",
 		"it": "Ogni secondo selezionato",
-		"es": "Cada segundo seleccionado"
+		"es": "Cada segundo seleccionado",
+                "pl": "Każda wybrana sekunda",
+                "zh-cn": "每个选定的秒"
 	},
     "CRON Each selected week day": {
 		"en": "Each selected week day",
@@ -350,7 +418,9 @@ var jQueryCronWords = {
 		"nl": "Elke geselecteerde weekdag",
 		"fr": "Chaque jour de la semaine sélectionné",
 		"it": "Ogni giorno della settimana selezionato",
-		"es": "Cada día de la semana seleccionado"
+		"es": "Cada día de la semana seleccionado",
+                "pl": "Każdy wybrany dzień tygodnia",
+                "zh-cn": "每个选定的工作日"
 	},
     "CRON Every %s seconds": {
 		"en": "Every %s seconds",
@@ -360,7 +430,9 @@ var jQueryCronWords = {
 		"nl": "Elke% s seconden",
 		"fr": "Chaque %s seconde",
 		"it": "Ogni %s secondi",
-		"es": "Cada %s segundos"
+		"es": "Cada %s segundos",
+                "pl": "Co %s sekund",
+                "zh-cn": "每%s秒"
 	},
     "CRON Every n hours": {
 		"en": "Every n Hours",
@@ -370,7 +442,9 @@ var jQueryCronWords = {
 		"nl": "Every n Hours",
 		"fr": "Toutes les n heures",
 		"it": "Ogni n ore",
-		"es": "Cada n horas"
+		"es": "Cada n horas",
+                "pl": "Co n godzin",
+                "zh-cn": "每n小时一次"
 	},
     "CRON Every n minutes": {
 		"en": "Every n minutes",
@@ -380,7 +454,9 @@ var jQueryCronWords = {
 		"nl": "Elke n minuten",
 		"fr": "Toutes les n minutes",
 		"it": "Ogni n minuti",
-		"es": "Cada n minutos"
+		"es": "Cada n minutos",
+                "pl": "Co n minut",
+                "zh-cn": "每隔n分钟"
 	},
     "CRON Every n seconds": {
 		"en": "Every n seconds",
@@ -390,17 +466,21 @@ var jQueryCronWords = {
 		"nl": "Elke n seconden",
 		"fr": "Toutes les n secondes",
 		"it": "Ogni n secondi",
-		"es": "Cada n segundos"
+		"es": "Cada n segundos",
+                "pl": "Co n sekund",
+                "zh-cn": "每隔n秒"
 	},
     "Feb": {
 		"en": "Feb",
 		"de": "Feb",
 		"ru": "Фев",
 		"pt": "Feb",
-		"nl": "Februari",
+		"nl": "Feb",
 		"fr": "Févr.",
-		"it": "Febbraio",
-		"es": "Feb"
+		"it": "Feb",
+		"es": "Feb",
+                "pl": "Luty",
+                "zh-cn": "二月"
 	},
     "Friday": {
 		"en": "Friday",
@@ -410,7 +490,9 @@ var jQueryCronWords = {
 		"nl": "Vrijdag",
 		"fr": "Vendredi",
 		"it": "Venerdì",
-		"es": "Viernes"
+		"es": "Viernes",
+                "pl": "Piątek",
+                "zh-cn": "星期五"
 	},
     "CRON Hour": {
 		"en": "Hour",
@@ -420,7 +502,9 @@ var jQueryCronWords = {
 		"nl": "Uur",
 		"fr": "Heure",
 		"it": "Ora",
-		"es": "Hora"
+		"es": "Hora",
+                "pl": "Godzina",
+                "zh-cn": "小时"
 	},
     "Jan": {
 		"en": "Jan",
@@ -430,7 +514,9 @@ var jQueryCronWords = {
 		"nl": "Jan",
 		"fr": "Janv.",
 		"it": "Jan",
-		"es": "Ene"
+		"es": "Ene",
+                "pl": "Styc",
+                "zh-cn": "一月"
 	},
     "July": {
 		"en": "July",
@@ -440,7 +526,9 @@ var jQueryCronWords = {
 		"nl": "Juli",
 		"fr": "Juillet",
 		"it": "Luglio",
-		"es": "Julio"
+		"es": "Julio",
+                "pl": "Lipiec",
+                "zh-cn": "七月"
 	},
     "June": {
 		"en": "June",
@@ -450,7 +538,9 @@ var jQueryCronWords = {
 		"nl": "Juni",
 		"fr": "Juin",
 		"it": "Giugno",
-		"es": "Junio"
+		"es": "Junio",
+                "pl": "Czerw",
+                "zh-cn": "六月"
 	},
     "March": {
 		"en": "March",
@@ -460,7 +550,9 @@ var jQueryCronWords = {
 		"nl": "Maart",
 		"fr": "Mars",
 		"it": "Marzo",
-		"es": "Marzo"
+		"es": "Marzo",
+                "pl": "Marsz",
+                "zh-cn": "游行"
 	},
     "May": {
 		"en": "May",
@@ -470,7 +562,9 @@ var jQueryCronWords = {
 		"nl": "Mei",
 		"fr": "Mai",
 		"it": "Maggio",
-		"es": "Mayo"
+		"es": "Mayo",
+                "pl": "Może",
+                "zh-cn": "可以"
 	},
     "CRON Minute": {
 		"en": "Minute",
@@ -480,7 +574,9 @@ var jQueryCronWords = {
 		"nl": "Minuut",
 		"fr": "Minute",
 		"it": "Minuto",
-		"es": "Minuto"
+		"es": "Minuto",
+                "pl": "Minuta",
+                "zh-cn": "分钟"
 	},
     "Monday": {
 		"en": "Monday",
@@ -490,7 +586,9 @@ var jQueryCronWords = {
 		"nl": "Maandag",
 		"fr": "Lundi",
 		"it": "Lunedi",
-		"es": "Lunes"
+		"es": "Lunes",
+                "pl": "Poniedziałek",
+                "zh-cn": "星期一"
 	},
     "CRON Month": {
 		"en": "Month",
@@ -500,17 +598,21 @@ var jQueryCronWords = {
 		"nl": "Maand",
 		"fr": "Mois",
 		"it": "Mese",
-		"es": "Mes"
+		"es": "Mes",
+                "pl": "Miesiąc",
+                "zh-cn": "月"
 	},
     "Nov": {
 		"en": "Nov",
 		"de": "Nov",
 		"ru": "Ноя",
 		"pt": "Nov",
-		"nl": "November",
+		"nl": "Nov",
 		"fr": "Nov.",
-		"it": "Novembre",
-		"es": "Nov"
+		"it": "Nov",
+		"es": "Nov",
+                "pl": "Listo",
+                "zh-cn": "十一月"
 	},
     "Oct": {
 		"en": "Oct",
@@ -520,7 +622,9 @@ var jQueryCronWords = {
 		"nl": "Oct",
 		"fr": "Oct.",
 		"it": "Ottobre",
-		"es": "Oct"
+		"es": "Oct",
+                "pl": "Paźdz",
+                "zh-cn": "十月"
 	},
     "Saturday": {
 		"en": "Saturday",
@@ -530,7 +634,9 @@ var jQueryCronWords = {
 		"nl": "Zaterdag",
 		"fr": "Samedi",
 		"it": "Sabato",
-		"es": "Sábado"
+		"es": "Sábado",
+                "pl": "Sobota",
+                "zh-cn": "星期六"
 	},
     "CRON Second": {
 		"en": "Second",
@@ -540,17 +646,21 @@ var jQueryCronWords = {
 		"nl": "Tweede",
 		"fr": "Seconde",
 		"it": "Secondo",
-		"es": "Segundo"
+		"es": "Segundo",
+                "pl": "Druga",
+                "zh-cn": "第二"
 	},
     "Sept": {
 		"en": "Sept",
 		"de": "Sept",
 		"ru": "Сен",
 		"pt": "Sept",
-		"nl": "September",
+		"nl": "Sept",
 		"fr": "Sept.",
-		"it": "Settembre",
-		"es": "Sept"
+		"it": "Set",
+		"es": "Sept",
+                "pl": "Wrzes",
+                "zh-cn": "九月"
 	},
     "Sunday": {
 		"en": "Sunday",
@@ -560,7 +670,9 @@ var jQueryCronWords = {
 		"nl": "Zondag",
 		"fr": "Dimanche",
 		"it": "Domenica",
-		"es": "Domingo"
+		"es": "Domingo",
+                "pl": "Niedziela",
+                "zh-cn": "星期日"
 	},
     "Thursday": {
 		"en": "Thursday",
@@ -570,7 +682,9 @@ var jQueryCronWords = {
 		"nl": "Donderdag",
 		"fr": "Jeudi",
 		"it": "Giovedi",
-		"es": "Jueves"
+		"es": "Jueves",
+                "pl": "Czwartek",
+                "zh-cn": "星期四"
 	},
     "Tuesday": {
 		"en": "Tuesday",
@@ -580,7 +694,9 @@ var jQueryCronWords = {
 		"nl": "Dinsdag",
 		"fr": "Mardi",
 		"it": "Martedì",
-		"es": "Martes"
+		"es": "Martes",
+                "pl": "Wtorek",
+                "zh-cn": "星期二"
 	},
     "CRON Use seconds": {
 		"en": "Use seconds",
@@ -590,7 +706,9 @@ var jQueryCronWords = {
 		"nl": "Gebruik seconden",
 		"fr": "Utiliser les secondes",
 		"it": "Usa secondi",
-		"es": "Usar segundos"
+		"es": "Usar segundos",
+                "pl": "Użyj sekund",
+                "zh-cn": "使用秒"
 	},
     "Wednesday": {
 		"en": "Wednesday",
@@ -600,7 +718,9 @@ var jQueryCronWords = {
 		"nl": "Woensdag",
 		"fr": "Mercredi",
 		"it": "Mercoledì",
-		"es": "Miércoles"
+		"es": "Miércoles",
+                "pl": "środa",
+                "zh-cn": "星期三"
 	},
     "never": {
 		"en": "Never",
@@ -610,6 +730,8 @@ var jQueryCronWords = {
 		"nl": "Nooit",
 		"fr": "Jamais",
 		"it": "Mai",
-		"es": "Nunca"
-	},
+		"es": "Nunca",
+                "pl": "Nigdy",
+                "zh-cn": "决不"
+	}
 };

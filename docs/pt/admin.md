@@ -1,94 +1,67 @@
-## Descrição detalhada
+# Admin
 
-O adaptador de administração é usado para configurar todas os adaptadores no ioBroker. Ele fornece uma interface web, que pode ser chamado sob o '<endereço IP do servidor>:8081`. Este adaptador é criado diretamente durante a instalação do ioBroker.
+O adaptador de administração é usado para configurar toda a instalação do ioBroker e todos os seus adaptadores.
+Ele fornece uma interface web, que pode ser aberta por "http://<endereço IP do servidor>:8081"
+no navegador da web. Este adaptador é instalado automaticamente junto com o ioBroker.
 
-Pelo GUI do adaptador pode ser usada as seguintes funções:
+## Configuração:
 
-* Instalação de adaptadores adicionais
-* Acesso à visão geral dos objetos
-* Acesso à visão geral dos estados dos objetos
-* Acesso à administração de usuários e grupos
-* Acesso ao arquivo de log
-* Administração dos hosts
+A caixa de diálogo de configuração do adaptador "admin" fornece as seguintes configurações:
+![img_002](img/admin_img_002.png)
 
-## Instalação
+**IP:** o endereço IP do servidor web "admin" pode ser escolhido aqui.
+Diferentes endereços IPv4 e IPv6 podem ser selecionados. O valor padrão é 0.0.0.0\.
+Se você acha que 0.0.0.0 é uma configuração inválida, por favor, deixe-o ficar lá, porque
+é absolutamente válido. Se você alterar o endereço, poderá acessar o servidor da web
+somente através deste endereço. **Port:** Você pode especificar a porta do servidor web "admin".
+Se houver mais servidores web no PC ou dispositivo, a porta deve ser personalizada para evitar problemas
+de uma alocação de porta dupla. **Codificação:** habilite esta opção se o protocolo https seguro deve ser usado.
 
-Este adaptador é criado diretamente durante a instalação do ioBroker. Uma instalação manual não é necessária
+**Autenticação:** Se você quiser a autenticação com login/senha, você deve habilitar esta caixa de seleção.
+A senha padrão para o usuário "admin" é "iobroker" **Buffer:** para acelerar o carregamento das páginas, ative esta opção.
+Normalmente, apenas o desenvolvedor deseja ter essa opção desmarcada.
 
-## Configuração
+## Manipulação:
 
-![adapter_admin_konfiguration](img/admin_konfiguration.png)
+A página principal do admin consiste em várias abas. **Adaptador:** Aqui as ocorrências de
+um adaptadores podem ser instalados ou excluídos. Com o botão de atualização
+![img_005](img/admin_img_005.png)
+no canto superior esquerdo podemos obter se as novas versões dos adaptadores estiverem disponíveis.
+![img_001](img/admin_img_001.jpg)
 
-#### IP
+As versões disponíveis e instaladas do adaptador são mostradas. Para uma visão geral, o estado do
+adaptador é colorido (vermelho = no planejamento; laranja = alfa; amarelo = beta). As atualizações para uma versão mais recente do
+o adaptador é feito aqui também. Se houver uma versão mais recente, as letras da guia ficarão verdes.
+Se o ícone do ponto de interrogação na última coluna estiver ativo, você poderá ir até o site com informações do adaptador.
+O adaptador disponível é classificado em ordem alfabética. A instância já instalada está na parte superior da lista.
 
-Aqui é deve ser inserido o endereço IP sob o qual o adaptador pode ser alcançado. Várias opções Ipv4 e Ipv6 estão disponíveis.
-<span style="color: #ff0000;">**O default é 0.0.0.0\. Isso não pode ser alterado!**</span>
+**Instância:** A instância já instalada é listada aqui e pode ser configurada de acordo. Se o título do
+exemplo são sublinhados, você pode clicar nele e o site correspondente será aberto.
 
-#### Porta
+![img_003](img/admin_img_003.png)
 
-Aqui é definida a porta sob a qual o administrador pode ser chamado. Se vários servidores da Web estiverem sendo executados no servidor, esta porta deve ser adaptada para que não haja problemas com portas duplicadas.
+**Objetos:** os objetos gerenciados (por exemplo, setup / variables / programs do hardware conectado)
 
-#### Criptografia
+![img_004](img/admin_img_004.png)
 
-Se você quiser usar o protocolo seguro https, você deve marcar esta caixa.
+**Estados:** os estados atuais (valores dos objetos)
+Se o histórico do adaptador estiver instalado, você poderá registrar os pontos de dados escolhidos.
+Os pontos de dados registrados são selecionados à direita e aparecem com um logotipo verde.
 
-#### Autenticação
+**Scripts:** esta aba estará ativa somente se o adaptador "javascript" estiver instalado.
 
-Se você quiser que use uma autenticação, você deve marcar esta caixa.
+**Node-red:** esta aba é visível apenas se o adaptador "node-red" estiver instalado e ativado.
 
-## Funcionamento
+**Hosts:** o computador no qual o ioBroker está instalado. Aqui, a versão mais recente do js-controller pode ser instalada.
+Se houver uma nova versão, as letras da guia serão verdes. Para procurar uma nova versão, você tem que clicar na atualização
+ícone no canto inferior esquerdo.
 
-Usando o navegador da Web, vá para a página a seguir:
+**Enumeração:** aqui estão listados os favoritos, negociações e espaços da CCU.
 
-`<Endereço IP do servidor>:8081`
+**Usuários:** aqui os usuários podem ser adicionados. Para fazer isso, clique no (+). Por padrão, existe um administrador.
 
-## Abas
+**Grupos:** se você clicar no (+) no canto inferior esquerdo, você pode criar grupos de usuários. No menu suspenso, os usuários são atribuídos aos grupos.
 
-Na página principal do administrador existem várias abas. Na instalação básica, as abas são vistas como mostrado. Usando o ícone de lápis na parte superior direita (1), outras abas podem ser adicionadas ou retiradas.
-
-![iobroker_adapter_admin_001a](img/admin_ioBroker_Adapter_Admin_001a.jpg)
-
-Informações detalhadas são fornecidas nos links dos títulos.
-
-### [Adaptador](admin/tab-adapters.md)
-
-Aqui os adaptadores disponíveis podem ser instalados e gerenciados.
-
-### [Instâncias](admin/tab-instances.md)
-
-Aqui as instâncias já instaladas podem ser configuradas.
-
-### [Objetos](admin/tab-objects.md)
-
-
-
-### [Estados](admin/tab-states.md)
-
-Os estados atuais dos objetos.
-
-### [Eventos](admin/tab-events.md)
-
-Uma lista de atualizações dos estados.
-
-### [Grupos](admin/tab-groups.md)
-
-Aqui você pode criar os grupos de usuários e controlar os direitos desse.
-
-### [Usuários](admin/tab-users.md)
-
-Aqui você pode criar os usuários e adicionar eles aos grupos existentes.
-
-### [Enumerações](admin/tab-enums.md)
-
-Aqui estão listados os favoritos, as kategorias e os quartos.
-
-### [Hosts](admin/tab-hosts.md)
-
-Informações sobre o computador onde ioBroker está instalado. Você pode aqui atualizar a versão do js-controler. Se uma nova versão estiver disponível, a aba aparece em verde.
-
-### [Log](admin/tab-log.md)
-
-
-### [Configurações do sistema](admin/tab-system.md)
-
-![Configurações do administrador do sistema](img/admin_Systemeinstellungen.jpg)
+**Evento:** Uma lista das atualizações em andamento das condições. **Log:** aqui o log é exibido Na instância da guia, o nível do log logado
+da instância única pode ser definida. No menu de seleção, o nível de registro mínimo exibido é selecionado. Se ocorrer um erro
+letras do log aparecem em vermelho.

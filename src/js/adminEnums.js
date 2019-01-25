@@ -29,7 +29,9 @@ function Enums(main) {
                     "nl": "Kamers",
                     "fr": "Pièces",
                     "it": "Camere",
-                    "es": "Habitaciones"
+                    "es": "Habitaciones",
+                    "pl": "Pokoje",
+                    "zh-cn": "客房"
                 },
                 "desc": {
                     "en": "List of the rooms",
@@ -39,7 +41,9 @@ function Enums(main) {
                     "nl": "Lijst met kamers",
                     "fr": "Liste des chambres",
                     "it": "Elenco delle stanze",
-                    "es": "Lista de las habitaciones"
+                    "es": "Lista de las habitaciones",
+                    "pl": "Lista pokoi",
+                    "zh-cn": "房间清单"
                 },
                 "members": [],
                 "dontDelete": true
@@ -58,7 +62,9 @@ function Enums(main) {
                     "nl": "functies",
                     "fr": "Les fonctions",
                     "it": "funzioni",
-                    "es": "Funciones"
+                    "es": "Funciones",
+                    "pl": "Funkcje",
+                    "zh-cn": "功能"
                 },
                 "desc": {
                     "en": "List of the functions",
@@ -68,7 +74,9 @@ function Enums(main) {
                     "nl": "Lijst met functies",
                     "fr": "Liste des fonctions",
                     "it": "Elenco delle funzioni",
-                    "es": "Lista de las funciones"
+                    "es": "Lista de las funciones",
+                    "pl": "Lista funkcji",
+                    "zh-cn": "功能列表"
                 },
                 "members": [],
                 "dontDelete": true
@@ -87,7 +95,9 @@ function Enums(main) {
                     "nl": "favorieten",
                     "fr": "Favoris",
                     "it": "Preferiti",
-                    "es": "Favoritos"
+                    "es": "Favoritos",
+                    "pl": "Ulubione",
+                    "zh-cn": "最爱"
                 },
                 "desc": {
                     "en": "List of favorites objects",
@@ -97,7 +107,9 @@ function Enums(main) {
                     "nl": "Lijst met favorietenobjecten",
                     "fr": "Liste des objets favoris",
                     "it": "Elenco di oggetti preferiti",
-                    "es": "Lista de objetos favoritos"
+                    "es": "Lista de objetos favoritos",
+                    "pl": "Lista ulubionych obiektów",
+                    "zh-cn": "收藏夹对象列表"
                 },
                 "members": []
             },
@@ -119,7 +131,9 @@ function Enums(main) {
                         "nl": "Woonkamer",
                         "fr": "Salon",
                         "it": "Soggiorno",
-                        "es": "Sala"
+                        "es": "Sala",
+                        "pl": "Salon",
+                        "zh-cn": "客厅"
                     },
                     "members": []
                 },
@@ -138,7 +152,8 @@ function Enums(main) {
                         "fr": "Chambre à coucher",
                         "it": "Camera da letto",
                         "es": "Dormitorio",
-                        "pl": "Sypialnia"
+                        "pl": "Sypialnia",
+                        "zh-cn": "卧室"
                     },
                     "members": []
                 },
@@ -157,7 +172,8 @@ function Enums(main) {
                         "fr": "Cuisine",
                         "it": "Cucina",
                         "es": "Cocina",
-                        "pl": "Kuchnia"
+                        "pl": "Kuchnia",
+                        "zh-cn": "厨房"
                     },
                     "members": []
                 },
@@ -176,7 +192,8 @@ function Enums(main) {
                         "fr": "Bureau",
                         "it": "Ufficio",
                         "es": "Oficina",
-                        "pl": "Gabinet"
+                        "pl": "Gabinet",
+                        "zh-cn": "办公室"
                     },
                     "members": []
                 },
@@ -195,7 +212,8 @@ function Enums(main) {
                         "fr": "Garderie",
                         "it": "Asilo nido",
                         "es": "Guardería",
-                        "pl": "Żłobek"
+                        "pl": "Żłobek",
+                        "zh-cn": "苗圃"
                     },
                     "members": []
                 },
@@ -214,7 +232,8 @@ function Enums(main) {
                         "fr": "Toilettes",
                         "it": "Bagno",
                         "es": "Baño",
-                        "pl": "Toaleta"
+                        "pl": "Toaleta",
+                        "zh-cn": "厕所"
                     },
                     "members": []
                 },
@@ -233,7 +252,8 @@ function Enums(main) {
                         "fr": "Garage",
                         "it": "Box auto",
                         "es": "Garaje",
-                        "pl": "Garaż"
+                        "pl": "Garaż",
+                        "zh-cn": "车库"
                     },
                     "members": []
                 },
@@ -257,7 +277,9 @@ function Enums(main) {
                         "nl": "Licht",
                         "fr": "Lumière",
                         "it": "Soggiorno",
-                        "es": "Luz"
+                        "es": "Luz",
+                        "pl": "Światło",
+                        "zh-cn": "光"
                     },
                     "members": []
                 },
@@ -276,7 +298,8 @@ function Enums(main) {
                         "fr": "Stores",
                         "it": "blinds",
                         "es": "Persianas",
-                        "pl": "Żaluzje"
+                        "pl": "Żaluzje",
+                        "zh-cn": "百叶窗"
                     },
                     "members": []
                 },
@@ -295,7 +318,8 @@ function Enums(main) {
                         "fr": "Météo",
                         "it": "Tempo metereologico",
                         "es": "Clima",
-                        "pl": "Pogoda"
+                        "pl": "Pogoda",
+                        "zh-cn": "天气"
                     },
                     "members": []
                 },
@@ -314,7 +338,8 @@ function Enums(main) {
                         "fr": "Chauffage",
                         "it": "Riscaldamento",
                         "es": "Calefacción",
-                        "pl": "Ogrzewanie"
+                        "pl": "Ogrzewanie",
+                        "zh-cn": "加热"
                     },
                     "members": []
                 },
@@ -333,7 +358,8 @@ function Enums(main) {
                         "fr": "Rétro-éclairage",
                         "it": "Controluce",
                         "es": "Iluminar desde el fondo",
-                        "pl": "Podświetlenie"
+                        "pl": "Podświetlenie",
+                        "zh-cn": "逆光"
                     },
                     "members": []
                 },
@@ -352,7 +378,8 @@ function Enums(main) {
                         "fr": "Ménage",
                         "it": "Domestico",
                         "es": "Casa",
-                        "pl": "Gospodarstwo domowe"
+                        "pl": "Gospodarstwo domowe",
+                        "zh-cn": "家庭"
                     },
                     "members": []
                 },
@@ -371,7 +398,8 @@ function Enums(main) {
                         "fr": "Audio/Musique",
                         "it": "Audio/Musica",
                         "es": "Audio/Música",
-                        "pl": "Audio/Muzyka"
+                        "pl": "Audio/Muzyka",
+                        "zh-cn": "音频/音乐"
                     },
                     "members": []
                 },
@@ -390,7 +418,8 @@ function Enums(main) {
                         "fr": "Sécurité",
                         "it": "Sicurezza",
                         "es": "Seguridad",
-                        "pl": "Bezpieczeństwo"
+                        "pl": "Bezpieczeństwo",
+                        "zh-cn": "安全"
                     },
                     "members": []
                 },
@@ -1562,7 +1591,8 @@ function Enums(main) {
                             "fr": "Pièces",
                             "it": "Camere",
                             "es": "Habitaciones",
-                            "pl": "Pokoje"
+                            "pl": "Pokoje",
+                            "zh-cn": "客房"
                         },
                         "desc": {
                             "en": "List of the rooms",
@@ -1573,7 +1603,8 @@ function Enums(main) {
                             "fr": "Liste des chambres",
                             "it": "Elenco delle stanze",
                             "es": "Lista de las habitaciones",
-                            "pl": "Lista pokoi"
+                            "pl": "Lista pokoi",
+                            "zh-cn": "房间清单"
                         },
                         "members": [],
                         "dontDelete": true
@@ -1602,7 +1633,8 @@ function Enums(main) {
                             "fr": "Les fonctions",
                             "it": "funzioni",
                             "es": "Funciones",
-                            "pl": "Funkcje"
+                            "pl": "Funkcje",
+                            "zh-cn": "功能"
                         },
                         "desc": {
                             "en": "List of the functions",
@@ -1613,7 +1645,8 @@ function Enums(main) {
                             "fr": "Liste des fonctions",
                             "it": "Elenco delle funzioni",
                             "es": "Lista de las funciones",
-                            "pl": "Lista funkcji"
+                            "pl": "Lista funkcji",
+                            "zh-cn": "功能列表"
                         },
                         "members": [],
                         "dontDelete": true

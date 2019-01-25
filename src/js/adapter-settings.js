@@ -27,23 +27,23 @@ function preInit () {
     // Extend dictionary with standard words for adapter
     if (typeof systemDictionary === 'undefined') systemDictionary = {};
 
-    systemDictionary.save =           {"en": "Save",           "fr": "Sauvegarder",                     "nl": "Opslaan",             "es": "Salvar",                      "pt": "Salve",                   "it": "Salvare",                     "de": "Speichern",                "pl": "Zapisać",                      "ru": "Сохранить"};
-    systemDictionary.saveclose =      {"en": "Save and close", "fr": "Sauver et fermer",                "nl": "Opslaan en afsluiten","es": "Guardar y cerrar",            "pt": "Salvar e fechar",         "it": "Salva e chiudi",              "de": "Speichern und schließen",  "pl": "Zapisz i zamknij",             "ru": "Сохранить и выйти"};
-    systemDictionary.none =           {"en": "none",           "fr": "aucun",                           "nl": "geen",                "es": "ninguna",                     "pt": "Nenhum",                  "it": "nessuna",                     "de": "keins",                    "pl": "Żaden",                        "ru": ""};
-    systemDictionary.nonerooms =      {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": ""};
-    systemDictionary.nonefunctions =  {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": ""};
-    systemDictionary.all =            {"en": "all",            "fr": "tout",                            "nl": "alle",                "es": "todas",                       "pt": "todos",                   "it": "tutti",                       "de": "alle",                     "pl": "wszystko",                     "ru": "все"};
-    systemDictionary['Device list'] = {"en": "Device list",    "fr": "Liste des périphériques",         "nl": "Lijst met apparaten", "es": "Lista de dispositivos",       "pt": "Lista de dispositivos",   "it": "Elenco dispositivi",          "de": "Geräteliste",              "pl": "Lista urządzeń",               "ru": "Список устройств"};
-    systemDictionary['new device'] =  {"en": "new device",     "fr": "nouvel appareil",                 "nl": "nieuw apparaat",      "es": "Nuevo dispositivo",           "pt": "Novo dispositivo",        "it": "nuovo dispositivo",           "de": "Neues Gerät",              "pl": "nowe urządzenie",              "ru": "Новое устройство"};
-    systemDictionary.edit =           {"en": "edit",           "fr": "modifier",                        "nl": "Bewerk",              "es": "editar",                      "pt": "editar",                  "it": "modificare",                  "de": "Ändern",                   "pl": "edytować",                     "ru": "Изменить"};
-    systemDictionary.delete =         {"en": "delete",         "fr": "effacer",                         "nl": "Delete",              "es": "borrar",                      "pt": "excluir",                 "it": "Elimina",                     "de": "Löschen",                  "pl": "kasować",                      "ru": "Удалить"};
-    systemDictionary.pair =           {"en": "pair",           "fr": "paire",                           "nl": "paar",                "es": "par",                         "pt": "par",                     "it": "paio",                        "de": "Verbinden",                "pl": "para",                         "ru": "Связать"};
-    systemDictionary.unpair =         {"en": "unpair",         "fr": "unpair",                          "nl": "Unpair",              "es": "desvincular",                 "pt": "unpair",                  "it": "Disaccoppia",                 "de": "Trennen",                  "pl": "unpair",                       "ru": "Разорвать связь"};
-    systemDictionary.ok =             {"en": "Ok",             "fr": "D'accord",                        "nl": "OK",                  "es": "De acuerdo",                  "pt": "Está bem",                "it": "Ok",                          "de": "Ok",                       "pl": "Ok",                           "ru": "Ok"};
-    systemDictionary.cancel =         {"en": "Cancel",         "fr": "Annuler",                         "nl": "Annuleer",            "es": "Cancelar",                    "pt": "Cancelar",                "it": "Annulla",                     "de": "Abbrechen",                "pl": "Anuluj",                       "ru": "Отмена"};
-    systemDictionary.Message =        {"en": "Message",        "fr": "Message",                         "nl": "Bericht",             "es": "Mensaje",                     "pt": "Mensagem",                "it": "Messaggio",                   "de": "Mitteilung",               "pl": "Wiadomość",                    "ru": "Сообщение"};
-    systemDictionary.close =          {"en": "Close",          "fr": "Fermer",                          "nl": "Dichtbij",            "es": "Cerca",                       "pt": "Fechar",                  "it": "Vicino",                      "de": "Schließen",                "pl": "Blisko",                       "ru": "Закрыть"};
-    systemDictionary.htooltip =       {"en": "Click for help", "fr": "Cliquez pour obtenir de l'aide",  "nl": "Klik voor hulp",      "es": "Haz clic para obtener ayuda", "pt": "Clique para ajuda",       "it": "Fai clic per chiedere aiuto", "de": "Anklicken",                "pl": "Kliknij, aby uzyskać pomoc",   "ru": "Перейти по ссылке"};
+    systemDictionary.save =           {"en": "Save",           "fr": "Sauvegarder",                     "nl": "Opslaan",             "es": "Salvar",                      "pt": "Salve",                   "it": "Salvare",                     "de": "Speichern",                "pl": "Zapisać",                      "ru": "Сохранить",           "zh-cn": "保存"};
+    systemDictionary.saveclose =      {"en": "Save and close", "fr": "Sauver et fermer",                "nl": "Opslaan en afsluiten","es": "Guardar y cerrar",            "pt": "Salvar e fechar",         "it": "Salva e chiudi",              "de": "Speichern und schließen",  "pl": "Zapisz i zamknij",             "ru": "Сохранить и выйти",   "zh-cn": "保存并关闭"};
+    systemDictionary.none =           {"en": "none",           "fr": "aucun",                           "nl": "geen",                "es": "ninguna",                     "pt": "Nenhum",                  "it": "nessuna",                     "de": "keins",                    "pl": "Żaden",                        "ru": "никто",               "zh-cn": "毫无"};
+    systemDictionary.nonerooms =      {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": "",                    "zh-cn": ""};
+    systemDictionary.nonefunctions =  {"en": "",               "fr": "",                                "nl": "",                    "es": "",                            "pt": "",                        "it": "",                            "de": "",                         "pl": "",                             "ru": "",                    "zh-cn": ""};
+    systemDictionary.all =            {"en": "all",            "fr": "tout",                            "nl": "alle",                "es": "todas",                       "pt": "todos",                   "it": "tutti",                       "de": "alle",                     "pl": "wszystko",                     "ru": "все",                 "zh-cn": "所有"};
+    systemDictionary['Device list'] = {"en": "Device list",    "fr": "Liste des périphériques",         "nl": "Lijst met apparaten", "es": "Lista de dispositivos",       "pt": "Lista de dispositivos",   "it": "Elenco dispositivi",          "de": "Geräteliste",              "pl": "Lista urządzeń",               "ru": "Список устройств",    "zh-cn": "设备清单"};
+    systemDictionary['new device'] =  {"en": "new device",     "fr": "nouvel appareil",                 "nl": "nieuw apparaat",      "es": "Nuevo dispositivo",           "pt": "Novo dispositivo",        "it": "nuovo dispositivo",           "de": "Neues Gerät",              "pl": "nowe urządzenie",              "ru": "Новое устройство",    "zh-cn": "新设备"};
+    systemDictionary.edit =           {"en": "edit",           "fr": "modifier",                        "nl": "Bewerk",              "es": "editar",                      "pt": "editar",                  "it": "modificare",                  "de": "Ändern",                   "pl": "edytować",                     "ru": "Изменить",            "zh-cn": "编辑"};
+    systemDictionary.delete =         {"en": "delete",         "fr": "effacer",                         "nl": "Delete",              "es": "borrar",                      "pt": "excluir",                 "it": "Elimina",                     "de": "Löschen",                  "pl": "kasować",                      "ru": "Удалить",             "zh-cn": "删除"};
+    systemDictionary.pair =           {"en": "pair",           "fr": "paire",                           "nl": "paar",                "es": "par",                         "pt": "par",                     "it": "paio",                        "de": "Verbinden",                "pl": "para",                         "ru": "Связать",             "zh-cn": "双"};
+    systemDictionary.unpair =         {"en": "unpair",         "fr": "unpair",                          "nl": "Unpair",              "es": "desvincular",                 "pt": "unpair",                  "it": "Disaccoppia",                 "de": "Trennen",                  "pl": "unpair",                       "ru": "Разорвать связь",     "zh-cn": "取消配对"};
+    systemDictionary.ok =             {"en": "Ok",             "fr": "D'accord",                        "nl": "OK",                  "es": "De acuerdo",                  "pt": "Está bem",                "it": "Ok",                          "de": "Ok",                       "pl": "Ok",                           "ru": "Ok",                  "zh-cn": "好"};
+    systemDictionary.cancel =         {"en": "Cancel",         "fr": "Annuler",                         "nl": "Annuleer",            "es": "Cancelar",                    "pt": "Cancelar",                "it": "Annulla",                     "de": "Abbrechen",                "pl": "Anuluj",                       "ru": "Отмена",              "zh-cn": "取消"};
+    systemDictionary.Message =        {"en": "Message",        "fr": "Message",                         "nl": "Bericht",             "es": "Mensaje",                     "pt": "Mensagem",                "it": "Messaggio",                   "de": "Mitteilung",               "pl": "Wiadomość",                    "ru": "Сообщение",           "zh-cn": "信息"};
+    systemDictionary.close =          {"en": "Close",          "fr": "Fermer",                          "nl": "Dichtbij",            "es": "Cerca",                       "pt": "Fechar",                  "it": "Vicino",                      "de": "Schließen",                "pl": "Blisko",                       "ru": "Закрыть",             "zh-cn": "关"};
+    systemDictionary.htooltip =       {"en": "Click for help", "fr": "Cliquez pour obtenir de l'aide",  "nl": "Klik voor hulp",      "es": "Haz clic para obtener ayuda", "pt": "Clique para ajuda",       "it": "Fai clic per chiedere aiuto", "de": "Anklicken",                "pl": "Kliknij, aby uzyskać pomoc",   "ru": "Перейти по ссылке",   "zh-cn": "单击获取帮助"};
     systemDictionary.saveConfig =     {
         "en": "Save configuration to file",
         "de": "Speichern Sie die Konfiguration in der Datei",
@@ -53,7 +53,8 @@ function preInit () {
         "fr": "Enregistrer la configuration dans un fichier",
         "it": "Salva la configurazione nel file",
         "es": "Guardar configuración en archivo",
-        "pl": "Zapisz konfigurację do pliku"
+        "pl": "Zapisz konfigurację do pliku",
+        "zh-cn": "将配置保存到文件"
     };
     systemDictionary.loadConfig =     {
         "en": "Load configuration from file",
@@ -64,7 +65,8 @@ function preInit () {
         "fr": "Charger la configuration à partir du fichier",
         "it": "Carica la configurazione dal file",
         "es": "Cargar configuración desde archivo",
-        "pl": "Załaduj konfigurację z pliku"
+        "pl": "Załaduj konfigurację z pliku",
+        "zh-cn": "从文件加载配置"
     };
     systemDictionary.otherConfig = {
         "en": "Configuration from other adapter %s",
@@ -75,7 +77,8 @@ function preInit () {
         "fr": "Configuration à partir d'un autre adaptateur %s",
         "it": "Configurazione da altro adattatore %s",
         "es": "Configuración desde otro adaptador %s",
-        "pl": "Konfiguracja z innego adaptera %s"
+        "pl": "Konfiguracja z innego adaptera %s",
+        "zh-cn": "从其他适配器%s配置"
     };
     systemDictionary.invalidConfig = {
         "en": "Invalid JSON file",
@@ -86,7 +89,8 @@ function preInit () {
         "fr": "Fichier JSON non valide",
         "it": "File JSON non valido",
         "es": "Archivo JSON no válido",
-        "pl": "Nieprawidłowy plik JSON"
+        "pl": "Nieprawidłowy plik JSON",
+        "zh-cn": "无效的JSON文件"
     };
     systemDictionary.configLoaded = {
         "en": "Configuration was successfully loaded",
@@ -97,7 +101,8 @@ function preInit () {
         "fr": "La configuration a été chargée avec succès",
         "it": "La configurazione è stata caricata correttamente",
         "es": "La configuración se cargó correctamente",
-        "pl": "Konfiguracja została pomyślnie załadowana"
+        "pl": "Konfiguracja została pomyślnie załadowana",
+        "zh-cn": "配置已成功加载"
     };
     systemDictionary.maxTableRaw =    {
         "en": "Maximum number of allowed raws",
@@ -108,9 +113,10 @@ function preInit () {
         "nl": "Maximumaantal toegestane raws",
         "pt": "Número máximo de raias permitidas",
         "es": "Número máximo de raws permitidos",
-        "pl": "Maksymalna liczba dozwolonych surowców"
+        "pl": "Maksymalna liczba dozwolonych surowców",
+        "zh-cn": "允许的最大原始数量"
     };
-    systemDictionary.maxTableRawInfo = {"en": "Warning",       "de": "Warnung",                  "ru": "Внимание", "pt": "Atenção",  "nl": "Waarschuwing", "fr": "Attention", "it": "avvertimento", "es": "Advertencia", "pl": "Ostrzeżenie"};
+    systemDictionary.maxTableRawInfo = {"en": "Warning",       "de": "Warnung",                  "ru": "Внимание", "pt": "Atenção",  "nl": "Waarschuwing", "fr": "Attention", "it": "avvertimento", "es": "Advertencia", "pl": "Ostrzeżenie", "zh-cn": "警告"};
     systemDictionary["Main settings"] = {
         "en": "Main settings",
         "de": "Haupteinstellungen",
@@ -120,7 +126,8 @@ function preInit () {
         "fr": "Réglages principaux",
         "it": "Impostazioni principali",
         "es": "Ajustes principales",
-        "pl": "Ustawienia główne"
+        "pl": "Ustawienia główne",
+        "zh-cn": "主要设置"
       };
 
     systemDictionary["Let's Encrypt SSL"] = {
@@ -132,7 +139,8 @@ function preInit () {
         "fr": "Let's Encrypt Certificats",
         "it": "Let's Encrypt certificati",
         "es": "Let's Encrypt Certificados",
-        "pl": "Let's Encrypt certyfikaty"
+        "pl": "Let's Encrypt certyfikaty",
+        "zh-cn": "Let's Encrypt证书"
       };
     systemDictionary["Please activate secure communication"] = {
         "en": "Please activate secure communication",
@@ -143,7 +151,8 @@ function preInit () {
         "fr": "Veuillez activer la communication sécurisée",
         "it": "Si prega di attivare la comunicazione sicura",
         "es": "Por favor active la comunicación segura",
-        "pl": "Aktywuj bezpieczną komunikację"
+        "pl": "Aktywuj bezpieczną komunikację",
+        "zh-cn": "请激活安全通信"
       };
     //socket.on('connection', function () {
         loadSystemConfig(function () {
