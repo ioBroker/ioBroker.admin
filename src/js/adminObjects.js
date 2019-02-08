@@ -164,6 +164,26 @@ function Objects(main) {
         }
     };
 
+    this.getEnumsForId = function (id) {
+        var enums = that.main.tabs.enums.list;
+        var result = [];
+        for (var e = 0; e < enums.length; e++) {
+            var en = that.main.objects[enums[e]];
+            if (en.common && en.common.members && en.common.members.length && en.common.members.indexOf(id) !== -1) {
+                en = {
+                  _id: en._id,
+                  common: JSON.parse(JSON.stringify(en.common)),
+                  native: en.native
+                };
+                if (en.common) {
+                    delete en.common.members;
+                }
+                result.push(en);
+            }
+        }
+        return result.length ? result : undefined;
+    };
+
     function _syncEnum(id, enumIds, newArray, cb) {
         if (!enumIds || !enumIds.length) {
             cb && cb();
@@ -593,7 +613,16 @@ function Objects(main) {
                             var id = selectId('getActual') || '';
                             var result = {};
                             $.map(that.main.objects, function (val, key) {
-                                if (!key.search(id)) result[key] = val;
+                                if (!key.search(id)) {
+                                    result[key] = JSON.parse(JSON.stringify(val));
+                                    // add enum information
+                                    if (result[key].common) {
+                                        var enums = that.getEnumsForId(key);
+                                        if (enums) {
+                                            result[key].common.enums = enums;
+                                        }
+                                    }
+                                }
                             });
                             if (result !== undefined) {
                                 generateFile(id + '.json', result);
@@ -718,26 +747,86 @@ function Objects(main) {
         }
     };
 
+    function _createAllEnums(enums, objId, callback) {
+        if (!enums || !enums.length) {
+            callback();
+        } else {
+            var id = enums.shift();
+            var _enObj;
+            if (typeof id === 'object') {
+                _enObj = id;
+                id = id._id;
+            }
+            var enObj = that.main.objects[id];
+            if (!enObj) {
+                enObj = _enObj || {
+                    _id: id,
+                    common: {
+                        name: id.split('.').pop(),
+                        members: [],
+                    },
+                    native: {}
+                };
+
+                enObj.common = enObj.common || {};
+                enObj.common.members = [objId];
+
+                that.main.socket.emit('setObject', id, enObj, function (err) {
+                    setTimeout(function () {
+                        _createAllEnums(enums, objId, callback);
+                    }, 300); // give time for update of objects
+                });
+            } else if (!enObj.common || !enObj.common.members || enObj.common.members.indexOf(objId) === -1) {
+                enObj.common = enObj.common || {};
+                enObj.common.members = enObj.common.members || [];
+                // add missing object
+                enObj.common.members.push(objId);
+                that.main.socket.emit('setObject', id, enObj, function (err) {
+                    setTimeout(function () {
+                        _createAllEnums(enums, objId, callback);
+                    }, 300); // give time for update of objects
+                });
+            } else {
+                setTimeout(function () {
+                    _createAllEnums(enums, objId, callback);
+                }, 0);
+            }
+        }
+    }
+
     function loadObjects(objs, callback) {
         if (objs) {
             for (var id in objs) {
                 if (!objs.hasOwnProperty(id) || !objs[id]) continue;
-                var obj = objs[id];
-                objs[id] = null;
-                that.main.socket.emit('setObject', id, obj, function (err) {
-                    if (err) {
-                        that.main.showError(err);
-                    } else if (obj.type === 'state') {
-                        that.main.socket.emit('getState', obj._id, function (err, state) {
-                            if (!state || state.val === null) {
-                                that.main.socket.emit('setState', obj._id, !obj.common || obj.common.def === undefined ? null : obj.common.def, true);
-                            }
-                            setTimeout(loadObjects, 0, objs, callback);
-                        });
+                (function (obj) {
+                    var enums = null;
+                    if (obj && obj.common && obj.common.enums) {
+                        enums = obj.common.enums;
+                        delete obj.common.enums;
                     } else {
-                        setTimeout(loadObjects, 0, objs, callback);
+                        enums = null;
                     }
-                });
+
+                    that.main.socket.emit('setObject', id, obj, function (err) {
+                        if (err) {
+                            that.main.showError(err);
+                        } else {
+                            _createAllEnums(enums, function () {
+                                if (obj.type === 'state') {
+                                    that.main.socket.emit('getState', obj._id, function (err, state) {
+                                        if (!state || state.val === null) {
+                                            that.main.socket.emit('setState', obj._id, !obj.common || obj.common.def === undefined ? null : obj.common.def, true);
+                                        }
+                                        setTimeout(loadObjects, 0, objs, callback);
+                                    });
+                                } else {
+                                    setTimeout(loadObjects, 0, objs, callback);
+                                }
+                            });
+                        }
+                    });
+                })(objs[id]);
+                objs[id] = null;
                 return;
             }
         }
