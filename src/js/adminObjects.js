@@ -177,6 +177,8 @@ function Objects(main) {
                 };
                 if (en.common) {
                     delete en.common.members;
+                    delete en.common.custom;
+                    delete en.common.mobile;
                 }
                 result.push(en);
             }
@@ -811,7 +813,7 @@ function Objects(main) {
                         if (err) {
                             that.main.showError(err);
                         } else {
-                            _createAllEnums(enums, function () {
+                            _createAllEnums(enums, obj._id, function () {
                                 if (obj.type === 'state') {
                                     that.main.socket.emit('getState', obj._id, function (err, state) {
                                         if (!state || state.val === null) {
