@@ -119,7 +119,7 @@ $(document).ready(function () {
         dialogs:        {},
         selectId:       null,
         config:         {},
-        ignoreJSupdate: false, // set to true after some global script updated and till system.adapter.javascript.x updated
+        //ignoreJSupdate: false, // set to true after some global script updated and till system.adapter.javascript.x updated
         addEventMessage: function (id, stateOrObj, isMessage, isState) {
             // cannot directly use tabs.events.add, because to init time not available.
             tabs.events.add(id, stateOrObj, isMessage, isState);
@@ -1223,8 +1223,10 @@ $(document).ready(function () {
 
     function objectChange(id, obj) {
         //var changed = false;
-        //var oldObj = null;
+        var oldObj = null;
         var action = 'update';
+
+        oldObj = main.objects[id];
 
         // update main.objects cache
         if (obj) {
@@ -1271,21 +1273,35 @@ $(document).ready(function () {
 
         tabs.instances.objectChange(id, obj, action);
 
-        if (id.match(/^script\.js\.global\..*/)) {
-            main.ignoreJSupdate = true;
-        }
+        //if (id.match(/^script\.js\.global\..*/)) {
+        //    main.ignoreJSupdate = true;
+        //}
 
         if (obj && id.match(/^system\.adapter\.[\w-]+\.[0-9]+$/)) {
             if (obj.common &&
                 obj.common.adminTab &&
                 !obj.common.adminTab.ignoreConfigUpdate
             ) {
-                // one exception for javascript. To able work with global scripts normally
-                if (!id.match(/^system\.adapter\.javascript\.[0-9]+$/) || !main.ignoreJSupdate) {
-                    initTabs();
-                } else {
-                    main.ignoreJSupdate = false;
+                // Detect enable/disable change and do not update tabs (To able to work with global scripts normally)
+                var ignore = false;
+                // try to detect if javascript just enabled or disabled
+                if (oldObj && obj) {
+                    if (oldObj.common && obj.common) {
+                        var newObj = JSON.parse(JSON.stringify(obj));
+                        newObj.common.enabled = oldObj.common.enabled;
+                        newObj.ts = 0;
+                        oldObj.ts = 0;
+                        console.log(JSON.stringify(newObj));
+                        console.log(JSON.stringify(oldObj));
+                        if (JSON.stringify(newObj) === JSON.stringify(oldObj)) {
+                            ignore = true;
+                        }
+                    }
                 }
+                !ignore && initTabs();
+                /*} else {
+                    main.ignoreJSupdate = false;
+                }*/
             }
 
             if (obj && obj.type === 'instance' && obj.common.supportCustoms) {
