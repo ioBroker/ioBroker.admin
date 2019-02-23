@@ -143,7 +143,7 @@ function Customs(main) {
             var tab =
                 '<li data-adapter="' + data + '" class="' + (collapsed.indexOf(data) === -1 ? 'active' : '') + '">' +
                 '   <div class="collapsible-header">' +
-                '       <img src="' + img + '" />' + _('Settings for %s', data) +
+                '       <img src="' + img + '" alt="picture"/>' + _('Settings for %s', data) +
                 '       <span class="activated" data-adapter="' + data + '" style="opacity: ' + (commons[data] && (commons[data].enabled === true || commons[data].enabled === STR_DIFFERENT) ? '1' : '0') + '">' + _('active') + '</span>' +
                 '   </div>' +
                 '   <div class="customs-settings collapsible-body">' +
@@ -181,7 +181,14 @@ function Customs(main) {
             $customTabs.append($tab);
             // post init => add custom logic
             if (customPostInits.hasOwnProperty(adapter) && typeof customPostInits[adapter] === 'function') {
-                customPostInits[adapter]($tab, commons[adapter + '.' + instance], that.main.objects['system.adapter.' + adapter + '.' + instance], type, role);
+                customPostInits[adapter](
+                    $tab,
+                    commons[adapter + '.' + instance],
+                    that.main.objects['system.adapter.' + adapter + '.' + instance],
+                    type,
+                    role,
+                    ids.length > 1 ? false : main.objects[ids[id]] // only if one element
+                );
             }
         }
 
