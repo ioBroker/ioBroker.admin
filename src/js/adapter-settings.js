@@ -1556,19 +1556,19 @@ function getTableResult(tabId, cols) {
 
 /*
  <div id="values">
- <button class="table-button-add" style="margin-left: 10px"></button>
- <table class="table-values" style="width: 100%; calc(100% - 200px)">
- <thead>
- <tr>
- <th data-name="regex"     style="width: 30%" class="translate">Context</th>
- <th data-name="room"      class="translate" data-type="select">Room</th>
- <th data-name="aaa"       class="translate" data-options="1/A;2/B;3/C;4" data-type="select">Room</th>
- <th data-name="enabled"   class="translate" data-type="checkbox">Enabled</th>
- <th data-buttons="delete up down copy" style="width: 32px"></th>
- </tr>
- </thead>
- </table>
- </td>
+     <button class="table-button-add" style="margin-left: 10px"></button>
+     <table class="table-values" style="width: 100%; calc(100% - 200px)">
+         <thead>
+         <tr>
+             <th data-name="regex"     style="width: 30%" class="translate">Context</th>
+             <th data-name="room"      class="translate" data-type="select">Room</th>
+             <th data-name="aaa"       class="translate" data-options="1/A;2/B;3/C;4" data-type="select">Room</th>
+             <th data-name="enabled"   class="translate" data-type="checkbox">Enabled</th>
+             <th data-buttons="delete up down copy" style="width: 32px"></th>
+         </tr>
+         </thead>
+     </table>
+ </div>
  */
 
 /**
@@ -1796,7 +1796,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     idName = values[v][names[0]];
                 }
             }
-            text += '<tr data-id="' + idName + '" data-index="' + v + '">';
+            text += '<tr ' + (idName ? 'data-id="' + idName + '"' : '') + ' data-index="' + v + '">';
 
             for (var i = 0; i < names.length; i++) {
                 text += '<td';

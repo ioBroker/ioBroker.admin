@@ -534,7 +534,7 @@ function Instances(main) {
                                 if (err) that.main.showError(err);
                             });
                         }
-                    })
+                    });
                 });
             }
         });
