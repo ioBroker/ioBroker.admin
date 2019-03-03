@@ -14,7 +14,7 @@
 'use strict';
 
 const adapterName = require('./package.json').name.split('.').pop();
-const utils 	  = require('./lib/utils'); // Get common adapter utils
+const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const tools 	  = require(utils.controllerDir + '/lib/tools.js');
 const SocketIO    = require('./lib/socket');
 const Web         = require('./lib/web');
