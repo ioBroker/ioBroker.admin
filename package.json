@@ -55,14 +55,15 @@
     "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.8",
     "materialize-css": "^1.0.0-alpha.4",
-    "mocha": "^5.2.0"
+    "mocha": "^6.0.2",
+    "@iobroker/adapter-core": "^1.0.3"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"
   },
   "main": "main.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha",
+    "test": "node node_modules/mocha/bin/mocha --exit",
     "prepublish": "node node_modules/gulp/bin/gulp default"
   },
   "author": "bluefox <dogafox@gmail.com>",
