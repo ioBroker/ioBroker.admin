@@ -1,7 +1,6 @@
 version: 'test-{build}'
 environment:
   matrix:
-    - nodejs_version: '4'
     - nodejs_version: '6'
     - nodejs_version: '8'
     - nodejs_version: '10'
@@ -16,7 +15,7 @@ install:
   - ps: npm --version
   - npm install
   - node node_modules/gulp/bin/gulp default
-  - npm install winston@2.3.1
+  - npm install winston@3.2.1
   - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
   - if exist "node_modules/iobroker.js-controller/node_modules/iobroker.admin/" rmdir  /s /q "node_modules/iobroker.js-controller/node_modules/iobroker.admin"
 test_script:
