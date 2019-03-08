@@ -4,6 +4,7 @@
 
 [![NPM version](http://img.shields.io/npm/v/iobroker.admin.svg)](https://www.npmjs.com/package/iobroker.admin)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.admin.svg)](https://www.npmjs.com/package/iobroker.admin)
+[![Stable](http://iobroker.live/badges/admin-stable.svg)](http://iobroker.live/badges/admin-stable.svg)
 
 [![NPM](https://nodei.co/npm/iobroker.admin.png?downloads=true)](https://nodei.co/npm/iobroker.admin/)
 
