@@ -57,7 +57,7 @@
     "gulp-util": "^3.0.8",
     "materialize-css": "^1.0.0-alpha.4",
     "mocha": "^6.0.2",
-    "@iobroker/testing": "^1.1.5"
+    "@iobroker/testing": "^1.1.7"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"
