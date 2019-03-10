@@ -22,6 +22,6 @@ addons:
 after_success:
   - 'bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)'
 script:
-  - 'npm run test:package'
-  - 'npm run test:unit'
-  - 'npm run test:integration'
+  - npm run test:package
+  - npm run test:unit
+  - DEBUG=testing:* npm run test:integration
