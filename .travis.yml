@@ -12,10 +12,6 @@ before_script:
   - 'if [[ $NPMVERSION == 5 ]]; then npm install -g npm@5; fi'
   - npm -v
   - node node_modules/gulp/bin/gulp default
-  - npm install winston@3.2.1
-  - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
-  - rm -f package.json
-  - rm -rf ./node_modules/iobroker.js-controller/node_modules/iobroker.admin
 env:
   - CXX=g++-4.9
 addons:
@@ -26,3 +22,10 @@ addons:
       - g++-4.9
 after_success:
   - 'bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)'
+script:
+  - 'npm run test:package'
+  - 'npm run test:unit'
+  - 'npm run test:integration'
+  - 'npm run test:package'
+  - 'npm run test:unit'
+  - 'npm run test:integration'
