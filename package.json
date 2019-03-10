@@ -56,15 +56,19 @@
     "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.8",
     "materialize-css": "^1.0.0-alpha.4",
-    "mocha": "^6.0.2"
+    "mocha": "^6.0.2",
+    "@iobroker/testing": "^1.1.5"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"
   },
   "main": "main.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --exit",
-    "prepublish": "node node_modules/gulp/bin/gulp default"
+    "test": "npm run test:package; npm run test:unit",
+    "prepublish": "node node_modules/gulp/bin/gulp default",
+    "test:package": "mocha test/package --exit",
+    "test:unit": "mocha test/unit --exit",
+    "test:integration": "mocha test/integration --exit"
   },
   "author": "bluefox <dogafox@gmail.com>",
   "license": "MIT"
