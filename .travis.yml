@@ -11,7 +11,6 @@ before_script:
   - export NPMVERSION=$(echo "$($(which npm) -v)"|cut -c1)
   - 'if [[ $NPMVERSION == 5 ]]; then npm install -g npm@5; fi'
   - npm -v
-  - node node_modules/gulp/bin/gulp default
 env:
   - CXX=g++-4.9
 addons:
@@ -23,9 +22,6 @@ addons:
 after_success:
   - 'bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)'
 script:
-  - 'npm run test:package'
-  - 'npm run test:unit'
-  - 'npm run test:integration'
   - 'npm run test:package'
   - 'npm run test:unit'
   - 'npm run test:integration'

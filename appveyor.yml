@@ -14,7 +14,6 @@ install:
   - ps: 'if($NpmVersion -eq 5) { npm install -g npm@5 }'
   - ps: npm --version
   - npm install
-  - node node_modules/gulp/bin/gulp default
 test_script:
   - echo %cd%
   - node --version
