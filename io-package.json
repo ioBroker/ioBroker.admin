@@ -329,6 +329,17 @@
         "type": "meta.user"
       },
       "native": {}
+    },
+    {
+      "_id": "connected",
+      "type": "state",
+      "common": {
+        "name": "Info about connected socket clients",
+        "type": "string",
+        "read":  true,
+        "write": false,
+        "role":  "text"
+      }
     }
   ]
 }
