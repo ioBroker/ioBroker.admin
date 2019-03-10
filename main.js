@@ -89,7 +89,7 @@ function startAdapter(options) {
                 }
             } else {
                 adapter.config.secret = secret;
-                adapter.logger.error('Cannot find object system.config');
+                adapter.log.error('Cannot find object system.config');
             }
         });
     });

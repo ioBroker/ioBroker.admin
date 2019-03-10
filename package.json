@@ -39,6 +39,7 @@
     "@iobroker/adapter-core": "^1.0.3"
   },
   "devDependencies": {
+    "@iobroker/testing": "^1.1.8",
     "babel-core": "^6.26.3",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
     "babel-plugin-transform-es2015-block-scoping": "^6.26.0",
@@ -56,8 +57,7 @@
     "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.8",
     "materialize-css": "^1.0.0-alpha.4",
-    "mocha": "^6.0.2",
-    "@iobroker/testing": "^1.1.5"
+    "mocha": "^6.0.2"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.admin/issues"
