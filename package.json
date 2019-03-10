@@ -39,7 +39,7 @@
     "@iobroker/adapter-core": "^1.0.3"
   },
   "devDependencies": {
-    "@iobroker/testing": "^1.1.8",
+    "@iobroker/testing": "^1.1.9",
     "babel-core": "^6.26.3",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
     "babel-plugin-transform-es2015-block-scoping": "^6.26.0",
@@ -64,7 +64,7 @@
   },
   "main": "main.js",
   "scripts": {
-    "test": "npm run test:package; npm run test:unit",
+    "test": "npm run test:package && npm run test:unit",
     "prepublish": "node node_modules/gulp/bin/gulp default",
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
