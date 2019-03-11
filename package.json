@@ -65,6 +65,5 @@
     "test:unit": "mocha test/unit --exit",
     "test:integration": "mocha test/integration --exit"
   },
-  "author": "bluefox <dogafox@gmail.com>",
-  "license": "MIT"
+  "author": "bluefox <dogafox@gmail.com>"
 }
