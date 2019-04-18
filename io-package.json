@@ -2,8 +2,8 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.6.0",
-    "news": {
+    "version": "3.6.1",
+    "news": {            
       "3.6.0": {
         "en": "Added Chinese translations\nNew informative states added about updates",
         "de": "Chinesische Übersetzungen hinzugefügt\nNeue Informationsstände zu Updates hinzugefügt",
