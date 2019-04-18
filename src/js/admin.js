@@ -1738,13 +1738,13 @@ $(document).ready(function () {
     };
 
     var tabsInfo = {
-        'tab-intro':            {order: 1,    icon: 'apps'},        
-        'tab-adapters':         {order: 5,    icon: 'store',             host: true},
-        'tab-instances':        {order: 10,   icon: 'subtitles',         host: true},
-        'tab-objects':          {order: 15,   icon: 'view_list'},
-        'tab-enums':            {order: 20,   icon: 'art_track'},
-        'tab-logs':             {order: 25,   icon: 'view_headline',     host: true},
-        'tab-info':             {order: 30,   icon: 'info',              host: true},
+        'tab-intro':            {order: 1,    icon: 'apps'},
+        'tab-info':             {order: 5,    icon: 'info',              host: true},
+        'tab-adapters':         {order: 10,   icon: 'store',             host: true},
+        'tab-instances':        {order: 15,   icon: 'subtitles',         host: true},
+        'tab-objects':          {order: 20,   icon: 'view_list'},
+        'tab-enums':            {order: 25,   icon: 'art_track'},
+        'tab-logs':             {order: 30,   icon: 'view_headline',     host: true},        
         'tab-scenes':           {order: 35,   icon: 'subscriptions'},
         'tab-events':           {order: 40,   icon: 'flash_on'},
         'tab-users':            {order: 45,   icon: 'person_outline'},
