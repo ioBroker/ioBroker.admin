@@ -4,7 +4,7 @@ const less        = require('gulp-less');
 const sass        = require('gulp-sass');
 const gulp        = require('gulp');
 const gutil       = require('gulp-util');
-const uglify      = require('gulp-uglify');
+const uglify      = require('gulp-terser');
 const htmlmin     = require('gulp-htmlmin');
 const concat      = require('gulp-concat');
 const sourcemaps  = require('gulp-sourcemaps');
@@ -502,7 +502,7 @@ gulp.task('materializeJS', () => {
             'transform-es2015-template-literals'
         ]
     }))
-    //.pipe(uglify())    
+    .pipe(uglify())    
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./www/lib/js'));
 });
@@ -575,7 +575,7 @@ gulp.task('appJS', () => {
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('app.js'))
-        //.pipe(uglify())
+        .pipe(uglify())
         .on('error', function (err) {
             gutil.log(gutil.colors.red('[Error]'), err.toString());
         })
