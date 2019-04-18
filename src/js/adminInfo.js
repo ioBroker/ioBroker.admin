@@ -37,12 +37,25 @@ const infoAdapter = {
     },
     checkAndSetData: async function (messagesObj, date) {
         const messages = await infoAdapter.checkMessages(messagesObj, date);
-        if (messages.length > 0) {
-            await asyncForEach(messages, async function (message) {
-                gMain.showMessage(message.content, message.title, message.class);
+        if (messages.length === 1) {
+            const message = messages[0];
+            gMain.showMessage(message.content, message.title, message.class);
+        } else if (messages.length > 1) {
+            let content = "<ol>";
+            const idArray = [];
+            messages.forEach(function (message) {
+                if (idArray.indexOf(message.id) === -1) {
+                    content += "<li>";
+                    content += "<h5>" + message.title + "</h5>";
+                    content += "<p>" + message.content + "</p>";
+                    content += "</li>";
+                    idArray.push(message.id);
+                }
             });
-            gMain.socket.emit('setState', 'info.0.last_popup', {val: new Date().toISOString(), ack: true});
+            content += "</ol>";
+            gMain.showMessage(content, _("Please read these important notes:"), "error");
         }
+        gMain.socket.emit('setState', 'info.0.last_popup', {val: new Date().toISOString(), ack: true});
     },
     checkMessages: async function (obj, date) {
         const messagesToShow = [];
