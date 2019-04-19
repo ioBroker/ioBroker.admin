@@ -3,7 +3,19 @@
     "name": "admin",
     "title": "Admin",
     "version": "3.6.1",
-    "news": {            
+    "news": {
+      "3.6.1": {
+        "en": "Info adpater integration",
+        "de": "Integration des Informationsadapters",
+        "ru": "Интеграция с информационным адаптером",
+        "pt": "Integração do adaptador de informações",
+        "nl": "Integratie van infodapter",
+        "fr": "Intégration de l'adaptateur d'informations",
+        "it": "Integrazione dell'adattatore di informazioni",
+        "es": "Integración del adaptador de información",
+        "pl": "Integracja adaptera informacyjnego",
+        "zh-cn": "信息适配器集成"
+      },    
       "3.6.0": {
         "en": "Added Chinese translations\nNew informative states added about updates",
         "de": "Chinesische Übersetzungen hinzugefügt\nNeue Informationsstände zu Updates hinzugefügt",
