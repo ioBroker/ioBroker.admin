@@ -52,7 +52,7 @@
     "gulp-terser": "^1.1.7",
     "fancy-log": "^1.3.3",
     "ansi-colors": "^3.2.4",
-    "materialize-css": "^1.0.0-alpha.4",
+    "materialize-css": "^1.0.0",
     "mocha": "^6.0.2"
   },
   "bugs": {
