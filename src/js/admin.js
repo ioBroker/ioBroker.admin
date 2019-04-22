@@ -13,7 +13,7 @@
 /* global systemLang: true */
 /* global license */
 /* global translateAll */
-/* global initGridLanguage, M, storage, decodeURI, States, infoAdapter */
+/* global initGridLanguage, M, storage, decodeURI, States */
 'use strict';
 
 //if (typeof Worker === 'undefined') alert('your browser does not support WebWorkers :-(');
@@ -489,73 +489,7 @@ $(document).ready(function () {
                 }
             }
             doIt();
-        },
-        /*_delObject_old: function (idOrList, callback) {*
-            var id;
-            if (typeof idOrList === 'object') {
-                if (!idOrList || !idOrList.length) {
-                    if (callback) callback(null);
-                    return;
-                }
-                id = idOrList.pop();
-            } else {
-                id = idOrList;
-            }
-
-            if (main.objects[id] && main.objects[id].common && (main.objects[id].common['object-non-deletable'] || main.objects[id].common.dontDelete)) {
-                main.showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
-                if (typeof idOrList === 'object') {
-                    setTimeout(function () {
-                        this._delObject(idOrList, callback);
-                    }.bind(this), 0);
-                } else {
-                    if (callback) {
-                        setTimeout(function () {
-                            callback(null, idOrList);
-                        }, 0);
-                    }
-                }
-            } else {
-                var obj = main.objects[id];
-                main.socket.emit('delObject', id, function (err) {
-                    if (err && err !=='Not exists') {
-                        main.showError(err);
-                        return;
-                    }
-                    if (obj && obj.type === 'state') {
-                        main.socket.emit('delState', id, function (err) {
-                            if (err && err !=='Not exists') {
-                                main.showError(err);
-                                return;
-                            }
-                            if (typeof idOrList === 'object') {
-                                setTimeout(function () {
-                                    this._delObject(idOrList, callback);
-                                }.bind(this), 0);
-                            } else {
-                                if (callback) {
-                                    setTimeout(function () {
-                                        callback(null, idOrList);
-                                    }, 0);
-                                }
-                            }
-                        }.bind(this));
-                    } else {
-                        if (typeof idOrList === 'object') {
-                            setTimeout(function () {
-                                this._delObject(idOrList, callback);
-                            }.bind(this), 0);
-                        } else {
-                            if (callback) {
-                                setTimeout(function () {
-                                    callback(null, idOrList);
-                                }, 0);
-                            }
-                        }
-                    }
-                }.bind(this));
-            }
-        },*/
+        },     
         _delObjects:    function (rootId, isAll, callback) {
             if (!isAll) {
                 this._delObject(rootId, callback);
@@ -621,7 +555,8 @@ $(document).ready(function () {
         events:     new Events(main),
         logs:       new Logs(main),
         states:     null,
-        intro:      new Intro(main)
+        intro:      new Intro(main),
+        info:       new InfoAdapter(main)
     };
 
     if (typeof States !== 'undefined') {
@@ -778,7 +713,7 @@ $(document).ready(function () {
         });
         
         setTimeout(function () {
-            infoAdapter.init();
+            main.tabs.info.init();
         }, 5000);
 
         window.onhashchange = function () {

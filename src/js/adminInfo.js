@@ -1,7 +1,11 @@
-/* global socket, systemLang, gMain */
+/* global socket, systemLang */
 
-const infoAdapter = {
-    checkVersion: function (smaller, bigger) {
+function InfoAdapter(main) {
+
+    var that = this;
+    this.main = main;
+
+    this.checkVersion = function (smaller, bigger) {
         smaller = smaller.split('.');
         bigger = bigger.split('.');
         smaller[0] = parseInt(smaller[0], 10);
@@ -24,22 +28,25 @@ const infoAdapter = {
         } else {
             return true;
         }
-    },
-    checkVersionBetween: function (inst, vers1, vers2) {
-        return inst === vers1 || inst === vers2 || (infoAdapter.checkVersion(vers1, inst) && infoAdapter.checkVersion(inst, vers2));
-    },
-    showPopup: function (obj) {
-        gMain.socket.emit('getState', 'info.0.last_popup', function (err, dateObj) {
+    };
+
+    this.checkVersionBetween = function (inst, vers1, vers2) {
+        return inst === vers1 || inst === vers2 || (that.checkVersion(vers1, inst) && that.checkVersion(inst, vers2));
+    };
+
+    this.showPopup = function (obj) {
+        that.main.socket.emit('getState', 'info.0.last_popup', function (err, dateObj) {
             if (!err && dateObj) {
-                infoAdapter.checkAndSetData(obj, dateObj.val);
+                that.checkAndSetData(obj, dateObj.val);
             }
         });
-    },
-    checkAndSetData: async function (messagesObj, date) {
-        const messages = await infoAdapter.checkMessages(messagesObj, date);
+    };
+
+    this.checkAndSetData = async function (messagesObj, date) {
+        const messages = await that.checkMessages(messagesObj, date);
         if (messages.length === 1) {
             const message = messages[0];
-            gMain.showMessage(message.content, message.title, message.class);
+            that.main.showMessage(message.content, message.title, message.class);
         } else if (messages.length > 1) {
             let content = "<ol>";
             const idArray = [];
@@ -53,17 +60,21 @@ const infoAdapter = {
                 }
             });
             content += "</ol>";
-            gMain.showMessage(content, _("Please read these important notes:"), "error");
+            that.main.showMessage(content, _("Please read these important notes:"), "error");
         }
-        gMain.socket.emit('setState', 'info.0.last_popup', {val: new Date().toISOString(), ack: true});
-    },
-    checkMessages: async function (obj, date) {
+        that.main.socket.emit('setState', 'info.0.last_popup', {val: new Date().toISOString(), ack: true});
+    };
+
+    this.checkMessages = async function (obj, date) {
         const messagesToShow = [];
 
         try {
             const messages = JSON.parse(obj);
             const today = new Date().getTime();
-            const lastMessage = new Date(date).getTime();
+            let lastMessage = 0;
+            if (date) {
+                lastMessage = new Date(date).getTime();
+            }
             if (messages.length > 0) {
                 await asyncForEach(messages, async function (message) {
                     let showIt = true;
@@ -74,7 +85,7 @@ const infoAdapter = {
                     } else if (showIt && message['date-end'] && new Date(message['date-end']).getTime() < today) {
                         showIt = false;
                     } else if (showIt && message.conditions && Object.keys(message.conditions).length > 0) {
-                        const adapters = gMain.tabs.adapters.curInstalled;
+                        const adapters = that.main.tabs.adapters.curInstalled;
                         await asyncForEach(Object.keys(message.conditions), function (key) {
                             const adapter = adapters[key];
                             const condition = message.conditions[key];
@@ -87,14 +98,14 @@ const infoAdapter = {
                                 showIt = (adapter.version === vers);
                             } else if (adapter && condition.startsWith("bigger")) {
                                 const vers = condition.substring(7, condition.length - 1).trim();
-                                showIt = infoAdapter.checkVersion(vers, adapter.version);
+                                showIt = that.checkVersion(vers, adapter.version);
                             } else if (adapter && condition.startsWith("smaller")) {
                                 const vers = condition.substring(8, condition.length - 1).trim();
-                                showIt = infoAdapter.checkVersion(adapter.version, vers);
+                                showIt = that.checkVersion(adapter.version, vers);
                             } else if (adapter && condition.startsWith("between")) {
                                 const vers1 = condition.substring(8, condition.indexOf(',')).trim();
                                 const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
-                                showIt = infoAdapter.checkVersionBetween(adapter.version, vers1, vers2);
+                                showIt = that.checkVersionBetween(adapter.version, vers1, vers2);
                             }
                         });
                     }
@@ -109,23 +120,24 @@ const infoAdapter = {
         }
 
         return messagesToShow;
-    },
-    init: function () {
-        if (gMain.objects["info.0.newsfeed"] && gMain.objects["info.0.last_popup"]) {
-            gMain.socket.emit('subscribe', 'info.0.newsfeed');
+    };
 
-            gMain.socket.on('stateChange', function (id, obj) {
+    this.init = function () {
+        if (that.main.objects["info.0.newsfeed"] && that.main.objects["info.0.last_popup"]) {
+            that.main.socket.emit('subscribe', 'info.0.newsfeed');
+
+            that.main.socket.on('stateChange', function (id, obj) {
                 if (id === "info.0.newsfeed") {
-                    infoAdapter.showPopup(obj.val);
+                    that.showPopup(obj.val);
                 }
             });
 
-            gMain.socket.emit('getState', 'info.0.newsfeed', async function (err, obj) {
+            that.main.socket.emit('getState', 'info.0.newsfeed', async function (err, obj) {
                 if (!err && obj) {
-                    infoAdapter.showPopup(obj.val);
+                    that.showPopup(obj.val);
                 }
             });
         }
-    }
+    };
 
-};
+}
