@@ -62,7 +62,9 @@ function InfoAdapter(main) {
             content += "</ol>";
             that.main.showMessage(content, _("Please read these important notes:"), "error");
         }
-        that.main.socket.emit('setState', 'info.0.last_popup', {val: new Date().toISOString(), ack: true});
+        if (messages.length > 0) {
+            that.main.socket.emit('setState', 'info.0.last_popup', {val: new Date().toISOString(), ack: true});
+        }
     };
 
     this.checkMessages = async function (obj, date) {
