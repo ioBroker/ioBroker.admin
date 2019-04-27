@@ -139,6 +139,46 @@ function InfoAdapter(main) {
                     that.showPopup(obj.val);
                 }
             });
+        } else if (!main.systemConfig.common.infoAdapterInstall) {
+
+            if (main.objects['system.adapter.info.0']) {
+                // if installed version too old
+                that.main.confirmMessage(_('<p>Your version of the info adapter is outdated. It is strongly recommended to update this to get on the enjoyment of the innovations. Only with the new version, for example, messages from the ioBroker team can be displayed directly.</p><p>Would you like to update the info adapter?</p>'), _('Update info adapter'), 'info', function (result) {
+                    if (result) {
+                        that.main.cmdExec('upgrade info', function (exitCode) {
+                            if (!exitCode) {
+                                that._postInit(true);
+                            }
+                        });
+                    }
+                });
+            } else {
+                // if info adapter is not installed
+                that.main.confirmMessage(_('<p>You have not installed an Info Adapter. The adapter shows you information about the system and is required to display important messages from the ioBroker team.</p><p>Do you want to install the info adapter?</p>'), _('Info adapter not found'), 'info', function (result) {
+                    if (result) {
+                        that.main.cmdExec('add info 0', function (exitCode) {
+                            if (!exitCode) {
+                                that._postInit(true);
+                            }
+                        });
+                    }
+                });
+            }
+
+            main.socket.emit('getObject', 'system.config', function (err, obj) {
+                //ask only one time
+                if (err || !obj) {
+                    main.showError(_('Cannot confirm: ' + err));
+                    return;
+                }
+                obj.common = obj.common || {};
+                obj.common.infoAdapterInstall = true;
+                main.socket.emit('setObject', 'system.config', obj, function (err) {
+                    if (err) {
+                        main.showError(err);
+                    }
+                });
+            });
         }
     };
 

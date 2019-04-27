@@ -2048,6 +2048,7 @@ $(document).ready(function () {
                                                 dateFormat:       'DD.MM.YYYY', // Default date format.
                                                 isFloatComma:     true,         // Default float divider ('.' - false, ',' - true)
                                                 licenseConfirmed: false,        // If license agreement confirmed,
+                                                infoAdapterInstall: false,      // Asked if user wants to install the info adapter
                                                 defaultHistory:   '',           // Default history instance
                                                 tabs: [                         // Show by default only these tabs
                                                     'tab-intro',
