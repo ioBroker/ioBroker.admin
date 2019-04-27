@@ -139,7 +139,7 @@ function InfoAdapter(main) {
                     that.showPopup(obj.val);
                 }
             });
-        } else {
+        } else if (!that.main.systemConfig.common.infoAdapterInstall) {
 
             if (that.main.objects['system.adapter.info.0']) {
                 // if installed version too old
