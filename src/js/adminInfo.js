@@ -139,9 +139,9 @@ function InfoAdapter(main) {
                     that.showPopup(obj.val);
                 }
             });
-        } else if (!main.systemConfig.common.infoAdapterInstall) {
+        } else {
 
-            if (main.objects['system.adapter.info.0']) {
+            if (that.main.objects['system.adapter.info.0']) {
                 // if installed version too old
                 that.main.confirmMessage(_('<p>Your version of the info adapter is outdated. It is strongly recommended to update this to get on the enjoyment of the innovations. Only with the new version, for example, messages from the ioBroker team can be displayed directly.</p><p>Would you like to update the info adapter?</p>'), _('Update info adapter'), 'info', function (result) {
                     if (result) {
