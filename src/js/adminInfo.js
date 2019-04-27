@@ -145,14 +145,22 @@ function InfoAdapter(main) {
                 // if installed version too old
                 that.main.confirmMessage(_('<p>Your version of the info adapter is outdated. It is strongly recommended to update this to get on the enjoyment of the innovations. Only with the new version, for example, messages from the ioBroker team can be displayed directly.</p><p>Would you like to update the info adapter?</p>'), _('Update info adapter'), 'info', function (result) {
                     if (result) {
-                        that.main.cmdExec(null, 'upgrade info');
+                        that.main.cmdExec(null, 'upgrade info', function (exitCode) {
+                            if (!exitCode) {
+                                location.reload(true);
+                            }
+                        });
                     }
                 });
             } else {
                 // if info adapter is not installed
                 that.main.confirmMessage(_('<p>You have not installed an Info Adapter. The adapter shows you information about the system and is required to display important messages from the ioBroker team.</p><p>Do you want to install the info adapter?</p>'), _('Info adapter not found'), 'info', function (result) {
                     if (result) {
-                        that.main.cmdExec(null, 'add info 0');
+                        that.main.cmdExec(null, 'add info 0', function (exitCode) {
+                            if (!exitCode) {
+                                location.reload(true);
+                            }
+                        });
                     }
                 });
             }
