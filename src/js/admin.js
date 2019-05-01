@@ -13,7 +13,7 @@
 /* global systemLang: true */
 /* global license */
 /* global translateAll */
-/* global initGridLanguage */
+/* global initGridLanguage, M, storage, decodeURI, States */
 'use strict';
 
 //if (typeof Worker === 'undefined') alert('your browser does not support WebWorkers :-(');
@@ -39,12 +39,17 @@ if (typeof Number === 'undefined') {
     console.log('define Number');
     Number = function (obj) {
         return parseFloat(obj);
-    }
+    };
 }
 if (!Object.assign) {
     Object.assign = $.extend;
 }
 
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array [index], index, array);
+    }
+}
 
 var $iframeDialog = null; // used in adapter settings window
 var configNotSaved = null; // used in adapter settings window
@@ -136,7 +141,7 @@ $(document).ready(function () {
                 if (err) {
                     this.showError (err);
                 }
-            })
+            });
         },
 
         // Helper methods
@@ -484,73 +489,7 @@ $(document).ready(function () {
                 }
             }
             doIt();
-        },
-        /*_delObject_old: function (idOrList, callback) {*
-            var id;
-            if (typeof idOrList === 'object') {
-                if (!idOrList || !idOrList.length) {
-                    if (callback) callback(null);
-                    return;
-                }
-                id = idOrList.pop();
-            } else {
-                id = idOrList;
-            }
-
-            if (main.objects[id] && main.objects[id].common && (main.objects[id].common['object-non-deletable'] || main.objects[id].common.dontDelete)) {
-                main.showMessage(_('Cannot delete "%s" because not allowed', id), '', 'notice');
-                if (typeof idOrList === 'object') {
-                    setTimeout(function () {
-                        this._delObject(idOrList, callback);
-                    }.bind(this), 0);
-                } else {
-                    if (callback) {
-                        setTimeout(function () {
-                            callback(null, idOrList);
-                        }, 0);
-                    }
-                }
-            } else {
-                var obj = main.objects[id];
-                main.socket.emit('delObject', id, function (err) {
-                    if (err && err !=='Not exists') {
-                        main.showError(err);
-                        return;
-                    }
-                    if (obj && obj.type === 'state') {
-                        main.socket.emit('delState', id, function (err) {
-                            if (err && err !=='Not exists') {
-                                main.showError(err);
-                                return;
-                            }
-                            if (typeof idOrList === 'object') {
-                                setTimeout(function () {
-                                    this._delObject(idOrList, callback);
-                                }.bind(this), 0);
-                            } else {
-                                if (callback) {
-                                    setTimeout(function () {
-                                        callback(null, idOrList);
-                                    }, 0);
-                                }
-                            }
-                        }.bind(this));
-                    } else {
-                        if (typeof idOrList === 'object') {
-                            setTimeout(function () {
-                                this._delObject(idOrList, callback);
-                            }.bind(this), 0);
-                        } else {
-                            if (callback) {
-                                setTimeout(function () {
-                                    callback(null, idOrList);
-                                }, 0);
-                            }
-                        }
-                    }
-                }.bind(this));
-            }
-        },*/
+        },     
         _delObjects:    function (rootId, isAll, callback) {
             if (!isAll) {
                 this._delObject(rootId, callback);
@@ -612,12 +551,12 @@ $(document).ready(function () {
         adapters:   new Adapters(main),
         instances:  new Instances(main),
         users:      new Users(main),
-        //groups:     new Groups(main),
         enums:      new Enums(main),
         events:     new Events(main),
         logs:       new Logs(main),
         states:     null,
-        intro:      new Intro(main)
+        intro:      new Intro(main),
+        info:       new InfoAdapter(main)
     };
 
     if (typeof States !== 'undefined') {
@@ -768,10 +707,14 @@ $(document).ready(function () {
         });
 
         main.updateWizard();
-
+        
         $('#button-logout').on('click', function () {
             window.location.href = '/logout/';
         });
+        
+        setTimeout(function () {
+            main.tabs.info.init();
+        }, 5000);
 
         window.onhashchange = function () {
             main.navigateDo();
@@ -878,22 +821,6 @@ $(document).ready(function () {
                 buttonName = _(tab.common.name);
             }
 
-            // if (main.objects[addTabs[a]].common.adminTab.name) {
-            //     if (typeof main.objects[addTabs[a]].common.adminTab.name === 'object') {
-            //         if (main.objects[addTabs[a]].common.adminTab.name[systemLang]) {
-            //             buttonName = main.objects[addTabs[a]].common.adminTab.name[systemLang];
-            //         } else if (main.objects[addTabs[a]].common.adminTab.name.en) {
-            //             buttonName = _(main.objects[addTabs[a]].common.adminTab.name.en);
-            //         } else {
-            //             buttonName = _(main.objects[addTabs[a]].common.name);
-            //         }
-            //     } else {
-            //         buttonName = _(main.objects[addTabs[a]].common.adminTab.name);
-            //     }
-            // } else {
-            //     buttonName = _(main.objects[addTabs[a]].common.name);
-            // }
-
             if (!tab.common.adminTab.singleton) {
                 if (link.indexOf('?') !== -1) {
                     link += '&instance=' + parts[3];
@@ -917,10 +844,6 @@ $(document).ready(function () {
                         link = '/adapter/' + parts[2] + '/tab_m.html';
                     }
                 } else {
-                    // convert "http://%ip%:%port%" to "http://localhost:1880"
-                    /*main.tabs.instances._replaceLinks(link, parts[2], parts[3], name, function (link, adapter, instance, arg) {
-                        $('#' + arg).data('src', link);
-                    });*/
                     isReplace = link.indexOf('%') !== -1;
                 }
 
@@ -986,7 +909,7 @@ $(document).ready(function () {
         // fill the host list (select) on adapter tab
         var $selHosts = $('#host-adapters');
         if (isFirstInit && $selHosts.data('inited')) {
-            return
+            return;
         }
 
         $selHosts.data('inited', true);
@@ -1667,7 +1590,7 @@ $(document).ready(function () {
             }
             alt = obj.type;
         }
-        return {icon: icon, alt: alt}
+        return {icon: icon, alt: alt};
     }
 
     main.getIconFromObj = function (obj, imgPath, classes) {
@@ -1750,26 +1673,27 @@ $(document).ready(function () {
     };
 
     var tabsInfo = {
-        'tab-intro':            {order: 1,   icon: 'apps'},
-        'tab-adapters':         {order: 2,   icon: 'store',             host: true},
-        'tab-instances':        {order: 3,   icon: 'subtitles',         host: true},
-        'tab-objects':          {order: 4,   icon: 'view_list'},
-        'tab-enums':            {order: 5,   icon: 'art_track'},
-        'tab-logs':             {order: 6,   icon: 'view_headline',     host: true},
-        'tab-scenes':           {order: 7,   icon: 'subscriptions'},
-        'tab-events':           {order: 8,   icon: 'flash_on'},
-        'tab-users':            {order: 10,  icon: 'person_outline'},
-        'tab-javascript':       {order: 11,  icon: 'code'},
-        'tab-text2command-0':   {order: 12,  icon: 'ac_unit'},
-        'tab-text2command-1':   {order: 12,  icon: 'ac_unit'},
-        'tab-text2command-2':   {order: 12,  icon: 'ac_unit'},
-        'tab-node-red-0':       {order: 20,  icon: 'device_hub'},
-        'tab-node-red-1':       {order: 21,  icon: 'device_hub'},
-        'tab-node-red-2':       {order: 22,  icon: 'device_hub'},
-        'tab-hosts':            {order: 100, icon: 'storage'},
-        'tab-fullcalendar-0':   {order: 30,  icon: 'perm_contact_calendar'},
-        'tab-fullcalendar-1':   {order: 31,  icon: 'perm_contact_calendar'},
-        'tab-fullcalendar-2':   {order: 32,  icon: 'perm_contact_calendar'}
+        'tab-intro':            {order: 1,    icon: 'apps'},
+        'tab-info':             {order: 5,    icon: 'info',              host: true},
+        'tab-adapters':         {order: 10,   icon: 'store',             host: true},
+        'tab-instances':        {order: 15,   icon: 'subtitles',         host: true},
+        'tab-objects':          {order: 20,   icon: 'view_list'},
+        'tab-enums':            {order: 25,   icon: 'art_track'},
+        'tab-logs':             {order: 30,   icon: 'view_headline',     host: true},        
+        'tab-scenes':           {order: 35,   icon: 'subscriptions'},
+        'tab-events':           {order: 40,   icon: 'flash_on'},
+        'tab-users':            {order: 45,   icon: 'person_outline'},
+        'tab-javascript':       {order: 50,   icon: 'code'},
+        'tab-text2command-0':   {order: 55,   icon: 'ac_unit'},
+        'tab-text2command-1':   {order: 56,   icon: 'ac_unit'},
+        'tab-text2command-2':   {order: 57,   icon: 'ac_unit'},
+        'tab-node-red-0':       {order: 60,   icon: 'device_hub'},
+        'tab-node-red-1':       {order: 61,   icon: 'device_hub'},
+        'tab-node-red-2':       {order: 62,   icon: 'device_hub'},        
+        'tab-fullcalendar-0':   {order: 65,   icon: 'perm_contact_calendar'},
+        'tab-fullcalendar-1':   {order: 66,   icon: 'perm_contact_calendar'},
+        'tab-fullcalendar-2':   {order: 67,   icon: 'perm_contact_calendar'},
+        'tab-hosts':            {order: 100,  icon: 'storage'}
     };
 
     function initSideNav() {
@@ -2124,9 +2048,11 @@ $(document).ready(function () {
                                                 dateFormat:       'DD.MM.YYYY', // Default date format.
                                                 isFloatComma:     true,         // Default float divider ('.' - false, ',' - true)
                                                 licenseConfirmed: false,        // If license agreement confirmed,
+                                                infoAdapterInstall: false,      // Asked if user wants to install the info adapter
                                                 defaultHistory:   '',           // Default history instance
                                                 tabs: [                         // Show by default only these tabs
                                                     'tab-intro',
+                                                    'tab-info',
                                                     'tab-adapters',
                                                     'tab-instances',
                                                     'tab-objects',
@@ -2192,23 +2118,5 @@ $(document).ready(function () {
         location.reload();
     });
 
-    /*function resizeGrids() {
-        var x = $(window).width();
-        var y = $(window).height();
-        if (x < 720) {
-            x = 720;
-        }
-        if (y < 480) {
-            y = 480;
-        }
-        for (var tab in tabs.events) {
-            if (tabs.events.hasOwnProperty(tab) && tabs[tab] && tabs[tab].resize) {
-                tabs[tab].resize(x, y);
-            }
-        }
-    }
-
-    $(window).resize(resizeGrids);
-    */
-});
+    });
 })(jQuery);

@@ -3,8 +3,9 @@
 const less        = require('gulp-less');
 const sass        = require('gulp-sass');
 const gulp        = require('gulp');
-const gutil       = require('gulp-util');
-const uglify      = require('gulp-uglify');
+const colors      = require('ansi-colors');
+const log         = require('fancy-log');
+const uglify      = require('gulp-terser');
 const htmlmin     = require('gulp-htmlmin');
 const concat      = require('gulp-concat');
 const sourcemaps  = require('gulp-sourcemaps');
@@ -15,10 +16,6 @@ const iopackage   = require('./io-package.json');
 const babel       = require('gulp-babel');
 const fs          = require('fs');
 
-gulp.task('1_words',  ['www (json => words.js)', 'admin (json => words.js)']);
-gulp.task('2_css',    ['iobCSS', 'adminCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS']);
-gulp.task('3_js',     ['vendorJS', 'materializeJS', 'appJS', 'fancyTreeJS']); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
-gulp.task('4_static', ['appHTML', 'aceCopy', 'colorpickerCopy', 'appCopy']);
 const fileName = 'words.js';
 const noSort   = false;
 
@@ -291,7 +288,7 @@ function languagesFlat2words(src) {
             if (aWords.hasOwnProperty(w)) {
                 if (!bigOne[w]) {
                     console.warn('Take from actual ' + fileName + ': ' + w);
-                    bigOne[w] = aWords[w]
+                    bigOne[w] = aWords[w];
                 }
                 dirs.forEach(function (lang) {
                     if (temporaryIgnore.indexOf(lang) !== -1) return;
@@ -346,14 +343,14 @@ function languages2words(src) {
     // read actual words.js
     var aWords = readWordJs();
 
-    var temporaryIgnore = ['pt', 'fr', 'nl', 'es', 'pl'];
+    var temporaryIgnore = [];
     if (aWords) {
         // Merge words together
         for (var w in aWords) {
             if (aWords.hasOwnProperty(w)) {
                 if (!bigOne[w]) {
                     console.warn('Take from actual ' + fileName + ': ' + w);
-                    bigOne[w] = aWords[w]
+                    bigOne[w] = aWords[w];
                 }
                 dirs.forEach(function (lang) {
                     if (temporaryIgnore.indexOf(lang) !== -1) return;
@@ -459,7 +456,7 @@ gulp.task('updateReadme', done => {
 });
 
 gulp.task('materializeCSS', () => {
-    gulp.src(['./src/materialize-css/sass/**/*.scss'])
+    return gulp.src(['./src/materialize-css/sass/**/*.scss'])
         .pipe(sass({
             paths: [ ]
         }))
@@ -502,13 +499,13 @@ gulp.task('materializeJS', () => {
             'transform-es2015-template-literals'
         ]
     }))
-    //.pipe(uglify())    
+    .pipe(uglify())    
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./www/lib/js'));
 });
 
 gulp.task('configCSS', () => {
-    gulp.src([
+    return gulp.src([
         './src/lib/css/iob/selectID.less',
         './src/less/adapter.less',
         './src/less/materializeCorrect.less'
@@ -562,7 +559,7 @@ gulp.task('fancyTreeJS', () => {
         .pipe(concat('jquery.fancytree-all.min.js'))
         .pipe(uglify())
         .on('error', function (err) {
-            gutil.log(gutil.colors.red('[Error]'), err.toString());
+            log.error(colors.red('[Error] ') + err.toString());
         })
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/lib/js'));
@@ -577,7 +574,7 @@ gulp.task('appJS', () => {
         .pipe(concat('app.js'))
         .pipe(uglify())
         .on('error', function (err) {
-            gutil.log(gutil.colors.red('[Error]'), err.toString());
+            log.error(colors.red('[Error] ') + err.toString());
         })
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/js'));
@@ -597,7 +594,7 @@ gulp.task('appHTML', () => {
 });
 
 gulp.task('appCSS', () => {
-    gulp.src([
+    return gulp.src([
         './src/less/*.less',
         './src/colorpicker/less/*.less',
         '!./src/less/adapter.less'
@@ -637,7 +634,7 @@ gulp.task('vendorJS', () => {
         .pipe(concat('vendor.js'))
         .pipe(uglify())
         .on('error', function (err) {
-            gutil.log(gutil.colors.red('[Error]'), err.toString());
+            log.error(colors.red('[Error] ') + err.toString());
         })
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/lib/js'));
@@ -651,13 +648,13 @@ gulp.task('colorpick.min', () => {
         .pipe(concat('colResizable-1.6.min.js'))
         .pipe(uglify())
         .on('error', function (err) {
-            gutil.log(gutil.colors.red('[Error]'), err.toString());
+            log.error(colors.red('[Error] ') + err.toString());
         })
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/lib/js'));
 });
 
-gulp.task('appCopy', ['colorpick.min'], () => {
+gulp.task('appCopy', gulp.series('colorpick.min', () => {
     return gulp.src([
         './src/**/*.*',
         '!./src/i18n/**/*',
@@ -672,7 +669,8 @@ gulp.task('appCopy', ['colorpick.min'], () => {
         '!./src/colorpicker/**/*'
     ])
     .pipe(gulp.dest('./www'));
-});
+    })
+);
 
 gulp.task('colorpickerCopy', () => {
     return gulp.src([
@@ -687,7 +685,7 @@ gulp.task('aceCopy', () => {
     ],  {base: './src/lib/js/ace-1.2.0/'})
     .pipe(gulp.dest('./www'));
 });
-gulp.task('copy', ['appCopy', 'aceCopy', 'colorpickerCopy']);
+gulp.task('copy', gulp.parallel('appCopy', 'aceCopy', 'colorpickerCopy'));
 
 gulp.task('watch', () => {
     gulp.watch('./src/css/*.less', ['lessApp']);
@@ -708,8 +706,13 @@ gulp.task('beta', done => {
     done();
 });
 
-gulp.task('default', [
+gulp.task('1_words',  gulp.parallel('www (json => words.js)', 'admin (json => words.js)'));
+gulp.task('2_css',    gulp.parallel('iobCSS', 'adminCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS'));
+gulp.task('3_js',     gulp.parallel('vendorJS', 'materializeJS', 'appJS', 'fancyTreeJS')); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
+gulp.task('4_static', gulp.parallel('appHTML', 'aceCopy', 'colorpickerCopy', 'appCopy'));
+
+gulp.task('default', gulp.series(
     '1_words',
     '2_css',
     '3_js',
-    '4_static']);
+    '4_static'));
