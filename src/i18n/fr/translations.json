@@ -287,6 +287,7 @@
   "Instances": "Instances",
   "Instructions": "Instructions",
   "Intro": "Début",
+  "Invalid configuration. Please fix": "Configuration invalide. S'il-vous-plaît, réparez",
   "Invalid version of %s": "Version non valide de %s",
   "Invalid version of %s. Required %s": "Version non valide de %s. Requis %s",
   "Iran": "Iran",

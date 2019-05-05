@@ -141,7 +141,7 @@ function Customs(main) {
             var img = this.main.objects['system.adapter.' + adapter].common.icon;
             img = '/adapter/' + adapter + '/' + img;
             var tab =
-                '<li data-adapter="' + data + '" class="' + (collapsed.indexOf(data) === -1 ? 'active' : '') + '">' +
+                '<li data-adapter="' + data + '" data-adapterOnly="' + adapter + '" class="custom-config ' + (collapsed.indexOf(data) === -1 ? 'active' : '') + '">' +
                 '   <div class="collapsible-header">' +
                 '       <img src="' + img + '" alt="picture"/>' + _('Settings for %s', data) +
                 '       <span class="activated" data-adapter="' + data + '" style="opacity: ' + (commons[data] && (commons[data].enabled === true || commons[data].enabled === STR_DIFFERENT) ? '1' : '0') + '">' + _('active') + '</span>' +
@@ -686,10 +686,7 @@ function Customs(main) {
             }
         });
 
-
         if (ids) {
-            that.$dialog.find('.dialog-system-buttons .btn-save').addClass('disabled');
-
             for (var i = 0; i < ids.length; i++) {
                 var found = false;
                 var custom_ = that.main.objects[ids[i]].common.custom;
@@ -705,11 +702,31 @@ function Customs(main) {
                     that.main.objects[ids[i]].common.custom = null;
                 }
             }
-            that.setCustoms(ids, function () {
-                // disable iframe
-                that.loadHistoryChart(); // disable iframe
-                that.main.navigate();
+
+            var allOk = true;
+
+            $tabs.find('.custom-config').each(function () {
+                var adapter = $(this).data('adapterOnly');
+                // post init => add custom logic
+                if (customPostOnSave.hasOwnProperty(adapter) && typeof customPostOnSave[adapter] === 'function') {
+                    // returns true if some problem detected
+                    if (customPostOnSave[adapter]($(this), $(this).data('adapter'))) {
+                        allOk = false;
+                    }
+                }
             });
+
+            if (allOk) {
+                that.$dialog.find('.dialog-system-buttons .btn-save').addClass('disabled');
+
+                that.setCustoms(ids, function () {
+                    // disable iframe
+                    that.loadHistoryChart(); // disable iframe
+                    that.main.navigate();
+                });
+            } else {
+                that.main.showError(_('Invalid configuration. Please fix'));
+            }
         }
 
     }

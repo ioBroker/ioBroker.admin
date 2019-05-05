@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.6.1",
+    "version": "3.6.2",
     "news": {
+      "3.6.2": {
+        "en": "Added onSave handler for custom dialogs",
+        "de": "OnSave-Handler für benutzerdefinierte Dialoge hinzugefügt",
+        "ru": "Добавлен обработчик onSave для пользовательских диалогов",
+        "pt": "Adicionado manipulador onSave para diálogos personalizados",
+        "nl": "Toegevoegd onSave handler voor aangepaste dialogen",
+        "fr": "Ajout du gestionnaire onSave pour les boîtes de dialogue personnalisées",
+        "it": "Aggiunto il gestore onSave per le finestre di dialogo personalizzate",
+        "es": "Añadido onSave handler para diálogos personalizados",
+        "pl": "Dodano obsługę onSave dla niestandardowych okien dialogowych",
+        "zh-cn": "为自定义对话框添加了onSave处理程序"
+      },
       "3.6.1": {
         "en": "Info adpater integration",
         "de": "Integration des Informationsadapters",
@@ -39,83 +51,6 @@
         "es": "Demasiadas salidas de depuración fueron deshabilitadas",
         "pl": "Zbyt wiele wyników debugowania zostało wyłączonych"
       },
-      "3.5.9": {
-        "en": "The log output problem was fixed",
-        "de": "Das Protokollausgabe-Problem wurde behoben",
-        "ru": "Проблема с выводом журнала была исправлена",
-        "pt": "O problema de saída de log foi corrigido",
-        "nl": "Het probleem met de uitvoer van de log is opgelost",
-        "fr": "Le problème de sortie du journal a été résolu",
-        "it": "Il problema di output del log è stato risolto",
-        "es": "El problema de salida del registro fue arreglado",
-        "pl": "Problem z wyjściem dziennika został naprawiony"
-      },
-      "3.5.8": {
-        "en": "Google map was replaces with open street map",
-        "de": "Google Karte wurde durch open street map ersetzt",
-        "ru": "Карта Google заменяет собой open street map",
-        "pt": "Mapa do Google foi substituído por open street map",
-        "nl": "Google-kaart werd vervangen door open street map",
-        "fr": "Google map était remplacé par open street map",
-        "it": "La mappa di Google è stata sostituita con open street map",
-        "es": "El mapa de Google fue reemplazado por open street map",
-        "pl": "Mapa Google została zamieniona na open street map"
-      },
-      "3.5.7": {
-        "en": "Edit of the table entries in configuration dialog was corrected",
-        "de": "Die Bearbeitung der Tabelleneinträge im Konfigurationsdialog wurde korrigiert",
-        "ru": "Исправлено редактирование записей таблицы в диалоговом окне конфигурации",
-        "pt": "A edição das entradas da tabela na caixa de diálogo de configuração foi corrigida",
-        "nl": "Bewerking van de tabelitems in het configuratiedialoogvenster is gecorrigeerd",
-        "fr": "L'édition des entrées de la table de dialogue de configuration a été corrigée",
-        "it": "La modifica delle voci della tabella nella finestra di configurazione è stata corretta",
-        "es": "Se corrigió la edición de las entradas de la tabla en el cuadro de diálogo de configuración",
-        "pl": "Edytowano wpisy tabeli w oknie dialogowym konfiguracji"
-      },
-      "3.5.6": {
-        "en": "Import and export of the instance configuration was implemented.",
-        "de": "Import und Export der Instanzkonfiguration wurde implementiert.",
-        "ru": "Был реализован импорт и экспорт конфигурации экземпляра.",
-        "pt": "Importação e exportação da configuração da instância foi implementada.",
-        "nl": "Import en export van de instance-configuratie is geïmplementeerd.",
-        "fr": "L'importation et l'exportation de la configuration d'instance ont été implémentées.",
-        "it": "È stata implementata l'importazione e l'esportazione della configurazione dell'istanza.",
-        "es": "Se implementó la importación y exportación de la configuración de la instancia.",
-        "pl": "Zaimplementowano import i eksport konfiguracji instancji."
-      },
-      "3.5.5": {
-        "en": "Upload of files was corrected.",
-        "de": "Upload von Dateien wurde korrigiert.",
-        "ru": "Исправлена ​​загрузка файлов.",
-        "pt": "Upload de arquivos foi corrigido.",
-        "nl": "Upload van bestanden is gecorrigeerd.",
-        "fr": "Le téléchargement de fichiers a été corrigé.",
-        "it": "Il caricamento dei file è stato corretto.",
-        "es": "La carga de archivos fue corregida.",
-        "pl": "Przesyłanie plików zostało poprawione."
-      },
-      "3.5.3": {
-        "en": "Dropdown was fixed on touch devices\nSpeedup build of instances",
-        "de": "Drop-down wurde auf Touch-Geräten behoben\nBeschleunigen Sie das Build von Instanzen",
-        "ru": "Распаковка была зафиксирована на сенсорных устройствах\nУскорение сборки экземпляров",
-        "pt": "O menu suspenso foi corrigido em dispositivos sensíveis ao toque\nSpeedup build de instâncias",
-        "nl": "Dropdown is opgelost op touch-apparaten\nSpeedup build van instanties",
-        "fr": "Dropdown était fixé sur les appareils tactiles\nAccélération de la création d'instances",
-        "it": "Il menu a discesa è stato corretto sui dispositivi touch\nSpeedup build di istanze",
-        "es": "El menú desplegable se corrigió en dispositivos táctiles\nSpeedup construcción de instancias",
-        "pl": "Rozwinięcie zostało naprawione na urządzeniach dotykowych\nPrzyspieszenie kompilacji wystąpień"
-      },
-      "3.5.1": {
-        "en": "Error in custom settings was fixed",
-        "de": "Fehler in benutzerdefinierten Einstellungen wurde behoben",
-        "ru": "Исправлена ​​ошибка в пользовательских настройках",
-        "pt": "Erro nas configurações personalizadas foi corrigido",
-        "nl": "Fout in aangepaste instellingen was opgelost",
-        "fr": "Une erreur dans les paramètres personnalisés a été corrigée",
-        "it": "Errore nelle impostazioni personalizzate è stato corretto",
-        "es": "Se corrigió el error en la configuración personalizada",
-        "pl": "Naprawiono błąd w ustawieniach niestandardowych"
-      },
       "3.5.0": {
         "en": "Editing of enums was changed\nLogo was updated\nThe function icons were added",
         "de": "Die Bearbeitung der Enums wurde geändert\nDas Logo wurde aktualisiert\nDie Funktionssymbole wurden hinzugefügt",
@@ -127,93 +62,11 @@
         "es": "Se modificó la edición de enumeraciones\nLogotipo fue actualizado\nSe agregaron los íconos de función",
         "pl": "Zmieniono edycję wyliczeń\nLogo zostało zaktualizowane\nDodano ikony funkcji"
       },
-      "3.4.9": {
-        "en": "Support of the custom login screen background\nshow tooltip about refresh on instances page\ntabs are now destroyed after they left",
-        "de": "Unterstützung des benutzerdefinierten Anmeldebildschirmhintergrunds\nzeige Tooltip zum Aktualisieren auf der Instanzenseite\nTabs werden jetzt zerstört, nachdem sie gegangen sind",
-        "ru": "Поддержка пользовательского экрана экрана входа в систему\nпоказать подсказку об обновлении на странице экземпляров\nвкладки теперь уничтожаются после того, как они ушли",
-        "pt": "Suporte do plano de fundo de tela de login personalizado\nmostre a dica de ferramenta sobre a atualização na página de instâncias\nguias agora são destruídas depois que eles saíram",
-        "nl": "Ondersteuning van de aangepaste inlogschermachtergrond\ntooltip weergeven voor vernieuwen op pagina met instanties\ntabbladen worden nu vernietigd nadat ze zijn vertrokken",
-        "fr": "Prise en charge de l'arrière-plan de l'écran de connexion personnalisé\naffiche une info-bulle sur l'actualisation de la page des instances\nles onglets sont maintenant détruits après leur départ",
-        "it": "Supporto dello sfondo della schermata di accesso personalizzato\nmostra tooltip sull'aggiornamento nella pagina delle istanze\nle schede sono ora distrutte dopo che se ne sono andati",
-        "es": "Soporte del fondo de pantalla de inicio de sesión personalizado\nmostrar información sobre herramientas sobre la actualización en la página de instancias\nlas pestañas ahora se destruyen después de que se fueron",
-        "pl": "Obsługa niestandardowego tła ekranu logowania\nwyświetl podpowiedź na temat odświeżania strony instancji\nKarty są teraz niszczone po ich odejściu"
-      },
-      "3.4.8": {
-        "en": "Small GUI corrections",
-        "de": "Kleine GUI-Korrekturen",
-        "ru": "Небольшие корректировки GUI",
-        "pt": "Correções de GUI pequenas",
-        "nl": "Kleine GUI-correcties",
-        "fr": "Petites corrections GUI",
-        "it": "Piccole correzioni della GUI",
-        "es": "Pequeñas correcciones GUI",
-        "pl": "Małe poprawki GUI"
-      },
-      "3.4.7": {
-        "en": "getInterfaces function was added\nScroll position for some tables is saved\nAdded \"filtered out\" information",
-        "de": "getInterfaces Funktion wurde hinzugefügt\nScroll-Position für einige Tabellen wird gespeichert\nHinzugefügt \"ausgefiltert\" Informationen",
-        "ru": "Добавлена ​​функция getInterfaces\nПоложение прокрутки для некоторых таблиц сохраняется\nДобавлена ​​информация «отфильтрована»",
-        "pt": "A função getInterfaces foi adicionada\nPosição de rolagem para algumas tabelas é salva\nAdicionadas informações \"filtradas\"",
-        "nl": "de functie getInterfaces is toegevoegd\nDe schuifpositie voor sommige tabellen is opgeslagen\nToegevoegd \"gefilterd\" informatie",
-        "fr": "La fonction getInterfaces a été ajoutée\nLa position de défilement de certaines tables est enregistrée\nAjout d'informations \"filtrées\"",
-        "it": "è stata aggiunta la funzione getInterfaces\nLa posizione di scorrimento per alcune tabelle viene salvata\nAggiunte informazioni \"filtrate\"",
-        "es": "Se agregó la función getInterfaces\nLa posición de desplazamiento para algunas tablas se guarda\nSe agregó información \"filtrada\"",
-        "pl": "Funkcja getInterfaces została dodana\nPozycja przewijania dla niektórych tabel zostaje zapisana\nDodano informacje \"przefiltrowane\""
-      },
-      "3.4.6": {
-        "en": "Minor GUI fixes",
-        "de": "Minor GUI Fixes",
-        "ru": "Незначительные исправления GUI",
-        "pt": "Correções de GUI menores",
-        "nl": "Kleine GUI-oplossingen",
-        "fr": "Corrections mineures de l'interface graphique",
-        "it": "Correzioni minori della GUI",
-        "es": "Correcciones menores de GUI",
-        "pl": "Drobne poprawki GUI"
-      },
-      "3.4.3": {
-        "en": "The button in selectID was fixed\ndisk info was added\nThe filter in table mode on adapter tab was showed\nmemAvailable for RAM monitoring is used\nfix select problem in config dialog\nadded the asking about unsaved scripts",
-        "de": "Die Schaltfläche in selectID wurde behoben\nDatenträgerinfo wurde hinzugefügt\nDer Filter im Tabellenmodus auf der Adapterregisterkarte wurde angezeigt\nmemAvailable für die RAM-Überwachung wird verwendet\nBehebung eines Problems im Konfigurationsdialog\ndie Frage nach nicht gespeicherten Skripten hinzugefügt",
-        "ru": "Кнопка в selectID была исправлена\nбыла добавлена ​​информация о диске\nБыл показан фильтр в режиме таблицы на вкладке адаптера\nmemAvailable для мониторинга ОЗУ\nисправить проблему выбора в диалоговом окне конфигурации\nдобавлен запрос о несохраненных скриптах",
-        "pt": "O botão no selectID foi corrigido\ninformação de disco foi adicionada\nO filtro no modo de tabela na guia do adaptador foi mostrado\nmemAvailable for RAM monitoring is used\ncorrija o problema de seleção no diálogo de configuração\nadicionou a pergunta sobre scripts não salvos",
-        "nl": "De knop in selectID is hersteld\nschijfinfo is toegevoegd\nHet filter in de tabelmodus op het tabblad met de adapter werd getoond\nmemBeschikbaar voor RAM-bewaking wordt gebruikt\nfix select probleem in configuratiedialoog\nhet vragen over niet-opgeslagen scripts toegevoegd",
-        "fr": "Le bouton dans selectID a été corrigé\ninformations sur le disque a été ajouté\nLe filtre en mode table sur l'onglet de l'adaptateur a été affiché\nmemAvailable pour la surveillance de la RAM est utilisé\nréparer le problème de sélection dans la boîte de dialogue de configuration\najouté la question sur les scripts non sauvegardés",
-        "it": "Il pulsante in selectID è stato risolto\nsono state aggiunte informazioni sul disco\nÈ stato mostrato il filtro in modalità tabella sulla scheda dell'adattatore\nmemAvailable per il monitoraggio RAM viene utilizzato\nrisolve il problema di selezione nella finestra di configurazione\nha aggiunto la richiesta di script non salvati",
-        "es": "El botón en selectID fue arreglado\nse agregó información de disco\nSe mostró el filtro en el modo de tabla en la pestaña del adaptador\nmemDisponible para la supervisión de RAM se utiliza\ncorregir el problema de selección en el diálogo de configuración\nagregó la pregunta sobre los guiones no guardados",
-        "pl": "Przycisk w selectID został naprawiony\ninformacje o dysku zostały dodane\nPokazano filtr w trybie tabeli na karcie adaptera\nmem Dostępne dla monitorowania pamięci RAM\nnapraw wybrany problem w oknie konfiguracji\ndodano pytanie o niezapisane skrypty"
-      },
-      "3.4.2": {
-        "en": "Fix: height of Select ID Dialog calculated wrong",
-        "de": "Fix: Höhe des Select ID Dialoges falsch berechnet",
-        "ru": "Исправлено: высота диалогового окна «Выбор идентификатора»",
-        "pt": "Correção: altura da caixa de diálogo Selecionar ID calculada errada",
-        "nl": "Fix: hoogte van Selecteer ID Dialoog berekend verkeerd",
-        "fr": "Correction: hauteur de la boîte de dialogue Select ID calculée incorrect",
-        "it": "Correzione: altezza della finestra di dialogo Seleziona ID calcolata erroneamente",
-        "es": "Solución: altura del cuadro de diálogo Seleccionar ID calculado incorrectamente",
-        "pl": "Napraw: wysokość okna dialogowego Wybierz identyfikator obliczono nieprawidłowo"
-      },
-      "3.4.1": {
-        "en": "Fix: Unable to scroll trough Dropdown on Touchscreens\nAdded: Show current Tab in Pagetitle",
-        "de": "Fix: Scrollen durch Dropdown auf Touchscreens nicht möglich\nHinzugefügt: Zeige den aktuellen Tab in Pagetitle",
-        "ru": "Исправлено: Не удалось прокрутить прокрутку вниз по сенсорным экранам\nДобавлено: Показать текущую вкладку в Pagetitle",
-        "pt": "Correção: Não é possível rolar pela lista suspensa em telas sensíveis ao toque\nAdicionado: Mostrar guia atual no Pagetitle",
-        "nl": "Oplossing: kan niet bladeren door Dropdown op touchscreens\nToegevoegd: Toon het huidige tabblad in Pagetitle",
-        "fr": "Corrigé: Impossible de faire défiler la liste déroulante sur les écrans tactiles\nAjouté: Afficher l'onglet actuel dans Pagetitle",
-        "it": "Correzione: impossibile scorrere attraverso il menu a discesa sui touchscreen.\nAggiunta: mostra la scheda corrente in Pagetitle",
-        "es": "Solución: no se puede desplazar a través de la lista desplegable en pantallas táctiles.\nAgregado: muestra la pestaña actual en el título.",
-        "pl": "Poprawka: Nie można przewijać listy rozwijanej na ekranach dotykowych\nDodano: Pokaż bieżącą kartę w oknie Pagetitle"
-      },
       "2.0.11": {
         "en": "Configurable event update disable threshold",
         "de": "Konfigurierbar Schwellenwert für Ereignisses",
         "ru": "Настраиваемое пороговое значение отключения обновления событий",
         "pt": "Limite configurável para o número de eventos"
-      },
-      "2.0.9": {
-        "en": "fix sorting, when using adapters with more than one instance",
-        "de": "Sortierung für Adapter mit mehr als einer Instanz repariert",
-        "pt": "Classificação para adaptadores com mais de uma instância"
       }
     },
     "desc": {

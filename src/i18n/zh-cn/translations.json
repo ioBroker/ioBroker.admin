@@ -287,6 +287,7 @@
   "Instances": "实例",
   "Instructions": "说明",
   "Intro": "概况",
+  "Invalid configuration. Please fix": "配置无效。请修理",
   "Invalid version of %s": "%s的版本无效",
   "Invalid version of %s. Required %s": "%s的版本无效。必需%s",
   "Iran": "伊朗",

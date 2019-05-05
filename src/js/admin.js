@@ -56,6 +56,7 @@ var configNotSaved = null; // used in adapter settings window
 var showConfig = null; // used in adapter settings window
 var defaults = {};
 var customPostInits = {};
+var customPostOnSave = {};
 var FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g;
 
 // used in adapter settings window
@@ -138,9 +139,7 @@ $(document).ready(function () {
         },
         saveTabs:       function () {
             this.socket.emit ('setObject', 'system.config', this.systemConfig, function (err) {
-                if (err) {
-                    this.showError (err);
-                }
+                err && this.showError(err);
             });
         },
 
