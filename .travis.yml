@@ -13,13 +13,13 @@ before_script:
   - 'if [[ $NPMVERSION == 5 ]]; then npm install -g npm@5; fi'
   - npm -v
 env:
-  - CXX=g++-4.9
+  - CXX=g++-6
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-4.9
+      - g++-6
 after_success:
   - 'bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)'
 script:
