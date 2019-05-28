@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.6.2",
+    "version": "3.6.3",
     "news": {
+      "3.6.3": {
+        "en": "Added deleteFile internal function",
+        "de": "Interne Funktion deleteFile hinzugefügt",
+        "ru": "Добавлена ​​внутренняя функция deleteFile",
+        "pt": "Adicionado função interna deleteFile",
+        "nl": "De interne functie deleteFile toegevoegd",
+        "fr": "Ajout de la fonction interne deleteFile",
+        "it": "Aggiunta la funzione interna deleteFile",
+        "es": "Agregada función interna deleteFile",
+        "pl": "Dodano funkcję wewnętrzną deleteFile",
+        "zh-cn": "添加了deleteFile内部函数"
+      },
       "3.6.2": {
         "en": "Added onSave handler for custom dialogs",
         "de": "OnSave-Handler für benutzerdefinierte Dialoge hinzugefügt",

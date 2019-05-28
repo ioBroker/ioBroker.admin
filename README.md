@@ -82,6 +82,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 3.6.3 (2019-05-25)
+* (bluefox) Added deleteFile internal function (required for lovelace)
+
 ### 3.6.2 (2019-05-05)
 * (bluefox) Added onSave handler for custom dialogs
 
