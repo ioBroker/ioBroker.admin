@@ -7,7 +7,7 @@
                 <span class="iob-toolbar-sep">&nbsp;</span>
             </div>
             <div class="col s9 m10 main-toolbar-table-types-tools">
-                <input class="filter-input translateP" placeholder="Filter" />
+                <input class="filter-input translateP" placeholder="Filter"  readonly onfocus="if (this.hasAttribute('readonly')) {this.removeAttribute('readonly'); this.blur(); this.focus();}"/>
                 <a class="filter-clear btn-floating btn-very-small translateT red lighten-3" title="clear"><i class="material-icons">clear</i></a>
             </div>
         </div>
