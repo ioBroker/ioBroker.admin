@@ -548,7 +548,7 @@
   "Tanzania": "坦桑尼亚",
   "Temperature units:": "温度单位",
   "Thailand": "泰国",
-  "This version of node.js \"%s\" on \"%s\" is deprecated. Please install node.js 6, 8 or newer": "ioBroker支持LTS版本6,8,10或更新的node.js.请将主机\"%s\"上的版本（\"%s\"）更新为其中一个受支持的版本。我们建议使用Node.js 6。",
+  "This version of node.js \"%s\" on \"%s\" is deprecated. Please install node.js 6, 8 or newer": "ioBroker支持LTS版本6,8,10,12或更新的node.js.请将主机\"%s\"上的版本（\"%s\"）更新为其中一个受支持的版本。我们建议使用Node.js 10。",
   "Thu": "星期四",
   "Time": "时间",
   "Time From": "时间从",
