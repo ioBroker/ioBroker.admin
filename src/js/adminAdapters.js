@@ -919,7 +919,6 @@ function Adapters(main) {
                             }
                         }
 
-
                         if (_instances) {
                             // TODO: move style to class
                             installed += '<td style="border: 0; text-align: center; padding: 0; width: 40px">';
@@ -946,6 +945,10 @@ function Adapters(main) {
                         // } else if (that.onlyUpdatable) {
                         //     continue;
                         // }
+
+
+                        // Use different pathes for installed and non installed adapters
+                        icon = obj.localIcon || icon;
 
                         installed += '</tr></table>';
                         if (!updatable && that.onlyUpdatable) continue;
@@ -1277,7 +1280,7 @@ function Adapters(main) {
 
                         $(this).on('hover', function () {
                             var text = '<div class="icon-large" style="' +
-                                'left: ' + Math.round($(this).position().left + $(this).width() + 5) + 'px;"><img src="' + $(this).attr('src') + '"/></div>';
+                                'left: ' + Math.round($(this).position().left + $(this).width() + 5) + 'px;"><img onerror="this.src=\'img/info-big.png\';" src="' + $(this).attr('src') + '"/></div>';
                             var $big = $(text);
                             $big.insertAfter($(this));
                             $(this).data('big', $big[0]);

@@ -1094,7 +1094,7 @@ function filterChanged(e) {
         }
 
         if (icon) {
-            return '<img class="iob-list-icon" src="' + icon + '" alt="' + alt + '"/>';
+            return '<img class="iob-list-icon" onerror="this.src=\'img/info-big.png\';" src="' + icon + '" alt="' + alt + '"/>';
         } else {
             return '';
         }

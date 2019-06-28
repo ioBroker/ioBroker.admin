@@ -3784,7 +3784,7 @@ $.extend(Fancytree.prototype,
 				if( TEST_IMG.test(icon) ) {
 					// node.icon is an image url. Prepend imagePath
 					icon = (icon.charAt(0) === "/") ? icon : ((opts.imagePath || "") + icon);
-					ares.push("<img src='" + icon + "' class='fancytree-icon'" + iconTooltip + " alt='' />");
+					ares.push("<img src='" + icon + "' onerror=\"this.src=\'img/info-big.png\';\" class='fancytree-icon'" + iconTooltip + " alt='' />");
 				} else {
 					ares.push("<span " + role + " class='fancytree-custom-icon " + icon +  "'" + iconTooltip + "></span>");
 				}
