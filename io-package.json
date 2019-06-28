@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.6.3",
+    "version": "3.6.4",
     "news": {
+      "3.6.4": {
+        "en": "Update nodejs recommendation message and check to recommend nodejs 10",
+        "ru": "Обновите сообщение с рекомендацией nodejs и проверьте, чтобы рекомендовать nodejs 10",
+        "de": "Aktualisieren der Empfehlungsnachricht von nodejs, um nodejs 10 zu empfehlen",
+        "fr": "Mettre à jour le message de recommandation nodejs et vérifier pour recommander nodejs 10",
+        "nl": "Update nodejs aanbevelingsbericht en controleer om nodejs 10 aan te bevelen",
+        "it": "Aggiorna il messaggio di raccomandazione nodejs e verifica per raccomandare nodejs 10",
+        "pl": "Zaktualizuj wiadomość rekomendacji nodejs anc sprawdź, aby polecić nodejs 10",
+        "es": "Actualice el mensaje de recomendación de nodejs y revise para recomendar nodejs 10",
+        "pt": "Atualize a mensagem de recomendação do nodejs e cheque para recomendar o nodejs 10",
+        "zh-cn": "更新nodejs推荐消息和检查以推荐nodejs 10"
+      },
       "3.6.3": {
         "en": "Added deleteFile internal function",
         "de": "Interne Funktion deleteFile hinzugefügt",
