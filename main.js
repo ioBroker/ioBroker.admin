@@ -411,34 +411,35 @@ function getData(callback) {
     adapter.getForeignStates('*', (err, res) => {
         adapter.log.info('received all states');
         states = res;
-        if (!--tasks && callback) callback();
+        !--tasks && callback && callback();
     });
     adapter.log.info('requesting all objects');
     tasks++;
     adapter.objects.getObjectList({include_docs: true}, (err, res) => {
         adapter.log.info('received all objects');
-        res = res.rows;
-        objects = {};
-        let tmpPath = '';
-        for (let i = 0; i < res.length; i++) {
-            objects[res[i].doc._id] = res[i].doc;
-            if (res[i].doc.type === 'instance' && res[i].doc.common && res[i].doc.common.tmpPath) {
-                if (tmpPath) {
-                    adapter.log.warn('tmpPath has multiple definitions!!');
+        if (res) {
+            res = res.rows;
+            objects = {};
+            let tmpPath = '';
+            for (let i = 0; i < res.length; i++) {
+                objects[res[i].doc._id] = res[i].doc;
+                if (res[i].doc.type === 'instance' && res[i].doc.common && res[i].doc.common.tmpPath) {
+                    tmpPath && adapter.log.warn('tmpPath has multiple definitions!!');
+                    tmpPath = res[i].doc.common.tmpPath;
                 }
-                tmpPath = res[i].doc.common.tmpPath;
             }
+
+            // Some adapters want access on specified tmp directory
+            if (tmpPath) {
+                adapter.config.tmpPath = tmpPath;
+                adapter.config.tmpPathAllow = true;
+            }
+
+            createUpdateInfo();
+            writeUpdateInfo();
         }
 
-        // Some adapters want access on specified tmp directory
-        if (tmpPath) {
-            adapter.config.tmpPath = tmpPath;
-            adapter.config.tmpPathAllow = true;
-        }
-
-        createUpdateInfo();
-        writeUpdateInfo();
-        if (!--tasks && callback) callback();
+        !--tasks && callback && callback();
     });
 }
 
@@ -447,7 +448,6 @@ function updateRegister() {
     adapter.log.info('Request actual repository...');
     adapter.getForeignObject('system.config', (err, data) => {
         if (data && data.common) {
-
             adapter.sendToHost(adapter.host, 'getRepository', {
                 repo:   data.common.activeRepo,
                 update: true
@@ -457,9 +457,7 @@ function updateRegister() {
                 } else {
                     adapter.log.info('Repository received successfully.');
 
-                    if (socket) {
-                        socket.repoUpdated();
-                    }
+                    socket && socket.repoUpdated();
                 }
             });
         }
