@@ -40,6 +40,7 @@ function InfoAdapter(main) {
         }else{
             that.main.socket.emit('getState', 'info.0.last_popup', function (err, dateObj) {
                 if (!err && dateObj) {
+                    sessionStorage.setItem('ioBroker.info.lastPopup', dateObj.val);
                     that.checkAndSetData(obj, dateObj.val);
                 }
             });
