@@ -35,11 +35,15 @@ function InfoAdapter(main) {
     };
 
     this.showPopup = function (obj) {
-        that.main.socket.emit('getState', 'info.0.last_popup', function (err, dateObj) {
-            if (!err && dateObj) {
-                that.checkAndSetData(obj, dateObj.val);
-            }
-        });
+        if (sessionStorage.getItem('ioBroker.info.lastPopup')) {
+            that.checkAndSetData(obj, sessionStorage.getItem('ioBroker.info.lastPopup'));
+        }else{
+            that.main.socket.emit('getState', 'info.0.last_popup', function (err, dateObj) {
+                if (!err && dateObj) {
+                    that.checkAndSetData(obj, dateObj.val);
+                }
+            });
+        }
     };
 
     this.checkAndSetData = async function (messagesObj, date) {
@@ -63,6 +67,7 @@ function InfoAdapter(main) {
             that.main.showMessage(content, _("Please read these important notes:"), "error");
         }
         if (messages.length > 0) {
+            sessionStorage.setItem('ioBroker.info.lastPopup', new Date().toISOString());
             that.main.socket.emit('setState', 'info.0.last_popup', {val: new Date().toISOString(), ack: true});
         }
     };
