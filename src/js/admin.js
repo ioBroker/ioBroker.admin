@@ -1678,7 +1678,8 @@ $(document).ready(function () {
         'tab-instances':        {order: 15,   icon: 'subtitles',         host: true},
         'tab-objects':          {order: 20,   icon: 'view_list'},
         'tab-enums':            {order: 25,   icon: 'art_track'},
-        'tab-logs':             {order: 30,   icon: 'view_headline',     host: true},        
+        'tab-devices':          {order: 27,   icon: 'dvr',               host: true},
+        'tab-logs':             {order: 30,   icon: 'view_headline',     host: true},
         'tab-scenes':           {order: 35,   icon: 'subscriptions'},
         'tab-events':           {order: 40,   icon: 'flash_on'},
         'tab-users':            {order: 45,   icon: 'person_outline'},
@@ -1692,7 +1693,7 @@ $(document).ready(function () {
         'tab-fullcalendar-0':   {order: 65,   icon: 'perm_contact_calendar'},
         'tab-fullcalendar-1':   {order: 66,   icon: 'perm_contact_calendar'},
         'tab-fullcalendar-2':   {order: 67,   icon: 'perm_contact_calendar'},
-        'tab-hosts':            {order: 100,  icon: 'storage'}
+        'tab-hosts':            {order: 100,  icon: 'storage'},
     };
 
     function initSideNav() {
