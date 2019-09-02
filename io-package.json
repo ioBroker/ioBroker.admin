@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.6.4",
+    "version": "3.6.5",
     "news": {
+      "3.6.5": {
+        "en": "Fix anoying popups from info adapter",
+        "de": "Beheben Sie ärgerliche Popups vom Info-Adapter",
+        "ru": "Исправление всплывающих всплывающих окон из адаптера",
+        "pt": "Corrija pop-ups irritantes do adaptador de informações",
+        "nl": "Bevestig vervelende pop-ups van de info-adapter",
+        "fr": "Corrige les popups ennuyeux depuis l'adaptateur info",
+        "it": "Correggi i popup di anoying dall'adattatore informazioni",
+        "es": "Arreglar ventanas emergentes molestas desde el adaptador de información",
+        "pl": "Napraw wyskakujące okienka z adaptera informacyjnego",
+        "zh-cn": "从信息适配器修复恼人的弹出窗口"
+      },
       "3.6.4": {
         "en": "Update nodejs recommendation message and check to recommend nodejs 10",
         "ru": "Обновите сообщение с рекомендацией nodejs и проверьте, чтобы рекомендовать nodejs 10",
