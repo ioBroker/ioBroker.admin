@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.6.5",
+    "version": "3.6.6",
     "news": {
+      "3.6.6": {
+        "en": "update some words translation",
+        "de": "Aktualisieren Sie einige Wörter Übersetzung",
+        "ru": "обновить перевод некоторых слов",
+        "pt": "atualizar algumas palavras tradução",
+        "nl": "update enkele woorden vertaling",
+        "fr": "mettre à jour la traduction de quelques mots",
+        "it": "aggiorna la traduzione di alcune parole",
+        "es": "actualizar algunas palabras traducción",
+        "pl": "zaktualizuj tłumaczenie niektórych słów",
+        "zh-cn": "更新一些单词翻译"
+      },
       "3.6.5": {
         "en": "Fix anoying popups from info adapter",
         "de": "Beheben Sie ärgerliche Popups vom Info-Adapter",
