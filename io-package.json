@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.6.6",
+    "version": "3.6.7",
     "news": {
+      "3.6.7": {
+        "en": "Add Node.JS version check to popup messages",
+        "de": "Node.JS-Versionsprüfung zu Popup-Nachrichten hinzufügen",
+        "ru": "Добавить проверку версии Node.JS во всплывающие сообщения",
+        "pt": "Adicione a verificação da versão do Node.JS às mensagens pop-up",
+        "nl": "Voeg Node.JS versiecontrole toe aan pop-upberichten",
+        "fr": "Ajouter la vérification de la version de Node.JS aux messages contextuels",
+        "it": "Aggiungi il controllo versione Node.JS ai messaggi popup",
+        "es": "Agregar verificación de versión de Node.JS a mensajes emergentes",
+        "pl": "Dodaj sprawdzanie wersji Node.JS do wyskakujących wiadomości",
+        "zh-cn": "将Node.JS版本检查添加到弹出消息"
+      },
       "3.6.6": {
         "en": "update some words translation",
         "de": "Aktualisieren Sie einige Wörter Übersetzung",
