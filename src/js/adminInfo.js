@@ -95,33 +95,39 @@ function InfoAdapter(main) {
                     } else if (showIt && message.conditions && Object.keys(message.conditions).length > 0) {
                         const adapters = that.main.tabs.adapters.curInstalled;
                         await asyncForEach(Object.keys(message.conditions), function (key) {
-                            const adapter = adapters[key];
+                                                      
+                            let adapter = false;
+                            let testVersion = null;
+                            let specialTest = false;
+                            if (key !== "nodeVersion") {
+                                adapter = adapters[key] ? true : false;
+                                testVersion = adapter ? adapters[key].version : null;
+                            } else {
+                                adapter = true;
+                                specialTest = true;
+                                testVersion = process.version;
+                                testVersion = testVersion.substring(1, testVersion.length);
+                            }
+
                             const condition = message.conditions[key];
-                            let nodeVersion = process.version;
-                            nodeVersion = nodeVersion.substring(1, nodeVersion.length);
-                            if (condition.startsWith("node-smaller")) {
-                                const vers = condition.substring(13, condition.length - 1).trim();
-                                showIt = that.checkVersion(nodeVersion, vers);
-                            } else if (condition.startsWith("node-bigger")) {
-                                const vers = condition.substring(12, condition.length - 1).trim();
-                                showIt = that.checkVersion(vers, nodeVersion);
-                            } else if (!adapter && condition !== "!installed") {
+                            
+                            if (!specialTest && !adapter && condition !== "!installed") {
                                 showIt = false;
-                            } else if (adapter && condition === "!installed") {
+                            } else if (!specialTest && adapter && condition === "!installed") {
                                 showIt = false;
                             } else if (adapter && condition.startsWith("equals")) {
                                 const vers = condition.substring(7, condition.length - 1).trim();
-                                showIt = (adapter.version === vers);
+                                showIt = (testVersion === vers);
                             } else if (adapter && condition.startsWith("bigger")) {
                                 const vers = condition.substring(7, condition.length - 1).trim();
-                                showIt = that.checkVersion(vers, adapter.version);
+                                showIt = that.checkVersion(vers, testVersion);
                             } else if (adapter && condition.startsWith("smaller")) {
                                 const vers = condition.substring(8, condition.length - 1).trim();
-                                showIt = that.checkVersion(adapter.version, vers);
+                                showIt = that.checkVersion(testVersion, vers);
                             } else if (adapter && condition.startsWith("between")) {
                                 const vers1 = condition.substring(8, condition.indexOf(',')).trim();
                                 const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
-                                showIt = that.checkVersionBetween(adapter.version, vers1, vers2);
+                                showIt = that.checkVersionBetween(testVersion, vers1, vers2);
                             }
                         });
                     }
