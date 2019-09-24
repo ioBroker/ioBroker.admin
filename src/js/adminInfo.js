@@ -86,6 +86,29 @@ function InfoAdapter(main) {
             if (messages.length > 0) {
                 await asyncForEach(messages, async function (message) {
                     let showIt = true;
+                    
+                    if (showIt && message['node-version']) {
+                        let installedVersion = process.version;
+                        installedVersion = installedVersion.substring(1, installedVersion.length);
+
+                        const condition = message['node-version'];
+
+                        if (condition.startsWith("equals")) {
+                            const vers = condition.substring(7, condition.length - 1).trim();
+                            showIt = (installedVersion === vers);
+                        } else if (condition.startsWith("bigger")) {
+                            const vers = condition.substring(7, condition.length - 1).trim();
+                            showIt = that.checkVersion(vers, installedVersion);
+                        } else if (condition.startsWith("smaller")) {
+                            const vers = condition.substring(8, condition.length - 1).trim();
+                            showIt = that.checkVersion(installedVersion, vers);
+                        } else if (condition.startsWith("between")) {
+                            const vers1 = condition.substring(8, condition.indexOf(',')).trim();
+                            const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
+                            showIt = that.checkVersionBetween(installedVersion, vers1, vers2);
+                        }
+                    }
+                    
                     if (showIt && message['created'] && new Date(message['created']).getTime() < lastMessage) {
                         showIt = false;
                     } else if (showIt && message['date-start'] && new Date(message['date-start']).getTime() > today) {
@@ -96,38 +119,26 @@ function InfoAdapter(main) {
                         const adapters = that.main.tabs.adapters.curInstalled;
                         await asyncForEach(Object.keys(message.conditions), function (key) {
                                                       
-                            let adapter = false;
-                            let testVersion = null;
-                            let specialTest = false;
-                            if (key !== "nodeVersion") {
-                                adapter = adapters[key] ? true : false;
-                                testVersion = adapter ? adapters[key].version : null;
-                            } else {
-                                adapter = true;
-                                specialTest = true;
-                                testVersion = process.version;
-                                testVersion = testVersion.substring(1, testVersion.length);
-                            }
-
+                            const adapter = adapters[key];
                             const condition = message.conditions[key];
                             
-                            if (!specialTest && !adapter && condition !== "!installed") {
+                            if (!adapter && condition !== "!installed") {
                                 showIt = false;
-                            } else if (!specialTest && adapter && condition === "!installed") {
+                            } else if (adapter && condition === "!installed") {
                                 showIt = false;
                             } else if (adapter && condition.startsWith("equals")) {
                                 const vers = condition.substring(7, condition.length - 1).trim();
-                                showIt = (testVersion === vers);
+                                showIt = (adapter.version === vers);
                             } else if (adapter && condition.startsWith("bigger")) {
                                 const vers = condition.substring(7, condition.length - 1).trim();
-                                showIt = that.checkVersion(vers, testVersion);
+                                showIt = that.checkVersion(vers, adapter.version);
                             } else if (adapter && condition.startsWith("smaller")) {
                                 const vers = condition.substring(8, condition.length - 1).trim();
-                                showIt = that.checkVersion(testVersion, vers);
+                                showIt = that.checkVersion(adapter.version, vers);
                             } else if (adapter && condition.startsWith("between")) {
                                 const vers1 = condition.substring(8, condition.indexOf(',')).trim();
                                 const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
-                                showIt = that.checkVersionBetween(testVersion, vers1, vers2);
+                                showIt = that.checkVersionBetween(adapter.version, vers1, vers2);
                             }
                         });
                     }
