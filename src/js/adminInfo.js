@@ -97,7 +97,15 @@ function InfoAdapter(main) {
                         await asyncForEach(Object.keys(message.conditions), function (key) {
                             const adapter = adapters[key];
                             const condition = message.conditions[key];
-                            if (!adapter && condition !== "!installed") {
+                            let nodeVersion = process.version;
+                            nodeVersion = nodeVersion.substring(1, nodeVersion.length);
+                            if (condition.startsWith("node-smaller")) {
+                                const vers = condition.substring(13, condition.length - 1).trim();
+                                showIt = that.checkVersion(nodeVersion, vers);
+                            } else if (condition.startsWith("node-bigger")) {
+                                const vers = condition.substring(12, condition.length - 1).trim();
+                                showIt = that.checkVersion(vers, nodeVersion);
+                            } else if (!adapter && condition !== "!installed") {
                                 showIt = false;
                             } else if (adapter && condition === "!installed") {
                                 showIt = false;
