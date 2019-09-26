@@ -1101,16 +1101,6 @@ function Instances(main) {
             }, 250);
             return;
         }
-        var count = 0;
-
-        count++;
-        this.getInstances(function () {
-            if (!--count) that._postInit(update, showMessage);
-        });
-        count++;
-        this.main.tabs.hosts.getHosts(function () {
-            if (!--count) that._postInit(update, showMessage);
-        });
 
         if (!this.inited) {
             this.inited = true;
@@ -1121,6 +1111,17 @@ function Instances(main) {
             this.main.subscribeStates('system.host.*');
             this.main.subscribeStates('*.info.connection');
         }
+
+        var count = 0;
+
+        count++;
+        this.getInstances(function () {
+            if (!--count) that._postInit(update, showMessage);
+        });
+        count++;
+        this.main.tabs.hosts.getHosts(function () {
+            if (!--count) that._postInit(update, showMessage);
+        });
     };
 
     this.saveScroll         = function () {
