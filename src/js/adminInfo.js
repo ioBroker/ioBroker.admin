@@ -4,7 +4,7 @@ function InfoAdapter(main) {
 
     var that = this;
     
-    this.sytemData = {};
+    this.sytemData = {"node": null, "npm": null, "os": null};
     this.main = main;
 
     this.checkVersion = function (smaller, bigger) {
@@ -160,17 +160,17 @@ function InfoAdapter(main) {
 
         that.main.socket.emit('getState', 'info.0.sysinfo.os.versions.node', function (err, data) {
             if (!err && data) {
-                that.systemData['node'] = data.val;
+                that.systemData.node = data.val;
             }
         });
         that.main.socket.emit('getState', 'info.0.sysinfo.os.versions.npm', function (err, data) {
             if (!err && data) {
-                that.systemData['npm'] = data.val;
+                that.systemData.npm = data.val;
             }
         });
         that.main.socket.emit('getState', 'info.0.sysinfo.os.info.platform', function (err, data) {
             if (!err && data) {
-                that.systemData['os'] = data.val;
+                that.systemData.os = data.val;
             }
         });
 
