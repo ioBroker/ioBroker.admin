@@ -1,7 +1,7 @@
 function Adapters(main) {
     'use strict';
 
-    var that = this;
+    const that = this;
 
     this.curRepository     = null;
     this.curRepoLastUpdate = null;
@@ -69,7 +69,7 @@ function Adapters(main) {
 
     function getVersionClass(version) {
         if (version) {
-            var tmp = version.split ('.');
+            const tmp = version.split ('.');
             if (tmp[0] === '0' && tmp[1] === '0' && tmp[2] === '0') {
                 version = 'planned';
             } else if (tmp[0] === '0' && tmp[1] === '0') {
@@ -106,9 +106,9 @@ function Adapters(main) {
                 },
                 source:     that.tree,
                 renderColumns: function(event, data) {
-                    var node = data.node;
-                    var $tdList = $(node.tr).find('>td');
-                    var obj = that.data[node.key];
+                    const node = data.node;
+                    const $tdList = $(node.tr).find('>td');
+                    const obj = that.data[node.key];
 
                     function ellipsis(txt) {
                         return '<div class="text-ellipsis">' + txt + '</div>';
@@ -120,18 +120,18 @@ function Adapters(main) {
                         $tdList.eq(0).find('span.fancytree-title').attr('style', 'padding-left: 0px !important');
 
                         // Calculate total count of adapter and count of installed adapter
-                        for (var c = 0; c < that.tree.length; c++) {
+                        for (let c = 0; c < that.tree.length; c++) {
                             if (that.tree[c].key === node.key) {
                                 $tdList.eq(1).html(that.tree[c].desc || '').css({'overflow': 'hidden', 'white-space': 'nowrap', position: 'relative'});
-                                var installed = 0;
-                                for (var k = 0; k < that.tree[c].children.length; k++) {
-                                    if (that.data[that.tree[c].children[k].key].installed) installed++;
+                                let installed = 0;
+                                for (let k = 0; k < that.tree[c].children.length; k++) {
+                                    if (that.data[that.tree[c].children[k].key].installed) {
+                                        installed++;
+                                    }
                                 }
                                 that.tree[c].installed = installed;
                                 node.data.installed = installed;
-                                var title;
-                                //if (!that.onlyInstalled && !that.onlyUpdatable) {
-                                title = '[<span title="' + _('Installed from group') + '">' + installed + '</span> / <span title="' + _('Total count in group') + '">' + that.tree[c].children.length + '</span>]';
+                                let title = '[<span title="' + _('Installed from group') + '">' + installed + '</span> / <span title="' + _('Total count in group') + '">' + that.tree[c].children.length + '</span>]';
                                 $tdList.eq(1).html(ellipsis('<span class="dark-green">' + installed + '</span> ' + _('of') + '<span class="dark-blue"> ' + that.tree[c].children.length + '</span> ' + _('Adapters from this Group installed')));
                                 break;
                             }
@@ -145,8 +145,8 @@ function Adapters(main) {
                         return $tdList.eq(no).html(ellipsis(html));
                     }
 
-                    var idx = obj.desc.indexOf('<div');
-                    var desc = idx >= 0 ? obj.desc.substr(0, idx) : obj.desc;
+                    const idx = obj.desc.indexOf('<div');
+                    const desc = idx >= 0 ? obj.desc.substr(0, idx) : obj.desc;
                     $tdList.eq(1).html(ellipsis(obj.desc))
                         .attr('title', desc)
                         .css({'white-space': 'nowrap', position: 'relative', 'font-weight': obj.bold ? 'bold' : null}).find('>div>div')
@@ -206,7 +206,7 @@ function Adapters(main) {
             });
 
             that.$tab.find('#btn_list_adapters').show().off('click').on('click', function () {
-                var $processAdapters = that.$tab.find('.process-adapters');
+                const $processAdapters = that.$tab.find('.process-adapters');
                 $processAdapters.show();
                 that.isList = !that.isList;
                 if (that.isList) {
@@ -278,11 +278,11 @@ function Adapters(main) {
     }
 
     function filterTiles() {
-        var anyVisible = false;
+        let anyVisible = false;
         // filter
         if (that.currentFilter) {
             that.$tiles.find('.tile').each(function () {
-                var $this = $(this);
+                const $this = $(this);
                 if (that.currentType && !$this.hasClass('class-' + that.currentType)) {
                     $this.hide();
                     return;
@@ -383,9 +383,9 @@ function Adapters(main) {
             .off('click')
             .on('click', function () {
                 // prepare adapters
-                var data = {};
-                var order = [];
-                var url;
+                const data = {};
+                const order = [];
+                let url;
                 for (url in that.urls) {
                     if (that.urls.hasOwnProperty(url)) {
                         order.push(url);
@@ -393,8 +393,8 @@ function Adapters(main) {
                 }
                 order.sort();
 
-                for (var o = 0; o < order.length; o++) {
-                    var user = that.urls[order[o]].match(/\.com\/([-_$§A-Za-z0-9]+)\/([-._$§A-Za-z0-9]+)\//);
+                for (let o = 0; o < order.length; o++) {
+                    const user = that.urls[order[o]].match(/\.com\/([-_$§A-Za-z0-9]+)\/([-._$§A-Za-z0-9]+)\//);
                     if (user && user.length >= 2 && (that.main.config.expertMode || order[o].indexOf('js-controller') === -1)) {
                         //text += '<option value="https://github.com/' + user[1] + '/ioBroker.' + order[o] + '/tarball/master ' + order[o] + '">' + order[o] + '</option>';
                         data[order[o] + ' [' + user[1] + ']'] = null;
@@ -412,16 +412,16 @@ function Adapters(main) {
                 that.$installDialog.modal();
 
                 that.$installDialog.find('.btn-install').off('click').on('click', function () {
-                    var isCustom = !that.$installDialog.find('a[href="#tabs-install-github"]').hasClass('active');//!!that.$installDialog.find('#tabs-install').tabs('option', 'active');
-                    var url;
-                    var debug;
-                    var adapter;
+                    const isCustom = !that.$installDialog.find('a[href="#tabs-install-github"]').hasClass('active');//!!that.$installDialog.find('#tabs-install').tabs('option', 'active');
+                    let url;
+                    let debug;
+                    let adapter;
                     if (isCustom) {
                         url     = that.$installDialog.find('#install-url-link').val();
                         debug   = that.$installDialog.find('#install-url-debug').prop('checked') ? ' --debug' : '';
                         adapter = '';
                     } else {
-                        var parts = that.$installDialog.find('#install-github-link').val().split(' ');
+                        const parts = that.$installDialog.find('#install-github-link').val().split(' ');
                         url     = 'https://github.com/' + parts[1].replace(/^\[|]$/g, '') + '/ioBroker.' + parts[0] + '/tarball/master';
                         debug   = that.$installDialog.find('#install-github-debug').prop('checked') ? ' --debug' : '';
                         adapter = ' ' + parts[0];
@@ -440,7 +440,7 @@ function Adapters(main) {
                 });
                 // workaround for materialize checkbox problem
                 that.$installDialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
-                    var $input = $(this).prev();
+                    const $input = $(this).prev();
                     if (!$input.prop('disabled')) {
                         $input.prop('checked', !$input.prop('checked')).trigger('change');
                     }
@@ -578,25 +578,25 @@ function Adapters(main) {
         //if (node.parent && node.parent.match) return true;
 
         if (that.currentFilter) {
-             if (!that.data[node.key]) return false;
+            if (!that.data[node.key]) return false;
 
-             var title = that.data[node.key].title;
-             if (title && typeof title === 'object') {
+            let title = that.data[node.key].title;
+            if (title && typeof title === 'object') {
                  title = title[systemLang] || title.en;
-             }
-            var desc = that.data[node.key].desc;
+            }
+            let desc = that.data[node.key].desc;
             if (desc && typeof desc === 'object') {
-                desc = desc[systemLang] || desc.en;
+               desc = desc[systemLang] || desc.en;
             }
 
-            if ((that.data[node.key].name      && that.data[node.key].name.toLowerCase().indexOf(that.currentFilter)     !== -1) ||
-                 (title                        && title.toLowerCase().indexOf(that.currentFilter)                        !== -1) ||
-                 (that.data[node.key].keywords && that.data[node.key].keywords.toLowerCase().indexOf(that.currentFilter) !== -1) ||
-                 (desc                         && desc.toLowerCase().indexOf(that.currentFilter)                         !== -1)){
+            if ((that.data[node.key].name     && that.data[node.key].name.toLowerCase().indexOf(that.currentFilter)     !== -1) ||
+                (title                        && title.toLowerCase().indexOf(that.currentFilter)                        !== -1) ||
+                (that.data[node.key].keywords && that.data[node.key].keywords.toLowerCase().indexOf(that.currentFilter) !== -1) ||
+                (desc                         && desc.toLowerCase().indexOf(that.currentFilter)                         !== -1)){
                 return true;
-             } else {
-                 return false;
-             }
+            } else {
+                return false;
+            }
         } else {
             return true;
         }
@@ -621,40 +621,42 @@ function Adapters(main) {
 
         if (!this.curRepository || this.curRepoLastHost !== host) {
             this.curRepository = null;
-            this.main.socket.emit('sendToHost', host, 'getRepository', {repo: this.main.systemConfig.common.activeRepo, update: updateRepo}, function (_repository) {
+            this.main.socket.emit('sendToHost', host, 'getRepository', {repo: this.main.systemConfig.common.activeRepo, update: updateRepo}, _repository => {
                 if (_repository === 'permissionError') {
                     console.error('May not read "getRepository"');
                     _repository = {};
                 }
 
-                that.curRepository = _repository || {};
-                if (that.curRepository && that.curInstalled && that.curRunning) {
-                    that.curRepoLastUpdate = (new Date()).getTime();
-                    setTimeout(function () {
-                        for (var c = 0; c < that.curRunning.length; c++) {
-                            that.curRunning[c](that.curRepository, that.curInstalled);
-                        }
-                        that.curRunning = null;
+                this.curRepository = _repository || {};
+
+                if (this.curRepository && that.curInstalled && that.curRunning) {
+                    this.curRepoLastUpdate = Date.now();
+                    setTimeout(() => {
+                        this.curRunning.forEach(cb =>
+                            cb(this.curRepository, this.curInstalled));
+
+                        this.curRunning = null;
                     }, 0);
                 }
             });
         }
         if (!this.curInstalled || this.curRepoLastHost !== host) {
             this.curInstalled = null;
-            this.main.socket.emit('sendToHost', host, 'getInstalled', null, function (_installed) {
+            this.main.socket.emit('sendToHost', host, 'getInstalled', null, _installed => {
                 if (_installed === 'permissionError') {
                     console.error('May not read "getInstalled"');
                     _installed = {};
                 }
 
-                that.curInstalled = _installed || {};
-                if (that.curRepository && that.curInstalled) {
-                    that.curRepoLastUpdate = (new Date()).getTime();
-                    setTimeout(function () {
-                        for (var c = 0; c < that.curRunning.length; c++) {
-                            that.curRunning[c](that.curRepository, that.curInstalled);
-                        }
-                        that.curRunning = null;
+                this.curInstalled = _installed || {};
+
+                if (this.curRepository && that.curInstalled) {
+                    this.curRepoLastUpdate = Date.now();
+                    setTimeout(() => {
+                        this.curRunning.forEach(cb =>
+                            cb(this.curRepository, this.curInstalled));
+
+                        this.curRunning = null;
                     }, 0);
                 }
             });
@@ -663,14 +665,14 @@ function Adapters(main) {
         this.curRepoLastHost = host;
 
         if (this.curInstalled && this.curRepository) {
-            setTimeout(function () {
-                if (that.curRunning) {
-                    for (var c = 0; c < that.curRunning.length; c++) {
-                        that.curRunning[c](that.curRepository, that.curInstalled);
-                    }
-                    that.curRunning = null;
+            setTimeout(() => {
+                if (this.curRunning) {
+                    this.curRunning.forEach(cb =>
+                        cb(this.curRepository, this.curInstalled));
+
+                    this.curRunning = null;
                 }
-                if (callback) callback(that.curRepository, that.curInstalled);
+                callback && callback(this.curRepository, this.curInstalled);
             }, 0);
         } else {
             this.curRunning = [callback];
@@ -685,9 +687,9 @@ function Adapters(main) {
     };
 
     function getNews(actualVersion, adapter) {
-        var text = '';
+        let text = '';
         if (adapter.news) {
-            for (var v in adapter.news) {
+            for (const v in adapter.news) {
                 if (adapter.news.hasOwnProperty(v)) {
                     if (systemLang === v) text += (text ? '\n' : '') + adapter.news[v];
                     if (v === 'en' || v === 'ru'  || v === 'de') continue;
@@ -702,12 +704,12 @@ function Adapters(main) {
     function checkDependencies(dependencies) {
         if (!dependencies) return '';
         // like [{"js-controller": ">=0.10.1"}]
-        var adapters;
+        let adapters;
         if (dependencies instanceof Array) {
             adapters = {};
-            for (var a = 0; a < dependencies.length; a++) {
+            for (let a = 0; a < dependencies.length; a++) {
                 if (typeof dependencies[a] === 'string') continue;
-                for (var b in dependencies[a]) {
+                for (const b in dependencies[a]) {
                     if (dependencies[a].hasOwnProperty(b)) {
                         adapters[b] = dependencies[a][b];
                     }
@@ -717,7 +719,7 @@ function Adapters(main) {
             adapters = dependencies;
         }
 
-        for (var adapter in adapters) {
+        for (const adapter in adapters) {
             if (adapters.hasOwnProperty(adapter)) {
                 if (adapter === 'js-controller') {
                     if (!semver.satisfies(that.main.objects['system.host.' + that.main.currentHost].common.installedVersion, adapters[adapter])) return _('Invalid version of %s. Required %s', adapter, adapters[adapter]);
@@ -732,15 +734,15 @@ function Adapters(main) {
 
     this.sortTree = function() {
         function sort(c1, c2) {
-            //var d1 = that.data[c1.key], d2 = that.data[c1.key];
-            var inst1 = c1.data.installed || 0, inst2 = c2.data.installed || 0;
-            var ret = inst2 - inst1;
+            //const d1 = that.data[c1.key], d2 = that.data[c1.key];
+            const inst1 = c1.data.installed || 0, inst2 = c2.data.installed || 0;
+            const ret = inst2 - inst1;
             if (ret) return ret;
-            var t1 = c1.titleLang || c1.title || '';
+            let t1 = c1.titleLang || c1.title || '';
             if (typeof t1 === 'object') {
                 t1 = t1[systemLang] || t1.en;
             }
-            var t2 = c2.titleLang || c2.title || '';
+            let t2 = c2.titleLang || c2.title || '';
             if (typeof t2 === 'object') {
                 t2 = t2[systemLang] || t2.en;
             }
@@ -760,8 +762,8 @@ function Adapters(main) {
         if (typeof time === 'string' || typeof time === 'number') {
             time = new Date(time);
         }
-        var interval = now.getTime() - time.getTime();
-        var days = Math.floor(interval / (24 * 3600000));
+        const interval = now.getTime() - time.getTime();
+        const days = Math.floor(interval / (24 * 3600000));
         if (days === 0) {
             if (now.getDate() === time.getDate()) {
                 return todayText;
@@ -775,8 +777,8 @@ function Adapters(main) {
                 return x2DaysAgoText.replace('%d', days + 1);
             }
         } else {
-            var t  = days % 10;
-            var tt = days % 100;
+            const t  = days % 10;
+            const tt = days % 100;
             // 2, 3, 4, 22, 23, 24, 32, 33, 34, 111, ...x2, x3, h4
             if ((tt < 10 || tt > 20) && t >= 2 && t <= 4) {
                 return x2DaysAgoText.replace('%d', days);
@@ -798,16 +800,16 @@ function Adapters(main) {
             this.$grid.find('tbody').html('');
 
             this.getAdaptersInfo(this.main.currentHost, update, updateRepo, function (repository, installedList) {
-                var obj;
-                var version;
-                var rawVersion;
-                var adapter;
-                var adaptersToUpdate = 0;
+                let obj;
+                let version;
+                let rawVersion;
+                let adapter;
+                let adaptersToUpdate = 0;
 
-                var listInstalled = [];
-                var listNonInstalled = [];
-                var nowObj = new Date();
-                var localTexts = {
+                const listInstalled = [];
+                const listNonInstalled = [];
+                const nowObj = new Date();
+                const localTexts = {
                     'add instance':             _('add instance'),
                     'update':                   _('update'),
                     'upload':                   _('upload'),
@@ -858,9 +860,9 @@ function Adapters(main) {
                 listNonInstalled.sort();
 
                 function getVersionString(version, updatable, news, updatableError) {
-                    //var span = getVersionSpan(version);
-                    var color = getVersionClass(version);
-                    var title = color + '\n\r' + (news || '');
+                    //const span = getVersionSpan(version);
+                    const color = getVersionClass(version);
+                    const title = color + '\n\r' + (news || '');
                     //version = '<table style="min-width: 80px; width: 100%; text-align: center; border: 0; border-spacing: 0px;' + (news ? 'font-weight: bold;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
                     version = //'<div style="height: 100% !important;">' +
                         '<table style="cursor: alias; width: 100%; text-align: center; border: 0; border-spacing: 0;' + (news ? 'color: blue;' : '') + '" cellspacing="0" cellpadding="0" class="ui-widget">' +
@@ -878,27 +880,28 @@ function Adapters(main) {
                 that.data = {};
 
                 // list of the installed adapters
-                for (var i = 0; i < listInstalled.length; i++) {
+                for (const i = 0; i < listInstalled.length; i++) {
                     adapter = listInstalled[i];
 
                     obj = installedList ? installedList[adapter] : null;
 
                     if (!obj || obj.controller || adapter === 'hosts') continue;
-                    var installed = '';
-                    var rawInstalled = '';
-                    var icon = obj.icon;
+                    let installed = '';
+                    let rawInstalled = '';
+                    let icon = obj.icon;
                     version = '';
 
                     if (repository[adapter] && repository[adapter].version) version = repository[adapter].version;
 
                     if (repository[adapter] && repository[adapter].extIcon) icon = repository[adapter].extIcon;
 
-                    var _instances = 0;
-                    var _enabled   = 0;
+                    let _instances = 0;
+                    let _enabled   = 0;
                     if (obj.version) {
-                        var news = '';
-                        var updatable = false;
-                        var updatableError = '';
+                        let news = '';
+                        let updatable = false;
+                        let updatableError = '';
+
                         if (!that.main.upToDate(version, obj.version)) {
                             news = getNews(obj.version, repository[adapter]);
                             // check if version is compatible with current adapters and js-controller
@@ -911,7 +914,7 @@ function Adapters(main) {
                             '<tr>';
 
                         // Show information about installed and enabled instances
-                        for (var z = 0; z < that.main.instances.length; z++) {
+                        for (const z = 0; z < that.main.instances.length; z++) {
                             if (that.main.objects[that.main.instances[z]] &&
                                 that.main.objects[that.main.instances[z]].common.name === adapter) {
                                 _instances++;
@@ -956,11 +959,11 @@ function Adapters(main) {
                     rawVersion = version;
                     version = getVersionString(version, updatable, news, updatableError);
 
-                    var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
-                    var desc  = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
+                    const group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
+                    let desc  = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
                     desc = desc || '';
                     desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
-                    var title = obj.titleLang || obj.title;
+                    let title = obj.titleLang || obj.title;
                     title = (typeof title === 'object') ? (title[systemLang] || title.en) : title;
 
                     that.data[adapter] = {
@@ -996,8 +999,8 @@ function Adapters(main) {
                     if (obj.type && that.types[adapter]) console.log('Adapter "' + adapter + '" has own type. Remove from admin.');
 
                     if (!that.isList) {
-                        var iGroup = -1;
-                        for (var jj = 0; jj < that.tree.length; jj++) {
+                        let iGroup = -1;
+                        for (const jj = 0; jj < that.tree.length; jj++) {
                             if (that.tree[jj].key === that.data[adapter].group) {
                                 iGroup = jj;
                                 break;
@@ -1032,7 +1035,7 @@ function Adapters(main) {
                 //that.sortTree();
 
                 if (!that.onlyInstalled && !that.onlyUpdatable) {
-                    for (i = 0; i < listNonInstalled.length; i++) {
+                    for (let i = 0; i < listNonInstalled.length; i++) {
                         adapter = listNonInstalled[i];
 
                         obj = repository[adapter];
@@ -1046,12 +1049,12 @@ function Adapters(main) {
                             version = getVersionString(version);
                         }
 
-                        var group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
-                        var desc = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
+                        const group = (obj.type || that.types[adapter] || 'common adapters') + '_group';
+                        let desc = (typeof obj.desc === 'object') ? (obj.desc[systemLang] || obj.desc.en) : obj.desc;
                         desc = desc || '';
                         desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
 
-                        title = obj.titleLang || obj.title;
+                        let title = obj.titleLang || obj.title;
                         title = (typeof title === 'object') ? (title[systemLang] || title.en) : title;
 
                         that.data[adapter] = {
@@ -1082,8 +1085,8 @@ function Adapters(main) {
                         if (obj.type && that.types[adapter]) console.log('Adapter "' + adapter + '" has own type. Remove from admin.');
 
                         if (!that.isList) {
-                            var igroup = -1;
-                            for (var j = 0; j < that.tree.length; j++){
+                            let igroup = -1;
+                            for (const j = 0; j < that.tree.length; j++){
                                 if (that.tree[j].key === that.data[adapter].group) {
                                     igroup = j;
                                     break;
@@ -1118,7 +1121,7 @@ function Adapters(main) {
                 }
 
                 if (that.currentOrder === 'popular' || that.currentOrder === 'updated') {
-                    var akeys = Object.keys(that.data);
+                    const akeys = Object.keys(that.data);
 
                     if (that.currentOrder === 'popular') {
                         akeys.sort(function (a, b) {
@@ -1137,8 +1140,8 @@ function Adapters(main) {
                             return 0;
                         });
                     }
-                    var newData = {};
-                    for (var u = 0; u < akeys.length; u++) {
+                    const newData = {};
+                    for (let u = 0; u < akeys.length; u++) {
                         newData[akeys[u]] = that.data[akeys[u]];
                     }
                     that.data = newData;
@@ -1146,11 +1149,11 @@ function Adapters(main) {
 
                 // build tiles
                 if (that.isTiles && (that.main.browser !== 'ie' || that.main.browserVersion > 10)) {
-                    var text = '';
-                    var types = [];
-                    for (var a in that.data) {
+                    let text = '';
+                    const types = [];
+                    for (const a in that.data) {
                         if (!that.data.hasOwnProperty(a)) continue;
-                        var ad = that.data[a];
+                        const ad = that.data[a];
                         if (types.indexOf(ad.group) === -1) {
                             types.push(ad.group);
                         }
@@ -1227,17 +1230,17 @@ function Adapters(main) {
 
                     that.$tiles.html(text);
                     // init buttons
-                    for (var b in that.data) {
+                    for (const b in that.data) {
                         if (that.data.hasOwnProperty(b)) {
                             that.initButtons(b);
                         }
                     }
 
-                    var tTypes = '<li class="main-toolbar-table-types-item" data-type=""><a>' + localTexts['all'] + '</a></li>\n';
-                    for (var g = 0; g < types.length; g++) {
+                    let tTypes = '<li class="main-toolbar-table-types-item" data-type=""><a>' + localTexts['all'] + '</a></li>\n';
+                    for (let g = 0; g < types.length; g++) {
                         tTypes += '<li class="main-toolbar-table-types-item" data-type="' + types[g] + '"><a>' + _(types[g]) + '</a></li>\n';
                     }
-                    var $types = that.$tab.find('#main-toolbar-table-types');
+                    const $types = that.$tab.find('#main-toolbar-table-types');
                     $types.html(tTypes);
                     $types.find('.main-toolbar-table-types-item').show().off('click').on('click', function () {
                         that.currentType = $(this).data('type') || '';
@@ -1279,20 +1282,20 @@ function Adapters(main) {
                         }
 
                         $(this).on('hover', function () {
-                            var text = '<div class="icon-large" style="' +
+                            const text = '<div class="icon-large" style="' +
                                 'left: ' + Math.round($(this).position().left + $(this).width() + 5) + 'px;"><img onerror="this.src=\'img/info-big.png\';" src="' + $(this).attr('src') + '"/></div>';
-                            var $big = $(text);
+                            const $big = $(text);
                             $big.insertAfter($(this));
                             $(this).data('big', $big[0]);
-                            var h   = parseFloat($big.height());
-                            var top = Math.round($(this).position().top - ((h - parseFloat($(this).height())) / 2));
+                            const h = parseFloat($big.height());
+                            let top = Math.round($(this).position().top - ((h - parseFloat($(this).height())) / 2));
                             if (h + top > (window.innerHeight || document.documentElement.clientHeight)) {
                                 top = (window.innerHeight || document.documentElement.clientHeight) - h;
                             }
                             $big.css({top: top});
 
                         }, function () {
-                            var big = $(this).data('big');
+                            const big = $(this).data('big');
                             $(big).remove();
                             $(this).data('big', undefined);
                         });
@@ -1304,7 +1307,7 @@ function Adapters(main) {
 
                     that.sortTree();
                     that.enableColResize();
-                    var classes = [
+                    const classes = [
                         'tab-adapters-table-name',
                         'tab-adapters-table-description',
                         'tab-adapters-table-keywords',
@@ -1314,7 +1317,7 @@ function Adapters(main) {
                         'tab-adapters-table-install'
                     ];
                     that.$grid.find('tbody tr').each(function () {
-                        var i = 0;
+                        const i = 0;
                         $(this).find('td').each(function () {
                             $(this).addClass(classes[i]);
                             i++;
@@ -1342,15 +1345,17 @@ function Adapters(main) {
     this.updateCounter = function (counter) {
         if (counter === undefined) {
             this.getAdaptersInfo(this.main.currentHost, false, false, function (repository, installedList) {
-                var adaptersToUpdate = 0;
+                let adaptersToUpdate = 0;
 
-                for (var adapter in installedList) {
+                for (const adapter in installedList) {
                     if (!installedList.hasOwnProperty(adapter)) continue;
-                    var obj = installedList ? installedList[adapter] : null;
+                    const obj = installedList ? installedList[adapter] : null;
                     if (!obj || obj.controller || adapter === 'hosts') continue;
 
-                    var version = '';
-                    if (repository[adapter] && repository[adapter].version) version = repository[adapter].version;
+                    let version = '';
+                    if (repository[adapter] && repository[adapter].version) {
+                        version = repository[adapter].version;
+                    }
 
                     if (obj.version && !that.main.upToDate(version, obj.version)) {
                         adaptersToUpdate++;
@@ -1359,7 +1364,7 @@ function Adapters(main) {
                 that.updateCounter(adaptersToUpdate);
             });
         } else if (counter) {
-            var $updates = $('#updates-for-adapters');
+            const $updates = $('#updates-for-adapters');
             if ($updates.length) {
                 $updates.text(counter);
             } else {
@@ -1409,14 +1414,14 @@ function Adapters(main) {
             return callback(true, that.main.currentHost, '');
         }
 
-        var $dialogAddInstance = $('#dialog-add-instance');
+        const $dialogAddInstance = $('#dialog-add-instance');
         $dialogAddInstance.find('.dialog-add-instance-name').html(adapter);
         $dialogAddInstance.find('.dialog-add-description').html(desc);
 
         // fill the hosts
-        var text = '';
-        for (var h = 0; h < that.main.tabs.hosts.list.length; h++) {
-            var host = that.main.tabs.hosts.list[h];
+        let text = '';
+        for (const h = 0; h < that.main.tabs.hosts.list.length; h++) {
+            const host = that.main.tabs.hosts.list[h];
             text += '<option ' + (host.name === that.main.currentHost ? 'selected' : '') + ' value="' + host.name + '">' + host.name + '</option>';
         }
 
@@ -1428,12 +1433,12 @@ function Adapters(main) {
         $dialogAddInstance.find('.dialog-add-instance-host').html(text).select();
 
         // find free instance numbers
-        var min = -1;
-        var used = [];
-        for (var i = 0; i < that.main.tabs.instances.list.length; i++) {
-            var parts = that.main.tabs.instances.list[i].split('.');
+        let min = -1;
+        const used = [];
+        for (const i = 0; i < that.main.tabs.instances.list.length; i++) {
+            const parts = that.main.tabs.instances.list[i].split('.');
             if (parts[parts.length - 2] === adapter) {
-                var index = parseInt(parts[parts.length - 1], 10);
+                const index = parseInt(parts[parts.length - 1], 10);
                 used.push(index);
                 if (index > min) {
                     min = index;
@@ -1442,7 +1447,7 @@ function Adapters(main) {
         }
         min += 10;
         text = '<option selected value="">' + _('auto') + '</option>';
-        for (var m = 0; m < min; m++) {
+        for (const m = 0; m < min; m++) {
             if (used.indexOf(m) !== -1) continue;
             text += '<option value="' + m + '">' + m + '</option>';
         }
@@ -1473,14 +1478,14 @@ function Adapters(main) {
     }
 
     function showLicenseDialog(adapter, callback) {
-        var $dialogLicense = $('#dialog-license');
+        const $dialogLicense = $('#dialog-license');
         // Is adapter installed
         if (that.data[adapter].installed || !that.data[adapter].licenseUrl) {
             callback(true);
             return;
         }
 
-        var timeout = setTimeout(function () {
+        let timeout = setTimeout(function () {
             timeout = null;
             callback(true);
         }, 10000);
@@ -1544,40 +1549,37 @@ function Adapters(main) {
 
     this.initButtons = function (adapter) {
         this.$tab.find('.adapter-install-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
-            var adapter = $(this).attr('data-adapter-name');
-            var desc = $(this).attr('data-adapter-desc');
+            const adapter = $(this).attr('data-adapter-name');
+            const desc = $(this).attr('data-adapter-desc');
 
             // show config dialog
             showAddInstanceDialog(adapter, desc, function (result, host, index) {
                 if (!result) return;
 
                 that.getAdaptersInfo(host, false, false, function (repo, installed) {
-                    var obj = repo[adapter];
+                    let obj = repo[adapter];
 
-                    if (!obj) obj = installed[adapter];
+                    obj = obj || installed[adapter];
 
-                    if (!obj) return;
+                    if (!obj) {
+                        return;
+                    }
 
                     if (obj.license && obj.license !== 'MIT') {
                         // Show license dialog!
-                        showLicenseDialog(adapter, function (isAgree) {
-                            if (isAgree) {
-                                that.main.cmdExec(null, 'add ' + adapter + ' ' + index + ' --host ' + host, function (exitCode) {
-                                    if (!exitCode) that._postInit(true);
-                                });
-                            }
-                        });
+                        showLicenseDialog(adapter, isAgree =>
+                            isAgree && that.main.cmdExec(null, 'add ' + adapter + ' ' + index + ' --host ' + host, exitCode =>
+                                !exitCode && that._postInit(true)));
                     } else {
-                        that.main.cmdExec(null, 'add ' + adapter + ' ' + index + ' --host ' + host, function (exitCode) {
-                            if (!exitCode) that._postInit(true);
-                        });
+                        that.main.cmdExec(null, 'add ' + adapter + ' ' + index + ' --host ' + host, exitCode =>
+                            !exitCode && that._postInit(true));
                     }
                 });
             });
         });
 
         this.$tab.find('.adapter-delete-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
-            var name = $(this).attr('data-adapter-name');
+            const name = $(this).attr('data-adapter-name');
             that.main.confirmMessage(_('Are you sure you want to delete adapter %s?', name), _('Please confirm'), 'help', function (result) {
                 if (result) {
                     that.main.cmdExec(null, 'del ' + name, function (exitCode) {
@@ -1596,7 +1598,7 @@ function Adapters(main) {
         });
 
         this.$tab.find('.adapter-update-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
-            var aName = $(this).attr('data-adapter-name');
+            const aName = $(this).attr('data-adapter-name');
             if (aName === 'admin') that.main.waitForRestart = true;
 
             that.main.cmdExec(null, 'upgrade ' + aName, function (exitCode) {
@@ -1605,19 +1607,19 @@ function Adapters(main) {
         });
 
         this.$tab.find('.adapter-upload-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
-            var aName = $(this).attr('data-adapter-name');
+            const aName = $(this).attr('data-adapter-name');
 
             that.main.cmdExec(null, 'upload ' + aName, function (exitCode) {
                 if (!exitCode) that._postInit(true);
             });
         });
 
-        var $button = this.$tab.find('.adapter-update-custom-submit[data-adapter-name="' + adapter + '"]');
+        const $button = this.$tab.find('.adapter-update-custom-submit[data-adapter-name="' + adapter + '"]');
         $button.off('click').on('click', function () {
-            var versions = [];
+            const versions = [];
             if (that.main.objects['system.adapter.' + adapter].common.news) {
-                var news = that.main.objects['system.adapter.' + adapter].common.news;
-                for (var id in news) {
+                const news = that.main.objects['system.adapter.' + adapter].common.news;
+                for (const id in news) {
                     if (news.hasOwnProperty(id)) {
                         versions.push(id);
                     }
@@ -1625,14 +1627,14 @@ function Adapters(main) {
             } else {
                 versions.push(that.main.objects['system.adapter.' + adapter].common.version);
             }
-            var menu = '<div class="collection">';
-            for (var v = 0; v < versions.length; v++) {
-                var nnews = (news[versions[v]] ? news[versions[v]][systemLang] || news[versions[v]].en : '');
+            const menu = '<div class="collection">';
+            for (const v = 0; v < versions.length; v++) {
+                const nnews = (news[versions[v]] ? news[versions[v]][systemLang] || news[versions[v]].en : '');
                 menu += '<a data-version="' + versions[v] + '" data-position="left" data-delay="50" title="' + nnews + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="collection-item adapters-versions-link tooltipped"><span class="adapters-versions-link-version">' + versions[v] + '</span> - <div class="adapters-versions-link-history">' + nnews + '</div></a>';
             }
             menu += '</div>';
 
-            var $adaptersMenu = $('#adapters-menu');
+            const $adaptersMenu = $('#adapters-menu');
             if (!$adaptersMenu.length) {
                 //$adaptersMenu = $('<div id="adapters-menu" class="dropdown-content m"></div>');
                 $adaptersMenu = $('<div id="adapters-menu" class="modal modal-fixed-footer"><div class="modal-content">' +
@@ -1649,8 +1651,8 @@ function Adapters(main) {
             $adaptersMenu.find('.adapters-versions-link').off('click').on('click', function () {
                 //if ($(this).data('link')) window.open($(this).data('link'), $(this).data('instance-id'));
                 $adaptersMenu.modal('close');
-                var adapter = $(this).data('adapter-name');
-                var version = $(this).data('version');
+                const adapter = $(this).data('adapter-name');
+                const version = $(this).data('version');
                 if (version && adapter) {
                     that.main.cmdExec(null, 'upgrade ' + adapter + '@' + version, function (exitCode) {
                         if (!exitCode) that._postInit(true);
@@ -1660,8 +1662,8 @@ function Adapters(main) {
 
             /*$(this).dropdown({
                 onCloseEnd: function () {
-                    var $adaptersMenu = $('#adapters-menu');
-                    var trigger = $adaptersMenu.data('trigger');
+                    const $adaptersMenu = $('#adapters-menu');
+                    const trigger = $adaptersMenu.data('trigger');
                     $(trigger).dropdown('close').dropdown('destroy');
                     $adaptersMenu.data('trigger', null).hide();
                     $adaptersMenu.remove();
@@ -1685,7 +1687,7 @@ function Adapters(main) {
             if (obj) {
                 if (this.list.indexOf(id) === -1) this.list.push(id);
             } else {
-                var j = this.list.indexOf(id);
+                const j = this.list.indexOf(id);
                 if (j !== -1) {
                     this.list.splice(j, 1);
                 }
@@ -1698,8 +1700,8 @@ function Adapters(main) {
     };
 
     function showUploadProgress(group, adapter, percent) {
-        var text = '';
-        var opened;
+        let text = '';
+        let opened;
         if (adapter || typeof group === 'string') {
             if (adapter) {
                // text += '<div class="adapter-upload-progress" data-adapter-name="' + adapter + '"';
@@ -1733,10 +1735,10 @@ function Adapters(main) {
 
     this.stateChange = function (id, state) {
         if (id && state) {
-            var adapter = id.match(/^system\.adapter\.([\w\d-]+)\.upload$/);
+            const adapter = id.match(/^system\.adapter\.([\w\d-]+)\.upload$/);
             if (adapter) {
-                var $adapter = this.$tab.find('.adapter-upload-progress[data-adapter-name="' + adapter[1] + '"]');
-                var text = showUploadProgress(state.val);
+                const $adapter = this.$tab.find('.adapter-upload-progress[data-adapter-name="' + adapter[1] + '"]');
+                const text = showUploadProgress(state.val);
                 $adapter.html(text).css({opacity: state.val ? 0.7 : 0});
                 this.$tab.find('.group-upload-progress[data-adapter-group="' + $adapter.data('adapter-group') + '"]').html(text).css({opacity: state.val ? 0.7 : 0});
             }
