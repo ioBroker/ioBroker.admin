@@ -3,6 +3,8 @@
 function InfoAdapter(main) {
 
     var that = this;
+    
+    this.sytemData = {};
     this.main = main;
 
     this.checkVersion = function (smaller, bigger) {
@@ -37,7 +39,7 @@ function InfoAdapter(main) {
     this.showPopup = function (obj) {
         if (sessionStorage.getItem('ioBroker.info.lastPopup')) {
             that.checkAndSetData(obj, sessionStorage.getItem('ioBroker.info.lastPopup'));
-        }else{
+        } else {
             that.main.socket.emit('getState', 'info.0.last_popup', function (err, dateObj) {
                 if (!err && dateObj) {
                     sessionStorage.setItem('ioBroker.info.lastPopup', dateObj.val);
@@ -73,6 +75,25 @@ function InfoAdapter(main) {
         }
     };
 
+    this.checkConditions = function (condition, installedVersion) {
+        if (condition.startsWith("equals")) {
+            const vers = condition.substring(7, condition.length - 1).trim();
+            return (installedVersion === vers);
+        } else if (condition.startsWith("bigger")) {
+            const vers = condition.substring(7, condition.length - 1).trim();
+            return that.checkVersion(vers, installedVersion);
+        } else if (condition.startsWith("smaller")) {
+            const vers = condition.substring(8, condition.length - 1).trim();
+            return that.checkVersion(installedVersion, vers);
+        } else if (condition.startsWith("between")) {
+            const vers1 = condition.substring(8, condition.indexOf(',')).trim();
+            const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
+            return that.checkVersionBetween(installedVersion, vers1, vers2);
+        } else {
+            return true;
+        }
+    };
+
     this.checkMessages = async function (obj, date) {
         const messagesToShow = [];
 
@@ -86,29 +107,7 @@ function InfoAdapter(main) {
             if (messages.length > 0) {
                 await asyncForEach(messages, async function (message) {
                     let showIt = true;
-                    
-                    if (showIt && message['node-version']) {
-                        let installedVersion = process.version;
-                        installedVersion = installedVersion.substring(1, installedVersion.length);
 
-                        const condition = message['node-version'];
-
-                        if (condition.startsWith("equals")) {
-                            const vers = condition.substring(7, condition.length - 1).trim();
-                            showIt = (installedVersion === vers);
-                        } else if (condition.startsWith("bigger")) {
-                            const vers = condition.substring(7, condition.length - 1).trim();
-                            showIt = that.checkVersion(vers, installedVersion);
-                        } else if (condition.startsWith("smaller")) {
-                            const vers = condition.substring(8, condition.length - 1).trim();
-                            showIt = that.checkVersion(installedVersion, vers);
-                        } else if (condition.startsWith("between")) {
-                            const vers1 = condition.substring(8, condition.indexOf(',')).trim();
-                            const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
-                            showIt = that.checkVersionBetween(installedVersion, vers1, vers2);
-                        }
-                    }
-                    
                     if (showIt && message['created'] && new Date(message['created']).getTime() < lastMessage) {
                         showIt = false;
                     } else if (showIt && message['date-start'] && new Date(message['date-start']).getTime() > today) {
@@ -118,29 +117,31 @@ function InfoAdapter(main) {
                     } else if (showIt && message.conditions && Object.keys(message.conditions).length > 0) {
                         const adapters = that.main.tabs.adapters.curInstalled;
                         await asyncForEach(Object.keys(message.conditions), function (key) {
-                                                      
+
                             const adapter = adapters[key];
                             const condition = message.conditions[key];
-                            
+
                             if (!adapter && condition !== "!installed") {
                                 showIt = false;
                             } else if (adapter && condition === "!installed") {
                                 showIt = false;
-                            } else if (adapter && condition.startsWith("equals")) {
-                                const vers = condition.substring(7, condition.length - 1).trim();
-                                showIt = (adapter.version === vers);
-                            } else if (adapter && condition.startsWith("bigger")) {
-                                const vers = condition.substring(7, condition.length - 1).trim();
-                                showIt = that.checkVersion(vers, adapter.version);
-                            } else if (adapter && condition.startsWith("smaller")) {
-                                const vers = condition.substring(8, condition.length - 1).trim();
-                                showIt = that.checkVersion(adapter.version, vers);
-                            } else if (adapter && condition.startsWith("between")) {
-                                const vers1 = condition.substring(8, condition.indexOf(',')).trim();
-                                const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
-                                showIt = that.checkVersionBetween(adapter.version, vers1, vers2);
+                            } else if (adapter) {
+                                showIt = that.checkConditions(condition, adapter.version);
                             }
                         });
+                    }
+
+                    if (showIt && message['node-version'] && that.sytemData.node) {
+                        const condition = message['node-version'];
+                        showIt = that.checkConditions(condition, that.sytemData.node);
+                    }
+                    if (showIt && message['npm-version'] && that.sytemData.npm) {
+                        const condition = message['npm-version'];
+                        showIt = that.checkConditions(condition, that.sytemData.npm);
+                    }
+                    if (showIt && message['os'] && that.sytemData.os) {
+                        const condition = message['os'];
+                        showIt = that.sytemData.os === message['os'];
                     }
 
                     if (showIt) {
@@ -156,6 +157,23 @@ function InfoAdapter(main) {
     };
 
     this.init = function () {
+
+        that.main.socket.emit('getState', 'info.0.sysinfo.os.versions.node', function (err, data) {
+            if (!err && data) {
+                that.systemData['node'] = data.val;
+            }
+        });
+        that.main.socket.emit('getState', 'info.0.sysinfo.os.versions.npm', function (err, data) {
+            if (!err && data) {
+                that.systemData['npm'] = data.val;
+            }
+        });
+        that.main.socket.emit('getState', 'info.0.sysinfo.os.info.platform', function (err, data) {
+            if (!err && data) {
+                that.systemData['os'] = data.val;
+            }
+        });
+
         if (that.main.objects["info.0.newsfeed"] && that.main.objects["info.0.last_popup"]) {
             that.main.socket.emit('subscribe', 'info.0.newsfeed');
 
