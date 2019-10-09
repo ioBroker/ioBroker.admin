@@ -1,6 +1,5 @@
 ![Logo](admin/admin.png)
 # ioBroker.admin
-===================
 
 [![NPM version](http://img.shields.io/npm/v/iobroker.admin.svg)](https://www.npmjs.com/package/iobroker.admin)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.admin.svg)](https://www.npmjs.com/package/iobroker.admin)
@@ -9,11 +8,9 @@
 
 [![NPM](https://nodei.co/npm/iobroker.admin.png?downloads=true)](https://nodei.co/npm/iobroker.admin/)
 
-
-User interface for configuration and administration.
+User interface for configuration and administration of ioBroker.
 
 ## Using common.localLink
-
 - %ip% - ioBroker ip address (address of the admin)
 - %secure% or %protocol% - read from native.secure the value and use http or https
 - %web_protocol% - looking for the first instance of web (e.g. web.0) and get "native.secure" from "system.adapter.web.0"
@@ -84,6 +81,8 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 ## Changelog
 ### 3.6.8 (2019-10-09)
 * (ldittmar) Add NPM version and OS check to popup messages
+* (bluefox) Log paths were sanitized
+* (bluefox) NPM packages were updated
 
 ### 3.6.7 (2019-09-24)
 * (ldittmar) Add Node.JS version check to popup messages
@@ -279,7 +278,7 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ### 3.0.11 (2018-01-11)
 * (DeepCoreSystem) French update
-* (bluefox) fix error with empty ID 
+* (bluefox) fix error with empty ID
 * (bluefox) add sort by "recently updated"
 * (ldittmar) add readme and issues viewer
 
@@ -290,7 +289,7 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ### 3.0.7 (2018-01-01)
 * (soef) update instances, objects and other lists
-* (bluefox) rewrite interface with materialize 
+* (bluefox) rewrite interface with materialize
 
 ### 2.0.11 (2017-10-23)
 * (bluefox) Configurable event update disable threshold

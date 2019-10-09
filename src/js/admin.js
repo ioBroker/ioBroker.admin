@@ -1,6 +1,6 @@
 /* jshint -W097 */
 /* jshint strict:true */
-/* jslint vars: true */
+/* jslint consts: true */
 /* global io:false */
 /* global jQuery:false */
 /* jslint browser:true */
@@ -19,10 +19,10 @@
 //if (typeof Worker === 'undefined') alert('your browser does not support WebWorkers :-(');
 
 Array.prototype.remove = function () {
-    var what;
-    var a = arguments;
-    var L = a.length;
-    var ax;
+    let what;
+    const a = arguments;
+    let L = a.length;
+    let ax;
     while (L && this.length) {
         what = a[--L];
         while ((ax = this.indexOf(what)) !== -1) {
@@ -51,16 +51,17 @@ async function asyncForEach(array, callback) {
     }
 }
 
-var $iframeDialog = null; // used in adapter settings window
-var configNotSaved = null; // used in adapter settings window
-var showConfig = null; // used in adapter settings window
-var defaults = {};
-var customPostInits = {};
-var customPostOnSave = {};
-var FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g;
+let $iframeDialog = null;  // used in adapter settings window
+let configNotSaved = null; // used in adapter settings window
+let showConfig = null;     // used in adapter settings window
+
+const defaults = {};
+const customPostInits = {};
+const customPostOnSave = {};
+const FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g;
 
 // used in adapter settings window
-var adapterRedirect = function (redirect, timeout) {
+const adapterRedirect = function (redirect, timeout) {
     if (redirect) {
         setTimeout(function () {
             redirect += document.location.pathname;
@@ -69,25 +70,25 @@ var adapterRedirect = function (redirect, timeout) {
         }, timeout || 5000);
     }
 };
-var gMain = null; // for google maps
+let gMain = null; // for google maps
 
 function detectIE() {
-    var ua = window.navigator.userAgent;
+    const ua = window.navigator.userAgent;
 
-    var msie = ua.indexOf('MSIE ');
+    const msie = ua.indexOf('MSIE ');
     if (msie > 0) {
         // IE 10 or older => return version number
         return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
     }
 
-    var trident = ua.indexOf('Trident/');
+    const trident = ua.indexOf('Trident/');
     if (trident > 0) {
         // IE 11 => return version number
-        var rv = ua.indexOf('rv:');
+        const rv = ua.indexOf('rv:');
         return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
     }
 
-    var edge = ua.indexOf('Edge/');
+    const edge = ua.indexOf('Edge/');
     if (edge > 0) {
         // Edge (IE 12+) => return version number
         return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
@@ -99,14 +100,14 @@ function detectIE() {
 
 (function ($) {
 $(document).ready(function () {
-    var path = location.pathname + 'socket.io';
+    let path = location.pathname + 'socket.io';
     if (location.pathname.match(/^\/admin\//)) {
         path = '/socket.io';
     }
 
-    var allTabs = {};
+    let allTabs = {};
 
-    var main = {
+    const main = {
         objects:        {},
         states:         {},
         currentHost:    '',
@@ -221,17 +222,17 @@ $(document).ready(function () {
                     '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-result="true">' + _('Ok') + '</a>' +
                     '<a class="modal-action modal-close waves-effect waves-green btn-flat translate">' + _('Cancel') + '</a>');
                 $dialogConfirm.find('.modal-footer .modal-action').on('click', function () {
-                    var cb = $dialogConfirm.data('callback');
+                    const cb = $dialogConfirm.data('callback');
                     cb && cb($(this).data('result'));
                 });
             } else if (typeof buttons === 'object') {
-                var tButtons = '';
-                for (var b = buttons.length - 1; b >= 0; b--) {
+                let tButtons = '';
+                for (let b = buttons.length - 1; b >= 0; b--) {
                     tButtons += '<a class="modal-action modal-close waves-effect waves-green btn-flat translate" data-id="' + b + '">' + buttons[b] + '</a>';
                 }
                 $dialogConfirm.find('.modal-footer').html(tButtons);
                 $dialogConfirm.find('.modal-footer .modal-action').on('click', function () {
-                    var cb = $dialogConfirm.data('callback');
+                    const cb = $dialogConfirm.data('callback');
                     cb && cb($(this).data('id'));
                 });
             }
@@ -290,7 +291,7 @@ $(document).ready(function () {
             //    ("0" + (dateObj.getSeconds()).toString(10)).slice(-2);
             // Following implementation is 5 times faster
             if (!dateObj) return '';
-            var text = typeof dateObj;
+            let text = typeof dateObj;
             if (text === 'string') {
                 if (justTime) {
                     return dateObj.substring(8);
@@ -301,7 +302,7 @@ $(document).ready(function () {
             // if less 2000.01.01 00:00:00
             if (text !== 'object') dateObj = dateObj < 946681200000 ? new Date(dateObj * 1000) : new Date(dateObj);
 
-            var v;
+            let v;
             if (!justTime) {
                 text = dateObj.getFullYear();
                 v = dateObj.getMonth() + 1;
@@ -385,7 +386,7 @@ $(document).ready(function () {
             return main.selectId;
         },*/
         updateWizard:   function () {
-            var $wizard = $('#button-wizard');
+            const $wizard = $('#button-wizard');
             if (main.objects['system.adapter.discovery.0']) {
                 if (!$wizard.data('inited')) {
                     $wizard.data('inited', true);
@@ -418,13 +419,13 @@ $(document).ready(function () {
                     if (!auth) {
                         $('#button-logout').remove();
                     } else {
-                        main._lastTimer = (new Date()).getTime();
+                        main._lastTimer = Date.now();
                         monitor();
                     }
                 });
             } else if (main.objects[main.currentUser]) {
-                var obj = main.objects[main.currentUser];
-                var name = '';
+                const obj = main.objects[main.currentUser];
+                let name = '';
                 if (!obj || !obj.common || !obj.common.name) {
                     name = main.currentUser.replace(/^system\.user\./);
                     name = name[0].toUpperCase() + name.substring(1).toLowerCase();
@@ -432,16 +433,16 @@ $(document).ready(function () {
                     name = translateName(obj.common.name);
                 }
                 if (obj && obj.common && obj.common.icon) {
-                    var objs = {};
+                    const objs = {};
                     objs[main.currentUser] = obj;
                     $('#current-user-icon').html(main.getIcon(main.currentUser, null, objs));
                 } else {
                     $('#current-user-icon').html('<i class="large material-icons">account_circle</i>');
                 }
                 $('#current-user').html(name);
-                var groups = [];
-                for (var i = 0; i < tabs.users.groups.length; i++) {
-                    var group = main.objects[tabs.users.groups[i]];
+                const groups = [];
+                for (let i = 0; i < tabs.users.groups.length; i++) {
+                    const group = main.objects[tabs.users.groups[i]];
                     if (group && group.common && group.common.members && group.common.members.indexOf(main.currentUser) !== -1) {
                         groups.push(_(translateName(group.common.name)));
                     }
@@ -452,7 +453,7 @@ $(document).ready(function () {
 
         // Delete objects
         _delObject:     function (idOrList, callback) {
-            var id;
+            let id;
             if (!Array.isArray(idOrList)) {
                 if (typeof idOrList !== 'string') return callback && callback('invalid idOrList parameter');
                 idOrList = [idOrList];
@@ -467,7 +468,7 @@ $(document).ready(function () {
                     main.showMessage (_ ('Cannot delete "%s" because not allowed', id), '', 'notifications');
                     setTimeout(doIt, 0);
                 } else {
-                    var obj = main.objects[id];
+                    const obj = main.objects[id];
                     main.socket.emit('delObject', id, function (err) {
                         if (err && err !== 'Not exists') {
                             main.showError (err);
@@ -488,13 +489,13 @@ $(document).ready(function () {
                 }
             }
             doIt();
-        },     
+        },
         _delObjects:    function (rootId, isAll, callback) {
             if (!isAll) {
                 this._delObject(rootId, callback);
             } else {
-                var list = [];
-                for (var id in main.objects) {
+                const list = [];
+                for (const id in main.objects) {
                     if (main.objects.hasOwnProperty(id) && id.substring(0, rootId.length + 1) === rootId + '.') {
                         list.push(id);
                     }
@@ -508,7 +509,7 @@ $(document).ready(function () {
             }
         },
         delObject:      function ($tree, id, callback) {
-            var leaf = $tree ? $tree.selectId('getTreeInfo', id) : null;
+            const leaf = $tree ? $tree.selectId('getTreeInfo', id) : null;
             if (main.objects[id]) {
                 if (leaf && leaf.children) {
                     // ask if only object must be deleted or just this one
@@ -544,7 +545,7 @@ $(document).ready(function () {
 
     gMain = main; // for google maps
 
-    var tabs = {
+    const tabs = {
         hosts:      new Hosts(main), // must be first to read the list of hosts
         objects:    new Objects(main),
         adapters:   new Adapters(main),
@@ -573,21 +574,21 @@ $(document).ready(function () {
         readme:     new Readme(main)
     };
 
-    var stdout;
-    var cmdCallback    = null;
-    var activeCmdId    = null;
-    var $stdout        = $('#stdout');
+    let stdout;
+    let cmdCallback      = null;
+    let activeCmdId      = null;
+    const $stdout        = $('#stdout');
 
-    var $dialogCommand = $('#dialog-command');
-    var $dialogLicense = $('#dialog-license-main');
-    var $dialogMessage = $('#dialog-message');
-    var $dialogConfirm = $('#dialog-confirm');
-    var $dialogCommandProgress = $dialogCommand.find('.progress div');
+    const $dialogCommand = $('#dialog-command');
+    const $dialogLicense = $('#dialog-license-main');
+    const $dialogMessage = $('#dialog-message');
+    const $dialogConfirm = $('#dialog-confirm');
+    const $dialogCommandProgress = $dialogCommand.find('.progress div');
 
-    var $adminSideMenu = $('#admin_sidemenu_menu');
-    var $adminSideMain = $('#admin_sidemenu_main');
+    const $adminSideMenu = $('#admin_sidemenu_menu');
+    const $adminSideMain = $('#admin_sidemenu_main');
 
-    var firstConnect   = true;
+    let firstConnect     = true;
 
     // detect touch devices
     if (!('ontouchstart' in window || navigator.maxTouchPoints)) {
@@ -633,15 +634,15 @@ $(document).ready(function () {
 
     function initHtmlButtons() {
         main.socket.emit('getVersion', function (err, version) {
-			var $versionBtn = $('.button-version');
+			const $versionBtn = $('.button-version');
 	        if (!$versionBtn.hasClass('vendor')) {
 	            $versionBtn.text('ioBroker.admin ' + version);
 	        }
         });
 
         $('.choose-tabs-config-button').off('click').on('click', function(event) {
-            var $dialog = $('#admin_sidemenu_dialog');
-            var html = $dialog.html();
+            const $dialog = $('#admin_sidemenu_dialog');
+            const html = $dialog.html();
             if (html) {
                 $dialog.html('');
                 // disable global handler
@@ -652,19 +653,19 @@ $(document).ready(function () {
                 // enable global handler
                 $('html').on('click', globalClickHandler);
             }, 100);
-            var $e = $(event.target);
-            var offs = $e.offset();
+            const $e = $(event.target);
+            const offs = $e.offset();
             offs.top += $e.height() - 2;
 
-            var text =
+            let text =
                 '<dialog open class="tab-selector m" style="top: ' + offs.top + 'px; left: ' + offs.left + 'px;">' + // style="overflow: visible; z-index: 999; ">'
                 '<div>' +
                 '<ul style="">';
 
-            var $lis = $adminSideMenu;
-            for (var tid in allTabs) {
-                var name = allTabs[tid];
-                var found = $adminSideMenu.find('.admin-sidemenu-items[data-tab="' + tid + '"]').length;
+            const $lis = $adminSideMenu;
+            for (const tid in allTabs) {
+                const name = allTabs[tid];
+                const found = $adminSideMenu.find('.admin-sidemenu-items[data-tab="' + tid + '"]').length;
                 // TABS
                 /*$adminSideMenu.each(function (i, e) {
                     if (tid === $(e).attr('aria-controls')) {
@@ -672,7 +673,7 @@ $(document).ready(function () {
                         return false;
                     }
                 });*/
-                var id = 'chk-' + tid;
+                const id = 'chk-' + tid;
                 text +=
                     '<li><input ' + (found ? 'checked' : 'unchecked') + ' class="chk-tab filled-in" type="checkbox" id="' + id + '" />' +
                     '<span for="' + id + '">' + _(name) + '</span></id>';
@@ -684,11 +685,11 @@ $(document).ready(function () {
             $dialog.append(text);
 
             $dialog.find('.chk-tab').off('change').on('change', function (event) {
-                var id = $(this).attr('id').substr(4);
+                const id = $(this).attr('id').substr(4);
                 if ($(this).prop('checked')) {
                     main.systemConfig.common.tabs.push(id);
                 } else {
-                    var pos = main.systemConfig.common.tabs.indexOf(id);
+                    const pos = main.systemConfig.common.tabs.indexOf(id);
                     if (id !== -1) {
                         main.systemConfig.common.tabs.splice(pos, 1);
                     }
@@ -698,7 +699,7 @@ $(document).ready(function () {
             });
             // workaround for materialize checkbox problem
             $dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
-                var $input = $(this).prev();
+                const $input = $(this).prev();
                 if (!$input.prop('disabled')) {
                     $input.prop('checked', !$input.prop('checked')).trigger('change');
                 }
@@ -706,11 +707,11 @@ $(document).ready(function () {
         });
 
         main.updateWizard();
-        
+
         $('#button-logout').on('click', function () {
             window.location.href = '/logout/';
         });
-        
+
         setTimeout(function () {
             main.tabs.info.init();
         }, 5000);
@@ -734,15 +735,15 @@ $(document).ready(function () {
                 main.socket.emit('eventsThreshold', false);
             });
         } else {
-            var $menu = $adminSideMenu;
-            var panelSelector = $menu.data('problem-link');
+            const $menu = $adminSideMenu;
+            const panelSelector = $menu.data('problem-link');
             if (panelSelector) {
-                var $panel = $(panelSelector);
+                const $panel = $(panelSelector);
                 // Init source for iframe
                 if ($panel.length) {
-                    var link = $panel.data('src');
+                    const link = $panel.data('src');
                     if (link && link.indexOf('%') === -1) {
-                        var $iframe = $panel.find('iframe');
+                        const $iframe = $panel.find('iframe');
                         if ($iframe.length && !$iframe.attr('src')) {
                             $iframe.attr('src', link);
                             $menu.data('problem-link', null);
@@ -758,20 +759,20 @@ $(document).ready(function () {
 
     function initTabs() {
         // extract all additional instances
-        var text     = '';
-        var list     = [];
-        var addTabs = [];
+        let text      = '';
+        const list    = [];
+        const addTabs = [];
 
         allTabs = {};
-        for (var i = 0; i < main.instances.length; i++) {
-            var instance = main.instances[i];
-            var instanceObj = main.objects[instance];
+        for (let i = 0; i < main.instances.length; i++) {
+            const instance = main.instances[i];
+            const instanceObj = main.objects[instance];
             if (!instanceObj.common || !instanceObj.common.adminTab) continue;
             if (instanceObj.common.adminTab.singleton) {
-                var isFound = false;
-                var inst1 = instance.replace(/\.(\d+)$/, '.');
-                for (var j = 0; j < addTabs.length; j++) {
-                    var inst2 = addTabs[j].replace(/\.(\d+)$/, '.');
+                let isFound = false;
+                const inst1 = instance.replace(/\.(\d+)$/, '.');
+                for (let j = 0; j < addTabs.length; j++) {
+                    const inst2 = addTabs[j].replace(/\.(\d+)$/, '.');
                     if (inst1 === inst2) {
                         isFound = true;
                         break;
@@ -785,24 +786,24 @@ $(document).ready(function () {
 
         // Build the standard tabs together
         $('.admin-tab').each(function () {
-            var $this = $(this);
-            var id = $this.attr('id');
+            const $this = $(this);
+            const id = $this.attr('id');
             list.push(id);
             allTabs[id] = $this.data('name');
         });
 
         // Look for adapter tabs
-        for (var a = 0; a < addTabs.length; a++) {
-            var tab   = main.objects[addTabs[a]];
-            var name  = 'tab-' + tab.common.name;
+        for (let a = 0; a < addTabs.length; a++) {
+            const tab = main.objects[addTabs[a]];
+            let name  = 'tab-' + tab.common.name;
 
-            var link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
+            let link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
             if (tab.common.materializeTab) {
                 link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';
             }
 
-            var parts = addTabs[a].split('.');
-            var buttonName;
+            const parts = addTabs[a].split('.');
+            let buttonName;
 
             if (tab.common.adminTab.name) {
                 if (typeof tab.common.adminTab.name === 'object') {
@@ -836,7 +837,7 @@ $(document).ready(function () {
             allTabs[name] = buttonName;
 
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(name) !==-1) {
-                var isReplace = false;
+                let isReplace = false;
                 if (!link) {
                     link = '/adapter/' + parts[2] + '/tab.html';
                     if (tab.common.materilizeTab) {
@@ -850,16 +851,20 @@ $(document).ready(function () {
 
                 // noinspection JSJQueryEfficiency
                 if (!$('#' + name).length) {
-                    var div = '<div id="' + name + '" data-name="' + buttonName + '" class="tab-custom ' + (isReplace ? 'link-replace' : '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
+                    const div = '<div id="' + name + '" data-name="' + buttonName + '" class="tab-custom ' + (isReplace ? 'link-replace' : '') + '" data-adapter="' + parts[2] + '" data-instance="' + parts[3] + '" data-src="' + link + '">' +
                         '<iframe class="iframe-in-tab" style="border: 0; solid #FFF; display: block; left: 0; top: 0; width: 100%; height: 100%"' +
                         '></iframe></div>';
                     $(div).hide().appendTo($('body'));
 
                     // TODO: temporary, until other tab will be adapted
                     $('#' + name).find ('.iframe-in-tab').on('load', function () {
-                        var elem = $ (this).contents ().find('body>header');
-                        if (!elem || !elem.length) elem = $(this).contents ().find('head');
-                        if (elem && elem.length) elem.append('<link rel="stylesheet" type="text/css" href="../../lib/css/iob/selectID.css"/>');
+                        let elem = $ (this).contents ().find('body>header');
+                        if (!elem || !elem.length) {
+                            elem = $(this).contents ().find('head');
+                        }
+                        if (elem && elem.length) {
+                            elem.append('<link rel="stylesheet" type="text/css" href="../../lib/css/iob/selectID.css"/>');
+                        }
                     });
                 } else {
                     $('#' + name).hide().appendTo($('body'));
@@ -877,10 +882,10 @@ $(document).ready(function () {
         if (!main.systemConfig.common.tabs) main.systemConfig.common.tabs = list;
 
         if ($('.link-replace').length) {
-            var countLink = 0;
+            let countLink = 0;
 
             // If some objects cannot be read => go by timeout
-            var loadTimeout = setTimeout(function() {
+            let loadTimeout = setTimeout(function() {
                 loadTimeout = null;
                 initHtmlTabs(/*showTabs*/);
             }, 100);
@@ -906,7 +911,7 @@ $(document).ready(function () {
 
     main.initHostsList = function (isFirstInit) {
         // fill the host list (select) on adapter tab
-        var $selHosts = $('#host-adapters');
+        const $selHosts = $('#host-adapters');
         if (isFirstInit && $selHosts.data('inited')) {
             return;
         }
@@ -915,10 +920,10 @@ $(document).ready(function () {
 
         main.currentHost = main.currentHost || main.config.currentHost || '';
 
-        var lines = [];
-        var color;
-        var curId;
-        for (var i = 0; i < main.tabs.hosts.list.length; i++) {
+        const lines = [];
+        let color;
+        let curId;
+        for (let i = 0; i < main.tabs.hosts.list.length; i++) {
             lines.push('<li><a data-value="' + main.tabs.hosts.list[i].name + '">' + main.getHostIcon(main.objects[main.tabs.hosts.list[i].id], 'imgHost left') + main.tabs.hosts.list[i].name + '</a></li>');
             if (!main.currentHost) {
                 main.currentHost = main.tabs.hosts.list[i].name;
@@ -929,7 +934,7 @@ $(document).ready(function () {
         }
         $selHosts.html(lines);
 
-        var $selBtn = $('#host-adapters-btn').show();
+        const $selBtn = $('#host-adapters-btn').show();
         $selBtn
             .text(_('Host:') + ' ' + main.currentHost)
             .dropdown();
@@ -951,8 +956,8 @@ $(document).ready(function () {
 
         // host selector
         $selHosts.find('a').on('click', function () {
-            var val = $(this).data('value');
-            var id  = 'system.host.' + val + '.alive';
+            const val = $(this).data('value');
+            const id  = 'system.host.' + val + '.alive';
             if (!main.states[id] || !main.states[id].val || main.states[id].val === 'null') {
                 main.showMessage(_('Host %s is offline', $(this).val()));
                 return;
@@ -997,7 +1002,7 @@ $(document).ready(function () {
         });
 
         $dialogCommand.find('.progress-show-more').off('change').on('change', function () {
-            var val = $(this).prop('checked');
+            const val = $(this).prop('checked');
             main.saveConfig('progressMore', val);
             if (val) {
                 $dialogCommand.find('.textarea').show();
@@ -1013,7 +1018,7 @@ $(document).ready(function () {
         });
         // workaround for materialize checkbox problem
         $dialogCommand.find('input[type="checkbox"]+span').off('click').on('click', function () {
-            var $input = $(this).prev();
+            const $input = $(this).prev();
             // ignore switch
             if ($input.parent().parent().hasClass('switch')) return;
 
@@ -1041,7 +1046,7 @@ $(document).ready(function () {
         if (hosts && index < hosts.length) {
             main.socket.emit('sendToHost', hosts[index].name, 'getHostInfo', null, function (result) {
                 if (result && result['Node.js']) {
-                    var major = parseInt(result['Node.js'].split('.').shift().replace('v', ''), 10);
+                    const major = parseInt(result['Node.js'].split('.').shift().replace('v', ''), 10);
                     if (major < 6 || major === 7 || major === 9  || major === 11 ) { // we allow 6, 8, 10 and 12+
                         main.showMessage(_('This version of node.js "%s" on "%s" is deprecated. Please install node.js 6, 8 or newer', result['Node.js'], hosts[index].name), _('Suggestion'), 'error_outline');
                     }
@@ -1065,9 +1070,9 @@ $(document).ready(function () {
             }
 
             setTimeout(function () {
-                var obj;
+                let obj;
                 main.objects = res;
-                for (var id in main.objects) {
+                for (const id in main.objects) {
                     if (!main.objects.hasOwnProperty(id) || id.slice(0, 7) === '_design') continue;
 
                     obj = main.objects[id];
@@ -1090,7 +1095,7 @@ $(document).ready(function () {
 
                 initTabs();
                 // init dialogs
-                for (var dialog in main.dialogs) {
+                for (const dialog in main.dialogs) {
                     if (main.dialogs.hasOwnProperty(dialog) && typeof main.dialogs[dialog].prepare === 'function') {
                         main.dialogs[dialog].prepare();
                     }
@@ -1144,11 +1149,9 @@ $(document).ready(function () {
     }
 
     function objectChange(id, obj) {
-        //var changed = false;
-        var oldObj = null;
-        var action = 'update';
-
-        oldObj = main.objects[id];
+        //const changed = false;
+        const oldObj = main.objects[id];
+        let action = 'update';
 
         // update main.objects cache
         if (obj) {
@@ -1205,11 +1208,11 @@ $(document).ready(function () {
                 !obj.common.adminTab.ignoreConfigUpdate
             ) {
                 // Detect enable/disable change and do not update tabs (To able to work with global scripts normally)
-                var ignore = false;
+                let ignore = false;
                 // try to detect if javascript just enabled or disabled
                 if (oldObj && obj) {
                     if (oldObj.common && obj.common) {
-                        var newObj = JSON.parse(JSON.stringify(obj));
+                        const newObj = JSON.parse(JSON.stringify(obj));
                         newObj.common.enabled = oldObj.common.enabled;
                         newObj.ts = 0;
                         oldObj.ts = 0;
@@ -1245,14 +1248,15 @@ $(document).ready(function () {
 
     function monitor() {
         if (main._timer) return;
-        var ts = (new Date()).getTime();
+        const ts = Date.now();
+
         if (ts - main._lastTimer > 30000) {
             // It seems, that PC was in a sleep => Reload page to request authentication anew
             location.reload();
         } else {
             main._lastTimer = ts;
         }
-        main._timer = setTimeout(function () {
+        main._timer = setTimeout(() => {
             main._timer = null;
             monitor();
         }, 10000);
@@ -1260,7 +1264,7 @@ $(document).ready(function () {
 
     // ---------------------------- Subscribes ---------------------------------------------
     main.resubscribeStates = function () {
-        for (var pattern in main.subscribesStates) {
+        for (const pattern in main.subscribesStates) {
             if (main.subscribesStates.hasOwnProperty(pattern) && main.subscribesStates[pattern]) {
                 console.debug('Re-Subscribe: ' + pattern);
                 main.socket.emit('subscribe', pattern);
@@ -1269,7 +1273,7 @@ $(document).ready(function () {
     };
 
     main.resubscribeObjects = function () {
-        for (var pattern in main.subscribesObjects) {
+        for (const pattern in main.subscribesObjects) {
             if (main.subscribesObjects.hasOwnProperty(pattern) && main.subscribesObjects[pattern]) {
                 main.socket.emit('subscribeObjects', pattern);
             }
@@ -1286,7 +1290,7 @@ $(document).ready(function () {
     main.subscribeStates = function (patterns) {
         if (!patterns) return;
         if (typeof patterns === 'object') {
-            for (var s = 0; s < patterns.length; s++) {
+            for (let s = 0; s < patterns.length; s++) {
                 main.subscribesStates[patterns[s]] = main.subscribesStates[patterns[s]] || 0;
                 main.subscribesStates[patterns[s]]++;
                 if (main.subscribesStates[patterns[s]] === 1) {
@@ -1307,12 +1311,12 @@ $(document).ready(function () {
     main.unsubscribeStates = function (patterns) {
         if (!patterns) return;
         if (typeof patterns === 'object') {
-            for (var s = 0; s < patterns.length; s++) {
+            for (let s = 0; s < patterns.length; s++) {
                 if (main.subscribesStates[patterns[s]]) {
                     main.subscribesStates[patterns[s]]--;
                 }
                 if (main.subscribesStates[patterns[s]] === 0) {
-                    console.debug('Unsibscribe: ' + patterns[s]);
+                    console.debug('Unsubscribe: ' + patterns[s]);
                     main.socket.emit('unsubscribe', patterns[s]);
                     delete main.subscribesStates[patterns[s]];
                 }
@@ -1332,7 +1336,7 @@ $(document).ready(function () {
     main.subscribeObjects = function (patterns) {
         if (!patterns) return;
         if (typeof patterns === 'object') {
-            for (var s = 0; s < patterns.length; s++) {
+            for (let s = 0; s < patterns.length; s++) {
                 main.subscribesObjects[patterns[s]] = main.subscribesObjects[patterns[s]] || 0;
                 main.subscribesObjects[patterns[s]]++;
                 if (main.subscribesObjects[patterns[s]] === 1) {
@@ -1351,7 +1355,7 @@ $(document).ready(function () {
     main.unsubscribeObjects = function (patterns) {
         if (!patterns) return;
         if (typeof patterns === 'object') {
-            for (var s = 0; s < patterns.length; s++) {
+            for (let s = 0; s < patterns.length; s++) {
                 if (main.subscribesObjects[patterns[s]]) {
                     main.subscribesObjects[patterns[s]]--;
                 }
@@ -1407,7 +1411,7 @@ $(document).ready(function () {
     };
 
     main.navigateGetParams = function () {
-        var parts = decodeURI(window.location.hash).split('/');
+        const parts = decodeURI(window.location.hash).split('/');
         return parts[2] ? decodeURIComponent(parts[2]) : null;
     };
 
@@ -1425,7 +1429,7 @@ $(document).ready(function () {
 
         // get actual tab
         if (!options.tab) {
-            var parts   = decodeURI(window.location.hash).split('/');
+            const parts   = decodeURI(window.location.hash).split('/');
             options.tab = parts[0].replace(/^#/, '').replace(/^tab-/, '');
         }
 
@@ -1444,10 +1448,10 @@ $(document).ready(function () {
                 configNotSaved = null;
                 main.currentHash = window.location.hash;
                 // hash has following structure => #tabName/dialogName/ids
-                var parts  = main.currentHash.split('/');
-                var tab    = parts[0].replace(/^#/, '').replace(/^tab-/, '');
-                var dialog = parts[1];
-                var params = decodeURIComponent(parts[2]);
+                const parts  = main.currentHash.split('/');
+                let tab      = parts[0].replace(/^#/, '').replace(/^tab-/, '');
+                const dialog = parts[1];
+                const params = decodeURIComponent(parts[2]);
 
                 // set default page
                 if (!tab || tab === '!') {
@@ -1461,9 +1465,9 @@ $(document).ready(function () {
                 }
                 // do tab is not found
 
-                var $adminBody = $('.admin-sidemenu-body');
-                var $actualTab = $adminBody.find('.admin-sidemenu-body-content');
-                var $panel     = $('#tab-' + tab);
+                const $adminBody = $('.admin-sidemenu-body');
+                let $actualTab   = $adminBody.find('.admin-sidemenu-body-content');
+                const $panel     = $('#tab-' + tab);
 
                 $adminBody.find('.admin-preloader').remove();
 
@@ -1473,15 +1477,15 @@ $(document).ready(function () {
 
                 // if tab was changed
                 if (main.currentTab !== tab || !$actualTab.length) {
-                    var link;
+                    let link;
                     // destroy actual tab
                     if (main.currentTab && tabs[main.currentTab] && typeof tabs[main.currentTab].destroy === 'function') {
                         tabs[main.currentTab].destroy();
                     } else if (main.currentTab) {
-                        var $oldPanel = $('#tab-' + main.currentTab);
+                        const $oldPanel = $('#tab-' + main.currentTab);
                         // destroy current iframe
                         if ($oldPanel.length && (link = $oldPanel.data('src'))) {
-                            var $iframe_ = $oldPanel.find('>iframe');
+                            const $iframe_ = $oldPanel.find('>iframe');
                             if ($iframe_.attr('src')) {
                                 console.log('clear');
                                 $iframe_.attr('src', '');
@@ -1504,7 +1508,7 @@ $(document).ready(function () {
                     // if iframe like node-red
                     if ($panel.length && (link = $panel.data('src'))) {
                         if (link.indexOf('%') === -1) {
-                            var $iframe = $panel.find('>iframe');
+                            const $iframe = $panel.find('>iframe');
                             if ($iframe.length && !$iframe.attr('src')) {
                                 $iframe.attr('src', link);
                             }
@@ -1515,7 +1519,7 @@ $(document).ready(function () {
                 }
 
                 // select menu element
-                var  $tab = $adminSideMenu.find('.admin-sidemenu-items[data-tab="tab-' + tab + '"]');
+                const  $tab = $adminSideMenu.find('.admin-sidemenu-items[data-tab="tab-' + tab + '"]');
                 $adminSideMenu.find('.admin-sidemenu-items').not($tab).removeClass('admin-sidemenu-active');
                 $tab.addClass('admin-sidemenu-active');
 
@@ -1553,14 +1557,14 @@ $(document).ready(function () {
     };
 
     function getIconHtml(obj, classes) {
-        var icon;
-        var alt;
-        var isCommon = obj && obj.common;
+        let icon;
+        let alt;
+        const isCommon = obj && obj.common;
 
         if (isCommon.icon) {
             if (!isCommon.icon.match(/^data:image\//)) {
                 if (isCommon.icon.indexOf('.') !== -1) {
-                    var instance;
+                    let instance;
                     if (obj.type === 'instance') {
                         icon = '/adapter/' + obj.common.name + '/' + obj.common.icon;
                     } else if (obj._id.match(/^system\.adapter\./)) {
@@ -1593,11 +1597,11 @@ $(document).ready(function () {
     }
 
     main.getIconFromObj = function (obj, imgPath, classes) {
-        var icon     = '';
-        var alt      = '';
+        let icon     = '';
+        let alt      = '';
         if (obj && obj.common) {
             if (obj.common.icon) {
-                var result = getIconHtml(obj);
+                const result = getIconHtml(obj);
                 icon = result.icon;
                 alt = result.alt;
             } else {
@@ -1625,11 +1629,11 @@ $(document).ready(function () {
     };
 
     main.getHostIcon = function (obj, classes) {
-        var icon     = '';
-        var alt      = '';
+        let icon     = '';
+        let alt      = '';
 
         if (obj && obj.common && obj.common.icon) {
-            var result = getIconHtml(obj);
+            const result = getIconHtml(obj);
             icon = result.icon;
             alt = result.alt;
         }
@@ -1643,8 +1647,8 @@ $(document).ready(function () {
         if (Math.abs(bytes) < 1024) {
             return bytes + ' B';
         }
-        var units = ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
-        var u = -1;
+        const units = ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+        let u = -1;
         do {
             bytes /= 1024;
             ++u;
@@ -1664,14 +1668,14 @@ $(document).ready(function () {
         if (hex.length !== 6) {
             return false;
         }
-        var r = parseInt(hex.slice(0, 2), 16),
+        const r = parseInt(hex.slice(0, 2), 16),
             g = parseInt(hex.slice(2, 4), 16),
             b = parseInt(hex.slice(4, 6), 16);
         // http://stackoverflow.com/a/3943023/112731
         return (r * 0.299 + g * 0.587 + b * 0.114) <= 186;
     };
 
-    var tabsInfo = {
+    const tabsInfo = {
         'tab-intro':            {order: 1,    icon: 'apps'},
         'tab-info':             {order: 5,    icon: 'info',              host: true},
         'tab-adapters':         {order: 10,   icon: 'store',             host: true},
@@ -1689,7 +1693,7 @@ $(document).ready(function () {
         'tab-text2command-2':   {order: 57,   icon: 'ac_unit'},
         'tab-node-red-0':       {order: 60,   icon: 'device_hub'},
         'tab-node-red-1':       {order: 61,   icon: 'device_hub'},
-        'tab-node-red-2':       {order: 62,   icon: 'device_hub'},        
+        'tab-node-red-2':       {order: 62,   icon: 'device_hub'},
         'tab-fullcalendar-0':   {order: 65,   icon: 'perm_contact_calendar'},
         'tab-fullcalendar-1':   {order: 66,   icon: 'perm_contact_calendar'},
         'tab-fullcalendar-2':   {order: 67,   icon: 'perm_contact_calendar'},
@@ -1697,11 +1701,11 @@ $(document).ready(function () {
     };
 
     function initSideNav() {
-        var lines = '';
+        let lines = '';
 
-        var elements = [];
+        const elements = [];
         $('.admin-tab').each(function () {
-            var id = $(this).attr('id');
+            const id = $(this).attr('id');
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !== -1) {
                 elements.push({
                     line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a href="#' + id + '">' +
@@ -1712,14 +1716,14 @@ $(document).ready(function () {
             }
         });
         $('.tab-custom').each(function () {
-            var id = $(this).attr('id');
+            const id = $(this).attr('id');
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !== -1) {
-                var icon;
+                let icon;
                 if (tabsInfo[id] && tabsInfo[id].icon) {
                     icon = tabsInfo[id].icon;
                 } else {
-                    var _id = 'system.adapter.' + id.substring(4);
-		    if (main.objects[_id] && main.objects[_id].common.adminTab && main.objects[_id].common.adminTab['fa-icon']) {
+                    const _id = 'system.adapter.' + id.substring(4);
+		            if (main.objects[_id] && main.objects[_id].common.adminTab && main.objects[_id].common.adminTab['fa-icon']) {
                         icon = main.objects[_id].common.adminTab['fa-icon'];
                     }
                 }
@@ -1742,7 +1746,7 @@ $(document).ready(function () {
             return 0;
         });
 
-        for (var e = 0; e < elements.length; e++) {
+        for (let e = 0; e < elements.length; e++) {
             lines += elements[e].line;
         }
         $adminSideMenu.find('.admin-sidemenu-menu').html(lines);
@@ -1792,14 +1796,14 @@ $(document).ready(function () {
     });
     main.socket.on('cmdStdout',         function (_id, text) {
         if (activeCmdId === _id) {
-            var m = text.match(/^upload \[(\d+)]/);
+            let m = text.match(/^upload \[(\d+)]/);
             if (m) {
                 if ($dialogCommand.data('max') === null) {
                     $dialogCommand.data('max', parseInt(m[1], 10));
                     $dialogCommandProgress.removeClass('indeterminate').addClass('determinate');
                 }
-                var max = $dialogCommand.data('max');
-                var value = parseInt(m[1], 10);
+                const max = $dialogCommand.data('max');
+                const value = parseInt(m[1], 10);
                 $dialogCommandProgress.css('width', (100 - Math.round((value / max) * 100)) + '%');
             } else {
                 m = text.match(/^got [-_:\/\\.\w\d]+\/admin$/);
@@ -1848,7 +1852,7 @@ $(document).ready(function () {
             $dialogCommand.find('.btn').html(_('Close'));
             $dialogCommand.data('finished', true);
             $dialogCommand.data('max', true);
-            var $backButton = $adminSideMain.find('.button-command');
+            const $backButton = $adminSideMain.find('.button-command');
             $backButton.removeClass('in-progress');
 
             if (!exitCode) {
@@ -1860,9 +1864,9 @@ $(document).ready(function () {
                     }, 1500);
                 }
             } else {
-                var error = $dialogCommand.data('error');
+                let error = $dialogCommand.data('error');
                 if (error) {
-                    var m = error.match(/error: (.*)$/);
+                    const m = error.match(/error: (.*)$/);
                     if (m) {
                         error = m[1];
                     }
@@ -1902,7 +1906,7 @@ $(document).ready(function () {
 
                     // set logo and set branding
                     if (data && data.native && data.native.vendor) {
-                        var vendor = data.native.vendor;
+                        const vendor = data.native.vendor;
                         if (vendor.icon) {
                             $('.admin-sidemenu-header .button-icon img').attr('src', data.native.vendor.icon);
                         }
@@ -1924,7 +1928,7 @@ $(document).ready(function () {
                             }
                             // apply rules
                             if (vendor.admin.css.rules) {
-                                for (var r = 0; r < vendor.admin.css.rules.length; r++) {
+                                for (let r = 0; r < vendor.admin.css.rules.length; r++) {
                                     $(vendor.admin.css.rules[r].selector).css(vendor.admin.css.rules[r].css);
                                 }
                             }
@@ -1936,7 +1940,7 @@ $(document).ready(function () {
 
                     // rename log => logs (back compatibility)
                     if (main.systemConfig && main.systemConfig.common && main.systemConfig.common.tabs) {
-                        var pos = main.systemConfig.common.tabs.indexOf('tab-log');
+                        const pos = main.systemConfig.common.tabs.indexOf('tab-log');
                         if (pos !== -1) {
                             main.systemConfig.common.tabs[pos] = 'tab-logs';
                         }
@@ -1959,8 +1963,10 @@ $(document).ready(function () {
 
                                         if (!main.systemConfig.common.licenseConfirmed) {
                                             // Show license agreement
-                                            var language = (main.systemConfig.common.language || window.navigator.userLanguage || window.navigator.language || '').substring(0, 2);
-                                            if (language !== 'en' && language !== 'de' && language !== 'ru') language = 'en';
+                                            let language = (main.systemConfig.common.language || window.navigator.userLanguage || window.navigator.language || '').substring(0, 2);
+                                            if (language !== 'en' && language !== 'de' && language !== 'ru') {
+                                                language = 'en';
+                                            }
 
                                             systemLang = language;
 
@@ -1993,7 +1999,7 @@ $(document).ready(function () {
 
                                             // workaround for materialize checkbox problem
                                             $dialogLicense.find('input[type="checkbox"]+span').off('click').on('click', function () {
-                                                var $input = $(this).prev();
+                                                const $input = $(this).prev();
                                                 if (!$input.prop('disabled')) {
                                                     $input.prop('checked', !$input.prop('checked')).trigger('change');
                                                 }
@@ -2077,7 +2083,7 @@ $(document).ready(function () {
                                 // Here we go!
                                 initAllDialogs();
                                 // call prepare
-                                for (var t in tabs) {
+                                for (const t in tabs) {
                                     if (tabs.hasOwnProperty(t) && tabs[t] && typeof tabs[t].prepare === 'function') {
                                         tabs[t].prepare();
                                     }
@@ -2096,18 +2102,15 @@ $(document).ready(function () {
             main.resubscribeObjects();
             main.resubscribeLogs();
         }
-        if (main.waitForRestart) {
-            location.reload();
-        }
+
+        main.waitForRestart && location.reload();
     });
     main.socket.on('disconnect',        function () {
         $('#connecting').show();
     });
     main.socket.on('reconnect',         function () {
         $('#connecting').hide();
-        if (main.waitForRestart) {
-            location.reload();
-        }
+        main.waitForRestart && location.reload();
     });
     main.socket.on('repoUpdated',       function () {
         setTimeout(function () {

@@ -493,13 +493,13 @@ gulp.task('materializeJS', () => {
     .pipe(concat('materialize.js'))
     .pipe(babel({
         plugins: [
-            'transform-es2015-arrow-functions',
-            'transform-es2015-block-scoping',
-            'transform-es2015-classes',
-            'transform-es2015-template-literals'
+            '@babel/plugin-transform-arrow-functions',
+            '@babel/plugin-transform-block-scoping',
+            '@babel/plugin-transform-classes',
+            '@babel/plugin-transform-template-literals'
         ]
     }))
-    .pipe(uglify())    
+    .pipe(uglify())
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./www/lib/js'));
 });

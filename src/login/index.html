@@ -2,7 +2,7 @@
 <head>
     <style>
         * {
-            box-sizing:border-box;
+            box-sizing: border-box;
         }
 
         body {
@@ -63,7 +63,9 @@
             border-bottom: 1px solid #757575;
         }
 
-        input:focus { outline: none; }
+        input:focus {
+            outline: none;
+        }
 
         /* Label */
 
@@ -79,8 +81,8 @@
         }
 
         /* active */
-
-        input:focus ~ label, input.used ~ label {
+        input:focus ~ label,
+        input.used ~ label {
             top: -20px;
             transform: scale(.75); left: -2px;
             /* font-size: 14px; */
@@ -111,7 +113,10 @@
 
         /* active */
 
-        input:focus ~ .bar:before, input:focus ~ .bar:after { width: 50%; }
+        input:focus ~ .bar:before,
+        input:focus ~ .bar:after {
+            width: 50%;
+        }
 
 
         /* Highlight */
@@ -163,18 +168,21 @@
             cursor: pointer;
             transition: all 0.15s ease;
         }
-        .button:focus { outline: 0; }
 
+        .button:focus {
+            outline: 0;
+        }
 
         /* Button modifiers */
-
         .buttonBlue {
             background: #2196f3;
             text-shadow: 1px 1px 0 rgba(39, 110, 204, .5);
             border-radius: 2px;
         }
 
-        .buttonBlue:hover { background: #39a1f4; }
+        .buttonBlue:hover {
+            background: #39a1f4;
+        }
 
 
         /* Ripples container */
@@ -268,11 +276,11 @@
 </header>
 <form action="/login" method="post">
     <div class="group">
-        <input type="text" name="username" id="username"><span class="highlight"></span><span class="bar"></span>
+        <input type="text" name="username" id="username" class="used"><span class="highlight"></span><span class="bar"></span>
         <label id="username-label" for="username">Name</label>
     </div>
     <div class="group">
-        <input type="password" name="password" id="password"><span class="highlight"></span><span class="bar"></span>
+        <input type="password" name="password" id="password" class="used"><span class="highlight"></span><span class="bar"></span>
         <label id="password-label" for="password">Password</label>
     </div>
     <input type="hidden" id="origin" name="origin" value=""/>
@@ -355,7 +363,7 @@
 
     var inputs = document.getElementsByTagName('INPUT');
     if (inputs) {
-        for (var i = 0; i < inputs.length; i++) {
+        /*for (var i = 0; i < inputs.length; i++) {
             inputs[i].addEventListener('blur', function() {
                 if (this.value) {
                     if (this.className.indexOf('used') === -1) {
@@ -365,7 +373,7 @@
                     this.className = this.className.replace(/\s?used/, '');
                 }
             });
-        }
+        }*/
         setTimeout(function () {
             if (document.getElementById('username').value) {
                 document.getElementById('password').focus();
@@ -379,6 +387,7 @@
             }
         }, 300);
     }
+
     document.getElementById('username').addEventListener('keydown', function (e) {
         if (e.keyCode === 13) {
             e.preventDefault();
