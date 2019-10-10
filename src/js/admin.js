@@ -1125,7 +1125,7 @@ $(document).ready(function () {
     }
 
     function stateChange(id, state) {
-        id = id ? id.replace(/\s/g, '_') : '';
+        id = id || '';
 
         if (!id || !id.match(/\.messagebox$/)) {
             if (tabs.states) {
