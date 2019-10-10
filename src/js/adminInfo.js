@@ -117,16 +117,17 @@ function InfoAdapter(main) {
                     } else if (showIt && message.conditions && Object.keys(message.conditions).length > 0) {
                         const adapters = that.main.tabs.adapters.curInstalled;
                         await asyncForEach(Object.keys(message.conditions), function (key) {
+                            if(showIt) {
+                                const adapter = adapters[key];
+                                const condition = message.conditions[key];
 
-                            const adapter = adapters[key];
-                            const condition = message.conditions[key];
-
-                            if (!adapter && condition !== "!installed") {
-                                showIt = false;
-                            } else if (adapter && condition === "!installed") {
-                                showIt = false;
-                            } else if (adapter) {
-                                showIt = that.checkConditions(condition, adapter.version);
+                                if (!adapter && condition !== "!installed") {
+                                    showIt = false;
+                                } else if (adapter && condition === "!installed") {
+                                    showIt = false;
+                                } else if (adapter) {
+                                    showIt = that.checkConditions(condition, adapter.version);
+                                }
                             }
                         });
                     }
