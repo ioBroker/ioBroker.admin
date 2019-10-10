@@ -882,7 +882,7 @@ function Adapters(main) {
                 that.data = {};
 
                 // list of the installed adapters
-                for (const i = 0; i < listInstalled.length; i++) {
+                for (let i = 0; i < listInstalled.length; i++) {
                     adapter = listInstalled[i];
 
                     obj = installedList ? installedList[adapter] : null;
@@ -899,11 +899,11 @@ function Adapters(main) {
 
                     let _instances = 0;
                     let _enabled   = 0;
-                    if (obj.version) {
-                        let news = '';
-                        let updatable = false;
-                        let updatableError = '';
+                    let updatable  = false;
+                    let news = '';
+                    let updatableError = '';
 
+                    if (obj.version) {
                         if (!that.main.upToDate(version, obj.version)) {
                             news = getNews(obj.version, repository[adapter]);
                             // check if version is compatible with current adapters and js-controller
@@ -916,7 +916,7 @@ function Adapters(main) {
                             '<tr>';
 
                         // Show information about installed and enabled instances
-                        for (const z = 0; z < that.main.instances.length; z++) {
+                        for (let z = 0; z < that.main.instances.length; z++) {
                             if (that.main.objects[that.main.instances[z]] &&
                                 that.main.objects[that.main.instances[z]].common.name === adapter) {
                                 _instances++;
@@ -1002,7 +1002,7 @@ function Adapters(main) {
 
                     if (!that.isList) {
                         let iGroup = -1;
-                        for (const jj = 0; jj < that.tree.length; jj++) {
+                        for (let jj = 0; jj < that.tree.length; jj++) {
                             if (that.tree[jj].key === that.data[adapter].group) {
                                 iGroup = jj;
                                 break;
@@ -1088,7 +1088,7 @@ function Adapters(main) {
 
                         if (!that.isList) {
                             let igroup = -1;
-                            for (const j = 0; j < that.tree.length; j++){
+                            for (let j = 0; j < that.tree.length; j++){
                                 if (that.tree[j].key === that.data[adapter].group) {
                                     igroup = j;
                                     break;
@@ -1155,10 +1155,11 @@ function Adapters(main) {
                     const types = [];
                     for (const a in that.data) {
                         if (!that.data.hasOwnProperty(a)) continue;
+
+                        let updatableError = '';
+
                         const ad = that.data[a];
-                        if (types.indexOf(ad.group) === -1) {
-                            types.push(ad.group);
-                        }
+                        types.indexOf(ad.group) === -1 && types.push(ad.group);
 //                        text += '<div class="tile class-' + ad.group + '" data-id="' + ad.name + '">';
 //                        text += '   <div class="card-header">';
 //                        text += '       <div class="title">' + ad.title + '</div>';
@@ -1242,7 +1243,7 @@ function Adapters(main) {
                     for (let g = 0; g < types.length; g++) {
                         tTypes += '<li class="main-toolbar-table-types-item" data-type="' + types[g] + '"><a>' + _(types[g]) + '</a></li>\n';
                     }
-                    const $types = that.$tab.find('#main-toolbar-table-types');
+                    let $types = that.$tab.find('#main-toolbar-table-types');
                     $types.html(tTypes);
                     $types.find('.main-toolbar-table-types-item').show().off('click').on('click', function () {
                         that.currentType = $(this).data('type') || '';
@@ -1319,7 +1320,7 @@ function Adapters(main) {
                         'tab-adapters-table-install'
                     ];
                     that.$grid.find('tbody tr').each(function () {
-                        const i = 0;
+                        let i = 0;
                         $(this).find('td').each(function () {
                             $(this).addClass(classes[i]);
                             i++;
@@ -1422,7 +1423,7 @@ function Adapters(main) {
 
         // fill the hosts
         let text = '';
-        for (const h = 0; h < that.main.tabs.hosts.list.length; h++) {
+        for (let h = 0; h < that.main.tabs.hosts.list.length; h++) {
             const host = that.main.tabs.hosts.list[h];
             text += '<option ' + (host.name === that.main.currentHost ? 'selected' : '') + ' value="' + host.name + '">' + host.name + '</option>';
         }
@@ -1437,7 +1438,7 @@ function Adapters(main) {
         // find free instance numbers
         let min = -1;
         const used = [];
-        for (const i = 0; i < that.main.tabs.instances.list.length; i++) {
+        for (let i = 0; i < that.main.tabs.instances.list.length; i++) {
             const parts = that.main.tabs.instances.list[i].split('.');
             if (parts[parts.length - 2] === adapter) {
                 const index = parseInt(parts[parts.length - 1], 10);
@@ -1449,7 +1450,7 @@ function Adapters(main) {
         }
         min += 10;
         text = '<option selected value="">' + _('auto') + '</option>';
-        for (const m = 0; m < min; m++) {
+        for (let m = 0; m < min; m++) {
             if (used.indexOf(m) !== -1) continue;
             text += '<option value="' + m + '">' + m + '</option>';
         }
@@ -1591,6 +1592,7 @@ function Adapters(main) {
             });
         });
 
+        // leave "function" here, becuase "this" is used
         this.$tab.find('.adapter-readme-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
             that.main.navigate({
                 tab:    'adapters',
@@ -1599,21 +1601,21 @@ function Adapters(main) {
             });
         });
 
+        // leave "function" here, becuase "this" is used
         this.$tab.find('.adapter-update-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
             const aName = $(this).attr('data-adapter-name');
             if (aName === 'admin') that.main.waitForRestart = true;
 
-            that.main.cmdExec(null, 'upgrade ' + aName, function (exitCode) {
-                if (!exitCode) that._postInit(true);
-            });
+            that.main.cmdExec(null, 'upgrade ' + aName, exitCode =>
+                !exitCode && that._postInit(true));
         });
 
+        // leave "function" here, becuase "this" is used
         this.$tab.find('.adapter-upload-submit[data-adapter-name="' + adapter + '"]').off('click').on('click', function () {
             const aName = $(this).attr('data-adapter-name');
 
-            that.main.cmdExec(null, 'upload ' + aName, function (exitCode) {
-                if (!exitCode) that._postInit(true);
-            });
+            that.main.cmdExec(null, 'upload ' + aName, exitCode =>
+                !exitCode && that._postInit(true));
         });
 
         const $button = this.$tab.find('.adapter-update-custom-submit[data-adapter-name="' + adapter + '"]');
@@ -1629,14 +1631,14 @@ function Adapters(main) {
             } else {
                 versions.push(that.main.objects['system.adapter.' + adapter].common.version);
             }
-            const menu = '<div class="collection">';
-            for (const v = 0; v < versions.length; v++) {
+            let menu = '<div class="collection">';
+            for (let v = 0; v < versions.length; v++) {
                 const nnews = (news[versions[v]] ? news[versions[v]][systemLang] || news[versions[v]].en : '');
                 menu += '<a data-version="' + versions[v] + '" data-position="left" data-delay="50" title="' + nnews + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="collection-item adapters-versions-link tooltipped"><span class="adapters-versions-link-version">' + versions[v] + '</span> - <div class="adapters-versions-link-history">' + nnews + '</div></a>';
             }
             menu += '</div>';
 
-            const $adaptersMenu = $('#adapters-menu');
+            let $adaptersMenu = $('#adapters-menu');
             if (!$adaptersMenu.length) {
                 //$adaptersMenu = $('<div id="adapters-menu" class="dropdown-content m"></div>');
                 $adaptersMenu = $('<div id="adapters-menu" class="modal modal-fixed-footer"><div class="modal-content">' +
