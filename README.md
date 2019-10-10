@@ -80,6 +80,7 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ## Changelog
 ### 3.6.8 (2019-10-09)
+* (ldittmar) Add NPM version and OS check to popup messages
 * (bluefox) Log paths were sanitized
 * (bluefox) NPM packages were updated
 

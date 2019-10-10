@@ -4,6 +4,18 @@
     "title": "Admin",
     "version": "3.6.8",
     "news": {
+      "3.6.8": {
+        "en": "Add NPM version and OS check to popup messages",
+        "de": "NPM-Version und Betriebssystemprüfung zu Popup-Meldungen hinzufügen",
+        "ru": "Добавить версию NPM и проверку ОС во всплывающих сообщениях",
+        "pt": "Adicionar versão do NPM e verificação do SO às mensagens pop-up",
+        "nl": "Voeg NPM-versie en OS-controle toe aan pop-upberichten",
+        "fr": "Ajouter la version de NPM et la vérification du système d'exploitation aux messages contextuels",
+        "it": "Aggiungi la versione NPM e il controllo del sistema operativo ai messaggi popup",
+        "es": "Agregue la versión NPM y la verificación del sistema operativo a los mensajes emergentes",
+        "pl": "Dodaj wersję NPM i kontrolę systemu operacyjnego do wyskakujących wiadomości",
+        "zh-cn": "添加NPM版本和操作系统检查以弹出消息"
+      },
       "3.6.7": {
         "en": "Add Node.JS version check to popup messages",
         "de": "Node.JS-Versionsprüfung zu Popup-Nachrichten hinzufügen",

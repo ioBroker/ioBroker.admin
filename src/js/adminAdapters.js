@@ -1,3 +1,5 @@
+/* global systemLang, semver */
+
 function Adapters(main) {
     'use strict';
 
@@ -75,7 +77,7 @@ function Adapters(main) {
             } else if (tmp[0] === '0' && tmp[1] === '0') {
                 version = 'alpha';
             } else if (tmp[0] === '0') {
-                version = 'beta'
+                version = 'beta';
             } else if (version === 'npm error') {
                 version = 'error';
             } else {
@@ -1322,7 +1324,7 @@ function Adapters(main) {
                             $(this).addClass(classes[i]);
                             i++;
                         });
-                    })
+                    });
                 }
                 that.$tab.find('.grid-main-div').removeClass('order-a-z order-popular order-updated').addClass(that.currentOrder ? 'order-' + that.currentOrder : '');
                 that.$tab.find('.process-adapters').hide();
