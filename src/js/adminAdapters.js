@@ -1621,8 +1621,9 @@ function Adapters(main) {
         const $button = this.$tab.find('.adapter-update-custom-submit[data-adapter-name="' + adapter + '"]');
         $button.off('click').on('click', function () {
             const versions = [];
+            let news;
             if (that.main.objects['system.adapter.' + adapter].common.news) {
-                const news = that.main.objects['system.adapter.' + adapter].common.news;
+                news = that.main.objects['system.adapter.' + adapter].common.news;
                 for (const id in news) {
                     if (news.hasOwnProperty(id)) {
                         versions.push(id);
@@ -1632,9 +1633,11 @@ function Adapters(main) {
                 versions.push(that.main.objects['system.adapter.' + adapter].common.version);
             }
             let menu = '<div class="collection">';
-            for (let v = 0; v < versions.length; v++) {
-                const nnews = (news[versions[v]] ? news[versions[v]][systemLang] || news[versions[v]].en : '');
-                menu += '<a data-version="' + versions[v] + '" data-position="left" data-delay="50" title="' + nnews + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="collection-item adapters-versions-link tooltipped"><span class="adapters-versions-link-version">' + versions[v] + '</span> - <div class="adapters-versions-link-history">' + nnews + '</div></a>';
+            if (news) {
+                for (let v = 0; v < versions.length; v++) {
+                    const nnews = news[versions[v]] ? news[versions[v]][systemLang] || news[versions[v]].en : '';
+                    menu += '<a data-version="' + versions[v] + '" data-position="left" data-delay="50" title="' + nnews + '" data-adapter-name="' + $(this).data('adapter-name') + '" class="collection-item adapters-versions-link tooltipped"><span class="adapters-versions-link-version">' + versions[v] + '</span> - <div class="adapters-versions-link-history">' + nnews + '</div></a>';
+                }
             }
             menu += '</div>';
 
