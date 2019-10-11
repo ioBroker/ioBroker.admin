@@ -70,7 +70,7 @@ const adapterRedirect = function (redirect, timeout) {
         }, timeout || 5000);
     }
 };
-let gMain = null; // for google maps
+var gMain = null; // for google maps (must to be var don't change it)
 
 function detectIE() {
     const ua = window.navigator.userAgent;
