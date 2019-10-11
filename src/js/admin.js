@@ -51,9 +51,9 @@ async function asyncForEach(array, callback) {
     }
 }
 
-let $iframeDialog = null;  // used in adapter settings window
-let configNotSaved = null; // used in adapter settings window
-let showConfig = null;     // used in adapter settings window
+var $iframeDialog = null;  // used in adapter settings window
+var configNotSaved = null; // used in adapter settings window
+var showConfig = null;     // used in adapter settings window
 
 const defaults = {};
 const customPostInits = {};
@@ -70,7 +70,7 @@ const adapterRedirect = function (redirect, timeout) {
         }, timeout || 5000);
     }
 };
-let gMain = null; // for google maps
+var gMain = null; // for google maps (must to be var don't change it)
 
 function detectIE() {
     const ua = window.navigator.userAgent;
