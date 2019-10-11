@@ -4,7 +4,7 @@ function InfoAdapter(main) {
 
     var that = this;
     
-    this.sytemData = {"node": null, "npm": null, "os": null};
+    this.systemData = {"node": null, "npm": null, "os": null};
     this.main = main;
 
     this.checkVersion = function (smaller, bigger) {
@@ -132,17 +132,17 @@ function InfoAdapter(main) {
                         });
                     }
 
-                    if (showIt && message['node-version'] && that.sytemData.node) {
+                    if (showIt && message['node-version'] && that.systemData.node) {
                         const condition = message['node-version'];
-                        showIt = that.checkConditions(condition, that.sytemData.node);
+                        showIt = that.checkConditions(condition, that.systemData.node);
                     }
-                    if (showIt && message['npm-version'] && that.sytemData.npm) {
+                    if (showIt && message['npm-version'] && that.systemData.npm) {
                         const condition = message['npm-version'];
-                        showIt = that.checkConditions(condition, that.sytemData.npm);
+                        showIt = that.checkConditions(condition, that.systemData.npm);
                     }
-                    if (showIt && message['os'] && that.sytemData.os) {
+                    if (showIt && message['os'] && that.systemData.os) {
                         const condition = message['os'];
-                        showIt = that.sytemData.os === message['os'];
+                        showIt = that.systemData.os === message['os'];
                     }
 
                     if (showIt) {
