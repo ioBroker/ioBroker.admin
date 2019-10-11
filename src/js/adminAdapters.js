@@ -1621,8 +1621,9 @@ function Adapters(main) {
         const $button = this.$tab.find('.adapter-update-custom-submit[data-adapter-name="' + adapter + '"]');
         $button.off('click').on('click', function () {
             const versions = [];
+            let news = {};
             if (that.main.objects['system.adapter.' + adapter].common.news) {
-                const news = that.main.objects['system.adapter.' + adapter].common.news;
+                news = that.main.objects['system.adapter.' + adapter].common.news;
                 for (const id in news) {
                     if (news.hasOwnProperty(id)) {
                         versions.push(id);

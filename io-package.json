@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.6.8",
+    "version": "3.6.9",
     "news": {
-      "3.6.8": {
+      "3.6.9": {
         "en": "Add NPM version and OS check to popup messages",
         "de": "NPM-Version und Betriebssystemprüfung zu Popup-Meldungen hinzufügen",
         "ru": "Добавить версию NPM и проверку ОС во всплывающих сообщениях",
