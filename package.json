@@ -20,9 +20,11 @@
     "setup"
   ],
   "dependencies": {
+    "@iobroker/adapter-core": "^1.0.3",
     "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.4",
+    "dock-spawn-ts": "^2.18.0",
     "express": "^4.17.1",
     "express-fileupload": "^1.1.6-alpha.5",
     "express-session": "^1.16.2",
@@ -31,8 +33,7 @@
     "passport.socketio": "^3.7.0",
     "request": "^2.88.0",
     "socket.io": "1.7.2",
-    "xtend": "^4.0.2",
-    "@iobroker/adapter-core": "^1.0.3"
+    "xtend": "^4.0.2"
   },
   "devDependencies": {
     "@iobroker/testing": "^1.2.5",

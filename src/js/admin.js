@@ -1475,48 +1475,80 @@ $(document).ready(function () {
                     tab = 'intro';
                 }
 
-                // if tab was changed
-                if (main.currentTab !== tab || !$actualTab.length) {
-                    let link;
-                    // destroy actual tab
-                    if (main.currentTab && tabs[main.currentTab] && typeof tabs[main.currentTab].destroy === 'function') {
-                        tabs[main.currentTab].destroy();
-                    } else if (main.currentTab) {
-                        const $oldPanel = $('#tab-' + main.currentTab);
-                        // destroy current iframe
-                        if ($oldPanel.length && (link = $oldPanel.data('src'))) {
-                            const $iframe_ = $oldPanel.find('>iframe');
-                            if ($iframe_.attr('src')) {
-                                console.log('clear');
-                                $iframe_.attr('src', '');
-                            }
-                        }
-                    }
-                    main.currentTab = tab;
+				main.systemConfig.common.useDock = true;
+				if (main.systemConfig.common.useDock) {
+					if (!main.systemConfig.common._dockCssAdded) {
+						main.systemConfig.common._dockCssAdded = true;
+						
+						let divDockManager = document.createElement("div");
+						divDockManager.style.position = "relative"; divDockManager.style.width = "100%"; divDockManager.style.height = "100%";
+						let bodyContainer = document.getElementsByClassName("admin-sidemenu-body")[0];
+						bodyContainer.appendChild(divDockManager);
+						
+						let dockManager = new DockSpawnTS.DockManager(divDockManager);
+						dockManager.initialize();
+						window.onresize = () => dockManager.resize(divDockManager.clientWidth, divDockManager.clientHeight);
+						
+						window.dockManager = dockManager;
+					}
+					
+					if (!dialog) {
+						$panel.addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
+						$actualTab = $panel;
+					}
+						
+					let panelContainer = new DockSpawnTS.PanelContainer($panel[0], dockManager);
+					let documentNode = dockManager.context.model.documentManagerNode;
+					dockManager.dockFill(documentNode, panelContainer);
+					
+					// init new tab
+					if (tabs[tab] && typeof tabs[tab].init === 'function') {
+						tabs[tab].init();
+					}
+				} else {
+					// if tab was changed
+					if (main.currentTab !== tab || !$actualTab.length) {
+						let link;
+						// destroy actual tab
+						if (main.currentTab && tabs[main.currentTab] && typeof tabs[main.currentTab].destroy === 'function') {
+							tabs[main.currentTab].destroy();
+						} else if (main.currentTab) {
+							const $oldPanel = $('#tab-' + main.currentTab);
+							// destroy current iframe
+							if ($oldPanel.length && (link = $oldPanel.data('src'))) {
+								const $iframe_ = $oldPanel.find('>iframe');
+								if ($iframe_.attr('src')) {
+									console.log('clear');
+									$iframe_.attr('src', '');
+								}
+							}
+						}
+						main.currentTab = tab;
+						
+						//$actualTab.hide().appendTo('body');
+						if (!dialog) {
+							$panel.addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
+							$actualTab = $panel;
+						}
 
-                    $actualTab.hide().appendTo('body');
-                    if (!dialog) {
-                        $panel.addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
-                        $actualTab = $panel;
-                    }
+						// init new tab
+						if (tabs[tab] && typeof tabs[tab].init === 'function') {
+							tabs[tab].init();
+						}
 
-                    // init new tab
-                    if (tabs[tab] && typeof tabs[tab].init === 'function') {
-                        tabs[tab].init();
-                    }
-
-                    // if iframe like node-red
-                    if ($panel.length && (link = $panel.data('src'))) {
-                        if (link.indexOf('%') === -1) {
-                            const $iframe = $panel.find('>iframe');
-                            if ($iframe.length && !$iframe.attr('src')) {
-                                $iframe.attr('src', link);
-                            }
-                        } else {
-                            $adminSideMenu.data('problem-link', 'tab-' + tab);
-                        }
-                    }
-                }
+						// if iframe like node-red
+						if ($panel.length && (link = $panel.data('src'))) {
+							if (link.indexOf('%') === -1) {
+								const $iframe = $panel.find('>iframe');
+								if ($iframe.length && !$iframe.attr('src')) {
+									$iframe.attr('src', link);
+								}
+							} else {
+								$adminSideMenu.data('problem-link', 'tab-' + tab);
+							}
+						}
+					}
+				}
 
                 // select menu element
                 const  $tab = $adminSideMenu.find('.admin-sidemenu-items[data-tab="tab-' + tab + '"]');

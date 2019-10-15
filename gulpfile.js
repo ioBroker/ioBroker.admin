@@ -466,6 +466,16 @@ gulp.task('materializeCSS', () => {
 
 });
 
+gulp.task('copyDockSpawn', () => {
+    return gulp.src(['./node_modules/dock-spawn-ts/lib/css/*.css'])
+		.pipe(gulp.dest('./www/css'))
+		.pipe(gulp.src(['./node_modules/dock-spawn-ts/lib/es5/*.js']))
+		.pipe(gulp.dest('./www/js'))
+		.pipe(gulp.src(['./node_modules/dock-spawn-ts/lib/images/*.*']))
+		.pipe(gulp.dest('./www/images'));
+
+});
+
 gulp.task('materializeJS', () => {
     return gulp.src([
         './src/materialize-css/js/global.js',
@@ -707,7 +717,7 @@ gulp.task('beta', done => {
 });
 
 gulp.task('1_words',  gulp.parallel('www (json => words.js)', 'admin (json => words.js)'));
-gulp.task('2_css',    gulp.parallel('iobCSS', 'adminCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS'));
+gulp.task('2_css',    gulp.parallel('iobCSS', 'adminCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS', 'copyDockSpawn'));
 gulp.task('3_js',     gulp.parallel('vendorJS', 'materializeJS', 'appJS', 'fancyTreeJS')); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
 gulp.task('4_static', gulp.parallel('appHTML', 'aceCopy', 'colorpickerCopy', 'appCopy'));
 
