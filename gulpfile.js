@@ -466,15 +466,26 @@ gulp.task('materializeCSS', () => {
 
 });
 
-gulp.task('copyDockSpawn', () => {
-    return gulp.src(['./node_modules/dock-spawn-ts/lib/css/*.css'])
-		.pipe(gulp.dest('./www/css'))
-		.pipe(gulp.src(['./node_modules/dock-spawn-ts/lib/es5/*.js']))
-		.pipe(gulp.dest('./www/js'))
-		.pipe(gulp.src(['./node_modules/dock-spawn-ts/lib/images/*.*']))
-		.pipe(gulp.dest('./www/images'));
-
+gulp.task('copyDockSpawnCss', () => {
+    return gulp.src(['./node_modules/dock-spawn-ts/lib/css/dock-manager.css'])
+        .pipe(gulp.src('./src/css/*.css'))
+		.pipe(gulp.dest('./www/css'));
 });
+
+gulp.task('copyDockSpawnJs', () => {
+    return gulp.src(['./node_modules/dock-spawn-ts/lib/es5/*.js'])
+		.pipe(gulp.dest('./www/js'));
+});
+
+gulp.task('copyDockSpawnImages', () => {
+    return gulp.src(['./node_modules/dock-spawn-ts/lib/images/*.*'])
+		.pipe(gulp.dest('./www/images'));
+});
+
+gulp.task('copyDockSpawn', gulp.series(
+    'copyDockSpawnCss',
+    'copyDockSpawnJs',
+    'copyDockSpawnImages'));
 
 gulp.task('materializeJS', () => {
     return gulp.src([
@@ -582,7 +593,7 @@ gulp.task('appJS', () => {
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('app.js'))
-        .pipe(uglify())
+        //.pipe(uglify())
         .on('error', function (err) {
             log.error(colors.red('[Error] ') + err.toString());
         })
