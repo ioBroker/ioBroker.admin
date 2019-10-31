@@ -98,7 +98,7 @@ function Users(main) {
                 var users = objects[groups[g]].common.members;
                 for (var u = 0; u < users.length; u++) {
                     usersGroups[users[u]] = usersGroups[users[u]] || [];
-                    usersGroups[users[u]].push({id: groups[g], name: objects[groups[g]].common.name || id.replace('system.group.', '')});
+                    usersGroups[users[u]].push({id: groups[g], name: objects[groups[g]].common.name || groups[g].replace('system.group.', '')});
                 }
             }
         }
@@ -844,7 +844,7 @@ function Users(main) {
             '<a class="btn-floating waves-effect waves-light blue btn-custom-0" title="' + _('New user') + '" id="tab-users-btn-new-user">' +
             '<i class="material-icons">person_add</i></a></div>';*/
 
-       text += '<ul class="collection">';
+        text += '<ul class="collection">';
         var users = getUsersGroups(that.main.objects, that.groups);
         for (var u = 0; u < that.list.length; u++) {
             var name;

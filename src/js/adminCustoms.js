@@ -526,6 +526,7 @@ function Customs(main) {
 
         var port  = 0;
         var chart = false;
+        var chartExplain;
 
         initTab('tab-customs-settings');
 
@@ -534,25 +535,55 @@ function Customs(main) {
 
             // Check if chart enabled and set
             for (var i = 0; i < main.instances.length; i++) {
-                if (main.objects[main.instances[i]].common.name === 'flot' && main.objects[main.instances[i]].common.enabled) {
-                    chart = 'flot';
+                if (main.objects[main.instances[i]].common.name === 'flot') {
+                    if (main.objects[main.instances[i]].common.enabled) {
+                        chart = 'flot';
+                    } else {
+                        chartExplain = _('%s instance is disabled', 'Flot');
+                    }
                 } else
-                if (!chart && main.objects[main.instances[i]].common.name === 'rickshaw' && main.objects[main.instances[i]].common.enabled) {
-                    chart = 'rickshaw';
+                if (!chart && main.objects[main.instances[i]].common.name === 'rickshaw') {
+                    if (main.objects[main.instances[i]].common.enabled) {
+                        chart = 'rickshaw';
+                    } else {
+                        chartExplain = _('%s instance is disabled', 'Rickshaw');
+                    }
                 } else
-                if (main.objects[main.instances[i]].common.name === 'web'  && main.objects[main.instances[i]].common.enabled) {
-                    port = main.objects[main.instances[i]].native.port;
+                if (main.objects[main.instances[i]].common.name === 'web') {
+                    if (main.objects[main.instances[i]].common.enabled) {
+                        port = main.objects[main.instances[i]].native.port;
+                    } else {
+                        chartExplain = _('%s instance is disabled', 'Web');
+                    }
                 }
-                if (chart === 'flot' && port) break;
+                if (chart === 'flot' && port) {
+                    break;
+                }
             }
+
+            if (!port && !chartExplain) {
+                chartExplain = _('No %s instance found', 'web');
+            } else if (!chart && !chartExplain) {
+                chartExplain = _('No %s instance found', 'chart');
+            }
+
             that.loadHistoryTable(id);
 
             $tabs.find('.tabs .tab-table').removeClass('disabled');
 
+            var inst = window.M.Tabs.getInstance($tabs.find('.tabs'));
+
             if (port && chart && that.currentCustoms) {
-                $tabs.find('.tabs .tab-chart').removeClass('disabled');
+                $tabs.find('.tabs .tab-chart').removeClass('disabled').attr('title', '');
+                // if charts selected
+                if (inst && inst.index === 2) {
+                    that.loadHistoryChart(id);
+                }
             } else {
-                $tabs.find('.tabs .tab-chart').addClass('disabled');
+                if (inst && inst.index === 2) {
+                    $tabs.find('.tabs').mtabs('select', 1);
+                }
+                $tabs.find('.tabs .tab-chart').addClass('disabled').attr('title', chartExplain);
             }
         } else {
             $tabs.find('.tabs .tab-table').addClass('disabled');
