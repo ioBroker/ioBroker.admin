@@ -141,8 +141,10 @@ function InfoAdapter(main) {
                         showIt = that.systemData.npm !== null && that.checkConditions(condition, that.systemData.npm);
                     }
                     if (showIt && message['os']) {
-                        const condition = message['os'];
                         showIt = that.systemData.os !== null && that.systemData.os === message['os'];
+                    }
+                    if (showIt && message['repo']) {
+                        showIt = that.main.systemConfig.common.activeRepo === message['repo'];
                     }
 
                     if (showIt) {

@@ -1,3 +1,5 @@
+/* global systemLang, M, FORBIDDEN_CHARS, showdown */
+
 function Hosts(main) {
     'use strict';
 
@@ -10,6 +12,8 @@ function Hosts(main) {
     this.inited   = false;
     this.isTiles  = true;
     this.words    = {};
+    
+    showdown.setFlavor('github');
 
     this.prepare  = function () {
         this.isTiles = (this.main.config.hostsIsTiles !== undefined && this.main.config.hostsIsTiles !== null) ? this.main.config.hostsIsTiles : true;
@@ -125,9 +129,12 @@ function Hosts(main) {
         });
 
     };
-
-    function showUpdateInfo(data) {
-        var $dialog = $('#dialog-host-update');
+    
+    async function showUpdateInfo(data) {
+        const $dialog = $('#dialog-host-update');
+        const updateInfo = await fetch("https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/admin/" + systemLang + "/controller-upgrade.md");
+        const html = showdown.Converter().makeHtml(updateInfo).replace(/<img/g, '<img class="img-responsive"');
+        
         if (data) {
             var path = data.path;
             path = path.replace(/\\/g, '/');
@@ -137,13 +144,13 @@ function Hosts(main) {
 
             if (data.platform === 'linux' || data.platform === 'darwin' || data.platform === 'freebsd' || data.platform === 'lin') {
                 // linux
-                $dialog.find('#dialog-host-update-instructions').val('cd ' + parts.join('/') + '\nsudo iobroker stop\nsudo iobroker update\nsudo iobroker upgrade self\nsudo iobroker start')
+                $dialog.find('#dialog-host-update-instructions').html(html);
             } else {
                 // windows
-                $dialog.find('#dialog-host-update-instructions').val('cd ' + parts.join('\\') + '\niobroker stop\niobroker update\niobroker upgrade self\niobroker start')
+                $dialog.find('#dialog-host-update-instructions').html(html);
             }
         } else {
-            $dialog.find('#dialog-host-update-instructions').val('cd /opt/iobroker\nsudo iobroker stop\nsudo iobroker update\nsudo iobroker upgrade self\nsudo iobroker start')
+            $dialog.find('#dialog-host-update-instructions').html(html);
         }
 
         if (!$dialog.data('inited')) {
@@ -470,7 +477,7 @@ function Hosts(main) {
             if (this.isTiles) {
                 showHostsTile();
             } else {
-                showHostsTable()
+                showHostsTable();
             }
             applyFilter(this.$tab.find('.filter-input').val());
 
