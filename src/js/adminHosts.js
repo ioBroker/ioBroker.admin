@@ -132,7 +132,12 @@ function Hosts(main) {
     
     async function showUpdateInfo(data) {
         const $dialog = $('#dialog-host-update');
-        const updateInfo = await fetch("https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/admin/" + systemLang + "/controller-upgrade.md");
+        
+        let updateInfo;
+	await fetch("https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/admin/" + systemLang + "/controller-upgrade.md")
+        .then( async (resp) => {
+            updateInfo = await resp.text();
+        });
         const html = new showdown.Converter().makeHtml(updateInfo).replace(/<img/g, '<img class="img-responsive"');
         
         if (data) {
