@@ -79,9 +79,10 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
-### 3.6.12 (2019-11-01)
+### 3.6.12 (2019-11-04)
 * (ldittmar) Add repo check to popup messages
 * (ldittmar) Update Controller-Update info page
+* (Apollon77) update deps
 
 ### 3.6.11 (2019-10-16)
 * (bluefox) Fixed login of non-admin user
