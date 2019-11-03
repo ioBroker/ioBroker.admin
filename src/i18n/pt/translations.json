@@ -877,5 +877,6 @@
   "wetty": "Wetty",
   "write": "escrever",
   "write operation": "escrever",
-  "yesterday": "ontem"
+  "yesterday": "ontem",
+  "update_info_no_net": "Para obter informações sobre a atualização do controlador, visite esta página: <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/pt/controller-upgrade.md\" target=\"_blank\">Update JS-Contoller</a>"
 }

@@ -135,7 +135,11 @@ function Hosts(main) {
 
         let updateInfo;
         await fetch("https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/admin/" + systemLang + "/controller-upgrade.md").then(async (resp) => {
-            updateInfo = await resp.text();
+            if(resp.ok){
+                updateInfo = await resp.text();
+            }else{
+                updateInfo = _("update_info_no_net");
+            }
         });
         let html = new showdown.Converter().makeHtml(updateInfo);
         html = html.replace(/<img/g, '<img class="img-responsive"');

@@ -877,5 +877,6 @@
   "wetty": "Wetty",
   "write": "写",
   "write operation": "写",
-  "yesterday": "昨天"
+  "yesterday": "昨天",
+  "update_info_no_net": "有关更新控制器的信息，请访问以下页面： <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/zh-cn/controller-upgrade.md\" target=\"_blank\">Update JS-Contoller</a>"
 }
