@@ -147,29 +147,14 @@ function Hosts(main) {
         html = html.replace(/<h2/g, '<h5');
         html = html.replace(/<\/h1>/g, '</h4>');
         html = html.replace(/<\/h2>/g, '</h5>');
-
-        if (data) {
-            var path = data.path;
-            path = path.replace(/\\/g, '/');
-            var parts = path.split('/');
-            parts.pop(); // js-controller
-            parts.pop(); // node_modules
-
-            if (data.platform === 'linux' || data.platform === 'darwin' || data.platform === 'freebsd' || data.platform === 'lin') {
-                // linux
-                $dialog.find('#dialog-host-update-instructions').html(html);
-            } else {
-                // windows
-                $dialog.find('#dialog-host-update-instructions').html(html);
-            }
-        } else {
-            $dialog.find('#dialog-host-update-instructions').html(html);
-        }
+        
+        $dialog.find('#dialog-host-update-instructions').html(html);
 
         if (!$dialog.data('inited')) {
             $dialog.data('inited', true);
             $dialog.modal();
         }
+        
         $dialog.modal('open');
     }
 
