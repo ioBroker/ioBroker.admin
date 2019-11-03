@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.6.11",
+    "version": "3.6.12",
     "news": {
+      "3.6.12": {
+        "en": "Add repo check to popup messages",
+        "de": "Repo-Check zu Popup-Nachrichten hinzufügen",
+        "ru": "Добавить проверку репо во всплывающие сообщения",
+        "pt": "Adicionar verificação de repo às mensagens pop-up",
+        "nl": "Repo-controle toevoegen aan pop-upberichten",
+        "fr": "Ajouter repo check aux messages contextuels",
+        "it": "Aggiungi controllo repository ai messaggi popup",
+        "es": "Agregar verificación de repositorio a mensajes emergentes",
+        "pl": "Dodaj kontrolę repo do wyskakujących wiadomości",
+        "zh-cn": "将回购检查添加到弹出消息"
+      },
       "3.6.11": {
         "en": "Fixed login of non-admin user ",
         "de": "Fehler beim Anmelden eines Benutzers ohne Administratorrechte behoben",
