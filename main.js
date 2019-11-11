@@ -18,6 +18,7 @@ const utils       = require('@iobroker/adapter-core'); // Get common adapter uti
 const tools 	  = require(utils.controllerDir + '/lib/tools.js');
 const SocketIO    = require('./lib/socket');
 const Web         = require('./lib/web');
+const semver      = require('semver');
 
 const ONE_HOUR_MS = 3600000;
 const ERROR_PERMISSION = 'permissionError';
@@ -217,30 +218,8 @@ function createUpdateInfo() {
 }
 
 // Helper methods
-function upToDate(a, b) {
-    a = a.split('.');
-    b = b.split('.');
-    a[0] = parseInt(a[0], 10);
-    b[0] = parseInt(b[0], 10);
-    if (a[0] > b[0]) {
-        return false;
-    } else if (a[0] < b[0]) {
-        return true;
-    } else if (a[0] === b[0]) {
-        a[1] = parseInt(a[1], 10);
-        b[1] = parseInt(b[1], 10);
-        if (a[1] > b[1]) {
-            return false;
-        } else if (a[1] < b[1]) {
-            return true;
-        } else if (a[1] === b[1]) {
-            a[2] = parseInt(a[2], 10);
-            b[2] = parseInt(b[2], 10);
-            return a[2] <= b[2];
-        }
-    } else {
-        return true;
-    }
+function upToDate(v1, v2) {
+	return semver.gt(v2, v1);
 }
 
 function writeUpdateInfo(sources) {
