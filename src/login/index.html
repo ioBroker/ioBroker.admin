@@ -54,7 +54,7 @@
             margin-bottom: 45px;
         }
 
-        input {
+        input[type="text"], input[type="password"] {
             font-size: 18px;
             padding: 10px 10px 10px 5px;
             -webkit-appearance: none;
@@ -277,6 +277,109 @@
             left:           calc(50% - 200px);
             border-radius: 2px;
         }
+        .checkbox label {
+            font-size: .8rem;
+            color: #9e9e9e;
+        }
+        [type="checkbox"]+span:not(.lever) {
+            position: relative;
+            padding-left: 35px;
+            cursor: pointer;
+            display: inline-block;
+            height: 25px;
+            line-height: 25px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            font-size: 12px;
+            color: #4a89dc;
+        }
+        [type="checkbox"].filled-in:checked+span:not(.lever):before {
+            top: 0;
+            left: 1px;
+            width: 8px;
+            height: 13px;
+            border-top: 2px solid transparent;
+            border-left: 2px solid transparent;
+            border-right: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            -webkit-transform: rotateZ(37deg);
+            transform: rotateZ(37deg);
+            -webkit-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+        }
+        [type="checkbox"].filled-in+span:not(.lever):before, [type="checkbox"].filled-in+span:not(.lever):after {
+            content: '';
+            left: 0;
+            position: absolute;
+            -webkit-transition: border .25s, background-color .25s, width .20s .1s, height .20s .1s, top .20s .1s, left .20s .1s;
+            transition: border .25s, background-color .25s, width .20s .1s, height .20s .1s, top .20s .1s, left .20s .1s;
+            z-index: 1;
+        }
+        [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        [type="checkbox"], [type="radio"] {
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            padding: 0;
+        }
+        [type="checkbox"]:checked+span:not(.lever):before {
+            top: -4px;
+            left: -5px;
+            width: 12px;
+            height: 22px;
+            border-top: 2px solid transparent;
+            border-left: 2px solid transparent;
+            border-right: 2px solid #1685ff;
+            border-bottom: 2px solid #1685ff;
+            -webkit-transform: rotate(40deg);
+            transform: rotate(40deg);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+        }
+        [type="checkbox"]+span:not(.lever):before, [type="checkbox"]:not(.filled-in)+span:not(.lever):after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 18px;
+            height: 18px;
+            z-index: 0;
+            border: 2px solid #5a5a5a;
+            border-radius: 1px;
+            margin-top: 3px;
+            -webkit-transition: .2s;
+            transition: .2s;
+        }
+        [type="checkbox"].filled-in:checked+span:not(.lever):after {
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #26a69a;
+            background-color: #26a69a;
+            z-index: 0;
+        }
+        [type="checkbox"].filled-in+span:not(.lever):before, [type="checkbox"].filled-in+span:not(.lever):after {
+            content: '';
+            left: 0;
+            position: absolute;
+            -webkit-transition: border .25s, background-color .25s, width .20s .1s, height .20s .1s, top .20s .1s, left .20s .1s;
+            transition: border .25s, background-color .25s, width .20s .1s, height .20s .1s, top .20s .1s, left .20s .1s;
+            z-index: 1;
+        }
+        [type="checkbox"].filled-in+span:not(.lever):after {
+            border-radius: 2px;
+        }
+        .checkbox *, .checkbox *:before, *:after {
+            -webkit-box-sizing: inherit;
+            box-sizing: inherit;
+        }
     </style>
 </head>
 <body>
@@ -288,9 +391,13 @@
         <input type="text" name="username" id="username" class="used"><span class="highlight"></span><span class="bar"></span>
         <label id="username-label" for="username">Name</label>
     </div>
-    <div class="group">
+    <div class="group" style="margin-bottom: 5px;">
         <input type="password" name="password" id="password" class="used"><span class="highlight"></span><span class="bar"></span>
         <label id="password-label" for="password">Password</label>
+    </div>
+    <div class="group checkbox" style="margin-bottom: 12px;">
+            <input type="checkbox" name="stayloggedin" id="stayloggedin" class="used">
+            <span id="stayloggedin-label" for="stayloggedin">Stay signed in</span>
     </div>
     <input type="hidden" id="origin" name="origin" value=""/>
     <button type="submit" class="button buttonBlue" id="submit"><span id="submit-label">Submit</span>
@@ -361,6 +468,18 @@
             "en": "Admin",
             "de": "Admin",
             "ru": "Вход в админ"
+        },
+        "Stay signed in": {
+            "en": "Stay signed in",
+            "de": "Angemeldet bleiben",
+            "ru": "Оставайтесь в системе",
+            "pt": "Mantenha-se conectado",
+            "nl": "Blijf ingelogd",
+            "fr": "rester connecté",
+            "it": "Resta connesso",
+            "es": "Mantente conectado",
+            "pl": "Pozostań zalogowany",
+            "zh-cn": "保持登录"
         }
     };
 
@@ -372,6 +491,12 @@
     document.getElementById('password-label').innerHTML = systemDictionary.enterPassword[userLang]  || systemDictionary.enterPassword.en;
     document.getElementById('login-label').innerHTML    = systemDictionary.title[userLang]          || systemDictionary.title.en;
     document.getElementById('submit-label').innerHTML   = systemDictionary.login[userLang]          || systemDictionary.login.en;
+    document.getElementById('stayloggedin-label').innerHTML = systemDictionary['Stay signed in'][userLang] || systemDictionary['Stay signed in'].en;
+
+    document.getElementById('stayloggedin-label').onclick = function () {
+        var checkbox = document.getElementById('stayloggedin');
+        checkbox.checked = !checkbox.checked;
+    };
 
     var inputs = document.getElementsByTagName('INPUT');
     if (inputs) {

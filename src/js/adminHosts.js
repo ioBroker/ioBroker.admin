@@ -1,3 +1,5 @@
+/* global systemLang, M, FORBIDDEN_CHARS, showdown */
+
 function Hosts(main) {
     'use strict';
 
@@ -10,6 +12,8 @@ function Hosts(main) {
     this.inited   = false;
     this.isTiles  = true;
     this.words    = {};
+    
+    showdown.setFlavor('github');
 
     this.prepare  = function () {
         this.isTiles = (this.main.config.hostsIsTiles !== undefined && this.main.config.hostsIsTiles !== null) ? this.main.config.hostsIsTiles : true;
@@ -125,31 +129,32 @@ function Hosts(main) {
         });
 
     };
+    
+    async function showUpdateInfo(data) {
+        const $dialog = $('#dialog-host-update');
 
-    function showUpdateInfo(data) {
-        var $dialog = $('#dialog-host-update');
-        if (data) {
-            var path = data.path;
-            path = path.replace(/\\/g, '/');
-            var parts = path.split('/');
-            parts.pop(); // js-controller
-            parts.pop(); // node_modules
-
-            if (data.platform === 'linux' || data.platform === 'darwin' || data.platform === 'freebsd' || data.platform === 'lin') {
-                // linux
-                $dialog.find('#dialog-host-update-instructions').val('cd ' + parts.join('/') + '\nsudo iobroker stop\nsudo iobroker update\nsudo iobroker upgrade self\nsudo iobroker start')
-            } else {
-                // windows
-                $dialog.find('#dialog-host-update-instructions').val('cd ' + parts.join('\\') + '\niobroker stop\niobroker update\niobroker upgrade self\niobroker start')
+        let updateInfo;
+        await fetch("https://raw.githubusercontent.com/ioBroker/ioBroker.docs/master/admin/" + systemLang + "/controller-upgrade.md").then(async (resp) => {
+            if(resp.ok){
+                updateInfo = await resp.text();
+            }else{
+                updateInfo = _("update_info_no_net");
             }
-        } else {
-            $dialog.find('#dialog-host-update-instructions').val('cd /opt/iobroker\nsudo iobroker stop\nsudo iobroker update\nsudo iobroker upgrade self\nsudo iobroker start')
-        }
+        });
+        let html = new showdown.Converter().makeHtml(updateInfo);
+        html = html.replace(/<img/g, '<img class="img-responsive"');
+        html = html.replace(/<h1/g, '<h4');
+        html = html.replace(/<h2/g, '<h5');
+        html = html.replace(/<\/h1>/g, '</h4>');
+        html = html.replace(/<\/h2>/g, '</h5>');
+        
+        $dialog.find('#dialog-host-update-instructions').html(html);
 
         if (!$dialog.data('inited')) {
             $dialog.data('inited', true);
             $dialog.modal();
         }
+        
         $dialog.modal('open');
     }
 
@@ -470,7 +475,7 @@ function Hosts(main) {
             if (this.isTiles) {
                 showHostsTile();
             } else {
-                showHostsTable()
+                showHostsTable();
             }
             applyFilter(this.$tab.find('.filter-input').val());
 

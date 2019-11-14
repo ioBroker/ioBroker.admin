@@ -51,9 +51,9 @@ async function asyncForEach(array, callback) {
     }
 }
 
-let $iframeDialog = null;  // used in adapter settings window
-let configNotSaved = null; // used in adapter settings window
-let showConfig = null;     // used in adapter settings window
+var $iframeDialog = null;  // used in adapter settings window
+var configNotSaved = null; // used in adapter settings window
+var showConfig = null;     // used in adapter settings window
 
 const defaults = {};
 const customPostInits = {};

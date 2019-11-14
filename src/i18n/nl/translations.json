@@ -286,7 +286,6 @@
   "Installed instances": "Geïnstalleerde instanties",
   "Installed version": "Geïnstalleerde versie",
   "Instances": "Instanties",
-  "Instructions": "Instructies",
   "Intro": "Begin",
   "Invalid configuration. Please fix": "Ongeldige configuratie. Corrigeer alstublieft",
   "Invalid version of %s": "Ongeldige versie van %s",
@@ -854,7 +853,6 @@
   "unit": "eenheid",
   "update": "bijwerken",
   "update adapter information": "adapter informatie bijwerken",
-  "update-part1": "Vanwege het veelvoud aan Platformen waarop ioBroker beschikbaar is kan een systeemupdate alleen handmatig uitgevoerd worden. Ga voor handmatige update naar je systeem via de console en voer het volgende uit:",
   "updated": "bijgewerkt",
   "updates": "updates",
   "upload": "uploaden",
@@ -880,5 +878,6 @@
   "wetty": "Wetty",
   "write": "schrijven",
   "write operation": "schrijven",
-  "yesterday": "gisteren"
+  "yesterday": "gisteren",
+  "update_info_no_net": "Ga naar deze pagina voor informatie over het bijwerken van de controller: <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/nl/controller-upgrade.md\" target=\"_blank\">Update JS-Contoller</a>"
 }

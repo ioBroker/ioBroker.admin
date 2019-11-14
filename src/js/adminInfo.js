@@ -132,17 +132,19 @@ function InfoAdapter(main) {
                         });
                     }
 
-                    if (showIt && message['node-version'] && that.systemData.node) {
+                    if (showIt && message['node-version']) {
                         const condition = message['node-version'];
-                        showIt = that.checkConditions(condition, that.systemData.node);
+                        showIt = that.systemData.node !== null && that.checkConditions(condition, that.systemData.node);
                     }
-                    if (showIt && message['npm-version'] && that.systemData.npm) {
+                    if (showIt && message['npm-version']) {
                         const condition = message['npm-version'];
-                        showIt = that.checkConditions(condition, that.systemData.npm);
+                        showIt = that.systemData.npm !== null && that.checkConditions(condition, that.systemData.npm);
                     }
-                    if (showIt && message['os'] && that.systemData.os) {
-                        const condition = message['os'];
-                        showIt = that.systemData.os === message['os'];
+                    if (showIt && message['os']) {
+                        showIt = that.systemData.os !== null && that.systemData.os === message['os'];
+                    }
+                    if (showIt && message['repo']) {
+                        showIt = that.main.systemConfig.common.activeRepo === message['repo'];
                     }
 
                     if (showIt) {

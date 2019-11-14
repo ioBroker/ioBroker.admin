@@ -2,9 +2,33 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.6.9",
+    "version": "3.6.12",
     "news": {
-      "3.6.9": {
+      "3.6.12": {
+        "en": "Add repo check to popup messages",
+        "de": "Repo-Check zu Popup-Nachrichten hinzufügen",
+        "ru": "Добавить проверку репо во всплывающие сообщения",
+        "pt": "Adicionar verificação de repo às mensagens pop-up",
+        "nl": "Repo-controle toevoegen aan pop-upberichten",
+        "fr": "Ajouter repo check aux messages contextuels",
+        "it": "Aggiungi controllo repository ai messaggi popup",
+        "es": "Agregar verificación de repositorio a mensajes emergentes",
+        "pl": "Dodaj kontrolę repo do wyskakujących wiadomości",
+        "zh-cn": "将回购检查添加到弹出消息"
+      },
+      "3.6.11": {
+        "en": "Fixed login of non-admin user ",
+        "de": "Fehler beim Anmelden eines Benutzers ohne Administratorrechte behoben",
+        "ru": "Исправлена ошибка входа пользователя без прав администратора",
+        "pt": "Corrigido login do usuário não administrador",
+        "nl": "Vaste aanmelding van niet-admin-gebruiker",
+        "fr": "Connexion fixe de l'utilisateur non-administrateur",
+        "it": "Risolto il login dell'utente non amministratore",
+        "es": "Inicio de sesión fijo de usuario no administrador",
+        "pl": "Naprawiono logowanie użytkownika niebędącego administratorem",
+        "zh-cn": "固定非管理员用户登录"
+      },
+      "3.6.10": {
         "en": "Add NPM version and OS check to popup messages",
         "de": "NPM-Version und Betriebssystemprüfung zu Popup-Meldungen hinzufügen",
         "ru": "Добавить версию NPM и проверку ОС во всплывающих сообщениях",
@@ -15,18 +39,6 @@
         "es": "Agregue la versión NPM y la verificación del sistema operativo a los mensajes emergentes",
         "pl": "Dodaj wersję NPM i kontrolę systemu operacyjnego do wyskakujących wiadomości",
         "zh-cn": "添加NPM版本和操作系统检查以弹出消息"
-      },
-      "3.6.7": {
-        "en": "Add Node.JS version check to popup messages",
-        "de": "Node.JS-Versionsprüfung zu Popup-Nachrichten hinzufügen",
-        "ru": "Добавить проверку версии Node.JS во всплывающие сообщения",
-        "pt": "Adicione a verificação da versão do Node.JS às mensagens pop-up",
-        "nl": "Voeg Node.JS versiecontrole toe aan pop-upberichten",
-        "fr": "Ajouter la vérification de la version de Node.JS aux messages contextuels",
-        "it": "Aggiungi il controllo versione Node.JS ai messaggi popup",
-        "es": "Agregar verificación de versión de Node.JS a mensajes emergentes",
-        "pl": "Dodaj sprawdzanie wersji Node.JS do wyskakujących wiadomości",
-        "zh-cn": "将Node.JS版本检查添加到弹出消息"
       },
       "3.6.7": {
         "en": "Add Node.JS version check to popup messages",

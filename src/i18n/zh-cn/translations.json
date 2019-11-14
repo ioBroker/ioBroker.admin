@@ -286,7 +286,6 @@
   "Installed instances": "已安装的程序",
   "Installed version": "已安装的版本",
   "Instances": "程序",
-  "Instructions": "说明",
   "Intro": "概况",
   "Invalid configuration. Please fix": "配置无效。请修理",
   "Invalid version of %s": "%s的版本无效",
@@ -854,7 +853,6 @@
   "unit": "单元",
   "update": "刷新",
   "update adapter information": "更新插件信息",
-  "update-part1": "由于ioBroker可以在许多不同的平台上运行，因此目前只能进行手动更新。要开始手动更新，请通过控制台转到控制器并执行以下操作：",
   "updated": "刷新",
   "updates": "刷新",
   "upload": "上传",
@@ -880,5 +878,6 @@
   "wetty": "Wetty",
   "write": "写",
   "write operation": "写",
-  "yesterday": "昨天"
+  "yesterday": "昨天",
+  "update_info_no_net": "有关更新控制器的信息，请访问以下页面： <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/zh-cn/controller-upgrade.md\" target=\"_blank\">Update JS-Contoller</a>"
 }

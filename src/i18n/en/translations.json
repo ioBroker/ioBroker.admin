@@ -286,7 +286,6 @@
   "Installed instances": "Installed instances",
   "Installed version": "Installed version",
   "Instances": "Instances",
-  "Instructions": "Instructions",
   "Intro": "Overview",
   "Invalid configuration. Please fix": "Invalid configuration. Please fix",
   "Invalid version of %s": "Invalid version of %s",
@@ -854,7 +853,6 @@
   "unit": "unit",
   "update": "update",
   "update adapter information": "update adapter information",
-  "update-part1": "Because ioBroker runs on many very different platforms, only manual updating is possible at the moment. To start the manual update, please go to your controller via console and execute the following:",
   "updated": "updated",
   "updates": "updates",
   "upload": "Upload",
@@ -880,5 +878,6 @@
   "wetty": "Wetty",
   "write": "write",
   "write operation": "write",
-  "yesterday": "yesterday"
+  "yesterday": "yesterday",
+  "update_info_no_net": "For information about updating the controller, visit this page: <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/en/controller-upgrade.md\" target=\"_blank\">Update JS-Contoller</a>"  
 }
