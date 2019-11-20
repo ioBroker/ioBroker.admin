@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.7.0",
+    "version": "3.7.1",
     "news": {
-      "3.7.0": {
+      "3.7.1": {
         "en": "Easy admin configuration was implemented",
         "de": "Einfache Admin-Konfiguration wurde implementiert",
         "ru": "Простая конфигурация администратора была реализована",
