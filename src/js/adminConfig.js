@@ -24,7 +24,7 @@ function Config(main) {
                     console.log('Unknown event: ' + (event.data|| event.message));
                 }
             }
-        },false);
+        }, false);
     };
 
     this.init = function () {

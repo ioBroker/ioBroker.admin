@@ -100,7 +100,7 @@ function detectIE() {
 
 (function ($) {
 $(document).ready(function () {
-    let path = location.pathname + 'socket.io';
+    let path = location.pathname.replace('index.html', '') + 'socket.io';
     if (location.pathname.match(/^\/admin\//)) {
         path = '/socket.io';
     }
@@ -1903,6 +1903,10 @@ $(document).ready(function () {
                 // Read system configuration
                 main.socket.emit('getObject', 'system.config', function (errConfig, data) {
                     main.systemConfig = data;
+
+                    $('.admin-sidemenu-header .button-icon').off('click').on('click', function () {
+                        document.location = './configs.html';
+                    }).css('cursor', 'pointer');
 
                     // set logo and set branding
                     if (data && data.native && data.native.vendor) {

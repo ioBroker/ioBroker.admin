@@ -64,6 +64,14 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 
 **Let's encrypt works only from node.js version>=4.5**
 
+## Simple instance's settings page
+The user have the possibility to limit the access to the instance configuration dialog.
+For that the option "Allow access only to specific instances" must be activated.
+It could be found on the "Access to instances" tab.
+Additionally the allowed instances should be selected in the appeared configuration table.
+
+If this option is disabled, the simple configuration page could be accessed under http://IP:8081/configs.html
+
 ## Todo
 - move html tooltips to materialize tooltips
 - tiles for hosts (additionally to table - low prior)
@@ -79,6 +87,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 3.7.0 (2019-11-20)
+* (bluefox) Easy admin configuration was implemented
+
 ### 3.6.12 (2019-11-04)
 * (ldittmar) Add repo check to popup messages
 * (ldittmar) Update Controller-Update info page

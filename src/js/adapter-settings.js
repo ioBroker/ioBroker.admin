@@ -25,7 +25,9 @@ function preInit () {
     var id = 'system.adapter.' + adapter + '.' + instance;
 
     // Extend dictionary with standard words for adapter
-    if (typeof systemDictionary === 'undefined') systemDictionary = {};
+    if (typeof systemDictionary === 'undefined') {
+        systemDictionary = {};
+    }
 
     systemDictionary.save =           {"en": "Save",           "fr": "Sauvegarder",                     "nl": "Opslaan",             "es": "Salvar",                      "pt": "Salve",                   "it": "Salvare",                     "de": "Speichern",                "pl": "Zapisać",                      "ru": "Сохранить",           "zh-cn": "保存"};
     systemDictionary.saveclose =      {"en": "Save and close", "fr": "Sauver et fermer",                "nl": "Opslaan en afsluiten","es": "Guardar y cerrar",            "pt": "Salvar e fechar",         "it": "Salva e chiudi",              "de": "Speichern und schließen",  "pl": "Zapisz i zamknij",             "ru": "Сохранить и выйти",   "zh-cn": "保存并关闭"};
@@ -1085,16 +1087,16 @@ function getAdapterInstances(_adapter, callback) {
 
     socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.' + (_adapter || adapter), endkey: 'system.adapter.' + (_adapter || adapter) + '.\u9999'}, function (err, doc) {
         if (err) {
-            if (callback) callback ([]);
+            callback && callback([]);
         } else {
             if (doc.rows.length === 0) {
-                if (callback) callback ([]);
+                callback && callback([]);
             } else {
                 var res = [];
                 for (var i = 0; i < doc.rows.length; i++) {
                     res.push(doc.rows[i].value);
                 }
-                if (callback) callback(res);
+                callback && callback(res);
             }
         }
 
@@ -1296,7 +1298,9 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
 
         if (typeof cols[i] === 'object') {
             width  = cols[i].width;
-            if (cols[i].checkbox) checkbox = true;
+            if (cols[i].checkbox) {
+                checkbox = true;
+            }
             cols[i] = cols[i].name;
         }
         colNames.push(_(cols[i]));
@@ -1610,7 +1614,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
         values   = divId;
         divId    = '';
     }
-	
+
 	if (typeof onReady === 'number') {
         maxRaw = onReady;
         onReady = null;
@@ -1628,7 +1632,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
     }
     var $add = $div.find('.table-button-add');
 	$add.data('raw', values.length);
-	
+
 	if (maxRaw) {
 	    $add.data('maxraw', maxRaw);
     }
@@ -1752,11 +1756,15 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     type:    $(this).data('type') || 'text',
                     def:     $(this).data('default'),
                     style:   $(this).data('style'),
-					tdstyle: $(this).data('tdstyle')					 
+					tdstyle: $(this).data('tdstyle')
                 };
                 if (obj.type === 'checkbox') {
-                    if (obj.def === 'false') obj.def = false;
-                    if (obj.def === 'true')  obj.def = true;
+                    if (obj.def === 'false') {
+                        obj.def = false;
+                    }
+                    if (obj.def === 'true') {
+                        obj.def = true;
+                    }
                     obj.def = !!obj.def;
                 } else if (obj.type === 'select' || obj.type === 'select multiple') {
                     var vals = ($(this).data('options') || '').split(';');
@@ -1802,12 +1810,12 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 text += '<td';
                 var line    = '';
                 var style   = '';
-				var tdstyle = '';	  
+				var tdstyle = '';
                 if (names[i]) {
 					if (names[i].name !== '_index') {
                         tdstyle = names[i].tdstyle || '';
                         if (tdstyle && tdstyle[0] !== ';') tdstyle = ';' + tdstyle;
-                    }																  
+                    }
 					if (names[i].name === '_index') {
                         style = (names[i].style ? names[i].style : 'text-align: right;');
                         line += (v + 1);
@@ -1816,21 +1824,21 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         if (isMaterialize) {
                             line += '<span></span>';
                         }
-                    } else if (names[i].type.substring(0, 6) === 'select') {                        
-                        line += (names[i].type.substring(7, 16) === 'multiple' ? '<select multiple style="' : '<select style="') + (names[i].style ? names[i].style : 'width: 100%') + '" class="values-input" data-index="' + v + '" data-name="' + names[i].name + '">';                        
+                    } else if (names[i].type.substring(0, 6) === 'select') {
+                        line += (names[i].type.substring(7, 16) === 'multiple' ? '<select multiple style="' : '<select style="') + (names[i].style ? names[i].style : 'width: 100%') + '" class="values-input" data-index="' + v + '" data-name="' + names[i].name + '">';
                         var options;
                         if (names[i].name === 'room') {
                             options = $table.data('rooms');
                         } else if (names[i].name === 'func') {
                             options = $table.data('functions');
-							if (names[i].type === 'select multiple') delete options[_('none')];									   
+							if (names[i].type === 'select multiple') delete options[_('none')];
                         } else {
                             options = names[i].options;
                         }
-						
+
                         var val = (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]);
                         if (typeof val !== 'object') val = [val];
-                        for (var p in options) {                                                        
+                        for (var p in options) {
                             line += '<option value="' + p + '" ' + (val.indexOf(p) !== -1 ? ' selected' : '') + '>' + options[p] + '</option>';
                         }
                         line += '</select>';
@@ -1861,7 +1869,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     text += ' style="' + style + tdstyle + '">' + line + '</td>';
                 } else {
                     text += '>' + line + '</td>';
-                }						
+                }
             }
 
             text += '</tr>';

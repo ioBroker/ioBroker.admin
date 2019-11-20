@@ -170,6 +170,49 @@
         }
     }
 
+    function showInstances(configs, tabs) {
+        configs = configs || [];
+        tabs    = tabs    || [];
+        socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.', endkey: 'system.adapter.\u9999'}, function (err, doc) {
+            var res = [];
+            if (!err && doc.rows.length) {
+                for (var i = 0; i < doc.rows.length; i++) {
+                    res.push(doc.rows[i].value);
+                }
+            }
+            var text = '<table style="width: 100%"><tr><th>' + _('Instance') + '</th><th>' + _('Config') + '</th><th>' + _('Tab') + '</th></tr>\n';
+            var len = 'system.adapter.'.length;
+            for (var t = 0; t < res.length; t++) {
+				if (res[t].common.noConfig && !res[t].common.adminTab) {
+					continue;
+				}
+
+                var _id = res[t]._id.substring(len);
+                text += '<tr><td>' + _id + '</td>';
+                text += '<td>';
+				if (!res[t].common.noConfig) {
+					text += '<div class="input-field"><input type="checkbox" class="instance-config-enabled filled-in" data-value="' + _id + '" ' + (configs.indexOf(_id) !== -1 ? 'checked' : '') + '/><span></span></div>';
+				}
+                text += '</td><td>';
+				if (res[t].common.adminTab) {
+					text += '<div class="input-field"><input type="checkbox" class="instance-tab-enabled filled-in"    data-value="' + _id + '" ' + (tabs.indexOf(_id) !== -1 ? 'checked' : '') + '/><span></span></div>';
+				}
+                text += '</td></tr>';
+            }
+
+            text += '</table>';
+            var $table = $('#inst_table');
+            $table.html(text);
+            // workaround for materialize checkbox problem
+            $table.find('input[type="checkbox"]+span').off('click').on('click', function () {
+                var $input = $(this).prev();
+                if (!$input.prop('disabled')) {
+                    $input.prop('checked', !$input.prop('checked')).trigger('change');
+                }
+            });
+        });
+    }
+
     // the function loadSettings has to exist ...
     function load(settings, onChange) {
         if (!settings) return;
@@ -207,6 +250,20 @@
             }
         });
 
+        if (settings.limitAccess) {
+            $('.inst-table').show();
+        } else {
+            $('.inst-table').hide();
+        }
+        $('#limitAccess').on('change', function () {
+            if ($(this).prop('checked')) {
+                $('.inst-table').show();
+            } else {
+                $('.inst-table').hide();
+            }
+        });
+
+        showInstances(settings.allowedConfigs, settings.allowedTabs);
         onChange(false);
         M.updateTextFields();
 
@@ -248,6 +305,22 @@
             showMessage(_('Set certificates or load it first in the system settings (right top).'));
             return;
         }
+
+        var allowedConfigs = [];
+        var allowedTabs = [];
+        $('.instance-config-enabled').each(function () {
+            if ($(this).prop('checked')) {
+                allowedConfigs.push($(this).data('value'));
+            }
+        });
+        $('.instance-tab-enabled').each(function () {
+            if ($(this).prop('checked')) {
+                allowedTabs.push($(this).data('value'));
+            }
+        });
+        obj.allowedConfigs = allowedConfigs;
+        obj.allowedTabs    = allowedTabs;
+
         var isRedirect = false;
         var isHttp = false;
         if (oldBind !== obj.bind) {
@@ -296,6 +369,10 @@
         width: 320px;
         height: auto;
     }
+    #inst_table td, #inst_table tr {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
 </style>
 </head>
 <body>
@@ -307,6 +384,7 @@
                 <li class="tab col s2"><a href="#tab-main"  class="translate active">Main settings</a></li>
                 <li class="tab col s2 le-settings"><a href="#tab-le"    class="translate">Let's Encrypt SSL</a></li>
                 <li class="tab col s2 tab-login"><a href="#tab-login" class="translate">Background</a></li>
+                <li class="tab col s2 tab-instances"><a href="#tab-instances" class="translate">Access to instances</a></li>
             </ul>
         </div>
         <div id="tab-main" class="col s12 page">
@@ -328,8 +406,8 @@
             <div class="row">
                 <div class="input-field col s12 m6 l2">
                     <input class="value" id="secure" type="checkbox" />
-                    <label class="translate" for="secure">Secure(HTTPS):</label>
-                </div>                
+                    <span class="translate" for="secure">Secure(HTTPS):</span>
+                </div>
                 <div class="input-field col s12 m6 l2 col-certPublic">
                     <select id="certPublic" class="value"></select>
                     <label class="translate" for="certPublic">Public certificate:</label>
@@ -346,7 +424,7 @@
             <div class="row">
                 <div class="input-field col s12 m6 l2">
                     <input class="value" id="auth" type="checkbox" />
-                    <label class="translate" for="auth">Authentication:</label>
+                    <span class="translate" for="auth">Authentication:</span>
                 </div>
                 <div class="input-field col s12 m6 l2 col-defaultUser">
                     <select class="value" id="defaultUser"></select>
@@ -386,13 +464,13 @@
             <div class="row">
                 <div class="input-field col s11">
                     <input class="value" id="leEnabled" type="checkbox" data-link="lets-encrypt-certificates"/>
-                    <label for="leEnabled" class="translate">Use Lets Encrypt certificates:</label>
+                    <span for="leEnabled" class="translate">Use Lets Encrypt certificates:</span>
                 </div>
             </div>
             <div class="row le-sub-settings">
                 <div class="input-field col s11">
                     <input class="value" id="leUpdate" type="checkbox" data-link="lets-encrypt-certificates"/>
-                    <label for="leUpdate" class="translate">Use this instance for automatic update:</label>
+                    <span for="leUpdate" class="translate">Use this instance for automatic update:</span>
                 </div>
             </div>
             <div class="row le-sub-settings le-sub-settings-update">
@@ -443,6 +521,24 @@
                         <span class="translate">place here</span>
                         <img id="login_image" src="" />
                     </div>
+                </div>
+            </div>
+        </div>
+        <div id="tab-instances" class="col s12 page">
+            <div class="row">
+                <div class="col s12">
+                    <span class="translate">explain_access_instance</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m8 l4">
+                    <input class="value" id="limitAccess" type="checkbox"/>
+                    <span class="translate" for="limitAccess">Allow access only to specific instances</span>
+                </div>
+            </div>
+            <div class="row inst-table" style="height: calc(100% - 80px); margin-bottom: 0; overflow: hidden">
+                <div class="col s12 m8 l4" id="inst_table" style="height: 100%; overflow: auto;">
+
                 </div>
             </div>
         </div>
