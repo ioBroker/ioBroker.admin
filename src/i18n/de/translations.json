@@ -49,7 +49,8 @@
   "Architecture": "Die Architektur",
   "Are you sure to delete %s?": "Wollen Sie <b>\"%s\"</b> wirklich löschen?",
   "Are you sure to delete <span style=\"color: red\">all</span> children of %s?": "Wollen Sie wirklich <span style=\"color: red; font-weight: bold\">alle</span> untergeordneten Objekte von <b>\"%s\"</b> löschen?",
-  "Are you sure to delete all children of %s?": "Wollen Sie wirklich <b>\"%s\"</b> und <span style=\"color: red; font-weight: bold\">alle</span> untergeordneten Objekte löschen?",  "Are you sure to delete script %s?": "Wollen Sie das Skript '%s' wirklich löschen?",
+  "Are you sure to delete all children of %s?": "Wollen Sie wirklich <b>\"%s\"</b> und <span style=\"color: red; font-weight: bold\">alle</span> untergeordneten Objekte löschen?",
+  "Are you sure to delete script %s?": "Wollen Sie das Skript '%s' wirklich löschen?",
   "Are you sure you want to delete adapter %s?": "Möchten Sie den Adapter %s wirklich löschen?",
   "Are you sure you want to delete the instance <b>%s</b>?": "Möchten Sie die Instanz <b>%s</b> wirklich löschen?",
   "Are you sure?": "Sind sie sicher?",
@@ -851,6 +852,7 @@
   "unit": "Einheit",
   "update": "Aktualisieren",
   "update adapter information": "Adapterinformationen aktualisieren",
+  "update_info_no_net": "Für Informationen zum Update des Controllers, besuchen Sie diese Seite: <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/de/controller-upgrade.md\" target=\"_blank\">Update JS-Contoller</a>",
   "updated": "aktualisiert",
   "updates": "Aktualisierung",
   "upload": "Upload",
@@ -876,6 +878,5 @@
   "wetty": "Wetty",
   "write": "schreiben",
   "write operation": "schreiben",
-  "yesterday": "gestern",
-  "update_info_no_net": "Für Informationen zum Update des Controllers, besuchen Sie diese Seite: <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/de/controller-upgrade.md\" target=\"_blank\">Update JS-Contoller</a>"
+  "yesterday": "gestern"
 }

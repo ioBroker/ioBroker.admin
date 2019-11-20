@@ -852,6 +852,7 @@
   "unit": "单元",
   "update": "刷新",
   "update adapter information": "更新插件信息",
+  "update_info_no_net": "有关更新控制器的信息，请访问以下页面： <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/zh-cn/controller-upgrade.md\" target=\"_blank\">Update JS-Contoller</a>",
   "updated": "刷新",
   "updates": "刷新",
   "upload": "上传",
@@ -877,6 +878,5 @@
   "wetty": "Wetty",
   "write": "写",
   "write operation": "写",
-  "yesterday": "昨天",
-  "update_info_no_net": "有关更新控制器的信息，请访问以下页面： <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/zh-cn/controller-upgrade.md\" target=\"_blank\">Update JS-Contoller</a>"
+  "yesterday": "昨天"
 }

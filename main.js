@@ -47,7 +47,7 @@ function startAdapter(options) {
             objects[id] = obj;
 
             if (id === 'system.repositories') {
-                writeUpdateInfo();
+                writeUpdateInfo(adapter);
             }
         } else {
             //console.log('objectDeleted: ' + id);
@@ -71,11 +71,11 @@ function startAdapter(options) {
                     require('crypto').randomBytes(24, (ex, buf) => {
                         adapter.config.secret = buf.toString('hex');
                         adapter.extendForeignObject('system.config', {native: {secret: adapter.config.secret}});
-                        main();
+                        main(adapter);
                     });
                 } else {
                     adapter.config.secret = obj.native.secret;
-                    main();
+                    main(adapter);
                 }
             } else {
                 adapter.config.secret = secret;
@@ -113,7 +113,7 @@ function startAdapter(options) {
     return adapter;
 }
 
-function createUpdateInfo() {
+function createUpdateInfo(adapter) {
     // create connected object and state
     let updatesNumberObj = objects[adapter.namespace + '.info.updatesNumber'];
 
@@ -243,7 +243,7 @@ function upToDate(a, b) {
     }
 }
 
-function writeUpdateInfo(sources) {
+function writeUpdateInfo(adapter, sources) {
     if (!sources) {
         let obj = objects['system.repositories'];
         if (!objects['system.config'] || !objects['system.config'].common) {
@@ -308,12 +308,88 @@ function writeUpdateInfo(sources) {
     });
 }
 
-function initSocket(server, store) {
+function initSocket(server, store, adapter) {
     socket = new SocketIO(server, adapter.config, adapter, objects, store);
     socket.subscribe(null, 'objectChange', '*');
 }
 
-function main() {
+function processTasks(adapter) {
+    if (!adapter._running && adapter._tasks.length) {
+        adapter._running = true;
+
+        const obj = adapter._tasks.shift();
+        if (!obj.acl || obj.acl.owner !== adapter.config.defaultUser) {
+            obj.acl.owner = adapter.config.defaultUser;
+            adapter.setForeignObject(obj._id, obj, err => setImmediate(() => {
+                adapter._running = false;
+                processTasks(adapter);
+            }));
+        } else {
+            setImmediate(() => {
+                adapter._running = false;
+                processTasks(adapter);
+            });
+        }
+    }
+}
+
+function applyRightsToObjects(adapter, pattern, types, cb) {
+    if (typeof types === 'object') {
+        let count = types.length;
+        types.forEach(type => applyRightsToObjects(adapter, pattern, type, () => !--count && cb && cb()));
+    } else {
+        adapter.getObjectView('system', types, {startkey: pattern + '.', endkey: pattern + '.\u9999'}, (err, doc) => {
+            adapter._tasks = adapter._tasks || [];
+
+            if (!err && doc.rows.length) {
+                for (let i = 0; i < doc.rows.length; i++) {
+                    adapter._tasks.push(doc.rows[i].value);
+                }
+                processTasks(adapter);
+            }
+        });
+    }
+}
+
+function applyRights(adapter) {
+    const promises = [];
+    adapter.config.accessAllowedConfigs = adapter.config.accessAllowedConfigs || [];
+    adapter.config.accessAllowedTabs    = adapter.config.accessAllowedTabs || [];
+
+    adapter.config.accessAllowedConfigs.forEach(id => promises.push(new Promise(resolve =>
+        adapter.getForeignObject('system.adapter.' + id, (err, obj) => {
+            if (obj && obj.acl && obj.acl.owner !== adapter.config.defaultUser) {
+                obj.acl.owner = adapter.config.defaultUser;
+                adapter.setForeignObject('system.adapter.' + id, obj, err => resolve(!err));
+            } else {
+                resolve(false);
+            }
+        }))));
+
+    adapter.config.accessAllowedTabs.forEach(id => {
+        if (id.startsWith('devices.')) {
+            // change rights of all alias.*
+            applyRightsToObjects(adapter, 'alias', ['state', 'channel']);
+        } else if (id.startsWith('javascript.')) {
+            // change rights of all script.js.*
+            applyRightsToObjects(adapter, 'javascript', ['script', 'channel']);
+        } else if (id.startsWith('fullcalendar.')) {
+            // change rights of all fullcalendar.*
+            applyRightsToObjects(adapter, 'fullcalendar', ['schedule']);
+        } else if (id.startsWith('scenes.')) {
+            // change rights of all scenes.*
+            applyRightsToObjects(adapter, 'scenes', ['state', 'channel']);
+        }
+    });
+
+    Promise.all(promises)
+        .then(results => {
+            const len = results.filter(r => !!r).length;
+            len && adapter.log.info(`Updated ${len} objects`);
+        });
+}
+
+function main(adapter) {
     // adapter.subscribeForeignStates('*');
     // adapter.subscribeForeignObjects('*');
 
@@ -328,10 +404,14 @@ function main() {
             adapter.config.certificates = certificates;
             adapter.config.leConfig     = leConfig;
 
-            getData(() => webServer = new Web(adapter.config, adapter, initSocket));
+            getData(adapter, adapter => webServer = new Web(adapter.config, adapter, initSocket));
         });
     } else {
-        getData(() => webServer = new Web(adapter.config, adapter, initSocket));
+        getData(adapter, adapter => webServer = new Web(adapter.config, adapter, initSocket));
+    }
+
+    if (adapter.config.applyRights && adapter.config.accessLimit && !adapter.config.auth && adapter.config.defaultUser !== 'system.user.admin') {
+        applyRights(adapter);
     }
 
     // By default update repository every 24 hours
@@ -345,7 +425,7 @@ function main() {
     adapter.config.autoUpdate && updateRegister();
 }
 
-function getData(callback) {
+function getData(adapter, callback) {
     adapter.log.info('requesting all states');
     /*
     tasks++;
@@ -378,11 +458,11 @@ function getData(callback) {
                 adapter.config.tmpPathAllow = true;
             }
 
-            createUpdateInfo();
-            writeUpdateInfo();
+            createUpdateInfo(adapter);
+            writeUpdateInfo(adapter);
         }
 
-        callback && callback();
+        callback && callback(adapter);
     });
 }
 

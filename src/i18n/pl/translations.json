@@ -852,7 +852,8 @@
   "unit": "jednostka",
   "update": "aktualizacja",
   "update adapter information": "aktualizuj informacje o adapterze",
- "updated": "zaktualizowany",
+  "update_info_no_net": "Aby uzyskać informacje na temat aktualizacji kontrolera, odwiedź tę stronę: <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/pl/controller-upgrade.md\" target=\"_blank\">Update JS-Contoller</a>",
+  "updated": "zaktualizowany",
   "updates": "aktualizacje",
   "upload": "upload",
   "user permissions": "uprawnienia użytkownika",
@@ -877,6 +878,5 @@
   "wetty": "Wetty",
   "write": "pisać",
   "write operation": "pisać",
-  "yesterday": "wczoraj",
-  "update_info_no_net": "Aby uzyskać informacje na temat aktualizacji kontrolera, odwiedź tę stronę: <a href=\"https://github.com/ioBroker/ioBroker.docs/blob/master/admin/pl/controller-upgrade.md\" target=\"_blank\">Update JS-Contoller</a>"
+  "yesterday": "wczoraj"
 }

@@ -174,9 +174,11 @@
     "secure": false,
     "bind": "0.0.0.0",
     "cache": false,
-    "limitAccess": false,
-    "allowedConfigs": [],
-    "allowedTabs": [],
+
+    "accessLimit": false,
+    "accessApplyRights": false,
+    "accessAllowedConfigs": [],
+    "accessAllowedTabs": [],
 
     "certPublic": "",
     "certPrivate": "",

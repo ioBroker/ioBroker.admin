@@ -170,7 +170,7 @@
         }
     }
 
-    function showInstances(configs, tabs) {
+    function showInstances(configs, tabs, onChange) {
         configs = configs || [];
         tabs    = tabs    || [];
         socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.', endkey: 'system.adapter.\u9999'}, function (err, doc) {
@@ -209,6 +209,7 @@
                 if (!$input.prop('disabled')) {
                     $input.prop('checked', !$input.prop('checked')).trigger('change');
                 }
+                onChange();
             });
         });
     }
@@ -250,20 +251,24 @@
             }
         });
 
-        if (settings.limitAccess) {
+        if (settings.accessLimit) {
             $('.inst-table').show();
+            $('.applyRights').show();
         } else {
             $('.inst-table').hide();
+            $('.applyRights').hide();
         }
-        $('#limitAccess').on('change', function () {
+        $('#accessLimit').on('change', function () {
             if ($(this).prop('checked')) {
                 $('.inst-table').show();
+                $('.applyRights').show();
             } else {
                 $('.inst-table').hide();
+                $('.applyRights').hide();
             }
         });
 
-        showInstances(settings.allowedConfigs, settings.allowedTabs);
+        showInstances(settings.accessAllowedConfigs, settings.accessAllowedTabs, onChange);
         onChange(false);
         M.updateTextFields();
 
@@ -306,20 +311,20 @@
             return;
         }
 
-        var allowedConfigs = [];
-        var allowedTabs = [];
+        var accessAllowedConfigs = [];
+        var accessAllowedTabs = [];
         $('.instance-config-enabled').each(function () {
             if ($(this).prop('checked')) {
-                allowedConfigs.push($(this).data('value'));
+                accessAllowedConfigs.push($(this).data('value'));
             }
         });
         $('.instance-tab-enabled').each(function () {
             if ($(this).prop('checked')) {
-                allowedTabs.push($(this).data('value'));
+                accessAllowedTabs.push($(this).data('value'));
             }
         });
-        obj.allowedConfigs = allowedConfigs;
-        obj.allowedTabs    = allowedTabs;
+        obj.accessAllowedConfigs = accessAllowedConfigs;
+        obj.accessAllowedTabs    = accessAllowedTabs;
 
         var isRedirect = false;
         var isHttp = false;
@@ -356,7 +361,7 @@
         text-align: center;
         font-size: 20pt;
         font-weight: bold;
-        font-family:  'Arial';
+        font-family: 'Arial', sans-serif;
         color: #bbb;
         min-width: 320px;
         min-height: 200px
@@ -532,8 +537,12 @@
             </div>
             <div class="row">
                 <div class="col s12 m8 l4">
-                    <input class="value" id="limitAccess" type="checkbox"/>
-                    <span class="translate" for="limitAccess">Allow access only to specific instances</span>
+                    <input class="value" id="accessLimit" type="checkbox"/>
+                    <span class="translate" for="accessLimit">Allow access only to specific instances</span>
+                </div>
+                <div class="col s12 m8 l4 applyRights">
+                    <input class="value" id="applyRights" type="checkbox"/>
+                    <span class="translate" for="applyRights">Apply access rights for selected instances</span>
                 </div>
             </div>
             <div class="row inst-table" style="height: calc(100% - 80px); margin-bottom: 0; overflow: hidden">

@@ -156,13 +156,23 @@ function preInit () {
         "pl": "Aktywuj bezpieczną komunikację",
         "zh-cn": "请激活安全通信"
       };
-    //socket.on('connection', function () {
+
+    if (socket.connected) {
         loadSystemConfig(function () {
-            if (typeof translateAll === 'function') translateAll();
+            typeof translateAll === 'function' && translateAll();
             loadSettings(prepareTooltips);
         });
-    //});
+    } else {
+        socket.on('connect', function () {
+            loadSystemConfig(function () {
+                typeof translateAll === 'function' && translateAll();
+                loadSettings(prepareTooltips);
+            });
+        });
+    }
+
     var $body = $('body');
+
     $body.wrapInner('<div class="adapter-body"></div>');
     /*$body.prepend('<div class="header ui-tabs-nav ui-widget ui-widget-header ui-corner-all" style="padding: 2px" >' +
         '<button id="save" class="translateB">save</button>&nbsp;' +
@@ -265,9 +275,30 @@ function preInit () {
         });
     }
 
+    var loadCount = 0;
+    var loaded = false;
     // Read language settings
     function loadSystemConfig(callback) {
+        if (loaded) {
+            return;
+        }
+        // retry strategy
+        var _timeout = setTimeout(function () {
+            _timeout = null;
+            loadCount++;
+            if (loadCount < 10) {
+                loadSystemConfig(callback);
+            }
+        }, 1000);
+
         socket.emit('getObject', 'system.config', function (err, res) {
+            if (loaded) {
+                return;
+            }
+            loaded = true;
+            clearTimeout(_timeout);
+            _timeout = null;
+
             if (!err && res && res.common) {
                 systemLang = res.common.language || systemLang;
                 systemConfig = res;

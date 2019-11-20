@@ -484,9 +484,11 @@
             $('.tab-intro-cards').hide();
             if (a.tab) {
                 $('#back').show();
+                $('.button-icon').hide();
                 $('.brand-logo').css('cursor', 'pointer').on('click', function () {window.location.hash = '';});
             } else {
                 $('#back').hide();
+                $('.button-icon').show();
                 $('.brand-logo').css('cursor', 'default').off('click');
             }
 
@@ -498,6 +500,7 @@
             $iframe[0].contentWindow.location.replace('./empty.html');
 
             $('#adapter_name').hide();
+            $('.button-icon').show();
             $('#back').hide();
             $('.brand-logo').css('cursor', 'default').off('click');
             showTiles();
