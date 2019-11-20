@@ -2138,7 +2138,7 @@ $(document).ready(function () {
     main._timeout = setTimeout(function () {
         main._timeout = null;
         main.loadCount++;
-        if (main.loadCount < 10) {
+        if (main.loadCount < 10 && !main.loaded) {
             onConnect();
         }
     }, 1000);
