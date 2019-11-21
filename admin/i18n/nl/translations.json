@@ -1,5 +1,8 @@
 {
+  "Access to instances": "Toegang tot instanties",
   "Admin adapter settings": "Admin adapter instellingen",
+  "Allow access only to specific instances": "Sta alleen toegang toe tot specifieke instanties",
+  "Apply access rights for selected instances": "Pas toegangsrechten toe voor geselecteerde instanties",
   "Authentication was deactivated": "Verificatie was gedeactiveerd",
   "Authentication:": "Authenticatie",
   "Auto update:": "Updates controleren",
@@ -35,6 +38,7 @@
   "every 3 days": "om de 3 dagen",
   "every day": "elke dag",
   "every week": "elke week",
+  "explain_access_instance": "Er is een optie om toegang te verlenen tot de specifieke configuratiepagina's van geselecteerde exemplaren.",
   "manually": "handmatig",
   "monthly": "maandelijks",
   "place here": "plaats de bestanden hier",

@@ -60,8 +60,9 @@ function startAdapter(options) {
         socket && socket.objectChange(id, obj);
     });
 
-    adapter.on('stateChange', (id, state) =>
-        socket && socket.stateChange(id, state));
+    adapter.on('stateChange', (id, state) => {
+        socket && socket.stateChange(id, state);
+    });
 
     adapter.on('ready', () => {
         adapter.getForeignObject('system.config', (err, obj) => {

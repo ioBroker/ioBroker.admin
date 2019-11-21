@@ -120,8 +120,9 @@
     }
 
     function showHideSettings(id) {
-        var $secure = $('#secure');
-        var $auth   = $('#auth');
+        var $secure      = $('#secure');
+        var $auth        = $('#auth');
+        var $accessLimit = $('#accessLimit');
 
         if ($secure.prop('checked')) {
             $('.col-certPublic').show();
@@ -144,7 +145,23 @@
             $('.col-certChained').hide();
             $('.le-settings').addClass('disabled');
         }
-        if ($auth.prop('checked')) {
+
+        var auth = $auth.prop('checked');
+        var accessLimit = $accessLimit.prop('checked');
+
+        if (accessLimit) {
+            $('.inst-table').show();
+            if (auth) {
+                $('.applyRights').show();
+            } else {
+                $('.applyRights').hide();
+            }
+        } else {
+            $('.inst-table').hide();
+            $('.applyRights').hide();
+        }
+
+        if (auth) {
             $('.tab-login').removeClass('disabled');
             $('#defaultUser').val('admin');
             $('.col-defaultUser').hide();
@@ -158,6 +175,8 @@
                     }
                 });
             }
+
+            $('.applyRights').hide();
         } else {
             $('.tab-login').addClass('disabled');
             $('.col-defaultUser').show();
@@ -259,13 +278,7 @@
             $('.applyRights').hide();
         }
         $('#accessLimit').on('change', function () {
-            if ($(this).prop('checked')) {
-                $('.inst-table').show();
-                $('.applyRights').show();
-            } else {
-                $('.inst-table').hide();
-                $('.applyRights').hide();
-            }
+            showHideSettings($(this).attr('id'));
         });
 
         showInstances(settings.accessAllowedConfigs, settings.accessAllowedTabs, onChange);

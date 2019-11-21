@@ -1,5 +1,8 @@
 {
+  "Access to instances": "Acesso a instâncias",
   "Admin adapter settings": "Configurações do adaptador de administração",
+  "Allow access only to specific instances": "Permitir acesso apenas a instâncias específicas",
+  "Apply access rights for selected instances": "Aplicar direitos de acesso para instâncias selecionadas",
   "Authentication was deactivated": "A autenticação foi desativada",
   "Authentication:": "Autenticação",
   "Auto update:": "Verificar atualizações",
@@ -35,6 +38,7 @@
   "every 3 days": "cada 3 dias",
   "every day": "todos os dias",
   "every week": "todas as semanas",
+  "explain_access_instance": "Existe uma opção para permitir o acesso às páginas de configuração específicas das instâncias selecionadas.",
   "manually": "manualmente",
   "monthly": "mensal",
   "place here": "coloque os arquivos aqui",

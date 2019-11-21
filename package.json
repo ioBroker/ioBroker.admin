@@ -35,13 +35,15 @@
     "@iobroker/adapter-core": "^1.0.3"
   },
   "devDependencies": {
-    "@iobroker/testing": "^1.3.0",
     "@babel/core": "^7.6.4",
     "@babel/plugin-transform-arrow-functions": "^7.2.0",
     "@babel/plugin-transform-block-scoping": "^7.6.3",
-    "@babel/plugin-transform-classes": "^7.5.5",
+    "@babel/plugin-transform-classes": "^7.7.0",
     "@babel/plugin-transform-template-literals": "^7.4.4",
+    "@iobroker/testing": "^1.3.0",
+    "ansi-colors": "^4.1.1",
     "chai": "^4.2.0",
+    "fancy-log": "^1.3.3",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-clean-css": "^4.2.0",
@@ -51,8 +53,6 @@
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-terser": "^1.2.0",
-    "fancy-log": "^1.3.3",
-    "ansi-colors": "^4.1.1",
     "materialize-css": "^1.0.0",
     "mocha": "^6.2.2"
   },

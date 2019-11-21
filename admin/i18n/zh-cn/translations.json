@@ -1,5 +1,8 @@
 {
+  "Access to instances": "访问实例",
   "Admin adapter settings": "admin适配器的设置",
+  "Allow access only to specific instances": "只允许访问特定实例",
+  "Apply access rights for selected instances": "对选定实例应用访问权限",
   "Authentication was deactivated": "身份验证已停用",
   "Authentication:": "认证",
   "Auto update:": "检查更新",
@@ -35,6 +38,7 @@
   "every 3 days": "每3天一次",
   "every day": "每天",
   "every week": "每周",
+  "explain_access_instance": "有一个选项允许访问所选实例的特定配置页面。",
   "manually": "手动",
   "monthly": "每月一次",
   "place here": "将文件放在这里",

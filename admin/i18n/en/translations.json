@@ -1,5 +1,8 @@
 {
+  "Access to instances": "Access to instances",
   "Admin adapter settings": "The settings for the admin adapter",
+  "Allow access only to specific instances": "Allow access only to specific instances",
+  "Apply access rights for selected instances": "Apply access rights for selected instances",
   "Authentication was deactivated": "Authentication was deactivated",
   "Authentication:": "Authentication",
   "Auto update:": "Check for updates",
@@ -35,6 +38,7 @@
   "every 3 days": "every 3 days",
   "every day": "every day",
   "every week": "every week",
+  "explain_access_instance": "There is a option to allow access to the specific configuration pages of selected instances.",
   "manually": "manually",
   "monthly": "monthly",
   "place here": "place the files here",

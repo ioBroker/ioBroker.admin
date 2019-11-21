@@ -1,5 +1,8 @@
 {
+  "Access to instances": "Доступ к экземплярам",
   "Admin adapter settings": "Настройки для адаптера admin",
+  "Allow access only to specific instances": "Разрешить доступ только к конкретным настройкам",
+  "Apply access rights for selected instances": "Применить права доступа для выбранных экземпляров",
   "Authentication was deactivated": "Аутентификация была отключена",
   "Authentication:": "Аутентификация",
   "Auto update:": "Проверка обновлений",
@@ -35,6 +38,7 @@
   "every 3 days": "каждые 3 дня",
   "every day": "каждый день",
   "every week": "каждую неделю",
+  "explain_access_instance": "Существует возможность разрешить доступ к определенным страницам конфигурации выбранных экземпляров.",
   "manually": "вручную",
   "monthly": "раз в месяц",
   "place here": "разместите файлы здесь",
