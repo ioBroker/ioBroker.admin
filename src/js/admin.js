@@ -1791,13 +1791,11 @@ $(document).ready(function () {
                 onConnect();
             }
         }, 1000);
-
-        $('#connecting').hide();
-
+        
         if (firstConnect) {
-            firstConnect = false;
-
             main.socket.emit('getUserPermissions', function (err, acl) {
+                $('#connecting').hide();
+                firstConnect = false;
                 main.getUser();
 
                 if (main.loaded) {
