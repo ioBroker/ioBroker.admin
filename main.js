@@ -390,7 +390,7 @@ function main(adapter) {
         getData(adapter, adapter => webServer = new Web(adapter.config, adapter, initSocket));
     }
 
-    if (adapter.config.applyRights && adapter.config.accessLimit && !adapter.config.auth && adapter.config.defaultUser !== 'system.user.admin') {
+    if (adapter.config.accessApplyRights && adapter.config.accessLimit && !adapter.config.auth && adapter.config.defaultUser !== 'system.user.admin') {
         applyRights(adapter);
     }
 
