@@ -12,7 +12,7 @@ function IobListHeader(header, options) {
     $header = typeof header === 'object' ? $(header) : $('#' + header);
     if ($header[0].tagName === 'TABLE') $header = $header.find('tr:first');
     header = $header[0];
-    
+
     var that = this;
     that.selectIdOffset = [];
 
@@ -103,7 +103,7 @@ function IobListHeader(header, options) {
                 break;
             case 'edit':
                 txt =
-                    '    <input  class="list-header-input" placeholder="' + title + '" id="' + id + '" title="' + title + '">' +
+                    '    <input  class="list-header-input" autocomplete="new-password" placeholder="' + title + '" id="' + id + '" title="' + title + '">' +
                     '    <button class="list-header-clear" id="' + id + '-clear" role="button" title="' + title + '"></button>';
                 break;
             case 'text':

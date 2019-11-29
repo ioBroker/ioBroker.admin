@@ -1691,7 +1691,7 @@ function filterChanged(e) {
             if (placeholder === undefined) {
                 placeholder = data.texts[filterNo.toLowerCase()] || '';
             }
-            return  '<input  data-index="' + filterNo + '" placeholder="' + placeholder + '" class="filter">' +
+            return  '<input autocomplete="new-password" data-index="' + filterNo + '" placeholder="' + placeholder + '" class="filter">' +
                     '<button data-index="' + filterNo + '" class="filter-btn"></button>\n';
         }
 
@@ -2715,7 +2715,7 @@ function filterChanged(e) {
 
                     forEachColumn(data, function (name, c) {
                         if (name === 'name') {
-                            inputs[name] = $('<input type="text" data-name="' + name + '" class="select-edit" value="' + data.objects[_data.node.key].common[name] + '" style="width: 100%"/>');
+                            inputs[name] = $('<input autocomplete="new-password" type="text" data-name="' + name + '" class="select-edit" value="' + data.objects[_data.node.key].common[name] + '" style="width: 100%"/>');
                             $tdList.eq(c).html(inputs[name]);
                         }
                     });
