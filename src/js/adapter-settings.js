@@ -1743,6 +1743,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             });
             return;
         }
+
         // load functions
         if (!$table.data('functions') && $table.find('th[data-name="func"]').length) {
             getEnums('functions', function (err, list) {
@@ -1779,6 +1780,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             });
             return;
         }
+
         $table.find('th').each(function () {
             var name = $(this).data('name');
             if (name) {
@@ -1862,7 +1864,9 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                             options = $table.data('rooms');
                         } else if (names[i].name === 'func') {
                             options = $table.data('functions');
-							if (names[i].type === 'select multiple') delete options[_('none')];
+                            if (names[i].type === 'select multiple') {
+                                delete options[_('none')];
+                            }
                         } else {
                             options = names[i].options;
                         }
@@ -1905,6 +1909,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
             text += '</tr>';
         }
+
         var $lines = $div.find('.table-lines');
         if (!$lines.length) {
             $table.append('<tbody class="table-lines"></tbody>');
