@@ -64,6 +64,7 @@ function Adapters(main) {
     this.currentType   = '';
     this.isCollapsed   = {};
     this.isTiles       = true;
+    this.nodeJsVersions = {}; // node.js versions of hosts
 
     this.types = {
         occ:          'schedule'
@@ -605,15 +606,45 @@ function Adapters(main) {
     }
 
     this.getAdaptersInfo = function (host, update, updateRepo, callback) {
-        if (!host) return;
+        if (!host) {
+            return;
+        }
 
-        if (!callback) throw 'Callback cannot be null or undefined';
+        if (!callback) {
+            throw 'Callback cannot be null or undefined';
+        }
+
         if (update) {
             // Do not update too often
             if (!this.curRepoLastUpdate || ((new Date()).getTime() - this.curRepoLastUpdate > 1000)) {
                 this.curRepository = null;
                 this.curInstalled  = null;
             }
+        }
+
+        var requestCount = 0;
+
+        if (!this.nodeJsVersions[host.id]) {
+            requestCount++;
+            // read node.js version of current host
+            this.timeoutForGetHostInfoShort = setTimeout(function () {
+                this.timeoutForGetHostInfoShort = null;
+                (!--requestCount) && setTimeout(() => {
+                    this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));
+                    this.curRunning = null;
+                }, 0);
+            }, 300);
+
+            that.main.socket.emit('sendToHost', host.id, 'getHostInfoShort', null, function (data) {
+                this.timeoutForGetHostInfoShort && clearTimeout(this.timeoutForGetHostInfoShort);
+                this.timeoutForGetHostInfoShort = null;
+                this.nodeJsVersions[host.id] = data['Node.js'];
+
+                (!--requestCount) && setTimeout(() => {
+                    this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));
+                    this.curRunning = null;
+                }, 0);
+            });
         }
 
         if (this.curRunning) {
@@ -623,6 +654,7 @@ function Adapters(main) {
 
         if (!this.curRepository || this.curRepoLastHost !== host) {
             this.curRepository = null;
+            requestCount++;
             this.main.socket.emit('sendToHost', host, 'getRepository', {repo: this.main.systemConfig.common.activeRepo, update: updateRepo}, _repository => {
                 if (_repository === 'permissionError') {
                     console.error('May not read "getRepository"');
@@ -631,19 +663,18 @@ function Adapters(main) {
 
                 this.curRepository = _repository || {};
 
-                if (this.curRepository && that.curInstalled && that.curRunning) {
-                    this.curRepoLastUpdate = Date.now();
-                    setTimeout(() => {
-                        this.curRunning.forEach(cb =>
-                            cb(this.curRepository, this.curInstalled));
-
-                        this.curRunning = null;
-                    }, 0);
-                }
+                this.curRepoLastUpdate = Date.now();
+                (!--requestCount) && setTimeout(() => {
+                    this.curRunning && this.curRunning.forEach(cb =>
+                        cb(this.curRepository, this.curInstalled));
+                    this.curRunning = null;
+                }, 0);
             });
         }
-        if (!this.curInstalled || this.curRepoLastHost !== host) {
+
+        if (!this.curInstalled  || this.curRepoLastHost !== host) {
             this.curInstalled = null;
+            requestCount++;
             this.main.socket.emit('sendToHost', host, 'getInstalled', null, _installed => {
                 if (_installed === 'permissionError') {
                     console.error('May not read "getInstalled"');
@@ -652,28 +683,21 @@ function Adapters(main) {
 
                 this.curInstalled = _installed || {};
 
-                if (this.curRepository && that.curInstalled) {
-                    this.curRepoLastUpdate = Date.now();
-                    setTimeout(() => {
-                        this.curRunning.forEach(cb =>
-                            cb(this.curRepository, this.curInstalled));
-
-                        this.curRunning = null;
-                    }, 0);
-                }
+                this.curRepoLastUpdate = Date.now();
+                (!--requestCount) && setTimeout(() => {
+                    this.curRunning && this.curRunning.forEach(cb =>
+                        cb(this.curRepository, this.curInstalled));
+                    this.curRunning = null;
+                }, 0);
             });
         }
 
         this.curRepoLastHost = host;
 
-        if (this.curInstalled && this.curRepository) {
+        if (!requestCount) {
             setTimeout(() => {
-                if (this.curRunning) {
-                    this.curRunning.forEach(cb =>
-                        cb(this.curRepository, this.curInstalled));
-
-                    this.curRunning = null;
-                }
+                this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));
+                this.curRunning = null;
                 callback && callback(this.curRepository, this.curInstalled);
             }, 0);
         } else {
@@ -1159,6 +1183,7 @@ function Adapters(main) {
                         let updatableError = '';
 
                         const ad = that.data[a];
+                        const incompatible = this.main.currentHost && this.nodeJsVersions[this.main.currentHost];
                         types.indexOf(ad.group) === -1 && types.push(ad.group);
 //                        text += '<div class="tile class-' + ad.group + '" data-id="' + ad.name + '">';
 //                        text += '   <div class="card-header">';
@@ -1217,7 +1242,6 @@ function Adapters(main) {
                         text += '   </div>';
                         text += '</div>';
                     }
-
 
                     // Add filtered out tile
                     text += '<div class="col s12 m6 l4 xl3 filtered-out">';
@@ -1327,6 +1351,7 @@ function Adapters(main) {
                         });
                     });
                 }
+
                 that.$tab.find('.grid-main-div').removeClass('order-a-z order-popular order-updated').addClass(that.currentOrder ? 'order-' + that.currentOrder : '');
                 that.$tab.find('.process-adapters').hide();
                 that.updateCounter(adaptersToUpdate);
@@ -1385,9 +1410,7 @@ function Adapters(main) {
         }
 
         if (!this.main.objectsLoaded) {
-            setTimeout(function () {
-                that.init(update, updateRepo);
-            }, 250);
+            setTimeout(() => that.init(update, updateRepo), 250);
             return;
         }
 
@@ -1398,9 +1421,7 @@ function Adapters(main) {
             this.main.subscribeObjects('system.host.*');
             this.main.subscribeStates('system.host.*');
         }
-        this.main.tabs.hosts.getHosts(function () {
-            that._postInit(update, updateRepo);
-        });
+        this.main.tabs.hosts.getHosts(() => that._postInit(update, updateRepo));
     };
 
     this.destroy = function () {
