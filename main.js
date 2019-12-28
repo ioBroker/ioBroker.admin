@@ -418,7 +418,7 @@ function getData(adapter, callback) {
 
     adapter.log.info('requesting all objects');
 
-    adapter.objects.getObjectList({include_docs: true}, (err, res) => {
+    adapter.getObjectList({include_docs: true}, (err, res) => {
         adapter.log.info('received all objects');
         if (res) {
             res = res.rows;
