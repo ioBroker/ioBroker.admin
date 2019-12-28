@@ -87,6 +87,10 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 3.7.3 (2019-12-28)
+* (bluefox) Added the filter of the running instances
+* (bluefox) The incompatible adapters will be hidden
+
 ### 3.7.1 (2019-11-20)
 * (bluefox) Easy admin configuration was implemented
 

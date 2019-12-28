@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.7.2",
+    "version": "3.7.3",
     "news": {
+      "3.7.3": {
+        "en": "Added the filter of the running instances\nThe incompatible adapters will be hidden",
+        "de": "Filter der laufenden Instanzen hinzugefügt\nDie inkompatiblen Adapter werden ausgeblendet",
+        "ru": "Добавлен фильтр запущенных экземпляров\nНесовместимые адаптеры будут скрыты",
+        "pt": "Adicionado o filtro das instâncias em execução\nOs adaptadores incompatíveis serão ocultados",
+        "nl": "Het filter van de actieve exemplaren toegevoegd\nDe incompatibele adapters worden verborgen",
+        "fr": "Ajout du filtre des instances en cours d'exécution\nLes adaptateurs incompatibles seront cachés",
+        "it": "Aggiunto il filtro delle istanze in esecuzione\nGli adattatori incompatibili saranno nascosti",
+        "es": "Se agregó el filtro de las instancias en ejecución\nLos adaptadores incompatibles estarán ocultos.",
+        "pl": "Dodano filtr uruchomionych instancji\nNiezgodne adaptery zostaną ukryte",
+        "zh-cn": "添加了正在运行的实例的过滤器\n不兼容的适配器将被隐藏"
+      },
       "3.7.2": {
         "en": "Easy admin configuration was implemented",
         "de": "Einfache Admin-Konfiguration wurde implementiert",

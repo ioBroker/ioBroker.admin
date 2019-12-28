@@ -12,6 +12,7 @@ function Instances(main) {
     this.list          = [];
     this.hostsText     = null;
     this.filterHost    = false;
+    this.filterRunning = false;
     this.memState      = 'memAvailable';
 
     if (!window.tdp) {
@@ -580,13 +581,19 @@ function Instances(main) {
                     isShow = that.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]').find('instance-led').hasClass('led-green') ? 'hide' : 'show';
                 }
 
-                if (isShow === 'show' && that.filterHost && obj.common.host !== that.main.currentHost) isShow = 'hide';
-
-                if (isShow === 'hide') invisible.push(that.list[i]);
+                if (isShow === 'show' && that.filterHost && obj.common.host !== that.main.currentHost) {
+                    isShow = 'hide';
+                }
+                if (isShow === 'show' && that.filterRunning && !obj.common.enabled) {
+                    isShow = 'hide';
+                }
+                if (isShow === 'hide') {
+                    invisible.push(that.list[i]);
+                }
                 that.$grid.find('.instance-adapter[data-instance-id="' + that.list[i] + '"]')[isShow]();
             }
         } else {
-            if (that.filterHost) {
+            if (that.filterHost || that.filterRunning) {
                 for (var j = 0; j < that.list.length; j++) {
                     var _obj = that.main.objects[that.list[j]];
                     if (!_obj || !_obj.common) {
@@ -594,7 +601,12 @@ function Instances(main) {
                         continue;
                     }
                     var _isShow = 'hide';
-                    if (_obj.common.host === that.main.currentHost) _isShow = 'show';
+                    if (that.filterHost && _obj.common.host === that.main.currentHost) {
+                        _isShow = 'show';
+                    }
+                    if (that.filterRunning && _obj.common.enabled) {
+                        _isShow = 'show';
+                    }
                     that.$grid.find('.instance-adapter[data-instance-id="' + that.list[j] + '"]')[_isShow]();
                 }
             } else {
@@ -834,9 +846,9 @@ function Instances(main) {
         this.$tab.find('.btn-instances-host').off('click').on('click', function () {
             that.filterHost = !that.filterHost;
             if (that.filterHost) {
-                that.$tab.find('.btn-instances-host').addClass('red lighten-3');
+                $(this).addClass('red lighten-3');
             } else {
-                that.$tab.find('.btn-instances-host').removeClass('red lighten-3');
+                $(this).removeClass('red lighten-3');
             }
             that.main.saveConfig('instancesFilterHost', that.filterHost);
 
@@ -844,7 +856,6 @@ function Instances(main) {
                 applyFilter();
             }, 50);
         });
-
         this.filterHost = this.main.config.instancesFilterHost || false;
 
         if (this.filterHost) {
@@ -852,6 +863,28 @@ function Instances(main) {
         } else {
             this.$tab.find('.btn-instances-host').removeClass('red lighten-3');
         }
+
+        this.$tab.find('.btn-instances-running').off('click').on('click', function () {
+            that.filterRunning = !that.filterRunning;
+            if (that.filterRunning) {
+                $(this).addClass('red lighten-3');
+            } else {
+                $(this).removeClass('red lighten-3');
+            }
+            that.main.saveConfig('instancesFilterRunning', that.filterRunning);
+
+            setTimeout(function () {
+                applyFilter();
+            }, 50);
+        });
+        this.filterRunning = this.main.config.instancesFilterRunning || false;
+
+        if (this.filterRunning) {
+            this.$tab.find('.btn-instances-running').addClass('red lighten-3');
+        } else {
+            this.$tab.find('.btn-instances-running').removeClass('red lighten-3');
+        }
+
     };
 
     this.updateExpertMode   = function () {
@@ -1360,8 +1393,17 @@ function Instances(main) {
                 var id = $(this).attr('data-instance-id');
                 //$(this).button('disable');
                 $(this).addClass('disabled');
-                that.main.socket.emit('extendObject', id, {common: {enabled: !that.main.objects[id].common.enabled}}, function (err) {
-                    if (err) that.main.showError(err);
+                var enabled = !that.main.objects[id].common.enabled;
+                var $this = $(this).parent().parent();
+                !enabled && that.filterRunning && $this.addClass('instance-disappear');
+                that.main.socket.emit('extendObject', id, {common: {enabled: enabled}}, function (err) {
+                    err && that.main.showError(err);
+                    if (that.filterRunning) {
+                        setTimeout(function () {
+                            !enabled && $this.removeClass('instance-disappear');
+                            applyFilter();
+                        }, 1000);
+                    }
                 });
             });
 
