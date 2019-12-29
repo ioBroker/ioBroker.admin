@@ -623,6 +623,10 @@ function Adapters(main) {
                 this.curInstalled  = null;
             }
         }
+        if (this.curRunning) {
+            this.curRunning.push(callback);
+            return;
+        }
 
         var requestCount = 0;
 
@@ -631,28 +635,25 @@ function Adapters(main) {
             // read node.js version of current host
             this.timeoutForGetHostInfoShort = setTimeout(function () {
                 this.timeoutForGetHostInfoShort = null;
-                (!--requestCount) && setTimeout(() => {
+                !--requestCount && setTimeout(() => {
                     this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));
                     this.curRunning = null;
                 }, 0);
             }, 300);
 
             that.main.socket.emit('sendToHost', host, 'getHostInfoShort', {}, data => {
-                this.timeoutForGetHostInfoShort && clearTimeout(this.timeoutForGetHostInfoShort);
-                this.timeoutForGetHostInfoShort = null;
-                this.nodeJsVersions[host] = data['Node.js'].replace('v', '');
-                this.hostOs[host] = data.os;
+                if (this.timeoutForGetHostInfoShort) {
+                    clearTimeout(this.timeoutForGetHostInfoShort);
+                    this.timeoutForGetHostInfoShort = null;
+                    this.nodeJsVersions[host] = data['Node.js'].replace('v', '');
+                    this.hostOs[host] = data.os;
 
-                (!--requestCount) && setTimeout(() => {
-                    this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));
-                    this.curRunning = null;
-                }, 0);
+                    !--requestCount && setTimeout(() => {
+                        this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));
+                        this.curRunning = null;
+                    }, 0);
+                }
             });
-        }
-
-        if (this.curRunning) {
-            this.curRunning.push(callback);
-            return;
         }
 
         if (!this.curRepository || this.curRepoLastHost !== host) {
@@ -667,15 +668,14 @@ function Adapters(main) {
                 this.curRepository = _repository || {};
 
                 this.curRepoLastUpdate = Date.now();
-                (!--requestCount) && setTimeout(() => {
-                    this.curRunning && this.curRunning.forEach(cb =>
-                        cb(this.curRepository, this.curInstalled));
+                !--requestCount && setTimeout(() => {
+                    this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));
                     this.curRunning = null;
                 }, 0);
             });
         }
 
-        if (!this.curInstalled  || this.curRepoLastHost !== host) {
+        if (!this.curInstalled || this.curRepoLastHost !== host) {
             this.curInstalled = null;
             requestCount++;
             this.main.socket.emit('sendToHost', host, 'getInstalled', null, _installed => {
@@ -687,9 +687,8 @@ function Adapters(main) {
                 this.curInstalled = _installed || {};
 
                 this.curRepoLastUpdate = Date.now();
-                (!--requestCount) && setTimeout(() => {
-                    this.curRunning && this.curRunning.forEach(cb =>
-                        cb(this.curRepository, this.curInstalled));
+                !--requestCount && setTimeout(() => {
+                    this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));
                     this.curRunning = null;
                 }, 0);
             });
@@ -1411,7 +1410,7 @@ function Adapters(main) {
                     if (!obj || obj.controller || adapter === 'hosts') continue;
 
                     let version = '';
-                    if (repository[adapter] && repository[adapter].version) {
+                    if (repository && repository[adapter] && repository[adapter].version) {
                         version = repository[adapter].version;
                     }
 
