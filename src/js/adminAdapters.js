@@ -628,12 +628,12 @@ function Adapters(main) {
             return;
         }
 
-        var requestCount = 0;
+        let requestCount = 0;
 
         if (!this.nodeJsVersions[host] || !this.hostOs[host]) {
             requestCount++;
             // read node.js version of current host
-            this.timeoutForGetHostInfoShort = setTimeout(function () {
+            this.timeoutForGetHostInfoShort = setTimeout(() => {
                 this.timeoutForGetHostInfoShort = null;
                 !--requestCount && setTimeout(() => {
                     this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));

@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.7.4",
+    "version": "3.7.5",
     "news": {
-      "3.7.4": {
+      "3.7.5": {
         "en": "Added the filter of the running instances\nThe incompatible adapters will be hidden",
         "de": "Filter der laufenden Instanzen hinzugefügt\nDie inkompatiblen Adapter werden ausgeblendet",
         "ru": "Добавлен фильтр запущенных экземпляров\nНесовместимые адаптеры будут скрыты",
