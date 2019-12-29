@@ -39,6 +39,7 @@ function Adapters(main) {
         'protocols_group':        'img/communication.png',
         'network_group':          'img/communication.png',
         'messaging_group':        'img/communication.png',
+        'vehicle_group':          'img/car.svg',
         'visualisation_group':    'img/visualisation.png',
         'visualization_group':    'img/visualisation.png',
         'visualization-icons_group': 'img/visualisation.png',

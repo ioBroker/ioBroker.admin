@@ -871,6 +871,7 @@
   "value.q": "Kwaliteitscode",
   "value.ts": "tijdstempel",
   "value.val": "waarde",
+  "vehicle_group": "Voertuig",
   "version": "versie",
   "vis_group": "ioBroker.vis",
   "visualisation_group": "Visualisatie",

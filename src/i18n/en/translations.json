@@ -871,6 +871,7 @@
   "value.q": "Quality code",
   "value.ts": "Timestamp",
   "value.val": "value",
+  "vehicle_group": "Vehicle",
   "version": "version",
   "vis_group": "ioBroker.vis",
   "visualisation_group": "Visualisation",

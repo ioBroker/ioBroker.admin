@@ -871,6 +871,7 @@
   "value.q": "Qualitätscode",
   "value.ts": "Zeitstempel",
   "value.val": "Wert",
+  "vehicle_group": "Fahrzeug",
   "version": "Version",
   "vis_group": "ioBroker.vis",
   "visualisation_group": "Visualisierung",
