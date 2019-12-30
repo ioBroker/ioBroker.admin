@@ -186,7 +186,7 @@ function System(main) {
 
                 values.push({
                     name:        cert,
-                    certificate: cert2string(that.systemCerts.native.certificates[cert])
+                    certificate: cert2string(that.systemCerts.native.certificates[cert] || '')
                 });
             }
 

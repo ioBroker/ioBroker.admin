@@ -39,6 +39,7 @@ function Adapters(main) {
         'protocols_group':        'img/communication.png',
         'network_group':          'img/communication.png',
         'messaging_group':        'img/communication.png',
+        'vehicle_group':          'img/car.svg',
         'visualisation_group':    'img/visualisation.png',
         'visualization_group':    'img/visualisation.png',
         'visualization-icons_group': 'img/visualisation.png',
@@ -64,6 +65,8 @@ function Adapters(main) {
     this.currentType   = '';
     this.isCollapsed   = {};
     this.isTiles       = true;
+    this.nodeJsVersions = {}; // node.js versions of hosts
+    this.hostOs        = {}; // OS of hosts
 
     this.types = {
         occ:          'schedule'
@@ -605,9 +608,14 @@ function Adapters(main) {
     }
 
     this.getAdaptersInfo = function (host, update, updateRepo, callback) {
-        if (!host) return;
+        if (!host) {
+            return;
+        }
 
-        if (!callback) throw 'Callback cannot be null or undefined';
+        if (!callback) {
+            throw 'Callback cannot be null or undefined';
+        }
+
         if (update) {
             // Do not update too often
             if (!this.curRepoLastUpdate || ((new Date()).getTime() - this.curRepoLastUpdate > 1000)) {
@@ -615,14 +623,42 @@ function Adapters(main) {
                 this.curInstalled  = null;
             }
         }
-
         if (this.curRunning) {
             this.curRunning.push(callback);
             return;
         }
 
+        let requestCount = 0;
+
+        if (!this.nodeJsVersions[host] || !this.hostOs[host]) {
+            requestCount++;
+            // read node.js version of current host
+            this.timeoutForGetHostInfoShort = setTimeout(() => {
+                this.timeoutForGetHostInfoShort = null;
+                !--requestCount && setTimeout(() => {
+                    this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));
+                    this.curRunning = null;
+                }, 0);
+            }, 300);
+
+            that.main.socket.emit('sendToHost', host, 'getHostInfoShort', {}, data => {
+                if (this.timeoutForGetHostInfoShort) {
+                    clearTimeout(this.timeoutForGetHostInfoShort);
+                    this.timeoutForGetHostInfoShort = null;
+                    this.nodeJsVersions[host] = data['Node.js'].replace('v', '');
+                    this.hostOs[host] = data.os;
+
+                    !--requestCount && setTimeout(() => {
+                        this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));
+                        this.curRunning = null;
+                    }, 0);
+                }
+            });
+        }
+
         if (!this.curRepository || this.curRepoLastHost !== host) {
             this.curRepository = null;
+            requestCount++;
             this.main.socket.emit('sendToHost', host, 'getRepository', {repo: this.main.systemConfig.common.activeRepo, update: updateRepo}, _repository => {
                 if (_repository === 'permissionError') {
                     console.error('May not read "getRepository"');
@@ -631,19 +667,17 @@ function Adapters(main) {
 
                 this.curRepository = _repository || {};
 
-                if (this.curRepository && that.curInstalled && that.curRunning) {
-                    this.curRepoLastUpdate = Date.now();
-                    setTimeout(() => {
-                        this.curRunning.forEach(cb =>
-                            cb(this.curRepository, this.curInstalled));
-
-                        this.curRunning = null;
-                    }, 0);
-                }
+                this.curRepoLastUpdate = Date.now();
+                !--requestCount && setTimeout(() => {
+                    this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));
+                    this.curRunning = null;
+                }, 0);
             });
         }
+
         if (!this.curInstalled || this.curRepoLastHost !== host) {
             this.curInstalled = null;
+            requestCount++;
             this.main.socket.emit('sendToHost', host, 'getInstalled', null, _installed => {
                 if (_installed === 'permissionError') {
                     console.error('May not read "getInstalled"');
@@ -652,28 +686,20 @@ function Adapters(main) {
 
                 this.curInstalled = _installed || {};
 
-                if (this.curRepository && that.curInstalled) {
-                    this.curRepoLastUpdate = Date.now();
-                    setTimeout(() => {
-                        this.curRunning.forEach(cb =>
-                            cb(this.curRepository, this.curInstalled));
-
-                        this.curRunning = null;
-                    }, 0);
-                }
+                this.curRepoLastUpdate = Date.now();
+                !--requestCount && setTimeout(() => {
+                    this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));
+                    this.curRunning = null;
+                }, 0);
             });
         }
 
         this.curRepoLastHost = host;
 
-        if (this.curInstalled && this.curRepository) {
+        if (!requestCount) {
             setTimeout(() => {
-                if (this.curRunning) {
-                    this.curRunning.forEach(cb =>
-                        cb(this.curRepository, this.curInstalled));
-
-                    this.curRunning = null;
-                }
+                this.curRunning && this.curRunning.forEach(cb => cb(this.curRepository, this.curInstalled));
+                this.curRunning = null;
                 callback && callback(this.curRepository, this.curInstalled);
             }, 0);
         } else {
@@ -724,10 +750,16 @@ function Adapters(main) {
         for (const adapter in adapters) {
             if (adapters.hasOwnProperty(adapter)) {
                 if (adapter === 'js-controller') {
-                    if (!semver.satisfies(that.main.objects['system.host.' + that.main.currentHost].common.installedVersion, adapters[adapter])) return _('Invalid version of %s. Required %s', adapter, adapters[adapter]);
+                    if (!semver.satisfies(that.main.objects['system.host.' + that.main.currentHost].common.installedVersion, adapters[adapter])) {
+                        return _('Invalid version of %s. Required %s', adapter, adapters[adapter]);
+                    }
                 } else {
-                    if (!that.main.objects['system.adapter.' + adapter] || !that.main.objects['system.adapter.' + adapter].common || !that.main.objects['system.adapter.' + adapter].common.installedVersion) return _('No version of %s', adapter);
-                    if (!semver.satisfies(that.main.objects['system.adapter.' + adapter].common.installedVersion, adapters[adapter])) return _('Invalid version of %s', adapter);
+                    if (!that.main.objects['system.adapter.' + adapter] || !that.main.objects['system.adapter.' + adapter].common || !that.main.objects['system.adapter.' + adapter].common.installedVersion) {
+                        return _('No version of %s', adapter);
+                    }
+                    if (!semver.satisfies(that.main.objects['system.adapter.' + adapter].common.installedVersion, adapters[adapter])) {
+                        return _('Invalid version of %s', adapter);
+                    }
                 }
             }
         }
@@ -828,7 +860,9 @@ function Adapters(main) {
                     'yesterday':                _('yesterday'),
                     '1 %d days ago':            _('1 %d days ago'),
                     '2 %d days ago':            _('2 %d days ago'),
-                    '5 %d days ago':            _('5 %d days ago')
+                    '5 %d days ago':            _('5 %d days ago'),
+                    'Incompatible node version': _('Incompatible node version. Required %d, installed %d'),
+                    'Incompatible OS':          _('Incompatible OS. Required one of %d, present %d')
                 };
 
                 if (installedList) {
@@ -880,6 +914,8 @@ function Adapters(main) {
 
                 that.tree = [];
                 that.data = {};
+                const hostNodeVersion = that.main.currentHost && that.nodeJsVersions[that.main.currentHost];
+                const hostOs = that.main.currentHost && that.hostOs[that.main.currentHost];
 
                 // list of the installed adapters
                 for (let i = 0; i < listInstalled.length; i++) {
@@ -893,9 +929,13 @@ function Adapters(main) {
                     let icon = obj.icon;
                     version = '';
 
-                    if (repository[adapter] && repository[adapter].version) version = repository[adapter].version;
+                    if (repository[adapter] && repository[adapter].version) {
+                        version = repository[adapter].version;
+                    }
 
-                    if (repository[adapter] && repository[adapter].extIcon) icon = repository[adapter].extIcon;
+                    if (repository[adapter] && repository[adapter].extIcon) {
+                        icon = repository[adapter].extIcon;
+                    }
 
                     let _instances = 0;
                     let _enabled   = 0;
@@ -966,7 +1006,7 @@ function Adapters(main) {
                     desc = desc || '';
                     desc += showUploadProgress(group, adapter, that.main.states['system.adapter.' + adapter + '.upload'] ? that.main.states['system.adapter.' + adapter + '.upload'].val : 0);
                     let title = obj.titleLang || obj.title;
-                    title = (typeof title === 'object') ? (title[systemLang] || title.en) : title;
+                    title = typeof title === 'object' ? (title[systemLang] || title.en) : title;
 
                     that.data[adapter] = {
                         image:      icon ? '<img onerror="this.src=\'img/info-big.png\';" src="' + icon + '" class="adapter-table-icon" />' : '',
@@ -976,6 +1016,8 @@ function Adapters(main) {
                         title:      (title || '').replace('ioBroker Visualisation - ', ''),
                         desc:       desc,
                         news:       news,
+                        nodeIncompatible: obj.node && hostNodeVersion && !semver.satisfies(hostNodeVersion, obj.node) && localTexts['Incompatible node version'].replace('%d', obj.node).replace('%d', hostNodeVersion),
+                        osIncompatible: obj.os && obj.os.indexOf(hostOs) === -1 && localTexts['Incompatible OS'].replace('%d', obj.os.toString()).replace('%d', hostOs),
                         updatableError: updatableError,
                         keywords:   obj.keywords ? obj.keywords.join(' ') : '',
                         version:    version,
@@ -1009,7 +1051,7 @@ function Adapters(main) {
                             }
                         }
                         if (iGroup < 0) {
-                            if (!localTexts[that.data[adapter].group]) localTexts[that.data[adapter].group] = _(that.data[adapter].group);
+                            localTexts[that.data[adapter].group] = localTexts[that.data[adapter].group] || _(that.data[adapter].group);
                             that.tree.push({
                                 title:    localTexts[that.data[adapter].group],
                                 desc:     showUploadProgress(group),
@@ -1069,6 +1111,8 @@ function Adapters(main) {
                             keywords:   obj.keywords ? obj.keywords.join(' ') : '',
                             rawVersion: rawVersion,
                             version:    version,
+                            nodeIncompatible: obj.node && hostNodeVersion && !semver.satisfies(hostNodeVersion, obj.node) && localTexts['Incompatible node version'].replace('%d', obj.node).replace('%d', hostNodeVersion),
+                            osIncompatible: obj.os && obj.os.indexOf(hostOs) === -1 && localTexts['Incompatible OS'].replace('%d', obj.os.toString()).replace('%d', hostOs),
                             bold:       obj.highlight,
                             installed:  '',
                             versionDate: obj.versionDate,
@@ -1083,8 +1127,8 @@ function Adapters(main) {
                             group:      group
                         };
 
-                        if (!obj.type) console.log('"' + adapter + '": "common adapters",');
-                        if (obj.type && that.types[adapter]) console.log('Adapter "' + adapter + '" has own type. Remove from admin.');
+                        !obj.type && console.log('"' + adapter + '": "common adapters",');
+                        obj.type && that.types[adapter] && console.log('Adapter "' + adapter + '" has own type. Remove from admin.');
 
                         if (!that.isList) {
                             let igroup = -1;
@@ -1095,7 +1139,7 @@ function Adapters(main) {
                                 }
                             }
                             if (igroup < 0) {
-                                if (!localTexts[that.data[adapter].group]) localTexts[that.data[adapter].group] = _(that.data[adapter].group);
+                                localTexts[that.data[adapter].group] = localTexts[that.data[adapter].group] || _(that.data[adapter].group);
                                 that.tree.push({
                                     title:    localTexts[that.data[adapter].group],
                                     key:      that.data[adapter].group,
@@ -1153,12 +1197,16 @@ function Adapters(main) {
                 if (that.isTiles && (that.main.browser !== 'ie' || that.main.browserVersion > 10)) {
                     let text = '';
                     const types = [];
+
                     for (const a in that.data) {
-                        if (!that.data.hasOwnProperty(a)) continue;
+                        if (!that.data.hasOwnProperty(a)) {
+                            continue;
+                        }
 
                         let updatableError = '';
 
                         const ad = that.data[a];
+
                         types.indexOf(ad.group) === -1 && types.push(ad.group);
 //                        text += '<div class="tile class-' + ad.group + '" data-id="' + ad.name + '">';
 //                        text += '   <div class="card-header">';
@@ -1179,7 +1227,7 @@ function Adapters(main) {
 //                        text += '    </div>';
 //                        text += '</div>';
 
-                        text += '<div class="col s12 m6 l4 xl3 tile class-' + ad.group + '" data-id="' + ad.name + '">';
+                        text += '<div class="col s12 m6 l4 xl3 tile class-' + ad.group + (ad.nodeIncompatible || ad.osIncompatible ? ' node-incompatible' : '') +  '" data-id="' + ad.name + '" ' + (ad.nodeIncompatible || ad.osIncompatible ? ' title="' + (ad.nodeIncompatible || ad.osIncompatible) + '"' : '') + '>';
                         text += '   <div class="card hoverable card-adapters">';
                         text += '       <div class="card-header ' + (ad.updatable ? 'updatable' : (ad.installed ? 'installed' : '')) + '"></div>';
                         text += '       <div class="card-content">';
@@ -1217,7 +1265,6 @@ function Adapters(main) {
                         text += '   </div>';
                         text += '</div>';
                     }
-
 
                     // Add filtered out tile
                     text += '<div class="col s12 m6 l4 xl3 filtered-out">';
@@ -1326,7 +1373,14 @@ function Adapters(main) {
                             i++;
                         });
                     });
+                    // mark incompatible adapters
+                    that.$grid.find('.adapter-install-submit').each(function () {
+                        var adapter = $(this).data('adapter-name');
+                        (that.data[adapter].nodeIncompatible || that.data[adapter].osIncompatible) && $(this).parent().parent().parent()
+                            .addClass('node-incompatible').attr('title', that.data[adapter].nodeIncompatible || that.data[adapter].osIncompatible);
+                    });
                 }
+
                 that.$tab.find('.grid-main-div').removeClass('order-a-z order-popular order-updated').addClass(that.currentOrder ? 'order-' + that.currentOrder : '');
                 that.$tab.find('.process-adapters').hide();
                 that.updateCounter(adaptersToUpdate);
@@ -1356,7 +1410,7 @@ function Adapters(main) {
                     if (!obj || obj.controller || adapter === 'hosts') continue;
 
                     let version = '';
-                    if (repository[adapter] && repository[adapter].version) {
+                    if (repository && repository[adapter] && repository[adapter].version) {
                         version = repository[adapter].version;
                     }
 
@@ -1385,9 +1439,7 @@ function Adapters(main) {
         }
 
         if (!this.main.objectsLoaded) {
-            setTimeout(function () {
-                that.init(update, updateRepo);
-            }, 250);
+            setTimeout(() => that.init(update, updateRepo), 250);
             return;
         }
 
@@ -1398,9 +1450,7 @@ function Adapters(main) {
             this.main.subscribeObjects('system.host.*');
             this.main.subscribeStates('system.host.*');
         }
-        this.main.tabs.hosts.getHosts(function () {
-            that._postInit(update, updateRepo);
-        });
+        this.main.tabs.hosts.getHosts(() => that._postInit(update, updateRepo));
     };
 
     this.destroy = function () {

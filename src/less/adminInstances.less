@@ -15,6 +15,11 @@
     }
 }
 
+@keyframes disappear {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+
 #tab-instances {
     // because of MS-EDGE
     .main-toolbar-table-types-tools {
@@ -90,6 +95,13 @@
         }
     }
 
+    .expert-mode-icon {
+        color: white;
+        width: 21px;
+        padding-top: 5px;
+        padding-left: 2px;
+    }
+
     .instance-table {
         // .new-iob-list-table;
         font-weight:        normal;
@@ -146,6 +158,14 @@
 
     .instance-schedule-button span {
         padding:        0 !important;
+    }
+
+    .instance-disappear {
+        -webkit-animation-name: disappear;
+        -webkit-animation-duration: 1s;
+        animation-name: disappear;
+        animation-duration: 1s;
+        opacity: 0;
     }
 
     /*

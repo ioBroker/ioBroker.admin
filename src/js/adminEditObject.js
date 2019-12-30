@@ -432,7 +432,9 @@ function EditObject(main) {
         });
 
         obj.acl = obj.acl || {};
-        if (obj.acl.object === undefined) obj.acl.object = 0x666;
+        if (obj.acl.object === undefined) {
+            obj.acl.object = 0x666;
+        }
 
         this.$dialog.find('#object-tab-acl-obj-owner-read') .prop('checked', obj.acl.object & 0x400);
         this.$dialog.find('#object-tab-acl-obj-owner-write').prop('checked', obj.acl.object & 0x200);

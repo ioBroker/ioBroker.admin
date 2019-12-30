@@ -64,6 +64,14 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 
 **Let's encrypt works only from node.js version>=4.5**
 
+## Simple instance's settings page
+The user have the possibility to limit the access to the instance configuration dialog.
+For that the option "Allow access only to specific instances" must be activated.
+It could be found on the "Access to instances" tab.
+Additionally the allowed instances should be selected in the appeared configuration table.
+
+If this option is disabled, the simple configuration page could be accessed under http://IP:8081/configs.html
+
 ## Todo
 - move html tooltips to materialize tooltips
 - tiles for hosts (additionally to table - low prior)
@@ -73,13 +81,28 @@ The topic is rather complex and 1000 things can go wrong. If you cannot get cert
 This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/006-double-bed.svg" height="48" /> - designed by [smalllikeart](https://www.flaticon.com/authors/smalllikeart) from [Flaticon](https://www.flaticon.com/)
 - <img src="src/img/rooms/016-armchair-1.svg" height="48" /> - designed by [smalllikeart](https://www.flaticon.com/authors/smalllikeart) from [Flaticon](https://www.flaticon.com/)
-- <img src="src/img/rooms/022-armchair-1.svg" height="48" /> - designed by [smalllikeart](https://www.flaticon.com/authors/smalllikeart) from [Flaticon](https://www.flaticon.com/)
+- <img src="src/img/rooms/022-sofa-1.svg" height="48" /> - designed by [smalllikeart](https://www.flaticon.com/authors/smalllikeart) from [Flaticon](https://www.flaticon.com/)
 - <img src="src/img/devices/light-bulb.svg" height="48" /> - Icons made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 - <img src="src/img/rooms/garage.svg" height="48" /> - designed by [Pause08](https://www.flaticon.com/authors/Pause08) from [Flaticon](https://www.flaticon.com/)
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
-### 3.6.9 (2019-10-11)
+### 3.7.5 (2019-12-29)
+* (bluefox) Added the filter of the running instances
+* (bluefox) The incompatible adapters will be hidden
+
+### 3.7.1 (2019-11-20)
+* (bluefox) Easy admin configuration was implemented
+
+### 3.6.12 (2019-11-04)
+* (ldittmar) Add repo check to popup messages
+* (ldittmar) Update Controller-Update info page
+* (Apollon77) update deps
+
+### 3.6.11 (2019-10-16)
+* (bluefox) Fixed login of non-admin user
+
+### 3.6.10 (2019-10-11)
 * (ldittmar) Add NPM version and OS check to popup messages
 * (bluefox) Log paths were sanitized
 * (bluefox) NPM packages were updated

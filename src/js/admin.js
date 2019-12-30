@@ -100,7 +100,7 @@ function detectIE() {
 
 (function ($) {
 $(document).ready(function () {
-    let path = location.pathname + 'socket.io';
+    let path = location.pathname.replace('index.html', '') + 'socket.io';
     if (location.pathname.match(/^\/admin\//)) {
         path = '/socket.io';
     }
@@ -1867,131 +1867,41 @@ $(document).ready(function () {
         tabs.adapters.updateCounter();
     }
 
-    // ---------------------------- Socket.io methods ---------------------------------------------
-    main.socket.on('log',               function (message) {
-        tabs.logs.add(message);
-    });
-    main.socket.on('error',             function (error) {
-        console.log(error);
-    });
-    main.socket.on('permissionError',   function (err) {
-        main.showMessage(_('Has no permission to %s %s %s', err.operation, err.type, (err.id || '')));
-    });
-    main.socket.on('stateChange',       function (id, obj) {
-        setTimeout(stateChange, 0, id, obj);
-    });
-    main.socket.on('objectChange',      function (id, obj) {
-        setTimeout(objectChange, 0, id, obj);
-    });
-    main.socket.on('cmdStdout',         function (_id, text) {
-        if (activeCmdId === _id) {
-            let m = text.match(/^upload \[(\d+)]/);
-            if (m) {
-                if ($dialogCommand.data('max') === null) {
-                    $dialogCommand.data('max', parseInt(m[1], 10));
-                    $dialogCommandProgress.removeClass('indeterminate').addClass('determinate');
-                }
-                const max = $dialogCommand.data('max');
-                const value = parseInt(m[1], 10);
-                $dialogCommandProgress.css('width', (100 - Math.round((value / max) * 100)) + '%');
-            } else {
-                m = text.match(/^got [-_:\/\\.\w\d]+\/admin$/);
-                if (m) {
-                    // upload of admin
-                    $dialogCommand.find('.progress-text').html(_('Upload admin started'));
-                    $dialogCommand.data('max', null);
-                } else {
-                    // got ..../www
-                    m = text.match(/^got [-_:\/\\.\w\d]+\/www$/);
-                    if (m) {
-                        // upload of www
-                        $dialogCommand.find('.progress-text').html(_('Upload www started'));
-                        $dialogCommand.data('max', null);
-                    } else {
-
-                    }
-                }
-            }
-
-            stdout += '\n' + text;
-            $stdout.val(stdout);
-            $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+    function onConnect() {
+        if (main.loaded) {
+            return;
         }
-    });
-    main.socket.on('cmdStderr',         function (_id, text) {
-        if (activeCmdId === _id) {
-            if (!$dialogCommand.data('error')) {
-                $dialogCommand.data('error', text);
+        // retry strategy
+        let _timeout = setTimeout(function () {
+            _timeout = null;
+            main.loadCount++;
+            if (main.loadCount < 10) {
+                firstConnect = false;
+                onConnect();
             }
-            stdout += '\nERROR: ' + text;
-            $stdout.val(stdout);
-            $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
-        }
-    });
-    main.socket.on('cmdExit',           function (_id, exitCode) {
-        if (activeCmdId === _id) {
-
-            exitCode = parseInt(exitCode, 10);
-            stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
-            $stdout.val(stdout);
-            $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
-
-            $dialogCommand.find('.progress-dont-close').addClass('disabled');
-            $dialogCommandProgress.removeClass('indeterminate').css({'width': '100%'});
-            $dialogCommand.find('.btn').html(_('Close'));
-            $dialogCommand.data('finished', true);
-            $dialogCommand.data('max', true);
-            const $backButton = $adminSideMain.find('.button-command');
-            $backButton.removeClass('in-progress');
-
-            if (!exitCode) {
-                $dialogCommand.find('.progress-text').html(_('Success!'));
-                $backButton.hide();
-                if ($dialogCommand.find('.progress-dont-close input').prop('checked')) {
-                    setTimeout(function () {
-                        $dialogCommand.modal('close');
-                    }, 1500);
-                }
-            } else {
-                let error = $dialogCommand.data('error');
-                if (error) {
-                    const m = error.match(/error: (.*)$/);
-                    if (m) {
-                        error = m[1];
-                    }
-
-                    $dialogCommand.find('.progress-text').html(_('Done with error: %s', _(error))).addClass('error');
-                } else {
-                    $dialogCommand.find('.progress-text').html(_('Done with error')).addClass('error');
-                }
-                $backButton.addClass('error');
-                $backButton.show();
-            }
-            if (cmdCallback) {
-                cmdCallback(exitCode);
-                cmdCallback = null;
-            }
-        }
-    });
-    main.socket.on('eventsThreshold',   function (isActive) {
-        if (isActive) {
-            $('#events_threshold').show();
-        } else {
-            $('#events_threshold').hide();
-        }
-    });
-    main.socket.on('connect',           function () {
-        $('#connecting').hide();
+        }, 1000);
+        
         if (firstConnect) {
-            firstConnect = false;
-
-            main.getUser();
-
             main.socket.emit('getUserPermissions', function (err, acl) {
+                $('#connecting').hide();
+                firstConnect = false;
+                main.getUser();
+
+                if (main.loaded) {
+                    return;
+                }
+                clearTimeout(_timeout);
+                _timeout = null;
+                main.loaded = true;
+
                 main.acl = acl;
                 // Read system configuration
                 main.socket.emit('getObject', 'system.config', function (errConfig, data) {
                     main.systemConfig = data;
+
+                    $('.admin-sidemenu-header .button-icon').off('click').on('click', function () {
+                        document.location = './configs.html';
+                    }).css('cursor', 'pointer');
 
                     // set logo and set branding
                     if (data && data.native && data.native.vendor) {
@@ -2193,6 +2103,138 @@ $(document).ready(function () {
         }
 
         main.waitForRestart && location.reload();
+    }
+
+    // ---------------------------- Socket.io methods ---------------------------------------------
+    main.socket.on('log',               function (message) {
+        tabs.logs.add(message);
+    });
+    main.socket.on('error',             function (error) {
+        console.log(error);
+    });
+    main.socket.on('permissionError',   function (err) {
+        main.showMessage(_('Has no permission to %s %s %s', err.operation, err.type, (err.id || '')));
+    });
+    main.socket.on('stateChange',       function (id, obj) {
+        setTimeout(stateChange, 0, id, obj);
+    });
+    main.socket.on('objectChange',      function (id, obj) {
+        setTimeout(objectChange, 0, id, obj);
+    });
+    main.socket.on('cmdStdout',         function (_id, text) {
+        if (activeCmdId === _id) {
+            let m = text.match(/^upload \[(\d+)]/);
+            if (m) {
+                if ($dialogCommand.data('max') === null) {
+                    $dialogCommand.data('max', parseInt(m[1], 10));
+                    $dialogCommandProgress.removeClass('indeterminate').addClass('determinate');
+                }
+                const max = $dialogCommand.data('max');
+                const value = parseInt(m[1], 10);
+                $dialogCommandProgress.css('width', (100 - Math.round((value / max) * 100)) + '%');
+            } else {
+                m = text.match(/^got [-_:\/\\.\w\d]+\/admin$/);
+                if (m) {
+                    // upload of admin
+                    $dialogCommand.find('.progress-text').html(_('Upload admin started'));
+                    $dialogCommand.data('max', null);
+                } else {
+                    // got ..../www
+                    m = text.match(/^got [-_:\/\\.\w\d]+\/www$/);
+                    if (m) {
+                        // upload of www
+                        $dialogCommand.find('.progress-text').html(_('Upload www started'));
+                        $dialogCommand.data('max', null);
+                    } else {
+
+                    }
+                }
+            }
+
+            stdout += '\n' + text;
+            $stdout.val(stdout);
+            $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+        }
+    });
+    main.socket.on('cmdStderr',         function (_id, text) {
+        if (activeCmdId === _id) {
+            if (!$dialogCommand.data('error')) {
+                $dialogCommand.data('error', text);
+            }
+            stdout += '\nERROR: ' + text;
+            $stdout.val(stdout);
+            $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+        }
+    });
+    main.socket.on('cmdExit',           function (_id, exitCode) {
+        if (activeCmdId === _id) {
+
+            exitCode = parseInt(exitCode, 10);
+            stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
+            $stdout.val(stdout);
+            $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+
+            $dialogCommand.find('.progress-dont-close').addClass('disabled');
+            $dialogCommandProgress.removeClass('indeterminate').css({'width': '100%'});
+            $dialogCommand.find('.btn').html(_('Close'));
+            $dialogCommand.data('finished', true);
+            $dialogCommand.data('max', true);
+            const $backButton = $adminSideMain.find('.button-command');
+            $backButton.removeClass('in-progress');
+
+            if (!exitCode) {
+                $dialogCommand.find('.progress-text').html(_('Success!'));
+                $backButton.hide();
+                if ($dialogCommand.find('.progress-dont-close input').prop('checked')) {
+                    setTimeout(function () {
+                        $dialogCommand.modal('close');
+                    }, 1500);
+                }
+            } else {
+                let error = $dialogCommand.data('error');
+                if (error) {
+                    const m = error.match(/error: (.*)$/);
+                    if (m) {
+                        error = m[1];
+                    }
+
+                    $dialogCommand.find('.progress-text').html(_('Done with error: %s', _(error))).addClass('error');
+                } else {
+                    $dialogCommand.find('.progress-text').html(_('Done with error')).addClass('error');
+                }
+                $backButton.addClass('error');
+                $backButton.show();
+            }
+            if (cmdCallback) {
+                cmdCallback(exitCode);
+                cmdCallback = null;
+            }
+        }
+    });
+    main.socket.on('eventsThreshold',   function (isActive) {
+        if (isActive) {
+            $('#events_threshold').show();
+        } else {
+            $('#events_threshold').hide();
+        }
+    });
+
+    main.loadCount = 0;
+
+    // retry strategy
+    main._timeout = setTimeout(function () {
+        main._timeout = null;
+        main.loadCount++;
+        if (main.loadCount < 10 && !main.loaded) {
+            onConnect();
+        }
+    }, 1000);
+
+    main.socket.on('connect',           function () {
+        if (main.loaded) {
+            return;
+        }
+        onConnect();
     });
     main.socket.on('disconnect',        function () {
         $('#connecting').show();

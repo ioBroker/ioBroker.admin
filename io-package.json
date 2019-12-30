@@ -2,9 +2,57 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.6.9",
+    "version": "3.7.5",
     "news": {
-      "3.6.9": {
+      "3.7.5": {
+        "en": "Added the filter of the running instances\nThe incompatible adapters will be hidden",
+        "de": "Filter der laufenden Instanzen hinzugefügt\nDie inkompatiblen Adapter werden ausgeblendet",
+        "ru": "Добавлен фильтр запущенных экземпляров\nНесовместимые адаптеры будут скрыты",
+        "pt": "Adicionado o filtro das instâncias em execução\nOs adaptadores incompatíveis serão ocultados",
+        "nl": "Het filter van de actieve exemplaren toegevoegd\nDe incompatibele adapters worden verborgen",
+        "fr": "Ajout du filtre des instances en cours d'exécution\nLes adaptateurs incompatibles seront cachés",
+        "it": "Aggiunto il filtro delle istanze in esecuzione\nGli adattatori incompatibili saranno nascosti",
+        "es": "Se agregó el filtro de las instancias en ejecución\nLos adaptadores incompatibles estarán ocultos.",
+        "pl": "Dodano filtr uruchomionych instancji\nNiezgodne adaptery zostaną ukryte",
+        "zh-cn": "添加了正在运行的实例的过滤器\n不兼容的适配器将被隐藏"
+      },
+      "3.7.2": {
+        "en": "Easy admin configuration was implemented",
+        "de": "Einfache Admin-Konfiguration wurde implementiert",
+        "ru": "Простая конфигурация администратора была реализована",
+        "pt": "Fácil configuração administrativa foi implementada",
+        "nl": "Eenvoudige beheerconfiguratie is geïmplementeerd",
+        "fr": "Configuration facile de l'administrateur a été mise en œuvre",
+        "it": "È stata implementata una facile configurazione dell'amministratore",
+        "es": "Se implementó una configuración de administrador fácil",
+        "pl": "Wdrożono łatwą konfigurację administratora",
+        "zh-cn": "简单的管理员配置已实现"
+      },
+      "3.6.12": {
+        "en": "Add repo check to popup messages",
+        "de": "Repo-Check zu Popup-Nachrichten hinzufügen",
+        "ru": "Добавить проверку репо во всплывающие сообщения",
+        "pt": "Adicionar verificação de repo às mensagens pop-up",
+        "nl": "Repo-controle toevoegen aan pop-upberichten",
+        "fr": "Ajouter repo check aux messages contextuels",
+        "it": "Aggiungi controllo repository ai messaggi popup",
+        "es": "Agregar verificación de repositorio a mensajes emergentes",
+        "pl": "Dodaj kontrolę repo do wyskakujących wiadomości",
+        "zh-cn": "将回购检查添加到弹出消息"
+      },
+      "3.6.11": {
+        "en": "Fixed login of non-admin user ",
+        "de": "Fehler beim Anmelden eines Benutzers ohne Administratorrechte behoben",
+        "ru": "Исправлена ошибка входа пользователя без прав администратора",
+        "pt": "Corrigido login do usuário não administrador",
+        "nl": "Vaste aanmelding van niet-admin-gebruiker",
+        "fr": "Connexion fixe de l'utilisateur non-administrateur",
+        "it": "Risolto il login dell'utente non amministratore",
+        "es": "Inicio de sesión fijo de usuario no administrador",
+        "pl": "Naprawiono logowanie użytkownika niebędącego administratorem",
+        "zh-cn": "固定非管理员用户登录"
+      },
+      "3.6.10": {
         "en": "Add NPM version and OS check to popup messages",
         "de": "NPM-Version und Betriebssystemprüfung zu Popup-Meldungen hinzufügen",
         "ru": "Добавить версию NPM и проверку ОС во всплывающих сообщениях",
@@ -39,78 +87,6 @@
         "pl": "zaktualizuj tłumaczenie niektórych słów",
         "zh-cn": "更新一些单词翻译"
       },
-      "3.6.5": {
-        "en": "Fix anoying popups from info adapter",
-        "de": "Beheben Sie ärgerliche Popups vom Info-Adapter",
-        "ru": "Исправление всплывающих всплывающих окон из адаптера",
-        "pt": "Corrija pop-ups irritantes do adaptador de informações",
-        "nl": "Bevestig vervelende pop-ups van de info-adapter",
-        "fr": "Corrige les popups ennuyeux depuis l'adaptateur info",
-        "it": "Correggi i popup di anoying dall'adattatore informazioni",
-        "es": "Arreglar ventanas emergentes molestas desde el adaptador de información",
-        "pl": "Napraw wyskakujące okienka z adaptera informacyjnego",
-        "zh-cn": "从信息适配器修复恼人的弹出窗口"
-      },
-      "3.6.4": {
-        "en": "Update nodejs recommendation message and check to recommend nodejs 10",
-        "ru": "Обновите сообщение с рекомендацией nodejs и проверьте, чтобы рекомендовать nodejs 10",
-        "de": "Aktualisieren der Empfehlungsnachricht von nodejs, um nodejs 10 zu empfehlen",
-        "fr": "Mettre à jour le message de recommandation nodejs et vérifier pour recommander nodejs 10",
-        "nl": "Update nodejs aanbevelingsbericht en controleer om nodejs 10 aan te bevelen",
-        "it": "Aggiorna il messaggio di raccomandazione nodejs e verifica per raccomandare nodejs 10",
-        "pl": "Zaktualizuj wiadomość rekomendacji nodejs anc sprawdź, aby polecić nodejs 10",
-        "es": "Actualice el mensaje de recomendación de nodejs y revise para recomendar nodejs 10",
-        "pt": "Atualize a mensagem de recomendação do nodejs e cheque para recomendar o nodejs 10",
-        "zh-cn": "更新nodejs推荐消息和检查以推荐nodejs 10"
-      },
-      "3.6.3": {
-        "en": "Added deleteFile internal function",
-        "de": "Interne Funktion deleteFile hinzugefügt",
-        "ru": "Добавлена ​​внутренняя функция deleteFile",
-        "pt": "Adicionado função interna deleteFile",
-        "nl": "De interne functie deleteFile toegevoegd",
-        "fr": "Ajout de la fonction interne deleteFile",
-        "it": "Aggiunta la funzione interna deleteFile",
-        "es": "Agregada función interna deleteFile",
-        "pl": "Dodano funkcję wewnętrzną deleteFile",
-        "zh-cn": "添加了deleteFile内部函数"
-      },
-      "3.6.2": {
-        "en": "Added onSave handler for custom dialogs",
-        "de": "OnSave-Handler für benutzerdefinierte Dialoge hinzugefügt",
-        "ru": "Добавлен обработчик onSave для пользовательских диалогов",
-        "pt": "Adicionado manipulador onSave para diálogos personalizados",
-        "nl": "Toegevoegd onSave handler voor aangepaste dialogen",
-        "fr": "Ajout du gestionnaire onSave pour les boîtes de dialogue personnalisées",
-        "it": "Aggiunto il gestore onSave per le finestre di dialogo personalizzate",
-        "es": "Añadido onSave handler para diálogos personalizados",
-        "pl": "Dodano obsługę onSave dla niestandardowych okien dialogowych",
-        "zh-cn": "为自定义对话框添加了onSave处理程序"
-      },
-      "3.6.1": {
-        "en": "Info adpater integration",
-        "de": "Integration des Informationsadapters",
-        "ru": "Интеграция с информационным адаптером",
-        "pt": "Integração do adaptador de informações",
-        "nl": "Integratie van infodapter",
-        "fr": "Intégration de l'adaptateur d'informations",
-        "it": "Integrazione dell'adattatore di informazioni",
-        "es": "Integración del adaptador de información",
-        "pl": "Integracja adaptera informacyjnego",
-        "zh-cn": "信息适配器集成"
-      },
-      "3.6.0": {
-        "en": "Added Chinese translations\nNew informative states added about updates",
-        "de": "Chinesische Übersetzungen hinzugefügt\nNeue Informationsstände zu Updates hinzugefügt",
-        "ru": "Добавлены китайские переводы\nДобавлены новые информационные состояния об обновлениях",
-        "pt": "Adicionado traduções chinesas\nNovos estados informativos adicionados sobre atualizações",
-        "nl": "Chinese vertalingen toegevoegd\nNieuwe informatieve staten toegevoegd over updates",
-        "fr": "Ajout de traductions chinoises\nNouveaux états informatifs ajoutés à propos des mises à jour",
-        "it": "Aggiunte traduzioni in cinese\nNuovi stati informativi aggiunti sugli aggiornamenti",
-        "es": "Traducciones en chino añadido\nNuevos estados informativos añadidos sobre actualizaciones.",
-        "pl": "Dodano chińskie tłumaczenia\nDodano nowe informacje informacyjne o aktualizacjach",
-        "zh-cn": "增加了中文翻译\n新的信息状态增加了更新"
-      },
       "3.5.10": {
         "en": "Too many debug outputs were disabled",
         "de": "Zu viele Debug-Ausgaben wurden deaktiviert",
@@ -121,23 +97,6 @@
         "it": "Troppe uscite di debug sono state disabilitate",
         "es": "Demasiadas salidas de depuración fueron deshabilitadas",
         "pl": "Zbyt wiele wyników debugowania zostało wyłączonych"
-      },
-      "3.5.0": {
-        "en": "Editing of enums was changed\nLogo was updated\nThe function icons were added",
-        "de": "Die Bearbeitung der Enums wurde geändert\nDas Logo wurde aktualisiert\nDie Funktionssymbole wurden hinzugefügt",
-        "ru": "Изменено редактирование перечислений\nЛоготип обновлен\nЗначки функций добавлены",
-        "pt": "Edição de enums foi alterada\nLogo foi atualizado\nOs ícones de função foram adicionados",
-        "nl": "Het bewerken van de enums is gewijzigd\nLogo is bijgewerkt\nDe functiepictogrammen zijn toegevoegd",
-        "fr": "L'édition des énumérations a été modifiée\nLe logo a été mis à jour\nLes icônes de fonctions ont été ajoutées",
-        "it": "La modifica delle enumerazioni è stata modificata\nIl logo è stato aggiornato\nLe icone delle funzioni sono state aggiunte",
-        "es": "Se modificó la edición de enumeraciones\nLogotipo fue actualizado\nSe agregaron los íconos de función",
-        "pl": "Zmieniono edycję wyliczeń\nLogo zostało zaktualizowane\nDodano ikony funkcji"
-      },
-      "2.0.11": {
-        "en": "Configurable event update disable threshold",
-        "de": "Konfigurierbar Schwellenwert für Ereignisses",
-        "ru": "Настраиваемое пороговое значение отключения обновления событий",
-        "pt": "Limite configurável para o número de eventos"
       }
     },
     "desc": {
@@ -202,7 +161,7 @@
     ],
     "dependencies": [
       {
-        "js-controller": ">=1.2.0"
+        "js-controller": ">=2.0.0"
       }
     ],
     "type": "general",
@@ -227,6 +186,11 @@
     "secure": false,
     "bind": "0.0.0.0",
     "cache": false,
+
+    "accessLimit": false,
+    "accessApplyRights": false,
+    "accessAllowedConfigs": [],
+    "accessAllowedTabs": [],
 
     "certPublic": "",
     "certPrivate": "",

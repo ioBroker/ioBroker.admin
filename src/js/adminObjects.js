@@ -566,7 +566,7 @@ function Objects(main) {
                         'material-icon': 'add',
                         title: _('Add new child object to selected parent'),
                         click: function () {
-                            var id = selectId('getActual') || '';
+                            var id = selectId('getActual') || '0_userdata.0';
                             var $dialog = $('#dialog-new-object');
                             $dialog.find('#object-tab-new-object-parent').val(id);
                             $dialog.find('#object-tab-new-object-name').val(_('newObject'));

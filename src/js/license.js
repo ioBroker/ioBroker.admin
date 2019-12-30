@@ -1,7 +1,7 @@
 var license = {
     'en': 'The MIT License (MIT)<br>' +
         '<br>' +
-        'Copyright © 2014-2018 bluefox, 2014 hobbyquaker<br>' +
+        'Copyright © 2014-2019 bluefox, 2014 hobbyquaker<br>' +
         '<br>' +
         'Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:<br>' +
         'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br>' +
@@ -9,7 +9,7 @@ var license = {
 
     "de": 'MIT-Lizenz (MIT)<br>' +
         '<br>' +
-        'Copyright © 2014-2018 bluefox, 2014 hobbyquaker<br>' +
+        'Copyright © 2014-2019 bluefox, 2014 hobbyquaker<br>' +
         '<br>' +
         'Hiermit wird unentgeltlich jeder Person, die eine Kopie der Software und der zugehörigen Dokumentationen (die "Software") erhält, die Erlaubnis erteilt, sie uneingeschränkt zu benutzen, inklusive und ohne Ausnahme dem Recht, sie zu verwenden, kopieren, ändern, fusionieren, verlegen, verbreiten, unterlizenzieren und/oder zu verkaufen, und Personen, die diese Software erhalten, diese Rechte zu geben, unter den folgenden Bedingungen:<br>' +
         'Der obige Urheberrechtsvermerk und dieser Erlaubnisvermerk sind in allen Kopien oder Teilkopien der Software beizulegen.<br>' +
@@ -17,7 +17,7 @@ var license = {
 
     "ru": 'Лицензия MIT<br>' +
         '<br>' +
-        'Copyright © 2014-2018 bluefox, 2014 hobbyquaker<br>' +
+        'Copyright © 2014-2019 bluefox, 2014 hobbyquaker<br>' +
         '<br>' +
         'Данная лицензия разрешает лицам, получившим копию данного программного обеспечения и сопутствующей документации (в дальнейшем именуемыми «Программное Обеспечение»), безвозмездно использовать Программное Обеспечение без ограничений, включая неограниченное право на использование, копирование, изменение, добавление, публикацию, распространение, сублицензирование и/или продажу копий Программного Обеспечения, также как и лицам, которым предоставляется данное Программное Обеспечение, при соблюдении следующих условий:<br>' +
         'Указанное выше уведомление об авторском праве и данные условия должны быть включены во все копии или значимые части данного Программного Обеспечения.<br>' +
@@ -25,7 +25,7 @@ var license = {
 
     'it': 'Licenza MIT<br>' +
         '<br>' +
-        'Copyright © 2014-2018 bluefox, 2014 hobbyquaker<br>' +
+        'Copyright © 2014-2019 bluefox, 2014 hobbyquaker<br>' +
         '<br>' +
         'Si concede gratuitamente l\'autorizzazione, a chiunque ottenga una copia di questo software e dei file di documentazione associati (il "Software"), di dare opera al Software senza restrizioni, compresi senza limitazione i diritti di utilizzare, copiare, modificare, unire, pubblicare, distribuire, concedere in sublicenza ovvero vendere copie del Software, e di consentire alle persone a cui il Software è fornito di fare altrettanto, posto che siano rispettate le seguenti condizioni:<br>' +
         'l\'avviso di copyright unitamente a questo avviso di licenza devono essere sempre inclusi in tutte le copie o parti sostanziali del Software.<br>' +
@@ -33,7 +33,7 @@ var license = {
 
     'fr': 'Licence MIT<br>' +
         '<br>' +
-        'Copyright © 2014-2018 bluefox, 2014 hobbyquaker<br>' +
+        'Copyright © 2014-2019 bluefox, 2014 hobbyquaker<br>' +
         '<br>' +
         'Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:<br>' +
         'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br>' +
@@ -41,7 +41,7 @@ var license = {
 
     'pt': 'Licença MIT<br>' +
         '<br>' +
-        'Copyright © 2014-2018 bluefox, 2014 hobbyquaker<br>' +
+        'Copyright © 2014-2019 bluefox, 2014 hobbyquaker<br>' +
         '<br>' +
         'Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:<br>' +
         'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br>' +
@@ -49,7 +49,7 @@ var license = {
 
     'nl': 'MIT-licentie<br>' +
         '<br>' +
-        'Copyright © 2014-2018 bluefox, 2014 hobbyquaker<br>' +
+        'Copyright © 2014-2019 bluefox, 2014 hobbyquaker<br>' +
         '<br>' +
         'Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:<br>' +
         'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br>' +
@@ -57,7 +57,7 @@ var license = {
 
     'es': 'Licencia MIT<br>' +
         '<br>' +
-        'Copyright © 2014-2018 bluefox, 2014 hobbyquaker<br>' +
+        'Copyright © 2014-2019 bluefox, 2014 hobbyquaker<br>' +
         '<br>' +
         'Se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados (el "Software"), para utilizar el Software sin restricción, incluyendo sin limitación los derechos a usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar, y/o vender copias del Software, y a permitir a las personas a las que se les proporcione el Software a hacer lo mismo, sujeto a las siguientes condiciones:<br>' +
         'El aviso de copyright anterior y este aviso de permiso se incluirán en todas las copias o partes sustanciales del Software.<br>' +
@@ -65,7 +65,7 @@ var license = {
 
     'pl': 'Licencja MIT<br>' +
         '<br>' +
-        'Copyright © 2014-2018 bluefox, 2014 hobbyquaker<br>' +
+        'Copyright © 2014-2019 bluefox, 2014 hobbyquaker<br>' +
         '<br>' +
         'Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:<br>' +
         'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br>' +
@@ -73,7 +73,7 @@ var license = {
 
     'zh-cn': 'MIT许可证<br>' +
         '<br>' +
-        'Copyright © 2014-2018 bluefox, 2014 hobbyquaker<br>' +
+        'Copyright © 2014-2019 bluefox, 2014 hobbyquaker<br>' +
         '<br>' +
         '特此向任何得到本软件副本或相关文档的人授权：被授权人有权使用、复制、修改、 合并、出版、发布、散布、再授权和/或贩售软件及软件的副本，及授予被供应人 同等权利，只需服从以下义务：<br>' +
         '在软件和软件的所有副本中都必须包含以上版权声明和本许可声明。<br>' +
