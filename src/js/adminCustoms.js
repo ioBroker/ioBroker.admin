@@ -719,18 +719,12 @@ function Customs(main) {
 
         if (ids) {
             for (var i = 0; i < ids.length; i++) {
-                var found = false;
                 var custom_ = that.main.objects[ids[i]].common.custom;
                 for (var inst in custom_) {
                     if (!custom_.hasOwnProperty(inst)) continue;
                     if (!custom_[inst].enabled) {
-                        delete custom_[inst];
-                    } else {
-                        found = true;
+                        custom_[inst] = null;
                     }
-                }
-                if (!found) {
-                    that.main.objects[ids[i]].common.custom = null;
                 }
             }
 
