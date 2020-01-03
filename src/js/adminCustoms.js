@@ -712,14 +712,11 @@ function Customs(main) {
 
         if (ids) {
             for (var i = 0; i < ids.length; i++) {
-                var found = false;
                 var custom_ = that.main.objects[ids[i]].common.custom;
                 for (var inst in custom_) {
                     if (!custom_.hasOwnProperty(inst)) continue;
                     if (!custom_[inst].enabled) {
                         custom_[inst] = null; // give the signal to controller, that this setting must be deleted
-                    } else {
-                        found = true;
                     }
                 }
             }
