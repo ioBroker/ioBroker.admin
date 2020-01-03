@@ -165,11 +165,6 @@ function Customs(main) {
                 if (field === 'enabled') {
                     $this.on('click', function (event) {
                         event.stopPropagation();
-                        if ($(this).prop('checked')) {
-
-                        } else {
-
-                        }
                     });
                 }
             });
@@ -726,9 +721,6 @@ function Customs(main) {
                     } else {
                         found = true;
                     }
-                }
-                if (!found) {
-                    that.main.objects[ids[i]].common.custom = null; // from js-controller 2.1.x it is not required anymore, because will be done in controller itself
                 }
             }
 
