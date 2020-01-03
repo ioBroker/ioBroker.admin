@@ -87,6 +87,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 3.7.6 (2020-01-03)
+* (bluefox) The disabling of custom settings was corrected
+
 ### 3.7.5 (2019-12-29)
 * (bluefox) Added the filter of the running instances
 * (bluefox) The incompatible adapters will be hidden
@@ -386,4 +389,4 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2019 bluefox <dogafox@gmail.com>
+Copyright (c) 2014-2020 bluefox <dogafox@gmail.com>

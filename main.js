@@ -3,7 +3,7 @@
  *
  *      Controls Adapter-Processes
  *
- *      Copyright 2014-2019 bluefox <dogafox@gmail.com>,
+ *      Copyright 2014-2020 bluefox <dogafox@gmail.com>,
  *      MIT License
  *
  */

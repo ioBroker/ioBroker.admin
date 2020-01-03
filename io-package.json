@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.7.5",
+    "version": "3.7.6",
     "news": {
+      "3.7.6": {
+        "en": "The disabling of custom settings was corrected",
+        "de": "Das Deaktivieren von benutzerdefinierten Einstellungen wurde korrigiert",
+        "ru": "Исправлено отключение пользовательских настроек",
+        "pt": "A desativação das configurações personalizadas foi corrigida",
+        "nl": "Het uitschakelen van aangepaste instellingen is gecorrigeerd",
+        "fr": "La désactivation des paramètres personnalisés a été corrigée",
+        "it": "La disabilitazione delle impostazioni personalizzate è stata corretta",
+        "es": "Se corrigió la desactivación de la configuración personalizada",
+        "pl": "Wyłączono niestandardowe ustawienia",
+        "zh-cn": "自定义设置的禁用已得到纠正"
+      },
       "3.7.5": {
         "en": "Added the filter of the running instances\nThe incompatible adapters will be hidden",
         "de": "Filter der laufenden Instanzen hinzugefügt\nDie inkompatiblen Adapter werden ausgeblendet",

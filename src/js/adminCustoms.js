@@ -36,9 +36,7 @@ function Customs(main) {
                 if (this.customEnabled !== null && this.customEnabled !== true) {
                     this.customEnabled = true;
                     // update customs buttons
-                    if (this.inited) {
-                        this.init(null, true);
-                    }
+                    this.inited && this.init(null, true);
                 } else {
                     this.customEnabled = true;
                 }
@@ -49,9 +47,7 @@ function Customs(main) {
         if (this.customEnabled !== null && this.customEnabled !== false) {
             this.customEnabled = false;
             // update custom button
-            if (this.inited) {
-                this.init(null, true);
-            }
+            this.inited && this.init(null, true);
         } else {
             this.customEnabled = false;
         }
@@ -501,7 +497,9 @@ function Customs(main) {
                     port = this.main.objects[this.main.instances[i]].native.port;
                     isSecure = this.main.objects[this.main.instances[i]].native.secure;
                 }
-                if (chart === 'flot' && port) break;
+                if (chart === 'flot' && port) {
+                    break;
+                }
             }
             var $chart = this.$dialog.find('#iframe-history-chart');
 
@@ -636,7 +634,7 @@ function Customs(main) {
                 }
             });
         } else {
-            if (callback) callback();
+            callback && callback();
         }
     };
 
@@ -724,13 +722,13 @@ function Customs(main) {
                 for (var inst in custom_) {
                     if (!custom_.hasOwnProperty(inst)) continue;
                     if (!custom_[inst].enabled) {
-                        delete custom_[inst];
+                        custom_[inst] = null; // give the signal to controller, that this setting must be deleted
                     } else {
                         found = true;
                     }
                 }
                 if (!found) {
-                    that.main.objects[ids[i]].common.custom = null;
+                    that.main.objects[ids[i]].common.custom = null; // from js-controller 2.1.x it is not required anymore, because will be done in controller itself
                 }
             }
 
@@ -843,9 +841,11 @@ function Customs(main) {
                         for (var h in custom) {
                             if (!custom.hasOwnProperty(h)) continue;
                             if (custom[h].enabled === false) {
-                                delete custom[h];
+                                custom[h] = null; // give the signal to controller, that this setting must be deleted
                             } else {
-                                if (ids.length === 1) _instances.push(h);
+                                if (ids.length === 1) {
+                                    _instances.push(h);
+                                }
                                 found = true;
                             }
                         }
