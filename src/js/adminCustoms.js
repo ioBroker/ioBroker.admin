@@ -825,21 +825,14 @@ function Customs(main) {
                 } else {
                     var custom = this.main.objects[ids[i]].common.custom;
                     if (custom) {
-                        var found = false;
                         // delete disabled entries
                         for (var h in custom) {
                             if (!custom.hasOwnProperty(h)) continue;
-                            if (custom[h].enabled === false) {
+                            if (!custom[h] || custom[h].enabled === false) {
                                 custom[h] = null; // give the signal to controller, that this setting must be deleted
-                            } else {
-                                if (ids.length === 1) {
-                                    _instances.push(h);
-                                }
-                                found = true;
+                            } else if (ids.length === 1) {
+                                _instances.push(h);
                             }
-                        }
-                        if (!found) {
-                            delete this.main.objects[ids[i]].common.custom;
                         }
                     }
                 }
