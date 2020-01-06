@@ -3,9 +3,9 @@
 /* jshint -W097 */
 /* jshint strict: false */
 /*
- MIT, Copyright 2014-2018 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
+ MIT, Copyright 2014-2020 bluefox <dogafox@gmail.com>, soef <soef@gmx.net>
 
- version: 1.1.6 (2018.08.03)
+ version: 1.1.7 (2020.01.06)
 
  To use this dialog as standalone in ioBroker environment include:
  <link type="text/css" rel="stylesheet" href="lib/css/redmond/jquery-ui.min.css">
@@ -68,6 +68,7 @@
              noColumnResize: false, // do not allow column resize
              firstMinWidth: null,  // width if ID column, default 400
              showButtonsForNotExistingObjects: false,
+             allowSelectionOfNonExistingObjects: false, // allow select of e.g. "system.adapter" object, even it is not really exists
              webServer:    null,   // link to webserver, by default ":8082"
              filterPresets: null,  // Object with predefined filters, eg {role: 'level.dimmer'} or {type: 'state'}
              roleExactly:   false, // If the role must be equal or just content the filter value
@@ -1972,7 +1973,7 @@ function filterChanged(e) {
                         }
 
                         // Enable/ disable 'Select' button
-                        if (_data.objects[newId]) { // && _data.objects[newId].type === 'state') {
+                        if (newId && (_data.objects[newId] || _data.allowSelectionOfNonExistingObjects)) { // && _data.objects[newId].type === 'state') {
                             $dlg.find('#button-ok').removeClass('ui-state-disabled');
                             $dlg.find('.btn-set').removeClass('disabled');
                         } else {
