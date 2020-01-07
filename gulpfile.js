@@ -573,9 +573,7 @@ gulp.task('appJS', () => {
         .pipe(sourcemaps.init())
         .pipe(concat('app.js'))
         .pipe(uglify())
-        .on('error', function (err) {
-            log.error(colors.red('[Error] ') + err.toString());
-        })
+        .on('error', err => log.error(colors.red('[Error] ') + err.toString()))
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./www/js'));
 });
