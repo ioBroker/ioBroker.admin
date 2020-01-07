@@ -2,6 +2,7 @@ gulpfile.js
 package-lock.json
 node_modules
 .git
+.github
 .idea
 test
 docs
