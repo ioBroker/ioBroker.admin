@@ -36,7 +36,7 @@
              states:     null,     // All states of objects. It can be empty if connCfg used. If objects are set and no states, states will no be shown.
              filter:     null,     // filter
              imgPath:    'lib/css/fancytree/', // Path to images device.png, channel.png and state.png
-             connCfg:    null,     // configuration for dialog, ti read objects itself: {socketUrl: socketUrl, socketSession: socketSession}
+             connCfg:    null,     // configuration for dialog, to read objects itself: {socketUrl: socketUrl, socketSession: socketSession}
              onSuccess:  null,     // callback function to be called if user press "Select". Can be overwritten in "show" - function (newId, oldId, newObj)
              onChange:   null,     // called every time the new object selected - function (newId, oldId, newObj)
              noDialog:   false,    // do not make dialog
@@ -144,6 +144,55 @@
      }
   or
      type: "state"
+
+ ## How to use
+ ```
+ <!-- Somewhere in HTML -->
+    <div id="dialog-select-member" style="display: none"></div>
+ ```
+
+ ```
+ // In Javascript
+ // Name "dialog-select-member" is important, because for that exist the CSS classes
+ // Important to have "admin/img/big-info.png" in too, because this icon will be loaded if no icon found, elsewise we have endless loop
+ var selectId;
+ function initSelectId (cb) {
+     if (selectId) return cb ? cb(selectId) : selectId;
+    socket.emit('getObjects', function (err, res) {
+        if (!err && res) {
+            selectId = $('#dialog-select-member').selectId('init',  {
+                noMultiselect: true,
+                objects: res,
+                imgPath:       '../../lib/css/fancytree/',
+                filter:        {type: 'state'},
+                name:          'adapter-select-state',
+                texts: {
+                    select:          _('Select'),
+                    cancel:          _('Cancel'),
+                    all:             _('All'),
+                    id:              _('ID'),
+                    name:            _('Name'),
+                    role:            _('Role'),
+                    room:            _('Room'),
+                    value:           _('Value'),
+                    selectid:        _('Select ID'),
+                    from:            _('From'),
+                    lc:              _('Last changed'),
+                    ts:              _('Time stamp'),
+                    wait:            _('Processing...'),
+                    ack:             _('Acknowledged'),
+                    selectAll:       _('Select all'),
+                    unselectAll:     _('Deselect all'),
+                    invertSelection: _('Invert selection')
+                },
+                columns: ['image', 'name', 'role', 'room', 'value']
+            });
+            cb && cb(selectId);
+        }
+    });
+}
+  ```
+
  */
 
 var addAll2FilterCombobox = false;
@@ -1471,13 +1520,16 @@ function filterChanged(e) {
     function initTreeDialog($dlg) {
         var c;
         $dlg.addClass('dialog-select-object-ids');
+        var data = $dlg.data('selectId');
+        if (!data) {
+            return;
+        }
+
         if ($dlg.attr('id') !== 'dialog-select-member' && $dlg.attr('id') !== 'dialog-select-members') {
             $dlg.css({height: '100%', width: '100%'});
         } else {
             $dlg.css({height: 'calc(100% - 110px)', width: 'calc(100% - 20px)'});
         }
-        var data = $dlg.data('selectId');
-        if (!data) return;
 
         //var noStates = (data.objects && !data.states);
         var multiselect = (!data.noDialog && !data.noMultiselect);
@@ -1516,80 +1568,6 @@ function filterChanged(e) {
         // Get all states
         var expandeds = getExpandeds(data);
         getAllStates(data);
-
-        if (!data.noDialog && !data.buttonsDlg) {
-            if (typeof M !== 'undefined') {
-                data.buttonsDlg = true;
-                // following structure is expected
-                // <div id="dialog-select-member" class="modal modal-fixed-footer">
-                //     <div class="modal-content">
-                //          <div class="row">
-                //              <div class="col s12 title"></div>
-                //          </div>
-                //         <div class="row">
-                //             <div class="col s12 dialog-content">
-                //             </div>
-                //         </div>
-                //     </div>
-                //     <div class="modal-footer">
-                //         <a class="modal-action modal-close waves-effect waves-green btn btn-set"  ><i class="large material-icons">check</i><span class="translate">Ok</span></a>
-                //         <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons">close</i><span class="translate">Cancel</span></a>
-                //     </div>
-                // </div>
-                $dlg.find('.btn-set').off('click').on('click', function () {
-                    var _data = $dlg.data('selectId');
-                    if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId, _data.objects[_data.selectedID]);
-                    _data.currentId = _data.selectedID;
-                    storeSettings(_data);
-                });
-                $dlg.find('.btn-close').off('click').on('click', function () {
-                    var _data = $dlg.data('selectId');
-                    storeSettings(_data);
-                });
-                $dlg.modal({
-                    dismissible: false
-                });
-            } else {
-                data.buttonsDlg = [
-                    {
-                        id:     'button-ok',
-                        text:   data.texts.select,
-                        click:  function () {
-                            var _data = $dlg.data('selectId');
-                            if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId, _data.objects[_data.selectedID]);
-                            _data.currentId = _data.selectedID;
-                            storeSettings(_data);
-                            $dlg.dialog('close');
-                        }
-                    },
-                    {
-                        text:   data.texts.cancel,
-                        click:  function () {
-                            var _data = $dlg.data('selectId');
-                            storeSettings(_data);
-                            $(this).dialog('close');
-                        }
-                    }
-                ];
-
-                $dlg.dialog ({
-                    autoOpen: false,
-                    modal: true,
-                    resizable: false,
-                    width: '90%',
-                    open: function (event) {
-                        $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
-                    },
-                    close: function () {
-                        storeSettings (data);
-                    },
-                    buttons: data.buttonsDlg
-                });
-                if (data.zindex !== null) {
-                    $('div[aria-describedby="' + $dlg.attr('id') + '"]').css({'z-index': data.zindex})
-                }
-            }
-        }
 
         var filter = {};
         forEachColumn(data, function (name) {
@@ -1888,6 +1866,82 @@ function filterChanged(e) {
             $content.html(text)
         } else {
             $dlg.html(text);
+        }
+
+        // Init dialog buttons
+        if (!data.noDialog && !data.buttonsDlg) {
+            if (typeof M !== 'undefined') {
+                data.buttonsDlg = true;
+                // following structure is expected
+                // <div id="dialog-select-member" class="modal modal-fixed-footer">
+                //     <div class="modal-content">
+                //          <div class="row">
+                //              <div class="col s12 title"></div>
+                //          </div>
+                //         <div class="row">
+                //             <div class="col s12 dialog-content">
+                //             </div>
+                //         </div>
+                //     </div>
+                //     <div class="modal-footer">
+                //         <a class="modal-action modal-close waves-effect waves-green btn btn-set"  ><i class="large material-icons">check</i><span class="translate">Ok</span></a>
+                //         <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons">close</i><span class="translate">Cancel</span></a>
+                //     </div>
+                // </div>
+                $dlg.find('.btn-set').off('click').on('click', function () {
+                    var _data = $dlg.data('selectId');
+                    if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId, _data.objects[_data.selectedID]);
+                    _data.currentId = _data.selectedID;
+                    storeSettings(_data);
+                });
+                $dlg.find('.btn-close').off('click').on('click', function () {
+                    var _data = $dlg.data('selectId');
+                    storeSettings(_data);
+                });
+                $dlg.modal({
+                    dismissible: false
+                });
+            } else {
+                data.buttonsDlg = [
+                    {
+                        id:     'button-ok',
+                        text:   data.texts.select,
+                        click:  function () {
+                            var _data = $dlg.data('selectId');
+                            if (_data && _data.onSuccess) _data.onSuccess(_data.selectedID, _data.currentId, _data.objects[_data.selectedID]);
+                            _data.currentId = _data.selectedID;
+                            storeSettings(_data);
+                            $dlg.dialog('close');
+                        }
+                    },
+                    {
+                        text:   data.texts.cancel,
+                        click:  function () {
+                            var _data = $dlg.data('selectId');
+                            storeSettings(_data);
+                            $(this).dialog('close');
+                        }
+                    }
+                ];
+
+                $dlg.dialog ({
+                    autoOpen: false,
+                    modal: true,
+                    resizable: false,
+                    width: '90%',
+                    left: '1rem',
+                    open: function (event) {
+                        $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                    },
+                    close: function () {
+                        storeSettings (data);
+                    },
+                    buttons: data.buttonsDlg
+                });
+                if (data.zindex !== null) {
+                    $('div[aria-describedby="' + $dlg.attr('id') + '"]').css({'z-index': data.zindex})
+                }
+            }
         }
 
         data.$tree = $dlg.find('.objects-list-table');

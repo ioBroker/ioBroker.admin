@@ -1589,6 +1589,65 @@ function getTableResult(tabId, cols) {
     return res;
 }
 
+// Show select ID dialog
+// Required in index.html
+//     <link type="text/css" rel="stylesheet" href="../../lib/css/themes/jquery-ui/default/jquery-ui.min.css">
+//     <link type="text/css" rel="stylesheet" href="../../lib/css/fancytree/ui.fancytree.min.css"/>
+//     <link rel="stylesheet" type="text/css" href="../../lib/css/iob/selectID.css"/>
+//
+//     <script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
+//     <script type="text/javascript" src="../../lib/js/jquery.fancytree-all.min.js"></script>
+//     <script type="text/javascript" src="../../lib/js/selectID.js"></script>
+function showSelectIdDialog(val, callback) {
+    // see cloud, tileboard adapters for details
+    var $dialog = $('#dialog-select-member');
+    if (!$dialog.length) {
+        $('body').append('<div id="dialog-select-member" style="display: none; position: absolute; background: white"></div>');
+        $dialog = $('#dialog-select-member');
+    }
+    if (!window.tableSelectId) {
+        socket.emit('getObjects', function (err, res) {
+            if (!err && res) {
+                window.tableSelectId = $dialog.selectId('init',  {
+                    noMultiselect: true,
+                    objects: res,
+                    dialogHeight: '420px!important',//'calc(100% - 100px) !important',
+                    imgPath:       '../../lib/css/fancytree/',
+                    filter:        {type: 'state'},
+                    name:          'table-select-state',
+                    texts: {
+                        select:          _('Select'),
+                        cancel:          _('Cancel'),
+                        all:             _('All'),
+                        id:              _('ID'),
+                        name:            _('Name'),
+                        role:            _('Role'),
+                        room:            _('Room'),
+                        value:           _('Value'),
+                        selectid:        _('Select ID'),
+                        from:            _('From'),
+                        lc:              _('Last changed'),
+                        ts:              _('Time stamp'),
+                        wait:            _('Processing...'),
+                        ack:             _('Acknowledged'),
+                        selectAll:       _('Select all'),
+                        unselectAll:     _('Deselect all'),
+                        invertSelection: _('Invert selection')
+                    },
+                    columns: ['image', 'name', 'role', 'room']
+                });
+                window.tableSelectId.selectId('show', val, function (newId, oldId) {
+                    newId && callback && callback(newId, oldId || '');
+                });
+            }
+        });
+    } else {
+        window.tableSelectId.selectId('show', val, function (newId, oldId) {
+            newId && callback && callback(newId, oldId || '');
+        });
+    }
+}
+
 /*
  <div id="values">
      <button class="table-button-add" style="margin-left: 10px"></button>
@@ -1622,6 +1681,7 @@ function getTableResult(tabId, cols) {
  *                      <th data-name="regex"     class="translate" style="width: 30%" data-style="text-align: right">Context</th>
  *                      <th data-name="room"      class="translate" data-type="select">Room</th>
  *                      <th data-name="aaa"       class="translate" data-options="1/A;2/B;3/C;4" data-type="select">Room</th>
+ *                      <th data-name="id"        class="translate" data-type="OID">Object ID</th>
  *                      <th data-name="enabled"   class="translate" data-type="checkbox" data-default="true">Enabled</th>
  *                      <th data-buttons="delete up down copy" style="width: 32px"></th>
  *                  </tr>
@@ -1857,6 +1917,14 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         if (isMaterialize) {
                             line += '<span></span>';
                         }
+                    } else if (names[i].type === 'OID') {
+                        line += '<div style="' + (names[i].style ? names[i].style : 'width: calc(100% - 30px') + '"><input class="values-input" style="width: calc(100% - 30px)" type="text" data-index="' + v + '" data-name="' + names[i].name + '"/>';
+                        if (isMaterialize) {
+                            line += '<a style="max-width: 30px" class="btn-floating btn-small waves-effect waves-light blue oid-select" data-index="' + v + '" data-name="' + names[i].name + '">...</a>'
+                        } else {
+                            line += '<button  style="max-width: 30px" class="oid-select" data-index="' + v + '" data-name="' + names[i].name + '">...</button>'
+                        }
+                        line += '</div>';
                     } else if (names[i].type.substring(0, 6) === 'select') {
                         line += (names[i].type.substring(7, 16) === 'multiple' ? '<select multiple style="' : '<select style="') + (names[i].style ? names[i].style : 'width: 100%') + '" class="values-input" data-index="' + v + '" data-name="' + names[i].name + '">';
                         var options;
@@ -2094,6 +2162,17 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     }
                 });
             }
+        });
+        $lines.find('.oid-select').on('click', function () {
+            var name = $(this).data('name');
+            var index = $(this).data('index');
+            var $input = $lines.find('.values-input[data-name="' + name + '"][data-index="' + index + '"]');
+            var val = $input.val() || '';
+            showSelectIdDialog(val, function (newValue, oldValue) {
+                if (newValue !== oldValue) {
+                    $input.val(newValue).trigger('change');
+                }
+            });
         });
 
         $lines.find('.values-input').on('change.adaptersettings', function () {
