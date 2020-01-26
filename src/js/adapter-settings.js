@@ -1069,7 +1069,7 @@ function fillSelectIPs(id, actualAddr, noIPv4, noIPv6, callback) {
 }
 
 function sendTo(_adapter_instance, command, message, callback) {
-    socket.emit('sendTo', (_adapter_instance || adapter + '.' + instance), command, message, callback);
+    socket.emit('sendTo', _adapter_instance || (adapter + '.' + instance), command, message, callback);
 }
 
 function sendToHost(host, command, message, callback) {
