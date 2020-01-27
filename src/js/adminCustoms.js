@@ -676,11 +676,11 @@ function Customs(main) {
             }
             // if not changed
             if (val === wordDifferent) return;
-
-            if (val === null) val = '';
+            if (val === null)      val = '';
             if (val === undefined) val = '';
-            if (val === 'false') val = false;
-            if (val === 'true')  val = true;
+            if (val === 'false')   val = false;
+            if (val === 'true')    val = true;
+
             var f = parseFloat(val);
             // replace trailing 0 and prefix +
             if (val.toString().replace(/^\+/, '').replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/,'$1') === f.toString()) {
@@ -691,7 +691,7 @@ function Customs(main) {
                 var custom = that.main.objects[ids[i]].common.custom;
                 custom = that.main.objects[ids[i]].common.custom = custom || {};
 
-                if (custom[instance] === undefined) {
+                if (!custom[instance]) {
                     var adapter = instance.split('.')[0];
                     var _default;
                     // Try to get default values
@@ -706,17 +706,44 @@ function Customs(main) {
                     }
                     custom[instance] = _default || {};
                 }
+
                 custom[instance][field] = val;
             }
         });
 
+        // On save
         if (ids) {
             for (var i = 0; i < ids.length; i++) {
                 var custom_ = that.main.objects[ids[i]].common.custom;
                 for (var inst in custom_) {
                     if (!custom_.hasOwnProperty(inst)) continue;
-                    if (!custom_[inst].enabled) {
-                        custom_[inst] = null; // give the signal to controller, that this setting must be deleted
+                    if (!custom_[inst]) {
+                        custom_[inst] = null;
+                    }
+
+                    if (custom_[inst] && !custom_[inst].enabled) {
+                        var found = false;
+
+                        // analyse custom.material.admin.enabled
+                        // or      custom.iot.user.enabled
+                        if (typeof custom_[inst] === 'object') {
+                            Object.keys(custom_[inst])
+                                .forEach(attr => {
+                                    // if custom.material['admin']
+                                    if (typeof custom_[inst][attr] === 'object') {
+                                        // if custom.material['admin'].enabled
+                                        if (custom_[inst][attr].enabled) {
+                                            found = true;
+                                        } else {
+                                            delete custom_[inst][attr];
+                                        }
+                                    }
+                                });
+                        }
+
+                        if (!found) {
+                            custom_[inst] = null; // give the signal to controller, that this setting must be deleted
+                        }
                     }
                 }
             }
@@ -817,6 +844,7 @@ function Customs(main) {
             }
         }
         var _instances = [];
+        // on load
         if (ids) {
             for (var i = ids.length - 1; i >= 0; i--) {
                 if (!this.main.objects[ids[i]]) {

@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.7.7",
+    "version": "3.7.8",
     "news": {
-      "3.7.7": {
+      "3.7.8": {
         "en": "The disabling of custom settings was corrected",
         "de": "Das Deaktivieren von benutzerdefinierten Einstellungen wurde korrigiert",
         "ru": "Исправлено отключение пользовательских настроек",
