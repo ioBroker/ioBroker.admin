@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.7.8",
+    "version": "3.7.9",
     "news": {
+      "3.7.9": {
+        "en": "The log downloading was fixed",
+        "de": "Das Herunterladen des Protokolls wurde behoben",
+        "ru": "Загрузка журнала была исправлена",
+        "pt": "O download do log foi corrigido",
+        "nl": "Het downloaden van het logboek is opgelost",
+        "fr": "Le téléchargement du journal a été corrigé",
+        "it": "Il download del registro è stato corretto",
+        "es": "La descarga del registro fue corregida",
+        "pl": "Pobieranie dziennika zostało naprawione",
+        "zh-cn": "日志下载已修复"
+      },
       "3.7.8": {
         "en": "The disabling of custom settings was corrected",
         "de": "Das Deaktivieren von benutzerdefinierten Einstellungen wurde korrigiert",
