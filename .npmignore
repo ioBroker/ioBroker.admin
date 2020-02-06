@@ -8,6 +8,7 @@ test
 docs
 .travis.yml
 src
+iob_npm.done
 .gitignore
 DEVELOPER.md
 admin/i18n

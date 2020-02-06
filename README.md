@@ -90,7 +90,10 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 ### 4.0.0 (2020-01-15)
 * (Apollon77) upgrade all dependencies, especially socketio to current version! This might break ipad 1/2 devices
 
-### 3.7.7 (2020-01-05)
+### 3.7.9 (2020-01-28)
+* (bluefox) The log downloading was fixed
+
+### 3.7.8 (2020-01-26)
 * (bluefox) The disabling of custom settings was corrected
 
 ### 3.7.5 (2019-12-29)
