@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "3.7.9",
+    "version": "4.0.0",
     "news": {
+      "4.0.0": {
+        "en": "socket.io upgraded to latest version. Attention: This might break older devices like iPad 1/2!!",
+        "de": "socket.io wurde auf die neueste Version aktualisiert. Achtung: Dies könnte ältere Geräte wie das iPad 1/2 beschädigen !!",
+        "ru": "socket.io обновлен до последней версии. Внимание: это может сломать старые устройства, такие как iPad 1/2!",
+        "pt": "socket.io atualizado para a versão mais recente. Atenção: Isso pode quebrar dispositivos mais antigos como o iPad 1/2 !!",
+        "nl": "socket.io opgewaardeerd naar de nieuwste versie. Let op: dit kan oudere apparaten zoals iPad 1/2 kapot maken !!",
+        "fr": "socket.io mis à niveau vers la dernière version. Attention: cela pourrait casser des appareils plus anciens comme l'iPad 1/2 !!",
+        "it": "socket.io aggiornato all'ultima versione. Attenzione: questo potrebbe rompere i dispositivi più vecchi come iPad 1/2 !!",
+        "es": "socket.io actualizado a la última versión. Atención: ¡Esto podría romper dispositivos más antiguos como iPad 1/2!",
+        "pl": "socket.io zaktualizowane do najnowszej wersji. Uwaga: może to uszkodzić starsze urządzenia, takie jak iPad 1/2 !!",
+        "zh-cn": "socket.io已升级到最新版本。注意：这可能会损坏旧设备，例如iPad 1/2！"
+      },
       "3.7.9": {
         "en": "The log downloading was fixed",
         "de": "Das Herunterladen des Protokolls wurde behoben",
