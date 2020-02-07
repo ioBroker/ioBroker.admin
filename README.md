@@ -87,6 +87,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 4.0.1 (2020-02-07)
+* (bluefox) Fixed the loading of some adapter configurations
+
 ### 4.0.0 (2020-01-15)
 * (Apollon77) upgrade all dependencies, especially socketio to current version! This might break ipad 1/2 devices
 

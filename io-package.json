@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "4.0.0",
+    "version": "4.0.1",
     "news": {
+      "4.0.1": {
+        "en": "Fixed the loading of some adapter configurations",
+        "de": "Das Laden einiger Adapterkonfigurationen wurde behoben",
+        "ru": "Исправлена загрузка некоторых конфигураций адаптера",
+        "pt": "Corrigido o carregamento de algumas configurações do adaptador",
+        "nl": "Het laden van sommige adapterconfiguraties opgelost",
+        "fr": "Correction du chargement de certaines configurations d'adaptateur",
+        "it": "Risolto il problema con il caricamento di alcune configurazioni dell'adattatore",
+        "es": "Se corrigió la carga de algunas configuraciones de adaptadores",
+        "pl": "Naprawiono ładowanie niektórych konfiguracji adaptera",
+        "zh-cn": "修复了某些适配器配置的加载"
+      },
       "4.0.0": {
         "en": "socket.io upgraded to latest version. Attention: This might break older devices like iPad 1/2!!",
         "de": "socket.io wurde auf die neueste Version aktualisiert. Achtung: Dies könnte ältere Geräte wie das iPad 1/2 beschädigen !!",
@@ -87,52 +99,6 @@
         "es": "Inicio de sesión fijo de usuario no administrador",
         "pl": "Naprawiono logowanie użytkownika niebędącego administratorem",
         "zh-cn": "固定非管理员用户登录"
-      },
-      "3.6.10": {
-        "en": "Add NPM version and OS check to popup messages",
-        "de": "NPM-Version und Betriebssystemprüfung zu Popup-Meldungen hinzufügen",
-        "ru": "Добавить версию NPM и проверку ОС во всплывающих сообщениях",
-        "pt": "Adicionar versão do NPM e verificação do SO às mensagens pop-up",
-        "nl": "Voeg NPM-versie en OS-controle toe aan pop-upberichten",
-        "fr": "Ajouter la version de NPM et la vérification du système d'exploitation aux messages contextuels",
-        "it": "Aggiungi la versione NPM e il controllo del sistema operativo ai messaggi popup",
-        "es": "Agregue la versión NPM y la verificación del sistema operativo a los mensajes emergentes",
-        "pl": "Dodaj wersję NPM i kontrolę systemu operacyjnego do wyskakujących wiadomości",
-        "zh-cn": "添加NPM版本和操作系统检查以弹出消息"
-      },
-      "3.6.7": {
-        "en": "Add Node.JS version check to popup messages",
-        "de": "Node.JS-Versionsprüfung zu Popup-Nachrichten hinzufügen",
-        "ru": "Добавить проверку версии Node.JS во всплывающие сообщения",
-        "pt": "Adicione a verificação da versão do Node.JS às mensagens pop-up",
-        "nl": "Voeg Node.JS versiecontrole toe aan pop-upberichten",
-        "fr": "Ajouter la vérification de la version de Node.JS aux messages contextuels",
-        "it": "Aggiungi il controllo versione Node.JS ai messaggi popup",
-        "es": "Agregar verificación de versión de Node.JS a mensajes emergentes",
-        "pl": "Dodaj sprawdzanie wersji Node.JS do wyskakujących wiadomości",
-        "zh-cn": "将Node.JS版本检查添加到弹出消息"
-      },"3.6.6": {
-        "en": "update some words translation",
-        "de": "Aktualisieren Sie einige Wörter Übersetzung",
-        "ru": "обновить перевод некоторых слов",
-        "pt": "atualizar algumas palavras tradução",
-        "nl": "update enkele woorden vertaling",
-        "fr": "mettre à jour la traduction de quelques mots",
-        "it": "aggiorna la traduzione di alcune parole",
-        "es": "actualizar algunas palabras traducción",
-        "pl": "zaktualizuj tłumaczenie niektórych słów",
-        "zh-cn": "更新一些单词翻译"
-      },
-      "3.5.10": {
-        "en": "Too many debug outputs were disabled",
-        "de": "Zu viele Debug-Ausgaben wurden deaktiviert",
-        "ru": "Отключена отладочная информация",
-        "pt": "Muitas saídas de depuração foram desativadas",
-        "nl": "Te veel foutopsporingsuitgangen waren uitgeschakeld",
-        "fr": "Trop de sorties de débogage ont été désactivées",
-        "it": "Troppe uscite di debug sono state disabilitate",
-        "es": "Demasiadas salidas de depuración fueron deshabilitadas",
-        "pl": "Zbyt wiele wyników debugowania zostało wyłączonych"
       }
     },
     "desc": {

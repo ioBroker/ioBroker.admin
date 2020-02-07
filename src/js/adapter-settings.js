@@ -17,7 +17,7 @@ var adapter  = '';
 var onChangeSupported = false;
 var isMaterialize = false;
 var ___onChange = null;
-var secret = 'Zgfr56gFe87jJOM';
+var systemSecret = 'Zgfr56gFe87jJOM';
 
 function preInit () {
     'use strict';
@@ -303,7 +303,7 @@ function preInit () {
             if (!err && res && res.common) {
                 systemLang = res.common.language || systemLang;
                 systemConfig = res;
-                secret = (systemConfig && systemConfig.native && systemConfig.native.secret) || 'Zgfr56gFe87jJOM';
+                systemSecret = (systemConfig && systemConfig.native && systemConfig.native.secret) || 'Zgfr56gFe87jJOM';
             }
             socket.emit('getObject', 'system.certificates', function (err, res) {
                 if (!err && res) {
@@ -2267,16 +2267,15 @@ function table2values(divId) {
  * Decrypt the password/value with given key
  *  Usage:
  *  ```
- *     var secret = '';
  *     function load(settings, onChange) {
  *          if (settings.password) {
- *              settings.password = decrypt(secret, settings.password);
+ *              settings.password = decrypt(systemSecret, settings.password);
  *          }
  *          // ...
  *     }
  *  ```
  * @param {string} key - Secret key
- * @param {string} value - value to decript
+ * @param {string} value - value to decrypt
  * @returns {string}
  */
 function decrypt(key, value) {
@@ -2294,7 +2293,7 @@ function decrypt(key, value) {
  *     function save(callback) {
  *          ...
  *          if (obj.password) {
- *              obj.password = encrypt(secret, obj.password);
+ *              obj.password = encrypt(systemSecret, obj.password);
  *          }
  *          ...
  *    }
