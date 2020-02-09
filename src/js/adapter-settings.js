@@ -271,7 +271,7 @@ function preInit () {
                     return;
                 }
                 changed = false;
-                if (callback) callback();
+                callback && callback();
             });
         });
     }
@@ -348,7 +348,7 @@ function preInit () {
                         }
                     }
                 }
-                if (callback) callback();
+                callback && callback();
             });
         });
     }
@@ -375,10 +375,19 @@ function preInit () {
                 $('.adapter-instance').html(adapter + '.' + instance);
                 $('.adapter-config').html('system.adapter.' + adapter + '.' + instance);
                 common = res.common;
-                if (res.common && res.common.name) $('.adapter-name').html(res.common.name);
+                res.common && res.common.name && $('.adapter-name').html(res.common.name);
                 if (typeof load === 'undefined') {
                     alert('Please implement save function in your admin/index.html');
                 } else {
+                    // decode all native attributes starting with enc_
+                    if (res.native && typeof res.native === 'object') {
+                        for (var attr in res.native) {
+                            if (res.native.hasOwnProperty(attr) && attr.match(/^enc_/)) {
+                                res.native[attr] = decrypt(res.native[attr]);
+                            }
+                        }
+                    }
+
                     load(res.native, onChange);
                     // init selects
                     if (isMaterialize) {
@@ -924,9 +933,9 @@ function showToast(parent, message, icon, duration, isError, classes) {
 function getObject(id, callback) {
     socket.emit('getObject', id, function (err, res) {
         if (!err && res) {
-            if (callback) callback(err, res);
+            callback && callback(err, res);
         } else {
-            if (callback) callback(null);
+            callback && callback(null);
         }
     });
 }
@@ -934,9 +943,9 @@ function getObject(id, callback) {
 function getState(id, callback) {
     socket.emit('getState', id, function (err, res) {
         if (!err && res) {
-            if (callback) callback(err, res);
+            callback && callback(err, res);
         } else {
-            if (callback) callback(null);
+            callback && callback(null);
         }
     });
 }
@@ -949,9 +958,9 @@ function getEnums(_enum, callback) {
                 if (res.rows[i].id === 'enum.' + _enum) continue;
                 _res[res.rows[i].id] = res.rows[i].value;
             }
-            if (callback) callback(null, _res);
+            callback && callback(null, _res);
         } else {
-            if (callback) callback(err, []);
+            callback && callback(err, []);
         }
     });
 }
@@ -963,9 +972,9 @@ function getGroups(callback) {
             for (var i = 0; i < res.rows.length; i++) {
                 _res[res.rows[i].id] = res.rows[i].value;
             }
-            if (callback) callback(null, _res);
+            callback && callback(null, _res);
         } else {
-            if (callback) callback(err, []);
+            callback && callback(err, []);
         }
     });
 }
@@ -977,9 +986,9 @@ function getUsers(callback) {
             for (var i = 0; i < res.rows.length; i++) {
                 _res[res.rows[i].id] = res.rows[i].value;
             }
-            if (callback) callback(null, _res);
+            callback && callback(null, _res);
         } else {
-            if (callback) callback(err, []);
+            callback && callback(err, []);
         }
     });
 }
@@ -1144,10 +1153,10 @@ function getExtendableInstances(_adapter, callback) {
 
     socket.emit('getObjectView', 'system', 'instance', null, function (err, doc) {
         if (err) {
-            if (callback) callback ([]);
+            callback && callback ([]);
         } else {
             if (doc.rows.length === 0) {
-                if (callback) callback ([]);
+                callback && callback ([]);
             } else {
                 var res = [];
                 for (var i = 0; i < doc.rows.length; i++) {
@@ -1155,7 +1164,7 @@ function getExtendableInstances(_adapter, callback) {
                         res.push(doc.rows[i].value);
                     }
                 }
-                if (callback) callback (res);
+                callback && callback (res);
             }
         }
     });
@@ -2270,6 +2279,8 @@ function table2values(divId) {
  *     function load(settings, onChange) {
  *          if (settings.password) {
  *              settings.password = decrypt(systemSecret, settings.password);
+ *              // same as
+ *              settings.password = decrypt(settings.password);
  *          }
  *          // ...
  *     }
@@ -2279,8 +2290,12 @@ function table2values(divId) {
  * @returns {string}
  */
 function decrypt(key, value) {
-    let result = '';
-    for(let i = 0; i < value.length; i++) {
+    if (value === undefined) {
+        value = key;
+        key = systemSecret;
+    }
+    var result = '';
+    for(var i = 0; i < value.length; i++) {
         result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
@@ -2294,6 +2309,8 @@ function decrypt(key, value) {
  *          ...
  *          if (obj.password) {
  *              obj.password = encrypt(systemSecret, obj.password);
+ *              // same as
+ *              obj.password = decrypt(obj.password);
  *          }
  *          ...
  *    }
@@ -2303,8 +2320,12 @@ function decrypt(key, value) {
  * @returns {string}
  */
 function encrypt(key, value) {
-    let result = '';
-    for(let i = 0; i < value.length; i++) {
+    if (value === undefined) {
+        value = key;
+        key = systemSecret;
+    }
+    var result = '';
+    for(var i = 0; i < value.length; i++) {
         result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
     }
     return result;
