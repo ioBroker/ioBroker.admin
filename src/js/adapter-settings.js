@@ -18,6 +18,9 @@ var onChangeSupported = false;
 var isMaterialize = false;
 var ___onChange = null;
 var systemSecret = 'Zgfr56gFe87jJOM';
+var supportedFeatures = [
+    'ADAPTER_AUTO_ENCODE', // all native attributes, that start with "enc_" will be automatically encoded
+];
 
 function preInit () {
     'use strict';
@@ -689,6 +692,10 @@ function prepareTooltips() {
             }
         });
     }
+}
+
+function supportsFeature(feature) {
+    return supportedFeatures.indexOf(feature) !== -1;
 }
 
 function showMessageJQ(message, title, icon, width) {
