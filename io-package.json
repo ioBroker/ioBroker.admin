@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "4.0.1",
+    "version": "4.0.2",
     "news": {
-      "4.0.1": {
+      "4.0.2": {
         "en": "Fixed the loading of some adapter configurations",
         "de": "Das Laden einiger Adapterkonfigurationen wurde behoben",
         "ru": "Исправлена загрузка некоторых конфигураций адаптера",
