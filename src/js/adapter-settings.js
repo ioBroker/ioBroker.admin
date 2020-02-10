@@ -19,7 +19,7 @@ var isMaterialize = false;
 var ___onChange = null;
 var systemSecret = 'Zgfr56gFe87jJOM';
 var supportedFeatures = [
-    'ADAPTER_AUTO_ENCODE', // all native attributes, that start with "enc_" will be automatically encoded
+    'ADAPTER_AUTO_DECRYPT', // all native attributes, that start with "enc_" will be automatically decrypted and encrypted
 ];
 
 function preInit () {
