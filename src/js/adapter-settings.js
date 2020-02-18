@@ -251,6 +251,11 @@ function preInit () {
             for (var a in native) {
                 if (native.hasOwnProperty(a)) {
                     oldObj.native[a] = native[a];
+
+                    // encode all native attributes starting with enc_
+                    if (oldObj.native[a] && a.match(/^enc_/)) {
+                        oldObj.native[a] = encrypt(oldObj.native[a]);
+                    }
                 }
             }
 
