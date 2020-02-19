@@ -87,6 +87,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 4.0.4 (2020-02-19)
+* (Apollon77) Fix socket.io-client dependency
+
 ### 4.0.3 (2020-02-19)
 * (bluefox) Encrypted configuration was corrected.
 

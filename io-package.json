@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "4.0.3",
+    "version": "4.0.4",
     "news": {
+      "4.0.4": {
+        "en": "fix socketio client dependency",
+        "de": "Behebung der Socketio-Client-Abhängigkeit",
+        "ru": "исправить зависимость клиента socketio",
+        "pt": "corrigir dependência do cliente socketio",
+        "nl": "fix socketio client afhankelijkheid",
+        "fr": "correction de la dépendance du client socketio",
+        "it": "correzione della dipendenza client socketio",
+        "es": "arreglar la dependencia del cliente socketio",
+        "pl": "napraw zależność klienta socketio",
+        "zh-cn": "修复socketio客户端依赖性"
+      },
       "4.0.3": {
         "en": "Encrypted configuration was corrected.",
         "de": "Die verschlüsselte Konfiguration wurde korrigiert.",
