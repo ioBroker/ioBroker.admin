@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "4.0.2",
+    "version": "4.0.3",
     "news": {
+      "4.0.3": {
+        "en": "Encrypted configuration was corrected.",
+        "de": "Die verschlüsselte Konfiguration wurde korrigiert.",
+        "ru": "Зашифрованная конфигурация была исправлена.",
+        "pt": "A configuração criptografada foi corrigida.",
+        "nl": "Gecodeerde configuratie is gecorrigeerd.",
+        "fr": "La configuration cryptée a été corrigée.",
+        "it": "La configurazione crittografata è stata corretta.",
+        "es": "La configuración encriptada fue corregida.",
+        "pl": "Szyfrowana konfiguracja została poprawiona.",
+        "zh-cn": "加密的配置已得到纠正。"
+      },
       "4.0.2": {
         "en": "Fixed the loading of some adapter configurations",
         "de": "Das Laden einiger Adapterkonfigurationen wurde behoben",
@@ -63,42 +75,6 @@
         "es": "Se agregó el filtro de las instancias en ejecución\nLos adaptadores incompatibles estarán ocultos.",
         "pl": "Dodano filtr uruchomionych instancji\nNiezgodne adaptery zostaną ukryte",
         "zh-cn": "添加了正在运行的实例的过滤器\n不兼容的适配器将被隐藏"
-      },
-      "3.7.2": {
-        "en": "Easy admin configuration was implemented",
-        "de": "Einfache Admin-Konfiguration wurde implementiert",
-        "ru": "Простая конфигурация администратора была реализована",
-        "pt": "Fácil configuração administrativa foi implementada",
-        "nl": "Eenvoudige beheerconfiguratie is geïmplementeerd",
-        "fr": "Configuration facile de l'administrateur a été mise en œuvre",
-        "it": "È stata implementata una facile configurazione dell'amministratore",
-        "es": "Se implementó una configuración de administrador fácil",
-        "pl": "Wdrożono łatwą konfigurację administratora",
-        "zh-cn": "简单的管理员配置已实现"
-      },
-      "3.6.12": {
-        "en": "Add repo check to popup messages",
-        "de": "Repo-Check zu Popup-Nachrichten hinzufügen",
-        "ru": "Добавить проверку репо во всплывающие сообщения",
-        "pt": "Adicionar verificação de repo às mensagens pop-up",
-        "nl": "Repo-controle toevoegen aan pop-upberichten",
-        "fr": "Ajouter repo check aux messages contextuels",
-        "it": "Aggiungi controllo repository ai messaggi popup",
-        "es": "Agregar verificación de repositorio a mensajes emergentes",
-        "pl": "Dodaj kontrolę repo do wyskakujących wiadomości",
-        "zh-cn": "将回购检查添加到弹出消息"
-      },
-      "3.6.11": {
-        "en": "Fixed login of non-admin user ",
-        "de": "Fehler beim Anmelden eines Benutzers ohne Administratorrechte behoben",
-        "ru": "Исправлена ошибка входа пользователя без прав администратора",
-        "pt": "Corrigido login do usuário não administrador",
-        "nl": "Vaste aanmelding van niet-admin-gebruiker",
-        "fr": "Connexion fixe de l'utilisateur non-administrateur",
-        "it": "Risolto il login dell'utente non amministratore",
-        "es": "Inicio de sesión fijo de usuario no administrador",
-        "pl": "Naprawiono logowanie użytkownika niebędącego administratorem",
-        "zh-cn": "固定非管理员用户登录"
       }
     },
     "desc": {
