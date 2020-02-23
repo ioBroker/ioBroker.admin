@@ -665,7 +665,7 @@ gulp.task('appCopy', gulp.series('colorpick.min', () => {
         '!./src/js/**/words.js',
         '!./src/materialize-css/**/*',
         '!./src/colorpicker/**/*',
-        './src/configs.html',
+        './src/configs.html'
     ])
     .pipe(gulp.dest('./www'));
     })
