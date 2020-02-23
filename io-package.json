@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "4.0.4",
+    "version": "4.0.5",
     "news": {
+      "4.0.5": {
+        "en": "workaround for a socket.io bug added, warning message for GitHub installs added",
+        "de": "Problemumgehung für einen socket.io-Fehler hinzugefügt, Warnmeldung für GitHub-Installationen hinzugefügt",
+        "ru": "добавлено обходное решение для ошибки socket.io, добавлено предупреждающее сообщение для установки GitHub",
+        "pt": "solução alternativa para um bug do socket.io adicionado, mensagem de aviso para instalações do GitHub adicionada",
+        "nl": "tijdelijke oplossing voor een socket.io-bug toegevoegd, waarschuwingsbericht voor GitHub-installaties toegevoegd",
+        "fr": "solution de contournement pour un bug socket.io ajoutée, message d'avertissement pour les installations GitHub ajouté",
+        "it": "soluzione alternativa per un bug socket.io aggiunto, aggiunto un messaggio di avviso per le installazioni di GitHub",
+        "es": "solución alternativa para un error socket.io agregado, mensaje de advertencia para las instalaciones de GitHub agregadas",
+        "pl": "dodano obejście dla błędu socket.io, dodano komunikat ostrzegawczy dla instalacji GitHub",
+        "zh-cn": "添加了socket.io错误的解决方法，添加了GitHub安装的警告消息"
+      },
       "4.0.4": {
         "en": "fix socketio client dependency",
         "de": "Behebung der Socketio-Client-Abhängigkeit",

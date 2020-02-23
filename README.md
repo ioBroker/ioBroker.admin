@@ -87,6 +87,11 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 4.0.5 (2020-02-23)
+* (Apollon77) Workaround for socket.io bug #3555 added to make sure always the correct client files are delivered
+* (Apollon77) remove socket.io-client dep again because we lookup via socket.io lib
+* (klein0r) Added a warning message to Custom/GitHub installs (thanky @ldittmar81 for translations)
+
 ### 4.0.4 (2020-02-19)
 * (Apollon77) Fix socket.io-client dependency
 
