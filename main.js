@@ -199,17 +199,17 @@ function createUpdateInfo(adapter) {
 
     let lastUpdateCheckObj = objects[adapter.namespace + '.info.lastUpdateCheck'];
 
-    if (!lastUpdateCheckObj || !lastUpdateCheckObj.common || lastUpdateCheckObj.common.type !== 'string') {
+    if (!lastUpdateCheckObj || !lastUpdateCheckObj.common || lastUpdateCheckObj.common.type !== 'number') {
         let obj = {
             _id:  'info.lastUpdateCheck',
             type: 'state',
             common: {
-                role:  'value.datetime',
+                role:  'value.time',
                 name:  'Timestamp of last update check',
-                type:  'string',
+                type:  'number',
                 read:  true,
                 write: false,
-                def:   '{}'
+                def:   ''
             },
             native: {}
         };
@@ -241,8 +241,7 @@ function writeUpdateInfo(adapter, sources) {
             adapter.setState('info.updatesList',  '', true);
             adapter.setState('info.newUpdates', false, true);
             adapter.setState('info.updatesJson', '{}', true);
-            let updateTime = new Date();
-            adapter.setState('info.lastUpdateCheck', new Date(updateTime - updateTime.getTimezoneOffset() * 60000).toISOString(), true);
+            adapter.setState('info.lastUpdateCheck', Date.now(), true);
             if (obj && obj.native && obj.native.repositories && obj.native.repositories[activeRepo]) {
                 adapter.log.warn('Repository cannot be read');
             } else {
@@ -258,10 +257,12 @@ function writeUpdateInfo(adapter, sources) {
     let newUpdateIndicator = false;
     adapter.getState('info.updatesJson', (err, state) => {
         let oldUpdates;
-        if (state && state.val) oldUpdates = JSON.parse(state.val) || {};
-        else oldUpdates = {};
-        for (let name in sources) {
-            if (!sources.hasOwnProperty(name)) continue;
+        if (state && state.val) {
+            oldUpdates = JSON.parse(state.val) || {};
+        } else {
+            oldUpdates = {};
+        }
+        Object.keys(sources).forEach(name => {
             if (installed[name] && installed[name].version && sources[name].version) {
                 if (sources[name].version !== installed[name].version &&
                     !upToDate(sources[name].version, installed[name].version)) {
@@ -278,13 +279,13 @@ function writeUpdateInfo(adapter, sources) {
                     list.push(n === -1 ? name : name.substring(n + 1));
                 }
             }
-        }
+        });
+
         adapter.setState('info.updatesNumber', list.length, true);
         adapter.setState('info.updatesList', list.join(', '), true);
         adapter.setState('info.newUpdates', newUpdateIndicator, true);
         adapter.setState('info.updatesJson', JSON.stringify(updatesJson), true);
-        let updateTime = new Date();
-        adapter.setState('info.lastUpdateCheck', new Date(updateTime - updateTime.getTimezoneOffset() * 60000).toISOString(), true);
+        adapter.setState('info.lastUpdateCheck', Date.now(), true);
     });
 }
 
