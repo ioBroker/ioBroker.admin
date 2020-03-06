@@ -1,8 +1,5 @@
 import React from 'react';
 
-//import Button from './Button';
-//import Icon from './Icon';
-
 import { withStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
@@ -12,6 +9,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Collapse from '@material-ui/core/Collapse';
 import Divider from '@material-ui/core/Divider';
+import Grid from '@material-ui/core/Grid';
 import IconButton  from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
@@ -31,18 +29,6 @@ const boxShadowHover = '0 8px 17px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19)
 const styles = theme => ({
     root: {
         padding: '.75rem',
-        [theme.breakpoints.up('xs')]: {
-            flex: '0 1 100%'
-        },
-        [theme.breakpoints.up('sm')]: {
-            flex: '0 1 50%'
-        },
-        [theme.breakpoints.up('md')]: {
-            flex: '0 1 33%'
-        },
-        [theme.breakpoints.up('lg')]: {
-            flex: '0 1 25%'
-        },
         [theme.breakpoints.up('xl')]: {
             flex: '0 1 20%'
         }
@@ -113,6 +99,7 @@ const styles = theme => ({
         width: '100%',
         '& button': {
             position: 'absolute',
+            top: '10px',
             color: '#000000',
             '&:focus': {
                 color: '#ffffff',
@@ -121,11 +108,9 @@ const styles = theme => ({
         }
     },
     close: { 
-        top: '10px',
-        right: '10px',
+        right: '10px'
     },
     save: {
-        top: '10px',
         right: '50px'
     },
     enabled: {
@@ -185,7 +170,14 @@ class IntroCard extends React.Component {
         const editClass = this.props.edit ? ' ' + classes.edit : '';
 
         return(
-            <div className={ classes.root }>
+            <Grid
+                item
+                xs={ 12 }
+                sm={ 6 }
+                md={ 4 }
+                lg={ 3 }
+                className={ classes.root }
+            >
                 <Card className={ classes.card }>
                     {
                         this.props.reveal &&
@@ -193,7 +185,8 @@ class IntroCard extends React.Component {
                             className={ classes.expand + editClass }
                             variant="contained"
                             size="small"
-                            onClick={ () => this.handleExpandClick() }>
+                            onClick={ () => this.handleExpandClick() }
+                        >
                             INFO
                         </Button>
                     }
@@ -231,7 +224,7 @@ class IntroCard extends React.Component {
                             in={ this.state.expanded }
                             timeout="auto"
                             unmountOnExit
-                            >
+                        >
                             <IconButton className={ classes.save } size="small" onClick={ () => Utils.copyToClipboard(this.props.reveal) }>
                                 <SaveIcon />
                             </IconButton>
@@ -253,7 +246,7 @@ class IntroCard extends React.Component {
                         </IconButton>
                     }
                 </Card>
-            </div>
+            </Grid>
         );
     }
 }
