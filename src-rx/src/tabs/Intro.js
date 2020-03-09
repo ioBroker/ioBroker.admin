@@ -2,6 +2,7 @@ import React from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 
@@ -24,7 +25,7 @@ const styles = {
         position: 'absolute',
         bottom: '1rem',
         right: '1rem',
-        boxShadow: '0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.12),0 1px 5px 0 rgba(0,0,0,.2)'
+        boxShadow: '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)'
     },
     save: {
         backgroundColor: red[500],
@@ -147,11 +148,11 @@ class Intro extends React.Component {
                         key={ index }
                         image={ instance.image }
                         title={ instance.name }
-                        action={{link: instance.link, text: linkText }}
+                        action={{ link: instance.link, text: linkText }}
                         color={ instance.color }
                         reveal={ instance.info }
                         edit={ this.state.edit }
-                        enabled={ (this.state.edit) ? instance.editActive : instance.active }
+                        enabled={ this.state.edit ? instance.editActive : instance.active }
                         toggleActivation={ () => this.toggleCard(instance.id) }
                     >
                         { instance.description }
@@ -205,6 +206,12 @@ class Intro extends React.Component {
     }
 
     render() {
+
+        if(!this.props.ready) {
+            return(
+                <LinearProgress />
+            );
+        }
 
         const { classes } = this.props;
 
