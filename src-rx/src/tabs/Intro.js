@@ -71,7 +71,7 @@ class Intro extends React.Component {
     static getDerivedStateFromProps(props) {
 
         const derived = {};
-        
+
         if(props.instances) derived.instances = props.instances;
 
         return derived;
@@ -98,7 +98,7 @@ class Intro extends React.Component {
     }
 
     toggleCard(id) {
-        
+
         const instances = this.state.instances.slice();
 
         if(!instances) return;
@@ -116,10 +116,9 @@ class Intro extends React.Component {
     }
 
     saveCards() {
-
         const instances = this.state.instances.slice();
 
-        for(const index in instances) {
+        for (const index in instances) {
             instances[index].active = instances[index].editActive;
         }
 
@@ -135,14 +134,14 @@ class Intro extends React.Component {
 
         const cards = this.state.instances.map((instance, index) => {
 
-            if((!this.state.edit && instance.active) || this.state.edit) {
-                
+            if ((!this.state.edit && instance.active) || this.state.edit) {
+
                 let linkText = (instance.link) ? instance.link.replace(/^https?:\/\//, '') : '';
                 const pos = linkText.indexOf('/');
                 if (pos !== -1) {
                     linkText = linkText.substring(0, pos);
                 }
-                
+
                 return (
                     <IntroCard
                         key={ index }
@@ -158,7 +157,9 @@ class Intro extends React.Component {
                         { instance.description }
                     </IntroCard>
                 );
-            } else return (null);
+            } else {
+                return null;
+            }
         });
 
         return cards;
@@ -168,7 +169,7 @@ class Intro extends React.Component {
 
         const buttons = [];
 
-        if(this.state.edit) {
+        if (this.state.edit) {
             buttons.push(
                 <IconButton
                     key="save"
@@ -178,7 +179,7 @@ class Intro extends React.Component {
                     <CheckIcon />
                 </IconButton>
             );
-            
+
             buttons.push(
                 <IconButton
                     key="close"
