@@ -23,8 +23,8 @@ import grey from '@material-ui/core/colors/grey';
 
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
-const boxShadow = '0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.12),0 1px 5px 0 rgba(0,0,0,.2)';
-const boxShadowHover = '0 8px 17px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19)';
+const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
+const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
 const styles = theme => ({
     root: {
@@ -205,11 +205,11 @@ class IntroCard extends React.Component {
                             { this.props.children }
                         </CardContent>
                         {
-                            this.props.action &&
+                            this.props.action && this.props.action.link &&
                             <Divider />
                         }
                         {
-                            this.props.action &&
+                            this.props.action && this.props.action.link &&
                             <CardActions className={ classes.action }>
                                 <Link className={ classes.link } href={ this.props.action.link }>
                                     { this.props.action.text }
@@ -232,10 +232,10 @@ class IntroCard extends React.Component {
                                 <CloseIcon />
                             </IconButton>
                             <CardContent>
-                            <Typography gutterBottom variant="h5" component="h5">
-                                Info
-                            </Typography>
-                            { this.props.reveal }
+                                <Typography gutterBottom variant="h5" component="h5">
+                                    Info
+                                </Typography>
+                                { this.props.reveal }
                             </CardContent>
                         </Collapse>
                     }
