@@ -2,6 +2,8 @@ import React from 'react';
 
 import withStyles from '@material-ui/core/styles/withStyles';
 
+const offset = 187;
+
 const styles = {
     root: {
         left: 0,
@@ -47,14 +49,14 @@ const styles = {
     },
     '@keyframes dash': {
         '0%': {
-            strokeDashoffset: '@offset'
+            strokeDashoffset: offset
         },
         '50%': {
-            strokeDashoffset: '@offset/4',
+            strokeDashoffset: offset / 4,
             transform: 'rotate(135deg)'
         },
         '100%': {
-            strokeDashoffset: '@offset',
+            strokeDashoffset: offset,
             transform: 'rotate(450deg)'
         }
     },
