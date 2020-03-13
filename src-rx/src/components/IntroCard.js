@@ -73,24 +73,14 @@ const styles = theme => ({
         minHeight: '49px',
         padding: '16px 24px'
     },
-    link: {
-        color: '#ffab40',
-        transition: 'color .3s ease',
-        textTransform: 'uppercase',
-        textDecoration: 'none',
-        '&:hover': {
-            color: '#ffd8a6',
-            textDecoration: 'none'
-        }
-    },
     expand: {
         color: '#ffffff',
-        backgroundColor: blue[500],
+        //backgroundColor: blue[500],
         position: 'absolute',
         right: '10px',
         bottom: '10px',
         '&:focus': {
-            backgroundColor: blue[500]
+            //backgroundColor: blue[500]
         }
     },
     collapse: {
@@ -186,6 +176,7 @@ class IntroCard extends React.Component {
                             variant="contained"
                             size="small"
                             onClick={ () => this.handleExpandClick() }
+                            color="primary"
                         >
                             INFO
                         </Button>
@@ -211,7 +202,7 @@ class IntroCard extends React.Component {
                         {
                             this.props.action && this.props.action.link &&
                             <CardActions className={ classes.action }>
-                                <Link className={ classes.link } href={ this.props.action.link }>
+                                <Link href={ this.props.action.link }>
                                     { this.props.action.text }
                                 </Link>
                             </CardActions>
