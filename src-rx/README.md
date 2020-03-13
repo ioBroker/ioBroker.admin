@@ -1,6 +1,8 @@
 # Components
 ## IntroCard
-![IntroCard](docs/images/components/IntroCard.png)
+![IntroCard (light)](docs/images/components/IntroCard_light.png)
+![IntroCard (dark blue)](docs/images/components/IntroCard_darkblue.png)
+![IntroCard (dark)](docs/images/components/IntroCard_dark.png)
 
 ### Import
 ```js
