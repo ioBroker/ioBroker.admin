@@ -1,5 +1,7 @@
 import React from 'react';
 
+import PropTypes from 'prop-types';
+
 import { withStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
@@ -74,14 +76,9 @@ const styles = theme => ({
         padding: '16px 24px'
     },
     expand: {
-        color: '#ffffff',
-        //backgroundColor: blue[500],
         position: 'absolute',
         right: '10px',
-        bottom: '10px',
-        '&:focus': {
-            //backgroundColor: blue[500]
-        }
+        bottom: '10px'
     },
     collapse: {
         backgroundColor: '#ffffff',
@@ -202,7 +199,7 @@ class IntroCard extends React.Component {
                         {
                             this.props.action && this.props.action.link &&
                             <CardActions className={ classes.action }>
-                                <Link href={ this.props.action.link }>
+                                <Link href={ this.props.action.link } underline="none">
                                     { this.props.action.text }
                                 </Link>
                             </CardActions>
@@ -241,5 +238,21 @@ class IntroCard extends React.Component {
         );
     }
 }
+
+IntroCard.propTypes = {
+    /**
+    * Link and text
+    * {link: 'https://example.com', text: 'example.com'}
+    */
+    action: PropTypes.object,
+    children: PropTypes.node,
+    color: PropTypes.string,
+    edit: PropTypes.bool,
+    enabled: PropTypes.bool,
+    image: PropTypes.string,
+    reveal: PropTypes.node,
+    title: PropTypes.string,
+    toggleActivation: PropTypes.func
+};
 
 export default withStyles(styles)(IntroCard);
