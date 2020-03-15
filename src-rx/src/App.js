@@ -1053,7 +1053,7 @@ class App extends React.Component {
         if(this.state.login) {
             return(
                 <ThemeProvider theme={ theme(this.state.themeType) }>
-                    <Login />
+                    <Login t={ I18n.t } />
                 </ThemeProvider>
             );
         }
