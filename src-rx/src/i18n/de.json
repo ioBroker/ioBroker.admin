@@ -4,5 +4,6 @@
     "password": "Kennwort",
     "staySignedIn": "Angemeldet bleiben",
     "login": "Anmelden",
-    "wrongPassword": "Name oder Kennwort sind falsch"
+    "wrongPassword": "Name oder Kennwort sind falsch",
+    "adapterConfig": "Adapterkonfiguration"
 }
