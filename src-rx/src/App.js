@@ -14,6 +14,7 @@ import Router from '@iobroker/adapter-react/Components/Router';
 //@material-ui/core
 import AppBar from '@material-ui/core/AppBar';
 import Avatar from '@material-ui/core/Avatar';
+
 //import Button from '@material-ui/core/Button';
 import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
@@ -22,6 +23,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Paper from '@material-ui/core/Paper';
 import Snackbar from '@material-ui/core/Snackbar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -49,6 +51,11 @@ import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 
+import Brightness4Icon from '@material-ui/icons/Brightness4';
+import Brightness5Icon from '@material-ui/icons/Brightness5';
+import Brightness6Icon from '@material-ui/icons/Brightness6';
+import Brightness7Icon from '@material-ui/icons/Brightness7';
+
 //@material-ui/lab
 import Alert from '@material-ui/lab/Alert';
 
@@ -59,7 +66,9 @@ import grey from '@material-ui/core/colors/grey';
 import Connecting from './components/Connecting';
 
 import { ThemeProvider } from '@material-ui/core/styles';
-import theme from '@iobroker/adapter-react/createTheme';
+import theme from './Theme';
+
+import Login from './login/Login';
 
 import Adapters from './tabs/Adapters';
 import Instances from './tabs/Instances';
@@ -73,7 +82,7 @@ const styles = theme => ({
         height: '100%'
     },
     appBar: {
-        backgroundColor: blue[300],
+        /*backgroundColor: blue[300],*/
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -112,7 +121,7 @@ const styles = theme => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3),
+        padding: theme.spacing(2),
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -120,7 +129,7 @@ const styles = theme => ({
         marginLeft: -drawerWidth,
         marginTop: theme.mixins.toolbar.minHeight,
         overflowY: 'auto',
-        backgroundColor: grey[200]
+        /*backgroundColor: grey[200]*/
     },
     contentShift: {
       transition: theme.transitions.create('margin', {
@@ -133,175 +142,215 @@ const styles = theme => ({
 
 class App extends React.Component {
 
-  constructor(props) {
+    constructor(props) {
 
-    super(props);
+        super(props);
 
-    window.alert = (message) => {
+        window.alert = (message) => {
 
-        console.log(message);
+            console.log(message);
 
-        if(message.includes('error') || message.includes('Error')) {
-            this.showAlert(message, 'error');
-        } else {
-            this.showAlert(message, 'info');
-        }
-    };
-
-    this.state = {
-        connected:      false,
-        progress:       0,
-        ready:          false,
-        protocol:       window.location.protocol || '',
-        hostname:       window.location.hostname,
-        port:           parseInt(window.location.port, 10),
-        allTabs:        null,
-        objects:        {},
-        states:         {},
-        hosts:          [],
-        currentHost:    '',
-        currentTab:     Router.getLocation(),
-        currentDialog:  null,
-        currentUser:    '',
-        subscribesStates: {},
-        subscribesObjects: {},
-        subscribesLogs: 0,
-        systemConfig:   null,
-        instances:      null,
-        objectsLoaded:  false,
-        waitForRestart: false,
-        tabs:           null,
-        dialogs:        {},
-        selectId:       null,
-        config:         {},
-        themeType: window.localStorage ? window.localStorage.getItem('App.theme') || 'light' : 'light',
-        alert: false,
-        alertType: 'info',
-        alertMessage: '',
-        drawerOpen: this.props.width !== 'xs',
-        introInstances: [],
-        introInstancesLoaded: false,
-        formattedInstances: [],
-        formattedInstancesLoaded: false,
-        tab: null
-    }
-
-    this.tabsInfo = {
-        'tab-intro':            {order: 1,    icon: <AppsIcon />},
-        'tab-info':             {order: 5,    icon: <InfoIcon />,               host: true},
-        'tab-adapters':         {order: 10,   icon: <StoreIcon />,              host: true},
-        'tab-instances':        {order: 15,   icon: <SubtitlesIcon />,          host: true},
-        'tab-objects':          {order: 20,   icon: <ViewListIcon />},
-        'tab-enums':            {order: 25,   icon: <ArtTrackIcon />},
-        'tab-devices':          {order: 27,   icon: <DvrIcon />,                host: true},
-        'tab-logs':             {order: 30,   icon: <ViewHeadlineIcon />,       host: true},
-        'tab-scenes':           {order: 35,   icon: <SubscriptionsIcon />},
-        'tab-events':           {order: 40,   icon: <FlashOnIcon />},
-        'tab-users':            {order: 45,   icon: <PersonOutlineIcon />},
-        'tab-javascript':       {order: 50,   icon: <CodeIcon />},
-        'tab-text2command-0':   {order: 55,   icon: <AcUnitIcon />},
-        'tab-text2command-1':   {order: 56,   icon: <AcUnitIcon />},
-        'tab-text2command-2':   {order: 57,   icon: <AcUnitIcon />},
-        'tab-node-red-0':       {order: 60,   icon: <DeviceHubIcon />},
-        'tab-node-red-1':       {order: 61,   icon: <DeviceHubIcon />},
-        'tab-node-red-2':       {order: 62,   icon: <DeviceHubIcon />},
-        'tab-fullcalendar-0':   {order: 65,   icon: <PermContactCalendarIcon />},
-        'tab-fullcalendar-1':   {order: 66,   icon: <PermContactCalendarIcon />},
-        'tab-fullcalendar-2':   {order: 67,   icon: <PermContactCalendarIcon />},
-        'tab-hosts':            {order: 100,  icon: <StorageIcon />},
-    };
-
-    let port = this.state.port;
-
-    if(isNaN(port)) {
-        switch(this.state.protocol) {
-            case 'https:':
-              port = 443;
-              break;
-            case 'http:':
-              port = 80;
-              break;
-            default:
-              break;
-        }
-    }
-
-    if(!port || port === 3000) {
-      port = 8081;
-    }
-
-    this.socket = new Connection({
-        port,
-        /*autoSubscribes: ['*'],*/
-        autoSubscribeLog: true,
-        onProgress: progress => {
-            if (progress === PROGRESS.CONNECTING) {
-                this.setState({
-                    connected: false
-                });
-            } else if (progress === PROGRESS.READY) {
-                this.setState({
-                    connected: true,
-                    progress: 100
-                });
+            if(message.includes('error') || message.includes('Error')) {
+                this.showAlert(message, 'error');
             } else {
-                this.setState({
-                    connected: true,
-                    progress: Math.round(PROGRESS.READY / progress * 100)
-                });
+                this.showAlert(message, 'info');
             }
-        },
-        onReady: async (objects, scripts) => {
+        };
 
-            this.socket.subscribeObject('*', (id, obj) => {
-                //console.log(id);
+        this.translations = {
+            'en': require('./i18n/en'),
+            'de': require('./i18n/de'),
+            'ru': require('./i18n/ru'),
+            'pt': require('./i18n/pt'),
+            'nl': require('./i18n/nl'),
+            'fr': require('./i18n/fr'),
+            'it': require('./i18n/it'),
+            'es': require('./i18n/es'),
+            'pl': require('./i18n/pl'),
+            'zh-cn': require('./i18n/zh-cn'),
+        };
+        
+        // init translations
+        I18n.setTranslations(this.translations);
+        I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
+
+        if(window.location.pathname.split('/')[1] !== 'login') {
+
+            this.state = {
+                connected:      false,
+                progress:       0,
+                ready:          false,
+                protocol:       window.location.protocol || '',
+                hostname:       window.location.hostname,
+                port:           parseInt(window.location.port, 10),
+                allTabs:        null,
+                objects:        {},
+                states:         {},
+                hosts:          [],
+                currentHost:    '',
+                currentTab:     Router.getLocation(),
+                currentDialog:  null,
+                currentUser:    '',
+                subscribesStates: {},
+                subscribesObjects: {},
+                subscribesLogs: 0,
+                systemConfig:   null,
+                instances:      null,
+                objectsLoaded:  false,
+                waitForRestart: false,
+                tabs:           null,
+                dialogs:        {},
+                selectId:       null,
+                config:         {},
+                themeType: window.localStorage && window.localStorage.getItem('App.theme') ? window.localStorage.getItem('App.theme') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+                alert: false,
+                alertType: 'info',
+                alertMessage: '',
+                drawerOpen: this.props.width !== 'xs',
+                introInstances: [],
+                introInstancesLoaded: false,
+                formattedInstances: {},
+                formattedInstancesLoaded: false,
+                tab: null
+            }
+
+            this.tabsInfo = {
+                'tab-intro':            {order: 1,    icon: <AppsIcon />},
+                'tab-info':             {order: 5,    icon: <InfoIcon />,               host: true},
+                'tab-adapters':         {order: 10,   icon: <StoreIcon />,              host: true},
+                'tab-instances':        {order: 15,   icon: <SubtitlesIcon />,          host: true},
+                'tab-objects':          {order: 20,   icon: <ViewListIcon />},
+                'tab-enums':            {order: 25,   icon: <ArtTrackIcon />},
+                'tab-devices':          {order: 27,   icon: <DvrIcon />,                host: true},
+                'tab-logs':             {order: 30,   icon: <ViewHeadlineIcon />,       host: true},
+                'tab-scenes':           {order: 35,   icon: <SubscriptionsIcon />},
+                'tab-events':           {order: 40,   icon: <FlashOnIcon />},
+                'tab-users':            {order: 45,   icon: <PersonOutlineIcon />},
+                'tab-javascript':       {order: 50,   icon: <CodeIcon />},
+                'tab-text2command-0':   {order: 55,   icon: <AcUnitIcon />},
+                'tab-text2command-1':   {order: 56,   icon: <AcUnitIcon />},
+                'tab-text2command-2':   {order: 57,   icon: <AcUnitIcon />},
+                'tab-node-red-0':       {order: 60,   icon: <DeviceHubIcon />},
+                'tab-node-red-1':       {order: 61,   icon: <DeviceHubIcon />},
+                'tab-node-red-2':       {order: 62,   icon: <DeviceHubIcon />},
+                'tab-fullcalendar-0':   {order: 65,   icon: <PermContactCalendarIcon />},
+                'tab-fullcalendar-1':   {order: 66,   icon: <PermContactCalendarIcon />},
+                'tab-fullcalendar-2':   {order: 67,   icon: <PermContactCalendarIcon />},
+                'tab-hosts':            {order: 100,  icon: <StorageIcon />},
+            };
+
+            let port = this.state.port;
+
+            if(isNaN(port)) {
+                switch(this.state.protocol) {
+                    case 'https:':
+                    port = 443;
+                    break;
+                    case 'http:':
+                    port = 80;
+                    break;
+                    default:
+                    break;
+                }
+            }
+
+            if(!port || port === 3000) {
+            port = 8081;
+            }
+
+            this.socket = new Connection({
+                port,
+                /*autoSubscribes: ['*'],*/
+                autoSubscribeLog: true,
+                onProgress: progress => {
+                    if (progress === PROGRESS.CONNECTING) {
+                        this.setState({
+                            connected: false
+                        });
+                    } else if (progress === PROGRESS.READY) {
+                        this.setState({
+                            connected: true,
+                            progress: 100
+                        });
+                    } else {
+                        this.setState({
+                            connected: true,
+                            progress: Math.round(PROGRESS.READY / progress * 100)
+                        });
+                    }
+                },
+                onReady: async (objects, scripts) => {
+
+                    this.socket.subscribeObject('*', (id, obj) => {
+                        //console.log(id);
+                    });
+
+                    I18n.setLanguage(this.socket.systemLang);
+                    window.systemLang = this.socket.systemLang;
+                    /*this.onObjectChange(objects, scripts, true);*/
+
+                    await this.socket.getStates();
+
+                    await this.getSystemConfig();
+                    await this.getHosts();
+
+                    this.getTabs();
+
+                    this.setState({
+                        ready: true,
+                        objects: objects,
+                        states: this.socket.states
+                    });
+
+                    this.handleNavigation();
+                },
+                onObjectChange: (objects, scripts) => {
+                    //console.log(objects);
+                },
+                onError: error => {
+                    console.error('ERROR: ' + error);
+                },
+            /*onBlocklyChanges: () => {
+                /*this.confirmCallback = result => result && window.location.reload();
+                this.setState({confirm: I18n.t('Some blocks were updated. Reload admin?')});*
+            },*/
+            onLog: message => {
+                console.log('LOG: ' + JSON.stringify(message));
+                //this.logIndex++;
+                //this.setState({logMessage: {index: this.logIndex, message}})
+            }
             });
 
-            I18n.setLanguage(this.socket.systemLang);
-            window.systemLang = this.socket.systemLang;
-            /*this.onObjectChange(objects, scripts, true);*/
+            this.formatInfo = {
+                'Uptime':        this.formatSeconds,
+                'System uptime': this.formatSeconds,
+                'RAM':           this.formatRam,
+                'Speed':         this.formatSpeed,
+                'Disk size':     this.formatBytes,
+                'Disk free':     this.formatBytes
+            };
+        } else {
+            this.state = {
+                login: true,
+                themeType: window.localStorage && window.localStorage.getItem('App.theme') ? window.localStorage.getItem('App.theme') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+            }
+        }
+    }
 
-            await this.socket.getStates();
+    componentDidMount() {
+        window.addEventListener("hashchange", () => this.handleHashChange(), false);
+    }
+    
+    componentWillUnmount() {
+        window.removeEventListener("hashchange", () => this.handleHashChange(), false);
+    }
 
-            await this.getSystemConfig();
-            await this.getHosts();
-
-            this.getTabs();
-
-            this.setState({
-                ready: true,
-                objects: objects,
-                states: this.socket.states
-            });
-
-            this.handleNavigation();
-        },
-        onObjectChange: (objects, scripts) => {
-            //console.log(objects);
-        },
-        onError: error => {
-            console.error('ERROR: ' + error);
-        },
-      /*onBlocklyChanges: () => {
-          /*this.confirmCallback = result => result && window.location.reload();
-          this.setState({confirm: I18n.t('Some blocks were updated. Reload admin?')});*
-      },*/
-      onLog: message => {
-          console.log('LOG: ' + JSON.stringify(message));
-          //this.logIndex++;
-          //this.setState({logMessage: {index: this.logIndex, message}})
-      }
-    });
-
-    this.formatInfo = {
-        'Uptime':        this.formatSeconds,
-        'System uptime': this.formatSeconds,
-        'RAM':           this.formatRam,
-        'Speed':         this.formatSpeed,
-        'Disk size':     this.formatBytes,
-        'Disk free':     this.formatBytes
-    };
-  }
+    handleHashChange() {
+        console.log('HASH CHANGE');
+        this.setState({
+            tab: Router.getLocation()
+        });
+    }
 
     async getAdapterInstances() {
         try {
@@ -792,6 +841,7 @@ class App extends React.Component {
                         ready={ this.state.formattedInstancesLoaded }
                         instances={ this.state.formattedInstances }
                         extendObject={ (id, data) => this.extendObject(id, data) }
+                        t={ I18n.t }
                     />
                 );
             }
@@ -851,6 +901,10 @@ class App extends React.Component {
             });
         }
 
+        if(this.props.width === 'xs' || this.props.width === 'sm') {
+            this.handleDrawerClose();
+        }
+
         this.setTitle(tab ? tab.replace('tab-', '') : this.state.currentTab.tab.replace('tab-', ''));
 
         tab = tab || this.state.currentTab.tab || '';
@@ -864,10 +918,6 @@ class App extends React.Component {
         } else {
             this.getIntroInstances();
         }
-
-        if(this.props.width === 'xs') {
-            this.handleDrawerClose();
-        }
     }
 
     getNavigationItems() {
@@ -877,7 +927,7 @@ class App extends React.Component {
         for(const index in this.tabsInfo) {
             //For developing
             if(index !== 'tab-intro' && index !== 'tab-adapters' && index !== 'tab-instances') continue;
-
+            
             items.push(
                 <ListItem button key={ index } onClick={ () => this.handleNavigation(index) }>
                     <Grid container spacing={ 1 } alignItems="center">
@@ -904,7 +954,7 @@ class App extends React.Component {
         if(!this.state.instances) await this.getAdapterInstances();
         
         const instances = this.state.instances.slice();
-        const formatted = [];
+        const formatted = {};
 
         instances.sort((a, b) => {
             a = a && a.common;
@@ -974,8 +1024,9 @@ class App extends React.Component {
             instance.canStart = !common.onlyWWW;
             instance.config = !common.noConfig;
             instance.isRun = isRun;
+            instance.materialize = common.materialize || false;
 
-            formatted.push(instance);
+            formatted[obj._id] = instance;
         }
 
         this.setState({
@@ -990,18 +1041,38 @@ class App extends React.Component {
         });
     }
 
+    setThemeType(type) {
+        window.localStorage.setItem('App.theme', type || 'light');
+        this.setState({
+            themeType: type || 'light'
+        });
+    }
+
     render() {
+
+        if(this.state.login) {
+            return(
+                <ThemeProvider theme={ theme(this.state.themeType) }>
+                    <Login />
+                </ThemeProvider>
+            );
+        }
         
         if(!this.state.ready) {
-            return (<Loader theme={ this.state.themeType }/>);
+            return (
+                <ThemeProvider theme={ theme(this.state.themeType) }>
+                    <Loader /*theme={ this.state.themeType }*//>
+                </ThemeProvider>
+            );
         }
 
         const { classes } = this.props;
 
         return (
-            <ThemeProvider theme={ theme() }>
-                <div className={ classes.root }>
+            <ThemeProvider theme={ theme(this.state.themeType) }>
+                <Paper elevation={ 0 } className={ classes.root }>
                     <AppBar
+                        color="default"
                         position="fixed"
                         className={ clsx(classes.appBar, {[classes.appBarShift]: this.state.drawerOpen}) }
                     >
@@ -1018,6 +1089,22 @@ class App extends React.Component {
                             </IconButton>
                             <IconButton>
                                 <BuildIcon />
+                            </IconButton>
+                            <IconButton onClick={ () => this.setThemeType(this.state.themeType === 'dark' ? 'blue' :
+                                this.state.themeType === 'blue' ? 'colored' : this.state.themeType === 'colored' ? 'light' :
+                                this.state.themeType === 'light' ? 'dark' : 'colored') }>
+                                { this.state.themeType === 'dark' &&
+                                    <Brightness4Icon />
+                                }
+                                { this.state.themeType === 'blue' &&
+                                    <Brightness5Icon />
+                                }
+                                { this.state.themeType === 'colored' &&
+                                    <Brightness6Icon />
+                                }
+                                { this.state.themeType === 'light' &&
+                                    <Brightness7Icon />
+                                }
                             </IconButton>
                             <Typography variant="h6" className={classes.title} style={{flexGrow: 1}}>
                             </Typography>
@@ -1050,19 +1137,17 @@ class App extends React.Component {
                             { this.getNavigationItems() }
                         </List>
                     </Drawer>
-                    <main
-                        className={clsx(classes.content, {
+                    <Paper elevation={ 0 } square  className={clsx(classes.content, {
                             [classes.contentShift]: this.state.drawerOpen,
-                        })}
-                    >
-                        { this.getCurrentTab() }
-                    </main>
+                        })}>
+                            { this.getCurrentTab() }
+                    </Paper>
                     <Snackbar open={ this.state.alert } autoHideDuration={ 6000 } onClose={ () => this.handleAlertClose() }>
                         <Alert onClose={ () => this.handleAlertClose() } variant="filled" severity={ this.state.alertType }>
                             { this.state.alertMessage }
                         </Alert>
                     </Snackbar>
-                </div>
+                </Paper>
                 { !this.state.connected && <Connecting /> }
             </ThemeProvider>
         );
