@@ -3,60 +3,35 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
 
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import CreateIcon from '@material-ui/icons/Create';
 
-import blue from '@material-ui/core/colors/blue';
-import grey from '@material-ui/core/colors/grey';
-import red from '@material-ui/core/colors/red';
-
 import IntroCard from '../components/IntroCard';
 
-const styles = {
-    root: {
-        color: 'red'
-    },
+const styles = theme => ({
     button: {
-        color: '#ffffff',
         position: 'absolute',
-        bottom: '1rem',
-        right: '1rem',
-        boxShadow: '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)'
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
     },
     save: {
-        backgroundColor: red[500],
+        backgroundColor: theme.palette.success.main,
         right: '5rem',
         '&:hover': {
-            backgroundColor: red[300]
-        },
-        '&:focus': {
-            backgroundColor: red[500]
+            backgroundColor: theme.palette.success.dark
         }
     },
     close: {
-        backgroundColor: grey[500],
+        backgroundColor: theme.palette.error.main,
         '&:hover': {
-            backgroundColor: grey[300]
-        },
-        '&:focus': {
-            backgroundColor: grey[500]
-        }
-    },
-    edit: {
-        backgroundColor: blue[500],
-        opacity: '.7',
-        '&:hover': {
-            backgroundColor: blue[300]
-        },
-        '&:focus': {
-            backgroundColor: blue[500]
+            backgroundColor: theme.palette.error.dark
         }
     }
-};
+});
 
 class Intro extends React.Component {
 
@@ -172,33 +147,36 @@ class Intro extends React.Component {
 
         if (this.state.edit) {
             buttons.push(
-                <IconButton
+                <Fab
                     key="save"
+                    color="primary"
                     className={ classes.button + ' ' + classes.save }
                     onClick={ () => this.saveCards() }
                 >
                     <CheckIcon />
-                </IconButton>
+                </Fab>
             );
 
             buttons.push(
-                <IconButton
+                <Fab
                     key="close"
+                    color="primary"
                     className={ classes.button + ' ' + classes.close }
                     onClick={ () => this.deactivateEditMode() }
                 >
                     <CloseIcon />
-                </IconButton>
+                </Fab>
             )
         } else {
             buttons.push(
-                <IconButton
+                <Fab
+                    color="primary"
                     key="edit"
-                    className={ classes.button + ' ' + classes.edit }
+                    className={ classes.button}
                     onClick={ () => this.activateEditMode() }
                 >
                     <CreateIcon />
-                </IconButton>
+                </Fab>
             );
         }
 
@@ -216,7 +194,7 @@ class Intro extends React.Component {
         const { classes } = this.props;
 
         return(
-            <div className={ classes.root }>
+            <div>
                 <Grid
                     container
                     spacing={ 2 }
