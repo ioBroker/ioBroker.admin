@@ -20,7 +20,7 @@ const styles = theme => ({
     },
     save: {
         backgroundColor: theme.palette.success.main,
-        right: '5rem',
+        right: theme.spacing(10),
         '&:hover': {
             backgroundColor: theme.palette.success.dark
         }
