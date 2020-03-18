@@ -5,6 +5,7 @@ import orange from '@material-ui/core/colors/orange';
 export default type => {
     if(type === 'dark') {
         return createMuiTheme({
+            name: type,
             palette: {
                 type: 'dark',
                 background: {
@@ -56,6 +57,7 @@ export default type => {
         });
     } else if(type === 'blue') {
         return createMuiTheme({
+            name: type,
             palette: {
                 type: 'dark',
                 background: {
@@ -107,6 +109,7 @@ export default type => {
         });
     } else if(type === 'colored') {
         return createMuiTheme({
+            name: type,
             palette: {
                 type: 'light',
                 primary: {
@@ -136,6 +139,7 @@ export default type => {
         });
     } else {
         return createMuiTheme({
+            name: type,
             palette: {
                 type: 'light',
                 primary: {
