@@ -67,12 +67,15 @@ import Connecting from './components/Connecting';
 
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './Theme';
+import Utils from './Utils';
 
 import Login from './login/Login';
 
 import Adapters from './tabs/Adapters';
 import Instances from './tabs/Instances';
 import Intro from './tabs/Intro';
+
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
 const drawerWidth = 180;
 
@@ -180,11 +183,15 @@ class App extends React.Component {
                 connected:      false,
                 progress:       0,
                 ready:          false,
-                protocol:       window.location.protocol || '',
+
+                //Finished
+                protocol:       this.getProtocol(),
                 hostname:       window.location.hostname,
-                port:           parseInt(window.location.port, 10),
+                port:           this.getPort(),
+                //---------
+
                 allTabs:        null,
-                objects:        {},
+                
                 states:         {},
                 hosts:          [],
                 currentHost:    '',
@@ -195,14 +202,25 @@ class App extends React.Component {
                 subscribesObjects: {},
                 subscribesLogs: 0,
                 systemConfig:   null,
+
                 instances:      null,
+                instancesLoaded: false,
+                instancesLoading: false,
+
+                objects:        {},
                 objectsLoaded:  false,
+                objectsLoading: false,
+
                 waitForRestart: false,
                 tabs:           null,
                 dialogs:        {},
                 selectId:       null,
                 config:         {},
-                themeType: window.localStorage && window.localStorage.getItem('App.theme') ? window.localStorage.getItem('App.theme') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+
+                theme:          this.getTheme(),
+                themeName:      this.getThemeName(this.getTheme()),
+                themeType:      this.getThemeType(this.getTheme()),
+
                 alert: false,
                 alertType: 'info',
                 alertMessage: '',
@@ -239,27 +257,8 @@ class App extends React.Component {
                 'tab-hosts':            {order: 100,  icon: <StorageIcon />},
             };
 
-            let port = this.state.port;
-
-            if(isNaN(port)) {
-                switch(this.state.protocol) {
-                    case 'https:':
-                    port = 443;
-                    break;
-                    case 'http:':
-                    port = 80;
-                    break;
-                    default:
-                    break;
-                }
-            }
-
-            if(!port || port === 3000) {
-            port = 8081;
-            }
-
             this.socket = new Connection({
-                port,
+                port: this.getPort(),
                 /*autoSubscribes: ['*'],*/
                 autoSubscribeLog: true,
                 onProgress: progress => {
@@ -282,7 +281,22 @@ class App extends React.Component {
                 onReady: async (objects, scripts) => {
 
                     this.socket.subscribeObject('*', (id, obj) => {
-                        //console.log(id);
+
+                        const objects = JSON.parse(JSON.stringify(this.state.objects));
+
+                        if(obj) {
+                            objects[id] = obj;
+                        } else {
+                            delete objects[id];
+                        }
+
+                        if(id.startsWith('system.adapter.')) {
+                            this.getAdapterInstances();
+                        }
+
+                        this.setState({
+                            objects: objects
+                        });
                     });
 
                     I18n.setLanguage(this.socket.systemLang);
@@ -309,25 +323,22 @@ class App extends React.Component {
                 },
                 onError: error => {
                     console.error('ERROR: ' + error);
+                    this.showAlert(error, 'error');
                 },
-            /*onBlocklyChanges: () => {
-                /*this.confirmCallback = result => result && window.location.reload();
-                this.setState({confirm: I18n.t('Some blocks were updated. Reload admin?')});*
-            },*/
-            onLog: message => {
-                console.log('LOG: ' + JSON.stringify(message));
-                //this.logIndex++;
-                //this.setState({logMessage: {index: this.logIndex, message}})
-            }
+                onLog: message => {
+                    console.log('LOG: ' + JSON.stringify(message));
+                    //this.logIndex++;
+                    //this.setState({logMessage: {index: this.logIndex, message}})
+                }
             });
 
             this.formatInfo = {
                 'Uptime':        this.formatSeconds,
                 'System uptime': this.formatSeconds,
-                'RAM':           this.formatRam,
-                'Speed':         this.formatSpeed,
-                'Disk size':     this.formatBytes,
-                'Disk free':     this.formatBytes
+                'RAM':           Utils.formatRam,
+                'Speed':         Utils.formatSpeed,
+                'Disk size':     Utils.formatBytes,
+                'Disk free':     Utils.formatBytes
             };
         } else {
             this.state = {
@@ -345,10 +356,96 @@ class App extends React.Component {
         window.removeEventListener("hashchange", () => this.handleHashChange(), false);
     }
 
+    /**
+     * Updates the current location in the states
+     */
     handleHashChange() {
-        console.log('HASH CHANGE');
         this.setState({
-            tab: Router.getLocation()
+            location: Router.getLocation()
+        });
+    }
+
+    /**
+     * Get the used port
+     */
+    getPort() {
+
+        let port = parseInt(window.location.port, 10);
+
+        if(isNaN(port)) {
+            switch(this.getProtocol()) {
+                case 'https:':
+                    port = 443;
+                    break;
+                case 'http:':
+                    port = 80;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if(!port || port === 3000) {
+            port = 8081;
+        }
+
+        return port;
+    }
+
+    /**
+     * Get the used protocol
+     */
+    getProtocol() {
+        return window.location.protocol;
+    }
+
+    /**
+     * Get a theme
+     * @param {string} name Theme name
+     * @returns {Theme}
+     */
+    getTheme(name) {
+        return theme(name ? name : window.localStorage && window.localStorage.getItem('App.theme') ?
+            window.localStorage.getItem('App.theme') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored');
+    }
+
+    /**
+     * Get the theme name
+     * @param {Theme} theme Theme
+     * @returns {string} Theme name
+     */
+    getThemeName(theme) {
+        return theme.name;
+    }
+
+    /**
+     * Get the theme type
+     * @param {Theme} theme Theme
+     * @returns {string} Theme type
+     */
+    getThemeType(theme) {
+        return theme.palette.type;
+    }
+
+    /**
+     * Changes the current theme
+     */
+    toggleTheme() {
+
+        const themeName = this.state.themeName;
+
+        const newThemeName = themeName === 'dark' ? 'blue' :
+            themeName === 'blue' ? 'colored' : themeName === 'colored' ? 'light' :
+            themeName === 'light' ? 'dark' : 'colored';
+
+        window.localStorage.setItem('App.theme', newThemeName);
+
+        const theme = this.getTheme(newThemeName);
+
+        this.setState({
+            theme: theme,
+            themeName: this.getThemeName(theme),
+            themeType: this.getThemeType(theme)
         });
     }
 
@@ -529,42 +626,6 @@ class App extends React.Component {
         text += hours + ':' + minutes + ':' + seconds;
 
         return text;
-    }
-
-    /**
-     * Format bytes to MB or GB
-     * @param {!number} bytes
-     * @returns {String}
-     */
-    formatRam(bytes) {
-        const GB = Math.floor(bytes / (1024 * 1024 * 1024) * 10) / 10;
-        bytes %= (1024 * 1024 * 1024);
-        const MB = Math.floor(bytes / (1024 * 1024) * 10) / 10;
-        let text = '';
-        if(GB > 1) {
-            text += GB + ' GB';
-        } else {
-            text += MB + ' MB';
-        }
-
-        return text;
-    }
-
-    formatSpeed(mhz) {
-        return mhz + ' MHz';
-    }
-
-    formatBytes(bytes) {
-        if (Math.abs(bytes) < 1024) {
-            return bytes + ' B';
-        }
-        const units = ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
-        let u = -1;
-        do {
-            bytes /= 1024;
-            ++u;
-        } while (Math.abs(bytes) >= 1024 && u < units.length - 1);
-        return bytes.toFixed(1) + ' ' + units[u];
     }
 
     /*getUser() {
@@ -1041,18 +1102,11 @@ class App extends React.Component {
         });
     }
 
-    setThemeType(type) {
-        window.localStorage.setItem('App.theme', type || 'light');
-        this.setState({
-            themeType: type || 'light'
-        });
-    }
-
     render() {
 
         if(this.state.login) {
             return(
-                <ThemeProvider theme={ theme(this.state.themeType) }>
+                <ThemeProvider theme={ this.state.theme }>
                     <Login t={ I18n.t } />
                 </ThemeProvider>
             );
@@ -1060,8 +1114,8 @@ class App extends React.Component {
         
         if(!this.state.ready) {
             return (
-                <ThemeProvider theme={ theme(this.state.themeType) }>
-                    <Loader /*theme={ this.state.themeType }*//>
+                <ThemeProvider theme={ this.state.theme }>
+                    <Loader theme={ this.state.themeType } />
                 </ThemeProvider>
             );
         }
@@ -1069,7 +1123,7 @@ class App extends React.Component {
         const { classes } = this.props;
 
         return (
-            <ThemeProvider theme={ theme(this.state.themeType) }>
+            <ThemeProvider theme={ this.state.theme }>
                 <Paper elevation={ 0 } className={ classes.root }>
                     <AppBar
                         color="default"
@@ -1090,19 +1144,17 @@ class App extends React.Component {
                             <IconButton>
                                 <BuildIcon />
                             </IconButton>
-                            <IconButton onClick={ () => this.setThemeType(this.state.themeType === 'dark' ? 'blue' :
-                                this.state.themeType === 'blue' ? 'colored' : this.state.themeType === 'colored' ? 'light' :
-                                this.state.themeType === 'light' ? 'dark' : 'colored') }>
-                                { this.state.themeType === 'dark' &&
+                            <IconButton onClick={ () => this.toggleTheme() }>
+                                { this.state.themeName === 'dark' &&
                                     <Brightness4Icon />
                                 }
-                                { this.state.themeType === 'blue' &&
+                                { this.state.themeName === 'blue' &&
                                     <Brightness5Icon />
                                 }
-                                { this.state.themeType === 'colored' &&
+                                { this.state.themeName === 'colored' &&
                                     <Brightness6Icon />
                                 }
-                                { this.state.themeType === 'light' &&
+                                { this.state.themeName === 'light' &&
                                     <Brightness7Icon />
                                 }
                             </IconButton>
