@@ -105,7 +105,7 @@ function Hosts(main) {
 
         this.$tab.find('.host-restart-submit' + selector).off('click').on('click', function () {
             that.main.waitForRestart = true;
-            that.main.cmdExec($(this).attr('data-host-name'), '_restart');
+            that.main.cmdExec($(this).attr('data-host-name'), 'restart');
         });
         this.$tab.find('.host-delete' + selector).off('click').on('click', function () {
             that.main.cmdExec(that.main.currentHost, 'host remove ' + $(this).attr('data-host-name'));
