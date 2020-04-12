@@ -8,6 +8,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Grid from '@material-ui/core/Grid';
+import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Table from '@material-ui/core/Table';
@@ -21,6 +22,7 @@ import Paper from '@material-ui/core/Paper';
 
 import BuildIcon from '@material-ui/icons/Build';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import InputIcon from '@material-ui/icons/Input';
 import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
@@ -55,20 +57,21 @@ const styles = theme => ({
         padding: '5px'
     },
     enabled: {
-        backgroundColor: green[300],
+        color: green[400],
+        //backgroundColor: green[300],
         '&:hover': {
-            backgroundColor: green[300],
-            color: '#ffffff'
+            backgroundColor: green[200],
         },
         '&:focus': {
             backgroundColor: green[300]
         }
     },
     disabled: {
-        backgroundColor: red[300],
+        color: red[400],
+        //backgroundColor: red[300],
         '&:hover': {
-            backgroundColor: red[300],
-            color: '#ffffff'
+            backgroundColor: red[200],
+            //color: '#ffffff'
         },
         '&:focus': {
             backgroundColor: red[300]
@@ -233,19 +236,31 @@ class Instances extends React.Component {
 
             panels.push(
                 <ExpansionPanel key={ instance.id } square expanded={ this.state.expanded === instance.id } onChange={ () => this.handleChange(instance.id ) }>
-                    <ExpansionPanelSummary>
+                    <ExpansionPanelSummary
+                        expandIcon={<ExpandMoreIcon />}
+                    >
                         <Grid container spacing={ 1 } alignItems="center">
-                            <Grid item>
-                                <div
-                                    className={ classes.state + ' ' + classes[instance.state] }
-                                />
+                            
+                            <Grid item md={2}>
+                                <Grid container spacing={ 1 } alignItems="center">
+                                    <Grid item>
+                                        <div
+                                            className={ classes.state + ' ' + classes[instance.state] }
+                                        />
+                                    </Grid>
+                                    <Grid item>
+                                        <Avatar alt={ instance.id } src={ instance.image } className={ classes.smallAvatar }/>
+                                    </Grid>
+                                    <Grid item>
+                                        { instance.id }
+                                    </Grid>
+                                </Grid>
                             </Grid>
-                            <Grid item>
-                                <Avatar alt={ instance.id } src={ instance.image } className={ classes.smallAvatar }/>
-                            </Grid>
-                            <Grid item>
-                                { instance.id }
-                            </Grid>
+                            <Hidden mdDown>
+                                <Grid item>
+                                    <Typography className={classes.secondaryHeading}>{ instance.name }</Typography>
+                                </Grid>
+                            </Hidden>
                         </Grid>
                         <IconButton
                             size="small"
