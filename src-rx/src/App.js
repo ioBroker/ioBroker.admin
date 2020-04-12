@@ -74,6 +74,7 @@ import Login from './login/Login';
 import Adapters from './tabs/Adapters';
 import Instances from './tabs/Instances';
 import Intro from './tabs/Intro';
+import Logs from './tabs/Logs';
 
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
@@ -217,6 +218,9 @@ class App extends React.Component {
                 selectId:       null,
                 config:         {},
 
+
+                logs: [],
+
                 theme:          this.getTheme(),
                 themeName:      this.getThemeName(this.getTheme()),
                 themeType:      this.getThemeType(this.getTheme()),
@@ -257,81 +261,6 @@ class App extends React.Component {
                 'tab-hosts':            {order: 100,  icon: <StorageIcon />},
             };
 
-            this.socket = new Connection({
-                port: this.getPort(),
-                /*autoSubscribes: ['*'],*/
-                autoSubscribeLog: true,
-                onProgress: progress => {
-                    if (progress === PROGRESS.CONNECTING) {
-                        this.setState({
-                            connected: false
-                        });
-                    } else if (progress === PROGRESS.READY) {
-                        this.setState({
-                            connected: true,
-                            progress: 100
-                        });
-                    } else {
-                        this.setState({
-                            connected: true,
-                            progress: Math.round(PROGRESS.READY / progress * 100)
-                        });
-                    }
-                },
-                onReady: async (objects, scripts) => {
-
-                    this.socket.subscribeObject('*', (id, obj) => {
-
-                        const objects = JSON.parse(JSON.stringify(this.state.objects));
-
-                        if(obj) {
-                            objects[id] = obj;
-                        } else {
-                            delete objects[id];
-                        }
-
-                        if(id.startsWith('system.adapter.')) {
-                            this.getAdapterInstances();
-                        }
-
-                        this.setState({
-                            objects: objects
-                        });
-                    });
-
-                    I18n.setLanguage(this.socket.systemLang);
-                    window.systemLang = this.socket.systemLang;
-                    /*this.onObjectChange(objects, scripts, true);*/
-
-                    await this.socket.getStates();
-
-                    await this.getSystemConfig();
-                    await this.getHosts();
-
-                    this.getTabs();
-
-                    this.setState({
-                        ready: true,
-                        objects: objects,
-                        states: this.socket.states
-                    });
-
-                    this.handleNavigation();
-                },
-                onObjectChange: (objects, scripts) => {
-                    //console.log(objects);
-                },
-                onError: error => {
-                    console.error('ERROR: ' + error);
-                    this.showAlert(error, 'error');
-                },
-                onLog: message => {
-                    console.log('LOG: ' + JSON.stringify(message));
-                    //this.logIndex++;
-                    //this.setState({logMessage: {index: this.logIndex, message}})
-                }
-            });
-
             this.formatInfo = {
                 'Uptime':        this.formatSeconds,
                 'System uptime': this.formatSeconds,
@@ -350,6 +279,69 @@ class App extends React.Component {
 
     componentDidMount() {
         window.addEventListener("hashchange", () => this.handleHashChange(), false);
+
+        this.socket = new Connection({
+            port: this.getPort(),
+            autoSubscribes: ['system.adapter.*'],
+            autoSubscribeLog: true,
+            onProgress: progress => {
+                if(progress === PROGRESS.CONNECTING) {
+                    this.setState({
+                        connected: false
+                    });
+                } else if(progress === PROGRESS.READY) {
+                    this.setState({
+                        connected: true,
+                        progress: 100
+                    });
+                } else {
+                    this.setState({
+                        connected: true,
+                        progress: Math.round(PROGRESS.READY / progress * 100)
+                    });
+                }
+            },
+            onReady: async (objects, scripts) => {
+
+                I18n.setLanguage(this.socket.systemLang);
+                window.systemLang = this.socket.systemLang;
+
+                this.socket.getStates((states) => {
+                    this.setState({
+                        ready: true,
+                        objects: objects,
+                        states: states
+                    });
+                });
+
+                this.socket.subscribeObject('*', (id, obj) => this.onObjectChange(id, obj));
+                //this.socket.subscribeState('*', (id, state) => this.onStateChange(id, state));
+
+                await this.getSystemConfig();
+                await this.getHosts();
+
+                this.getTabs();
+
+                this.handleNavigation();
+            },
+            //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
+            onError: error => {
+                console.error('ERROR: ' + error);
+                this.showAlert(error, 'error');
+            },
+            onLog: message => {
+                console.log('LOG: ' + JSON.stringify(message));
+
+                const logs = (this.state.logs.length > 999) ?
+                    this.state.logs.slice(1, 1000) : this.state.logs.slice();
+                
+                logs.push(message);
+
+                this.setState({
+                    logs: logs
+                });
+            }
+        });
     }
     
     componentWillUnmount() {
@@ -447,6 +439,56 @@ class App extends React.Component {
             themeName: this.getThemeName(theme),
             themeType: this.getThemeType(theme)
         });
+    }
+
+    async onObjectChange(id, obj) {
+        console.log('OBJECT: ' + id);
+        if(obj) {
+            this.setState((prevState) => {
+                
+                const objects = prevState.objects;
+                objects[id] = obj;
+
+                return {
+                    objects: objects
+                };
+            });
+        } else {
+            this.setState((prevState) => {
+                
+                const objects = prevState.objects;
+                delete objects[id];
+
+                return {
+                    objects: objects
+                };
+            });
+        }
+    }
+
+    async onStateChange(id, state) {
+        console.log('STATE: ' + id);
+        /*if(state) {
+            this.setState((prevState) => {
+                
+                const states = prevState.states;
+                states[id] = state;
+
+                return {
+                    states: states
+                };
+            });
+        } else {
+            this.setState((prevState) => {
+                
+                const states = prevState.states;
+                delete states[id];
+
+                return {
+                    states: states
+                };
+            });
+        }*/
     }
 
     async getAdapterInstances() {
@@ -905,6 +947,14 @@ class App extends React.Component {
                         t={ I18n.t }
                     />
                 );
+            } else if(this.state.currentTab.tab === 'tab-logs') {
+                return (
+                    <Logs
+                        ready={ this.state.ready }
+                        logs={ this.state.logs }
+                        t={ I18n.t }
+                    />
+                );
             }
         }
 
@@ -987,7 +1037,7 @@ class App extends React.Component {
 
         for(const index in this.tabsInfo) {
             //For developing
-            if(index !== 'tab-intro' && index !== 'tab-adapters' && index !== 'tab-instances') continue;
+            if(index !== 'tab-intro' && index !== 'tab-adapters' && index !== 'tab-instances' && index !== 'tab-logs') continue;
             
             items.push(
                 <ListItem button key={ index } onClick={ () => this.handleNavigation(index) }>
