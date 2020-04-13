@@ -1,3 +1,38 @@
+// The adapter must define the structure in custom_m.html `defaults`. E.g:
+// if (typeof defaults !== 'undefined') {
+//     defaults.myadapter = function (obj, instanceObj) {
+//         if (obj && obj.common && obj.common.type !== 'number') {
+//             return {
+//                 enabled: false,
+//                 changesOnly: false,
+//                 debounce: 0
+//             }
+//         } else {
+//             return {
+//                 enabled: false,
+//                 changesOnly: false,
+//                 debounce: 0
+//             }
+//         }
+//     }
+// }
+//
+// Additionally following functions could be defined:
+// Called after all settings are defined and DOM is rendered
+// if (typeof customPostInits !== 'undefined') {
+//     customPostInits.myadapter = function ($tab, settings, instanceObj, type, role, obj) {
+//
+//     };
+// }
+//
+// Called before save
+// if (typeof customPostOnSave !== 'undefined') {
+//     customPostOnSave.myadapter = function ($tab, settings) {
+//         return false; // returns true if some problem detected
+//     };
+// }
+//
+
 function Customs(main) {
     'use strict';
 

@@ -55,9 +55,9 @@ var $iframeDialog = null;  // used in adapter settings window
 var configNotSaved = null; // used in adapter settings window
 var showConfig = null;     // used in adapter settings window
 
-const defaults = {};
-const customPostInits = {};
-const customPostOnSave = {};
+const defaults = {};         // Used for "customs" settings
+const customPostInits = {};  // Used for "customs" settings
+const customPostOnSave = {}; // Used for "customs" settings
 const FORBIDDEN_CHARS = /[\]\[*,;'"`<>\\\s?]/g;
 
 // used in adapter settings window
