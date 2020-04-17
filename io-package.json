@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "4.0.6",
+    "version": "4.0.7",
     "news": {
-      "4.0.6": {
+      "4.0.7": {
         "en": "The attempt to process error by the log show.",
         "de": "Der Versuch, Fehler durch das Protokoll zu verarbeiten, wird angezeigt.",
         "ru": "Попытка обработать ошибку в журнале.",

@@ -87,7 +87,7 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
-### 4.0.6 (2020-04-18)
+### 4.0.7 (2020-04-18)
 * (bluefox) The attempt to process error by the log show.
 
 ### 4.0.5 (2020-02-23)

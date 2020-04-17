@@ -117,6 +117,20 @@ function Logs(main) {                                                           
         }
     }
 
+    var formatUnits = ['KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
+    function formatSize(bytes) {
+        if (Math.abs(bytes) < 1024) {
+            return bytes + ' B';
+        }
+        var u = -1;
+        do {
+            bytes = bytes / 1024;
+            u++;
+        } while (Math.abs(bytes) >= 1024 && u < formatUnits.length - 1);
+
+        return bytes.toFixed(1) + ' ' + formatUnits[u];
+    }
+
     // -------------------------------- Logs ------------------------------------------------------------
     this.init = function (update) {
         if (this.inited && !update) {
@@ -178,22 +192,38 @@ function Logs(main) {                                                           
                 that.main.socket.emit('readLogs', function (err, list) {
                     if (list && list.length) {
                         var html = '';
-                        list.reverse();
+                        list.sort(function (a, b) {
+                            if (a.fileName > b.fileName) {
+                                return -1;
+                            } else if (a.fileName < b.fileName) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        });
                         // first 2018-01-01
                         for (var l = 0; l < list.length; l++) {
-                            var parts = list[l].split('/');
+                            var parts = list[l].fileName.split('/');
                             var name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
                             if (name[0] <= '9') {
-                                html += '<li><a data-value="' + list[l] + '">' + name + '</a></li>';
+                                html += '<li><a data-value="' + list[l].fileName + '" class="log-file-name">' + name + ' (' + formatSize(list[l].size) + ')</a></li>';
                             }
                         }
                         // then restart.log ans so on
-                        list.sort();
+                        list.sort(function (a, b) {
+                            if (a.fileName > b.fileName) {
+                                return 1;
+                            } else if (a.fileName < b.fileName) {
+                                return -1;
+                            } else {
+                                return 0;
+                            }
+                        });
                         for (var ll = 0; ll < list.length; ll++) {
-                            var parts_ = list[ll].split('/');
+                            var parts_ = list[ll].fileName.split('/');
                             var name_ = parts_.pop().replace(/iobroker\.?/, '').replace('.log', '');
                             if (name_[0] > '9') {
-                                html += '<li><a data-value="' + list[ll] + '">' + name_ + '</a></li>';
+                                html += '<li><a data-value="' + list[ll].fileName + '"  class="log-file-name">' + name_ + ' (' + formatSize(list[ll].size) + ')</a></li>';
                             }
                         }
 
