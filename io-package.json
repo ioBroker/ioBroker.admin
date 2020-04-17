@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "4.0.5",
+    "version": "4.0.6",
     "news": {
+      "4.0.6": {
+        "en": "The attempt to process error by the log show.",
+        "de": "Der Versuch, Fehler durch das Protokoll zu verarbeiten, wird angezeigt.",
+        "ru": "Попытка обработать ошибку в журнале.",
+        "pt": "A tentativa de processar o erro pelo log mostra.",
+        "nl": "De poging om fouten te verwerken door de logshow.",
+        "fr": "La tentative de traitement de l'erreur par le journal affiche.",
+        "it": "Il tentativo di elaborare l'errore da parte del registro.",
+        "es": "El intento de procesar el error por el registro muestra.",
+        "pl": "Próba przetworzenia błędu przez przedstawienie dziennika.",
+        "zh-cn": "尝试通过日志显示来处理错误。"
+      },
       "4.0.5": {
         "en": "workaround for a socket.io bug added, warning message for GitHub installs added",
         "de": "Problemumgehung für einen socket.io-Fehler hinzugefügt, Warnmeldung für GitHub-Installationen hinzugefügt",
@@ -87,18 +99,6 @@
         "es": "Se corrigió la desactivación de la configuración personalizada",
         "pl": "Wyłączono niestandardowe ustawienia",
         "zh-cn": "自定义设置的禁用已得到纠正"
-      },
-      "3.7.5": {
-        "en": "Added the filter of the running instances\nThe incompatible adapters will be hidden",
-        "de": "Filter der laufenden Instanzen hinzugefügt\nDie inkompatiblen Adapter werden ausgeblendet",
-        "ru": "Добавлен фильтр запущенных экземпляров\nНесовместимые адаптеры будут скрыты",
-        "pt": "Adicionado o filtro das instâncias em execução\nOs adaptadores incompatíveis serão ocultados",
-        "nl": "Het filter van de actieve exemplaren toegevoegd\nDe incompatibele adapters worden verborgen",
-        "fr": "Ajout du filtre des instances en cours d'exécution\nLes adaptateurs incompatibles seront cachés",
-        "it": "Aggiunto il filtro delle istanze in esecuzione\nGli adattatori incompatibili saranno nascosti",
-        "es": "Se agregó el filtro de las instancias en ejecución\nLos adaptadores incompatibles estarán ocultos.",
-        "pl": "Dodano filtr uruchomionych instancji\nNiezgodne adaptery zostaną ukryte",
-        "zh-cn": "添加了正在运行的实例的过滤器\n不兼容的适配器将被隐藏"
       }
     },
     "desc": {
