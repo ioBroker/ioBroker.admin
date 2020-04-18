@@ -10,6 +10,8 @@
 
 User interface for configuration and administration of ioBroker.
 
+**This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.** For more details and for information how to disable the error reporting see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
+
 ## Using common.localLink
 - %ip% - ioBroker ip address (address of the admin)
 - %secure% or %protocol% - read from native.secure the value and use http or https
@@ -87,8 +89,10 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
-### 4.0.8 (2020-04-18)
-* (bluefox) Fix error by the zipped log show.
+### 4.0.7 (2020-04-18)
+* (bluefox) The attempt to process error by the gz log show.
+* (bluefox) Implement new automatic encryption/decryption for js-controller 3.0
+* (bluefox) add Sentry for error reporting with js-controller 3.0
 
 ### 4.0.5 (2020-02-23)
 * (Apollon77) Workaround for socket.io bug #3555 added to make sure always the correct client files are delivered
