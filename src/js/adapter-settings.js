@@ -253,8 +253,8 @@ function preInit () {
                     oldObj.native[a] = native[a];
                     // encode all native attributes listed in oldObj.encryptedNative
                     if (oldObj.encryptedNative &&
-                        typeof res.encryptedNative === 'object' &&
-                        res.encryptedNative instanceof Array &&
+                        typeof oldObj.encryptedNative === 'object' &&
+                        oldObj.encryptedNative instanceof Array &&
                         oldObj.encryptedNative.indexOf(a) !== -1) {
                         oldObj.native[a] = encrypt(oldObj.native[a]);
                     }
