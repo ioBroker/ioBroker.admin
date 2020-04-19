@@ -154,7 +154,7 @@ class App extends React.Component {
 
             console.log(message);
 
-            if(message.includes('error') || message.includes('Error')) {
+            if(message.toLowerCase().includes('error')) {
                 this.showAlert(message, 'error');
             } else {
                 this.showAlert(message, 'info');
@@ -218,8 +218,11 @@ class App extends React.Component {
                 selectId:       null,
                 config:         {},
 
-
+                //==================== Finished
                 logs: [],
+                //=============
+
+                stateChanged: false,
 
                 theme:          this.getTheme(),
                 themeName:      this.getThemeName(this.getTheme()),
@@ -282,7 +285,7 @@ class App extends React.Component {
 
         this.socket = new Connection({
             port: this.getPort(),
-            autoSubscribes: ['system.adapter.*'],
+            autoSubscribes: ['*', 'system.adapter.*'],
             autoSubscribeLog: true,
             onProgress: progress => {
                 if(progress === PROGRESS.CONNECTING) {
@@ -323,10 +326,12 @@ class App extends React.Component {
                 this.getTabs();
 
                 this.handleNavigation();
+
+                this.initLog();
             },
             //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
             onError: error => {
-                console.error('ERROR: ' + error);
+                console.error(error);
                 this.showAlert(error, 'error');
             },
             onLog: message => {
@@ -346,6 +351,50 @@ class App extends React.Component {
     
     componentWillUnmount() {
         window.removeEventListener("hashchange", () => this.handleHashChange(), false);
+    }
+
+    initLog() {
+        this.socket.socket.emit('sendToHost', this.states.currentHost, 'getLogs', 200, (lines) => {
+            
+            const size = lines ? Utils.formatBytes(lines.pop()) : -1;
+
+            const logs = [];
+
+            for(const i in lines) {
+
+                const line = lines[i];
+
+                const time = line.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/);
+
+                if(time && time.length > 0) {
+                    
+                    const entry = {
+                        _id: i,
+                        from: line.match(/: (\D+\.\d+ \(|host\..+? )/)[0].replace(/[ :(]/g, ''),
+                        message: line.split(/\[\d+m: /)[1],
+                        severity: line.match(/\d+m(silly|debug|info|warn|error)/)[0].replace(/[\dm]/g, ''),
+                        ts: new Date(time[0]).getTime()
+                    }
+
+                    logs.push(entry);
+                } else {
+                    if(logs.length > 0) {
+                        logs[logs.length - 1].message += line;
+                    }
+                }
+            }
+
+            this.setState({
+                logSize: size,
+                logs: logs
+            });
+        });
+    }
+
+    clearLog() {
+        this.setState({
+            logs: []
+        });
     }
 
     /**
@@ -467,7 +516,10 @@ class App extends React.Component {
     }
 
     async onStateChange(id, state) {
-        console.log('STATE: ' + id);
+        //console.log('STATE: ' + id);
+        this.setState({
+            stateChanged: true
+        });
         /*if(state) {
             this.setState((prevState) => {
                 
@@ -952,7 +1004,12 @@ class App extends React.Component {
                     <Logs
                         ready={ this.state.ready }
                         logs={ this.state.logs }
+                        size={ this.state.logSize }
                         t={ I18n.t }
+                        socket={ this.socket.socket }
+                        currentHost={ this.state.currentHost }
+                        clearLog={ () => this.clearLog() }
+                        refreshLog={ () => this.initLog() }
                     />
                 );
             }
