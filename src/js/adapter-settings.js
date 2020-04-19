@@ -401,7 +401,7 @@ function preInit () {
                     } else {
                         var idx = supportedFeatures.indexOf('ADAPTER_AUTO_DECRYPT_NATIVE');
                         if (idx !== -1) {
-                            // if no encryptedNative exists the feature is irrelevand, remove for compatibility reasons
+                            // if no encryptedNative exists the feature is irrelevant, remove for compatibility reasons
                             supportedFeatures.splice(idx, 1);
                         }
                     }
