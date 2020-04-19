@@ -89,6 +89,10 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+
+### 4.0.9 (2020-04-19)
+* (Apollon77) Fix password encryption logics and make compatible to js-controller 3.x again
+
 ### 4.0.8 (2020-04-18)
 * (bluefox) The attempt to process error by the gz log show.
 * (bluefox) Implement new automatic encryption/decryption for js-controller 3.0
