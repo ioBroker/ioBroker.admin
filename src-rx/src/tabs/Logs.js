@@ -3,6 +3,8 @@ import React from 'react';
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,19 +14,26 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
+import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import PauseIcon from '@material-ui/icons/Pause';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import SaveAltIcon from '@material-ui/icons/SaveAlt';
 
 import amber from '@material-ui/core/colors/amber';
-import blue from '@material-ui/core/colors/blue';
 import grey from '@material-ui/core/colors/grey';
 import red from '@material-ui/core/colors/red';
 
@@ -32,8 +41,20 @@ const styles = theme => ({
     root: {
         height: '100%'
     },
+    flexContainer: {
+        height: '100%',
+        flexWrap: 'nowrap'
+    },
     container: {
         height: '100%'
+    },
+    table: {
+        tableLayout: 'fixed',
+        minWidth: 960,
+        '& td:nth-of-type(5)': {
+           overflow: 'hidden',
+           whiteSpace: 'nowrap'
+        }
     },
     row: {
         '&:nth-of-type(odd)': {
@@ -53,7 +74,7 @@ const styles = theme => ({
         color: grey[500]
     },
     source: {
-        width: 300
+        width: 230
     },
     id: {
         width: 100
@@ -63,6 +84,25 @@ const styles = theme => ({
     },
     severity: {
         width: 110
+    },
+    message: {
+        minWidth: 300
+    },
+    hidden: {
+        display: 'none'
+    },
+    grow: {
+        flexGrow: 1
+    },
+    logSize: {
+        marginRight: '1rem',
+        marginLeft: '1rem'
+    },
+    closeButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        color: theme.palette.grey[500],
     }
 });
 
@@ -80,7 +120,10 @@ class Logs extends React.Component {
         this.state = {
             source: '1',
             severity: 'debug',
-            message: ''
+            message: '',
+            logDeleteDialog: false,
+            logDownloadDialog: null,
+            logFiles: []
         };
 
         this.severities = {
@@ -90,6 +133,51 @@ class Logs extends React.Component {
             'warn': 3,
             'error': 4
         };
+        
+        this.t = props.t;
+    }
+
+    componentDidMount() {
+        this.props.socket.emit('readLogs', (err, list) => {
+
+            if(list && list.length) {
+                
+                const logFiles = [];
+
+                list.reverse();
+                // first 2018-01-01
+                for (const i in list) {
+
+                    const parts = list[i].split('/');
+                    const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '')
+
+                    if(name[0] <= '9') {
+                        logFiles.push({
+                            path: list[i],
+                            name: name
+                        });
+                    }
+                }
+                // then restart.log ans so on
+                list.sort();
+                for(const i in list) {
+
+                    const parts = list[i].split('/');
+                    const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
+
+                    if(name[0] > '9') {
+                        logFiles.push({
+                            path: list[i],
+                            name: name
+                        });
+                    }
+                }
+
+                this.setState({
+                    logFiles: logFiles
+                });
+            }
+        });
     }
 
     handleMessageChange(event) {
@@ -107,6 +195,69 @@ class Logs extends React.Component {
     handleSeverityChange(event) {
         this.setState({
             severity: event.target.value
+        });
+    }
+
+    openLogDownload(event) {
+        this.setState({
+            logDownloadDialog: event.currentTarget
+        });
+    }
+
+    closeLogDownload() {
+        this.setState({
+            logDownloadDialog: null
+        });
+    }
+
+    openLogDelete() {
+        this.setState({
+            logDeleteDialog: true
+        });
+    }
+
+    closeLogDelete() {
+        this.setState({
+            logDeleteDialog: false
+        });
+    }
+
+    handleLogDelete() {
+        
+        this.props.socket.emit('sendToHost', this.props.currentHost, 'delLogs', null, (error) => {
+            if(error) {
+                window.alert(error);
+            } else {
+                this.clearLog();
+            }
+        });
+
+        this.closeLogDelete();
+    }
+
+    clearLog() {
+        this.props.clearLog();
+    }
+
+    refreshLog() {
+        this.props.refreshLog();
+    }
+
+    openTab(path) {
+        const tab = window.open(path, '_blank');
+        tab.focus();
+    }
+
+    getLogFiles() {
+        return this.state.logFiles.map((entry) => {
+            return (
+                <MenuItem
+                    key={ entry.name }
+                    onClick={ () => { this.openTab(entry.path); this.closeLogDownload() } }
+                >
+                    { entry.name }
+                </MenuItem>
+            );
         });
     }
 
@@ -160,60 +311,57 @@ class Logs extends React.Component {
             const row = this.props.logs[i];
             const severity = row.severity;
 
-            if(this.state.source === '1' || this.state.source === row.from) {
-                if(this.severities[severity] >= this.severities[this.state.severity]) {
-                    
-                    const date = new Date(row.ts);
-                    const ts = `${date.getFullYear().pad(4)}-${(date.getMonth() + 1).pad(2)}-${date.getDate().pad(2)} ` +
-                        `${date.getHours().pad(2)}:${date.getMinutes().pad(2)}:${date.getSeconds().pad(2)}.${date.getMilliseconds().pad(3)}`;
-                    let message = row.message;
-                    let id = '';
+            const date = new Date(row.ts);
+            const ts = `${date.getFullYear().pad(4)}-${(date.getMonth() + 1).pad(2)}-${date.getDate().pad(2)} ` +
+                `${date.getHours().pad(2)}:${date.getMinutes().pad(2)}:${date.getSeconds().pad(2)}.${date.getMilliseconds().pad(3)}`;
+            let message = row.message;
+            let id = '';
 
-                    const regExp = new RegExp(row.from.replace('.', '\\.') + ' \\(\\d+\\) ', 'g');
-                    const matches = message.match(regExp);
+            const regExp = new RegExp(row.from.replace('.', '\\.') + ' \\(\\d+\\) ', 'g');
+            const matches = message.match(regExp);
 
-                    if(matches) {
-                        message = message.replace(matches[0], '');
-                        id = matches[0].split(' ')[1].match(/\d+/g)[0];
-                    } else {
-                        message = message.replace(row.from + ' ', '');
-                    }
-
-                    if(message.includes(this.state.message)) {
-                        rows.push(
-                            <TableRow
-                                className={ classes.row }
-                                key={ row._id }
-                                hover
-                            >
-                                <TableCell>
-                                    { row.from }
-                                </TableCell>
-                                <TableCell
-                                    className={ classes[severity] }
-                                >
-                                    { id }
-                                </TableCell>
-                                <TableCell
-                                    className={ classes[severity] }
-                                >
-                                    { ts }
-                                </TableCell>
-                                <TableCell
-                                    className={ classes[severity] }
-                                >
-                                    { row.severity }
-                                </TableCell>
-                                <TableCell
-                                    className={ classes[severity] }
-                                >
-                                    { message }
-                                </TableCell>
-                            </TableRow>
-                        );
-                    }
-                }
+            if(matches) {
+                message = message.replace(matches[0], '');
+                id = matches[0].split(' ')[1].match(/\d+/g)[0];
+            } else {
+                message = message.replace(row.from + ' ', '');
             }
+
+            rows.push(
+                <TableRow
+                    className={ classes.row +
+                        (((this.state.source !== '1' && this.state.source !== row.from) ||
+                        this.severities[severity] < this.severities[this.state.severity]) ||
+                        !message.toLowerCase().includes(this.state.message.toLowerCase()) ?
+                        ' ' + classes.hidden : '') }
+                    key={ row._id }
+                    hover
+                >
+                    <TableCell>
+                        { row.from }
+                    </TableCell>
+                    <TableCell
+                        className={ classes[severity] }
+                    >
+                        { id }
+                    </TableCell>
+                    <TableCell
+                        className={ classes[severity] }
+                    >
+                        { ts }
+                    </TableCell>
+                    <TableCell
+                        className={ classes[severity] }
+                    >
+                        { row.severity }
+                    </TableCell>
+                    <TableCell
+                        className={ classes[severity] }
+                    >
+                        { message }
+                    </TableCell>
+                </TableRow>
+            );
         }
 
         return rows;
@@ -225,69 +373,134 @@ class Logs extends React.Component {
 
         return (
             <Paper className={ classes.root }>
-                <IconButton>
-                    <RefreshIcon />
-                </IconButton>
-                <IconButton>
-                    <PauseIcon />
-                </IconButton>
-                <IconButton>
-                    <DeleteIcon />
-                </IconButton>
-                <IconButton>
-                    <DeleteForeverIcon />
-                </IconButton>
-                <TableContainer className={ classes.container }>
-                    <Table stickyHeader size="small">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell className={ classes.source }>
-                                    <FormControl className={ classes.formControl }>
-                                        <InputLabel id="source-label"></InputLabel>
-                                        <Select
-                                            labelId="source-label"
-                                            value={ this.state.source }
-                                            onChange={ (event) => this.handleSourceChange(event) }
-                                        >
-                                            {
-                                                this.getSources()
-                                            }
-                                        </Select>
-                                    </FormControl>
-                                </TableCell>
-                                <TableCell className={ classes.id }>ID</TableCell>
-                                <TableCell className={ classes.timestamp }>Zeit</TableCell>
-                                <TableCell className={ classes.severity }>
-                                    <FormControl className={classes.formControl}>
-                                        <InputLabel id="severity-label"></InputLabel>
-                                        <Select
-                                            labelId="severity-label"
-                                            value={ this.state.severity }
-                                            onChange={ (event) => this.handleSeverityChange(event) }
-                                        >
-                                            {
-                                                this.getSeverities()
-                                            }
-                                        </Select>
-                                    </FormControl>
-                                </TableCell>
-                                <TableCell>
-                                    <FormControl className={ classes.formControl }>
-                                        <TextField
-                                            label="Meldung"
-                                            onChange={ (event) => this.handleMessageChange(event) }
-                                        />
-                                    </FormControl>
-                                </TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {
-                                this.getRows()
-                            }
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                <Grid
+                    container
+                    direction="column"
+                    className={ classes.flexContainer }
+                >
+                    <Grid
+                        item
+                        container
+                        alignItems="center"
+                    >
+                        <IconButton
+                            onClick={ () => this.refreshLog() }
+                        >
+                            <RefreshIcon />
+                        </IconButton>
+                        <IconButton>
+                            <PauseIcon />
+                        </IconButton>
+                        <IconButton
+                            onClick={ () => this.clearLog() }
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                        <IconButton
+                            onClick={ () => this.openLogDelete() }
+                        >
+                            <DeleteForeverIcon />
+                        </IconButton>
+                        <div className={classes.grow} />
+                        { this.state.logFiles.length > 0 &&
+                            <div>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={ <SaveAltIcon />}
+                                    onClick={ (event) => this.openLogDownload(event) }
+                                >
+                                    { this.t('download') }
+                                </Button>
+                                <Menu
+                                    id="simple-menu"
+                                    anchorEl={ this.state.logDownloadDialog }
+                                    keepMounted
+                                    open={ Boolean(this.state.logDownloadDialog) }
+                                    onClose={ () => this.closeLogDownload() }
+                                >
+                                    { this.getLogFiles() }
+                                </Menu>
+                            </div>
+                        }
+                        <div className={classes.grow} />
+                        <Typography
+                            variant="body2"
+                            className={ classes.logSize }
+                        >
+                            { `${this.t('logSize')}: ${this.props.size || '-'}` }
+                        </Typography>
+                    </Grid>
+                    <TableContainer className={ classes.container }>
+                        <Table stickyHeader size="small" className={ classes.table }>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell className={ classes.source }>
+                                        <FormControl className={ classes.formControl }>
+                                            <InputLabel id="source-label"></InputLabel>
+                                            <Select
+                                                labelId="source-label"
+                                                value={ this.state.source }
+                                                onChange={ (event) => this.handleSourceChange(event) }
+                                            >
+                                                {
+                                                    this.getSources()
+                                                }
+                                            </Select>
+                                        </FormControl>
+                                    </TableCell>
+                                    <TableCell className={ classes.id }>ID</TableCell>
+                                    <TableCell className={ classes.timestamp }>Zeit</TableCell>
+                                    <TableCell className={ classes.severity }>
+                                        <FormControl className={classes.formControl}>
+                                            <InputLabel id="severity-label"></InputLabel>
+                                            <Select
+                                                labelId="severity-label"
+                                                value={ this.state.severity }
+                                                onChange={ (event) => this.handleSeverityChange(event) }
+                                            >
+                                                {
+                                                    this.getSeverities()
+                                                }
+                                            </Select>
+                                        </FormControl>
+                                    </TableCell>
+                                    <TableCell className={ classes.message }>
+                                        <FormControl className={ classes.formControl }>
+                                            <TextField
+                                                label="Meldung"
+                                                onChange={ (event) => this.handleMessageChange(event) }
+                                            />
+                                        </FormControl>
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {
+                                    this.getRows()
+                                }
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Grid>
+                <Dialog onClose={ () => this.closeLogDelete() } open={ this.state.logDeleteDialog }>
+                    <DialogTitle>
+                        { this.t('confirm') }
+                        <IconButton className={ classes.closeButton } onClick={ () => this.closeLogDelete() }>
+                            <CloseIcon />
+                        </IconButton>
+                    </DialogTitle>
+                    <DialogContent dividers>
+                        <Typography gutterBottom>
+                            Die Logdatei wird engültig gelöscht. Sind Sie sicher?
+                        </Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button autoFocus onClick={ () => this.handleLogDelete() } color="primary">
+                            { this.t('ok') }
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Paper>
         );
     }
