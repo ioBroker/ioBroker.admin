@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "4.0.9",
+    "version": "4.0.10",
     "news": {
+      "4.0.10": {
+        "en": "Caught the web server errors",
+        "de": "Fehler beim Webserver",
+        "ru": "Поймали ошибки веб-сервера",
+        "pt": "Detectou os erros do servidor web",
+        "nl": "Betrapte de webserverfouten",
+        "fr": "Pris les erreurs du serveur Web",
+        "it": "Catturati gli errori del web server",
+        "es": "Atrapado los errores del servidor web",
+        "pl": "Wyłapał błędy serwera WWW",
+        "zh-cn": "捕获了Web服务器错误"
+      },
       "4.0.9": {
         "en": "The attempt to process error by the log show.",
         "de": "Der Versuch, Fehler durch das Protokoll zu verarbeiten, wird angezeigt.",
