@@ -55,7 +55,7 @@
         "gulp-less": "^4.0.1",
         "gulp-exec": "^4.0.0",
         "gulp-replace": "^1.0.0",
-        "gulp-sass": "^4.0.2",
+        "gulp-sass": "^4.1.0",
         "gulp-sourcemaps": "^2.6.5",
         "gulp-terser": "^1.2.0",
         "materialize-css": "^1.0.0",
