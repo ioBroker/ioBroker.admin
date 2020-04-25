@@ -1,4 +1,5 @@
 gulpfile.js
+gulpReact.js
 package-lock.json
 node_modules
 .git
@@ -8,6 +9,8 @@ test
 docs
 .travis.yml
 src
+src-rx
+CHANGELOG_OLD.md
 iob_npm.done
 .gitignore
 DEVELOPER.md

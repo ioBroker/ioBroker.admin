@@ -6,6 +6,7 @@ const replace = require('gulp-replace');
 const srcRx = 'src-rx/';
 const src = __dirname + '/' + srcRx;
 const dir = src + '/src/i18n/';
+const dest = 'www-react/';
 
 function npmInstall() {
     return new Promise((resolve, reject) => {
@@ -70,7 +71,7 @@ function build(gulp) {
 
 function copyFiles(gulp) {
     return del([
-        'www/**/*'
+        dest + '**/*'
     ]).then(() => {
         return Promise.all([
             gulp.src([
@@ -80,19 +81,19 @@ function copyFiles(gulp) {
                 `!${srcRx}build/i18n/**/*`,
                 `!${srcRx}build/i18n`
             ])
-                .pipe(gulp.dest('www/')),
+                .pipe(gulp.dest(dest)),
 
             gulp.src([
                 `${srcRx}build/index.html`,
             ])
                 .pipe(replace('href="/', 'href="'))
                 .pipe(replace('src="/', 'src="'))
-                .pipe(gulp.dest('www/')),
+                .pipe(gulp.dest(dest)),
             gulp.src([
                 `${srcRx}build/static/js/main.*.chunk.js`,
             ])
                 .pipe(replace('s.p+"static/media/copy-content', '"./static/media/copy-content'))
-                .pipe(gulp.dest('www/static/js/')),
+                .pipe(gulp.dest(dest + 'static/js/')),
         ]);
     });
 }
@@ -177,13 +178,13 @@ function init(gulp) {
     gulp.task('react-clean', () => {
         return del([
             // 'src/node_modules/**/*',
-            'www/**/*',
-            'www/*',
+            dest + '/**/*',
+            dest + '*',
             'src/build/**/*'
         ]).then(del([
             // 'src/node_modules',
             'src/build',
-            'www/'
+            dest
         ]));
     });
 

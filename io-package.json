@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "4.0.10",
+    "version": "4.1.0",
     "news": {
+      "4.1.0": {
+        "en": "Started the development of GUI based on React (only for developers)",
+        "de": "Startete die Entwicklung einer GUI basierend auf React (nur für Entwickler)",
+        "ru": "Начата разработка графического интерфейса на основе React (только для разработчиков)",
+        "pt": "Iniciou o desenvolvimento da GUI com base no React (apenas para desenvolvedores)",
+        "nl": "Begonnen met de ontwikkeling van GUI op basis van React (alleen voor ontwikkelaars)",
+        "fr": "A commencé le développement de GUI basé sur React (uniquement pour les développeurs)",
+        "it": "Ha iniziato lo sviluppo della GUI basata su React (solo per sviluppatori)",
+        "es": "Comenzó el desarrollo de GUI basado en React (solo para desarrolladores)",
+        "pl": "Rozpoczął tworzenie GUI w oparciu o React (tylko dla programistów)",
+        "zh-cn": "开始开发基于React的GUI（仅适用于开发人员）"
+      },
       "4.0.10": {
         "en": "Caught the web server errors",
         "de": "Fehler beim Webserver",
@@ -205,6 +217,8 @@
     "secure": false,
     "bind": "0.0.0.0",
     "cache": false,
+
+    "react": false,
 
     "accessLimit": false,
     "accessApplyRights": false,

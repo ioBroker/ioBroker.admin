@@ -699,11 +699,12 @@ gulp.task('2_css',    gulp.parallel('iobCSS', 'adminCSS', 'appCSS', 'treeTableCS
 gulp.task('3_js',     gulp.parallel('vendorJS', 'materializeJS', 'appJS', 'fancyTreeJS')); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
 gulp.task('4_static', gulp.parallel('appHTML', 'aceCopy', 'colorpickerCopy', 'appCopy'));
 
+// add react tasks
+require('./gulpReact')(gulp);
+
 gulp.task('default', gulp.series(
     '1_words',
     '2_css',
     '3_js',
-    '4_static'));
+    '4_static', 'react-build'));
 
-// add react tasks
-require('./gulpReact')(gulp);
