@@ -10,6 +10,8 @@
     "@testing-library/jest-dom": "^5.5.0",
     "@testing-library/react": "^10.0.3",
     "@testing-library/user-event": "^10.1.0",
+    "@sentry/browser": "^5.15.5",
+    "@sentry/integrations": "^5.15.5",
     "clsx": "^1.1.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",

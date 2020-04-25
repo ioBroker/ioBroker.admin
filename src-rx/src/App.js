@@ -178,7 +178,7 @@ class App extends React.Component {
         I18n.setTranslations(this.translations);
         I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
 
-        if(window.location.pathname.split('/')[1] !== 'login') {
+        if (window.location.pathname.split('/')[1] !== 'login') {
 
             this.state = {
                 connected:      false,
@@ -237,7 +237,7 @@ class App extends React.Component {
                 formattedInstances: {},
                 formattedInstancesLoaded: false,
                 tab: null
-            }
+            };
 
             this.tabsInfo = {
                 'tab-intro':            {order: 1,    icon: <AppsIcon />},
@@ -354,19 +354,18 @@ class App extends React.Component {
     }
 
     initLog() {
-        this.socket.socket.emit('sendToHost', this.states.currentHost, 'getLogs', 200, (lines) => {
+        this.socket.socket.emit('sendToHost', this.state.currentHost, 'getLogs', 200, lines => {
             
             const size = lines ? Utils.formatBytes(lines.pop()) : -1;
 
             const logs = [];
 
-            for(const i in lines) {
-
+            for (const i in lines) {
                 const line = lines[i];
 
                 const time = line.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/);
 
-                if(time && time.length > 0) {
+                if (time && time.length > 0) {
                     
                     const entry = {
                         _id: i,
@@ -374,11 +373,11 @@ class App extends React.Component {
                         message: line.split(/\[\d+m: /)[1],
                         severity: line.match(/\d+m(silly|debug|info|warn|error)/)[0].replace(/[\dm]/g, ''),
                         ts: new Date(time[0]).getTime()
-                    }
+                    };
 
                     logs.push(entry);
                 } else {
-                    if(logs.length > 0) {
+                    if (logs.length > 0) {
                         logs[logs.length - 1].message += line;
                     }
                 }
@@ -1164,20 +1163,20 @@ class App extends React.Component {
 
             let state = (common.mode === 'daemon') ? 'green' : 'blue';
 
-            if(common.enabled && (!common.webExtension || !obj.native.webInstance)) {
+            if (common.enabled && (!common.webExtension || !obj.native.webInstance)) {
 
-                if(!this.state.states[obj._id + '.connected'] || !this.state.states[obj._id + '.connected'].val) {
+                if (!this.state.states[obj._id + '.connected'] || !this.state.states[obj._id + '.connected'].val) {
                     state = (common.mode === 'daemon') ? 'red' : 'blue';
                 }
     
-                if(!this.state.states[obj._id + '.alive'] || !this.state.states[obj._id + '.alive'].val) {
+                if (!this.state.states[obj._id + '.alive'] || !this.state.states[obj._id + '.alive'].val) {
                     state = (common.mode === 'daemon') ? 'red' : 'blue';
                 }
                 
-                if(this.state.states[instance.id + '.info.connection'] || this.state.objects[instance.id + '.info.connection']) {
-                    
+                if (this.state.states[instance.id + '.info.connection'] || this.state.objects[instance.id + '.info.connection']) {
                     const val = this.state.states[instance.id + '.info.connection'] ? this.state.states[instance.id + '.info.connection'].val : false;
-                    if(!val) {
+
+                    if (!val) {
                         state = state === 'red' ? 'red' : 'orange';
                     }
                 }
@@ -1204,17 +1203,16 @@ class App extends React.Component {
     }
 
     extendObject(id, data) {
-        this.socket.socket.emit('extendObject', id, data, (error) => {
-            if (error) this.showAlert(error, 'error');
-        });
+        this.socket.socket.emit('extendObject', id, data, error =>
+            error && this.showAlert(error, 'error'));
     }
 
     render() {
 
-        if(this.state.login) {
+        if (this.state.login) {
             return(
                 <ThemeProvider theme={ this.state.theme }>
-                    <Login t={ I18n.t } />
+                    <Login t={I18n.t} />
                 </ThemeProvider>
             );
         }

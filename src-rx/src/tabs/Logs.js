@@ -148,10 +148,10 @@ class Logs extends React.Component {
                 // first 2018-01-01
                 for (const i in list) {
 
-                    const parts = list[i].split('/');
+                    const parts = list[i].fileName.split('/');
                     const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '')
 
-                    if(name[0] <= '9') {
+                    if (name[0] <= '9') {
                         logFiles.push({
                             path: list[i],
                             name: name
@@ -160,12 +160,12 @@ class Logs extends React.Component {
                 }
                 // then restart.log ans so on
                 list.sort();
-                for(const i in list) {
+                for (const i in list) {
 
-                    const parts = list[i].split('/');
+                    const parts = list[i].fileName.split('/');
                     const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
 
-                    if(name[0] > '9') {
+                    if (name[0] > '9') {
                         logFiles.push({
                             path: list[i],
                             name: name
@@ -223,14 +223,8 @@ class Logs extends React.Component {
     }
 
     handleLogDelete() {
-        
-        this.props.socket.emit('sendToHost', this.props.currentHost, 'delLogs', null, (error) => {
-            if(error) {
-                window.alert(error);
-            } else {
-                this.clearLog();
-            }
-        });
+        this.props.socket.emit('sendToHost', this.props.currentHost, 'delLogs', null, error =>
+            error ? window.alert(error) : this.clearLog());
 
         this.closeLogDelete();
     }
@@ -294,11 +288,8 @@ class Logs extends React.Component {
 
         sources.sort();
 
-        return sources.map((source) => {
-            return(
-                <MenuItem value={ source } key={ source }>{ (source === '1') ? 'Source' : source }</MenuItem>
-            );
-        });
+        return sources.map(source => (
+                <MenuItem value={ source } key={ source }>{ source === '1' ? 'Source' : source }</MenuItem>));
     }
 
     getRows() {
@@ -410,7 +401,7 @@ class Logs extends React.Component {
                                     startIcon={ <SaveAltIcon />}
                                     onClick={ (event) => this.openLogDownload(event) }
                                 >
-                                    { this.t('download') }
+                                    { this.t('Download log') }
                                 </Button>
                                 <Menu
                                     id="simple-menu"
@@ -428,7 +419,7 @@ class Logs extends React.Component {
                             variant="body2"
                             className={ classes.logSize }
                         >
-                            { `${this.t('logSize')}: ${this.props.size || '-'}` }
+                            { `${this.t('Log size:')} ${this.props.size || '-'}` }
                         </Typography>
                     </Grid>
                     <TableContainer className={ classes.container }>
@@ -437,7 +428,7 @@ class Logs extends React.Component {
                                 <TableRow>
                                     <TableCell className={ classes.source }>
                                         <FormControl className={ classes.formControl }>
-                                            <InputLabel id="source-label"></InputLabel>
+                                            <InputLabel id="source-label"/>
                                             <Select
                                                 labelId="source-label"
                                                 value={ this.state.source }
@@ -449,11 +440,11 @@ class Logs extends React.Component {
                                             </Select>
                                         </FormControl>
                                     </TableCell>
-                                    <TableCell className={ classes.id }>ID</TableCell>
-                                    <TableCell className={ classes.timestamp }>Zeit</TableCell>
+                                    <TableCell className={ classes.id }>{this.t('ID')}</TableCell>
+                                    <TableCell className={ classes.timestamp }>{this.t('Time')}</TableCell>
                                     <TableCell className={ classes.severity }>
                                         <FormControl className={classes.formControl}>
-                                            <InputLabel id="severity-label"></InputLabel>
+                                            <InputLabel id="severity-label"/>
                                             <Select
                                                 labelId="severity-label"
                                                 value={ this.state.severity }
@@ -468,7 +459,7 @@ class Logs extends React.Component {
                                     <TableCell className={ classes.message }>
                                         <FormControl className={ classes.formControl }>
                                             <TextField
-                                                label="Meldung"
+                                                label={this.t('Message')}
                                                 onChange={ (event) => this.handleMessageChange(event) }
                                             />
                                         </FormControl>
@@ -485,19 +476,19 @@ class Logs extends React.Component {
                 </Grid>
                 <Dialog onClose={ () => this.closeLogDelete() } open={ this.state.logDeleteDialog }>
                     <DialogTitle>
-                        { this.t('confirm') }
+                        { this.t('Please confirm') }
                         <IconButton className={ classes.closeButton } onClick={ () => this.closeLogDelete() }>
                             <CloseIcon />
                         </IconButton>
                     </DialogTitle>
                     <DialogContent dividers>
                         <Typography gutterBottom>
-                            Die Logdatei wird engültig gelöscht. Sind Sie sicher?
+                            {this.t('Log file will be deleted. Are you sure?')}
                         </Typography>
                     </DialogContent>
                     <DialogActions>
                         <Button autoFocus onClick={ () => this.handleLogDelete() } color="primary">
-                            { this.t('ok') }
+                            { this.t('Ok') }
                         </Button>
                     </DialogActions>
                 </Dialog>
