@@ -1,20 +1,20 @@
 {
   "name": "src-rx",
-  "version": "0.1.0",
+  "version": "4.0.10",
   "private": true,
   "dependencies": {
-    "@iobroker/adapter-react": "^0.3.4",
-    "@material-ui/core": "^4.9.5",
+    "@iobroker/adapter-react": "^0.3.8",
+    "@material-ui/core": "^4.9.11",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.45",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.4.0",
-    "@testing-library/user-event": "^7.2.1",
+    "@material-ui/lab": "^4.0.0-alpha.50",
+    "@testing-library/jest-dom": "^5.5.0",
+    "@testing-library/react": "^10.0.3",
+    "@testing-library/user-event": "^10.1.0",
     "clsx": "^1.1.0",
     "prop-types": "^15.7.2",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-scripts": "3.3.1"
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "^3.4.1"
   },
   "scripts": {
     "start": "react-scripts start",
