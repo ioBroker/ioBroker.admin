@@ -2,9 +2,9 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "4.1.0",
+    "version": "4.1.1",
     "news": {
-      "4.1.0": {
+      "4.1.1": {
         "en": "Started the development of GUI based on React (only for developers)",
         "de": "Startete die Entwicklung einer GUI basierend auf React (nur für Entwickler)",
         "ru": "Начата разработка графического интерфейса на основе React (только для разработчиков)",
