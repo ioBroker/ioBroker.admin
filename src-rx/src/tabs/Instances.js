@@ -217,8 +217,8 @@ class Instances extends React.Component {
                         </IconButton>
                     </TableCell>
                     <TableCell>{ instance.name }</TableCell>
-                    <TableCell/>
-                    <TableCell/>
+                    <TableCell />
+                    <TableCell />
                 </TableRow>
             );
         });
@@ -227,6 +227,7 @@ class Instances extends React.Component {
     }
 
     getPanels(classes) {
+
         const panels = [];
         
         for (const id in this.props.instances) {

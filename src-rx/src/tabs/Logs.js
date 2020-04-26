@@ -103,6 +103,15 @@ const styles = theme => ({
         right: theme.spacing(1),
         top: theme.spacing(1),
         color: theme.palette.grey[500],
+    },
+    header: {
+        '& .MuiFormLabel-root.Mui-disabled': {
+            color: theme.palette.text.primary
+        },
+        '& .MuiInput-underline::before': {
+            content: '',
+            borderBottom: 'none'
+        }
     }
 });
 
@@ -123,7 +132,9 @@ class Logs extends React.Component {
             message: '',
             logDeleteDialog: false,
             logDownloadDialog: null,
-            logFiles: []
+            logFiles: [],
+            pause: 0,
+            pauseCount: 0
         };
 
         this.severities = {
@@ -143,11 +154,11 @@ class Logs extends React.Component {
             if (list && list.length) {
                 
                 const logFiles = [];
-
+                
                 list.reverse();
                 // first 2018-01-01
                 for (const i in list) {
-
+                    
                     const parts = list[i].fileName.split('/');
                     const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '')
 
@@ -237,6 +248,12 @@ class Logs extends React.Component {
         this.props.refreshLog();
     }
 
+    handleLogPause() {
+        this.setState({
+            pause: (this.state.pause > 0) ? 0 : this.props.logs.length
+        });
+    }
+
     openTab(path) {
         const tab = window.open(path, '_blank');
         tab.focus();
@@ -289,7 +306,8 @@ class Logs extends React.Component {
         sources.sort();
 
         return sources.map(source => (
-                <MenuItem value={ source } key={ source }>{ source === '1' ? 'Source' : source }</MenuItem>));
+            <MenuItem value={ source } key={ source }>{ source === '1' ? this.t('Source') : source }</MenuItem>
+        ));
     }
 
     getRows() {
@@ -297,7 +315,7 @@ class Logs extends React.Component {
         const rows = [];
         const { classes } = this.props;
 
-        for (let i = this.props.logs.length - 1; i >= 0; i--) {
+        for (let i = (this.state.pause > 0) ? this.state.pause - 1 : this.props.logs.length - 1; i >= 0; i--) {
 
             const row = this.props.logs[i];
             const severity = row.severity;
@@ -348,6 +366,7 @@ class Logs extends React.Component {
                     </TableCell>
                     <TableCell
                         className={ classes[severity] }
+                        title={ message }
                     >
                         { message }
                     </TableCell>
@@ -361,6 +380,8 @@ class Logs extends React.Component {
     render() {
 
         const { classes } = this.props;
+
+        const pauseChild = (this.state.pause === 0) ? <PauseIcon /> : <Typography>{ this.props.logs.length - this.state.pause }</Typography>;
 
         return (
             <Paper className={ classes.root }>
@@ -379,8 +400,8 @@ class Logs extends React.Component {
                         >
                             <RefreshIcon />
                         </IconButton>
-                        <IconButton>
-                            <PauseIcon />
+                        <IconButton onClick={ () => this.handleLogPause() }>
+                            { pauseChild }
                         </IconButton>
                         <IconButton
                             onClick={ () => this.clearLog() }
@@ -428,7 +449,7 @@ class Logs extends React.Component {
                                 <TableRow>
                                     <TableCell className={ classes.source }>
                                         <FormControl className={ classes.formControl }>
-                                            <InputLabel id="source-label"/>
+                                            <InputLabel id="source-label" />
                                             <Select
                                                 labelId="source-label"
                                                 value={ this.state.source }
@@ -440,11 +461,15 @@ class Logs extends React.Component {
                                             </Select>
                                         </FormControl>
                                     </TableCell>
-                                    <TableCell className={ classes.id }>{this.t('ID')}</TableCell>
-                                    <TableCell className={ classes.timestamp }>{this.t('Time')}</TableCell>
+                                    <TableCell className={ classes.pid }>
+                                        <TextField disabled label={ this.t('PID') } className={ classes.header } />
+                                    </TableCell>
+                                    <TableCell className={ classes.timestamp }>
+                                        <TextField disabled label={ this.t('Time') } className={ classes.header } />
+                                    </TableCell>
                                     <TableCell className={ classes.severity }>
                                         <FormControl className={classes.formControl}>
-                                            <InputLabel id="severity-label"/>
+                                            <InputLabel id="severity-label" />
                                             <Select
                                                 labelId="severity-label"
                                                 value={ this.state.severity }
@@ -459,7 +484,7 @@ class Logs extends React.Component {
                                     <TableCell className={ classes.message }>
                                         <FormControl className={ classes.formControl }>
                                             <TextField
-                                                label={this.t('Message')}
+                                                label={ this.t('Message') }
                                                 onChange={ event => this.handleMessageChange(event) }
                                             />
                                         </FormControl>
@@ -483,7 +508,7 @@ class Logs extends React.Component {
                     </DialogTitle>
                     <DialogContent dividers>
                         <Typography gutterBottom>
-                            {this.t('Log file will be deleted. Are you sure?')}
+                            { this.t('Log file will be deleted. Are you sure?') }
                         </Typography>
                     </DialogContent>
                     <DialogActions>
