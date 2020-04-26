@@ -9,8 +9,7 @@ const styles = {
 class Adapters extends React.Component {
 
     render() {
-
-        return(
+        return (
             <div>
                 Adapters
             </div>

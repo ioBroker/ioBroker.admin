@@ -21,13 +21,13 @@ function build() {
     </MuiThemeProvider>, document.getElementById('root'));
 }
 
-/*Sentry.init({
-    dsn: "https://8f4cd4fe94f94e2a88e9da0f033f27fc@sentry.iobroker.net/57",
-    release: 'iobroker.iot@' + version,
+Sentry.init({
+    dsn: "https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58",
+    release: 'iobroker.admin@' + version,
     integrations: [
         new SentryIntegrations.Dedupe()
     ]
-});*/
+});
 
 
 build();

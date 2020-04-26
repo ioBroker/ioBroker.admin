@@ -3,7 +3,7 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import orange from '@material-ui/core/colors/orange';
 
 export default type => {
-    if(type === 'dark') {
+    if (type === 'dark') {
         return createMuiTheme({
             name: type,
             palette: {
@@ -55,7 +55,7 @@ export default type => {
                 }
             }
         });
-    } else if(type === 'blue') {
+    } else if (type === 'blue') {
         return createMuiTheme({
             name: type,
             palette: {
@@ -107,7 +107,7 @@ export default type => {
                 }
             }
         });
-    } else if(type === 'colored') {
+    } else if (type === 'colored') {
         return createMuiTheme({
             name: type,
             palette: {

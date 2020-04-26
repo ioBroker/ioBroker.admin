@@ -144,11 +144,11 @@ class Instances extends React.Component {
 
         const headers = [];
 
-        for(const index in this.columns) {
+        for (const index in this.columns) {
 
             const column = this.columns[index];
 
-            if(!column.onlyExpert || column.onlyExpert === this.state.expertmode) {
+            if (!column.onlyExpert || column.onlyExpert === this.state.expertmode) {
                 headers.push(
                     <TableCell key={ index }>{ index }</TableCell>
                 );
@@ -160,9 +160,9 @@ class Instances extends React.Component {
 
     getRows(classes) {
 
-        const rows = this.props.instances.map((instance, index) => {
+        const rows = this.props.instances.map(instance => {
 
-            return(
+            return (
                 <TableRow key={ instance.id } className={ classes.tableRow }>
                     <TableCell>
                         <Grid container  spacing={ 1 } alignItems="center">
@@ -217,8 +217,8 @@ class Instances extends React.Component {
                         </IconButton>
                     </TableCell>
                     <TableCell>{ instance.name }</TableCell>
-                    <TableCell></TableCell>
-                    <TableCell></TableCell>
+                    <TableCell/>
+                    <TableCell/>
                 </TableRow>
             );
         });
@@ -227,10 +227,9 @@ class Instances extends React.Component {
     }
 
     getPanels(classes) {
-
-        const panels = []
+        const panels = [];
         
-        for(const id in this.props.instances) {
+        for (const id in this.props.instances) {
 
             const instance = this.props.instances[id];
 
@@ -264,11 +263,11 @@ class Instances extends React.Component {
                         </Grid>
                         <IconButton
                             size="small"
-                            onClick={ (event) => {
+                            onClick={ event => {
                                 this.props.extendObject('system.adapter.' + instance.id, {common: {enabled: !instance.isRun}});
                                 event.stopPropagation();
                             } }
-                            onFocus={ (event) => event.stopPropagation() }
+                            onFocus={ event => event.stopPropagation() }
                             className={ classes.button + ' ' + (instance.canStart ? instance.isRun ? classes.enabled : classes.disabled : classes.hide) }
                         >
                             { instance.isRun ? <PauseIcon /> : <PlayArrowIcon /> }
@@ -282,11 +281,11 @@ class Instances extends React.Component {
                         </IconButton>
                         <IconButton
                             size="small"
-                            onClick={ (event) => {
+                            onClick={ event => {
                                 this.props.extendObject('system.adapter.' + instance.id, {});
                                 event.stopPropagation();
                             } }
-                            onFocus={ (event) => event.stopPropagation() }
+                            onFocus={ event => event.stopPropagation() }
                             className={ classes.button + ' ' + (instance.canStart ? '' : classes.hide) }
                             disabled={ !instance.isRun }
                         >
@@ -296,11 +295,11 @@ class Instances extends React.Component {
                             size="small"
                             className={ classes.button + ' ' + (instance.link ? '' : classes.hide) }
                             disabled={ !instance.isRun }
-                            onClick={ (event) => {
+                            onClick={ event => {
                                 window.open(instance.link, "_blank")
                                 event.stopPropagation();
                             } }
-                            onFocus={ (event) => event.stopPropagation() }
+                            onFocus={ event => event.stopPropagation() }
                         >
                             <InputIcon />
                         </IconButton>
@@ -334,20 +333,20 @@ class Instances extends React.Component {
 
     render() {
 
-        if(!this.props.ready) {
-            return(
+        if (!this.props.ready) {
+            return (
                 <LinearProgress />
             );
         }
 
         const { classes } = this.props;
 
-        if(this.state.dialog === 'config' && this.state.dialogProp) {
+        if (this.state.dialog === 'config' && this.state.dialogProp) {
 
             const instance = this.props.instances[this.state.dialogProp] || null;
 
-            if(instance) {
-                return(
+            if (instance) {
+                return (
                     <Paper className={ classes.paper }>
                         <Config
                             className={ classes.iframe }
@@ -361,7 +360,7 @@ class Instances extends React.Component {
             }
         }
 
-        //if(this.props.width === 'xs' || this.props.width === 'sm') {
+        //if (this.props.width === 'xs' || this.props.width === 'sm') {
             return (
                 <div>
                     { this.getPanels(classes) }
@@ -369,7 +368,7 @@ class Instances extends React.Component {
             );
         //}
 
-        return(
+        return (
             <TableContainer component={ Paper }>
                 <Table className={ classes.table } size="small">
                     <TableHead>

@@ -140,7 +140,7 @@ class Logs extends React.Component {
     componentDidMount() {
         this.props.socket.emit('readLogs', (err, list) => {
 
-            if(list && list.length) {
+            if (list && list.length) {
                 
                 const logFiles = [];
 
@@ -243,7 +243,7 @@ class Logs extends React.Component {
     }
 
     getLogFiles() {
-        return this.state.logFiles.map((entry) => {
+        return this.state.logFiles.map(entry => {
             return (
                 <MenuItem
                     key={ entry.name }
@@ -259,7 +259,7 @@ class Logs extends React.Component {
 
         const severities = [];
 
-        for(const i in this.severities) {
+        for (const i in this.severities) {
             severities.push(
                 <MenuItem value={ i } key={ i }>{ i }</MenuItem>
             );
@@ -273,16 +273,16 @@ class Logs extends React.Component {
         const sources = ['1'];
         const ids = {};
 
-        for(const i in this.props.logs) {
+        for (const i in this.props.logs) {
 
             const log = this.props.logs[i];
 
-            if(!ids[log.from]) {
+            if (!ids[log.from]) {
                 ids[log.from] = true;
             }
         }
 
-        for(const i in ids) {
+        for (const i in ids) {
             sources.push(i);
         }
 
@@ -297,7 +297,7 @@ class Logs extends React.Component {
         const rows = [];
         const { classes } = this.props;
 
-        for(let i = this.props.logs.length - 1; i >= 0; i--) {
+        for (let i = this.props.logs.length - 1; i >= 0; i--) {
 
             const row = this.props.logs[i];
             const severity = row.severity;
@@ -311,7 +311,7 @@ class Logs extends React.Component {
             const regExp = new RegExp(row.from.replace('.', '\\.') + ' \\(\\d+\\) ', 'g');
             const matches = message.match(regExp);
 
-            if(matches) {
+            if (matches) {
                 message = message.replace(matches[0], '');
                 id = matches[0].split(' ')[1].match(/\d+/g)[0];
             } else {
@@ -399,7 +399,7 @@ class Logs extends React.Component {
                                     variant="contained"
                                     color="primary"
                                     startIcon={ <SaveAltIcon />}
-                                    onClick={ (event) => this.openLogDownload(event) }
+                                    onClick={ event => this.openLogDownload(event) }
                                 >
                                     { this.t('Download log') }
                                 </Button>
@@ -432,7 +432,7 @@ class Logs extends React.Component {
                                             <Select
                                                 labelId="source-label"
                                                 value={ this.state.source }
-                                                onChange={ (event) => this.handleSourceChange(event) }
+                                                onChange={ event => this.handleSourceChange(event) }
                                             >
                                                 {
                                                     this.getSources()
@@ -448,7 +448,7 @@ class Logs extends React.Component {
                                             <Select
                                                 labelId="severity-label"
                                                 value={ this.state.severity }
-                                                onChange={ (event) => this.handleSeverityChange(event) }
+                                                onChange={ event => this.handleSeverityChange(event) }
                                             >
                                                 {
                                                     this.getSeverities()
@@ -460,7 +460,7 @@ class Logs extends React.Component {
                                         <FormControl className={ classes.formControl }>
                                             <TextField
                                                 label={this.t('Message')}
-                                                onChange={ (event) => this.handleMessageChange(event) }
+                                                onChange={ event => this.handleMessageChange(event) }
                                             />
                                         </FormControl>
                                     </TableCell>

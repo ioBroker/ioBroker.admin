@@ -12,7 +12,7 @@ class Utils {
         const MB = Math.floor(bytes / (1024 * 1024) * 10) / 10;
         let text = '';
 
-        if(GB > 1) {
+        if (GB > 1) {
             text += GB + ' GB';
         } else {
             text += MB + ' MB';

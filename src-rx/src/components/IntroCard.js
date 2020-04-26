@@ -141,8 +141,11 @@ class IntroCard extends React.Component {
     }
 
     static getDerivedStateFromProps(props) {
-        if(props.edit) return { expanded: false };
-        return null;
+        if (props.edit) {
+            return { expanded: false };
+        } else {
+            return null;
+        }
     }
 
     handleExpandClick() {
@@ -156,7 +159,7 @@ class IntroCard extends React.Component {
         const { classes } = this.props;
         const editClass = this.props.edit ? ' ' + classes.edit : '';
 
-        return(
+        return (
             <Grid
                 item
                 xs={ 12 }
@@ -240,19 +243,10 @@ class IntroCard extends React.Component {
 }
 
 IntroCard.propTypes = {
-    /**
-    * Link and text
-    * {link: 'https://example.com', text: 'example.com'}
-    */
-    action: PropTypes.object,
-    children: PropTypes.node,
-    color: PropTypes.string,
-    edit: PropTypes.bool,
-    enabled: PropTypes.bool,
-    image: PropTypes.string,
-    reveal: PropTypes.node,
-    title: PropTypes.string,
-    toggleActivation: PropTypes.func
+    ready: PropTypes.bool,
+    instances: PropTypes.object,
+    updateIntro: PropTypes.string,
+    t: PropTypes.func,
 };
 
 export default withStyles(styles)(IntroCard);

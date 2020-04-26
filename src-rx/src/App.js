@@ -150,11 +150,10 @@ class App extends React.Component {
 
         super(props);
 
-        window.alert = (message) => {
-
+        window.alert = message => {
             console.log(message);
 
-            if(message.toLowerCase().includes('error')) {
+            if (message.toLowerCase().includes('error')) {
                 this.showAlert(message, 'error');
             } else {
                 this.showAlert(message, 'info');
@@ -288,11 +287,11 @@ class App extends React.Component {
             autoSubscribes: ['*', 'system.adapter.*'],
             autoSubscribeLog: true,
             onProgress: progress => {
-                if(progress === PROGRESS.CONNECTING) {
+                if (progress === PROGRESS.CONNECTING) {
                     this.setState({
                         connected: false
                     });
-                } else if(progress === PROGRESS.READY) {
+                } else if (progress === PROGRESS.READY) {
                     this.setState({
                         connected: true,
                         progress: 100
@@ -309,7 +308,7 @@ class App extends React.Component {
                 I18n.setLanguage(this.socket.systemLang);
                 window.systemLang = this.socket.systemLang;
 
-                this.socket.getStates((states) => {
+                this.socket.getStates(states => {
                     this.setState({
                         ready: true,
                         objects: objects,
@@ -412,7 +411,7 @@ class App extends React.Component {
 
         let port = parseInt(window.location.port, 10);
 
-        if(isNaN(port)) {
+        if (isNaN(port)) {
             switch(this.getProtocol()) {
                 case 'https:':
                     port = 443;
@@ -425,7 +424,7 @@ class App extends React.Component {
             }
         }
 
-        if(!port || port === 3000) {
+        if (!port || port === 3000) {
             port = 8081;
         }
 
@@ -491,8 +490,8 @@ class App extends React.Component {
 
     async onObjectChange(id, obj) {
         console.log('OBJECT: ' + id);
-        if(obj) {
-            this.setState((prevState) => {
+        if (obj) {
+            this.setState(prevState => {
                 
                 const objects = prevState.objects;
                 objects[id] = obj;
@@ -502,7 +501,7 @@ class App extends React.Component {
                 };
             });
         } else {
-            this.setState((prevState) => {
+            this.setState(prevState => {
                 
                 const objects = prevState.objects;
                 delete objects[id];
@@ -519,8 +518,8 @@ class App extends React.Component {
         this.setState({
             stateChanged: true
         });
-        /*if(state) {
-            this.setState((prevState) => {
+        /*if (state) {
+            this.setState(prevState => {
                 
                 const states = prevState.states;
                 states[id] = state;
@@ -530,7 +529,7 @@ class App extends React.Component {
                 };
             });
         } else {
-            this.setState((prevState) => {
+            this.setState(prevState => {
                 
                 const states = prevState.states;
                 delete states[id];
@@ -572,19 +571,19 @@ class App extends React.Component {
             const list = [];
             const hostData = {};
 
-            for(const id in hosts) {
+            for (const id in hosts) {
 
                 const obj = hosts[id];
 
-                if(obj.type === 'host') {
+                if (obj.type === 'host') {
                     list.push(obj);
                 }
 
                 try {
-                    const data = await new Promise((resolve, reject) => this.socket.socket.emit('sendToHost', obj._id, 'getHostInfo', null, (data) => {
-                        if(data === 'permissionError') {
+                    const data = await new Promise((resolve, reject) => this.socket.socket.emit('sendToHost', obj._id, 'getHostInfo', null, data => {
+                        if (data === 'permissionError') {
                             reject('May not read "getHostInfo"');
-                        } else if(!data) {
+                        } else if (!data) {
                             reject('Cannot read "getHostInfo"');
                         } else {
                             resolve(data);
@@ -629,24 +628,24 @@ class App extends React.Component {
                 addTabs.push(instance);
             }*/
 
-        if(this.state.instances) {
-            for(const instanceIndex in this.state.instances) {
+        if (this.state.instances) {
+            for (const instanceIndex in this.state.instances) {
 
                 const instance = this.state.instances[instanceIndex];
 
-                if(!instance.common || !instance.common.adminTab) continue;
+                if (!instance.common || !instance.common.adminTab) continue;
 
-                if(instance.common.adminTab.singleton) {
+                if (instance.common.adminTab.singleton) {
                     let isFound = false;
                     const inst1 = instance._id.replace(/\.(\d+)$/, '.');
-                    for(const tabIndex in allTabs) {
+                    for (const tabIndex in allTabs) {
                         const inst2 = allTabs[tabIndex].replace(/\.(\d+)$/, '.');
-                        if(inst1 === inst2) {
+                        if (inst1 === inst2) {
                             isFound = true;
                             break;
                         }
                     }
-                    if(!isFound) allTabs.push(instance._id);
+                    if (!isFound) allTabs.push(instance._id);
                 } else {
                     allTabs.push(instance._id);
                 }
@@ -669,7 +668,7 @@ class App extends React.Component {
     }
 
     saveConfig(attr, value) {
-        if(attr) {
+        if (attr) {
             const config = this.state.config.slice();
             config[attr] = value;
             this.setState({
@@ -699,21 +698,21 @@ class App extends React.Component {
         const days = Math.floor(seconds / (3600 * 24));
         seconds %= 3600 * 24;
         let hours = Math.floor(seconds / 3600);
-        if(hours < 10) {
+        if (hours < 10) {
             hours = '0' + hours;
         }
         seconds %= 3600;
         let minutes = Math.floor(seconds / 60);
-        if(minutes < 10) {
+        if (minutes < 10) {
             minutes = '0' + minutes;
         }
         seconds %= 60;
         seconds = Math.floor(seconds);
-        if(seconds < 10) {
+        if (seconds < 10) {
             seconds = '0' + seconds;
         }
         let text = '';
-        if(days) {
+        if (days) {
             text += days + ' ' + I18n.t('daysShortText') + ' ';
         }
         text += hours + ':' + minutes + ':' + seconds;
@@ -722,7 +721,7 @@ class App extends React.Component {
     }
 
     /*getUser() {
-        if(!this.state.currentUser) {
+        if (!this.state.currentUser) {
             this.socket.socket.emit('authEnabled', (auth, user) => {
                 const currentUser = 'system.user.' + user;
                 this.setState({
@@ -730,18 +729,18 @@ class App extends React.Component {
                     authenticated: auth
                 });
             });
-        } else if(this.state.objects[this.state.currentUser]) {
+        } else if (this.state.objects[this.state.currentUser]) {
             const obj = this.state.objects[this.state.currentUser];
             let name = '';
 
-            if(!obj || !obj.common || !obj.common.name) {
+            if (!obj || !obj.common || !obj.common.name) {
                 name = this.state.currentUser.replace(/^system\.user\./);
                 name = name[0].toUpperCase() + name.substring(1).toLowerCase();
             } else {
                 //name = translateName(obj.common.name);
             }
 
-            if(obj && obj.common && obj.common.icon) {
+            if (obj && obj.common && obj.common.icon) {
                 const objs = {};
                 objs[this.state.currentUser] = obj;
                 //$('#current-user-icon').html(main.getIcon(main.currentUser, null, objs));
@@ -750,7 +749,7 @@ class App extends React.Component {
             }
             //$('#current-user').html(name);
             const groups = [];
-            for(let i = 0; i < this.state.tabs.users.groups.length; i++) {
+            for (let i = 0; i < this.state.tabs.users.groups.length; i++) {
                 const group = this.state.objects[this.state.tabs.users.groups[i]];
                 if (group && group.common && group.common.members && group.common.members.indexOf(this.state.currentUser) !== -1) {
                     //groups.push(_(translateName(group.common.name)));
@@ -762,9 +761,13 @@ class App extends React.Component {
 
     async getIntroInstances() {
 
-        if(this.state.introInstancesLoaded) return;
+        if (this.state.introInstancesLoaded) {
+            return;
+        }
         
-        if(!this.state.instances) await this.getAdapterInstances();
+        if (!this.state.instances) {
+            await this.getAdapterInstances();
+        }
 
         const deactivated = (this.state.systemConfig) ? this.state.systemConfig.common.intro : {};
         const instances = this.state.instances.slice();
@@ -793,22 +796,22 @@ class App extends React.Component {
             }
         });
 
-        for(const key in instances) {
+        for (const key in instances) {
 
             const obj = instances[key];
             const common = (obj) ? obj.common : null;
             const objId = obj._id.split('.');
             const instanceId = objId[objId.length - 1];
 
-            if(common.name && common.name === 'admin' && common.localLink === (this.state.hostname || '')) {
+            if (common.name && common.name === 'admin' && common.localLink === (this.state.hostname || '')) {
                 continue;
-            } else if(common.name && common.name === 'web') {
+            } else if (common.name && common.name === 'web') {
                 continue;
-            } else if(common.name && common.name !== 'vis-web-admin' && common.name.match(/^vis-/)) {
+            } else if (common.name && common.name !== 'vis-web-admin' && common.name.match(/^vis-/)) {
                 continue;
-            } else if(common.name && common.name.match(/^icons-/)) {
+            } else if (common.name && common.name.match(/^icons-/)) {
                 continue;
-            } else if(common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
+            } else if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
 
                 const instance = {};
                 const ws = (common.welcomeScreen) ? common.welcomeScreen : null;
@@ -839,11 +842,11 @@ class App extends React.Component {
 
         const hosts = this.state.hosts;
 
-        for(const key in hosts) {
+        for (const key in hosts) {
             const obj = hosts[key];
             const common = (obj) ? obj.common : null;
 
-            if(common) {
+            if (common) {
                 const instance = {};
 
                 const hostData = this.state.hostData[obj._id];
@@ -886,18 +889,18 @@ class App extends React.Component {
 
     replaceLink(link, adapter, instance) {
         
-        if(this.state.ready && link) {
+        if (this.state.ready && link) {
 
             let placeholder = link.match(/%(\w+)%/g);
 
-            if(placeholder) {
-                if(placeholder[0] === '%ip%') {
+            if (placeholder) {
+                if (placeholder[0] === '%ip%') {
                     link = link.replace('%ip%', this.state.hostname);
                     link = this.replaceLink(link, adapter, instance);
-                } else if(placeholder[0] === '%protocol%') {
+                } else if (placeholder[0] === '%protocol%') {
                     link = link.replace('%protocol%', this.state.protocol.substr(0, this.state.protocol.length - 1));
                     link = this.replaceLink(link, adapter, instance);
-                } else if(placeholder[0] === '%instance%') {
+                } else if (placeholder[0] === '%instance%') {
                     link = link.replace('%instance%', instance);
                     link = this.replaceLink(link, adapter, instance);
                 } else {
@@ -920,8 +923,8 @@ class App extends React.Component {
                     try {
                         const object = this.state.objects['system.adapter.' + parts[0]];
                         
-                        if(link && object) {
-                            if(parts[1] === 'secure') {
+                        if (link && object) {
+                            if (parts[1] === 'secure') {
                                 link = link.replace('%' + placeholder + '%', object.native[parts[1]] ? 'https' : 'http');
                             } else {
                                 if (link.indexOf('%' + placeholder + '%') === -1) {
@@ -953,27 +956,27 @@ class App extends React.Component {
         
         let changed = false;
 
-        for(const index in instances) {
+        for (const index in instances) {
 
             const instance = instances[index];
 
-            if(systemConfig.common.intro.hasOwnProperty(instance.id) || !instance.editActive) {
-                if(systemConfig.common.intro[instance.id] !== instance.editActive) {
+            if (systemConfig.common.intro.hasOwnProperty(instance.id) || !instance.editActive) {
+                if (systemConfig.common.intro[instance.id] !== instance.editActive) {
                     systemConfig.common.intro[instance.id] = instance.editActive;
                     changed = true;
                 }
             }
         }
 
-        if(changed) {
-            this.socket.getObject('system.config').then((obj) => {
+        if (changed) {
+            this.socket.getObject('system.config').then(obj => {
 
                 obj.common.intro = systemConfig.common.intro;
 
                 this.socket.setObject('system.config', obj);
                 
                 this.showAlert('Updated', 'success');
-            }, (error) => {
+            }, error => {
                 console.log(error);
                 this.showAlert(error, 'error');
             });
@@ -982,14 +985,14 @@ class App extends React.Component {
 
     getCurrentTab() {
 
-        if(this.state && this.state.currentTab) {
-            if(this.state.currentTab.tab === 'tab-adapters') {
+        if (this.state && this.state.currentTab) {
+            if (this.state.currentTab.tab === 'tab-adapters') {
                 return (
                     <Adapters
 
                     />
                 );
-            } else if(this.state.currentTab.tab === 'tab-instances') {
+            } else if (this.state.currentTab.tab === 'tab-instances') {
                 return (
                     <Instances
                         ready={ this.state.formattedInstancesLoaded }
@@ -998,7 +1001,7 @@ class App extends React.Component {
                         t={ I18n.t }
                     />
                 );
-            } else if(this.state.currentTab.tab === 'tab-logs') {
+            } else if (this.state.currentTab.tab === 'tab-logs') {
                 return (
                     <Logs
                         ready={ this.state.ready }
@@ -1018,13 +1021,14 @@ class App extends React.Component {
             <Intro
                 ready={ this.state.introInstancesLoaded }
                 instances={ this.state.introInstances }
-                updateIntro={ (instances) => this.updateIntro(instances) }
+                t={I18n.t}
+                updateIntro={ instances => this.updateIntro(instances) }
             />
         );
     }
 
     handleAlertClose(event, reason) {
-        if(reason === 'clickaway') {
+        if (reason === 'clickaway') {
           return;
         }
 
@@ -1035,7 +1039,7 @@ class App extends React.Component {
 
     showAlert(message, type) {
         
-        if(type !== 'error' && type !== 'warning' && type !== 'info' && type !== 'success') {
+        if (type !== 'error' && type !== 'warning' && type !== 'info' && type !== 'success') {
             type = 'info';
         }
 
@@ -1060,7 +1064,7 @@ class App extends React.Component {
 
     handleNavigation(tab) {
 
-        if(tab) {
+        if (tab) {
             Router.doNavigate(tab)
 
             this.setState({
@@ -1068,7 +1072,7 @@ class App extends React.Component {
             });
         }
 
-        if(this.props.width === 'xs' || this.props.width === 'sm') {
+        if (this.props.width === 'xs' || this.props.width === 'sm') {
             this.handleDrawerClose();
         }
 
@@ -1076,11 +1080,11 @@ class App extends React.Component {
 
         tab = tab || this.state.currentTab.tab || '';
 
-        if(tab === 'tab-adapters') {
+        if (tab === 'tab-adapters') {
             //Todo
-        } else if(tab === 'tab-instances') {
+        } else if (tab === 'tab-instances') {
             this.getFormattedInstances();
-        } else if(tab === 'tab-intro') {
+        } else if (tab === 'tab-intro') {
             this.getIntroInstances();
         } else {
             this.getIntroInstances();
@@ -1091,15 +1095,17 @@ class App extends React.Component {
 
         const items = [];
 
-        for(const index in this.tabsInfo) {
+        for (const index in this.tabsInfo) {
             //For developing
-            if(index !== 'tab-intro' && index !== 'tab-adapters' && index !== 'tab-instances' && index !== 'tab-logs') continue;
+            if (index !== 'tab-intro' && index !== 'tab-adapters' && index !== 'tab-instances' && index !== 'tab-logs') {
+                continue;
+            }
             
             items.push(
                 <ListItem button key={ index } onClick={ () => this.handleNavigation(index) }>
                     <Grid container spacing={ 1 } alignItems="center">
                         <Grid item>
-                            <ListItemIcon style={{minWidth: 0}}>
+                            <ListItemIcon style={{ minWidth: 0 }}>
                                 { this.tabsInfo[index].icon }    
                             </ListItemIcon>
                         </Grid>
@@ -1116,9 +1122,13 @@ class App extends React.Component {
 
     async getFormattedInstances() {
 
-        if(this.state.formattedInstancesLoaded) return;
+        if (this.state.formattedInstancesLoaded) {
+            return;
+        }
 
-        if(!this.state.instances) await this.getAdapterInstances();
+        if (!this.state.instances) {
+            await this.getAdapterInstances();
+        }
         
         const instances = this.state.instances.slice();
         const formatted = {};
@@ -1130,24 +1140,35 @@ class App extends React.Component {
             b = b || {};
 
             if (a.order === undefined && b.order === undefined) {
-                if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-                if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+                if (a.name.toLowerCase() > b.name.toLowerCase()) {
+                    return 1;
+                }
+                if (a.name.toLowerCase() < b.name.toLowerCase()) {
+                    return -1;
+                }
                 return 0;
             } else if (a.order === undefined) {
                 return -1;
             } else if (b.order === undefined) {
                 return 1;
             } else {
-                if (a.order > b.order) return 1;
-                if (a.order < b.order) return -1;
-                if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-                if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+                if (a.order > b.order) {
+                    return 1;
+                }
+                if (a.order < b.order) {
+                    return -1;
+                }
+                if (a.name.toLowerCase() > b.name.toLowerCase()) {
+                    return 1;
+                }
+                if (a.name.toLowerCase() < b.name.toLowerCase()) {
+                    return -1;
+                }
                 return 0;
             }
         });
 
-        for(const key in instances) {
-
+        for (const key in instances) {
             const obj = instances[key];
             const common = (obj) ? obj.common : null;
             const objId = obj._id.split('.');
@@ -1210,14 +1231,14 @@ class App extends React.Component {
     render() {
 
         if (this.state.login) {
-            return(
+            return (
                 <ThemeProvider theme={ this.state.theme }>
                     <Login t={I18n.t} />
                 </ThemeProvider>
             );
         }
         
-        if(!this.state.ready) {
+        if (!this.state.ready) {
             return (
                 <ThemeProvider theme={ this.state.theme }>
                     <Loader theme={ this.state.themeType } />

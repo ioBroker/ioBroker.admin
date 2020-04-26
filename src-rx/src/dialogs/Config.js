@@ -28,7 +28,7 @@ class Config extends React.Component {
         const emit = window[eventFunc];
         const eventName = eventFunc === 'attachEvent' ? 'onmessage' : 'message';
 
-        emit(eventName, (event) => this.closeConfig(event), false);
+        emit(eventName, event => this.closeConfig(event), false);
     }
     
     componentWillUnmount() {
@@ -37,11 +37,11 @@ class Config extends React.Component {
         const emit = window[eventFunc];
         const eventName = eventFunc === 'detachEvent' ? 'onmessage' : 'message';
 
-        emit(eventName, (event) => this.closeConfig(event), false);
+        emit(eventName, event => this.closeConfig(event), false);
     }
 
     closeConfig(event) {
-        if(event.data === 'close' || event.message === 'close') {
+        if (event.data === 'close' || event.message === 'close') {
             Router.doNavigate('tab-instances');
         }
     }
@@ -50,7 +50,7 @@ class Config extends React.Component {
 
         const { classes } = this.props;
 
-        return(
+        return (
             <Paper className={ classes.root }>
                 <AppBar color="default" position="static">
                     <Toolbar variant="dense">

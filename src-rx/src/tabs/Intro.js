@@ -11,6 +11,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import CreateIcon from '@material-ui/icons/Create';
 
 import IntroCard from '../components/IntroCard';
+import PropTypes from "prop-types";
 
 const styles = theme => ({
     button: {
@@ -48,7 +49,7 @@ class Intro extends React.Component {
 
         const derived = {};
 
-        if(props.instances) derived.instances = props.instances;
+        if (props.instances) derived.instances = props.instances;
 
         return derived;
     }
@@ -63,7 +64,7 @@ class Intro extends React.Component {
 
         const instances = this.state.instances.slice();
 
-        for(const index in instances) {
+        for (const index in instances) {
             instances[index].editActive = instances[index].active;
         }
 
@@ -77,10 +78,10 @@ class Intro extends React.Component {
 
         const instances = this.state.instances.slice();
 
-        if(!instances) return;
+        if (!instances) return;
 
-        for(const index in instances) {
-            if(instances[index].id === id) {
+        for (const index in instances) {
+            if (instances[index].id === id) {
                 instances[index].editActive = !instances[index].editActive;
                 break;
             }
@@ -112,7 +113,7 @@ class Intro extends React.Component {
 
             if ((!this.state.edit && instance.active) || this.state.edit) {
 
-                let linkText = (instance.link) ? instance.link.replace(/^https?:\/\//, '') : '';
+                let linkText = instance.link ? instance.link.replace(/^https?:\/\//, '') : '';
                 const pos = linkText.indexOf('/');
                 if (pos !== -1) {
                     linkText = linkText.substring(0, pos);
@@ -124,6 +125,7 @@ class Intro extends React.Component {
                         image={ instance.image }
                         title={ instance.name }
                         action={{ link: instance.link, text: linkText }}
+                        t={ this.props.t }
                         color={ instance.color }
                         reveal={ instance.info }
                         edit={ this.state.edit }
@@ -184,16 +186,15 @@ class Intro extends React.Component {
     }
 
     render() {
-
-        if(!this.props.ready) {
-            return(
+        if (!this.props.ready) {
+            return (
                 <LinearProgress />
             );
         }
 
         const { classes } = this.props;
 
-        return(
+        return (
             <div>
                 <Grid
                     container
@@ -206,5 +207,22 @@ class Intro extends React.Component {
         );
     }
 }
+
+Intro.propTypes = {
+    /**
+     * Link and text
+     * {link: 'https://example.com', text: 'example.com'}
+     */
+    action: PropTypes.object,
+    children: PropTypes.node,
+    color: PropTypes.string,
+    edit: PropTypes.bool,
+    enabled: PropTypes.bool,
+    image: PropTypes.string,
+    reveal: PropTypes.node,
+    title: PropTypes.string,
+    t: PropTypes.func,
+    toggleActivation: PropTypes.func
+};
 
 export default withStyles(styles)(Intro);
