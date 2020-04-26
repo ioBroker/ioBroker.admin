@@ -16,7 +16,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Avatar from '@material-ui/core/Avatar';
 
 //import Button from '@material-ui/core/Button';
-import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
@@ -59,10 +58,7 @@ import Brightness7Icon from '@material-ui/icons/Brightness7';
 //@material-ui/lab
 import Alert from '@material-ui/lab/Alert';
 
-//Colors
-import blue from '@material-ui/core/colors/blue';
-import grey from '@material-ui/core/colors/grey';
-
+import AppDrawer from './components/AppDrawer';
 import Connecting from './components/Connecting';
 
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -106,23 +102,6 @@ const styles = theme => ({
     hide: {
         display: 'none'
     },
-    drawer: {
-        width: drawerWidth,
-        flexShrink: 0
-    },
-    drawerPaper: {
-        width: 'inherit',
-        [theme.breakpoints.down('sm')]: {
-            width: '100%'
-        }
-    },
-    drawerHeader: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: theme.spacing(0, 1),
-      ...theme.mixins.toolbar,
-      justifyContent: 'flex-end',
-    },
     content: {
         flexGrow: 1,
         padding: theme.spacing(2),
@@ -130,10 +109,12 @@ const styles = theme => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        marginLeft: -drawerWidth,
         marginTop: theme.mixins.toolbar.minHeight,
         overflowY: 'auto',
         /*backgroundColor: grey[200]*/
+    },
+    contentMargin: {
+        marginLeft: -drawerWidth,
     },
     contentShift: {
       transition: theme.transitions.create('margin', {
@@ -151,6 +132,7 @@ class App extends React.Component {
         super(props);
 
         window.alert = message => {
+
             console.log(message);
 
             if (message.toLowerCase().includes('error')) {
@@ -360,6 +342,7 @@ class App extends React.Component {
             const logs = [];
 
             for (const i in lines) {
+
                 const line = lines[i];
 
                 const time = line.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/);
@@ -1169,6 +1152,7 @@ class App extends React.Component {
         });
 
         for (const key in instances) {
+
             const obj = instances[key];
             const common = (obj) ? obj.common : null;
             const objId = obj._id.split('.');
@@ -1195,8 +1179,9 @@ class App extends React.Component {
                 }
                 
                 if (this.state.states[instance.id + '.info.connection'] || this.state.objects[instance.id + '.info.connection']) {
+                    
                     const val = this.state.states[instance.id + '.info.connection'] ? this.state.states[instance.id + '.info.connection'].val : false;
-
+                    
                     if (!val) {
                         state = state === 'red' ? 'red' : 'orange';
                     }
@@ -1233,7 +1218,7 @@ class App extends React.Component {
         if (this.state.login) {
             return (
                 <ThemeProvider theme={ this.state.theme }>
-                    <Login t={I18n.t} />
+                    <Login t={ I18n.t } />
                 </ThemeProvider>
             );
         }
@@ -1247,6 +1232,7 @@ class App extends React.Component {
         }
 
         const { classes } = this.props;
+        const small = this.props.width === 'xs' || this.props.width === 'sm';
 
         return (
             <ThemeProvider theme={ this.state.theme }>
@@ -1254,12 +1240,12 @@ class App extends React.Component {
                     <AppBar
                         color="default"
                         position="fixed"
-                        className={ clsx(classes.appBar, {[classes.appBarShift]: this.state.drawerOpen}) }
+                        className={ clsx(classes.appBar, {[classes.appBarShift]: !small && this.state.drawerOpen}) }
                     >
                         <Toolbar>
                             <IconButton
                                 edge="start"
-                                className={ clsx(classes.menuButton, this.state.drawerOpen && classes.hide) }
+                                className={ clsx(classes.menuButton, !small && this.state.drawerOpen && classes.hide) }
                                 onClick={ () => this.handleDrawerOpen() }
                             >
                                 <MenuIcon />
@@ -1296,28 +1282,29 @@ class App extends React.Component {
                             </Grid>
                         </Toolbar>
                     </AppBar>
-                    <Drawer
-                        className={ classes.drawer }
-                        variant="persistent"
-                        anchor="left"
+                    <AppDrawer
                         open={ this.state.drawerOpen }
-                        classes={{
-                        paper: classes.drawerPaper,
-                        }}
+                        onClose={ () => this.handleDrawerClose() }
+                        onOpen={ () => this.handleDrawerOpen() }
                     >
                         <div className={ classes.drawerHeader }>
                         <IconButton onClick={ () => this.handleDrawerClose() }>
-                            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                            { theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon /> }
                         </IconButton>
                         </div>
                         
                         <List>
                             { this.getNavigationItems() }
                         </List>
-                    </Drawer>
-                    <Paper elevation={ 0 } square  className={clsx(classes.content, {
-                            [classes.contentShift]: this.state.drawerOpen,
-                        })}>
+                    </AppDrawer>
+                    <Paper
+                        elevation={ 0 }
+                        square
+                        className={
+                            clsx(classes.content, { [classes.contentMargin]: !small,
+                            [classes.contentShift]: !small && this.state.drawerOpen })
+                        }
+                    >
                             { this.getCurrentTab() }
                     </Paper>
                     <Snackbar open={ this.state.alert } autoHideDuration={ 6000 } onClose={ () => this.handleAlertClose() }>
