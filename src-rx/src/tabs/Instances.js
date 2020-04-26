@@ -36,6 +36,7 @@ import red from '@material-ui/core/colors/red';
 import Router from '@iobroker/adapter-react/Components/Router';
 
 import Config from '../dialogs/Config';
+import PropTypes from "prop-types";
 
 const styles = theme => ({
     table: {
@@ -384,5 +385,16 @@ class Instances extends React.Component {
         );
     }
 }
+
+Instances.propTypes = {
+    /**
+     * Link and text
+     * {link: 'https://example.com', text: 'example.com'}
+     */
+    ready: PropTypes.bool,
+    instances: PropTypes.object,
+    extendObject: PropTypes.func,
+    t: PropTypes.func,
+};
 
 export default withWidth()(withStyles(styles)(Instances));

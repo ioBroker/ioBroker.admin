@@ -11,11 +11,11 @@ import Loader from '@iobroker/adapter-react/Components/Loader';
 import I18n from '@iobroker/adapter-react/i18n';
 import Router from '@iobroker/adapter-react/Components/Router';
 
-//@material-ui/core
+// @material-ui/core
 import AppBar from '@material-ui/core/AppBar';
 import Avatar from '@material-ui/core/Avatar';
 
-//import Button from '@material-ui/core/Button';
+// import Button from '@material-ui/core/Button';
 import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
@@ -28,7 +28,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
-//@material-ui/icons
+// @material-ui/icons
 import AcUnitIcon from '@material-ui/icons/AcUnit';
 import AppsIcon from '@material-ui/icons/Apps';
 import ArtTrackIcon from '@material-ui/icons/ArtTrack';
@@ -50,16 +50,17 @@ import SubtitlesIcon from '@material-ui/icons/Subtitles';
 import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import FilesIcon from '@material-ui/icons/FileCopy';
 
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import Brightness5Icon from '@material-ui/icons/Brightness5';
 import Brightness6Icon from '@material-ui/icons/Brightness6';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
 
-//@material-ui/lab
+// @material-ui/lab
 import Alert from '@material-ui/lab/Alert';
 
-//Colors
+// Colors
 import blue from '@material-ui/core/colors/blue';
 import grey from '@material-ui/core/colors/grey';
 
@@ -71,10 +72,12 @@ import Utils from './Utils';
 
 import Login from './login/Login';
 
+// Tabs
 import Adapters from './tabs/Adapters';
 import Instances from './tabs/Instances';
 import Intro from './tabs/Intro';
 import Logs from './tabs/Logs';
+import Files from './tabs/Files';
 
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
@@ -261,6 +264,7 @@ class App extends React.Component {
                 'tab-fullcalendar-1':   {order: 66,   icon: <PermContactCalendarIcon />},
                 'tab-fullcalendar-2':   {order: 67,   icon: <PermContactCalendarIcon />},
                 'tab-hosts':            {order: 100,  icon: <StorageIcon />},
+                'tab-files':            {order: 110,  icon: <FilesIcon />},
             };
 
             this.formatInfo = {
@@ -812,7 +816,6 @@ class App extends React.Component {
             } else if (common.name && common.name.match(/^icons-/)) {
                 continue;
             } else if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
-
                 const instance = {};
                 const ws = (common.welcomeScreen) ? common.welcomeScreen : null;
                 
@@ -854,7 +857,7 @@ class App extends React.Component {
                 instance.id = obj._id;
                 instance.name = common.name;
                 instance.color = '';
-                instance.description =
+                instance.description = (
                     <ul>
                         <li>
                             <b>Platform: </b>
@@ -872,11 +875,11 @@ class App extends React.Component {
                             <b>NPM: </b>
                             <span>{ (this.formatInfo['NPM'] ? this.formatInfo['NPM'](hostData['NPM']) : hostData['NPM'] || ' --') }</span>
                         </li>
-                    </ul>;
+                    </ul>);
                 instance.image = (common.icon) ? common.icon : 'img/no-image.png';
                 instance.active = (deactivated.hasOwnProperty(instance.id)) ? deactivated[instance.id] : true;
                 instance.editActive = instance.active;
-                instance.info = 'Info';
+                instance.info = I18n.t('Info');
                 introInstances.push(instance);
             }
         }
@@ -907,7 +910,9 @@ class App extends React.Component {
                     // remove %%
                     placeholder = placeholder[0].replace(/%/g, '');
 
-                    if (placeholder.match(/^native_/)) placeholder = placeholder.substring(7);
+                    if (placeholder.match(/^native_/)) {
+                        placeholder = placeholder.substring(7);
+                    }
                     // like web.0_port
                     let parts;
                     if (placeholder.indexOf('_') === -1) {
@@ -918,7 +923,9 @@ class App extends React.Component {
                         if (!parts[0].match(/\.[0-9]+$/)) parts[0] += '.0';
                     }
             
-                    if (parts[1] === 'protocol') parts[1] = 'secure';
+                    if (parts[1] === 'protocol') {
+                        parts[1] = 'secure';
+                    }
                     
                     try {
                         const object = this.state.objects['system.adapter.' + parts[0]];
@@ -989,12 +996,14 @@ class App extends React.Component {
             if (this.state.currentTab.tab === 'tab-adapters') {
                 return (
                     <Adapters
+                        key="adapters"
 
                     />
                 );
             } else if (this.state.currentTab.tab === 'tab-instances') {
                 return (
                     <Instances
+                        key="instances"
                         ready={ this.state.formattedInstancesLoaded }
                         instances={ this.state.formattedInstances }
                         extendObject={ (id, data) => this.extendObject(id, data) }
@@ -1004,6 +1013,7 @@ class App extends React.Component {
             } else if (this.state.currentTab.tab === 'tab-logs') {
                 return (
                     <Logs
+                        key="logs"
                         ready={ this.state.ready }
                         logs={ this.state.logs }
                         size={ this.state.logSize }
@@ -1015,10 +1025,22 @@ class App extends React.Component {
                     />
                 );
             }
+            else if (this.state.currentTab.tab === 'tab-files') {
+                return (
+                    <Files
+                        key="files"
+                        ready={ this.state.ready }
+                        t={ I18n.t }
+                        lang={ I18n.getLanguage() }
+                        socket={ this.socket.socket }
+                    />
+                );
+            }
         }
 
         return (
             <Intro
+                key="intro"
                 ready={ this.state.introInstancesLoaded }
                 instances={ this.state.introInstances }
                 t={I18n.t}
@@ -1094,10 +1116,11 @@ class App extends React.Component {
     getNavigationItems() {
 
         const items = [];
+        const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files'];
 
         for (const index in this.tabsInfo) {
             //For developing
-            if (index !== 'tab-intro' && index !== 'tab-adapters' && index !== 'tab-instances' && index !== 'tab-logs') {
+            if (!READY_TO_USE.includes(index)) {
                 continue;
             }
             

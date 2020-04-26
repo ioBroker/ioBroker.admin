@@ -36,6 +36,7 @@ import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import amber from '@material-ui/core/colors/amber';
 import grey from '@material-ui/core/colors/grey';
 import red from '@material-ui/core/colors/red';
+import PropTypes from "prop-types";
 
 const styles = theme => ({
     root: {
@@ -496,5 +497,20 @@ class Logs extends React.Component {
         );
     }
 }
+
+Logs.propTypes = {
+    /**
+     * Link and text
+     * {link: 'https://example.com', text: 'example.com'}
+     */
+    ready: PropTypes.bool,
+    logs: PropTypes.object,
+    size: PropTypes.number,
+    socket: PropTypes.object,
+    currentHost: PropTypes.string,
+    clearLog: PropTypes.func,
+    refreshLog: PropTypes.func,
+    t: PropTypes.func,
+};
 
 export default withWidth()(withStyles(styles)(Logs));

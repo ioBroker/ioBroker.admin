@@ -12,3 +12,4 @@ src/js/words.js
 .vscode
 /src-rx/build
 /www-react
+/src-rx/package-lock.json
