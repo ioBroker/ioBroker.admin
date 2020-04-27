@@ -6,22 +6,15 @@ import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 
-const styles = theme => ({
+const styles = {
     root: {
         width: 180,
         flexShrink: 0
     },
     paper: {
         width: 'inherit'
-    },
-    header: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: theme.spacing(0, 1),
-      ...theme.mixins.toolbar,
-      justifyContent: 'flex-end',
     }
-});
+};
 
 class AppDrawer extends React.Component {
 
