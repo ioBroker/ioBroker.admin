@@ -103,6 +103,13 @@ const styles = theme => ({
     hide: {
         display: 'none'
     },
+    drawerHeader: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: theme.spacing(0, 1),
+        ...theme.mixins.toolbar,
+        justifyContent: 'flex-end',
+    },
     content: {
         flexGrow: 1,
         padding: theme.spacing(2),
@@ -757,7 +764,7 @@ class App extends React.Component {
             await this.getAdapterInstances();
         }
 
-        const deactivated = (this.state.systemConfig) ? this.state.systemConfig.common.intro : {};
+        const deactivated = (this.state.systemConfig) ? this.state.systemConfig.common.intro || {} : {};
         const instances = this.state.instances.slice();
         const introInstances = [];
 
