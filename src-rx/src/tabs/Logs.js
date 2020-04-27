@@ -77,7 +77,7 @@ const styles = theme => ({
     source: {
         width: 230
     },
-    id: {
+    pid: {
         width: 100
     },
     timestamp: {
@@ -113,6 +113,12 @@ const styles = theme => ({
             content: '',
             borderBottom: 'none'
         }
+    },
+    pauseButton: {
+        minWidth: theme.spacing(6)
+    },
+    pauseCount: {
+        color: amber[500]
     }
 });
 
@@ -382,7 +388,8 @@ class Logs extends React.Component {
 
         const { classes } = this.props;
 
-        const pauseChild = (this.state.pause === 0) ? <PauseIcon /> : <Typography>{ this.props.logs.length - this.state.pause }</Typography>;
+        const pauseChild = (this.state.pause === 0) ? <PauseIcon /> :
+            <Typography className={ classes.pauseCount }>{ this.props.logs.length - this.state.pause }</Typography>;
 
         return (
             <Paper className={ classes.root }>
@@ -401,7 +408,10 @@ class Logs extends React.Component {
                         >
                             <RefreshIcon />
                         </IconButton>
-                        <IconButton onClick={ () => this.handleLogPause() }>
+                        <IconButton
+                            className={ classes.pauseButton }
+                            onClick={ () => this.handleLogPause() }
+                        >
                             { pauseChild }
                         </IconButton>
                         <IconButton
