@@ -1,12 +1,12 @@
 import React from 'react';
 
 import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 import clsx from 'clsx';
 
 import Connection from '@iobroker/adapter-react/Connection';
-import {PROGRESS} from '@iobroker/adapter-react/Connection';
+import { PROGRESS } from '@iobroker/adapter-react/Connection';
 import Loader from '@iobroker/adapter-react/Components/Loader';
 import I18n from '@iobroker/adapter-react/i18n';
 import Router from '@iobroker/adapter-react/Components/Router';
@@ -75,8 +75,6 @@ import Intro from './tabs/Intro';
 import Logs from './tabs/Logs';
 import Files from './tabs/Files';
 
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-
 const drawerWidth = 180;
 
 const styles = theme => ({
@@ -134,13 +132,16 @@ class App extends React.Component {
 
         super(props);
 
+        String.prototype.ucFirst = function() {
+            return this.substring(0, 1).toUpperCase() + this.substring(1).toLowerCase();
+        };
+
         window.alert = message => {
-
-            console.log(message);
-
             if (message.toLowerCase().includes('error')) {
+                console.error(message);
                 this.showAlert(message, 'error');
             } else {
+                console.log(message);
                 this.showAlert(message, 'info');
             }
         };
@@ -260,13 +261,14 @@ class App extends React.Component {
         } else {
             this.state = {
                 login: true,
-                themeType: window.localStorage && window.localStorage.getItem('App.theme') ? window.localStorage.getItem('App.theme') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+                themeType: window.localStorage && window.localStorage.getItem('App.theme') ?
+                    window.localStorage.getItem('App.theme') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
             }
         }
     }
 
     componentDidMount() {
-        window.addEventListener("hashchange", () => this.handleHashChange(), false);
+        window.addEventListener('hashchange', () => this.handleHashChange(), false);
 
         this.socket = new Connection({
             port: this.getPort(),
@@ -320,7 +322,6 @@ class App extends React.Component {
                 this.showAlert(error, 'error');
             },
             onLog: message => {
-                console.log('LOG: ' + JSON.stringify(message));
 
                 const logs = (this.state.logs.length > 999) ?
                     this.state.logs.slice(1, 1000) : this.state.logs.slice();
@@ -335,7 +336,7 @@ class App extends React.Component {
     }
     
     componentWillUnmount() {
-        window.removeEventListener("hashchange", () => this.handleHashChange(), false);
+        window.removeEventListener('hashchange', () => this.handleHashChange(), false);
     }
 
     initLog() {
@@ -1007,8 +1008,7 @@ class App extends React.Component {
                         refreshLog={ () => this.initLog() }
                     />
                 );
-            }
-            else if (this.state.currentTab.tab === 'tab-files') {
+            } else if (this.state.currentTab.tab === 'tab-files') {
                 return (
                     <Files
                         key="files"
@@ -1116,7 +1116,7 @@ class App extends React.Component {
                             </ListItemIcon>
                         </Grid>
                         <Grid item>
-                            <ListItemText primary={ index } />
+                            <ListItemText primary={ I18n.t(index.replace('tab-', '').ucFirst()) } />
                         </Grid>
                     </Grid>
                 </ListItem>
