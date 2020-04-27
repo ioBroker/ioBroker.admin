@@ -29,9 +29,7 @@ class AppDrawer extends React.Component {
                     open={ this.props.open }
                     onClose={ this.props.onClose }
                     onOpen={ this.props.onOpen }
-                    classes={{
-                        paper: classes.paper,
-                    }}
+                    classes={{ paper: classes.paper, }}
                 >
                     { children }
                 </SwipeableDrawer>
@@ -43,9 +41,7 @@ class AppDrawer extends React.Component {
                     variant="persistent"
                     anchor="left"
                     open={ this.props.open }
-                    classes={{
-                        paper: classes.paper,
-                    }}
+                    classes={{ paper: classes.paper, }}
                 >
                     { children }
                 </Drawer>

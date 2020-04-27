@@ -1,6 +1,6 @@
 {
   "name": "src-rx",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "private": true,
   "dependencies": {
     "@iobroker/adapter-react": "^0.3.8",

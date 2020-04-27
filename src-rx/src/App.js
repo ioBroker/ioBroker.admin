@@ -110,6 +110,10 @@ const styles = theme => ({
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
     },
+    drawerSelected: {
+        background: theme.palette.secondary.main,
+        color: Utils.invertColor(theme.palette.secondary.main, true),
+    },
     content: {
         flexGrow: 1,
         padding: theme.spacing(2),
@@ -1108,22 +1112,26 @@ class App extends React.Component {
         const items = [];
         const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files'];
 
-        for (const index in this.tabsInfo) {
+        for (const name in this.tabsInfo) {
             //For developing
-            if (!READY_TO_USE.includes(index)) {
+            if (!READY_TO_USE.includes(name)) {
                 continue;
             }
             
             items.push(
-                <ListItem button key={ index } onClick={ () => this.handleNavigation(index) }>
+                <ListItem
+                    button
+                    key={ name }
+                    className={ clsx(this.state.currentTab && this.state.currentTab.tab === name ? this.props.classes.drawerSelected : '')}
+                    onClick={ () => this.handleNavigation(name) }>
                     <Grid container spacing={ 1 } alignItems="center">
                         <Grid item>
                             <ListItemIcon style={{ minWidth: 0 }}>
-                                { this.tabsInfo[index].icon }    
+                                { this.tabsInfo[name].icon }
                             </ListItemIcon>
                         </Grid>
                         <Grid item>
-                            <ListItemText primary={ I18n.t(index.replace('tab-', '').ucFirst()) } />
+                            <ListItemText primary={ I18n.t(name.replace('tab-', '').ucFirst()) } />
                         </Grid>
                     </Grid>
                 </ListItem>
@@ -1318,9 +1326,9 @@ class App extends React.Component {
                         onOpen={ () => this.handleDrawerOpen() }
                     >
                         <div className={ classes.drawerHeader }>
-                        <IconButton onClick={ () => this.handleDrawerClose() }>
-                            { theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon /> }
-                        </IconButton>
+                            <IconButton onClick={ () => this.handleDrawerClose() }>
+                                { theme.direction === 'ltr' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                            </IconButton>
                         </div>
                         
                         <List>
@@ -1331,11 +1339,13 @@ class App extends React.Component {
                         elevation={ 0 }
                         square
                         className={
-                            clsx(classes.content, { [classes.contentMargin]: !small,
-                            [classes.contentShift]: !small && this.state.drawerOpen })
+                            clsx(classes.content, {
+                                [classes.contentMargin]: !small,
+                                [classes.contentShift]: !small && this.state.drawerOpen
+                            })
                         }
                     >
-                            { this.getCurrentTab() }
+                        { this.getCurrentTab() }
                     </Paper>
                     <Snackbar open={ this.state.alert } autoHideDuration={ 6000 } onClose={ () => this.handleAlertClose() }>
                         <Alert onClose={ () => this.handleAlertClose() } variant="filled" severity={ this.state.alertType }>
