@@ -36,7 +36,9 @@ import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import amber from '@material-ui/core/colors/amber';
 import grey from '@material-ui/core/colors/grey';
 import red from '@material-ui/core/colors/red';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
+
+import Utils from '../Utils';
 
 const styles = theme => ({
     root: {
@@ -119,6 +121,14 @@ const styles = theme => ({
     },
     pauseCount: {
         color: amber[500]
+    },
+    downloadLogSize: {
+        color: grey[500],
+        marginLeft: theme.spacing(2)
+    },
+    downloadEntry: {
+        display: 'flex',
+        justifyContent: 'space-between'
     }
 });
 
@@ -267,13 +277,26 @@ class Logs extends React.Component {
     }
 
     getLogFiles() {
+
+        const { classes } = this.props;
+
         return this.state.logFiles.map(entry => {
             return (
                 <MenuItem
+                    className={ classes.downloadEntry }
                     key={ entry.name }
-                    onClick={ () => { this.openTab(entry.path); this.closeLogDownload() } }
+                    onClick={ () => {
+                        this.openTab(entry.path.fileName);
+                        this.closeLogDownload();
+                    } }
                 >
                     { entry.name }
+                    <Typography
+                        className={ classes.downloadLogSize }
+                        variant="caption"
+                    >
+                        { Utils.formatBytes(entry.path.size) || '-' }
+                    </Typography>
                 </MenuItem>
             );
         });
