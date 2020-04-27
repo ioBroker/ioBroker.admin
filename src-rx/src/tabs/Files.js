@@ -13,6 +13,7 @@ import Fab from '@material-ui/core/Fab';
 
 import Utils from '../Utils';
 import TextInputDialog from '../components/TextInputDialog';
+import DeleteDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 
 // Icons
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -26,8 +27,17 @@ import {FaFileCode as CssIcon} from 'react-icons/fa';
 import {FaJsSquare as JSIcon} from 'react-icons/fa';
 import {FaFolderMinus as EmptyFilterIcon} from 'react-icons/fa';
 import {FaFolderPlus as AddFolderIcon} from 'react-icons/fa';
-import {FaUpload as UploadIcon} from 'react-icons/fa';
+import {FaFileUpload as UploadIcon} from 'react-icons/fa';
+import {FaFileDownload as DownloadIcon} from 'react-icons/fa';
 import NoImage from '../assets/no-image.png';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import TextField from "@material-ui/core/TextField";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
 
 const styles = theme => ({
     root: {
@@ -60,7 +70,7 @@ const styles = theme => ({
     },
     itemNameTable: {
         display: 'inline-block',
-        width: 'calc(100% - 150px)',
+        width: 'calc(100% - 214px)', // 30 + 60 + 60 + 32 + 32
         paddingLeft: 10,
         fontSize: '1rem',
         verticalAlign: 'top',
@@ -103,6 +113,33 @@ const styles = theme => ({
         display: 'inline-block',
         width: 30,
         height: 30
+    },
+    itemDownloadButtonTable: {
+        display: 'inline-block',
+        width: 32,
+        height: 32,
+        verticalAlign: 'top',
+        padding: 0,
+        '& span': {
+            paddingTop: 9
+        },
+        '& svg': {
+            width: 14,
+            height: 14,
+            fontSize: '1rem'
+        }
+    },
+    itemDeleteButtonTable: {
+        display: 'inline-block',
+        width: 32,
+        height: 32,
+        verticalAlign: 'top',
+        padding: 0,
+        '& svg': {
+            width: 18,
+            height: 18,
+            fontSize: '1.5rem'
+        }
     },
 
 
@@ -185,6 +222,7 @@ class Files extends React.Component {
             expanded,
             addFolder: false,
             uploadFile: false,
+            deleteItem: '',
             selected: window.localStorage.getItem('files.selected') || USER_DATA,
         };
 
@@ -442,6 +480,22 @@ class Files extends React.Component {
             <div className={this.props.classes['itemName' + this.state.viewType]}>{ item.name }</div>
             {this.formatSize(item.size)}
             {this.formatAcl(item.acl)}
+            <IconButton
+                download
+                href={'files/' + item.id}
+                className={this.props.classes['itemDownloadButton' + this.state.viewType]}
+                onClick={e => {
+                    e.stopPropagation();
+                }}
+            ><DownloadIcon/></IconButton>
+            <IconButton aria-label="delete"
+                onClick={e => {
+                    e.stopPropagation();
+                    this.setState({deleteItem: item.id});
+                }}
+                className={this.props.classes['itemDeleteButton' + this.state.viewType]}>
+                <DeleteIcon fontSize="small" />
+            </IconButton>
         </div>);
     }
 
@@ -656,6 +710,61 @@ class Files extends React.Component {
         }
     }
 
+    deleteRecursive(id) {
+        return new Promise((resolve, reject) => {
+            const item = this.findItem(id);
+            if (item.folder) {
+                Promise.all(this.state.folders[id].map(item => this.deleteRecursive(item.id)))
+                    .then(() => resolve())
+                    .catch(err => reject(err));
+            } else {
+                const parts = id.split('/');
+                const adapter = parts.shift();
+                this.props.socket.emit('deleteFile', adapter, parts.join('/'), err =>
+                    err ? reject(err) : resolve());
+            }
+        });
+    }
+
+    deleteItem() {
+        const deleteItem = this.state.deleteItem;
+        this.setState({deleteItem: ''}, () =>
+            this.deleteRecursive(deleteItem)
+                .then(() => {
+                    let parentFolder = this.findFirstFolder(deleteItem);
+                    const folders = {};
+                    Object.keys(this.state.folders).forEach(name => {
+                        if (name !== parentFolder && !name.startsWith(parentFolder + '/')) {
+                            folders[name] = this.state.folders[name];
+                        }
+                    });
+                    this.setState({folders}, () =>
+                        this.browseFolders([...this.state.expanded], folders)
+                            .then(folders => this.setState({folders})));
+                })
+        );
+    }
+
+    renderDeleteDialog() {
+        if (this.state.deleteItem) {
+            return <Dialog open={true} onClose={() => this.setState({deleteItem: ''})} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">{this.props.t('Confirm deletion of %s', this.state.deleteItem.split('/').pop())}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {this.props.t('Are you sure?')}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => this.setState({deleteItem: ''})} >{this.props.t('Cancel')}</Button>
+                    <Button onClick={() => this.deleteItem()} >{this.props.t('Delete (no confirm for 5 mins')}</Button>
+                    <Button onClick={() => this.deleteItem()} color="primary">{this.props.t('Delete')}</Button>
+                </DialogActions>
+            </Dialog>;
+        } else {
+            return false;
+        }
+    }
+
     render() {
         if (!this.props.ready) {
             return (
@@ -670,6 +779,7 @@ class Files extends React.Component {
             </div>
             { this.renderInputDialog() }
             { this.renderUpload() }
+            { this.renderDeleteDialog() }
         </Paper>;
     }
 }
