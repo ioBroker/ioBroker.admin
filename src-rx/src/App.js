@@ -294,69 +294,71 @@ class App extends Router {
     }
 
     componentDidMount() {
-        this.socket = new Connection({
-            port: this.getPort(),
-            autoSubscribes: ['*', 'system.adapter.*'],
-            autoSubscribeLog: true,
-            onProgress: progress => {
-                if (progress === PROGRESS.CONNECTING) {
-                    this.setState({
-                        connected: false
+        if(!this.state.login) {
+            this.socket = new Connection({
+                port: this.getPort(),
+                autoSubscribes: ['*', 'system.adapter.*'],
+                autoSubscribeLog: true,
+                onProgress: progress => {
+                    if (progress === PROGRESS.CONNECTING) {
+                        this.setState({
+                            connected: false
+                        });
+                    } else if (progress === PROGRESS.READY) {
+                        this.setState({
+                            connected: true,
+                            progress: 100
+                        });
+                    } else {
+                        this.setState({
+                            connected: true,
+                            progress: Math.round(PROGRESS.READY / progress * 100)
+                        });
+                    }
+                },
+                onReady: async (objects, scripts) => {
+
+                    I18n.setLanguage(this.socket.systemLang);
+                    window.systemLang = this.socket.systemLang;
+
+                    this.socket.getStates(states => {
+                        this.setState({
+                            ready: true,
+                            objects: objects,
+                            states: states
+                        });
                     });
-                } else if (progress === PROGRESS.READY) {
+
+                    this.socket.subscribeObject('*', (id, obj) => this.onObjectChange(id, obj));
+                    //this.socket.subscribeState('*', (id, state) => this.onStateChange(id, state));
+
+                    await this.getSystemConfig();
+                    await this.getHosts();
+
+                    this.getTabs();
+
+                    this.handleNavigation();
+
+                    this.initLog();
+                },
+                //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
+                onError: error => {
+                    console.error(error);
+                    this.showAlert(error, 'error');
+                },
+                onLog: message => {
+
+                    const logs = (this.state.logs.length > 999) ?
+                        this.state.logs.slice(1, 1000) : this.state.logs.slice();
+                    
+                    logs.push(message);
+
                     this.setState({
-                        connected: true,
-                        progress: 100
-                    });
-                } else {
-                    this.setState({
-                        connected: true,
-                        progress: Math.round(PROGRESS.READY / progress * 100)
+                        logs: logs
                     });
                 }
-            },
-            onReady: async (objects, scripts) => {
-
-                I18n.setLanguage(this.socket.systemLang);
-                window.systemLang = this.socket.systemLang;
-
-                this.socket.getStates(states => {
-                    this.setState({
-                        ready: true,
-                        objects: objects,
-                        states: states
-                    });
-                });
-
-                this.socket.subscribeObject('*', (id, obj) => this.onObjectChange(id, obj));
-                //this.socket.subscribeState('*', (id, state) => this.onStateChange(id, state));
-
-                await this.getSystemConfig();
-                await this.getHosts();
-
-                this.getTabs();
-
-                this.handleNavigation();
-
-                this.initLog();
-            },
-            //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
-            onError: error => {
-                console.error(error);
-                this.showAlert(error, 'error');
-            },
-            onLog: message => {
-
-                const logs = (this.state.logs.length > 999) ?
-                    this.state.logs.slice(1, 1000) : this.state.logs.slice();
-                
-                logs.push(message);
-
-                this.setState({
-                    logs: logs
-                });
-            }
-        });
+            });
+        }
     }
 
     initLog() {
