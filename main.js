@@ -263,21 +263,25 @@ function writeUpdateInfo(adapter, sources) {
             oldUpdates = {};
         }
         Object.keys(sources).forEach(name => {
-            if (installed[name] && installed[name].version && sources[name].version) {
-                if (sources[name].version !== installed[name].version &&
-                    !upToDate(sources[name].version, installed[name].version)) {
-                    // Check if updates are new or already known to user
-                    if (!oldUpdates || !oldUpdates[name] || oldUpdates[name].availableVersion !== sources[name].version) {
-                        newUpdateIndicator = true;
-                    } // endIf
-                    updatesJson[name] = {
-                        availableVersion: sources[name].version,
-                        installedVersion: installed[name].version
-                    };
-                    // remove first part of the name
-                    const n = name.indexOf('.');
-                    list.push(n === -1 ? name : name.substring(n + 1));
+            try {
+                if (installed[name] && installed[name].version && sources[name].version) {
+                    if (sources[name].version !== installed[name].version &&
+                        !upToDate(sources[name].version, installed[name].version)) {
+                        // Check if updates are new or already known to user
+                        if (!oldUpdates || !oldUpdates[name] || oldUpdates[name].availableVersion !== sources[name].version) {
+                            newUpdateIndicator = true;
+                        } // endIf
+                        updatesJson[name] = {
+                            availableVersion: sources[name].version,
+                            installedVersion: installed[name].version
+                        };
+                        // remove first part of the name
+                        const n = name.indexOf('.');
+                        list.push(n === -1 ? name : name.substring(n + 1));
+                    }
                 }
+            } catch (err) {
+                adapter.log.warn('Error on version check for ' + name + ': ' + err);
             }
         });
 
