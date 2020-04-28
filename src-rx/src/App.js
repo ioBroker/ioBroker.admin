@@ -50,6 +50,7 @@ import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import FilesIcon from '@material-ui/icons/FileCopy';
+import ExpertIcon from './components/ExperIcon';
 
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import Brightness5Icon from '@material-ui/icons/Brightness5';
@@ -88,6 +89,9 @@ const styles = theme => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
+    },
+    logoWhite: {
+        background: '#FFFFFF'
     },
     appBarShift: {
       width: `calc(100% - ${drawerWidth}px)`,
@@ -134,10 +138,20 @@ const styles = theme => ({
         duration: theme.transitions.duration.enteringScreen,
       }),
       marginLeft: 0
+    },
+    expertIcon: {
+        width: 22,
+        height: 22,
+        color: theme.palette.text.disabled
+    },
+    expertIconActive: {
+        width: 22,
+        height: 22,
+        color: theme.palette.primary.main
     }
 });
 
-class App extends React.Component {
+class App extends Router {
 
     constructor(props) {
 
@@ -188,6 +202,8 @@ class App extends React.Component {
                 //---------
 
                 allTabs:        null,
+
+                expertMode:     window.localStorage.getItem('App.expertMode') === 'true',
                 
                 states:         {},
                 hosts:          [],
@@ -279,8 +295,6 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        window.addEventListener('hashchange', () => this.handleHashChange(), false);
-
         this.socket = new Connection({
             port: this.getPort(),
             autoSubscribes: ['*', 'system.adapter.*'],
@@ -345,10 +359,6 @@ class App extends React.Component {
             }
         });
     }
-    
-    componentWillUnmount() {
-        window.removeEventListener('hashchange', () => this.handleHashChange(), false);
-    }
 
     initLog() {
         this.socket.socket.emit('sendToHost', this.state.currentHost, 'getLogs', 200, lines => {
@@ -397,7 +407,7 @@ class App extends React.Component {
     /**
      * Updates the current location in the states
      */
-    handleHashChange() {
+    onHashChanged() {
         this.setState({
             location: Router.getLocation()
         });
@@ -992,7 +1002,7 @@ class App extends React.Component {
                 return (
                     <Adapters
                         key="adapters"
-
+                        expertMode={ this.state.expertMode }
                     />
                 );
             } else if (this.state.currentTab.tab === 'tab-instances') {
@@ -1001,6 +1011,7 @@ class App extends React.Component {
                         key="instances"
                         ready={ this.state.formattedInstancesLoaded }
                         instances={ this.state.formattedInstances }
+                        expertMode={ this.state.expertMode }
                         extendObject={ (id, data) => this.extendObject(id, data) }
                         t={ I18n.t }
                     />
@@ -1014,6 +1025,7 @@ class App extends React.Component {
                         size={ this.state.logSize }
                         t={ I18n.t }
                         socket={ this.socket.socket }
+                        expertMode={ this.state.expertMode }
                         currentHost={ this.state.currentHost }
                         clearLog={ () => this.clearLog() }
                         refreshLog={ () => this.initLog() }
@@ -1025,6 +1037,7 @@ class App extends React.Component {
                         key="files"
                         ready={ this.state.ready }
                         t={ I18n.t }
+                        expertMode={ this.state.expertMode }
                         lang={ I18n.getLanguage() }
                         socket={ this.socket.socket }
                     />
@@ -1308,6 +1321,14 @@ class App extends React.Component {
                                     <Brightness7Icon />
                                 }
                             </IconButton>
+                            {/*This will be removed later to settings, to not allow so easy to enable it*/}
+                            <IconButton onClick={ () => {
+                                window.localStorage.setItem('App.expertMode', !this.state.expertMode);
+                                this.setState({expertMode: !this.state.expertMode});
+                            }}>
+                                <ExpertIcon title={ I18n.t('Toggle expert mode')} active={ this.state.expertMode } className={ this.state.expertMode ? classes.expertIconActive : classes.expertIcon }/>
+                            </IconButton>
+
                             <Typography variant="h6" className={classes.title} style={{flexGrow: 1}}>
                             </Typography>
                             <Grid container spacing={ 1 } alignItems="center" style={{width: 'initial'}}>
@@ -1315,7 +1336,7 @@ class App extends React.Component {
                                     <Typography>admin</Typography>
                                 </Grid>
                                 <Grid item>
-                                    <Avatar alt="ioBroker" src="img/no-image.png" />
+                                    <Avatar className={ clsx((this.state.themeName === 'colored' || this.state.themeName === 'blue') && classes.logoWhite) } alt="ioBroker" src="img/no-image.png" />
                                 </Grid>
                             </Grid>
                         </Toolbar>

@@ -1,6 +1,6 @@
-import withWidth from "@material-ui/core/withWidth";
-import {withStyles} from "@material-ui/core/styles";
-import React, {useCallback} from 'react';
+import withWidth from '@material-ui/core/withWidth';
+import {withStyles} from '@material-ui/core/styles';
+import React from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -10,10 +10,15 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Dropzone from 'react-dropzone'
 import Fab from '@material-ui/core/Fab';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
 
 import Utils from '../Utils';
 import TextInputDialog from '../components/TextInputDialog';
-import DeleteDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 
 // Icons
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -31,13 +36,6 @@ import {FaFileUpload as UploadIcon} from 'react-icons/fa';
 import {FaFileDownload as DownloadIcon} from 'react-icons/fa';
 import NoImage from '../assets/no-image.png';
 import DeleteIcon from '@material-ui/icons/Delete';
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import TextField from "@material-ui/core/TextField";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
 
 const styles = theme => ({
     root: {
@@ -220,16 +218,26 @@ class Files extends React.Component {
             folders: {},
             filterEmpty: window.localStorage.getItem('files.empty') !== 'false',
             expanded,
+            expertMode: this.props.expertMode,
             addFolder: false,
             uploadFile: false,
             deleteItem: '',
+            marked: [],
             selected: window.localStorage.getItem('files.selected') || USER_DATA,
         };
 
         this.levelPadding = this.props.levelPadding || 20;
         this.mounted = true;
+        this.suppressDeleteConfirm = 0;
 
         this.loadFolders();
+    }
+    static getDerivedStateFromProps(props, state) {
+        if (props.expertMode !== state.expertMode) {
+            return {expertMode: props.expertMode};
+        } else {
+            return null;
+        }
     }
 
     loadFolders() {
@@ -422,7 +430,20 @@ class Files extends React.Component {
             <Icon className={ this.props.classes['itemFolderIcon' + this.state.viewType] } onClick={e => this.toggleFolder(item, e)}/>
             <div className={ clsx(this.props.classes['itemName' + this.state.viewType], this.props.classes['itemNameFolder' + this.state.viewType])}>{ item.name === USER_DATA ? this.props.t('User files') : item.name }</div>
             <div className={ this.props.classes['itemSize' + this.state.viewType]}>{ this.state.folders[item.id] ? this.state.folders[item.id].length : '' }</div>
-            {this.formatAcl(item.acl)}
+            { this.formatAcl(item.acl) }
+            <div className={ this.props.classes['itemDownloadButton' + this.state.viewType] }/>
+            { this.state.folders[item.id] && this.state.folders[item.id].length && (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/')) ? (<IconButton aria-label="delete"
+                        onClick={e => {
+                            e.stopPropagation();
+                            if (this.suppressDeleteConfirm > Date.now()) {
+                                this.deleteItem(item.id);
+                            } else {
+                                this.setState({deleteItem: item.id});
+                            }
+                        }}
+                        className={this.props.classes['itemDeleteButton' + this.state.viewType]}>
+                <DeleteIcon fontSize="small" />
+            </IconButton>) : null }
        </div>);
     }
 
@@ -488,21 +509,45 @@ class Files extends React.Component {
                     e.stopPropagation();
                 }}
             ><DownloadIcon/></IconButton>
-            <IconButton aria-label="delete"
+            {this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/') ? <IconButton aria-label="delete"
                 onClick={e => {
                     e.stopPropagation();
-                    this.setState({deleteItem: item.id});
+                    if (this.suppressDeleteConfirm > Date.now()) {
+                        this.deleteItem(item.id);
+                    } else {
+                        this.setState({deleteItem: item.id});
+                    }
                 }}
                 className={this.props.classes['itemDeleteButton' + this.state.viewType]}>
                 <DeleteIcon fontSize="small" />
-            </IconButton>
+            </IconButton> : null}
         </div>);
     }
 
     renderItems(folderId) {
+        if (folderId &&
+            folderId !== '/' &&
+            !this.state.expertMode &&
+            !folderId.startsWith(USER_DATA) &&
+            folderId !== USER_DATA &&
+            folderId !== 'vis.0' &&
+            !folderId.startsWith('vis.0/')
+        ) {
+            return null;
+        }
+
         if (this.state.folders[folderId]) {
             return this.state.folders[folderId].map(item => {
                 const res = [];
+                if (item.id &&
+                    item.id !== '/' &&
+                    !this.state.expertMode &&
+                    !item.id.startsWith(USER_DATA) &&
+                    item.id !== USER_DATA &&
+                    item.id !== 'vis.0' &&
+                    !item.id.startsWith('vis.0/')) {
+                    return;
+                }
 
                 if (item.folder) {
                     const expanded = this.state.expanded.includes(item.id);
@@ -545,7 +590,7 @@ class Files extends React.Component {
             ><RefreshIcon /></IconButton>
             <IconButton
                 edge="start"
-                disabled={this.props.expertMode ? !this.state.selected : !this.state.selected.startsWith('vis.0') && !this.state.selected.startsWith(USER_DATA)}
+                disabled={this.state.expertMode ? !this.state.selected : !this.state.selected.startsWith('vis.0') && !this.state.selected.startsWith(USER_DATA)}
                 title={this.props.t('Create folder')}
                 className={this.props.classes.menuButton}
                 color={'inherit'}
@@ -554,12 +599,14 @@ class Files extends React.Component {
             ><AddFolderIcon /></IconButton>
             <IconButton
                 edge="start"
-                disabled={this.props.expertMode ? !this.state.selected : !this.state.selected.startsWith('vis.0') && !this.state.selected.startsWith(USER_DATA)}
+                disabled={this.state.expertMode ? !this.state.selected : !this.state.selected.startsWith('vis.0') && !this.state.selected.startsWith(USER_DATA)}
                 title={this.props.t('Upload file')}
                 className={this.props.classes.menuButton}
                 color={'inherit'}
                 aria-label="upload file"
-                onClick={() => this.setState({uploadFile: true}) }
+                onClick={() => {
+                    this.setState({uploadFile: true})
+                } }
             ><UploadIcon /></IconButton>
         </Toolbar>;
     }
@@ -622,9 +669,15 @@ class Files extends React.Component {
     uploadFile(fileName, data) {
         const parts = fileName.split('/');
         const adapter = parts.shift();
-        return new Promise((resolve, reject) =>
-            this.props.socket.emit('writeFile64', adapter, parts.join('/'), btoa(String.fromCharCode(...new Uint8Array(data))), err =>
-                err ? reject(err) : resolve()));
+        return new Promise((resolve, reject) => {
+            const base64 = btoa(
+                new Uint8Array(data)
+                    .reduce((data, byte) => data + String.fromCharCode(byte), '')
+            );
+
+            this.props.socket.emit('writeFile64', adapter, parts.join('/'), base64, err =>
+                err ? reject(err) : resolve());
+        });
     }
 
     findFirstFolder(id) {
@@ -659,12 +712,12 @@ class Files extends React.Component {
                     onDragLeave={() => this.setState({uploadFile: true})}
                     onDrop={acceptedFiles => {
                         let count = acceptedFiles.length;
-                        acceptedFiles.forEach((file) => {
+                        acceptedFiles.forEach(file => {
                             const reader = new FileReader();
 
                             reader.onabort = () => console.log('file reading was aborted');
                             reader.onerror = () => console.log('file reading has failed');
-                            reader.onload = () => {
+                            reader.onload  = () => {
                                 let parentFolder = this.findFirstFolder(this.state.selected);
 
                                 if (!parentFolder) {
@@ -720,14 +773,19 @@ class Files extends React.Component {
             } else {
                 const parts = id.split('/');
                 const adapter = parts.shift();
-                this.props.socket.emit('deleteFile', adapter, parts.join('/'), err =>
-                    err ? reject(err) : resolve());
+                if (parts.length) {
+                    this.props.socket.emit('deleteFile', adapter, parts.join('/'), err =>
+                        err ? reject(err) : resolve());
+                } else {
+                    resolve();
+                }
             }
         });
     }
 
-    deleteItem() {
-        const deleteItem = this.state.deleteItem;
+    deleteItem(deleteItem) {
+        deleteItem = deleteItem || this.state.deleteItem;
+
         this.setState({deleteItem: ''}, () =>
             this.deleteRecursive(deleteItem)
                 .then(() => {
@@ -756,7 +814,10 @@ class Files extends React.Component {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => this.setState({deleteItem: ''})} >{this.props.t('Cancel')}</Button>
-                    <Button onClick={() => this.deleteItem()} >{this.props.t('Delete (no confirm for 5 mins')}</Button>
+                    <Button onClick={() => {
+                        this.suppressDeleteConfirm = new Date() + 60000 * 5;
+                        this.deleteItem();
+                    }} >{this.props.t('Delete (no confirm for 5 mins)')}</Button>
                     <Button onClick={() => this.deleteItem()} color="primary">{this.props.t('Delete')}</Button>
                 </DialogActions>
             </Dialog>;
@@ -773,9 +834,9 @@ class Files extends React.Component {
         }
 
         return <Paper className={this.props.classes.root}>
-            { this. renderToolbar() }
+            { this.renderToolbar() }
             <div className={this.props.classes.filesDiv}>
-            { this.renderItems('/') }
+                { this.renderItems('/') }
             </div>
             { this.renderInputDialog() }
             { this.renderUpload() }
