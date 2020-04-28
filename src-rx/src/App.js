@@ -890,6 +890,7 @@ class App extends Router {
                 instances={ this.state.instances }
                 hosts={ this.state.hosts }
                 hostData={ this.state.hostData }
+                systemConfig={ this.state.systemConfig }
                 t={ I18n.t }
                 updateIntro={ instances => this.updateIntro(instances) }
                 replaceLink={ (link, adapter, instance) => this.replaceLink(link, adapter, instance) }
