@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Paper from '@material-ui/core/Paper';
 
-import ObjectsBrowser from '../components/ObjectsBrowser';
+import ObjectBrowser from '../components/ObjectBrowser';
 
 const styles = theme => ({
     root: {
@@ -44,7 +44,7 @@ class Objects extends React.Component {
             );
         }
         return <Paper className={this.props.classes.root}>
-            <ObjectsBrowser
+            <ObjectBrowser
                 prefix={this.props.prefix}
                 defaultFilters={this.filters}
                 statesOnly={this.props.statesOnly}
