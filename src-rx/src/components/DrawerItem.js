@@ -53,7 +53,9 @@ DrawerItem.propTypes = {
     icon: PropTypes.object,
     onClick: PropTypes.func,
     selected: PropTypes.bool,
-    text: PropTypes.string
+    text: PropTypes.string,
+    badgeContent: PropTypes.number,
+    badgeColor: PropTypes.string
 };
 
 export default withStyles(styles)(DrawerItem);
