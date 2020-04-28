@@ -49,27 +49,20 @@ const formatInfo = {
 class Intro extends React.Component {
 
     constructor(props) {
+
         super(props);
 
         this.state = {
-            instances: Intro.getInstances(props),
+            instances: [],
             edit: false
         };
 
         this.t = props.t;
     }
 
-    static getDerivedStateFromProps(props) {
-
-        const derived = {};
-
-        if (props.instances) derived.instances = Intro.getInstances(props);
-
-        return derived;
-    }
-
     activateEditMode() {
         this.setState({
+            instances: this.getInstances(),
             edit: true
         });
     }
@@ -91,11 +84,12 @@ class Intro extends React.Component {
     toggleCard(id) {
 
         const instances = this.state.instances.slice();
-
+        
         if (!instances) return;
 
         for (const index in instances) {
             if (instances[index].id === id) {
+                
                 instances[index].editActive = !instances[index].editActive;
                 break;
             }
@@ -122,8 +116,7 @@ class Intro extends React.Component {
     }
 
     getCards() {
-
-        const cards = this.state.instances.map((instance, index) => {
+        return (this.state.edit ? this.state.instances : this.getInstances()).map((instance, index) => {
 
             if ((!this.state.edit && instance.active) || this.state.edit) {
 
@@ -153,8 +146,6 @@ class Intro extends React.Component {
                 return null;
             }
         });
-
-        return cards;
     }
 
     getButtons(classes) {
@@ -199,12 +190,11 @@ class Intro extends React.Component {
         return buttons;
     }
 
-    static getInstances(props) {
+    getInstances() {
 
-        const deactivated = (props.systemConfig) ? props.systemConfig.common.intro || {} : {};
-        const instances = props.instances ? props.instances.slice() : [];
+        const deactivated = (this.props.systemConfig) ? this.props.systemConfig.common.intro || {} : {};
+        const instances = this.props.instances ? this.props.instances.slice() : [];
         const introInstances = [];
-        const t = props.t;
 
         instances.sort((a, b) => {
             a = a && a.common;
@@ -236,7 +226,7 @@ class Intro extends React.Component {
             const objId = obj._id.split('.');
             const instanceId = objId[objId.length - 1];
 
-            if (common.name && common.name === 'admin' && common.localLink === (props.hostname || '')) {
+            if (common.name && common.name === 'admin' && common.localLink === (this.props.hostname || '')) {
                 return;
             } else if (common.name && common.name === 'web') {
                 return;
@@ -255,7 +245,7 @@ class Intro extends React.Component {
                 instance.description = common.desc[window.systemLang];
                 instance.image = (common.icon) ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
                 const link  = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
-                instance.link = props.replaceLink(link, common.name, instanceId) || '';
+                instance.link = this.props.replaceLink(link, common.name, instanceId) || '';
                 instance.active = (deactivated.hasOwnProperty(instance.id)) ? deactivated[instance.id] : true;
                 instance.editActive = instance.active;
 
@@ -274,7 +264,7 @@ class Intro extends React.Component {
         if (adapter.match(/^icons-/)) return null; // no icons
     */
 
-        const hosts = props.hosts || [];
+        const hosts = this.props.hosts || [];
 
         Object.keys(hosts).forEach(key => {
             const obj = hosts[key];
@@ -283,7 +273,7 @@ class Intro extends React.Component {
             if (common) {
                 const instance = {};
 
-                const hostData = props.hostData[obj._id];
+                const hostData = this.props.hostData[obj._id];
 
                 instance.id = obj._id;
                 instance.name = common.name;
@@ -310,7 +300,7 @@ class Intro extends React.Component {
                 instance.image = (common.icon) ? common.icon : 'img/no-image.png';
                 instance.active = (deactivated.hasOwnProperty(instance.id)) ? deactivated[instance.id] : true;
                 instance.editActive = instance.active;
-                instance.info = t('Info');
+                instance.info = this.t('Info');
                 introInstances.push(instance);
             }
         });
@@ -357,7 +347,8 @@ Intro.propTypes = {
     t: PropTypes.func,
     toggleActivation: PropTypes.func,
     instances: PropTypes.array,
-    hosts: PropTypes.array
+    hosts: PropTypes.array,
+    hostData: PropTypes.object
 };
 
 export default withStyles(styles)(Intro);
