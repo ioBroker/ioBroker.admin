@@ -207,7 +207,6 @@ class App extends Router {
 
                 instances:      null,
                 instancesLoaded: false,
-                instancesLoading: false,
 
                 objects:        {},
                 objectsLoaded:  false,
@@ -233,8 +232,6 @@ class App extends Router {
                 alertType: 'info',
                 alertMessage: '',
                 drawerOpen: this.props.width !== 'xs',
-                introInstances: [],
-                introInstancesLoaded: false,
                 formattedInstances: {},
                 formattedInstancesLoaded: false,
                 tab: null
@@ -264,15 +261,6 @@ class App extends Router {
                 'tab-fullcalendar-2':   {order: 67,   icon: <PermContactCalendarIcon />},
                 'tab-hosts':            {order: 100,  icon: <StorageIcon />},
                 'tab-files':            {order: 110,  icon: <FilesIcon />},
-            };
-
-            this.formatInfo = {
-                'Uptime':        this.formatSeconds,
-                'System uptime': this.formatSeconds,
-                'RAM':           Utils.formatRam,
-                'Speed':         Utils.formatSpeed,
-                'Disk size':     Utils.formatBytes,
-                'Disk free':     Utils.formatBytes
             };
         } else {
             this.state = {
@@ -324,6 +312,7 @@ class App extends Router {
 
                     await this.getSystemConfig();
                     await this.getHosts();
+                    this.getAdapterInstances();
 
                     this.getTabs();
 
@@ -545,7 +534,8 @@ class App extends Router {
         try {
             const instances = await this.socket.getAdapterInstances();
             this.setState({
-                instances: instances
+                instances: instances,
+                instancesLoaded: true
             });
         } catch(error) {
             console.log(error);
@@ -689,37 +679,6 @@ class App extends Router {
         }
     }*/
 
-    /**
-     * Format number in seconds to time text
-     * @param {!number} seconds
-     * @returns {String}
-     */
-    formatSeconds(seconds) {
-        const days = Math.floor(seconds / (3600 * 24));
-        seconds %= 3600 * 24;
-        let hours = Math.floor(seconds / 3600);
-        if (hours < 10) {
-            hours = '0' + hours;
-        }
-        seconds %= 3600;
-        let minutes = Math.floor(seconds / 60);
-        if (minutes < 10) {
-            minutes = '0' + minutes;
-        }
-        seconds %= 60;
-        seconds = Math.floor(seconds);
-        if (seconds < 10) {
-            seconds = '0' + seconds;
-        }
-        let text = '';
-        if (days) {
-            text += days + ' ' + I18n.t('daysShortText') + ' ';
-        }
-        text += hours + ':' + minutes + ':' + seconds;
-
-        return text;
-    }
-
     /*getUser() {
         if (!this.state.currentUser) {
             this.socket.socket.emit('authEnabled', (auth, user) => {
@@ -758,137 +717,6 @@ class App extends Router {
             //$('#current-group').html(groups.join(', '));
         }
     }*/
-
-    async getIntroInstances() {
-
-        if (this.state.introInstancesLoaded) {
-            return;
-        }
-        
-        if (!this.state.instances) {
-            await this.getAdapterInstances();
-        }
-
-        if (!this.state.instances) {
-            return;
-        }
-
-        const deactivated = (this.state.systemConfig) ? this.state.systemConfig.common.intro || {} : {};
-        const instances = this.state.instances.slice();
-        const introInstances = [];
-
-        instances.sort((a, b) => {
-            a = a && a.common;
-            b = b && b.common;
-            a = a || {};
-            b = b || {};
-
-            if (a.order === undefined && b.order === undefined) {
-                if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-                if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
-                return 0;
-            } else if (a.order === undefined) {
-                return -1;
-            } else if (b.order === undefined) {
-                return 1;
-            } else {
-                if (a.order > b.order) return 1;
-                if (a.order < b.order) return -1;
-                if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-                if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
-                return 0;
-            }
-        });
-
-        for (const key in instances) {
-
-            const obj = instances[key];
-            const common = (obj) ? obj.common : null;
-            const objId = obj._id.split('.');
-            const instanceId = objId[objId.length - 1];
-
-            if (common.name && common.name === 'admin' && common.localLink === (this.state.hostname || '')) {
-                continue;
-            } else if (common.name && common.name === 'web') {
-                continue;
-            } else if (common.name && common.name !== 'vis-web-admin' && common.name.match(/^vis-/)) {
-                continue;
-            } else if (common.name && common.name.match(/^icons-/)) {
-                continue;
-            } else if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
-                const instance = {};
-                const ws = (common.welcomeScreen) ? common.welcomeScreen : null;
-                
-                instance.id = obj._id.replace('system.adapter.', '');
-                instance.name = /*(ws && ws.name) ? ws.name :*/ (common.titleLang) ? common.titleLang[window.systemLang] : common.title;
-                instance.color = (ws && ws.color) ? ws.color : '';
-                instance.description = common.desc[window.systemLang];
-                instance.image = (common.icon) ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
-                const link  = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
-                instance.link = this.replaceLink(link, common.name, instanceId);
-                instance.active = (deactivated.hasOwnProperty(instance.id)) ? deactivated[instance.id] : true;
-                instance.editActive = instance.active;
-                introInstances.push(instance);
-            }
-        }
-
-        /*var urlText = url.replace(/^https?:\/\//, '');
-        var pos = urlText.indexOf('/');
-        if (pos !== -1) {
-            urlText = urlText.substring(0, pos);
-        }
-        if (adapter === 'admin' && urlText === location.host) return null;
-        if (adapter === 'web') return null;
-        if (adapter !== 'vis-web-admin' && adapter.match(/^vis-/)) return null; // no widgets
-        if (adapter.match(/^icons-/)) return null; // no icons
-    */
-
-        const hosts = this.state.hosts;
-
-        for (const key in hosts) {
-            const obj = hosts[key];
-            const common = (obj) ? obj.common : null;
-
-            if (common) {
-                const instance = {};
-
-                const hostData = this.state.hostData[obj._id];
-
-                instance.id = obj._id;
-                instance.name = common.name;
-                instance.color = '';
-                instance.description = (
-                    <ul>
-                        <li>
-                            <b>Platform: </b>
-                            <span>{ (this.formatInfo['Platform'] ? this.formatInfo['Platform'](hostData['Platform']) : hostData['Platform'] || ' --') }</span>
-                        </li>
-                        <li>
-                            <b>RAM: </b>
-                            <span>{ (this.formatInfo['RAM'] ? this.formatInfo['RAM'](hostData['RAM']) : hostData['RAM'] || ' --') }</span>
-                        </li>
-                        <li>
-                            <b>Node.js: </b>
-                            <span>{ (this.formatInfo['Node.js'] ? this.formatInfo['Node.js'](hostData['Node.js']) : hostData['Node.js'] || ' --') }</span>
-                        </li>
-                        <li>
-                            <b>NPM: </b>
-                            <span>{ (this.formatInfo['NPM'] ? this.formatInfo['NPM'](hostData['NPM']) : hostData['NPM'] || ' --') }</span>
-                        </li>
-                    </ul>);
-                instance.image = (common.icon) ? common.icon : 'img/no-image.png';
-                instance.active = (deactivated.hasOwnProperty(instance.id)) ? deactivated[instance.id] : true;
-                instance.editActive = instance.active;
-                instance.info = I18n.t('Info');
-                introInstances.push(instance);
-            }
-        }
-
-        this.setState({
-            introInstances: introInstances,
-            introInstancesLoaded: true
-        });
-    }
 
     replaceLink(link, adapter, instance) {
         
@@ -1058,10 +886,13 @@ class App extends Router {
         return (
             <Intro
                 key="intro"
-                ready={ this.state.introInstancesLoaded }
-                instances={ this.state.introInstances }
-                t={I18n.t}
+                ready={ this.state.instancesLoaded }
+                instances={ this.state.instances }
+                hosts={ this.state.hosts }
+                hostData={ this.state.hostData }
+                t={ I18n.t }
                 updateIntro={ instances => this.updateIntro(instances) }
+                replaceLink={ (link, adapter, instance) => this.replaceLink(link, adapter, instance) }
             />
         );
     }
@@ -1123,11 +954,11 @@ class App extends Router {
             //Todo
         } else if (tab === 'tab-instances') {
             this.getFormattedInstances();
-        } else if (tab === 'tab-intro') {
+        } /*else if (tab === 'tab-intro') {
             this.getIntroInstances();
         } else {
             this.getIntroInstances();
-        }
+        }*/
     }
 
     getNavigationItems() {
