@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 
 import clsx from 'clsx';
 
+import Badge from '@material-ui/core/Badge';
 import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -17,6 +18,9 @@ const styles = theme => ({
     selected: {
         background: theme.palette.secondary.main,
         color: Utils.invertColor(theme.palette.secondary.main, true),
+        '&:hover': {
+            color: theme.palette.text.primary
+        }
     }
 });
 
@@ -31,7 +35,9 @@ class DrawerItem extends React.Component {
                 <Grid container spacing={ 1 } alignItems="center">
                     <Grid item>
                         <ListItemIcon style={{ minWidth: 0 }}>
-                            { this.props.icon }
+                            <Badge badgeContent={ this.props.badgeContent || 0 } color={ this.props.badgeColor || 'primary' }>
+                                { this.props.icon }
+                            </Badge>
                         </ListItemIcon>
                     </Grid>
                     <Grid item>
