@@ -135,6 +135,7 @@ const styles = theme => ({
 class Logs extends React.Component {
 
     constructor(props) {
+
         super(props);
 
         Number.prototype.pad = function(size) {
@@ -163,6 +164,8 @@ class Logs extends React.Component {
         };
         
         this.t = props.t;
+
+        this.props.clearErrors();
     }
 
     componentDidMount() {
@@ -206,6 +209,10 @@ class Logs extends React.Component {
                 });
             }
         });
+    }
+
+    componentDidUpdate() {
+        this.props.clearErrors();
     }
 
     handleMessageChange(event) {
@@ -557,17 +564,14 @@ class Logs extends React.Component {
 }
 
 Logs.propTypes = {
-    /**
-     * Link and text
-     * {link: 'https://example.com', text: 'example.com'}
-     */
     ready: PropTypes.bool,
-    logs: PropTypes.object,
+    logs: PropTypes.array,
     size: PropTypes.number,
     socket: PropTypes.object,
     currentHost: PropTypes.string,
     clearLog: PropTypes.func,
     refreshLog: PropTypes.func,
+    clearErrors: PropTypes.func,
     t: PropTypes.func,
 };
 
