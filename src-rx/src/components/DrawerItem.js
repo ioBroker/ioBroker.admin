@@ -23,7 +23,6 @@ const styles = theme => ({
 class DrawerItem extends React.Component {
 
     render() {
-        console.log(this.props.selected);
         return (
             <ListItem
                 button
