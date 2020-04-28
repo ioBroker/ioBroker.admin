@@ -6,10 +6,7 @@ import PropTypes from 'prop-types';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Paper from '@material-ui/core/Paper';
 
-import SelectID from '@iobroker/adapter-react/Components/SelectID';
-
-import Utils from '../Utils';
-import TextInputDialog from '../components/TextInputDialog';
+import ObjectsBrowser from '../components/ObjectsBrowser';
 
 const styles = theme => ({
     root: {
@@ -46,9 +43,8 @@ class Objects extends React.Component {
                 <LinearProgress />
             );
         }
-
         return <Paper className={this.props.classes.root}>
-            <SelectID
+            <ObjectsBrowser
                 prefix={this.props.prefix}
                 defaultFilters={this.filters}
                 statesOnly={this.props.statesOnly}
@@ -56,14 +52,10 @@ class Objects extends React.Component {
                 connection={this.props.connection}
                 selected={this.state.selected}
                 name={this.state.name}
-                theme={this.props.theme}
+                theme={this.props.themeName}
                 onFilterChanged={filterConfig => {
                     this.filters = filterConfig;
                     window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));
-                }}
-                onSelect={(selected, name, isDouble) => {
-                    selected !== this.state.selected && this.setState({selected, name});
-                    isDouble && this.handleOk();
                 }}
             />
         </Paper>;
@@ -73,8 +65,9 @@ class Objects extends React.Component {
 Objects.propTypes = {
     t: PropTypes.func,
     lang: PropTypes.string,
-    socket: PropTypes.object,
+    connection: PropTypes.object,
     ready: PropTypes.bool,
+    themeName: PropTypes.string,
     expertMode: PropTypes.bool,
 };
 

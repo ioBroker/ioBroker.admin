@@ -1,10 +1,11 @@
 import * as React from "react";
+import PropTypes from "prop-types";
 
 function SvgExpertIcon(props) {
     return (
-        <svg viewBox="0 0 384.754 384.754" {...props}>
+        <svg viewBox="0 0 384.754 384.754" className={ props.className || ''} style={ props.style || {} }>
             <filter id="expert-neon">
-                <feFlood flood-color="#2978d0" flood-opacity="0.5" in="SourceGraphic" />
+                <feFlood floodColor={ props.glowColor || '#2978d0' } floodOpacity="0.5" in="SourceGraphic" />
                 <feComposite operator="in" in2="SourceGraphic" />
                 <feGaussianBlur stdDeviation="10" />
                 <feComponentTransfer result="glow1">
@@ -53,5 +54,12 @@ function SvgExpertIcon(props) {
         </svg>
     );
 }
+
+SvgExpertIcon.propTypes = {
+    className: PropTypes.string,
+    style: PropTypes.object,
+    glowColor: PropTypes.string,
+    active: PropTypes.bool
+};
 
 export default SvgExpertIcon;

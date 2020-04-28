@@ -5,8 +5,8 @@ import { withStyles } from '@material-ui/core/styles';
 
 import clsx from 'clsx';
 
-import Connection from '@iobroker/adapter-react/Connection';
-import { PROGRESS } from '@iobroker/adapter-react/Connection';
+import Connection from './components/Connection';
+import { PROGRESS } from './components/Connection';
 import Loader from '@iobroker/adapter-react/Components/Loader';
 import I18n from '@iobroker/adapter-react/i18n';
 import Router from '@iobroker/adapter-react/Components/Router';
@@ -75,6 +75,7 @@ import Instances from './tabs/Instances';
 import Intro from './tabs/Intro';
 import Logs from './tabs/Logs';
 import Files from './tabs/Files';
+import Objects from './tabs/Objects';
 
 const drawerWidth = 180;
 
@@ -142,12 +143,10 @@ const styles = theme => ({
     expertIcon: {
         width: 22,
         height: 22,
-        color: theme.palette.text.disabled
+        //color: theme.palette.text ? theme.palette.text.disabled : 'grey'
     },
     expertIconActive: {
-        width: 22,
-        height: 22,
-        color: theme.palette.primary.main
+        //color: theme.palette.action.active
     }
 });
 
@@ -778,6 +777,10 @@ class App extends Router {
             await this.getAdapterInstances();
         }
 
+        if (!this.state.instances) {
+            return;
+        }
+
         const deactivated = (this.state.systemConfig) ? this.state.systemConfig.common.intro || {} : {};
         const instances = this.state.instances.slice();
         const introInstances = [];
@@ -996,7 +999,6 @@ class App extends Router {
     }
 
     getCurrentTab() {
-
         if (this.state && this.state.currentTab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
                 return (
@@ -1005,7 +1007,8 @@ class App extends Router {
                         expertMode={ this.state.expertMode }
                     />
                 );
-            } else if (this.state.currentTab.tab === 'tab-instances') {
+            } else
+            if (this.state.currentTab.tab === 'tab-instances') {
                 return (
                     <Instances
                         key="instances"
@@ -1016,7 +1019,8 @@ class App extends Router {
                         t={ I18n.t }
                     />
                 );
-            } else if (this.state.currentTab.tab === 'tab-logs') {
+            } else
+            if (this.state.currentTab.tab === 'tab-logs') {
                 return (
                     <Logs
                         key="logs"
@@ -1031,7 +1035,8 @@ class App extends Router {
                         refreshLog={ () => this.initLog() }
                     />
                 );
-            } else if (this.state.currentTab.tab === 'tab-files') {
+            } else
+            if (this.state.currentTab.tab === 'tab-files') {
                 return (
                     <Files
                         key="files"
@@ -1040,6 +1045,19 @@ class App extends Router {
                         expertMode={ this.state.expertMode }
                         lang={ I18n.getLanguage() }
                         socket={ this.socket.socket }
+                    />
+                );
+            } else
+            if (this.state.currentTab.tab === 'tab-objects') {
+                return (
+                    <Objects
+                        key="objects"
+                        ready={ this.state.ready }
+                        t={ I18n.t }
+                        themeName={ this.state.themeName }
+                        expertMode={ this.state.expertMode }
+                        lang={ I18n.getLanguage() }
+                        connection={ this.socket }
                     />
                 );
             }
@@ -1123,7 +1141,7 @@ class App extends Router {
     getNavigationItems() {
 
         const items = [];
-        const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files'];
+        const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files', 'tab-objects'];
 
         for (const name in this.tabsInfo) {
             //For developing
@@ -1322,11 +1340,19 @@ class App extends Router {
                                 }
                             </IconButton>
                             {/*This will be removed later to settings, to not allow so easy to enable it*/}
-                            <IconButton onClick={ () => {
-                                window.localStorage.setItem('App.expertMode', !this.state.expertMode);
-                                this.setState({expertMode: !this.state.expertMode});
-                            }}>
-                                <ExpertIcon title={ I18n.t('Toggle expert mode')} active={ this.state.expertMode } className={ this.state.expertMode ? classes.expertIconActive : classes.expertIcon }/>
+                            <IconButton
+                                onClick={ () => {
+                                    window.localStorage.setItem('App.expertMode', !this.state.expertMode);
+                                    this.setState({expertMode: !this.state.expertMode});
+                                }}
+                                color={ this.state.expertMode ? 'secondary' : 'default' }
+                            >
+                                <ExpertIcon
+                                    title={ I18n.t('Toggle expert mode')}
+                                    glowColor={ this.getTheme().palette.secondary.main }
+                                    active={ this.state.expertMode }
+                                    className={ clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
+                                />
                             </IconButton>
 
                             <Typography variant="h6" className={classes.title} style={{flexGrow: 1}}>
