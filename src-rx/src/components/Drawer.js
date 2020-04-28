@@ -1,5 +1,6 @@
 import React from 'react';
 
+import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 
 import { Drawer as MaterialDrawer } from '@material-ui/core';
@@ -77,4 +78,4 @@ class Drawer extends React.Component {
     }
 }
 
-export default withStyles(styles)(Drawer);
+export default withWidth()(withStyles(styles)(Drawer));
