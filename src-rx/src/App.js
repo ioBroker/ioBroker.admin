@@ -60,7 +60,8 @@ import Brightness7Icon from '@material-ui/icons/Brightness7';
 // @material-ui/lab
 import Alert from '@material-ui/lab/Alert';
 
-import AppDrawer from './components/AppDrawer';
+import Drawer from './components/Drawer';
+import DrawerItem from './components/DrawerItem';
 import Connecting from './components/Connecting';
 
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -1152,22 +1153,13 @@ class App extends Router {
             }
             
             items.push(
-                <ListItem
-                    button
+                <DrawerItem
                     key={ name }
-                    className={ clsx(this.state.currentTab && this.state.currentTab.tab === name ? this.props.classes.drawerSelected : '')}
-                    onClick={ () => this.handleNavigation(name) }>
-                    <Grid container spacing={ 1 } alignItems="center">
-                        <Grid item>
-                            <ListItemIcon style={{ minWidth: 0 }}>
-                                { this.tabsInfo[name].icon }
-                            </ListItemIcon>
-                        </Grid>
-                        <Grid item>
-                            <ListItemText primary={ I18n.t(name.replace('tab-', '').ucFirst()) } />
-                        </Grid>
-                    </Grid>
-                </ListItem>
+                    className={ clsx(this.state.currentTab && this.state.currentTab.tab === name ? this.props.classes.drawerSelected : '') }
+                    onClick={ () => this.handleNavigation(name) }
+                    icon={ this.tabsInfo[name].icon }
+                    text={ I18n.t(name.replace('tab-', '').ucFirst()) }
+                />
             );
         }
 
@@ -1369,7 +1361,7 @@ class App extends Router {
                             </Grid>
                         </Toolbar>
                     </AppBar>
-                    <AppDrawer
+                    <Drawer
                         open={ this.state.drawerOpen }
                         onClose={ () => this.handleDrawerClose() }
                         onOpen={ () => this.handleDrawerOpen() }
@@ -1383,7 +1375,7 @@ class App extends Router {
                         <List>
                             { this.getNavigationItems() }
                         </List>
-                    </AppDrawer>
+                    </Drawer>
                     <Paper
                         elevation={ 0 }
                         square
