@@ -80,6 +80,37 @@ class Utils {
         // pad each with zeros and return
         return '#' + r.padStart(2, '0') + g.padStart(2, '0') + b.padStart(2, '0');
     }
+
+        /**
+     * Format number in seconds to time text
+     * @param {!number} seconds
+     * @returns {String}
+     */
+    static formatSeconds(seconds, t) {
+        const days = Math.floor(seconds / (3600 * 24));
+        seconds %= 3600 * 24;
+        let hours = Math.floor(seconds / 3600);
+        if (hours < 10) {
+            hours = '0' + hours;
+        }
+        seconds %= 3600;
+        let minutes = Math.floor(seconds / 60);
+        if (minutes < 10) {
+            minutes = '0' + minutes;
+        }
+        seconds %= 60;
+        seconds = Math.floor(seconds);
+        if (seconds < 10) {
+            seconds = '0' + seconds;
+        }
+        let text = '';
+        if (days) {
+            text += days + ' ' + t('daysShortText') + ' ';
+        }
+        text += hours + ':' + minutes + ':' + seconds;
+
+        return text;
+    }
 }
 
 export default Utils;
