@@ -1,4 +1,35 @@
 # Components
+
+## DrawerItem
+![DrawerItem (light)](docs/images/components/DrawerItem_light.png)
+![DrawerItem (dark blue)](docs/images/components/DrawerItem_darkblue.png)
+![DrawerItem (dark)](docs/images/components/DrawerItem_dark.png)
+
+### Import
+```js
+import DrawerItem from './components/DrawerItem';
+```
+
+### Props
+| Name | Default | Description
+| ------ | ------ | ------ |
+| icon |  | The icon on the left side
+| onClick |  | Function that is called when clicking
+| selected |  | Indicates whether the item is selected
+| text |  | Text to display
+| badgeContent | 0 | Content of the badge
+| badgeColor | primary | Color of the badge
+
+### Example
+```js
+<DrawerItem
+    text="Logs"
+    selected={ false }
+    badgeContent={ 11 }
+    badgeColor={ 'error' }
+/>
+```
+
 ## IntroCard
 ![IntroCard (light)](docs/images/components/IntroCard_light.png)
 ![IntroCard (dark blue)](docs/images/components/IntroCard_darkblue.png)
