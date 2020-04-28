@@ -58,7 +58,7 @@ export default function Login(props) {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    { props.t('title') }
+                    { props.t('loginTitle') }
                 </Typography>
                 { window.location.search.indexOf('error') !== -1 &&
                     <Alert severity="error">
@@ -72,7 +72,7 @@ export default function Login(props) {
                         required
                         fullWidth
                         id="username"
-                        label={ props.t('loginName') }
+                        label={ props.t('enterLogin') }
                         name="username"
                         autoComplete="username"
                         autoFocus
@@ -83,14 +83,14 @@ export default function Login(props) {
                         required
                         fullWidth
                         name="password"
-                        label={ props.t('password') }
+                        label={ props.t('enterPassword') }
                         type="password"
                         id="password"
                         autoComplete="current-password"
                     />
                     <FormControlLabel
                         control={<Checkbox id="stayloggedin" name="stayloggedin" value="remember" color="primary" />}
-                        label={ props.t('staySignedIn') }
+                        label={ props.t('Stay signed in') }
                     />
                     <input id="origin" type="hidden" name="origin" value={ window.location.search.replace('&error', '') }/>
                     <Button
