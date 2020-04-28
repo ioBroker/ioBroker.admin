@@ -219,7 +219,9 @@ class App extends Router {
                 config:         {},
 
                 //==================== Finished
+                logErrors: 0,
                 logs: [],
+                logSize: 0,
                 //=============
 
                 stateChanged: false,
@@ -327,13 +329,19 @@ class App extends Router {
                 },
                 onLog: message => {
 
+                    let error = this.state.logErrors;
                     const logs = (this.state.logs.length > 999) ?
                         this.state.logs.slice(1, 1000) : this.state.logs.slice();
                     
                     logs.push(message);
 
+                    if(message.severity === 'error') {
+                        error++;
+                    }
+
                     this.setState({
-                        logs: logs
+                        logs: logs,
+                        logErrors: error
                     });
                 }
             });
@@ -346,12 +354,17 @@ class App extends Router {
             const size = lines ? Utils.formatBytes(lines.pop()) : -1;
 
             const logs = [];
+            let error = 0;
 
             for (const i in lines) {
 
                 const line = lines[i];
 
                 const time = line.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/);
+
+                if(line.match(/\d+merror/)) {
+                    error++;
+                }
 
                 if (time && time.length > 0) {
                     
@@ -373,15 +386,25 @@ class App extends Router {
 
             this.setState({
                 logSize: size,
-                logs: logs
+                logs: logs,
+                logErrors: error
             });
         });
     }
 
     clearLog() {
+        this.clearLogErrors();
         this.setState({
             logs: []
         });
+    }
+
+    clearLogErrors() {
+        if(this.state.logErrors !== 0) {
+            this.setState({
+                logErrors: 0
+            });
+        }
     }
 
     /**
@@ -853,6 +876,7 @@ class App extends Router {
                         currentHost={ this.state.currentHost }
                         clearLog={ () => this.clearLog() }
                         refreshLog={ () => this.initLog() }
+                        clearErrors={ () => this.clearLogErrors() }
                     />
                 );
             } else
@@ -981,6 +1005,8 @@ class App extends Router {
                     icon={ this.tabsInfo[name].icon }
                     text={ I18n.t(name.replace('tab-', '').ucFirst()) }
                     selected={ this.state.currentTab && this.state.currentTab.tab === name }
+                    badgeContent={ name === 'tab-logs' ? this.state.logErrors : 0 }
+                    badgeColor={ name === 'tab-logs' ? 'error' : '' }
                 />
             );
         });
