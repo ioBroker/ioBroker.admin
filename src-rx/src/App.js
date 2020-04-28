@@ -109,17 +109,6 @@ const styles = theme => ({
     hide: {
         display: 'none'
     },
-    drawerHeader: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: theme.spacing(0, 1),
-        ...theme.mixins.toolbar,
-        justifyContent: 'flex-end',
-    },
-    drawerSelected: {
-        background: theme.palette.secondary.main,
-        color: Utils.invertColor(theme.palette.secondary.main, true),
-    },
     content: {
         flexGrow: 1,
         padding: theme.spacing(2),
@@ -1146,22 +1135,23 @@ class App extends Router {
         const items = [];
         const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files', 'tab-objects'];
 
-        for (const name in this.tabsInfo) {
+        Object.keys(this.tabsInfo).forEach(name => {
+
             //For developing
             if (!READY_TO_USE.includes(name)) {
-                continue;
+                return;
             }
             
             items.push(
                 <DrawerItem
                     key={ name }
-                    className={ clsx(this.state.currentTab && this.state.currentTab.tab === name ? this.props.classes.drawerSelected : '') }
                     onClick={ () => this.handleNavigation(name) }
                     icon={ this.tabsInfo[name].icon }
                     text={ I18n.t(name.replace('tab-', '').ucFirst()) }
+                    selected={ this.state.currentTab && this.state.currentTab.tab === name }
                 />
             );
-        }
+        });
 
         return items;
     }
@@ -1366,15 +1356,7 @@ class App extends Router {
                         onClose={ () => this.handleDrawerClose() }
                         onOpen={ () => this.handleDrawerOpen() }
                     >
-                        <div className={ classes.drawerHeader }>
-                            <IconButton onClick={ () => this.handleDrawerClose() }>
-                                { theme.direction === 'ltr' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                            </IconButton>
-                        </div>
-                        
-                        <List>
-                            { this.getNavigationItems() }
-                        </List>
+                        { this.getNavigationItems() }
                     </Drawer>
                     <Paper
                         elevation={ 0 }
