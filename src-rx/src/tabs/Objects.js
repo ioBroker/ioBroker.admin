@@ -20,10 +20,13 @@ const styles = theme => ({
 });
 
 class Objects extends React.Component {
+
     constructor(props) {
+
         super(props);
 
         this.filters = window.localStorage.getItem(this.dialogName) || '{}';
+
         try {
             this.filters = JSON.parse(this.filters);
         } catch (e) {
@@ -34,7 +37,6 @@ class Objects extends React.Component {
             selected: this.props.selected || '',
             name:     ''
         };
-
     }
 
     render() {
@@ -43,22 +45,25 @@ class Objects extends React.Component {
                 <LinearProgress />
             );
         }
-        return <Paper className={this.props.classes.root}>
-            <ObjectBrowser
-                prefix={this.props.prefix}
-                defaultFilters={this.filters}
-                statesOnly={this.props.statesOnly}
-                style={{width: '100%', height: '100%'}}
-                connection={this.props.connection}
-                selected={this.state.selected}
-                name={this.state.name}
-                theme={this.props.themeName}
-                onFilterChanged={filterConfig => {
-                    this.filters = filterConfig;
-                    window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));
-                }}
-            />
-        </Paper>;
+
+        return (
+            <Paper className={ this.props.classes.root }>
+                <ObjectBrowser
+                    prefix={ this.props.prefix }
+                    defaultFilters={ this.filters }
+                    statesOnly={ this.props.statesOnly }
+                    style={ {width: '100%', height: '100%'} }
+                    connection={ this.props.connection }
+                    selected={ this.state.selected }
+                    name={ this.state.name }
+                    theme={ this.props.themeName }
+                    onFilterChanged={ filterConfig => {
+                        this.filters = filterConfig;
+                        window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));
+                    }}
+                />
+            </Paper>
+        );
     }
 }
 
