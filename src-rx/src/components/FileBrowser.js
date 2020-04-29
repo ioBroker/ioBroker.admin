@@ -557,7 +557,7 @@ class FileBrowser extends React.Component {
                     item.id !== USER_DATA &&
                     item.id !== 'vis.0' &&
                     !item.id.startsWith('vis.0/')) {
-                    return;
+                    return null;
                 }
 
                 if (item.folder) {

@@ -40,12 +40,6 @@ class Objects extends React.Component {
     }
 
     render() {
-        if (!this.props.ready) {
-            return (
-                <LinearProgress />
-            );
-        }
-
         return (
             <Paper className={ this.props.classes.root }>
                 <ObjectBrowser
@@ -71,7 +65,6 @@ Objects.propTypes = {
     t: PropTypes.func,
     lang: PropTypes.string,
     socket: PropTypes.object,
-    ready: PropTypes.bool,
     themeName: PropTypes.string,
     expertMode: PropTypes.bool,
 };

@@ -733,28 +733,6 @@ class ObjectBrowser extends React.Component {
         this.states = {};
         this.subscribes = [];
 
-        this.props.connection.getObjects(objects => {
-            this.objects = objects;
-            const {info, root} = buildTree(this.objects, this.props);
-            this.root = root;
-            this.info = info;
-            let node = this.state.selected && findNode(this.root, this.state.selected);
-            // If selected ID is not visible, reset filter
-            if (node && !applyFilter(node, this.state.filter, this.lang, this.objects)) {
-                // reset filter
-                this.setState({filter: Object.assign({}, DEFAULT_FILTER)}, () => {
-                    applyFilter(this.root, this.state.filter, this.lang, this.objects);
-                    this.setState({loaded: true});
-                    this.state.selected && this.onSelect(this.state.selected);
-                });
-            } else {
-                applyFilter(this.root, this.state.filter, this.lang, this.objects);
-                this.setState({loaded: true});
-
-                this.state.selected && this.onSelect(this.state.selected);
-            }
-        }, true);
-
         this.texts = {
             value:   I18n.t('tooltip_value'),
             ack:     I18n.t('tooltip_ack'),
@@ -766,6 +744,30 @@ class ObjectBrowser extends React.Component {
         };
 
         this.onStateChangeBound = this.onStateChange.bind(this);
+
+        this.props.connection.getObjects(true)
+            .then(objects => {
+                this.objects = objects;
+                const {info, root} = buildTree(this.objects, this.props);
+                this.root = root;
+                this.info = info;
+                let node = this.state.selected && findNode(this.root, this.state.selected);
+
+                // If selected ID is not visible, reset filter
+                if (node && !applyFilter(node, this.state.filter, this.lang, this.objects)) {
+                    // reset filter
+                    this.setState({filter: Object.assign({}, DEFAULT_FILTER)}, () => {
+                        applyFilter(this.root, this.state.filter, this.lang, this.objects);
+                        this.setState({loaded: true});
+                        this.state.selected && this.onSelect(this.state.selected);
+                    });
+                } else {
+                    applyFilter(this.root, this.state.filter, this.lang, this.objects);
+                    this.setState({loaded: true});
+
+                    this.state.selected && this.onSelect(this.state.selected);
+                }
+            });
     }
 
     onSelect(selected, isDouble) {

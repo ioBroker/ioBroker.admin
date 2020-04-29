@@ -557,45 +557,11 @@ class App extends Router {
     }
 
     async getHosts() {
-        try {
-            const hosts = await this.socket.getHosts();
+        const hosts = await this.socket.getHosts();
 
-            const list = [];
-            const hostData = {};
-
-            for (const id in hosts) {
-
-                const obj = hosts[id];
-
-                if (obj.type === 'host') {
-                    list.push(obj);
-                }
-
-                try {
-                    const data = await new Promise((resolve, reject) => this.socket.socket.emit('sendToHost', obj._id, 'getHostInfo', null, data => {
-                        if (data === 'permissionError') {
-                            reject('May not read "getHostInfo"');
-                        } else if (!data) {
-                            reject('Cannot read "getHostInfo"');
-                        } else {
-                            resolve(data);
-                        }
-                    }));
-
-                    hostData[obj._id] = data;
-
-                } catch(error) {
-                    console.log(error);
-                }
-            }
-
-            this.setState({
-                hosts: list,
-                hostData: hostData
-            });
-        } catch(error) {
-            console.log(error);
-        }
+        this.setState({
+            hosts,
+        });
     }
 
     getTabs() {
@@ -909,7 +875,6 @@ class App extends Router {
                 return (
                     <Logs
                         key="logs"
-                        ready={ this.state.ready }
                         logs={ this.state.logs }
                         size={ this.state.logSize }
                         t={ I18n.t }
@@ -939,7 +904,6 @@ class App extends Router {
                 return (
                     <Objects
                         key="objects"
-                        ready={ this.state.ready }
                         t={ I18n.t }
                         themeName={ this.state.themeName }
                         expertMode={ this.state.expertMode }
@@ -953,16 +917,12 @@ class App extends Router {
         return (
             <Intro
                 key="intro"
-                hosts={ this.state.hosts }
                 protocol={ this.state.protocol }
                 hostname={ this.state.hostname }
                 showAlert={ (message, type) => this.showAlert(message, type) }
                 socket={ this.socket }
-                hostData={ this.state.hostData }
                 systemConfig={ this.state.systemConfig }
                 t={ I18n.t }
-                updateIntro={ instances => this.updateIntro(instances) }
-                replaceLink={ (link, adapter, instance) => this.replaceLink(link, adapter, instance) }
             />
         );
     }
