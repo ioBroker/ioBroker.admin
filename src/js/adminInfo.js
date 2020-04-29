@@ -8,6 +8,9 @@ function InfoAdapter(main) {
     this.main = main;
 
     this.checkVersion = function (smaller, bigger) {
+        if (smaller === undefined || bigger === undefined) {
+            return false;
+        }
         smaller = smaller.split('.');
         bigger = bigger.split('.');
         smaller[0] = parseInt(smaller[0], 10);
@@ -74,6 +77,26 @@ function InfoAdapter(main) {
             that.main.socket.emit('setState', 'info.0.last_popup', {val: new Date().toISOString(), ack: true});
         }
     };
+    
+    this.checkActive = function (adapterName) {
+        const instances = that.main.instances;
+        if (!instances) {
+            return false;
+        }
+        const instCreated = instances.filter(function (str) {
+            return str.includes("." + adapterName + ".");
+        });
+        if (instCreated.length === 0) {
+            return false;
+        }
+        let i;
+        for (i = 0; i < instCreated.length; i++) {
+            if (that.main.objects[instCreated[i]].common.enabled) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     this.checkConditions = function (condition, installedVersion) {
         if (condition.startsWith("equals")) {
@@ -125,6 +148,10 @@ function InfoAdapter(main) {
                                     showIt = false;
                                 } else if (adapter && condition === "!installed") {
                                     showIt = false;
+                                } else if (adapter && condition === "active") {
+                                    showIt = that.checkActive(key);
+                                } else if (adapter && condition === "!active") {
+                                    showIt = !that.checkActive(key);
                                 } else if (adapter) {
                                     showIt = that.checkConditions(condition, adapter.version);
                                 }
