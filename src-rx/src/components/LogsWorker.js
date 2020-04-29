@@ -145,6 +145,13 @@ class LogsWorker {
     }
 
     getLogs(update) {
+        if (!this.currentHost) {
+            this.promises.logs = this.promises.logs ||
+                new Promise(resolve => this.logResolve = resolve);
+
+            return this.promises.logs;
+        }
+
         if (!update && this.logs) {
             return Promise.resolve({logs: this.logs, logSize: this.logSize});
         }

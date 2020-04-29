@@ -208,11 +208,8 @@ class App extends Router {
                 systemConfig:   null,
 
                 instances:      null,
-                instancesLoaded: false,
 
                 objects:        {},
-                objectsLoaded:  false,
-                objectsLoading: false,
 
                 waitForRestart: false,
                 tabs:           null,
@@ -222,8 +219,6 @@ class App extends Router {
 
                 //==================== Finished
                 logErrors: 0,
-                logs: [],
-                logSize: 0,
                 //=============
 
                 stateChanged: false,

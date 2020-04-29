@@ -212,9 +212,18 @@ class Logs extends React.Component {
                     if (this.props.logWorker) {
                         this.props.logWorker.getLogs()
                             .then(results => {
-                                const logs = results.logs;
+                                const logs = [...results.logs];
                                 const logSize = results.logSize;
-                                this.setState({ logFiles, logs: [...logs], logSize });
+
+                                logs.forEach(item => {
+                                    if (!item.time) {
+                                        const date = new Date(item.ts);
+                                        item.time = `${date.getFullYear()}-${(date.getMonth() + 1).pad(2)}-${date.getDate().pad(2)} ` +
+                                            `${date.getHours().pad(2)}:${date.getMinutes().pad(2)}:${date.getSeconds().pad(2)}.${date.getMilliseconds().pad(3)}`;
+                                    }
+                                });
+
+                                this.setState({ logFiles, logs, logSize });
                             });
                     } else {
                         this.setState({ logFiles });
@@ -234,8 +243,16 @@ class Logs extends React.Component {
     }
 
     logHandler(newLogs) {
-        const logs = this.state.logs || [];
-        this.setState({logs: logs.concat(newLogs)});
+        const oldLogs = this.state.logs || [];
+        const logs = oldLogs.concat(newLogs);
+        logs.forEach(item => {
+            if (!item.time) {
+                const date = new Date(item.ts);
+                item.time = `${date.getFullYear()}-${(date.getMonth() + 1).pad(2)}-${date.getDate().pad(2)} ` +
+                    `${date.getHours().pad(2)}:${date.getMinutes().pad(2)}:${date.getSeconds().pad(2)}.${date.getMilliseconds().pad(3)}`;
+            }
+        });
+        this.setState({logs});
     }
 
     clearLog() {
@@ -378,9 +395,6 @@ class Logs extends React.Component {
             const row = this.state.logs[i];
             const severity = row.severity;
 
-            const date = new Date(row.ts);
-            const ts = `${date.getFullYear()}-${(date.getMonth() + 1).pad(2)}-${date.getDate().pad(2)} ` +
-                `${date.getHours().pad(2)}:${date.getMinutes().pad(2)}:${date.getSeconds().pad(2)}.${date.getMilliseconds().pad(3)}`;
             let message = row.message;
             let id = '';
 
@@ -400,7 +414,7 @@ class Logs extends React.Component {
             rows.push(
                 <TableRow
                     className={ clsx(classes.row, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow ) }
-                    key={ row._id }
+                    key={ row.key }
                     hover
                 >
                     <TableCell>
@@ -414,7 +428,7 @@ class Logs extends React.Component {
                     <TableCell
                         className={ classes[severity] }
                     >
-                        { ts }
+                        { row.time }
                     </TableCell>
                     <TableCell
                         className={ classes[severity] }
@@ -431,7 +445,9 @@ class Logs extends React.Component {
             );
         }
 
-        this.lastRowRender = Date.now();
+        if (!this.lastRowRender || Date.now() - this.lastRowRender > 1000) {
+            this.lastRowRender = Date.now();
+        }
 
         return rows;
     }
