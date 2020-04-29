@@ -169,46 +169,45 @@ class Logs extends React.Component {
     }
 
     componentDidMount() {
-        this.props.socket.emit('readLogs', (err, list) => {
+        this.props.socket.getLogsFiles()
+            .then(list => {
+                if (list && list.length) {
 
-            if (list && list.length) {
-                
-                const logFiles = [];
-                
-                list.reverse();
-                // first 2018-01-01
-                for (const i in list) {
-                    
-                    const parts = list[i].fileName.split('/');
-                    const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '')
+                    const logFiles = [];
 
-                    if (name[0] <= '9') {
-                        logFiles.push({
-                            path: list[i],
-                            name: name
-                        });
-                    }
+                    list.reverse();
+                    // first 2018-01-01
+                    list.forEach(file => {
+                        const parts = file.fileName.split('/');
+                        const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
+
+                        if (name[0] <= '9') {
+                            logFiles.push({
+                                path: file,
+                                name: name
+                            });
+                        }
+                    });
+
+                    // then restart.log ans so on
+                    list.sort();
+                    list.forEach(file => {
+                        const parts = file.fileName.split('/');
+                        const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
+
+                        if (name[0] > '9') {
+                            logFiles.push({
+                                path: file,
+                                name: name
+                            });
+                        }
+                    });
+
+                    this.setState({
+                        logFiles: logFiles
+                    });
                 }
-                // then restart.log ans so on
-                list.sort();
-                for (const i in list) {
-
-                    const parts = list[i].fileName.split('/');
-                    const name = parts.pop().replace(/iobroker\.?/, '').replace('.log', '');
-
-                    if (name[0] > '9') {
-                        logFiles.push({
-                            path: list[i],
-                            name: name
-                        });
-                    }
-                }
-
-                this.setState({
-                    logFiles: logFiles
-                });
-            }
-        });
+            });
     }
 
     componentDidUpdate() {
@@ -258,8 +257,9 @@ class Logs extends React.Component {
     }
 
     handleLogDelete() {
-        this.props.socket.emit('sendToHost', this.props.currentHost, 'delLogs', null, error =>
-            error ? window.alert(error) : this.clearLog());
+        this.props.socket.delLogs(this.props.currentHost)
+            .then(() => this.clearLog())
+            .catch(error => window.alert(error));
 
         this.closeLogDelete();
     }

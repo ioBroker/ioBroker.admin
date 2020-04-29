@@ -20,15 +20,15 @@ import {FaFolderOpen as IconOpen} from 'react-icons/fa';
 import {FaFileAlt as IconState} from 'react-icons/fa';
 import {FaFile as IconDocument} from 'react-icons/fa';
 import {MdPerson as IconExpert} from 'react-icons/md';
-import IconDefaultState from './assets/state.png';
-import IconDefaultChannel from './assets/channel.png';
-import IconDefaultDevice from './assets/device.png';
-import IconDefault from './assets/empty.png';
+import IconDefaultState from '../assets/state.png';
+import IconDefaultChannel from '../assets/channel.png';
+import IconDefaultDevice from '../assets/device.png';
+import IconDefault from '../assets/empty.png';
 
-import I18n from '../i18n';
-import Utils from './Utils';
+import I18n from '@iobroker/adapter-react/i18n';
+import Utils from '@iobroker/adapter-react/Components/Utils';
 
-import CopyContentImg from '../assets/copy-content.svg';
+import CopyContentIcon from './CopyIcon';
 
 const styles = theme => ({
     toolbar: {
@@ -714,7 +714,7 @@ const DEFAULT_FILTER = {
     expert: false
 };
 
-class ObjectsBrowser extends React.Component {
+class ObjectBrowser extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -725,7 +725,7 @@ class ObjectsBrowser extends React.Component {
             statesUpdate: 0,
         };
         this.selectedFound = false;
-        this.copyContentImg = CopyContentImg;
+        this.copyContentImg = CopyContentIcon;
         this.treeTableRef = React.createRef();
         this.mainRef = React.createRef();
         this.root = null;
@@ -1136,7 +1136,7 @@ class ObjectsBrowser extends React.Component {
     }
 }
 
-ObjectsBrowser.propTypes = {
+ObjectBrowser.propTypes = {
     classes: PropTypes.object,
     defaultFilters: PropTypes.object,
     statesOnly: PropTypes.bool,
@@ -1148,5 +1148,5 @@ ObjectsBrowser.propTypes = {
     theme: PropTypes.string,
 };
 
-export default withStyles(styles)(ObjectsBrowser);
+export default withStyles(styles)(ObjectBrowser);
 

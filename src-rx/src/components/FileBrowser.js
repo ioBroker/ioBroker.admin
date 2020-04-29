@@ -285,7 +285,8 @@ class FileBrowser extends React.Component {
             _resolve(_newFolders);
         } else {
             this.browseFolder(foldersList.shift(), _newFolders)
-                .then(() => setTimeout(() => this.browseFolders(foldersList, _newFolders, _resolve), 0));
+                .then(() => setTimeout(() => this.browseFolders(foldersList, _newFolders, _resolve), 0))
+                .catch(() => setTimeout(() => this.browseFolders(foldersList, _newFolders, _resolve), 0))
         }
     }
 
@@ -295,32 +296,36 @@ class FileBrowser extends React.Component {
             Object.keys(this.state.folders).forEach(folder => _newFolders[folder] = this.state.folders[folder]);
         }
 
-        return new Promise(resolve => {
-            if (_newFolders[folderId]) {
-                if (!_checkEmpty) {
-                    return Promise.all(_newFolders[folderId].filter(item => item.folder).map(item => this.browseFolder(item.id, _newFolders, true)))
+        if (_newFolders[folderId]) {
+            if (!_checkEmpty) {
+                return new Promise((resolve, reject) =>
+                    Promise.all(_newFolders[folderId].filter(item => item.folder).map(item =>
+                        this.browseFolder(item.id, _newFolders, true)
+                            .catch(error => {})))
                         .then(() => resolve(_newFolders))
-                } else {
-                    return resolve(_newFolders);
-                }
+                        .catch(error => reject(error)));
+            } else {
+                return Promise.resolve(_newFolders);
             }
+        }
 
-            if (!folderId || folderId === '/') {
-                this.props.socket.emit('getObjectView', 'system', 'meta', {startkey: '', endkey: '\u9999'}, (err, objs) => {
+        if (!folderId || folderId === '/') {
+            return this.props.socket.readMetaItems()
+                .then(objs => {
                     const _folders = [];
                     let userData = null;
-                    objs && objs.rows && objs.rows.forEach(obj => {
+                    objs.forEach(obj => {
                         const item = {
-                            id: obj.value._id,
-                            name: obj.value._id,
-                            title: (obj.value.common && obj.value.common.name) || obj.value._id,
+                            id: obj._id,
+                            name: obj._id,
+                            title: (obj.common && obj.common.name) || obj._id,
                             meta: true,
-                            from: obj.value.from,
-                            ts: obj.value.ts,
-                            color: obj.value.common && obj.value.common.color,
-                            icon: obj.value.common && obj.value.common.icon,
+                            from: obj.from,
+                            ts: obj.ts,
+                            color: obj.common && obj.common.color,
+                            icon: obj.common && obj.common.icon,
                             folder: true,
-                            acl: obj.value.acl,
+                            acl: obj.acl,
                             level: 0
                         };
                         if (item.id === USER_DATA) {
@@ -336,19 +341,21 @@ class FileBrowser extends React.Component {
                     _newFolders[folderId || '/'] = _folders;
 
                     if (!_checkEmpty) {
-                        return Promise.all(_folders.filter(item => item.folder).map(item => this.browseFolder(item.id, _newFolders, true)))
-                            .then(() => resolve(_newFolders))
+                        return Promise.all(_folders.filter(item => item.folder).map(item =>
+                            this.browseFolder(item.id, _newFolders, true).catch(error => {})))
+                        .then(() => _newFolders)
                     } else {
-                        resolve(_newFolders);
+                        return _newFolders;
                     }
                 });
-            } else {
-                const parts = folderId.split('/');
-                const level = parts.length;
-                const adapter = parts.shift();
-                const relPath = parts.join('/');
+        } else {
+            const parts   = folderId.split('/');
+            const level   = parts.length;
+            const adapter = parts.shift();
+            const relPath = parts.join('/');
 
-                this.props.socket.emit('readDir', adapter, relPath, (err, files) => {
+            return this.props.socket.readDir(adapter, relPath)
+                .then(files => {
                     const _folders = [];
                     files.forEach(file => {
                         const item = {
@@ -362,18 +369,18 @@ class FileBrowser extends React.Component {
                         };
                         _folders.push(item);
                     });
+
                     _folders.sort(sortFolders);
                     _newFolders[folderId] = _folders;
 
                     if (!_checkEmpty) {
                         return Promise.all(_folders.filter(item => item.folder).map(item => this.browseFolder(item.id, _newFolders, true)))
-                            .then(() => resolve(_newFolders))
+                            .then(() => _newFolders)
                     } else {
-                        resolve(_newFolders);
+                        return _newFolders;
                     }
                 });
-            }
-        });
+        }
     }
 
     toggleFolder(item, e) {
@@ -630,7 +637,7 @@ class FileBrowser extends React.Component {
                 return window.alert(this.props.t('Invalid parent folder!'));
             }
 
-            return <TextInputDialog
+            return <TextInputDialog key="inputDialog"
                 applyText={this.props.t('Create')}
                 cancelText={this.props.t('Cancel')}
                 titleText={this.props.t('Create new folder in %s', this.state.selected)}
@@ -673,15 +680,7 @@ class FileBrowser extends React.Component {
     uploadFile(fileName, data) {
         const parts = fileName.split('/');
         const adapter = parts.shift();
-        return new Promise((resolve, reject) => {
-            const base64 = btoa(
-                new Uint8Array(data)
-                    .reduce((data, byte) => data + String.fromCharCode(byte), '')
-            );
-
-            this.props.socket.emit('writeFile64', adapter, parts.join('/'), base64, err =>
-                err ? reject(err) : resolve());
-        });
+        return this.props.socket.writeFile64(adapter, parts.join('/'), data);
     }
 
     findFirstFolder(id) {
@@ -768,23 +767,18 @@ class FileBrowser extends React.Component {
     }
 
     deleteRecursive(id) {
-        return new Promise((resolve, reject) => {
-            const item = this.findItem(id);
-            if (item.folder) {
-                Promise.all(this.state.folders[id].map(item => this.deleteRecursive(item.id)))
-                    .then(() => resolve())
-                    .catch(err => reject(err));
+        const item = this.findItem(id);
+        if (item.folder) {
+            return Promise.all(this.state.folders[id].map(item => this.deleteRecursive(item.id)));
+        } else {
+            const parts = id.split('/');
+            const adapter = parts.shift();
+            if (parts.length) {
+                return this.props.socket.deleteFile(adapter, parts.join('/'));
             } else {
-                const parts = id.split('/');
-                const adapter = parts.shift();
-                if (parts.length) {
-                    this.props.socket.emit('deleteFile', adapter, parts.join('/'), err =>
-                        err ? reject(err) : resolve());
-                } else {
-                    resolve();
-                }
+                return Promise.resolve();
             }
-        });
+        }
     }
 
     deleteItem(deleteItem) {
@@ -809,7 +803,7 @@ class FileBrowser extends React.Component {
 
     renderDeleteDialog() {
         if (this.state.deleteItem) {
-            return <Dialog open={true} onClose={() => this.setState({deleteItem: ''})} aria-labelledby="form-dialog-title">
+            return <Dialog key="deleteDialog" open={true} onClose={() => this.setState({deleteItem: ''})} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">{this.props.t('Confirm deletion of %s', this.state.deleteItem.split('/').pop())}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -839,7 +833,7 @@ class FileBrowser extends React.Component {
 
         return [
             this.props.showToolbar ? this.renderToolbar() : null,
-            (<div className={this.props.classes.filesDiv}>
+            (<div key="items" className={this.props.classes.filesDiv}>
                 { this.renderItems('/') }
             </div>),
             this.props.allowUpload ? this.renderInputDialog() : null,

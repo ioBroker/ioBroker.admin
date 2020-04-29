@@ -234,8 +234,6 @@ class App extends Router {
                 alertType: 'info',
                 alertMessage: '',
                 drawerOpen: this.props.width !== 'xs',
-                formattedInstances: {},
-                formattedInstancesLoaded: false,
                 tab: null
             };
 
@@ -309,12 +307,11 @@ class App extends Router {
                         });
                     });
 
-                    this.socket.subscribeObject('*', (id, obj) => this.onObjectChange(id, obj));
-                    //this.socket.subscribeState('*', (id, state) => this.onStateChange(id, state));
+                    // this.socket.subscribeObject('*', (id, obj) => this.onObjectChange(id, obj));
+                    // this.socket.subscribeState('*', (id, state) => this.onStateChange(id, state));
 
                     await this.getSystemConfig();
                     await this.getHosts();
-                    this.getAdapterInstances();
 
                     this.getTabs();
 
@@ -332,7 +329,7 @@ class App extends Router {
                     let error = this.state.logErrors;
                     const logs = (this.state.logs.length > 999) ?
                         this.state.logs.slice(1, 1000) : this.state.logs.slice();
-                    
+
                     logs.push(message);
 
                     if(message.severity === 'error') {
@@ -349,22 +346,18 @@ class App extends Router {
     }
 
     initLog() {
-        this.socket.socket.emit('sendToHost', this.state.currentHost, 'getLogs', 200, lines => {
+        this.socket.getLogs(this.state.currentHost,200)
+            .then(lines => {
             
             const size = lines ? Utils.formatBytes(lines.pop()) : -1;
 
             const logs = [];
-            let error = 0;
 
             for (const i in lines) {
 
                 const line = lines[i];
 
                 const time = line.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/);
-
-                if(line.match(/\d+merror/)) {
-                    error++;
-                }
 
                 if (time && time.length > 0) {
                     
@@ -386,8 +379,7 @@ class App extends Router {
 
             this.setState({
                 logSize: size,
-                logs: logs,
-                logErrors: error
+                logs: logs
             });
         });
     }
@@ -553,18 +545,6 @@ class App extends Router {
         }*/
     }
 
-    async getAdapterInstances() {
-        try {
-            const instances = await this.socket.getAdapterInstances();
-            this.setState({
-                instances: instances,
-                instancesLoaded: true
-            });
-        } catch(error) {
-            console.log(error);
-        }
-    }
-
     async getSystemConfig() {
         try {
             const systemConfig = await this.socket.getObject('system.config');
@@ -702,6 +682,37 @@ class App extends Router {
         }
     }*/
 
+    /**
+     * Format number in seconds to time text
+     * @param {!number} seconds
+     * @returns {String}
+     */
+    formatSeconds(seconds) {
+        const days = Math.floor(seconds / (3600 * 24));
+        seconds %= 3600 * 24;
+        let hours = Math.floor(seconds / 3600);
+        if (hours < 10) {
+            hours = '0' + hours;
+        }
+        seconds %= 3600;
+        let minutes = Math.floor(seconds / 60);
+        if (minutes < 10) {
+            minutes = '0' + minutes;
+        }
+        seconds %= 60;
+        seconds = Math.floor(seconds);
+        if (seconds < 10) {
+            seconds = '0' + seconds;
+        }
+        let text = '';
+        if (days) {
+            text += days + ' ' + I18n.t('daysShortText') + ' ';
+        }
+        text += hours + ':' + minutes + ':' + seconds;
+
+        return text;
+    }
+
     /*getUser() {
         if (!this.state.currentUser) {
             this.socket.socket.emit('authEnabled', (auth, user) => {
@@ -741,71 +752,135 @@ class App extends Router {
         }
     }*/
 
-    replaceLink(link, adapter, instance) {
+    async getIntroInstances() {
+
+        if (this.state.introInstancesLoaded) {
+            return;
+        }
         
-        if (this.state.ready && link) {
+        if (!this.state.instances) {
+            await this.getAdapterInstances();
+        }
 
-            let placeholder = link.match(/%(\w+)%/g);
+        if (!this.state.instances) {
+            return;
+        }
 
-            if (placeholder) {
-                if (placeholder[0] === '%ip%') {
-                    link = link.replace('%ip%', this.state.hostname);
-                    link = this.replaceLink(link, adapter, instance);
-                } else if (placeholder[0] === '%protocol%') {
-                    link = link.replace('%protocol%', this.state.protocol.substr(0, this.state.protocol.length - 1));
-                    link = this.replaceLink(link, adapter, instance);
-                } else if (placeholder[0] === '%instance%') {
-                    link = link.replace('%instance%', instance);
-                    link = this.replaceLink(link, adapter, instance);
-                } else {
-                    // remove %%
-                    placeholder = placeholder[0].replace(/%/g, '');
+        const deactivated = (this.state.systemConfig) ? this.state.systemConfig.common.intro || {} : {};
+        const instances = this.state.instances.slice();
+        const introInstances = [];
 
-                    if (placeholder.match(/^native_/)) {
-                        placeholder = placeholder.substring(7);
-                    }
-                    // like web.0_port
-                    let parts;
-                    if (placeholder.indexOf('_') === -1) {
-                        parts = [adapter + '.' + instance, placeholder];
-                    } else {
-                        parts = placeholder.split('_');
-                        // add .0 if not defined
-                        if (!parts[0].match(/\.[0-9]+$/)) parts[0] += '.0';
-                    }
-            
-                    if (parts[1] === 'protocol') {
-                        parts[1] = 'secure';
-                    }
-                    
-                    try {
-                        const object = this.state.objects['system.adapter.' + parts[0]];
-                        
-                        if (link && object) {
-                            if (parts[1] === 'secure') {
-                                link = link.replace('%' + placeholder + '%', object.native[parts[1]] ? 'https' : 'http');
-                            } else {
-                                if (link.indexOf('%' + placeholder + '%') === -1) {
-                                    link = link.replace('%native_' + placeholder + '%', object.native[parts[1]]);
-                                } else {
-                                    link = link.replace('%' + placeholder + '%', object.native[parts[1]]);
-                                }
-                            }
-                        } else {
-                            console.log('Cannot get link ' + parts[1]);
-                            link = link.replace('%' + placeholder + '%', '');
-                        }
-            
-                    } catch(error) {
-                        console.log(error);
-                    }
+        instances.sort((a, b) => {
+            a = a && a.common;
+            b = b && b.common;
+            a = a || {};
+            b = b || {};
 
-                    link = this.replaceLink(link, adapter, instance);
-                }
+            if (a.order === undefined && b.order === undefined) {
+                if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+                if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+                return 0;
+            } else if (a.order === undefined) {
+                return -1;
+            } else if (b.order === undefined) {
+                return 1;
+            } else {
+                if (a.order > b.order) return 1;
+                if (a.order < b.order) return -1;
+                if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+                if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+                return 0;
+            }
+        });
+
+        for (const key in instances) {
+
+            const obj = instances[key];
+            const common = (obj) ? obj.common : null;
+            const objId = obj._id.split('.');
+            const instanceId = objId[objId.length - 1];
+
+            if (common.name && common.name === 'admin' && common.localLink === (this.state.hostname || '')) {
+                continue;
+            } else if (common.name && common.name === 'web') {
+                continue;
+            } else if (common.name && common.name !== 'vis-web-admin' && common.name.match(/^vis-/)) {
+                continue;
+            } else if (common.name && common.name.match(/^icons-/)) {
+                continue;
+            } else if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
+                const instance = {};
+                const ws = (common.welcomeScreen) ? common.welcomeScreen : null;
+                
+                instance.id = obj._id.replace('system.adapter.', '');
+                instance.name = /*(ws && ws.name) ? ws.name :*/ (common.titleLang) ? common.titleLang[window.systemLang] : common.title;
+                instance.color = (ws && ws.color) ? ws.color : '';
+                instance.description = common.desc[window.systemLang];
+                instance.image = (common.icon) ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+                const link  = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
+                instance.link = this.replaceLink(link, common.name, instanceId);
+                instance.active = (deactivated.hasOwnProperty(instance.id)) ? deactivated[instance.id] : true;
+                instance.editActive = instance.active;
+                introInstances.push(instance);
             }
         }
 
-        return link;
+        /*var urlText = url.replace(/^https?:\/\//, '');
+        var pos = urlText.indexOf('/');
+        if (pos !== -1) {
+            urlText = urlText.substring(0, pos);
+        }
+        if (adapter === 'admin' && urlText === location.host) return null;
+        if (adapter === 'web') return null;
+        if (adapter !== 'vis-web-admin' && adapter.match(/^vis-/)) return null; // no widgets
+        if (adapter.match(/^icons-/)) return null; // no icons
+    */
+
+        const hosts = this.state.hosts;
+
+        for (const key in hosts) {
+            const obj = hosts[key];
+            const common = (obj) ? obj.common : null;
+
+            if (common) {
+                const instance = {};
+
+                const hostData = this.state.hostData[obj._id];
+
+                instance.id = obj._id;
+                instance.name = common.name;
+                instance.color = '';
+                instance.description = (
+                    <ul>
+                        <li>
+                            <b>Platform: </b>
+                            <span>{ (this.formatInfo['Platform'] ? this.formatInfo['Platform'](hostData['Platform']) : hostData['Platform'] || ' --') }</span>
+                        </li>
+                        <li>
+                            <b>RAM: </b>
+                            <span>{ (this.formatInfo['RAM'] ? this.formatInfo['RAM'](hostData['RAM']) : hostData['RAM'] || ' --') }</span>
+                        </li>
+                        <li>
+                            <b>Node.js: </b>
+                            <span>{ (this.formatInfo['Node.js'] ? this.formatInfo['Node.js'](hostData['Node.js']) : hostData['Node.js'] || ' --') }</span>
+                        </li>
+                        <li>
+                            <b>NPM: </b>
+                            <span>{ (this.formatInfo['NPM'] ? this.formatInfo['NPM'](hostData['NPM']) : hostData['NPM'] || ' --') }</span>
+                        </li>
+                    </ul>);
+                instance.image = (common.icon) ? common.icon : 'img/no-image.png';
+                instance.active = (deactivated.hasOwnProperty(instance.id)) ? deactivated[instance.id] : true;
+                instance.editActive = instance.active;
+                instance.info = I18n.t('Info');
+                introInstances.push(instance);
+            }
+        }
+
+        this.setState({
+            introInstances: introInstances,
+            introInstancesLoaded: true
+        });
     }
 
     updateIntro(instances) {
@@ -855,10 +930,11 @@ class App extends Router {
                 return (
                     <Instances
                         key="instances"
-                        ready={ this.state.formattedInstancesLoaded }
-                        instances={ this.state.formattedInstances }
+                        socket={ this.socket }
+                        lang={ I18n.getLanguage() }
+                        protocol={ this.state.protocol }
+                        hostname={ this.state.hostname }
                         expertMode={ this.state.expertMode }
-                        extendObject={ (id, data) => this.extendObject(id, data) }
                         t={ I18n.t }
                     />
                 );
@@ -871,7 +947,8 @@ class App extends Router {
                         logs={ this.state.logs }
                         size={ this.state.logSize }
                         t={ I18n.t }
-                        socket={ this.socket.socket }
+                        lang={ I18n.getLanguage() }
+                        socket={ this.socket }
                         expertMode={ this.state.expertMode }
                         currentHost={ this.state.currentHost }
                         clearLog={ () => this.clearLog() }
@@ -888,7 +965,7 @@ class App extends Router {
                         t={ I18n.t }
                         expertMode={ this.state.expertMode }
                         lang={ I18n.getLanguage() }
-                        socket={ this.socket.socket }
+                        socket={ this.socket }
                     />
                 );
             } else
@@ -960,7 +1037,7 @@ class App extends Router {
     handleNavigation(tab) {
 
         if (tab) {
-            Router.doNavigate(tab)
+            Router.doNavigate(tab);
 
             this.setState({
                 currentTab: Router.getLocation()
@@ -974,16 +1051,6 @@ class App extends Router {
         this.setTitle(tab ? tab.replace('tab-', '') : this.state.currentTab.tab.replace('tab-', ''));
 
         tab = tab || this.state.currentTab.tab || '';
-
-        if (tab === 'tab-adapters') {
-            //Todo
-        } else if (tab === 'tab-instances') {
-            this.getFormattedInstances();
-        } /*else if (tab === 'tab-intro') {
-            this.getIntroInstances();
-        } else {
-            this.getIntroInstances();
-        }*/
     }
 
     getNavigationItems() {
@@ -1012,116 +1079,6 @@ class App extends Router {
         });
 
         return items;
-    }
-
-    async getFormattedInstances() {
-
-        if (this.state.formattedInstancesLoaded) {
-            return;
-        }
-
-        if (!this.state.instances) {
-            await this.getAdapterInstances();
-        }
-        
-        const instances = this.state.instances.slice();
-        const formatted = {};
-
-        instances.sort((a, b) => {
-            a = a && a.common;
-            b = b && b.common;
-            a = a || {};
-            b = b || {};
-
-            if (a.order === undefined && b.order === undefined) {
-                if (a.name.toLowerCase() > b.name.toLowerCase()) {
-                    return 1;
-                }
-                if (a.name.toLowerCase() < b.name.toLowerCase()) {
-                    return -1;
-                }
-                return 0;
-            } else if (a.order === undefined) {
-                return -1;
-            } else if (b.order === undefined) {
-                return 1;
-            } else {
-                if (a.order > b.order) {
-                    return 1;
-                }
-                if (a.order < b.order) {
-                    return -1;
-                }
-                if (a.name.toLowerCase() > b.name.toLowerCase()) {
-                    return 1;
-                }
-                if (a.name.toLowerCase() < b.name.toLowerCase()) {
-                    return -1;
-                }
-                return 0;
-            }
-        });
-
-        for (const key in instances) {
-
-            const obj = instances[key];
-            const common = (obj) ? obj.common : null;
-            const objId = obj._id.split('.');
-            const instanceId = objId[objId.length - 1];
-
-            const instance = {};
-            
-            instance.id = obj._id.replace('system.adapter.', '');
-            instance.name = (common.titleLang) ? common.titleLang[window.systemLang] : common.title;
-            instance.image = (common.icon) ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
-            const link = common.localLinks || common.localLink || '';
-            instance.link = this.replaceLink(link, common.name, instanceId);
-
-            let state = (common.mode === 'daemon') ? 'green' : 'blue';
-
-            if (common.enabled && (!common.webExtension || !obj.native.webInstance)) {
-
-                if (!this.state.states[obj._id + '.connected'] || !this.state.states[obj._id + '.connected'].val) {
-                    state = (common.mode === 'daemon') ? 'red' : 'blue';
-                }
-    
-                if (!this.state.states[obj._id + '.alive'] || !this.state.states[obj._id + '.alive'].val) {
-                    state = (common.mode === 'daemon') ? 'red' : 'blue';
-                }
-                
-                if (this.state.states[instance.id + '.info.connection'] || this.state.objects[instance.id + '.info.connection']) {
-                    
-                    const val = this.state.states[instance.id + '.info.connection'] ? this.state.states[instance.id + '.info.connection'].val : false;
-                    
-                    if (!val) {
-                        state = state === 'red' ? 'red' : 'orange';
-                    }
-                }
-            } else {
-                state = (common.mode === 'daemon') ? 'grey' : 'blue';
-            }
-
-            instance.state = state;
-
-            const isRun = common.onlyWWW || common.enabled;
-            
-            instance.canStart = !common.onlyWWW;
-            instance.config = !common.noConfig;
-            instance.isRun = isRun;
-            instance.materialize = common.materialize || false;
-
-            formatted[obj._id] = instance;
-        }
-
-        this.setState({
-            formattedInstances: formatted,
-            formattedInstancesLoaded: true
-        });
-    }
-
-    extendObject(id, data) {
-        this.socket.socket.emit('extendObject', id, data, error =>
-            error && this.showAlert(error, 'error'));
     }
 
     render() {

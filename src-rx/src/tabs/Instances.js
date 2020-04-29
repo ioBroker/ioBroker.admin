@@ -105,17 +105,20 @@ const styles = theme => ({
     }
 });
 
+// every tab should get their data itself from server
 class Instances extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            expertmode: false,
+            expertMode: this.props.expertMode,
             runningInstances: false,
             dialog: null,
-            dialogProp: null
-        }
+            instances: null,
+            dialogProp: null,
+            states: null,
+        };
 
         this.columns = {
             instance: { onlyExpert: false},
@@ -127,16 +130,241 @@ class Instances extends React.Component {
             ramLimit: { onlyExpert: true },
             events: { onlyExpert: true },
             ram: { onlyExpert: false }
-        }
+        };
+        
+        this.promises = {};
+        this.objects = null;
+
+        this.getData();
     }
 
-    static getDerivedStateFromProps() {
-        return {
-            dialog: Router.getLocation().dialog,
-            dialogProp: Router.getLocation().id
+    getStates(update) {
+        if (update) {
+            this.promises.states = null;
         }
+        this.promises.states = this.promises.states || this.props.socket.getForeignStates('system.adapter.*');
+
+        return this.promises.states;
     }
 
+    static getDerivedStateFromProps(props, state) {
+        const location = Router.getLocation();
+        
+        const newState = {
+            dialog: location.dialog,
+            dialogProp: location.id
+        };
+        
+        if (props.expertMode !== state.expertMode) {
+            newState.expertMode = props.expertMode;
+        }
+        
+        return newState;
+    }
+
+    getObjects(update) {
+        if (update) {
+            this.promises.objects = null;
+        }
+        this.promises.objects = this.promises.objects || this.props.socket.getForeignObjects('system.adapter.*');
+        return this.promises.objects;
+    }
+
+    getAdapterInstances(update) {
+        if (update) {
+            this.promises.instances = null;
+        }
+        
+        this.promises.instances = this.promises.instances || this.props.socket.getAdapterInstances()
+            .catch(error => console.log(error));
+        
+        return this.promises.instances;
+    }
+
+    static replaceLink(link, adapter, instance, context) {
+        if (link) {
+
+            let placeholder = link.match(/%(\w+)%/g);
+
+            if (placeholder) {
+                if (placeholder[0] === '%ip%') {
+                    link = link.replace('%ip%', context.hostname);
+                    link = Instances.replaceLink(link, adapter, instance, context);
+                } else if (placeholder[0] === '%protocol%') {
+                    link = link.replace('%protocol%', context.protocol.substr(0, context.protocol.length - 1));
+                    link = Instances.replaceLink(link, adapter, instance, context);
+                } else if (placeholder[0] === '%instance%') {
+                    link = link.replace('%instance%', instance);
+                    link = Instances.replaceLink(link, adapter, instance, context);
+                } else {
+                    // remove %%
+                    placeholder = placeholder[0].replace(/%/g, '');
+
+                    if (placeholder.match(/^native_/)) {
+                        placeholder = placeholder.substring(7);
+                    }
+                    // like web.0_port
+                    let parts;
+                    if (placeholder.indexOf('_') === -1) {
+                        parts = [adapter + '.' + instance, placeholder];
+                    } else {
+                        parts = placeholder.split('_');
+                        // add .0 if not defined
+                        if (!parts[0].match(/\.[0-9]+$/)) {
+                            parts[0] += '.0';
+                        }
+                    }
+
+                    if (parts[1] === 'protocol') {
+                        parts[1] = 'secure';
+                    }
+
+                    try {
+                        const object = context.objects['system.adapter.' + parts[0]];
+
+                        if (link && object) {
+                            if (parts[1] === 'secure') {
+                                link = link.replace('%' + placeholder + '%', object.native[parts[1]] ? 'https' : 'http');
+                            } else {
+                                if (link.indexOf('%' + placeholder + '%') === -1) {
+                                    link = link.replace('%native_' + placeholder + '%', object.native[parts[1]]);
+                                } else {
+                                    link = link.replace('%' + placeholder + '%', object.native[parts[1]]);
+                                }
+                            }
+                        } else {
+                            console.log('Cannot get link ' + parts[1]);
+                            link = link.replace('%' + placeholder + '%', '');
+                        }
+
+                    } catch(error) {
+                        console.log(error);
+                    }
+
+                    link = Instances.replaceLink(link, adapter, instance, context);
+                }
+            }
+        }
+
+        return link;
+    }
+
+    getData(update) {
+        let instances;
+        let states;
+        this.getAdapterInstances(update)
+            .then(_instances => {
+                instances = _instances;
+                return this.getStates(update)
+            })
+            .then(_states => {
+                states = _states;
+                return this.getObjects();
+            })
+            .then(objects => {
+                const formatted = {};
+                this.objects = objects;
+                instances.forEach(obj => this.objects[obj._id] = obj);
+
+                instances.sort((a, b) => {
+                    a = a && a.common;
+                    b = b && b.common;
+                    a = a || {};
+                    b = b || {};
+
+                    if (a.order === undefined && b.order === undefined) {
+                        if (a.name.toLowerCase() > b.name.toLowerCase()) {
+                            return 1;
+                        }
+                        if (a.name.toLowerCase() < b.name.toLowerCase()) {
+                            return -1;
+                        }
+                        return 0;
+                    } else if (a.order === undefined) {
+                        return -1;
+                    } else if (b.order === undefined) {
+                        return 1;
+                    } else {
+                        if (a.order > b.order) {
+                            return 1;
+                        }
+                        if (a.order < b.order) {
+                            return -1;
+                        }
+                        if (a.name.toLowerCase() > b.name.toLowerCase()) {
+                            return 1;
+                        }
+                        if (a.name.toLowerCase() < b.name.toLowerCase()) {
+                            return -1;
+                        }
+                        return 0;
+                    }
+                });
+
+                instances.forEach(obj => {
+                    const common = obj ? obj.common : null;
+                    const objId = obj._id.split('.');
+                    const instanceId = objId[objId.length - 1];
+
+                    const instance = {};
+
+                    instance.id    = obj._id.replace('system.adapter.', '');
+                    instance.name  = common.titleLang ? common.titleLang[this.props.lang] : common.title;
+                    instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+                    const link     = common.localLinks || common.localLink || '';
+
+                    instance.link = Instances.replaceLink(link, common.name, instanceId, {
+                        objects,
+                        host:     this.props.hostname,
+                        protocol: this.props.protocol
+                    });
+
+                    let state = common.mode === 'daemon' ? 'green' : 'blue';
+
+                    if (common.enabled && (!common.webExtension || !obj.native.webInstance)) {
+                        if (!states[obj._id + '.connected'] || !states[obj._id + '.connected'].val) {
+                            state = (common.mode === 'daemon') ? 'red' : 'blue';
+                        }
+
+                        if (!states[obj._id + '.alive'] || !states[obj._id + '.alive'].val) {
+                            state = (common.mode === 'daemon') ? 'red' : 'blue';
+                        }
+
+                        if (objects[instance.id + '.info.connection']) {
+                            const val = states[instance.id + '.info.connection'] ? states[instance.id + '.info.connection'].val : false;
+
+                            if (!val) {
+                                state = state === 'red' ? 'red' : 'orange';
+                            }
+                        }
+                    } else {
+                        state = common.mode === 'daemon' ? 'grey' : 'blue';
+                    }
+
+                    instance.state = state;
+
+                    const isRun = common.onlyWWW || common.enabled;
+
+                    instance.canStart = !common.onlyWWW;
+                    instance.config = !common.noConfig;
+                    instance.isRun = isRun;
+                    instance.materialize = common.materialize || false;
+
+                    formatted[obj._id] = instance;
+                });
+
+                this.setState({
+                    instances: formatted,
+                    states,
+                });
+            });
+    }
+
+    extendObject(id, data) {
+        this.socket.extendObject(id, data, error =>
+            error && window.alert(error));
+    }
+    
     openConfig(instance) {
         Router.doNavigate('tab-instances', 'config', instance);
     }
@@ -149,7 +377,7 @@ class Instances extends React.Component {
 
             const column = this.columns[index];
 
-            if (!column.onlyExpert || column.onlyExpert === this.state.expertmode) {
+            if (!column.onlyExpert || column.onlyExpert === this.state.expertMode) {
                 headers.push(
                     <TableCell key={ index }>{ index }</TableCell>
                 );
@@ -161,7 +389,7 @@ class Instances extends React.Component {
 
     getRows(classes) {
 
-        const rows = this.props.instances.map(instance => {
+        const rows = this.state.instances.map(instance => {
 
             return (
                 <TableRow key={ instance.id } className={ classes.tableRow }>
@@ -228,15 +456,9 @@ class Instances extends React.Component {
     }
 
     getPanels(classes) {
-
-        const panels = [];
-        
-        for (const id in this.props.instances) {
-
-            const instance = this.props.instances[id];
-
-            panels.push(
-                <ExpansionPanel key={ instance.id } square expanded={ this.state.expanded === instance.id } onChange={ () => this.handleChange(instance.id ) }>
+        return Object.keys(this.state.instances).map(id => {
+            const instance = this.state.instances[id];
+            return <ExpansionPanel key={ instance.id } square expanded={ this.state.expanded === instance.id } onChange={ () => this.handleChange(instance.id ) }>
                     <ExpansionPanelSummary
                         expandIcon={<ExpandMoreIcon />}
                     >
@@ -320,11 +542,8 @@ class Instances extends React.Component {
                         sit amet blandit leo lobortis eget. Lorem ipsum dolor sit amet, consectetur adipiscing
                         elit. Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget.
                     </ExpansionPanelDetails>
-                </ExpansionPanel>
-            );
-        }
-
-        return panels;
+                </ExpansionPanel>;
+        });
     }
 
     handleChange(panel) {
@@ -334,8 +553,7 @@ class Instances extends React.Component {
     }
 
     render() {
-
-        if (!this.props.ready) {
+        if (!this.state.instances) {
             return (
                 <LinearProgress />
             );
@@ -345,7 +563,7 @@ class Instances extends React.Component {
 
         if (this.state.dialog === 'config' && this.state.dialogProp) {
 
-            const instance = this.props.instances[this.state.dialogProp] || null;
+            const instance = this.state.instances[this.state.dialogProp] || null;
 
             if (instance) {
                 return (
@@ -393,9 +611,12 @@ Instances.propTypes = {
      * {link: 'https://example.com', text: 'example.com'}
      */
     ready: PropTypes.bool,
-    instances: PropTypes.object,
-    extendObject: PropTypes.func,
     t: PropTypes.func,
+    expertMode: PropTypes.bool,
+    hostname: PropTypes.string,
+    protocol: PropTypes.string,
+    socket: PropTypes.object,
+    systemLang: PropTypes.string,
 };
 
 export default withWidth()(withStyles(styles)(Instances));
