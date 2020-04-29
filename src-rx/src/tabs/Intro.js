@@ -312,7 +312,7 @@ class Intro extends React.Component {
                         const link = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
                         instance.link = Utils.replaceLink(link, common.name, instanceId, {
                             objects,
-                            host:     this.props.hostname,
+                            hostname:     this.props.hostname,
                             protocol: this.props.protocol
                         }) || '';
                         instance.active = deactivated.hasOwnProperty(instance.id) ? deactivated[instance.id] : true;
