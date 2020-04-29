@@ -672,6 +672,15 @@ class Connection {
             this._socket.emit('getForeignObjects', pattern || '*', type, (err, states) =>
                 err ? reject(err) : resolve(states)));
     }
+
+    getSystemConfig(update) {
+        if (update) {
+            this.promises.systemConfig = null;
+        }
+        this.promises.systemConfig = this.promises.systemConfig || this.getObject('system.config');
+
+        return this.promises.systemConfig;
+    }
 }
 
 Connection.Connection = {

@@ -294,7 +294,7 @@ class Instances extends React.Component {
     }
 
     extendObject(id, data) {
-        this.socket.extendObject(id, data, error =>
+        this.props.socket.extendObject(id, data, error =>
             error && window.alert(error));
     }
     
@@ -344,7 +344,7 @@ class Instances extends React.Component {
                     <TableCell style={{padding: 0}}>
                         <IconButton
                             size="small"
-                            onClick={ () => this.props.extendObject('system.adapter.' + instance.id, {common: {enabled: !instance.isRun}}) }
+                            onClick={ () => this.extendObject('system.adapter.' + instance.id, {common: {enabled: !instance.isRun}}) }
                             className={ classes.button + ' ' + (instance.canStart ? instance.isRun ? classes.enabled : classes.disabled : classes.hide) }
                         >
                             { instance.isRun ? <PauseIcon /> : <PlayArrowIcon /> }
@@ -357,7 +357,7 @@ class Instances extends React.Component {
                         </IconButton>
                         <IconButton
                             size="small"
-                            onClick={ () => this.props.extendObject('system.adapter.' + instance.id, {}) }
+                            onClick={ () => this.extendObject('system.adapter.' + instance.id, {}) }
                             className={ classes.button + ' ' + (instance.canStart ? '' : classes.hide) }
                             disabled={ !instance.isRun }
                         >
@@ -421,7 +421,7 @@ class Instances extends React.Component {
                         <IconButton
                             size="small"
                             onClick={ event => {
-                                this.props.extendObject('system.adapter.' + instance.id, {common: {enabled: !instance.isRun}});
+                                this.extendObject('system.adapter.' + instance.id, {common: {enabled: !instance.isRun}});
                                 event.stopPropagation();
                             } }
                             onFocus={ event => event.stopPropagation() }
@@ -439,7 +439,7 @@ class Instances extends React.Component {
                         <IconButton
                             size="small"
                             onClick={ event => {
-                                this.props.extendObject('system.adapter.' + instance.id, {});
+                                this.extendObject('system.adapter.' + instance.id, {});
                                 event.stopPropagation();
                             } }
                             onFocus={ event => event.stopPropagation() }

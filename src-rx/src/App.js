@@ -67,6 +67,7 @@ import Connecting from './components/Connecting';
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './Theme';
 import Utils from './Utils';
+import LogWorker from './components/LogsWorker';
 
 import Login from './login/Login';
 
@@ -183,6 +184,7 @@ class App extends Router {
                 connected:      false,
                 progress:       0,
                 ready:          false,
+                lang:           'en',
 
                 //Finished
                 protocol:       this.getProtocol(),
@@ -237,6 +239,9 @@ class App extends Router {
                 tab: null
             };
 
+            this.logWorker = null;
+            this.logErrorHandlerBound = this.logErrorHandler.bind(this);
+
             this.tabsInfo = {
                 'tab-intro':            {order: 1,    icon: <AppsIcon />},
                 'tab-info':             {order: 5,    icon: <InfoIcon />,               host: true},
@@ -271,8 +276,16 @@ class App extends Router {
         }
     }
 
+    logErrorHandler(logErrors) {
+        if (logErrors !== this.state.logErrors) {
+            this.setState({
+                logErrors
+            });
+        }
+    }
+
     componentDidMount() {
-        if(!this.state.login) {
+        if (!this.state.login) {
             this.socket = new Connection({
                 port: this.getPort(),
                 autoSubscribes: ['*', 'system.adapter.*'],
@@ -295,16 +308,19 @@ class App extends Router {
                     }
                 },
                 onReady: async (objects, scripts) => {
+                    if (!this.logWorker && this.logErrorHandlerBound) {
+                        this.logWorker = new LogWorker(this.socket, 1000);
+                        this.logWorker.registerErrorCountHandler(this.logErrorHandlerBound);
+                    }
 
                     I18n.setLanguage(this.socket.systemLang);
-                    window.systemLang = this.socket.systemLang;
+                    this.setState({ lang: this.socket.systemLang });
 
-                    this.socket.getStates(states => {
-                        this.setState({
-                            ready: true,
-                            objects: objects,
-                            states: states
-                        });
+                    // TODO: It is better to collect all the attributes in state and set it with one step
+                    // now we have 4 setState calls
+                    this.setState({
+                        ready: true,
+                        objects,
                     });
 
                     // this.socket.subscribeObject('*', (id, obj) => this.onObjectChange(id, obj));
@@ -317,85 +333,22 @@ class App extends Router {
 
                     this.handleNavigation();
 
-                    this.initLog();
+                    this.logWorker && this.logWorker.setCurrentHost(this.state.currentHost);
                 },
                 //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
                 onError: error => {
                     console.error(error);
                     this.showAlert(error, 'error');
-                },
-                onLog: message => {
-
-                    let error = this.state.logErrors;
-                    const logs = (this.state.logs.length > 999) ?
-                        this.state.logs.slice(1, 1000) : this.state.logs.slice();
-
-                    logs.push(message);
-
-                    if(message.severity === 'error') {
-                        error++;
-                    }
-
-                    this.setState({
-                        logs: logs,
-                        logErrors: error
-                    });
                 }
             });
         }
     }
 
-    initLog() {
-        this.socket.getLogs(this.state.currentHost,200)
-            .then(lines => {
-            
-            const size = lines ? Utils.formatBytes(lines.pop()) : -1;
-
-            const logs = [];
-
-            for (const i in lines) {
-
-                const line = lines[i];
-
-                const time = line.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/);
-
-                if (time && time.length > 0) {
-                    
-                    const entry = {
-                        _id: i,
-                        from: line.match(/: (\D+\.\d+ \(|host\..+? )/)[0].replace(/[ :(]/g, ''),
-                        message: line.split(/\[\d+m: /)[1],
-                        severity: line.match(/\d+m(silly|debug|info|warn|error)/)[0].replace(/[\dm]/g, ''),
-                        ts: new Date(time[0]).getTime()
-                    };
-
-                    logs.push(entry);
-                } else {
-                    if (logs.length > 0) {
-                        logs[logs.length - 1].message += line;
-                    }
-                }
-            }
-
-            this.setState({
-                logSize: size,
-                logs: logs
-            });
-        });
-    }
-
-    clearLog() {
-        this.clearLogErrors();
-        this.setState({
-            logs: []
-        });
-    }
-
-    clearLogErrors() {
-        if(this.state.logErrors !== 0) {
-            this.setState({
-                logErrors: 0
-            });
+    clearLogErrors(cb) {
+        if (this.state.logErrors) {
+            this.setState({logErrors: 0}, cb);
+        } else {
+            cb && cb();
         }
     }
 
@@ -547,11 +500,9 @@ class App extends Router {
 
     async getSystemConfig() {
         try {
-            const systemConfig = await this.socket.getObject('system.config');
-            this.setState({
-                systemConfig: systemConfig
-            });
-        } catch(error) {
+            const systemConfig = await this.socket.getSystemConfig();
+            this.setState({ systemConfig });
+        } catch (error) {
             console.log(error);
         }
     }
@@ -559,9 +510,11 @@ class App extends Router {
     async getHosts() {
         const hosts = await this.socket.getHosts();
 
-        this.setState({
-            hosts,
-        });
+        if (this.state.currentHost) {
+            this.setState({ hosts });
+        } else {
+            this.setState({ hosts, currentHost: hosts[0]._id });
+        }
     }
 
     getTabs() {
@@ -587,15 +540,18 @@ class App extends Router {
             }*/
 
         if (this.state.instances) {
-            for (const instanceIndex in this.state.instances) {
+            this.state.instances.forEach(instanceIndex => {
 
                 const instance = this.state.instances[instanceIndex];
 
-                if (!instance.common || !instance.common.adminTab) continue;
+                if (!instance.common || !instance.common.adminTab) {
+                    return;
+                }
 
                 if (instance.common.adminTab.singleton) {
                     let isFound = false;
                     const inst1 = instance._id.replace(/\.(\d+)$/, '.');
+
                     for (const tabIndex in allTabs) {
                         const inst2 = allTabs[tabIndex].replace(/\.(\d+)$/, '.');
                         if (inst1 === inst2) {
@@ -603,15 +559,16 @@ class App extends Router {
                             break;
                         }
                     }
-                    if (!isFound) allTabs.push(instance._id);
+
+                    !isFound && allTabs.push(instance._id);
                 } else {
                     allTabs.push(instance._id);
                 }
-            }
+            });
         }
 
         this.setState({
-            allTabs: allTabs,
+            allTabs,
             tabs: []
         });
     }
@@ -717,137 +674,6 @@ class App extends Router {
         }
     }*/
 
-    async getIntroInstances() {
-
-        if (this.state.introInstancesLoaded) {
-            return;
-        }
-        
-        if (!this.state.instances) {
-            await this.getAdapterInstances();
-        }
-
-        if (!this.state.instances) {
-            return;
-        }
-
-        const deactivated = (this.state.systemConfig) ? this.state.systemConfig.common.intro || {} : {};
-        const instances = this.state.instances.slice();
-        const introInstances = [];
-
-        instances.sort((a, b) => {
-            a = a && a.common;
-            b = b && b.common;
-            a = a || {};
-            b = b || {};
-
-            if (a.order === undefined && b.order === undefined) {
-                if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-                if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
-                return 0;
-            } else if (a.order === undefined) {
-                return -1;
-            } else if (b.order === undefined) {
-                return 1;
-            } else {
-                if (a.order > b.order) return 1;
-                if (a.order < b.order) return -1;
-                if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-                if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
-                return 0;
-            }
-        });
-
-        for (const key in instances) {
-
-            const obj = instances[key];
-            const common = (obj) ? obj.common : null;
-            const objId = obj._id.split('.');
-            const instanceId = objId[objId.length - 1];
-
-            if (common.name && common.name === 'admin' && common.localLink === (this.state.hostname || '')) {
-                continue;
-            } else if (common.name && common.name === 'web') {
-                continue;
-            } else if (common.name && common.name !== 'vis-web-admin' && common.name.match(/^vis-/)) {
-                continue;
-            } else if (common.name && common.name.match(/^icons-/)) {
-                continue;
-            } else if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
-                const instance = {};
-                const ws = (common.welcomeScreen) ? common.welcomeScreen : null;
-                
-                instance.id = obj._id.replace('system.adapter.', '');
-                instance.name = /*(ws && ws.name) ? ws.name :*/ (common.titleLang) ? common.titleLang[window.systemLang] : common.title;
-                instance.color = (ws && ws.color) ? ws.color : '';
-                instance.description = common.desc[window.systemLang];
-                instance.image = (common.icon) ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
-                const link  = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
-                instance.link = this.replaceLink(link, common.name, instanceId);
-                instance.active = (deactivated.hasOwnProperty(instance.id)) ? deactivated[instance.id] : true;
-                instance.editActive = instance.active;
-                introInstances.push(instance);
-            }
-        }
-
-        /*var urlText = url.replace(/^https?:\/\//, '');
-        var pos = urlText.indexOf('/');
-        if (pos !== -1) {
-            urlText = urlText.substring(0, pos);
-        }
-        if (adapter === 'admin' && urlText === location.host) return null;
-        if (adapter === 'web') return null;
-        if (adapter !== 'vis-web-admin' && adapter.match(/^vis-/)) return null; // no widgets
-        if (adapter.match(/^icons-/)) return null; // no icons
-    */
-
-        const hosts = this.state.hosts;
-
-        for (const key in hosts) {
-            const obj = hosts[key];
-            const common = (obj) ? obj.common : null;
-
-            if (common) {
-                const instance = {};
-
-                const hostData = this.state.hostData[obj._id];
-
-                instance.id = obj._id;
-                instance.name = common.name;
-                instance.color = '';
-                instance.description = (
-                    <ul>
-                        <li>
-                            <b>Platform: </b>
-                            <span>{ (this.formatInfo['Platform'] ? this.formatInfo['Platform'](hostData['Platform']) : hostData['Platform'] || ' --') }</span>
-                        </li>
-                        <li>
-                            <b>RAM: </b>
-                            <span>{ (this.formatInfo['RAM'] ? this.formatInfo['RAM'](hostData['RAM']) : hostData['RAM'] || ' --') }</span>
-                        </li>
-                        <li>
-                            <b>Node.js: </b>
-                            <span>{ (this.formatInfo['Node.js'] ? this.formatInfo['Node.js'](hostData['Node.js']) : hostData['Node.js'] || ' --') }</span>
-                        </li>
-                        <li>
-                            <b>NPM: </b>
-                            <span>{ (this.formatInfo['NPM'] ? this.formatInfo['NPM'](hostData['NPM']) : hostData['NPM'] || ' --') }</span>
-                        </li>
-                    </ul>);
-                instance.image = (common.icon) ? common.icon : 'img/no-image.png';
-                instance.active = (deactivated.hasOwnProperty(instance.id)) ? deactivated[instance.id] : true;
-                instance.editActive = instance.active;
-                instance.info = I18n.t('Info');
-                introInstances.push(instance);
-            }
-        }
-
-        this.setState({
-            introInstances: introInstances,
-            introInstancesLoaded: true
-        });
-    }
-
     getCurrentTab() {
         if (this.state && this.state.currentTab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
@@ -875,16 +701,13 @@ class App extends Router {
                 return (
                     <Logs
                         key="logs"
-                        logs={ this.state.logs }
-                        size={ this.state.logSize }
                         t={ I18n.t }
-                        lang={ I18n.getLanguage() }
+                        lang={ this.state.lang }
                         socket={ this.socket }
+                        logWorker={ this.logWorker }
                         expertMode={ this.state.expertMode }
                         currentHost={ this.state.currentHost }
-                        clearLog={ () => this.clearLog() }
-                        refreshLog={ () => this.initLog() }
-                        clearErrors={ () => this.clearLogErrors() }
+                        clearErrors={ cb => this.clearLogErrors(cb) }
                     />
                 );
             } else

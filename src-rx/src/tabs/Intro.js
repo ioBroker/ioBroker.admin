@@ -304,9 +304,9 @@ class Intro extends React.Component {
                         const ws = (common.welcomeScreen) ? common.welcomeScreen : null;
 
                         instance.id = obj._id.replace('system.adapter.', '');
-                        instance.name = /*(ws && ws.name) ? ws.name :*/ (common.titleLang) ? common.titleLang[window.systemLang] : common.title;
+                        instance.name = /*(ws && ws.name) ? ws.name :*/ (common.titleLang) ? common.titleLang[this.props.lang] : common.title;
                         instance.color = ws && ws.color ? ws.color : '';
-                        instance.description = common.desc[window.systemLang];
+                        instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
                         instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
 
                         const link = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';

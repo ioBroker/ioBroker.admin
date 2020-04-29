@@ -1,4 +1,5 @@
 import React from 'react';
+import clsx from 'clsx';
 
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
@@ -39,6 +40,7 @@ import red from '@material-ui/core/colors/red';
 import PropTypes from 'prop-types';
 
 import Utils from '../Utils';
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 const styles = theme => ({
     root: {
@@ -62,7 +64,10 @@ const styles = theme => ({
     row: {
         '&:nth-of-type(odd)': {
             backgroundColor: theme.palette.background.default,
-        }
+        },
+    },
+    updatedRow: {
+        animation: 'updated 1s',
     },
     formControl: {
         width: '100%'
@@ -135,12 +140,13 @@ const styles = theme => ({
 class Logs extends React.Component {
 
     constructor(props) {
-
         super(props);
 
-        Number.prototype.pad = function(size) {
+        Number.prototype.pad = function (size) {
             let s = this + '';
-            while (s.length < size) s = '0' + s;
+            while (s.length < size) {
+                s = '0' + s;
+            }
             return s;
         };
 
@@ -151,6 +157,8 @@ class Logs extends React.Component {
             logDeleteDialog: false,
             logDownloadDialog: null,
             logFiles: [],
+            logs: null,
+            logSize: null,
             pause: 0,
             pauseCount: 0
         };
@@ -165,10 +173,8 @@ class Logs extends React.Component {
         
         this.t = props.t;
 
-        this.props.clearErrors();
-    }
+        this.logHandlerBound = this.logHandler.bind(this);
 
-    componentDidMount() {
         this.props.socket.getLogsFiles()
             .then(list => {
                 if (list && list.length) {
@@ -203,15 +209,40 @@ class Logs extends React.Component {
                         }
                     });
 
-                    this.setState({
-                        logFiles: logFiles
-                    });
+                    if (this.props.logWorker) {
+                        this.props.logWorker.getLogs()
+                            .then(results => {
+                                const logs = results.logs;
+                                const logSize = results.logSize;
+                                this.setState({ logFiles, logs: [...logs], logSize });
+                            });
+                    } else {
+                        this.setState({ logFiles });
+                    }
                 }
             });
     }
 
-    componentDidUpdate() {
-        this.props.clearErrors();
+    componentDidMount() {
+        this.props.logWorker && this.props.logWorker.enableCountErrors(false);
+        this.props.logWorker.registerHandler(this.logHandlerBound);
+    }
+
+    componentWillUnmount() {
+        this.props.logWorker && this.props.logWorker.enableCountErrors(true);
+        this.props.logWorker.unregisterHandler(this.logHandlerBound);
+    }
+
+    logHandler(newLogs) {
+        const logs = this.state.logs || [];
+        this.setState({logs: logs.concat(newLogs)});
+    }
+
+    clearLog() {
+        this.props.logWorker && this.props.logWorker.clearLines();
+        this.setState({
+            logs: []
+        });
     }
 
     handleMessageChange(event) {
@@ -264,17 +295,9 @@ class Logs extends React.Component {
         this.closeLogDelete();
     }
 
-    clearLog() {
-        this.props.clearLog();
-    }
-
-    refreshLog() {
-        this.props.refreshLog();
-    }
-
     handleLogPause() {
         this.setState({
-            pause: (this.state.pause > 0) ? 0 : this.props.logs.length
+            pause: this.state.pause ? 0 : this.state.logs.length
         });
     }
 
@@ -327,9 +350,8 @@ class Logs extends React.Component {
         const sources = ['1'];
         const ids = {};
 
-        for (const i in this.props.logs) {
-
-            const log = this.props.logs[i];
+        for (let i = 0; i < this.state.logs.length; i++) {
+            const log = this.state.logs[i];
 
             if (!ids[log.from]) {
                 ids[log.from] = true;
@@ -348,17 +370,16 @@ class Logs extends React.Component {
     }
 
     getRows() {
-
         const rows = [];
         const { classes } = this.props;
 
-        for (let i = (this.state.pause > 0) ? this.state.pause - 1 : this.props.logs.length - 1; i >= 0; i--) {
+        for (let i = this.state.pause > 0 ? this.state.pause - 1 : this.state.logs.length - 1; i >= 0; i--) {
 
-            const row = this.props.logs[i];
+            const row = this.state.logs[i];
             const severity = row.severity;
 
             const date = new Date(row.ts);
-            const ts = `${date.getFullYear().pad(4)}-${(date.getMonth() + 1).pad(2)}-${date.getDate().pad(2)} ` +
+            const ts = `${date.getFullYear()}-${(date.getMonth() + 1).pad(2)}-${date.getDate().pad(2)} ` +
                 `${date.getHours().pad(2)}:${date.getMinutes().pad(2)}:${date.getSeconds().pad(2)}.${date.getMilliseconds().pad(3)}`;
             let message = row.message;
             let id = '';
@@ -373,13 +394,12 @@ class Logs extends React.Component {
                 message = message.replace(row.from + ' ', '');
             }
 
+            const isFrom = this.state.source !== '1' && this.state.source !== row.from;
+            const isHidden = isFrom || this.severities[severity] < this.severities[this.state.severity] ||
+                            !message.toLowerCase().includes(this.state.message.toLowerCase());
             rows.push(
                 <TableRow
-                    className={ classes.row +
-                        (((this.state.source !== '1' && this.state.source !== row.from) ||
-                        this.severities[severity] < this.severities[this.state.severity]) ||
-                        !message.toLowerCase().includes(this.state.message.toLowerCase()) ?
-                        ' ' + classes.hidden : '') }
+                    className={ clsx(classes.row, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow ) }
                     key={ row._id }
                     hover
                 >
@@ -411,15 +431,19 @@ class Logs extends React.Component {
             );
         }
 
+        this.lastRowRender = Date.now();
+
         return rows;
     }
 
     render() {
-
+        if (!this.state.logs) {
+            return <LinearProgress />
+        }
         const { classes } = this.props;
 
-        const pauseChild = (this.state.pause === 0) ? <PauseIcon /> :
-            <Typography className={ classes.pauseCount }>{ this.props.logs.length - this.state.pause }</Typography>;
+        const pauseChild = !this.state.pause ? <PauseIcon /> :
+            <Typography className={ classes.pauseCount }>{ this.state.logs.length - this.state.pause }</Typography>;
 
         return (
             <Paper className={ classes.root }>
@@ -434,7 +458,12 @@ class Logs extends React.Component {
                         alignItems="center"
                     >
                         <IconButton
-                            onClick={ () => this.refreshLog() }
+                            onClick={ () => this.props.logWorker &&
+                                this.props.logWorker.getLogs(true).then(results => {
+                                    const logs = results.logs;
+                                    const logSize = results.logSize;
+                                    this.setState({ logs: [...logs], logSize });
+                                }) }
                         >
                             <RefreshIcon />
                         </IconButton>
@@ -481,7 +510,7 @@ class Logs extends React.Component {
                             variant="body2"
                             className={ classes.logSize }
                         >
-                            { `${this.t('Log size:')} ${this.props.size || '-'}` }
+                            { `${this.t('Log size:')} ${this.state.logSize || '-'}` }
                         </Typography>
                     </Grid>
                     <TableContainer className={ classes.container }>
@@ -564,14 +593,11 @@ class Logs extends React.Component {
 }
 
 Logs.propTypes = {
-    ready: PropTypes.bool,
-    logs: PropTypes.array,
-    size: PropTypes.number,
     socket: PropTypes.object,
     currentHost: PropTypes.string,
-    clearLog: PropTypes.func,
-    refreshLog: PropTypes.func,
     clearErrors: PropTypes.func,
+    logWorker: PropTypes.object,
+    lang: PropTypes.string,
     t: PropTypes.func,
 };
 
