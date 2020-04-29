@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactTransitionGroup from 'react-addons-transition-group'
 import clsx from 'clsx';
 
 import withWidth from '@material-ui/core/withWidth';
@@ -230,6 +231,10 @@ class Logs extends React.Component {
                     }
                 }
             });
+
+        this.words = {
+
+        }
     }
 
     componentDidMount() {
@@ -363,7 +368,6 @@ class Logs extends React.Component {
     }
 
     getSources() {
-
         const sources = ['1'];
         const ids = {};
 
@@ -411,9 +415,10 @@ class Logs extends React.Component {
             const isFrom = this.state.source !== '1' && this.state.source !== row.from;
             const isHidden = isFrom || this.severities[severity] < this.severities[this.state.severity] ||
                             !message.toLowerCase().includes(this.state.message.toLowerCase());
+
             rows.push(
                 <TableRow
-                    className={ clsx(classes.row, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow ) }
+                    className={ clsx(classes.row, isHidden && classes.hidden, this.lastRowRender && row.ts > this.lastRowRender && classes.updatedRow) }
                     key={ row.key }
                     hover
                 >
@@ -446,7 +451,13 @@ class Logs extends React.Component {
         }
 
         if (!this.lastRowRender || Date.now() - this.lastRowRender > 1000) {
-            this.lastRowRender = Date.now();
+            if (!this.lastRowRenderTimeout) {
+                this.lastRowRenderTimeout = setTimeout(() => {
+                    this.lastRowRenderTimeout = null;
+                    this.lastRowRender = Date.now();
+                    console.log('reset ' + Date.now())
+                }, 1000);
+            }
         }
 
         return rows;
