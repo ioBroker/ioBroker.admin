@@ -11,6 +11,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import CreateIcon from '@material-ui/icons/Create';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import IntroCard from '../components/IntroCard';
 
@@ -53,27 +54,27 @@ class Intro extends React.Component {
         super(props);
 
         this.state = {
-            instances: [],
+            instances: null,
             edit: false
         };
 
+        this.promises = {};
+
         this.t = props.t;
+
+        this.getData();
     }
 
     activateEditMode() {
-        this.setState({
-            instances: this.getInstances(),
-            edit: true
-        });
+        this.getInstances(true)
+            .then(instances => this.setState({instances, edit: true}));
     }
 
     deactivateEditMode() {
 
-        const instances = this.state.instances.slice();
+        const instances = [...this.state.instances];
 
-        for (const index in instances) {
-            instances[index].editActive = instances[index].active;
-        }
+        instances.forEach((instance, i) => instances[i].editActive = instance.active);
 
         this.setState({
             instances: instances,
@@ -112,11 +113,11 @@ class Intro extends React.Component {
             edit: false
         });
 
-        this.props.updateIntro(instances);
+        this.updateIntro(instances);
     }
 
     getCards() {
-        return (this.state.edit ? this.state.instances : this.getInstances()).map((instance, index) => {
+        return this.state.instances.map((instance, index) => {
 
             if ((!this.state.edit && instance.active) || this.state.edit) {
 
@@ -139,7 +140,7 @@ class Intro extends React.Component {
                         enabled={ this.state.edit ? instance.editActive : instance.active }
                         toggleActivation={ () => this.toggleCard(instance.id) }
                     >
-                        { instance.description }
+                        { instance.description || this.getHostDescription(instance.id) }
                     </IntroCard>
                 );
             } else {
@@ -149,7 +150,6 @@ class Intro extends React.Component {
     }
 
     getButtons(classes) {
-
         const buttons = [];
 
         if (this.state.edit) {
@@ -190,126 +190,224 @@ class Intro extends React.Component {
         return buttons;
     }
 
-    getInstances() {
+    updateIntro(instances) {
+        const systemConfig = this.props.systemConfig;
 
-        const deactivated = (this.props.systemConfig) ? this.props.systemConfig.common.intro || {} : {};
-        const instances = this.props.instances ? this.props.instances.slice() : [];
-        const introInstances = [];
+        let changed = false;
 
-        instances.sort((a, b) => {
-            a = a && a.common;
-            b = b && b.common;
-            a = a || {};
-            b = b || {};
+        for (const index in instances) {
 
-            if (a.order === undefined && b.order === undefined) {
-                if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-                if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
-                return 0;
-            } else if (a.order === undefined) {
-                return -1;
-            } else if (b.order === undefined) {
-                return 1;
-            } else {
-                if (a.order > b.order) return 1;
-                if (a.order < b.order) return -1;
-                if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
-                if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
-                return 0;
+            const instance = instances[index];
+
+            if (systemConfig.common.intro.hasOwnProperty(instance.id) || !instance.editActive) {
+                if (systemConfig.common.intro[instance.id] !== instance.editActive) {
+                    systemConfig.common.intro[instance.id] = instance.editActive;
+                    changed = true;
+                }
             }
-        });
-
-        Object.keys(instances).forEach(key => {
-
-            const obj = instances[key];
-            const common = (obj) ? obj.common : null;
-            const objId = obj._id.split('.');
-            const instanceId = objId[objId.length - 1];
-
-            if (common.name && common.name === 'admin' && common.localLink === (this.props.hostname || '')) {
-                return;
-            } else if (common.name && common.name === 'web') {
-                return;
-            } else if (common.name && common.name !== 'vis-web-admin' && common.name.match(/^vis-/)) {
-                return;
-            } else if (common.name && common.name.match(/^icons-/)) {
-                return;
-            } else if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
-
-                const instance = {};
-                const ws = (common.welcomeScreen) ? common.welcomeScreen : null;
-                
-                instance.id = obj._id.replace('system.adapter.', '');
-                instance.name = /*(ws && ws.name) ? ws.name :*/ (common.titleLang) ? common.titleLang[window.systemLang] : common.title;
-                instance.color = (ws && ws.color) ? ws.color : '';
-                instance.description = common.desc[window.systemLang];
-                instance.image = (common.icon) ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
-                const link  = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
-                instance.link = this.props.replaceLink(link, common.name, instanceId) || '';
-                instance.active = (deactivated.hasOwnProperty(instance.id)) ? deactivated[instance.id] : true;
-                instance.editActive = instance.active;
-
-                introInstances.push(instance);
-            }
-        });
-
-        /*var urlText = url.replace(/^https?:\/\//, '');
-        var pos = urlText.indexOf('/');
-        if (pos !== -1) {
-            urlText = urlText.substring(0, pos);
         }
-        if (adapter === 'admin' && urlText === location.host) return null;
-        if (adapter === 'web') return null;
-        if (adapter !== 'vis-web-admin' && adapter.match(/^vis-/)) return null; // no widgets
-        if (adapter.match(/^icons-/)) return null; // no icons
-    */
 
-        const hosts = this.props.hosts || [];
+        if (changed) {
+            this.props.socket.getObject('system.config').then(obj => {
+                obj.common.intro = systemConfig.common.intro;
+                this.props.socket.setObject('system.config', obj);
+                this.props.showAlert('Updated', 'success');
+            }, error => {
+                console.log(error);
+                this.props.showAlert(error, 'error');
+            });
+        }
+    }
 
-        Object.keys(hosts).forEach(key => {
-            const obj = hosts[key];
-            const common = (obj) ? obj.common : null;
+    getHostsData(hosts) {
+        const promises = hosts.map(obj =>
+            this.props.socket.getHostInfo(obj._id)
+                .catch(error => {
+                    console.error(error);
+                    return error;
+                })
+                .then(data =>
+                    ({id: obj._id, data})));
 
-            if (common) {
-                const instance = {};
+        return new Promise(resolve =>
+            Promise.all(promises)
+                .then(results => {
+                    const hostsData = {};
+                    results.forEach(res => hostsData[res.id] = res.data);
+                    resolve(hostsData);
+                }));
+    }
 
-                const hostData = this.props.hostData[obj._id];
+    getHosts(update) {
+        if (update) {
+            this.promises.hosts = null;
+        }
+        this.promises.hosts = this.promises.hosts || this.props.socket.getHosts(update);
 
-                instance.id = obj._id;
-                instance.name = common.name;
-                instance.color = '';
-                instance.description = (
-                    <ul>
+        return this.promises.hosts;
+    }
+
+    getInstances(update, hosts, hostsData) {
+        hosts     = hosts     || this.state.hosts;
+        hostsData = hostsData || this.state.hostsData;
+
+        if (update) {
+            this.promises.instances = null;
+        }
+
+        this.promises.instances = this.promises.instances || this.props.socket.getAdapterInstances()
+            .then(instances => {
+                const deactivated = this.props.systemConfig ? this.props.systemConfig.common.intro || {} : {};
+                const introInstances = [];
+                const objects = {};
+                instances.forEach(obj => objects[obj._id] = obj);
+
+                instances.sort((a, b) => {
+                    a = a && a.common;
+                    b = b && b.common;
+                    a = a || {};
+                    b = b || {};
+
+                    if (a.order === undefined && b.order === undefined) {
+                        if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+                        if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+                        return 0;
+                    } else if (a.order === undefined) {
+                        return -1;
+                    } else if (b.order === undefined) {
+                        return 1;
+                    } else {
+                        if (a.order > b.order) return 1;
+                        if (a.order < b.order) return -1;
+                        if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+                        if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+                        return 0;
+                    }
+                });
+
+                Object.keys(instances).forEach(key => {
+                    const obj = instances[key];
+                    const common = (obj) ? obj.common : null;
+                    const objId = obj._id.split('.');
+                    const instanceId = objId[objId.length - 1];
+
+                    if (common.name && common.name === 'admin' && common.localLink === (this.props.hostname || '')) {
+                        return;
+                    } else if (common.name && common.name === 'web') {
+                        return;
+                    } else if (common.name && common.name !== 'vis-web-admin' && common.name.match(/^vis-/)) {
+                        return;
+                    } else if (common.name && common.name.match(/^icons-/)) {
+                        return;
+                    } else if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
+                        const instance = {};
+                        const ws = (common.welcomeScreen) ? common.welcomeScreen : null;
+
+                        instance.id = obj._id.replace('system.adapter.', '');
+                        instance.name = /*(ws && ws.name) ? ws.name :*/ (common.titleLang) ? common.titleLang[window.systemLang] : common.title;
+                        instance.color = ws && ws.color ? ws.color : '';
+                        instance.description = common.desc[window.systemLang];
+                        instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+
+                        const link = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
+                        instance.link = Utils.replaceLink(link, common.name, instanceId, {
+                            objects,
+                            host:     this.props.hostname,
+                            protocol: this.props.protocol
+                        }) || '';
+                        instance.active = deactivated.hasOwnProperty(instance.id) ? deactivated[instance.id] : true;
+                        instance.editActive = instance.active;
+
+                        introInstances.push(instance);
+                    }
+                });
+
+                /*var urlText = url.replace(/^https?:\/\//, '');
+                var pos = urlText.indexOf('/');
+                if (pos !== -1) {
+                    urlText = urlText.substring(0, pos);
+                }
+                if (adapter === 'admin' && urlText === location.host) return null;
+                if (adapter === 'web') return null;
+                if (adapter !== 'vis-web-admin' && adapter.match(/^vis-/)) return null; // no widgets
+                if (adapter.match(/^icons-/)) return null; // no icons
+            */
+
+                Object.keys(hosts).forEach(key => {
+                    const obj = hosts[key];
+                    const common = (obj) ? obj.common : null;
+
+                    if (common) {
+                        const instance = {};
+
+                        instance.id = obj._id;
+                        instance.name = common.name;
+                        instance.color = '';
+                        instance.image = (common.icon) ? common.icon : 'img/no-image.png';
+                        instance.active = (deactivated.hasOwnProperty(instance.id)) ? deactivated[instance.id] : true;
+                        instance.editActive = instance.active;
+                        instance.info = this.t('Info');
+                        introInstances.push(instance);
+                    }
+                });
+
+                return introInstances;
+            })
+            .catch(error => console.log(error));
+
+        return this.promises.instances;
+    }
+
+    getHostDescription(id) {
+        if (!this.state.hostsData) {
+            return <CircularProgress />;
+        } else {
+            const hostData = this.state.hostsData[id];
+            if (hostData && typeof hostData === 'object') {
+                return <ul>
                         <li>
                             <b>Platform: </b>
-                            <span>{ (formatInfo['Platform'] ? formatInfo['Platform'](hostData['Platform']) : hostData['Platform'] || ' --') }</span>
+                            <span>{(formatInfo['Platform'] ? formatInfo['Platform'](hostData['Platform']) : hostData['Platform'] || ' --')}</span>
                         </li>
                         <li>
                             <b>RAM: </b>
-                            <span>{ (formatInfo['RAM'] ? formatInfo['RAM'](hostData['RAM']) : hostData['RAM'] || ' --') }</span>
+                            <span>{(formatInfo['RAM'] ? formatInfo['RAM'](hostData['RAM']) : hostData['RAM'] || ' --')}</span>
                         </li>
                         <li>
                             <b>Node.js: </b>
-                            <span>{ (formatInfo['Node.js'] ? formatInfo['Node.js'](hostData['Node.js']) : hostData['Node.js'] || ' --') }</span>
+                            <span>{(formatInfo['Node.js'] ? formatInfo['Node.js'](hostData['Node.js']) : hostData['Node.js'] || ' --')}</span>
                         </li>
                         <li>
                             <b>NPM: </b>
-                            <span>{ (formatInfo['NPM'] ? formatInfo['NPM'](hostData['NPM']) : hostData['NPM'] || ' --') }</span>
+                            <span>{(formatInfo['NPM'] ? formatInfo['NPM'](hostData['NPM']) : hostData['NPM'] || ' --')}</span>
                         </li>
-                    </ul>);
-                instance.image = (common.icon) ? common.icon : 'img/no-image.png';
-                instance.active = (deactivated.hasOwnProperty(instance.id)) ? deactivated[instance.id] : true;
-                instance.editActive = instance.active;
-                instance.info = this.t('Info');
-                introInstances.push(instance);
+                    </ul>;
+            } else {
+                return hostData || '...'; // error text
             }
-        });
+        }
+    }
 
-        return introInstances;
+    getData(update) {
+        let hosts;
+
+        return this.getHosts(update)
+            .then(_hosts => {
+                hosts = _hosts;
+                return this.getInstances(update, hosts);
+            })
+            .then(instances => {
+                this.setState({instances, hosts});
+
+                // hosts data could last a long time, so show some results to user now and then get the info about hosts
+                return this.getHostsData(hosts)
+            })
+            .then(hostsData =>
+                this.setState({hostsData}));
     }
 
     render() {
-        if (!this.props.ready) {
+        if (!this.state.instances) {
             return (
                 <LinearProgress />
             );
@@ -319,10 +417,7 @@ class Intro extends React.Component {
 
         return (
             <div>
-                <Grid
-                    container
-                    spacing={ 2 }
-                >
+                <Grid container spacing={ 2 }>
                     { this.getCards() }
                 </Grid>
                 { this.getButtons(classes) }
@@ -345,10 +440,8 @@ Intro.propTypes = {
     reveal: PropTypes.node,
     title: PropTypes.string,
     t: PropTypes.func,
+    lang: PropTypes.string,
     toggleActivation: PropTypes.func,
-    instances: PropTypes.array,
-    hosts: PropTypes.array,
-    hostData: PropTypes.object
 };
 
 export default withStyles(styles)(Intro);

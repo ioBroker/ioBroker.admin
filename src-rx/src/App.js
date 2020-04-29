@@ -558,8 +558,7 @@ class App extends Router {
 
     async getHosts() {
         try {
-            const hosts = await new Promise((resolve, reject) => this.socket.socket.emit('getForeignObjects', 'system.host.*', 'host',
-                (error, response) => error ? reject(error) : resolve(response)));
+            const hosts = await this.socket.getHosts();
 
             const list = [];
             const hostData = {};
@@ -883,39 +882,6 @@ class App extends Router {
         });
     }
 
-    updateIntro(instances) {
-
-        const systemConfig = this.state.systemConfig;
-        
-        let changed = false;
-
-        for (const index in instances) {
-
-            const instance = instances[index];
-
-            if (systemConfig.common.intro.hasOwnProperty(instance.id) || !instance.editActive) {
-                if (systemConfig.common.intro[instance.id] !== instance.editActive) {
-                    systemConfig.common.intro[instance.id] = instance.editActive;
-                    changed = true;
-                }
-            }
-        }
-
-        if (changed) {
-            this.socket.getObject('system.config').then(obj => {
-
-                obj.common.intro = systemConfig.common.intro;
-
-                this.socket.setObject('system.config', obj);
-                
-                this.showAlert('Updated', 'success');
-            }, error => {
-                console.log(error);
-                this.showAlert(error, 'error');
-            });
-        }
-    }
-
     getCurrentTab() {
         if (this.state && this.state.currentTab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
@@ -978,7 +944,7 @@ class App extends Router {
                         themeName={ this.state.themeName }
                         expertMode={ this.state.expertMode }
                         lang={ I18n.getLanguage() }
-                        connection={ this.socket }
+                        socket={ this.socket }
                     />
                 );
             }
@@ -987,9 +953,11 @@ class App extends Router {
         return (
             <Intro
                 key="intro"
-                ready={ this.state.instancesLoaded }
-                instances={ this.state.instances }
                 hosts={ this.state.hosts }
+                protocol={ this.state.protocol }
+                hostname={ this.state.hostname }
+                showAlert={ (message, type) => this.showAlert(message, type) }
+                socket={ this.socket }
                 hostData={ this.state.hostData }
                 systemConfig={ this.state.systemConfig }
                 t={ I18n.t }

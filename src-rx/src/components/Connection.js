@@ -636,16 +636,28 @@ class Connection {
             host += 'system.host.' + host;
         }
 
-        return new Promise((resolve, reject) =>
-            this._socket.emit('sendToHost', host, 'getHostInfo', null, data => {
-                if (data === PERMISSION_ERROR) {
-                    reject('May not read "getHostInfo"');
-                } else if (!data) {
-                    reject('Cannot read "getHostInfo"');
-                } else {
-                    resolve(data);
+        return new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('timeout');
                 }
-            }));
+            }, 5000);
+
+            this._socket.emit('sendToHost', host, 'getHostInfo', null, data => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject('May not read "getHostInfo"');
+                    } else if (!data) {
+                        reject('Cannot read "getHostInfo"');
+                    } else {
+                        resolve(data);
+                    }
+                }
+            });
+        });
     }
 
     getForeignStates(pattern) {

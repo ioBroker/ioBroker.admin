@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from "prop-types";
 
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
@@ -36,7 +37,7 @@ import red from '@material-ui/core/colors/red';
 import Router from '@iobroker/adapter-react/Components/Router';
 
 import Config from '../dialogs/Config';
-import PropTypes from "prop-types";
+import Utils from '../Utils';
 
 const styles = theme => ({
     table: {
@@ -181,74 +182,6 @@ class Instances extends React.Component {
         return this.promises.instances;
     }
 
-    static replaceLink(link, adapter, instance, context) {
-        if (link) {
-
-            let placeholder = link.match(/%(\w+)%/g);
-
-            if (placeholder) {
-                if (placeholder[0] === '%ip%') {
-                    link = link.replace('%ip%', context.hostname);
-                    link = Instances.replaceLink(link, adapter, instance, context);
-                } else if (placeholder[0] === '%protocol%') {
-                    link = link.replace('%protocol%', context.protocol.substr(0, context.protocol.length - 1));
-                    link = Instances.replaceLink(link, adapter, instance, context);
-                } else if (placeholder[0] === '%instance%') {
-                    link = link.replace('%instance%', instance);
-                    link = Instances.replaceLink(link, adapter, instance, context);
-                } else {
-                    // remove %%
-                    placeholder = placeholder[0].replace(/%/g, '');
-
-                    if (placeholder.match(/^native_/)) {
-                        placeholder = placeholder.substring(7);
-                    }
-                    // like web.0_port
-                    let parts;
-                    if (placeholder.indexOf('_') === -1) {
-                        parts = [adapter + '.' + instance, placeholder];
-                    } else {
-                        parts = placeholder.split('_');
-                        // add .0 if not defined
-                        if (!parts[0].match(/\.[0-9]+$/)) {
-                            parts[0] += '.0';
-                        }
-                    }
-
-                    if (parts[1] === 'protocol') {
-                        parts[1] = 'secure';
-                    }
-
-                    try {
-                        const object = context.objects['system.adapter.' + parts[0]];
-
-                        if (link && object) {
-                            if (parts[1] === 'secure') {
-                                link = link.replace('%' + placeholder + '%', object.native[parts[1]] ? 'https' : 'http');
-                            } else {
-                                if (link.indexOf('%' + placeholder + '%') === -1) {
-                                    link = link.replace('%native_' + placeholder + '%', object.native[parts[1]]);
-                                } else {
-                                    link = link.replace('%' + placeholder + '%', object.native[parts[1]]);
-                                }
-                            }
-                        } else {
-                            console.log('Cannot get link ' + parts[1]);
-                            link = link.replace('%' + placeholder + '%', '');
-                        }
-
-                    } catch(error) {
-                        console.log(error);
-                    }
-
-                    link = Instances.replaceLink(link, adapter, instance, context);
-                }
-            }
-        }
-
-        return link;
-    }
-
     getData(update) {
         let instances;
         let states;
@@ -313,7 +246,7 @@ class Instances extends React.Component {
                     instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
                     const link     = common.localLinks || common.localLink || '';
 
-                    instance.link = Instances.replaceLink(link, common.name, instanceId, {
+                    instance.link = Utils.replaceLink(link, common.name, instanceId, {
                         objects,
                         host:     this.props.hostname,
                         protocol: this.props.protocol

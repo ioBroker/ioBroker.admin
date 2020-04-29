@@ -53,7 +53,7 @@ class Objects extends React.Component {
                     defaultFilters={ this.filters }
                     statesOnly={ this.props.statesOnly }
                     style={ {width: '100%', height: '100%'} }
-                    connection={ this.props.connection }
+                    connection={ this.props.socket }
                     selected={ this.state.selected }
                     name={ this.state.name }
                     theme={ this.props.themeName }
@@ -70,7 +70,7 @@ class Objects extends React.Component {
 Objects.propTypes = {
     t: PropTypes.func,
     lang: PropTypes.string,
-    connection: PropTypes.object,
+    socket: PropTypes.object,
     ready: PropTypes.bool,
     themeName: PropTypes.string,
     expertMode: PropTypes.bool,
