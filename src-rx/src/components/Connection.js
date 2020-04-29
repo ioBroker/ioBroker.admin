@@ -660,6 +660,83 @@ class Connection {
         });
     }
 
+    getSupportedFeatures(update) {
+        if (update) {
+            this.promises.supportedFeatures = null;
+        }
+
+        this.promises.supportedFeatures = this.promises.supportedFeatures || new Promise((resolve, reject) =>
+            this._socket.emit('getSupportedFeatures', features => resolve(features)));
+
+        return this.promises.supportedFeatures;
+    }
+
+    readBaseSettings(host) {
+        return this.getSupportedFetaures()
+            .then(supportedFeatures => {
+                if (supportedFeatures.includes('BASE_SETTINGS')) {
+                    return new Promise((resolve, reject) => {
+                        let timeout = setTimeout(() => {
+                            if (timeout) {
+                                timeout = null;
+                                reject('timeout');
+                            }
+                        }, 5000);
+
+                        this._socket.emit('sendToHost', host, 'readBaseSettings', null, data => {
+                            if (timeout) {
+                                clearTimeout(timeout);
+                                timeout = null;
+
+                                if (data === PERMISSION_ERROR) {
+                                    reject('May not read "BaseSettings"');
+                                } else if (!data) {
+                                    reject('Cannot read "BaseSettings"');
+                                } else {
+                                    resolve(data);
+                                }
+                            }
+                        });
+                    });
+                } else {
+                    return Promise.reject('Not supported');
+                }
+            })
+    }
+
+    writeBaseSettings(host, config) {
+        return this.getSupportedFetaures()
+            .then(supportedFeatures => {
+                if (supportedFeatures.includes('BASE_SETTINGS')) {
+                    return new Promise((resolve, reject) => {
+                        let timeout = setTimeout(() => {
+                            if (timeout) {
+                                timeout = null;
+                                reject('timeout');
+                            }
+                        }, 5000);
+
+                        this._socket.emit('sendToHost', host, 'writeBaseSettings', config, data => {
+                            if (timeout) {
+                                clearTimeout(timeout);
+                                timeout = null;
+
+                                if (data === PERMISSION_ERROR) {
+                                    reject('May not write "BaseSettings"');
+                                } else if (!data) {
+                                    reject('Cannot write "BaseSettings"');
+                                } else {
+                                    resolve(data);
+                                }
+                            }
+                        });
+                    });
+                } else {
+                    return Promise.reject('Not supported');
+                }
+            })
+    }
+
     getForeignStates(pattern) {
         return new Promise((resolve, reject) =>
             this._socket.emit('getForeignStates', pattern || '*', (err, states) =>

@@ -18,10 +18,6 @@ import Avatar from '@material-ui/core/Avatar';
 // import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import Snackbar from '@material-ui/core/Snackbar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -32,8 +28,6 @@ import AcUnitIcon from '@material-ui/icons/AcUnit';
 import AppsIcon from '@material-ui/icons/Apps';
 import ArtTrackIcon from '@material-ui/icons/ArtTrack';
 import BuildIcon from '@material-ui/icons/Build';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import CodeIcon from '@material-ui/icons/Code';
 import DeviceHubIcon from '@material-ui/icons/DeviceHub';
 import DvrIcon from '@material-ui/icons/Dvr';
@@ -66,7 +60,6 @@ import Connecting from './components/Connecting';
 
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './Theme';
-import Utils from './Utils';
 import LogWorker from './components/LogsWorker';
 
 import Login from './login/Login';
@@ -78,6 +71,7 @@ import Intro from './tabs/Intro';
 import Logs from './tabs/Logs';
 import Files from './tabs/Files';
 import Objects from './tabs/Objects';
+import BaseSettings from './tabs/BaseSettings';
 
 const drawerWidth = 180;
 
@@ -138,6 +132,9 @@ const styles = theme => ({
     },
     expertIconActive: {
         //color: theme.palette.action.active
+    },
+    baseSettingsButton: {
+        color: 'red',
     }
 });
 
@@ -213,8 +210,6 @@ class App extends Router {
 
                 waitForRestart: false,
                 tabs:           null,
-                dialogs:        {},
-                selectId:       null,
                 config:         {},
 
                 //==================== Finished
@@ -231,7 +226,9 @@ class App extends Router {
                 alertType: 'info',
                 alertMessage: '',
                 drawerOpen: this.props.width !== 'xs',
-                tab: null
+
+                baseSettingsOpened: null,
+                unsavedDataInDialog: false,
             };
 
             this.logWorker = null;
@@ -276,6 +273,12 @@ class App extends Router {
             this.setState({
                 logErrors
             });
+        }
+    }
+
+    setUnsavedData(hasUnsavedData) {
+        if (hasUnsavedData !== this.state.unsavedDataInDialog) {
+            this.setState({unsavedDataInDialog: hasUnsavedData});
         }
     }
 
@@ -670,7 +673,18 @@ class App extends Router {
     }*/
 
     getCurrentTab() {
-        if (this.state && this.state.currentTab) {
+        if (this.state.baseSettingsOpened) {
+            return (<BaseSettings
+                key="intro"
+                onUnsaveChanged={ hasUnsavedData => this.setUnsavedData(hasUnsavedData) }
+                lang={ this.state.lang }
+                showAlert={ (message, type) => this.showAlert(message, type) }
+                socket={ this.socket }
+                t={ I18n.t }
+            />);
+        }
+
+        if (this.state.currentTab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
                 return (
                     <Adapters
@@ -735,6 +749,7 @@ class App extends Router {
         return (
             <Intro
                 key="intro"
+                lang={ this.state.lang }
                 protocol={ this.state.protocol }
                 hostname={ this.state.hostname }
                 showAlert={ (message, type) => this.showAlert(message, type) }
@@ -899,6 +914,9 @@ class App extends Router {
                                     className={ clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
                                 />
                             </IconButton>
+                            {this.state.expertMode ? <IconButton>
+                                <BuildIcon className={ classes.baseSettingsButton }/>
+                            </IconButton> : null}
 
                             <Typography variant="h6" className={classes.title} style={{flexGrow: 1}}>
                             </Typography>
