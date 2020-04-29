@@ -15,7 +15,7 @@ html, body {
 }
 
 html {
-  box-sizing: 'border-box'
+  box-sizing: border-box;
 }
 
 body {
@@ -48,4 +48,9 @@ body {
   -moz-font-feature-settings: 'liga';
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: 'liga';
+}
+
+@keyframes updated {
+  0%   {background: #588042FF;}
+  100% {background: #00000000;}
 }
