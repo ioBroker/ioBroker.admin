@@ -4,8 +4,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 
-import ObjectBrowser from '../components/ObjectBrowser';
-
 const styles = theme => ({
     root: {
         paddingTop: 5,
@@ -17,7 +15,7 @@ const styles = theme => ({
     },
 });
 
-class Objects extends React.Component {
+class BaseSettings extends React.Component {
 
     constructor(props) {
 
@@ -40,26 +38,13 @@ class Objects extends React.Component {
     render() {
         return (
             <Paper className={ this.props.classes.root }>
-                <ObjectBrowser
-                    prefix={ this.props.prefix }
-                    defaultFilters={ this.filters }
-                    statesOnly={ this.props.statesOnly }
-                    style={ {width: '100%', height: '100%'} }
-                    connection={ this.props.socket }
-                    selected={ this.state.selected }
-                    name={ this.state.name }
-                    theme={ this.props.themeName }
-                    onFilterChanged={ filterConfig => {
-                        this.filters = filterConfig;
-                        window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));
-                    }}
-                />
+
             </Paper>
         );
     }
 }
 
-Objects.propTypes = {
+BaseSettings.propTypes = {
     t: PropTypes.func,
     lang: PropTypes.string,
     socket: PropTypes.object,
@@ -67,4 +52,4 @@ Objects.propTypes = {
     expertMode: PropTypes.bool,
 };
 
-export default withWidth()(withStyles(styles)(Objects));
+export default withWidth()(withStyles(styles)(BaseSettings));

@@ -61,7 +61,6 @@ import Connecting from './components/Connecting';
 
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './Theme';
-import Utils from './Utils';
 import LogWorker from './components/LogsWorker';
 
 import Login from './login/Login';
@@ -73,6 +72,8 @@ import Intro from './tabs/Intro';
 import Logs from './tabs/Logs';
 import Files from './tabs/Files';
 import Objects from './tabs/Objects';
+import BaseSettings from './tabs/BaseSettings';
+
 import i18n from '@iobroker/adapter-react/i18n';
 
 const drawerWidth = 180;
@@ -134,6 +135,9 @@ const styles = theme => ({
     },
     expertIconActive: {
         //color: theme.palette.action.active
+    },
+    baseSettingsButton: {
+        color: 'red',
     }
 });
 
@@ -204,22 +208,15 @@ class App extends Router {
                 systemConfig:   null,
 
                 instances:      null,
-                instancesLoaded: false,
 
                 objects:        {},
-                objectsLoaded:  false,
-                objectsLoading: false,
 
                 waitForRestart: false,
                 tabs:           null,
-                dialogs:        {},
-                selectId:       null,
                 config:         {},
 
                 //==================== Finished
                 logErrors: 0,
-                logs: [],
-                logSize: 0,
                 //=============
 
                 stateChanged: false,
@@ -232,8 +229,12 @@ class App extends Router {
                 alertType: 'info',
                 alertMessage: '',
                 drawerOpen: this.props.width !== 'xs',
+
                 tab: null,
-                allStored: true
+                allStored: true,
+
+                baseSettingsOpened: null,
+                unsavedDataInDialog: false
             };
 
             this.logWorker = null;
@@ -278,6 +279,12 @@ class App extends Router {
             this.setState({
                 logErrors
             });
+        }
+    }
+
+    setUnsavedData(hasUnsavedData) {
+        if (hasUnsavedData !== this.state.unsavedDataInDialog) {
+            this.setState({unsavedDataInDialog: hasUnsavedData});
         }
     }
 
@@ -670,6 +677,18 @@ class App extends Router {
     }*/
 
     getCurrentTab() {
+
+        if (this.state.baseSettingsOpened) {
+            return (<BaseSettings
+                key="intro"
+                onUnsaveChanged={ hasUnsavedData => this.setUnsavedData(hasUnsavedData) }
+                lang={ this.state.lang }
+                showAlert={ (message, type) => this.showAlert(message, type) }
+                socket={ this.socket }
+                t={ I18n.t }
+            />);
+        }
+
         if (this.state && this.state.currentTab && this.state.currentTab.tab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
                 return (
@@ -934,6 +953,9 @@ class App extends Router {
                                     className={ clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
                                 />
                             </IconButton>
+                            {this.state.expertMode ? <IconButton>
+                                <BuildIcon className={ classes.baseSettingsButton }/>
+                            </IconButton> : null}
 
                             <Typography variant="h6" className={classes.title} style={{flexGrow: 1}}>
                             </Typography>

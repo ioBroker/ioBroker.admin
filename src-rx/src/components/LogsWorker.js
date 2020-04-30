@@ -89,62 +89,89 @@ class LogsWorker {
             "_id": 48358425
         };*/
 
+        let obj;
+        let isNew = true;
+        const length = this.logs.length;
+        lastKey = lastKey || (length && this.logs[this.logs.length - 1].key) || 0;
+
         if (typeof line === 'object') {
-            this.logs.push(line);
-
-            if (this.logs.length === this.maxLogs) {
-                this.logs.shift();
+            if (lastKey && lastKey <= line.ts) {
+                line.key = lastKey + 1;
+            } else {
+                line.key = line.ts;
             }
 
-            if (line.severity === 'error' && this.countErrors) {
-                this.errors++;
-            }
-
-            return line;
+            obj = line;
         } else {
             const time = line.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/);
 
             if (time && time.length > 0) {
-                lastKey = lastKey || (this.logs.length && this.logs[this.logs.length - 1].key) || 0;
                 let ts = new Date(time[0]).getTime();
+                let key = ts;
 
-                if (lastKey === ts) {
-                    ts++;
+                if (lastKey && lastKey <= ts) {
+                    key = lastKey + 1;
                 }
 
                 // detect from
                 const from = line.match(/: (\D+\.\d+ \(|host\..+? )/);
 
-                const obj = {
-                    key: ts,
+                obj = {
+                    key,
                     from:  from ? from[0].replace(/[ :(]/g, '') : '',
                     message: line.split(/\[\d+m: /)[1],
                     severity: line.match(/\d+m(silly|debug|info|warn|error)/)[0].replace(/[\dm]/g, ''),
                     ts
                 };
-
-                this.logs.push(obj);
-
-                if (this.logs.length === this.maxLogs) {
-                    this.logs.shift();
+            } else {
+                isNew = false;
+                // if no time found
+                if (length) {
+                    obj = this.logs[length - 1];
+                    obj.message += line;
                 }
-
-                if (line.severity === 'error' && this.countErrors) {
-                    this.errors++;
-                }
-
-                return obj;
-            } else
-            // if no time found
-            if (this.logs.length > 0) {
-                const obj = this.logs[this.logs.length - 1];
-                obj.message += line;
-                return obj;
             }
         }
+
+        if (isNew) {
+            // if new message time is less than last message in log
+            if (length && this.logs[length - 1].key > obj.key) {
+                let i;
+                // find place
+                for (i = length - 1; i >= 0; i--) {
+                    if (this.logs[i].key < obj.key) {
+                        break;
+                    }
+                }
+                if (i === -1) {
+                    this.logs.unshift(obj);
+                } else {
+                    this.logs.splice(i + 1, 0, obj);
+                }
+            } else {
+                this.logs.push(obj);
+            }
+
+            if (length + 1 === this.maxLogs) {
+                this.logs.shift();
+            }
+
+            if (isNew && obj.severity === 'error' && obj.countErrors) {
+                this.errors++;
+            }
+        }
+
+        return obj;
     }
 
     getLogs(update) {
+        if (!this.currentHost) {
+            this.promises.logs = this.promises.logs ||
+                new Promise(resolve => this.logResolve = resolve);
+
+            return this.promises.logs;
+        }
+
         if (!update && this.logs) {
             return Promise.resolve({logs: this.logs, logSize: this.logSize});
         }
@@ -165,6 +192,8 @@ class LogsWorker {
 
                 this.logs = [];
                 let lastKey;
+                lines.sort((a, b) => a.ts > b.ts ? 1 : (a.ts < b.ts ? -1 : 0));
+
                 lines.forEach(line => {
                     const obj = this._processLine(line, lastKey);
                     lastKey = obj.key;
@@ -187,6 +216,12 @@ class LogsWorker {
     clearLines() {
         this.logs    = [];
         this.logSize = 0;
+
+        if (this.errors) {
+            const errors = this.errors;
+            this.errors = 0;
+            this.errorCountHandlers.forEach(handler => handler && handler(errors));
+        }
     }
 }
 
