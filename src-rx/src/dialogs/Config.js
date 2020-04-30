@@ -43,6 +43,10 @@ class Config extends React.Component {
     closeConfig(event) {
         if (event.data === 'close' || event.message === 'close') {
             Router.doNavigate('tab-instances');
+        } else if (event.data === 'change' || event.message === 'change' ) {
+            this.props.configStored(false);
+        } else if (event.data === 'nochange' || event.message === 'nochange' ) {
+            this.props.configStored(true);
         }
     }
 

@@ -507,6 +507,7 @@ class Instances extends React.Component {
                             instance={ instance.id.split('.')[1] }
                             materialize={ instance.materialize }
                             t={ this.props.t }
+                            configStored={ this.props.configStored }
                         />
                     </Paper>
                 );
