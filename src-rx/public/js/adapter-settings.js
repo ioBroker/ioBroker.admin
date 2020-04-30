@@ -278,6 +278,7 @@ function preInit () {
                     showMessage(err, _('Error'), 'alert');
                     return;
                 }
+                parent.postMessage('nochange', '*');
                 changed = false;
                 callback && callback();
             });
@@ -365,11 +366,13 @@ function preInit () {
     function onChange(isChanged) {
         onChangeSupported = true;
         if (typeof isChanged === 'boolean' && isChanged === false) {
+            parent.postMessage('nochange', '*');
             changed = false;
             $navButtons.find('.btn-save').addClass('disabled');
             $navButtons.find('.btn-save-close').addClass('disabled');
             $navButtons.find('.btn-cancel').find('span').html(_('close'));
         } else {
+            parent.postMessage('change', '*');
             changed = true;
             $navButtons.find('.btn-save').removeClass('disabled');
             $navButtons.find('.btn-save-close').removeClass('disabled');
@@ -1244,6 +1247,7 @@ function _editInitButtons($grid, tabId, objId) {
         if ($grid[0]._edited.indexOf(id) === -1) {
             $grid[0]._edited.push(id);
         }
+        parent.postMessage('change', '*');
         changed = true;
         var $navButtons = $('.dialog-config-buttons');
         $navButtons.find('.btn-save').removeClass('disabled');
@@ -1259,7 +1263,7 @@ function _editInitButtons($grid, tabId, objId) {
     }).on('click', function () {
         var id = $(this).attr('data-' + tabId + '-id');
         $grid.jqGrid('delRowData', tabId + '_' + id);
-
+        parent.postMessage('change', '*');
         changed = true;
         var $navButtons = $('.dialog-config-buttons');
         $navButtons.find('.btn-save').removeClass('disabled');
@@ -1287,7 +1291,7 @@ function _editInitButtons($grid, tabId, objId) {
         $('.' + tabId + '-cancel-submit').hide();
 
         $grid.jqGrid('saveRow', tabId + '_' + id, {url: 'clientArray'});
-
+        parent.postMessage('change', '*');
         changed = true;
         var $navButtons = $('.dialog-config-buttons');
         $navButtons.find('.btn-save').removeClass('disabled');
@@ -1415,7 +1419,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             $('.' + tabId + '-cancel-submit[data-' + tabId + '-id="' + id + '"]').show();
             $grid.jqGrid('editRow', rowid, {url: 'clientArray'});
             if ($grid[0]._edited.indexOf(id) === -1) $grid[0]._edited.push(id);
-
+            parent.postMessage('change', '*');
             changed = true;
             var $navButtons = $('.dialog-config-buttons');
             $navButtons.find('.btn-save').removeClass('disabled');
@@ -1436,6 +1440,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
             _editInitButtons($grid, tabId);
         },
         onSortCol: function () {
+            parent.postMessage('change', '*');
             changed = true;
             var $navButtons = $('.dialog-config-buttons');
             $navButtons.find('.btn-save').removeClass('disabled');
@@ -1490,7 +1495,7 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
                     obj[$grid[0]._cols[t]] = '';
                 }
                 obj[$grid[0]._cols[0]] = newText + idx;
-
+                parent.postMessage('change', '*');
                 changed = true;
                 var $navButtons = $('.dialog-config-buttons');
                 $navButtons.find('.btn-save').removeClass('disabled');
