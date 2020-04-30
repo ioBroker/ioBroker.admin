@@ -18,10 +18,6 @@ import Avatar from '@material-ui/core/Avatar';
 // import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import Snackbar from '@material-ui/core/Snackbar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -32,8 +28,6 @@ import AcUnitIcon from '@material-ui/icons/AcUnit';
 import AppsIcon from '@material-ui/icons/Apps';
 import ArtTrackIcon from '@material-ui/icons/ArtTrack';
 import BuildIcon from '@material-ui/icons/Build';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import CodeIcon from '@material-ui/icons/Code';
 import DeviceHubIcon from '@material-ui/icons/DeviceHub';
 import DvrIcon from '@material-ui/icons/Dvr';
@@ -60,6 +54,7 @@ import Brightness7Icon from '@material-ui/icons/Brightness7';
 // @material-ui/lab
 import Alert from '@material-ui/lab/Alert';
 
+import ConfirmDialog from './components/ConfirmDialog';
 import Drawer from './components/Drawer';
 import DrawerItem from './components/DrawerItem';
 import Connecting from './components/Connecting';
@@ -78,6 +73,7 @@ import Intro from './tabs/Intro';
 import Logs from './tabs/Logs';
 import Files from './tabs/Files';
 import Objects from './tabs/Objects';
+import i18n from '@iobroker/adapter-react/i18n';
 
 const drawerWidth = 180;
 
@@ -236,7 +232,8 @@ class App extends Router {
                 alertType: 'info',
                 alertMessage: '',
                 drawerOpen: this.props.width !== 'xs',
-                tab: null
+                tab: null,
+                allStored: true
             };
 
             this.logWorker = null;
@@ -331,8 +328,6 @@ class App extends Router {
 
                     this.getTabs();
 
-                    this.handleNavigation();
-
                     this.logWorker && this.logWorker.setCurrentHost(this.state.currentHost);
                 },
                 //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
@@ -353,11 +348,11 @@ class App extends Router {
     }
 
     /**
-     * Updates the current location in the states
+     * Updates the current currentTab in the states
      */
     onHashChanged() {
         this.setState({
-            location: Router.getLocation()
+            currentTab: Router.getLocation()
         });
     }
 
@@ -675,7 +670,7 @@ class App extends Router {
     }*/
 
     getCurrentTab() {
-        if (this.state && this.state.currentTab) {
+        if (this.state && this.state.currentTab && this.state.currentTab.tab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
                 return (
                     <Adapters
@@ -694,6 +689,21 @@ class App extends Router {
                         hostname={ this.state.hostname }
                         expertMode={ this.state.expertMode }
                         t={ I18n.t }
+                        configStored={ value => this.allStored(value) }
+                    />
+                );
+            } else
+            if (this.state.currentTab.tab === 'tab-intro') {
+                return (
+                    <Intro
+                        key="intro"
+                        protocol={ this.state.protocol }
+                        hostname={ this.state.hostname }
+                        showAlert={ (message, type) => this.showAlert(message, type) }
+                        socket={ this.socket }
+                        systemConfig={ this.state.systemConfig }
+                        t={ I18n.t }
+                        lang={ I18n.getLanguage() }
                     />
                 );
             } else
@@ -735,19 +745,10 @@ class App extends Router {
                     />
                 );
             }
+        } else {
+            this.handleNavigation('tab-intro');
+            return null;
         }
-
-        return (
-            <Intro
-                key="intro"
-                protocol={ this.state.protocol }
-                hostname={ this.state.hostname }
-                showAlert={ (message, type) => this.showAlert(message, type) }
-                socket={ this.socket }
-                systemConfig={ this.state.systemConfig }
-                t={ I18n.t }
-            />
-        );
     }
 
     handleAlertClose(event, reason) {
@@ -788,20 +789,49 @@ class App extends Router {
     handleNavigation(tab) {
 
         if (tab) {
-            Router.doNavigate(tab);
+            if (this.state.allStored) {
 
-            this.setState({
-                currentTab: Router.getLocation()
-            });
+                Router.doNavigate(tab);
+
+                this.setState({
+                    currentTab: Router.getLocation()
+                });
+            } else {
+                this.setState({
+                    dataNotStoredDialog: true,
+                    dataNotStoredTab: tab
+                });
+            }
         }
 
         if (this.props.width === 'xs' || this.props.width === 'sm') {
             this.handleDrawerClose();
         }
 
-        this.setTitle(tab ? tab.replace('tab-', '') : this.state.currentTab.tab.replace('tab-', ''));
-
         tab = tab || this.state.currentTab.tab || '';
+
+        this.setTitle(tab.replace('tab-', ''));
+    }
+
+    allStored(value) {
+        this.setState({
+            allStored: value
+        });
+    };
+
+    closeDataNotStoredDialog() {
+        this.setState({
+            dataNotStoredDialog: false
+        });
+    }
+
+    confirmDataNotStored() {
+        this.setState({
+            dataNotStoredDialog: false,
+            allStored: true
+        }, () => {
+            this.handleNavigation(this.state.dataNotStoredTab);
+        });
     }
 
     getNavigationItems() {
@@ -942,6 +972,15 @@ class App extends Router {
                         </Alert>
                     </Snackbar>
                 </Paper>
+                <ConfirmDialog
+                    onClose={ () => this.closeDataNotStoredDialog() }
+                    open={ this.state.dataNotStoredDialog }
+                    header={ i18n.t('Please confirm') }
+                    onConfirm={ () => this.confirmDataNotStored() }
+                    confirmText={ i18n.t('Ok') }
+                >
+                        { i18n.t('Some data are not stored. Discard?') }
+                </ConfirmDialog>
                 { !this.state.connected && <Connecting /> }
             </ThemeProvider>
         );
