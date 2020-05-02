@@ -232,6 +232,8 @@ class App extends Router {
 
                 tab: null,
                 allStored: true,
+                dataNotStoredDialog: false,
+                dataNotStoredTab: '',
 
                 baseSettingsOpened: null,
                 unsavedDataInDialog: false
@@ -694,6 +696,12 @@ class App extends Router {
                 return (
                     <Adapters
                         key="adapters"
+                        systemConfig={ this.state.systemConfig }
+                        socket={ this.socket }
+                        currentHost={ this.state.currentHost }
+                        ready={ this.state.ready }
+                        t={ I18n.t }
+                        lang={ I18n.getLanguage() }
                         expertMode={ this.state.expertMode }
                     />
                 );
@@ -733,6 +741,7 @@ class App extends Router {
                         t={ I18n.t }
                         lang={ this.state.lang }
                         socket={ this.socket }
+                        ready={ this.state.ready }
                         logWorker={ this.logWorker }
                         expertMode={ this.state.expertMode }
                         currentHost={ this.state.currentHost }
