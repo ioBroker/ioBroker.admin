@@ -2,6 +2,7 @@
  * ioBroker WebSockets
  * Copyright 2020, bluefox <dogafox@gmail.com>
  * Released under the MIT License.
+ * v 0.1.0
  */
 /* jshint -W097 */
 /* jshint strict: false */
@@ -274,6 +275,7 @@ function SocketClient () {
     this._reconnect = function () {
         if (!connectTimer) {
             connectTimer = setTimeout(() => {
+                connectTimer = null;
                 if (connectionCount < 5) {
                     connectionCount++;
                 }
