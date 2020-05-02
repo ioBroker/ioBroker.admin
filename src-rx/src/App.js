@@ -78,11 +78,19 @@ import BaseSettings from './tabs/BaseSettings';
 import i18n from '@iobroker/adapter-react/i18n';
 
 const drawerWidth = 180;
+const query = {};
+(window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
+    const parts = attr.split('=');
+    if (!parts[0]) {
+        return;
+    }
+    query[parts[0]] = parts[1] === undefined ? true : decodeURIComponent(parts[1]);
+});
 
 const styles = theme => ({
     root: {
-        display: 'flex',
-        height: '100%'
+        display:    'flex',
+        height:     '100%',
     },
     appBar: {
         /*backgroundColor: blue[300],*/
@@ -183,17 +191,7 @@ class App extends Router {
         I18n.setTranslations(this.translations);
         I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
 
-        const query = {};
-        (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
-            const parts = attr.split('=');
-            if (!parts[0]) {
-                return;
-            }
-            query[parts[0]] = parts[1] === undefined ? true : decodeURIComponent(parts[1]);
-        });
-
         if (!query.login) {
-
             this.state = {
                 connected:      false,
                 progress:       0,

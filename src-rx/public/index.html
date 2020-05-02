@@ -16,8 +16,23 @@
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <script type="text/javascript" src="%PUBLIC_URL%/lib/js/socket.io.js"></script>
-    <title>admin</title>
+    <title>Admin</title>
   </head>
+  <script>
+    window.loginHideLogo        = '@@loginHideLogo@@';
+    window.loginMotto           = '@@loginMotto@@';
+    window.login                = '@@auth@@';
+  </script>
+  <style>
+    body {
+      background-color: '@@loginBackgroundColor@@' !important;
+      background-image: url('@@loginBackgroundImage@@');
+    }
+    .root {
+      background-color: rgba(255,255,255,0.87);
+      border-radius: 10px;
+    }
+  </style>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root">
