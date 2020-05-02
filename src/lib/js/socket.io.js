@@ -52,6 +52,7 @@ function SocketClient () {
     let callbacks = [];
     let id = 0;
     let sessionID;
+    let authTimeout = null;
 
     this.connect = (_url, _options) => {
         id = 0;
@@ -129,6 +130,11 @@ function SocketClient () {
 
             const [type, id, name, args] = data;
 
+            if (authTimeout) {
+                clearTimeout(authTimeout);
+                authTimeout = null;
+            }
+
             if (type === MESSAGE_TYPES.CALLBACK) {
                 this.findAnswer(id, args);
             } else
@@ -182,6 +188,18 @@ function SocketClient () {
     };
 
     this.withCallback = (name, id, args, cb) => {
+        if (name === 'authenticate') {
+            authTimeout = setTimeout(() => {
+                authTimeout = null;
+                if (connected) {
+                    if (socket.readyState === 1) {
+                        console.log('ws normal error: ' + error.type);
+                    }
+                    handlers.error && handlers.error.forEach(cb => cb(ERRORS[error.code] || 'UNKNOWN'));
+                }
+                this.close();
+            });
+        }
         callbacks.push({id, cb, ts: DEBUG ? 0 : Date.now() + 30000});
         socket.send(JSON.stringify([MESSAGE_TYPES.CALLBACK, id, name, args]));
     };
@@ -203,6 +221,11 @@ function SocketClient () {
         }
 
         id++;
+
+        if (name === 'writeFile') {
+            // _adapter, filename, data, callback
+            arg3 = arg3 && btoa(String.fromCharCode.apply(null, new Uint8Array(arg3)));
+        }
 
         if (typeof arg5 === 'function') {
             this.withCallback(name, id, [arg1, arg2, arg3, arg4], arg5);

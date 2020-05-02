@@ -43,19 +43,25 @@
         }
     }
 
-    function showBackImage() {
+    function showBackImage(show) {
         // Read names of files for gong
-        socket.emit('readFile', 'admin.' + instance, BACK_FILE_NAME, function (err, file) {
+
+        /*socket.emit('readFile', 'admin.' + instance, BACK_FILE_NAME, function (err, file) {
             if (!err && file) {
                 var arrayBufferView = new Uint8Array(file);
                 var blob = new Blob([arrayBufferView], {type: 'image/png'});
                 var urlCreator = window.URL || window.webkitURL;
-                var imageUrl = urlCreator.createObjectURL( blob );
+                var imageUrl = urlCreator.createObjectURL(blob);
                 $('#login_image').attr('src', imageUrl).show();
             } else {
                 $('#login_image').hide();
             }
-        });
+        });*/
+        if (show) {
+            $('#login_image').attr('src', '/admin.' + instance + '/login-bg.png').show();
+        } else {
+            $('#login_image').hide();
+        }
     }
 
     function uploadFile(file, callback) {
@@ -64,7 +70,7 @@
         // Closure to capture the file information.
         reader.onload = function(e) {
             socket.emit('writeFile', 'admin.' + instance, BACK_FILE_NAME, e.target.result, function () {
-                if (callback) callback(BACK_FILE_NAME);
+                callback && callback(BACK_FILE_NAME);
             });
         };
 
@@ -90,7 +96,7 @@
 
         uploadFile(f, function (name) {
             $('#files').val('');
-            showBackImage();
+            showBackImage(true);
         });
     }
 
@@ -291,12 +297,12 @@
         fillUsers('#defaultUser', settings.defaultUser);
 
         initDropZone();
-        showBackImage();
+        showBackImage(settings.loginBackgroundImage);
 
         showHideSettings();
 
         $('#loginBackgroundColorHelper').on('change', function () {
-            $('#loginBackgroundColor').val($(this).val());
+            $('#loginBackgroundColor').val($(this).val()).trigger('change');
         });
 
         if (settings.loginBackgroundColor) {
@@ -543,7 +549,7 @@
                 <div class="col s12 m4 l4 background">
                     <div id="drop_zone">
                         <span class="translate">place here</span>
-                        <img id="login_image" src="" />
+                        <img id="login_image" src="" alt="background image"/>
                     </div>
                 </div>
             </div>
