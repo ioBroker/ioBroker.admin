@@ -1,3 +1,8 @@
+/*!
+ * ioBroker WebSockets
+ * Copyright 2020, bluefox <dogafox@gmail.com>
+ * Released under the MIT License.
+ */
 /* jshint -W097 */
 /* jshint strict: false */
 /* jslint node: true */
@@ -55,6 +60,10 @@ function SocketClient () {
         options = _options;
         sessionID = Date.now();
         try {
+            if (url === '/') {
+                url = window.location.protocol + '//' + window.location.host  + '/';
+            }
+
             let u = url.replace(/^http/, 'ws').split('?')[0] + '?sid=' + sessionID;
             if (_options && _options.name) {
                 u += '&name=' + encodeURIComponent(_options.name);
@@ -64,10 +73,10 @@ function SocketClient () {
         } catch (error) {
             handlers.error && handlers.error.forEach(cb => cb(error));
             this.close();
+            return;
         }
 
         socket.onopen = event => {
-            connected = true;
             lastPong = Date.now();
             connectionCount = 0;
             if (wasConnected) {
@@ -90,7 +99,7 @@ function SocketClient () {
             if (event.code === 3001) {
                 console.log('ws closed');
             } else {
-                console.log('ws connection error');
+                console.log('ws connection error: ' + ERRORS[event.code]);
             }
             this.close();
         };
@@ -124,6 +133,7 @@ function SocketClient () {
             } else
             if (type === MESSAGE_TYPES.MESSAGE) {
                 if (name === '___ready___') {
+                    connected  = true;
                     handlers.connect && handlers.connect.forEach(cb => cb());
                 } else if (args) {
                     handlers[name] && handlers[name].forEach(cb => cb(args[0], args[1], args[2], args[3], args[4]));
@@ -248,11 +258,12 @@ function SocketClient () {
             } catch (e) {
 
             }
-            if (connected) {
-                handlers.disconnect && handlers.disconnect.forEach(cb => cb());
-                connected = false;
-            }
             socket = null;
+        }
+
+        if (connected) {
+            handlers.disconnect && handlers.disconnect.forEach(cb => cb());
+            connected = false;
         }
 
         callbacks = [];
