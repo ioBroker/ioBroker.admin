@@ -1033,18 +1033,16 @@ class App extends Router {
                         { i18n.t('Some data are not stored. Discard?') }
                 </ConfirmDialog>
                 <CommandDialog
-                    onClose={ () => this.closeDataNotStoredDialog() }
-                    open={ true }
-                    header={ i18n.t('Please confirm') }
-                    onConfirm={ () => this.confirmDataNotStored() }
-                    cmd={ 'upload calendar' }
-                    confirmText={ i18n.t('Ok') }
+                    onClose={ () => {} /* Test command */}
+                    open={ this.state.cmdDialog }
+                    header={ i18n.t('Command') /* Placeholder */}
+                    onConfirm={ () => {} /* Test command */}
+                    cmd={ 'upload calendar' /* Test command */}
+                    confirmText={ i18n.t('Ok') /* Test command */}
                     socket={ this.socket }
                     currentHost={ this.state.currentHost }
                     ready={ this.state.ready }
-                >
-                    $ /.iobroker
-                </CommandDialog>
+                />
                 { !this.state.connected && <Connecting /> }
             </ThemeProvider>
         );

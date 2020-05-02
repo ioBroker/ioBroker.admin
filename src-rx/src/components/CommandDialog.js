@@ -25,10 +25,11 @@ const styles = theme => ({
         color: theme.palette.grey[500],
     },
     log: {
-        minHeight: 200,
-        minWidth: 400,
+        height: 400,
+        width: '100%',
         backgroundColor: grey[500],
-        padding: theme.spacing(1)
+        padding: theme.spacing(1),
+        overflowY: 'scroll'
     }
 });
 
@@ -39,6 +40,7 @@ class ConfirmDialog extends React.Component {
         super(props);
 
         this.state = {
+            log: ['$ /.iobroker ' + (props.cmd || '')],
             init: false
         };
     }
@@ -191,6 +193,12 @@ class ConfirmDialog extends React.Component {
 
     cmdStdoutHandler(id, text) {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
+            const log = this.state.log.slice();
+            log.push(text);
+
+            this.setState({
+                log
+            });
             console.log('cmdStdout');
             console.log(id);
             console.log(text);
@@ -199,6 +207,12 @@ class ConfirmDialog extends React.Component {
 
     cmdStderrHandler(id, text) {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
+            const log = this.state.log.slice();
+            log.push(text);
+
+            this.setState({
+                log
+            });
             console.log('cmdStderr');
             console.log(id);
             console.log(text);
@@ -207,10 +221,30 @@ class ConfirmDialog extends React.Component {
 
     cmdExitHandler(id, exitCode) {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
+            const log = this.state.log.slice();
+            log.push(exitCode);
+
+            this.setState({
+                log
+            });
             console.log('cmdExit');
             console.log(id);
             console.log(exitCode);
         }
+    }
+
+    getLog() {
+        return this.state.log.map((value, index) => {
+            return (
+                <Typography
+                    key={ index }
+                    component="p"
+                    variant="caption"
+                >
+                    { value }
+                </Typography>
+            )
+        });
     }
 
     render() {
@@ -218,7 +252,7 @@ class ConfirmDialog extends React.Component {
         const { classes } = this.props;
 
         return (
-            <Dialog onClose={ this.props.onClose } open={ this.props.open }>
+            <Dialog onClose={ this.props.onClose } open={ this.props.open } maxWidth="lg">
                 <DialogTitle>
                     { this.props.header || '' }
                     <IconButton className={ classes.closeButton } onClick={ this.props.onClose }>
@@ -230,7 +264,7 @@ class ConfirmDialog extends React.Component {
                         elevation={ 0 }
                         className={ classes.log }
                     >
-                        { this.props.children }
+                        { this.getLog() }
                     </Paper>
                 </DialogContent>
                 <DialogActions>
