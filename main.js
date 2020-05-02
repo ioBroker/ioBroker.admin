@@ -99,6 +99,7 @@ function startAdapter(options) {
     adapter.on('unload', callback => {
         // unsubscribe all
         socket && socket.unsubscribeAll();
+        adapter.timerRepo && clearTimeout(adapter.timerRepo);
 
         try {
             adapter.log.info('terminating http' + (adapter.config.secure ? 's' : '') + ' server on port ' + adapter.config.port);
