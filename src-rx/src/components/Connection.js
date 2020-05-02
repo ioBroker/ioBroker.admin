@@ -30,7 +30,7 @@ class Connection {
 
         this._socket = window.io.connect(
             this.props.protocol.replace(':', '') + '://' + this.props.host + ':' + this.props.port,
-            {query: 'ws=true'}
+            {query: 'ws=true', name: props.name}
         );
 
         this.states = {};
@@ -52,30 +52,32 @@ class Connection {
         this.promises = {};
 
         this._socket.on('connect', () => {
-            this.connected = true;
+            this._socket.emit('authenticate', (isOk, isSecure) => {
+                this.connected = true;
+                this.isSecure = isSecure;
+                if (this.firstConnect) {
+                    // retry strategy
+                    this.loadTimer = setTimeout(() => {
+                        this.loadTimer = null;
+                        this.loadCounter++;
+                        if (this.loadCounter < 10) {
+                            this.onConnect();
+                        }
+                    }, 1000);
 
-            if (this.firstConnect) {
-                // retry strategy
-                this.loadTimer = setTimeout(() => {
-                    this.loadTimer = null;
-                    this.loadCounter++;
-                    if (this.loadCounter < 10) {
+                    if (!this.loaded) {
                         this.onConnect();
                     }
-                }, 1000);
-
-                if (!this.loaded) {
-                    this.onConnect();
+                } else {
+                    this.onProgress(PROGRESS.READY);
                 }
-            } else {
-                this.onProgress(PROGRESS.READY);
-            }
 
-            this.subscribe(true);
+                this.subscribe(true);
 
-            if (this.waitForRestart) {
-                window.location.reload();
-            }
+                if (this.waitForRestart) {
+                    window.location.reload();
+                }
+            });
         });
 
         this._socket.on('disconnect', () => {
@@ -163,12 +165,7 @@ class Connection {
     }
 
     authenticate() {
-        if (window.location.port === '3000' || (window.location.search && window.location.search.startsWith('?href='))) {
-            window.alert('Please login in not debug window and then refresh');
-        } else {
-            // relocate to login.html
-            window.location = '/login?href=' + window.location.pathname + (window.location.search || '');
-        }
+        window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}?login&href=${window.location.search}${window.location.hash}`;
     }
 
     subscribeState(id, cb) {
@@ -717,22 +714,22 @@ class Connection {
             });
         });
     }
-
-    getSupportedFeatures(update) {
+    
+    checkFeatureSupported(feature, update) {
         if (update) {
-            this.promises.supportedFeatures = null;
+            this.promises['supportedFeatures_' + feature] = null;
         }
 
-        this.promises.supportedFeatures = this.promises.supportedFeatures || new Promise((resolve, reject) =>
-            this._socket.emit('getSupportedFeatures', features => resolve(features)));
+        this.promises['supportedFeatures_' + feature] = this.promises['supportedFeatures_' + feature] || new Promise((resolve, reject) =>
+            this._socket.emit('checkFeatureSupported', features => resolve(features)));
 
-        return this.promises.supportedFeatures;
+        return this.promises['supportedFeatures_' + feature];
     }
 
     readBaseSettings(host) {
-        return this.getSupportedFetaures()
-            .then(supportedFeatures => {
-                if (supportedFeatures.includes('BASE_SETTINGS')) {
+        return this.checkFeatureSupported('CONTROLLER_READWRITE_BASE_SETTINGS')
+            .then(result => {
+                if (result) {
                     return new Promise((resolve, reject) => {
                         let timeout = setTimeout(() => {
                             if (timeout) {
@@ -763,9 +760,9 @@ class Connection {
     }
 
     writeBaseSettings(host, config) {
-        return this.getSupportedFetaures()
-            .then(supportedFeatures => {
-                if (supportedFeatures.includes('BASE_SETTINGS')) {
+        return this.checkFeatureSupported('CONTROLLER_READWRITE_BASE_SETTINGS')
+            .then(result => {
+                if (result) {
                     return new Promise((resolve, reject) => {
                         let timeout = setTimeout(() => {
                             if (timeout) {
