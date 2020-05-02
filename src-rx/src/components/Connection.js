@@ -660,6 +660,64 @@ class Connection {
         });
     }
 
+    getRepository(host, args) {
+        if (!host.startsWith(host)) {
+            host += 'system.host.' + host;
+        }
+
+        return new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('timeout');
+                }
+            }, 5000);
+
+            this._socket.emit('sendToHost', host, 'getRepository', args, data => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject('May not read "getRepository"');
+                    } else if (!data) {
+                        reject('Cannot read "getRepository"');
+                    } else {
+                        resolve(data);
+                    }
+                }
+            });
+        });
+    }
+
+    getInstalled(host) {
+        if (!host.startsWith(host)) {
+            host += 'system.host.' + host;
+        }
+
+        return new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('timeout');
+                }
+            }, 5000);
+
+            this._socket.emit('sendToHost', host, 'getInstalled', null, data => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (data === PERMISSION_ERROR) {
+                        reject('May not read "getInstalled"');
+                    } else if (!data) {
+                        reject('Cannot read "getInstalled"');
+                    } else {
+                        resolve(data);
+                    }
+                }
+            });
+        });
+    }
+
     getSupportedFeatures(update) {
         if (update) {
             this.promises.supportedFeatures = null;
