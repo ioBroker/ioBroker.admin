@@ -39,6 +39,9 @@ import Config from '../dialogs/Config';
 import Utils from '../Utils';
 
 const styles = theme => ({
+    root: {
+        marginBottom: theme.spacing(2)
+    },
     table: {
         minWidth: 650,
     },
@@ -516,9 +519,9 @@ class Instances extends React.Component {
 
         //if (this.props.width === 'xs' || this.props.width === 'sm') {
             return (
-                <div>
+                <Paper className={ classes.root }>
                     { this.getPanels(classes) }
-                </div>
+                </Paper>
             );
         //}
 

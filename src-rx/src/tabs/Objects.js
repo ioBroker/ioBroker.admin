@@ -8,13 +8,12 @@ import ObjectBrowser from '../components/ObjectBrowser';
 
 const styles = theme => ({
     root: {
-        paddingTop: 5,
-        paddingLeft: 5,
-        width: 'calc(100% - 10px)',
-        height: 'calc(100% - 10px)',
+        width: '100%',
         overflow: 'hidden',
-        position: 'relative',
-    },
+        height: '100%',
+        paddingTop: 5,
+        paddingLeft: 5
+    }
 });
 
 class Objects extends React.Component {

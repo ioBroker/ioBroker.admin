@@ -9,6 +9,7 @@ import List from '@material-ui/core/List';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import { FaSignOutAlt as LogoutIcon } from 'react-icons/fa';
 
 const styles = theme => ({
     root: {
@@ -24,14 +25,28 @@ const styles = theme => ({
         padding: theme.spacing(0, 1),
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
+    },
+    headerLogout: {
+        justifyContent: 'space-between'
+    },
+    logout: {
+        color: theme.palette.primary.main
     }
 });
 
 class Drawer extends React.Component {
 
     getHeader() {
+
+        const { classes } = this.props;
+
         return (
-            <div className={ this.props.classes.header }>
+            <div className={ classes.header + (this.props.isSecure ? ' ' + classes.headerLogout : '') }>
+                { this.props.isSecure &&
+                    <IconButton title={ this.props.logoutTitle } onClick={ this.props.onLogout }>
+                        <LogoutIcon className={ classes.logout }/>
+                    </IconButton>
+                }
                 <IconButton onClick={ this.props.onClose }>
                     <ChevronLeftIcon />
                 </IconButton>

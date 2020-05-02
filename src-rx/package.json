@@ -4,9 +4,9 @@
   "private": true,
   "dependencies": {
     "@iobroker/adapter-react": "^0.3.8",
-    "@material-ui/core": "^4.9.11",
+    "@material-ui/core": "^4.9.12",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.50",
+    "@material-ui/lab": "^4.0.0-alpha.51",
     "@testing-library/jest-dom": "^5.5.0",
     "@testing-library/react": "^10.0.3",
     "@testing-library/user-event": "^10.1.0",

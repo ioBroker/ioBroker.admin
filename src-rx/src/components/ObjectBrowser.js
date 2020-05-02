@@ -14,6 +14,7 @@ import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import secondary from '@material-ui/core/colors/orange';
+import Grid from '@material-ui/core/Grid';
 
 import {FaFolder as IconClosed} from 'react-icons/fa';
 import {FaFolderOpen as IconOpen} from 'react-icons/fa';
@@ -54,9 +55,9 @@ const styles = theme => ({
         display: 'block'
     },
     mainDiv: {
-        width: '100%',
         height: '100%',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        flexWrap: 'nowrap'
     },
     tableDiv: {
         width: '100%',
@@ -1101,17 +1102,22 @@ class ObjectBrowser extends React.Component {
             const idWidth = 300;
             const WIDTHS = [120, 180, 180, 120];
             const width = `calc(100% - ${idWidth + WIDTHS[0] + WIDTHS[1] + WIDTHS[2] + WIDTHS[3]}px)`;
-            return (<div className={classes.mainDiv} ref={this.mainRef}>
-                {this.getToolbar()}
-                <div key="header" className={classes.header}>
+            return (
+            <Grid 
+                container
+                direction="column"
+                className={classes.mainDiv} ref={this.mainRef}
+            >
+                { this.getToolbar() }
+                <Grid item key="header" className={classes.header}>
                     <div className={classes.headerCell} style={{width: idWidth}}>{this.getFilterInput('id')}</div>
                     <div className={classes.headerCell} style={{width: width}}>{this.getFilterInput('name')}</div>
                     <div className={classes.headerCell} style={{width: WIDTHS[0]}}>{this.getFilterSelectRole()}</div>
                     <div className={classes.headerCell} style={{width: WIDTHS[1]}}>{this.getFilterSelectRoom()}</div>
                     <div className={classes.headerCell} style={{width: WIDTHS[2]}}>{this.getFilterSelectFunction()}</div>
                     <div className={classes.headerCell} style={{width: WIDTHS[3]}}>{I18n.t('Value')}</div>
-                </div>
-                <div className={classes.tableDiv}>
+                </Grid>
+                <Grid item className={classes.tableDiv}>
                     <TreeDataTable
                         ref={this.treeTableRef}
                         key="table"
@@ -1132,8 +1138,9 @@ class ObjectBrowser extends React.Component {
                         <TreeDataTable.Column grow={1} renderCell={this.renderColumnRoom.bind(this)}  className={classes.cellDiv} width={WIDTHS[1]}/>
                         <TreeDataTable.Column grow={1} renderCell={this.renderColumnFunc.bind(this)}  className={classes.cellDiv} width={WIDTHS[2]}/>
                         <TreeDataTable.Column grow={1} renderCell={this.renderColumnValue.bind(this)} className={classes.cellDiv} width={WIDTHS[3]}/>
-                    </TreeDataTable></div>
-            </div>);
+                    </TreeDataTable>
+                </Grid>
+            </Grid>);
         }
     }
 }

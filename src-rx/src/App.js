@@ -28,7 +28,6 @@ import AcUnitIcon from '@material-ui/icons/AcUnit';
 import AppsIcon from '@material-ui/icons/Apps';
 import ArtTrackIcon from '@material-ui/icons/ArtTrack';
 import BuildIcon from '@material-ui/icons/Build';
-import {FaSignOutAlt as LogoutIcon} from 'react-icons/fa';
 import CodeIcon from '@material-ui/icons/Code';
 import DeviceHubIcon from '@material-ui/icons/DeviceHub';
 import DvrIcon from '@material-ui/icons/Dvr';
@@ -147,10 +146,6 @@ const styles = theme => ({
     },
     baseSettingsButton: {
         color: 'red',
-    },
-    logoutButton: {
-        marginLeft: 50,
-        color: theme.palette.primary.main,
     }
 });
 
@@ -244,6 +239,8 @@ class App extends Router {
 
                 tab: null,
                 allStored: true,
+                dataNotStoredDialog: false,
+                dataNotStoredTab: '',
 
                 baseSettingsOpened: null,
                 unsavedDataInDialog: false
@@ -707,6 +704,12 @@ class App extends Router {
                 return (
                     <Adapters
                         key="adapters"
+                        systemConfig={ this.state.systemConfig }
+                        socket={ this.socket }
+                        currentHost={ this.state.currentHost }
+                        ready={ this.state.ready }
+                        t={ I18n.t }
+                        lang={ I18n.getLanguage() }
                         expertMode={ this.state.expertMode }
                     />
                 );
@@ -746,6 +749,7 @@ class App extends Router {
                         t={ I18n.t }
                         lang={ this.state.lang }
                         socket={ this.socket }
+                        ready={ this.state.ready }
                         logWorker={ this.logWorker }
                         expertMode={ this.state.expertMode }
                         currentHost={ this.state.currentHost }
@@ -973,14 +977,11 @@ class App extends Router {
                                 />
                             </IconButton>
                             {/*This will be removed later to settings, to not allow so easy to edit it*/}
-                            {this.state.expertMode ? <IconButton>
-                                <BuildIcon className={ classes.baseSettingsButton }/>
-                            </IconButton> : null}
-                            {/* @M: Do you have an Idea where to place it better */}
-                            {this.socket.isSecure ? <IconButton title={I18n.t('Logout')} onClick={() => this.logout()}>
-                                <LogoutIcon className={ classes.logoutButton }/>
-                            </IconButton> : null}
-
+                            {   this.state.expertMode && 
+                                <IconButton>
+                                    <BuildIcon className={ classes.baseSettingsButton }/>
+                                </IconButton>
+                            }
                             <Typography variant="h6" className={classes.title} style={{flexGrow: 1}}>
                             </Typography>
                             <Grid container spacing={ 1 } alignItems="center" style={{width: 'initial'}}>
@@ -997,6 +998,9 @@ class App extends Router {
                         open={ this.state.drawerOpen }
                         onClose={ () => this.handleDrawerClose() }
                         onOpen={ () => this.handleDrawerOpen() }
+                        onLogout={ () => this.logout() }
+                        logoutTitle={ i18n.t('Logout') }
+                        isSecure={ this.socket.isSecure }
                     >
                         { this.getNavigationItems() }
                     </Drawer>
