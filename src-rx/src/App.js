@@ -75,6 +75,7 @@ import Objects from './tabs/Objects';
 import BaseSettings from './tabs/BaseSettings';
 
 import i18n from '@iobroker/adapter-react/i18n';
+import CommandDialog from './components/CommandDialog';
 
 const drawerWidth = 180;
 
@@ -1033,6 +1034,19 @@ class App extends Router {
                 >
                         { i18n.t('Some data are not stored. Discard?') }
                 </ConfirmDialog>
+                <CommandDialog
+                    onClose={ () => this.closeDataNotStoredDialog() }
+                    open={ true }
+                    header={ i18n.t('Please confirm') }
+                    onConfirm={ () => this.confirmDataNotStored() }
+                    cmd={ 'upload calendar' }
+                    confirmText={ i18n.t('Ok') }
+                    socket={ this.socket }
+                    currentHost={ this.state.currentHost }
+                    ready={ this.state.ready }
+                >
+                    $ /.iobroker
+                </CommandDialog>
                 { !this.state.connected && <Connecting /> }
             </ThemeProvider>
         );
