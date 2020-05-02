@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactTransitionGroup from 'react-addons-transition-group'
 import clsx from 'clsx';
 
 import withWidth from '@material-ui/core/withWidth';

@@ -50,6 +50,9 @@ export default function Login(props) {
 
     const classes = useStyles();
 
+    const action = `${window.location.port === '3000' ? window.location.protocol + '//' + window.location.hostname + ':8081' : ''}/login?${window.location.port === '3000' ? 'dev&' : ''}href=${window.location.hash}`;
+    console.log(action);
+
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -65,7 +68,7 @@ export default function Login(props) {
                         { props.t('wrongPassword') }
                     </Alert>
                 }
-                <form className={classes.form} action="/login" method="post">
+                <form className={classes.form} action={action} method="post">
                     <TextField
                         variant="outlined"
                         margin="normal"

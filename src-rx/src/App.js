@@ -28,6 +28,7 @@ import AcUnitIcon from '@material-ui/icons/AcUnit';
 import AppsIcon from '@material-ui/icons/Apps';
 import ArtTrackIcon from '@material-ui/icons/ArtTrack';
 import BuildIcon from '@material-ui/icons/Build';
+import {FaSignOutAlt as LogoutIcon} from 'react-icons/fa';
 import CodeIcon from '@material-ui/icons/Code';
 import DeviceHubIcon from '@material-ui/icons/DeviceHub';
 import DvrIcon from '@material-ui/icons/Dvr';
@@ -138,6 +139,10 @@ const styles = theme => ({
     },
     baseSettingsButton: {
         color: 'red',
+    },
+    logoutButton: {
+        marginLeft: 50,
+        color: theme.palette.primary.main,
     }
 });
 
@@ -178,7 +183,16 @@ class App extends Router {
         I18n.setTranslations(this.translations);
         I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
 
-        if (window.location.pathname.split('/')[1] !== 'login') {
+        const query = {};
+        (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
+            const parts = attr.split('=');
+            if (!parts[0]) {
+                return;
+            }
+            query[parts[0]] = parts[1] === undefined ? true : decodeURIComponent(parts[1]);
+        });
+
+        if (!query.login) {
 
             this.state = {
                 connected:      false,
@@ -291,6 +305,7 @@ class App extends Router {
     componentDidMount() {
         if (!this.state.login) {
             this.socket = new Connection({
+                name: 'admin',
                 port: this.getPort(),
                 autoSubscribes: ['*', 'system.adapter.*'],
                 autoSubscribeLog: true,
@@ -805,8 +820,15 @@ class App extends Router {
         });
     }
 
-    handleNavigation(tab) {
+    logout() {
+        if (window.location.port === '3000') {
+            window.location = window.location.protocol + '//' + window.location.hostname + ':8081/logout?dev';
+        } else {
+            window.location = '/logout';
+        }
+    }
 
+    handleNavigation(tab) {
         if (tab) {
             if (this.state.allStored) {
 
@@ -882,7 +904,6 @@ class App extends Router {
     }
 
     render() {
-
         if (this.state.login) {
             return (
                 <ThemeProvider theme={ this.state.theme }>
@@ -953,8 +974,13 @@ class App extends Router {
                                     className={ clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
                                 />
                             </IconButton>
+                            {/*This will be removed later to settings, to not allow so easy to edit it*/}
                             {this.state.expertMode ? <IconButton>
                                 <BuildIcon className={ classes.baseSettingsButton }/>
+                            </IconButton> : null}
+                            {/* @M: Do you have an Idea where to place it better */}
+                            {this.socket.isSecure ? <IconButton title={I18n.t('Logout')} onClick={() => this.logout()}>
+                                <LogoutIcon className={ classes.logoutButton }/>
                             </IconButton> : null}
 
                             <Typography variant="h6" className={classes.title} style={{flexGrow: 1}}>
