@@ -196,7 +196,7 @@ function SocketClient () {
                     handlers.error && handlers.error.forEach(cb => cb('Authenticate timeout'));
                 }
                 this.close();
-            });
+            }, 2000);
         }
         callbacks.push({id, cb, ts: DEBUG ? 0 : Date.now() + 30000});
         socket.send(JSON.stringify([MESSAGE_TYPES.CALLBACK, id, name, args]));
