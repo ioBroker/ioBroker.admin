@@ -750,6 +750,33 @@ class Connection {
             });
         });
     }
+
+    cmdExec(host, cmd, cmdId) {
+        if (!host.startsWith(host)) {
+            host += 'system.host.' + host;
+        }
+
+        return new Promise((resolve, reject) => {
+            let timeout = setTimeout(() => {
+                if (timeout) {
+                    timeout = null;
+                    reject('timeout');
+                }
+            }, 5000);
+
+            this._socket.emit('cmdExec', host, cmdId, cmd, null, err => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                }
+            });
+        });
+    }
     
     checkFeatureSupported(feature, update) {
         if (update) {
