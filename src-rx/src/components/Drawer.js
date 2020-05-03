@@ -40,6 +40,10 @@ export const DRAWER_COMPACT_WIDTH = 50;
 const styles = theme => ({
     root: {
         flexShrink: 0,
+        transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        })
     },
     rootFullWidth: {
         width: DRAWER_FULL_WIDTH,
@@ -192,8 +196,8 @@ class Drawer extends React.Component {
         return (
             <div className={ clsx(
                 classes.header,
-                this.props.state !== STATES.compact && this.props.isSecure && classes.headerLogout,
-                this.props.state === STATES.compact && classes.headerCompact
+                this.props.state === STATES.opened && this.props.isSecure && classes.headerLogout,
+                this.props.state !== STATES.opened && classes.headerCompact
             ) }>
                 { this.props.isSecure &&
                     <IconButton title={ this.props.logoutTitle } onClick={ this.props.onLogout }>
@@ -228,7 +232,7 @@ class Drawer extends React.Component {
             items.push(
                 <DrawerItem
                     key={ name }
-                    compact={ this.props.state === STATES.compact }
+                    compact={ this.props.state !== STATES.opened }
                     onClick={ () => this.props.handleNavigation(name) }
                     icon={ tabsInfo[name].icon }
                     text={ I18n.t(name.replace('tab-', '').ucFirst()) }
@@ -265,7 +269,7 @@ class Drawer extends React.Component {
         } else {
             return (
                 <MaterialDrawer
-                    className={ clsx(classes.root, this.props.state === STATES.compact ? classes.rootCompactWidth : classes.rootFullWidth)}
+                    className={ clsx(classes.root, this.props.state !== STATES.opened ? classes.rootCompactWidth : classes.rootFullWidth) }
                     variant="persistent"
                     anchor="left"
                     open={ this.props.state !== STATES.closed }

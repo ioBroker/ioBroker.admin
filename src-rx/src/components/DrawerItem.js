@@ -24,41 +24,46 @@ const styles = theme => ({
     },
     compactBadge: {
         paddingLeft: 12,
+    },
+    noWrap: {
+        flexWrap: 'nowrap'
     }
 });
 
 class DrawerItem extends React.Component {
 
     render() {
+
+        const { classes } = this.props;
+
         return (
             <ListItem
                 button
-                className={ clsx({ [this.props.classes.selected]: this.props.selected }, this.props.compact && this.props.classes.compactBadge) }
-                onClick={ this.props.onClick }>
-
-                {!this.props.compact ?
-                    <Grid container spacing={1} alignItems="center">
-                        <Grid item>
-                            <ListItemIcon style={{minWidth: 0}}>
-                                <Badge badgeContent={this.props.badgeContent || 0}
-                                       color={this.props.badgeColor || 'primary'}>
-                                    {this.props.icon}
-                                </Badge>
-                            </ListItemIcon>
-                        </Grid>
-                        <Grid item>
-                            <ListItemText primary={this.props.text}/>
-                        </Grid>
-                    </Grid> :
-                    <ListItemIcon style={{minWidth: 0}} >
-                        <Badge
-                            badgeContent={this.props.badgeContent || 0}
-                            color={this.props.badgeColor || 'primary'}
-                        >
-                            {this.props.icon}
-                        </Badge>
-                    </ListItemIcon>
-                }
+                className={ clsx({ [classes.selected]: this.props.selected }, this.props.compact && classes.compactBadge) }
+                onClick={ this.props.onClick }
+            >
+                <Grid
+                    container
+                    spacing={1}
+                    alignItems="center"
+                    className={ classes.noWrap }
+                >
+                    <Grid item>
+                        <ListItemIcon style={{minWidth: 0}}>
+                            <Badge
+                                badgeContent={ this.props.badgeContent || 0 }
+                                color={ this.props.badgeColor || 'primary' }
+                            >
+                                { this.props.icon }
+                            </Badge>
+                        </ListItemIcon>
+                    </Grid>
+                        { !this.props.compact &&
+                            <Grid item>
+                                <ListItemText primary={this.props.text}/>
+                            </Grid>
+                        }
+                </Grid>
             </ListItem>
         )
     }
