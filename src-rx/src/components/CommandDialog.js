@@ -10,6 +10,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
@@ -41,8 +42,13 @@ class ConfirmDialog extends React.Component {
 
         this.state = {
             log: ['$ /.iobroker ' + (props.cmd || '')],
-            init: false
+            init: false,
+            max: null,
+            value: null,
+            progressText: ''
         };
+
+        this.t = props.t;
     }
     
     componentDidMount() {
@@ -57,7 +63,7 @@ class ConfirmDialog extends React.Component {
         }
     }
 
-    executeCommand() {
+    async executeCommand() {
 
         this.setState({
             init: true
@@ -67,47 +73,20 @@ class ConfirmDialog extends React.Component {
         this.props.socket.registerCmdStderrHandler(this.cmdStderrHandler.bind(this));
         this.props.socket.registerCmdExitHandler(this.cmdExitHandler.bind(this));
 
-        /*this.props.socket._socket.on('cmdStdout', (_id, text) => {
-            
+        const activeCmdId = Math.floor(Math.random() * 0xFFFFFFE) + 1;
 
-            if (this.state.activeCmdId && this.state.activeCmdId === _id) {
-                console.log('cmdStdout');
-            console.log(_id);
-            console.log(text);
-                let m = text.match(/^upload \[(\d+)]/);
-                /*if (m) {
-                    if ($dialogCommand.data('max') === null) {
-                        $dialogCommand.data('max', parseInt(m[1], 10));
-                        $dialogCommandProgress.removeClass('indeterminate').addClass('determinate');
-                    }
-                    const max = $dialogCommand.data('max');
-                    const value = parseInt(m[1], 10);
-                    $dialogCommandProgress.css('width', (100 - Math.round((value / max) * 100)) + '%');
-                } else {
-                    m = text.match(/^got [-_:\/\\.\w\d]+\/admin$/);
-                    if (m) {
-                        // upload of admin
-                        $dialogCommand.find('.progress-text').html(_('Upload admin started'));
-                        $dialogCommand.data('max', null);
-                    } else {
-                        // got ..../www
-                        m = text.match(/^got [-_:\/\\.\w\d]+\/www$/);
-                        if (m) {
-                            // upload of www
-                            $dialogCommand.find('.progress-text').html(_('Upload www started'));
-                            $dialogCommand.data('max', null);
-                        } else {
-    
-                        }
-                    }
-                }
-    
-                stdout += '\n' + text;
-                $stdout.val(stdout);
-                $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());*
-            }
+        this.setState({
+            activeCmdId
         });
-        this.props.socket._socket.on('cmdStderr', (_id, text) => {
+
+        try {
+            await this.props.socket.cmdExec(this.props.currentHost, this.props.cmd, activeCmdId);
+        } catch(error) {
+            console.log(error);
+        }
+
+
+        /*this.props.socket._socket.on('cmdStderr', (_id, text) => {
             
             if (this.state.activeCmdId && this.state.activeCmdId === _id) {
                 console.log('cmdStderr');
@@ -169,39 +148,43 @@ class ConfirmDialog extends React.Component {
                 }*
             }
         });*/
-
-        const activeCmdId = Math.floor(Math.random() * 0xFFFFFFE) + 1;
-
-        this.setState({
-            activeCmdId
-        });
-
-        this.props.socket._socket.emit('cmdExec', this.props.currentHost, activeCmdId, this.props.cmd, function (err) {
-
-            console.log(err);
-
-            if (err) {
-                /*stdout += '\n' + _(err);
-                $stdout.val(stdout);*
-                cmdCallback = null;*
-                callback(err);*/
-            } else {
-                //if (callback) callback();
-            }
-        });
     }
 
     cmdStdoutHandler(id, text) {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
+
             const log = this.state.log.slice();
             log.push(text);
 
+            const upload = text.match(/^upload \[(\d+)]/);
+            const gotAdmin = !upload ? text.match(/^got [-_:\/\\.\w\d]+\/admin$/) : null;
+            const gotWww = !gotAdmin ? text.match(/^got [-_:\/\\.\w\d]+\/www$/) : null;
+
+            let max = this.state.max;
+            let value = null;
+            let progressText = '';
+
+            if (upload) {
+                max = max || parseInt(upload[1], 10);
+                value = parseInt(upload[1], 10);
+            } else if (gotAdmin) {
+                // upload of admin
+                progressText = this.t('Upload admin started');
+                max = null;
+            } else if (gotWww) {
+                // upload of www
+                progressText = this.t('Upload www started');
+                max = null;
+            }
+
             this.setState({
-                log
+                log,
+                max,
+                value,
+                progressText
             });
+
             console.log('cmdStdout');
-            console.log(id);
-            console.log(text);
         }
     }
 
@@ -254,12 +237,16 @@ class ConfirmDialog extends React.Component {
         return (
             <Dialog onClose={ this.props.onClose } open={ this.props.open } maxWidth="lg">
                 <DialogTitle>
-                    { this.props.header || '' }
+                    { this.state.progressText || '' }
                     <IconButton className={ classes.closeButton } onClick={ this.props.onClose }>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
                 <DialogContent dividers>
+                    <LinearProgress
+                        variant={ this.state.max ? 'determinate' : 'indeterminate' }
+                        value={ this.state.max && this.state.value ? 100 - Math.round((this.state.value / this.state.max) * 100) : 0 }
+                    />
                     <Paper
                         elevation={ 0 }
                         className={ classes.log }
