@@ -26,7 +26,7 @@ const styles = theme => ({
     },
     log: {
         height: 400,
-        width: '100%',
+        width: 860,
         backgroundColor: grey[500],
         padding: theme.spacing(1),
         overflowY: 'scroll'
@@ -46,13 +46,13 @@ class ConfirmDialog extends React.Component {
     }
     
     componentDidMount() {
-        if(this.props.ready) {
+        if(this.props.ready && this.props.cmd) {
             this.executeCommand();
         }
     }
 
     componentDidUpdate() {
-        if(!this.state.init && this.props.ready) {
+        if(!this.state.init && this.props.ready && this.props.cmd) {
             this.executeCommand();
         }
     }
