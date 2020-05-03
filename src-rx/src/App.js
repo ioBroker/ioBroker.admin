@@ -281,8 +281,9 @@ class App extends Router {
         } else {
             this.state = {
                 login: true,
-                themeType: window.localStorage && window.localStorage.getItem('App.theme') ?
-                    window.localStorage.getItem('App.theme') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+                theme:          this.getTheme(),
+                themeName:      this.getThemeName(this.getTheme()),
+                themeType:      this.getThemeType(this.getTheme())
             }
         }
     }
