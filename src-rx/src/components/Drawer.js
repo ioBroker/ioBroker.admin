@@ -256,8 +256,8 @@ class Drawer extends React.Component {
                     className={ classes.root }
                     anchor="left"
                     open={ this.props.state !== STATES.closed }
-                    onClose={ this.props.onStateChange(STATES.closed) }
-                    onOpen={ this.props.onStateChange(STATES.opened) }
+                    onClose={ () => this.props.onStateChange(STATES.closed) }
+                    onOpen={ () => this.props.onStateChange(STATES.opened) }
                     classes={{ paper: classes.paper, }}
                 >
                     { this.getHeader() }
