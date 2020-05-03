@@ -192,10 +192,8 @@ function SocketClient () {
             authTimeout = setTimeout(() => {
                 authTimeout = null;
                 if (connected) {
-                    if (socket.readyState === 1) {
-                        console.log('ws normal error: ' + error.type);
-                    }
-                    handlers.error && handlers.error.forEach(cb => cb(ERRORS[error.code] || 'UNKNOWN'));
+                    DEBUG && console.log('Authenticate timeout');
+                    handlers.error && handlers.error.forEach(cb => cb('Authenticate timeout'));
                 }
                 this.close();
             });
