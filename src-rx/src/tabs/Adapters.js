@@ -351,7 +351,11 @@ class Adapters extends React.Component {
                                         <HelpIcon />
                                     </IconButton>
                                     { this.props.expertMode &&
-                                        <IconButton size="small" className={ !installed ? classes.hidden : '' }>
+                                        <IconButton
+                                            size="small"
+                                            className={ !installed ? classes.hidden : '' }
+                                            onClick={ () => this.props.executeCommand('upload ' + value)}    
+                                        >
                                             <PublishIcon />
                                         </IconButton>
                                     }
