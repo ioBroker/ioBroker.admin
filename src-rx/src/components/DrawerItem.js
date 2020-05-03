@@ -26,7 +26,8 @@ const styles = theme => ({
         paddingLeft: 12,
     },
     noWrap: {
-        flexWrap: 'nowrap'
+        flexWrap: 'nowrap',
+        minHeight: 49
     }
 });
 
@@ -49,7 +50,7 @@ class DrawerItem extends React.Component {
                     className={ classes.noWrap }
                 >
                     <Grid item>
-                        <ListItemIcon style={{minWidth: 0}}>
+                        <ListItemIcon style={{ minWidth: 0 }}>
                             <Badge
                                 badgeContent={ this.props.badgeContent || 0 }
                                 color={ this.props.badgeColor || 'primary' }
@@ -58,11 +59,11 @@ class DrawerItem extends React.Component {
                             </Badge>
                         </ListItemIcon>
                     </Grid>
-                        { !this.props.compact &&
-                            <Grid item>
-                                <ListItemText primary={this.props.text}/>
-                            </Grid>
-                        }
+                    { !this.props.compact &&
+                        <Grid item>
+                            <ListItemText primary={this.props.text}/>
+                        </Grid>
+                    }
                 </Grid>
             </ListItem>
         )
