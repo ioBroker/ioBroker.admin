@@ -100,6 +100,7 @@ function startAdapter(options) {
         // unsubscribe all
         socket && socket.unsubscribeAll();
         adapter.timerRepo && clearTimeout(adapter.timerRepo);
+        adapter.timerRepo = null;
 
         try {
             adapter.log.info('terminating http' + (adapter.config.secure ? 's' : '') + ' server on port ' + adapter.config.port);
@@ -440,7 +441,7 @@ function getData(adapter, callback) {
 
             // Some adapters want access on specified tmp directory
             if (tmpPath) {
-                adapter.config.tmpPath = tmpPath;
+                adapter.config.tmpPath      = tmpPath;
                 adapter.config.tmpPathAllow = true;
             }
 
@@ -491,16 +492,22 @@ function updateRegister(isForce) {
 
                         // start next cycle
                         if (adapter.config.autoUpdate) {
-                            adapter.timerRepo && clearInterval(adapter.timerRepo);
+                            adapter.timerRepo && clearTimeout(adapter.timerRepo);
                             adapter.log.debug('Next repo update on ' + new Date(Date.now() + adapter.config.autoUpdate * ONE_HOUR_MS + 1).toLocaleString());
-                            adapter.timerRepo = setTimeout(() => updateRegister(), adapter.config.autoUpdate * ONE_HOUR_MS + 1);
+                            adapter.timerRepo = setTimeout(() => {
+                                adapter.timerRepo = null;
+                                updateRegister();
+                            }, adapter.config.autoUpdate * ONE_HOUR_MS + 1);
                         }
                     });
                 } else if (adapter.config.autoUpdate) {
                     const interval = repos.ts + adapter.config.autoUpdate * ONE_HOUR_MS - Date.now() + 1;
                     adapter.log.debug('Next repo update on ' + new Date(Date.now() + interval).toLocaleString());
-                    adapter.timerRepo && clearInterval(adapter.timerRepo);
-                    adapter.timerRepo = setTimeout(() => updateRegister(), interval);
+                    adapter.timerRepo && clearTimeout(adapter.timerRepo);
+                    adapter.timerRepo = setTimeout(() => {
+                        adapter.timerRepo = null;
+                        updateRegister();
+                    }, interval);
                 }
             });
         }
