@@ -82,7 +82,7 @@ export default function Login(props) {
                     direction="column"
                     alignItems="center"  
                 >
-                    { !window.loginHideLogo &&
+                    { window.loginHideLogo && window.loginHideLogo === 'false' &&
                         <Avatar className={ classes.avatar } src="img/logo.png" />
                     }
                     <Typography component="h1" variant="h5">
