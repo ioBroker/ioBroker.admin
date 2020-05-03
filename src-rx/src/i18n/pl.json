@@ -889,5 +889,10 @@
     "wetty": "Wetty",
     "write": "pisać",
     "write operation": "pisać",
-    "yesterday": "wczoraj"
+    "yesterday": "wczoraj",
+    "wrongPassword": "Nieprawidłowa nazwa użytkownika lub hasło",
+    "enterLogin": "Nazwa użytkownika",
+    "enterPassword": "Hasło",
+    "login": "Zaloguj Się",
+    "Stay signed in": "Pozostań zalogowany"
 }

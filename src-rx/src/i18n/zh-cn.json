@@ -889,5 +889,10 @@
     "wetty": "Wetty",
     "write": "写",
     "write operation": "写",
-    "yesterday": "昨天"
+    "yesterday": "昨天",
+    "wrongPassword": "用户名或密码无效",
+    "enterLogin": "登录名",
+    "enterPassword": "密码",
+    "login": "登录",
+    "Stay signed in": "保持登录"
 }

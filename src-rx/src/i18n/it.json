@@ -889,5 +889,10 @@
     "wetty": "Umido",
     "write": "Scrivi",
     "write operation": "Scrivi",
-    "yesterday": "Ieri"
+    "yesterday": "Ieri",
+    "wrongPassword": "Nome utente o password errati",
+    "enterLogin": "Nome di login",
+    "enterPassword": "Parola d'ordine",
+    "login": "Accesso",
+    "Stay signed in": "Resta connesso"
 }

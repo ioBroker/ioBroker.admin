@@ -889,5 +889,11 @@
     "wetty": "Wetty",
     "write": "писать",
     "write operation": "Писать",
-    "yesterday": "вчера"
+    "yesterday": "вчера",
+    "wrongPassword": "Неверные имя пользователя или пароль",
+    "enterLogin": "Имя пользователя",
+    "enterPassword": "Пароль",
+    "login": "Войти",
+    "loginTitle": "Вход в админ",
+    "Stay signed in": "Оставайтесь в системе"
 }

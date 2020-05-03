@@ -889,5 +889,10 @@
     "wetty": "Wetty",
     "write": "schrijven",
     "write operation": "schrijven",
-    "yesterday": "gisteren"
+    "yesterday": "gisteren",
+    "wrongPassword": "ongeldige gebruikersnaam of wachtwoord",
+    "enterLogin": "Inlog naam",
+    "enterPassword": "Wachtwoord",
+    "login": "Log in",
+    "Stay signed in": "Blijf ingelogd"
 }
