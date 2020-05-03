@@ -354,7 +354,7 @@ class Adapters extends React.Component {
                                         <IconButton
                                             size="small"
                                             className={ !installed ? classes.hidden : '' }
-                                            onClick={ () => this.props.executeCommand('upload ' + value)}    
+                                            onClick={ () => this.props.executeCommand('upload ' + value) }
                                         >
                                             <PublishIcon />
                                         </IconButton>
@@ -368,7 +368,11 @@ class Adapters extends React.Component {
                                         </IconButton>
                                     }
                                     { this.props.expertMode &&
-                                        <IconButton size="small" className={ !installed ? classes.hidden : '' }>
+                                        <IconButton
+                                            size="small"
+                                            className={ !installed ? classes.hidden : '' }
+                                            onClick={ () => this.props.executeCommand('rebuild ' + value) }
+                                        >
                                             <BuildIcon />
                                         </IconButton>
                                     }
