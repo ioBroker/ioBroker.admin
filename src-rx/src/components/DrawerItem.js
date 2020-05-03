@@ -21,6 +21,9 @@ const styles = theme => ({
         '&:hover': {
             color: theme.palette.text.primary
         }
+    },
+    compactBadge: {
+        paddingLeft: 12,
     }
 });
 
@@ -30,20 +33,32 @@ class DrawerItem extends React.Component {
         return (
             <ListItem
                 button
-                className={ clsx({ [this.props.classes.selected]: this.props.selected }) }
+                className={ clsx({ [this.props.classes.selected]: this.props.selected }, this.props.compact && this.props.classes.compactBadge) }
                 onClick={ this.props.onClick }>
-                <Grid container spacing={ 1 } alignItems="center">
-                    <Grid item>
-                        <ListItemIcon style={{ minWidth: 0 }}>
-                            <Badge badgeContent={ this.props.badgeContent || 0 } color={ this.props.badgeColor || 'primary' }>
-                                { this.props.icon }
-                            </Badge>
-                        </ListItemIcon>
-                    </Grid>
-                    <Grid item>
-                        <ListItemText primary={ this.props.text } />
-                    </Grid>
-                </Grid>
+
+                {!this.props.compact ?
+                    <Grid container spacing={1} alignItems="center">
+                        <Grid item>
+                            <ListItemIcon style={{minWidth: 0}}>
+                                <Badge badgeContent={this.props.badgeContent || 0}
+                                       color={this.props.badgeColor || 'primary'}>
+                                    {this.props.icon}
+                                </Badge>
+                            </ListItemIcon>
+                        </Grid>
+                        <Grid item>
+                            <ListItemText primary={this.props.text}/>
+                        </Grid>
+                    </Grid> :
+                    <ListItemIcon style={{minWidth: 0}} >
+                        <Badge
+                            badgeContent={this.props.badgeContent || 0}
+                            color={this.props.badgeColor || 'primary'}
+                        >
+                            {this.props.icon}
+                        </Badge>
+                    </ListItemIcon>
+                }
             </ListItem>
         )
     }
@@ -53,6 +68,7 @@ DrawerItem.propTypes = {
     icon: PropTypes.object,
     onClick: PropTypes.func,
     selected: PropTypes.bool,
+    compact: PropTypes.bool,
     text: PropTypes.string,
     badgeContent: PropTypes.number,
     badgeColor: PropTypes.string
