@@ -311,6 +311,7 @@ class App extends Router {
 
                     if (!this.state.currentHost) {
                         newState.currentHost = newState.hosts[0]._id;
+                        newState.currentHostName = newState.hosts[0].common.name;
                     }
 
                     this.setState(newState);
@@ -562,7 +563,7 @@ class App extends Router {
                         systemConfig={ this.state.systemConfig }
                         socket={ this.socket }
                         currentHost={ this.state.currentHost }
-                        currentHostname={ this.state.currentHostName }
+                        currentHostName={ this.state.currentHostName }
                         ready={ this.state.ready }
                         t={ I18n.t }
                         lang={ I18n.getLanguage() }
@@ -891,6 +892,7 @@ class App extends Router {
                         socket={ this.socket }
                         currentHost={ this.state.currentHost }
                         ready={ this.state.ready }
+                        t={ I18n.t }
                     />
                 }
                 { !this.state.connected && <Connecting /> }
