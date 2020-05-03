@@ -120,6 +120,18 @@ class Connection {
 
         this._socket.on('objectChange', (id, obj) => setTimeout(() => this.objectChange(id, obj), 0));
         this._socket.on('stateChange', (id, state) => setTimeout(() => this.stateChange(id, state), 0));
+
+        this._socket.on('cmdStdout', (id, text) => {
+            this.onCmdStdoutHandler && this.onCmdStdoutHandler(id, text);
+        });
+
+        this._socket.on('cmdStderr', (id, text) => {
+            this.onCmdStderrHandler && this.onCmdStderrHandler(id, text);
+        });
+
+        this._socket.on('cmdExit', (id, exitCode) => {
+            this.onCmdExitHandler && this.onCmdExitHandler(id, exitCode);
+        });
     }
 
     onConnect() {
@@ -444,6 +456,30 @@ class Connection {
 
     unregisterLogHandler(handler) {
         this.onLogHandler = null;
+    }
+
+    registerCmdStdoutHandler(handler) {
+        this.onCmdStdoutHandler = handler;
+    }
+
+    unregisterCmdStdoutHandler(handler) {
+        this.onCmdStdoutHandler = null;
+    }
+
+    registerCmdStderrHandler(handler) {
+        this.onCmdStderrHandler = handler;
+    }
+
+    unregisterCmdStderrHandler(handler) {
+        this.onCmdStderrHandler = null;
+    }
+
+    registerCmdExitHandler(handler) {
+        this.onCmdExitHandler = handler;
+    }
+
+    unregisterCmdExitHandler(handler) {
+        this.onCmdExitHandler = null;
     }
 
     getEnums(_enum) {

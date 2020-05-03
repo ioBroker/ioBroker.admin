@@ -193,9 +193,9 @@ function SocketClient () {
                 authTimeout = null;
                 if (connected) {
                     if (socket.readyState === 1) {
-                        console.log('ws normal error: ' + error.type);
+                        console.log('ws normal error: ' /*+ error.type*/);
                     }
-                    handlers.error && handlers.error.forEach(cb => cb(ERRORS[error.code] || 'UNKNOWN'));
+                    handlers.error && handlers.error.forEach(cb => cb(/*ERRORS[error.code] || */'UNKNOWN'));
                 }
                 this.close();
             });
