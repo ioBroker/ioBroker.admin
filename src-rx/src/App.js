@@ -24,26 +24,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
 // @material-ui/icons
-import AcUnitIcon from '@material-ui/icons/AcUnit';
-import AppsIcon from '@material-ui/icons/Apps';
-import ArtTrackIcon from '@material-ui/icons/ArtTrack';
-import BuildIcon from '@material-ui/icons/Build';
-import CodeIcon from '@material-ui/icons/Code';
-import DeviceHubIcon from '@material-ui/icons/DeviceHub';
-import DvrIcon from '@material-ui/icons/Dvr';
-import FlashOnIcon from '@material-ui/icons/FlashOn';
-import InfoIcon from '@material-ui/icons/Info';
 import MenuIcon from '@material-ui/icons/Menu';
-import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
-import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
-import StorageIcon from '@material-ui/icons/Storage';
-import StoreIcon from '@material-ui/icons/Store';
-import SubscriptionsIcon from '@material-ui/icons/Subscriptions';
-import SubtitlesIcon from '@material-ui/icons/Subtitles';
-import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
-import ViewListIcon from '@material-ui/icons/ViewList';
+import BuildIcon from '@material-ui/icons/Build';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import FilesIcon from '@material-ui/icons/FileCopy';
 import ExpertIcon from './components/ExperIcon';
 
 import Brightness4Icon from '@material-ui/icons/Brightness4';
@@ -56,7 +39,8 @@ import Alert from '@material-ui/lab/Alert';
 
 import ConfirmDialog from './components/ConfirmDialog';
 import Drawer from './components/Drawer';
-import DrawerItem from './components/DrawerItem';
+import { STATES as DrawerStates } from './components/Drawer';
+import { DRAWER_FULL_WIDTH, DRAWER_COMPACT_WIDTH } from './components/Drawer';
 import Connecting from './components/Connecting';
 
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -76,8 +60,9 @@ import BaseSettings from './tabs/BaseSettings';
 
 import i18n from '@iobroker/adapter-react/i18n';
 import CommandDialog from './components/CommandDialog';
+import PropTypes from "prop-types";
 
-const drawerWidth = 180;
+
 const query = {};
 (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
     const parts = attr.split('=');
@@ -103,8 +88,16 @@ const styles = theme => ({
         background: '#FFFFFF'
     },
     appBarShift: {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: drawerWidth,
+      width: `calc(100% - ${DRAWER_FULL_WIDTH}px)`,
+      marginLeft: DRAWER_FULL_WIDTH,
+      transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
+    appBarShiftCompact: {
+      width: `calc(100% - ${DRAWER_COMPACT_WIDTH}px)`,
+      marginLeft: DRAWER_COMPACT_WIDTH,
       transition: theme.transitions.create(['margin', 'width'], {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
@@ -128,7 +121,10 @@ const styles = theme => ({
         /*backgroundColor: grey[200]*/
     },
     contentMargin: {
-        marginLeft: -drawerWidth,
+        marginLeft: -DRAWER_FULL_WIDTH,
+    },
+    contentMarginCompact: {
+        marginLeft: -DRAWER_COMPACT_WIDTH,
     },
     contentShift: {
       transition: theme.transitions.create('margin', {
@@ -188,6 +184,14 @@ class App extends Router {
         I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());
 
         if (!query.login) {
+            let drawerState = window.localStorage.getItem('App.drawerState');
+            if (drawerState) {
+                drawerState = parseInt(drawerState, 10);
+            } else {
+                drawerState = this.props.width === 'xs' ? DrawerStates.closed : DrawerStates.opened;
+            }
+
+
             this.state = {
                 connected:      false,
                 progress:       0,
@@ -215,17 +219,11 @@ class App extends Router {
                 subscribesLogs: 0,
                 systemConfig:   null,
 
-                instances:      null,
-
                 objects:        {},
 
                 waitForRestart: false,
                 tabs:           null,
                 config:         {},
-
-                //==================== Finished
-                logErrors: 0,
-                //=============
 
                 stateChanged: false,
 
@@ -236,7 +234,7 @@ class App extends Router {
                 alert: false,
                 alertType: 'info',
                 alertMessage: '',
-                drawerOpen: this.props.width !== 'xs',
+                drawerState,
 
                 tab: null,
                 allStored: true,
@@ -249,49 +247,13 @@ class App extends Router {
                 cmd: null,
                 cmdDialog: false
             };
-
             this.logWorker = null;
-            this.logErrorHandlerBound = this.logErrorHandler.bind(this);
-
-            this.tabsInfo = {
-                'tab-intro':            {order: 1,    icon: <AppsIcon />},
-                'tab-info':             {order: 5,    icon: <InfoIcon />,               host: true},
-                'tab-adapters':         {order: 10,   icon: <StoreIcon />,              host: true},
-                'tab-instances':        {order: 15,   icon: <SubtitlesIcon />,          host: true},
-                'tab-objects':          {order: 20,   icon: <ViewListIcon />},
-                'tab-enums':            {order: 25,   icon: <ArtTrackIcon />},
-                'tab-devices':          {order: 27,   icon: <DvrIcon />,                host: true},
-                'tab-logs':             {order: 30,   icon: <ViewHeadlineIcon />,       host: true},
-                'tab-scenes':           {order: 35,   icon: <SubscriptionsIcon />},
-                'tab-events':           {order: 40,   icon: <FlashOnIcon />},
-                'tab-users':            {order: 45,   icon: <PersonOutlineIcon />},
-                'tab-javascript':       {order: 50,   icon: <CodeIcon />},
-                'tab-text2command-0':   {order: 55,   icon: <AcUnitIcon />},
-                'tab-text2command-1':   {order: 56,   icon: <AcUnitIcon />},
-                'tab-text2command-2':   {order: 57,   icon: <AcUnitIcon />},
-                'tab-node-red-0':       {order: 60,   icon: <DeviceHubIcon />},
-                'tab-node-red-1':       {order: 61,   icon: <DeviceHubIcon />},
-                'tab-node-red-2':       {order: 62,   icon: <DeviceHubIcon />},
-                'tab-fullcalendar-0':   {order: 65,   icon: <PermContactCalendarIcon />},
-                'tab-fullcalendar-1':   {order: 66,   icon: <PermContactCalendarIcon />},
-                'tab-fullcalendar-2':   {order: 67,   icon: <PermContactCalendarIcon />},
-                'tab-hosts':            {order: 100,  icon: <StorageIcon />},
-                'tab-files':            {order: 110,  icon: <FilesIcon />},
-            };
         } else {
             this.state = {
                 login: true,
                 themeType: window.localStorage && window.localStorage.getItem('App.theme') ?
                     window.localStorage.getItem('App.theme') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
             }
-        }
-    }
-
-    logErrorHandler(logErrors) {
-        if (logErrors !== this.state.logErrors) {
-            this.setState({
-                logErrors
-            });
         }
     }
 
@@ -326,28 +288,30 @@ class App extends Router {
                     }
                 },
                 onReady: async (objects, scripts) => {
-                    if (!this.logWorker && this.logErrorHandlerBound) {
-                        this.logWorker = new LogWorker(this.socket, 1000);
-                        this.logWorker.registerErrorCountHandler(this.logErrorHandlerBound);
-                    }
-
                     I18n.setLanguage(this.socket.systemLang);
-                    this.setState({ lang: this.socket.systemLang });
 
-                    // TODO: It is better to collect all the attributes in state and set it with one step
-                    // now we have 4 setState calls
-                    this.setState({
+                    // create logWorker
+                    this.logWorker = this.logWorker || new LogWorker(this.socket, 1000);
+
+                    const newState = {
+                        lang: this.socket.systemLang,
                         ready: true,
                         objects,
-                    });
+                    };
 
-                    // this.socket.subscribeObject('*', (id, obj) => this.onObjectChange(id, obj));
-                    // this.socket.subscribeState('*', (id, state) => this.onStateChange(id, state));
+                    try {
+                        newState.systemConfig = await this.socket.getSystemConfig();
+                    } catch (error) {
+                        console.log(error);
+                    }
 
-                    await this.getSystemConfig();
-                    await this.getHosts();
+                    newState.hosts = await this.socket.getHosts();
 
-                    this.getTabs();
+                    if (!this.state.currentHost) {
+                        newState.currentHost = newState.hosts[0]._id;
+                    }
+
+                    this.setState(newState);
 
                     this.logWorker && this.logWorker.setCurrentHost(this.state.currentHost);
                 },
@@ -357,14 +321,6 @@ class App extends Router {
                     this.showAlert(error, 'error');
                 }
             });
-        }
-    }
-
-    clearLogErrors(cb) {
-        if (this.state.logErrors) {
-            this.setState({logErrors: 0}, cb);
-        } else {
-            cb && cb();
         }
     }
 
@@ -381,7 +337,6 @@ class App extends Router {
      * Get the used port
      */
     getPort() {
-
         let port = parseInt(window.location.port, 10);
 
         if (isNaN(port)) {
@@ -514,81 +469,6 @@ class App extends Router {
         }*/
     }
 
-    async getSystemConfig() {
-        try {
-            const systemConfig = await this.socket.getSystemConfig();
-            this.setState({ systemConfig });
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    async getHosts() {
-        const hosts = await this.socket.getHosts();
-
-        if (this.state.currentHost) {
-            this.setState({ hosts });
-        } else {
-            this.setState({ hosts, currentHost: hosts[0]._id });
-        }
-    }
-
-    getTabs() {
-
-        let allTabs = [];
-        /*for (let i = 0; i < main.instances.length; i++) {
-            const instance = main.instances[i];
-            const instanceObj = main.objects[instance];
-            if (!instanceObj.common || !instanceObj.common.adminTab) continue;
-            if (instanceObj.common.adminTab.singleton) {
-                let isFound = false;
-                const inst1 = instance.replace(/\.(\d+)$/, '.');
-                for (let j = 0; j < addTabs.length; j++) {
-                    const inst2 = addTabs[j].replace(/\.(\d+)$/, '.');
-                    if (inst1 === inst2) {
-                        isFound = true;
-                        break;
-                    }
-                }
-                if (!isFound) addTabs.push(instance);
-            } else {
-                addTabs.push(instance);
-            }*/
-
-        if (this.state.instances) {
-            this.state.instances.forEach(instanceIndex => {
-
-                const instance = this.state.instances[instanceIndex];
-
-                if (!instance.common || !instance.common.adminTab) {
-                    return;
-                }
-
-                if (instance.common.adminTab.singleton) {
-                    let isFound = false;
-                    const inst1 = instance._id.replace(/\.(\d+)$/, '.');
-
-                    for (const tabIndex in allTabs) {
-                        const inst2 = allTabs[tabIndex].replace(/\.(\d+)$/, '.');
-                        if (inst1 === inst2) {
-                            isFound = true;
-                            break;
-                        }
-                    }
-
-                    !isFound && allTabs.push(instance._id);
-                } else {
-                    allTabs.push(instance._id);
-                }
-            });
-        }
-
-        this.setState({
-            allTabs,
-            tabs: []
-        });
-    }
-
     async setTitle(title) {
         document.title = title + ' - ioBroker'; 
     }
@@ -619,37 +499,6 @@ class App extends Router {
             this.showError(error);
         }
     }*/
-
-    /**
-     * Format number in seconds to time text
-     * @param {!number} seconds
-     * @returns {String}
-     */
-    formatSeconds(seconds) {
-        const days = Math.floor(seconds / (3600 * 24));
-        seconds %= 3600 * 24;
-        let hours = Math.floor(seconds / 3600);
-        if (hours < 10) {
-            hours = '0' + hours;
-        }
-        seconds %= 3600;
-        let minutes = Math.floor(seconds / 60);
-        if (minutes < 10) {
-            minutes = '0' + minutes;
-        }
-        seconds %= 60;
-        seconds = Math.floor(seconds);
-        if (seconds < 10) {
-            seconds = '0' + seconds;
-        }
-        let text = '';
-        if (days) {
-            text += days + ' ' + I18n.t('daysShortText') + ' ';
-        }
-        text += hours + ':' + minutes + ':' + seconds;
-
-        return text;
-    }
 
     /*getUser() {
         if (!this.state.currentUser) {
@@ -815,15 +664,10 @@ class App extends Router {
         });
     }
 
-    handleDrawerClose() {
+    handleDrawerState(state) {
+        window.localStorage.setItem('App.drawerState', state);
         this.setState({
-            drawerOpen: false
-        });
-    }
-
-    handleDrawerOpen() {
-        this.setState({
-            drawerOpen: true
+            drawerState: state
         });
     }
 
@@ -853,10 +697,10 @@ class App extends Router {
         }
 
         if (this.props.width === 'xs' || this.props.width === 'sm') {
-            this.handleDrawerClose();
+            this.handleDrawerState(DrawerStates.closed);
         }
 
-        tab = tab || this.state.currentTab.tab || '';
+        tab = tab || (this.state.currentTab && this.state.currentTab.tab) || '';
 
         this.setTitle(tab.replace('tab-', ''));
     }
@@ -880,34 +724,6 @@ class App extends Router {
         }, () => {
             this.handleNavigation(this.state.dataNotStoredTab);
         });
-    }
-
-    getNavigationItems() {
-
-        const items = [];
-        const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files', 'tab-objects'];
-
-        Object.keys(this.tabsInfo).forEach(name => {
-
-            //For developing
-            if (!READY_TO_USE.includes(name)) {
-                return;
-            }
-            
-            items.push(
-                <DrawerItem
-                    key={ name }
-                    onClick={ () => this.handleNavigation(name) }
-                    icon={ this.tabsInfo[name].icon }
-                    text={ I18n.t(name.replace('tab-', '').ucFirst()) }
-                    selected={ this.state.currentTab && this.state.currentTab.tab === name }
-                    badgeContent={ name === 'tab-logs' ? this.state.logErrors : 0 }
-                    badgeColor={ name === 'tab-logs' ? 'error' : '' }
-                />
-            );
-        });
-
-        return items;
     }
 
     executeCommand(cmd) {
@@ -950,13 +766,17 @@ class App extends Router {
                     <AppBar
                         color="default"
                         position="fixed"
-                        className={ clsx(classes.appBar, {[classes.appBarShift]: !small && this.state.drawerOpen}) }
+                        className={ clsx(
+                            classes.appBar,
+                            {[classes.appBarShift]:        !small && this.state.drawerState === DrawerStates.opened},
+                            {[classes.appBarShiftCompact]: !small && this.state.drawerState === DrawerStates.compact}
+                        ) }
                     >
                         <Toolbar>
                             <IconButton
                                 edge="start"
-                                className={ clsx(classes.menuButton, !small && this.state.drawerOpen && classes.hide) }
-                                onClick={ () => this.handleDrawerOpen() }
+                                className={ clsx(classes.menuButton, !small && this.state.drawerState !== DrawerStates.closed && classes.hide) }
+                                onClick={ () => this.handleDrawerState(DrawerStates.opened) }
                             >
                                 <MenuIcon />
                             </IconButton>
@@ -1014,22 +834,29 @@ class App extends Router {
                         </Toolbar>
                     </AppBar>
                     <Drawer
-                        open={ this.state.drawerOpen }
-                        onClose={ () => this.handleDrawerClose() }
-                        onOpen={ () => this.handleDrawerOpen() }
+                        state={ this.state.drawerState }
+                        handleNavigation={ name => this.handleNavigation(name) }
+                        onStateChange={ state => this.handleDrawerState(state) }
                         onLogout={ () => this.logout() }
-                        logoutTitle={ i18n.t('Logout') }
+                        currentTab={ this.state.currentTab && this.state.currentTab.tab }
+                        logWorker={ this.logWorker }
+                        logoutTitle={ I18n.t('Logout') }
                         isSecure={ this.socket.isSecure }
-                    >
-                        { this.getNavigationItems() }
-                    </Drawer>
+                        t={ I18n.t }
+                        lang={ I18n.getLanguage() }
+                        socket={ this.socket }
+                        currentHost={ this.state.currentHost }
+                        expertMode={ this.state.expertMode }
+                        ready={ this.state.ready }
+                    />
                     <Paper
                         elevation={ 0 }
                         square
                         className={
                             clsx(classes.content, {
-                                [classes.contentMargin]: !small,
-                                [classes.contentShift]: !small && this.state.drawerOpen
+                                [classes.contentMargin]: !small && this.state.drawerState !== DrawerStates.compact,
+                                [classes.contentMarginCompact]: !small && this.state.drawerState !== DrawerStates.opened,
+                                [classes.contentShift]: !small && this.state.drawerState !== DrawerStates.closed
                             })
                         }
                     >
