@@ -121,7 +121,7 @@ class Adapters extends React.Component {
         }
     }
 
-    async getAdaptersInfo(update, updateRepo) {
+    async getAdaptersInfo(update, updateRepo = false) {
         if (!this.props.currentHost) {
             return;
         }
@@ -237,7 +237,7 @@ class Adapters extends React.Component {
         if (this.props.expertMode) {
             /* TODO: Add Dialog */
         } else {
-            this.props.executeCommand(`add ${adapter} --host ${this.props.currentHostname}`);
+            this.props.executeCommand(`add ${adapter} --host ${this.props.currentHostName}`);
         }
     }
 
@@ -351,7 +351,10 @@ class Adapters extends React.Component {
                                     { adapter.keywords && adapter.keywords.join(' ') }
                                 </TableCell>
                                 <TableCell>
-                                    { installed && `${installed.version} (${installed.count}${installed.count !== installed.enabled ? '~' : ''})` }
+                                    { installed &&
+                                        installed.version +
+                                        (installed.count ? ` (${installed.count}${installed.count !== installed.enabled ? '~' : ''})` : '')
+                                    }
                                 </TableCell>
                                 <TableCell>
                                     { adapter.version }
