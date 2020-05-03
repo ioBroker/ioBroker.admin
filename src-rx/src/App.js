@@ -244,7 +244,10 @@ class App extends Router {
                 dataNotStoredTab: '',
 
                 baseSettingsOpened: null,
-                unsavedDataInDialog: false
+                unsavedDataInDialog: false,
+
+                cmd: null,
+                cmdDialog: false
             };
 
             this.logWorker = null;
@@ -712,6 +715,7 @@ class App extends Router {
                         t={ I18n.t }
                         lang={ I18n.getLanguage() }
                         expertMode={ this.state.expertMode }
+                        executeCommand={ cmd => this.executeCommand(cmd) }
                     />
                 );
             } else
@@ -906,6 +910,20 @@ class App extends Router {
         return items;
     }
 
+    executeCommand(cmd) {
+        this.setState({
+            cmd,
+            cmdDialog: true
+        });
+    }
+
+    closeCmdDialog() {
+        this.setState({
+            cmd: null,
+            cmdDialog: false
+        });
+    }
+
     render() {
         if (this.state.login) {
             return (
@@ -1032,17 +1050,19 @@ class App extends Router {
                 >
                         { i18n.t('Some data are not stored. Discard?') }
                 </ConfirmDialog>
-                <CommandDialog
-                    onClose={ () => {} /* Test command */}
-                    open={ this.state.cmdDialog }
-                    header={ i18n.t('Command') /* Placeholder */}
-                    onConfirm={ () => {} /* Test command */}
-                    cmd={ 'upload calendar' /* Test command */}
-                    confirmText={ i18n.t('Ok') /* Test command */}
-                    socket={ this.socket }
-                    currentHost={ this.state.currentHost }
-                    ready={ this.state.ready }
-                />
+                { this.state.cmd &&
+                    <CommandDialog
+                        onClose={ () => this.closeCmdDialog() }
+                        open={ this.state.cmdDialog }
+                        header={ i18n.t('Command') /* Placeholder */}
+                        onConfirm={ () => {} /* Test command */}
+                        cmd={ this.state.cmd }
+                        confirmText={ i18n.t('Ok') /* Test command */}
+                        socket={ this.socket }
+                        currentHost={ this.state.currentHost }
+                        ready={ this.state.ready }
+                    />
+                }
                 { !this.state.connected && <Connecting /> }
             </ThemeProvider>
         );
