@@ -233,6 +233,22 @@ class Adapters extends React.Component {
         }
     }
 
+    addInstance(adapter) {
+        if (this.props.expertMode) {
+            /* TODO: Add Dialog */
+        } else {
+            this.props.executeCommand(`add ${adapter} --host ${this.props.currentHostname}`);
+        }
+    }
+
+    upload(adapter) {
+        this.props.executeCommand('upload ' + adapter);
+    }
+
+    rebuild(adapter) {
+        this.props.executeCommand('rebuild ' + adapter) 
+    }
+
     toggleCategory(category) {
 
         const categories = this.state.categories;
@@ -344,7 +360,10 @@ class Adapters extends React.Component {
                                     { adapter.license }
                                 </TableCell>
                                 <TableCell>
-                                    <IconButton size="small">
+                                    <IconButton
+                                        size="small"
+                                        onClick={ () => this.addInstance(value) }
+                                    >
                                         <AddIcon />
                                     </IconButton>
                                     <IconButton size="small">
@@ -354,7 +373,7 @@ class Adapters extends React.Component {
                                         <IconButton
                                             size="small"
                                             className={ !installed ? classes.hidden : '' }
-                                            onClick={ () => this.props.executeCommand('upload ' + value) }
+                                            onClick={ () => this.upload(value) }
                                         >
                                             <PublishIcon />
                                         </IconButton>
@@ -371,7 +390,7 @@ class Adapters extends React.Component {
                                         <IconButton
                                             size="small"
                                             className={ !installed ? classes.hidden : '' }
-                                            onClick={ () => this.props.executeCommand('rebuild ' + value) }
+                                            onClick={ () => this.rebuild(value) }
                                         >
                                             <BuildIcon />
                                         </IconButton>
