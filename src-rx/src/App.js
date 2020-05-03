@@ -211,7 +211,7 @@ class App extends Router {
                 states:         {},
                 hosts:          [],
                 currentHost:    '',
-                currentHostName: 'ioBroker',
+                currentHostName: '',
                 currentTab:     Router.getLocation(),
                 currentDialog:  null,
                 currentUser:    '',
@@ -472,7 +472,7 @@ class App extends Router {
     }
 
     async setTitle(title) {
-        document.title = title + ' - ' + this.state.currentHostName;
+        document.title = title + ' - ' + (this.state.currentHostName || 'ioBroker');
     }
 
     /*addEventMessage(id, stateOrObj, isMessage, isState) {
@@ -562,6 +562,7 @@ class App extends Router {
                         systemConfig={ this.state.systemConfig }
                         socket={ this.socket }
                         currentHost={ this.state.currentHost }
+                        currentHostname={ this.state.currentHostName }
                         ready={ this.state.ready }
                         t={ I18n.t }
                         lang={ I18n.getLanguage() }
