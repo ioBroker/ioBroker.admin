@@ -22,6 +22,7 @@ import Button from '@material-ui/core/Button';
 
 import Utils from '../Utils';
 import TextInputDialog from '../components/TextInputDialog';
+import FileViewer from '../components/FileViewer';
 
 // Icons
 import RefreshIcon from '@material-ui/icons/Refresh';
