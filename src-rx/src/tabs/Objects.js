@@ -11,8 +11,10 @@ const styles = theme => ({
         width: '100%',
         overflow: 'hidden',
         height: '100%',
-        paddingTop: 5,
-        paddingLeft: 5
+        marginTop: 0,
+        marginBottom: theme.spacing(2),
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
     }
 });
 

@@ -18,6 +18,12 @@ import IntroCard from '../components/IntroCard';
 import Utils from '../Utils';
 
 const styles = theme => ({
+    root: {
+        marginTop: 0,
+        marginBottom: theme.spacing(2),
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
+    },
     button: {
         position: 'absolute',
         bottom: theme.spacing(2),
@@ -416,7 +422,7 @@ class Intro extends React.Component {
         const { classes } = this.props;
 
         return (
-            <div>
+            <div className={ this.props.classes.root }>
                 <Grid container spacing={ 2 }>
                     { this.getCards() }
                 </Grid>

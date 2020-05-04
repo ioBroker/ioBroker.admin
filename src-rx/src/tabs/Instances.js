@@ -40,7 +40,10 @@ import Utils from '../Utils';
 
 const styles = theme => ({
     root: {
-        marginBottom: theme.spacing(2)
+        marginTop: 0,
+        marginBottom: theme.spacing(2),
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
     },
     table: {
         minWidth: 650,

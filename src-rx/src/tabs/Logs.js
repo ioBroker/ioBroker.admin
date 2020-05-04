@@ -44,7 +44,11 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 
 const styles = theme => ({
     root: {
-        height: '100%'
+        height: 'calc(100% - ' + theme.spacing(2) + 'px)',
+        marginTop: 0,
+        marginBottom: theme.spacing(2),
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
     },
     flexContainer: {
         height: '100%',

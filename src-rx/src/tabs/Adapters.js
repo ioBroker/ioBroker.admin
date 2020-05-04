@@ -33,8 +33,11 @@ import { blue } from '@material-ui/core/colors';
 import { green } from '@material-ui/core/colors';
 
 const styles = theme => ({
-    root:{
+    root: {
+        marginTop: 0,
         marginBottom: theme.spacing(2),
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
     },
     smallAvatar: {
         width: theme.spacing(3),
