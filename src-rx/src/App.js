@@ -382,8 +382,8 @@ class App extends Router {
      * @returns {Theme}
      */
     getTheme(name) {
-        return theme(name ? name : window.localStorage && window.localStorage.getItem('App.theme') ?
-            window.localStorage.getItem('App.theme') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored');
+        return theme(name ? name : window.localStorage && window.localStorage.getItem('App.themeName') ?
+            window.localStorage.getItem('App.themeName') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored');
     }
 
     /**
@@ -415,7 +415,9 @@ class App extends Router {
             themeName === 'blue' ? 'colored' : themeName === 'colored' ? 'light' :
             themeName === 'light' ? 'dark' : 'colored';
 
-        window.localStorage.setItem('App.theme', newThemeName);
+        window.localStorage.setItem('App.themeName', newThemeName);
+        window.localStorage.setItem('App.theme', newThemeName === 'dark' || newThemeName === 'blue' ?
+            'dark' : 'light');
 
         const theme = this.getTheme(newThemeName);
 
