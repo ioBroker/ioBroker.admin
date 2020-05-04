@@ -111,13 +111,13 @@ class Adapters extends React.Component {
 
     componentDidMount() {
         if(this.props.ready) {
-            this.getAdaptersInfo(this.props.currentHost, true);
+            this.getAdaptersInfo(true);
         }
     }
 
     componentDidUpdate() {
         if(!this.state.init && this.props.ready) {
-            this.getAdaptersInfo(this.props.currentHost, true);
+            this.getAdaptersInfo(true);
         }
     }
 
@@ -429,7 +429,9 @@ class Adapters extends React.Component {
                         container
                         alignItems="center"
                     >
-                        <IconButton>
+                        <IconButton
+                            onClick={ () => this.getAdaptersInfo(true, true) }
+                        >
                             <RefreshIcon />
                         </IconButton>
                         <IconButton>
