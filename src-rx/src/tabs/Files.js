@@ -44,6 +44,7 @@ class Files extends React.Component {
                 t={ this.props.t }
                 showToolbar={ true }
                 allowUpload={ true }
+                allowView={ true }
                 allowDownload={ true }
                 allowCreateFolder={ true }
                 allowDelete={ true }

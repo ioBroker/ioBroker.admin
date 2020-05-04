@@ -466,6 +466,29 @@ class Logs extends React.Component {
         return rows;
     }
 
+    renderClearDialog() {
+        const { classes } = this.props;
+
+        return <Dialog onClose={ () => this.closeLogDelete() } open={ this.state.logDeleteDialog }>
+            <DialogTitle>
+                { this.t('Please confirm') }
+                <IconButton className={ classes.closeButton } onClick={ () => this.closeLogDelete() }>
+                    <CloseIcon />
+                </IconButton>
+            </DialogTitle>
+            <DialogContent dividers>
+                <Typography gutterBottom>
+                    { this.t('Log file will be deleted. Are you sure?') }
+                </Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button autoFocus onClick={ () => this.handleLogDelete() } color="primary">
+                    { this.t('Ok') }
+                </Button>
+            </DialogActions>
+        </Dialog>;
+    }
+
     render() {
         if (!this.state.logs) {
             return <LinearProgress />
@@ -599,24 +622,7 @@ class Logs extends React.Component {
                         </Table>
                     </TableContainer>
                 </Grid>
-                <Dialog onClose={ () => this.closeLogDelete() } open={ this.state.logDeleteDialog }>
-                    <DialogTitle>
-                        { this.t('Please confirm') }
-                        <IconButton className={ classes.closeButton } onClick={ () => this.closeLogDelete() }>
-                            <CloseIcon />
-                        </IconButton>
-                    </DialogTitle>
-                    <DialogContent dividers>
-                        <Typography gutterBottom>
-                            { this.t('Log file will be deleted. Are you sure?') }
-                        </Typography>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button autoFocus onClick={ () => this.handleLogDelete() } color="primary">
-                            { this.t('Ok') }
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                { this.renderClearDialog() }
             </Paper>
         );
     }

@@ -6,7 +6,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
-import TreeDataTable from './cp-react-tree-table/src';
 import {withStyles} from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -15,21 +14,25 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import secondary from '@material-ui/core/colors/orange';
 import Grid from '@material-ui/core/Grid';
+import copy from 'copy-to-clipboard';
 
 import {FaFolder as IconClosed} from 'react-icons/fa';
 import {FaFolderOpen as IconOpen} from 'react-icons/fa';
 import {FaFileAlt as IconState} from 'react-icons/fa';
 import {FaFile as IconDocument} from 'react-icons/fa';
 import {MdPerson as IconExpert} from 'react-icons/md';
+import {FaCopy as IconCopy} from 'react-icons/fa';
 import IconDefaultState from '../assets/state.png';
 import IconDefaultChannel from '../assets/channel.png';
 import IconDefaultDevice from '../assets/device.png';
 import IconDefault from '../assets/empty.png';
 
-import I18n from '@iobroker/adapter-react/i18n';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
 import CopyContentIcon from './CopyIcon';
+
+const ROW_HEIGHT = 32;
+const ITEM_LEVEL = ROW_HEIGHT;
 
 const styles = theme => ({
     toolbar: {
@@ -40,7 +43,7 @@ const styles = theme => ({
         padding: 4,
         marginLeft: 4
     },
-    treeTable: {
+    /*treeTable: {
         background: '#ffffff',
         borderTop: '1px solid #999',
         borderBottom: '1px solid #999'
@@ -54,17 +57,46 @@ const styles = theme => ({
         boxShadow: 'inset 0 1px 0 #eeeeee',
         display: 'block'
     },
+     */
+
     mainDiv: {
         height: '100%',
         overflow: 'hidden',
         flexWrap: 'nowrap'
     },
+    headerRow: {
+        paddingLeft: theme.spacing(1),
+        height: 38,
+    },
+
     tableDiv: {
-        width: '100%',
-        height: 'calc(100% - 34px - 38px)',
+        paddingTop: theme.spacing(1),
+        marginLeft: theme.spacing(1),
+        width: 'calc(100% - ' + theme.spacing(1) + 'px)',
+        height: 'calc(100% - ' + 38 + 'px)',
         overflow: 'auto'
     },
-    cellDiv: {
+    tableRow: {
+        height: ROW_HEIGHT,
+        lineHeight: ROW_HEIGHT + 'px',
+        verticalAlign: 'top',
+        userSelect: 'none',
+    },
+    cellName: {
+        fontSize: '1rem',
+        verticalAlign: 'top',
+    },
+    cellNameSpan: {
+        display: 'inline-block',
+        verticalAlign: 'top',
+    },
+    cellNameIcon: {
+        marginRight: theme.spacing(1),
+        width: ROW_HEIGHT - 2,
+        height: ROW_HEIGHT - 2,
+        cursor: 'pointer',
+    },
+    /*cellDiv: {
         display: 'inline-block',
         fontSize: 12,
         height: 26,
@@ -106,14 +138,16 @@ const styles = theme => ({
         padding: 1,
         borderRadius: 3
     },
+
+
     partlyVisible: {
         opacity: 0.3
-    },
+    },*/
     /*.toggle-button-wrapper > span:hover {
         background: #d7d7d7;
     }*/
 
-    selectSpan: {
+    /*selectSpan: {
 //        fontFamily: "'SF Mono', 'Segoe UI Mono', 'Roboto Mono', Menlo, Courier, monospace",
         background: '#efefef',
         border: '1px solid #e5e5e5',
@@ -130,6 +164,7 @@ const styles = theme => ({
         paddingTop: 2,
         paddingRight: 2
     },
+    */
     header: {
         width: '100%'
     },
@@ -150,6 +185,7 @@ const styles = theme => ({
         color: 'black',
         fontSize: 14
     },
+
     cellCopy: {
         position: 'absolute',
         top: 3,
@@ -177,10 +213,18 @@ function binarySearch(d, t, s, e) {
         }
     }
     const m = Math.floor((s + e) / 2);
-    if (t === d[m]) return d[m];
-    if (e - 1 === s) return d[s] === t || d[e] === t;
-    if (t > d[m]) return binarySearch(d, t, m, e);
-    if (t < d[m]) return binarySearch(d, t, s, m);
+    if (t === d[m]) {
+        return d[m];
+    }
+    if (e - 1 === s) {
+        return d[s] === t || d[e] === t;
+    }
+    if (t > d[m]) {
+        return binarySearch(d, t, m, e);
+    }
+    if (t < d[m]) {
+        return binarySearch(d, t, s, m);
+    }
 }
 
 function applyFilter(item, filters, lang, objects, context) {
@@ -248,6 +292,7 @@ function buildTree(objects, options) {
     options = options || {};
 
     const ids = Object.keys(objects);
+
     ids.sort((a, b) => {
         if (a === b) return 0;
         a = a.replace(/\./g, '!!!');
@@ -260,13 +305,19 @@ function buildTree(objects, options) {
     let currentPathArr = [];
     let currentPath = '';
     let currentPathLen = 0;
-    let root = {data: {name: '', id: ''}, children: []};
+    let root = {
+        data: {
+            name: '',
+            id: ''
+        },
+        children: []
+    };
 
     let info = {
         funcEnums: [],
         roomEnums: [],
-        roles: [],
-        ids: [],
+        roles:     [],
+        ids:       [],
         objects
     };
 
@@ -275,11 +326,14 @@ function buildTree(objects, options) {
         const id = ids[i];
         const parts = id.split('.');
 
+        if (id.startsWith('alias')) {
+            console.log(id);
+        }
+
         if (objects[id]) {
-            if (objects[id].common && objects[id].common.role) {
-                if (info.roles.indexOf(objects[id].common.role) === -1) {
-                    info.roles.push(objects[id].common.role);
-                }
+            const role = objects[id].common && objects[id].common.role;
+            if (role && !info.roles.includes(role)) {
+                info.roles.push(role);
             } else if (id.startsWith('enum.rooms.')) {
                 info.roomEnums.push(id);
             } else if (id.startsWith('enum.functions.')) {
@@ -290,32 +344,56 @@ function buildTree(objects, options) {
         if (options.statesOnly && (!objects[id] || objects[id].type !== 'state')) {
             continue;
         }
+
         info.ids.push(id);
 
         let repeat;
+
         // if next level
         do {
             repeat = false;
-            if (!currentPath || id.substring(0, currentPath.length + 1) === currentPath + '.') {
+
+            // If current level is still OK and we can add ID to children
+            if (!currentPath || id.startsWith(currentPath + '.')) {
+                // if more than one level added
                 if (parts.length - currentPathLen > 1) {
                     let curPath = currentPath;
+                    // generate missing levels
                     for (let k = currentPathLen; k < parts.length - 1; k++) {
                         curPath += (curPath ? '.' : '') + parts[k];
+                        // level does not exist
                         if (!binarySearch(info.ids, curPath)) {
-                            const _croot = {data: {name: parts[k], parent: croot, id: curPath, obj: objects[curPath]}};
+                            const _croot = {
+                                data: {
+                                    name:   parts[k],
+                                    parent: croot,
+                                    id:     curPath,
+                                    obj:    objects[curPath],
+                                    level:  k,
+                                    generated: true,
+                                }
+                            };
+
                             croot.children = croot.children || [];
                             croot.children.push(_croot);
                             croot = _croot;
-                            //ids.splice(i, 0, curPath);
                             info.ids.push(curPath);
-                            //i++;
                         } else {
                             croot = croot.children.find(item => item.data.name === parts[k]);
                         }
                     }
                 }
 
-                const _croot = {data: {name: parts[parts.length - 1], obj: objects[id], parent: croot, id}, children: []};
+                const _croot = {
+                    data: {
+                        name:   parts[parts.length - 1],
+                        obj:    objects[id],
+                        parent: croot,
+                        id,
+                        level:  parts.length - 1,
+                        generated: false,
+                    }
+                };
                 croot.children = croot.children || [];
                 croot.children.push(_croot);
                 croot = _croot;
@@ -325,7 +403,11 @@ function buildTree(objects, options) {
                 currentPath    = id;
             } else {
                 let u = 0;
-                while (currentPathArr[u] === parts[u]) u++;
+
+                while (currentPathArr[u] === parts[u]) {
+                    u++;
+                }
+
                 if (u > 0) {
                     let move = currentPathArr.length;
                     currentPathArr = currentPathArr.splice(0, u);
@@ -338,12 +420,12 @@ function buildTree(objects, options) {
                 } else {
                     croot = root;
                     currentPathArr = [];
-                    currentPath = '';
+                    currentPath    = '';
                     currentPathLen = 0;
                 }
                 repeat = true;
             }
-        } while(repeat);
+        } while (repeat);
     }
 
     info.roomEnums.sort();
@@ -366,7 +448,7 @@ function findNode(root, id, _parts, _path, _level) {
         return null;
     } else {
         let found;
-        for (let i = 0; i< root.children.length; i++) {
+        for (let i = 0; i < root.children.length; i++) {
             const _id = root.children[i].data.id;
             if (_id === _path) {
                 found = root.children[i];
@@ -715,56 +797,70 @@ const DEFAULT_FILTER = {
     expert: false
 };
 
+
 class ObjectBrowser extends React.Component {
     constructor(props) {
         super(props);
+
+        let expanded = window.localStorage.getItem(this.props.key || 'App.objectExpanded') || '[]';
+        try {
+            expanded = JSON.parse(expanded);
+        } catch (e) {
+            expanded = [];
+        }
+
         this.state = {
             loaded: false,
             selected: (this.props.selected || '').replace(/["']/g, ''),
             filter: this.props.defaultFilters || Object.assign({}, DEFAULT_FILTER),
             depth: 0,
-            statesUpdate: 0,
+            expanded,
         };
+
         this.selectedFound = false;
         this.copyContentImg = CopyContentIcon;
         this.treeTableRef = React.createRef();
         this.mainRef = React.createRef();
         this.root = null;
-        this.lang = I18n.getLanguage();
         this.states = {};
         this.subscribes = [];
+        this.statesUpdateTimer = null;
+        this.objectsUpdateTimer = null;
+
+        this.visibleCols = this.props.cols || ['name', 'role', 'room', 'func', 'val', 'buttons'];
 
         this.texts = {
-            value:   I18n.t('tooltip_value'),
-            ack:     I18n.t('tooltip_ack'),
-            ts:      I18n.t('tooltip_ts'),
-            lc:      I18n.t('tooltip_lc'),
-            from:    I18n.t('tooltip_from'),
-            user:    I18n.t('tooltip_user'),
-            quality: I18n.t('tooltip_quality')
+            value:   this.props.t('tooltip_value'),
+            ack:     this.props.t('tooltip_ack'),
+            ts:      this.props.t('tooltip_ts'),
+            lc:      this.props.t('tooltip_lc'),
+            from:    this.props.t('tooltip_from'),
+            user:    this.props.t('tooltip_user'),
+            quality: this.props.t('tooltip_quality')
         };
 
         this.onStateChangeBound = this.onStateChange.bind(this);
 
-        this.props.connection.getObjects(true)
+        this.props.socket.getObjects(true)
             .then(objects => {
                 this.objects = objects;
                 const {info, root} = buildTree(this.objects, this.props);
                 this.root = root;
                 this.info = info;
+
                 let node = this.state.selected && findNode(this.root, this.state.selected);
 
                 // If selected ID is not visible, reset filter
-                if (node && !applyFilter(node, this.state.filter, this.lang, this.objects)) {
+                if (node && !applyFilter(node, this.state.filter, this.props.lang, this.objects)) {
                     // reset filter
-                    this.setState({filter: Object.assign({}, DEFAULT_FILTER)}, () => {
-                        applyFilter(this.root, this.state.filter, this.lang, this.objects);
-                        this.setState({loaded: true});
+                    this.setState({ filter: Object.assign({}, DEFAULT_FILTER) }, () => {
+                        applyFilter(this.root, this.state.filter, this.props.lang, this.objects);
+                        this.setState({ loaded: true });
                         this.state.selected && this.onSelect(this.state.selected);
                     });
                 } else {
-                    applyFilter(this.root, this.state.filter, this.lang, this.objects);
-                    this.setState({loaded: true});
+                    applyFilter(this.root, this.state.filter, this.props.lang, this.objects);
+                    this.setState({ loaded: true });
 
                     this.state.selected && this.onSelect(this.state.selected);
                 }
@@ -773,7 +869,7 @@ class ObjectBrowser extends React.Component {
 
     onSelect(selected, isDouble) {
         selected !== this.state.selected && this.setState({selected});
-        const name = selected ? Utils.getObjectName(this.objects, selected, null, {language: this.lang}) : '';
+        const name = selected ? Utils.getObjectName(this.objects, selected, null, { language: this.props.lang }) : '';
         this.props.onSelect && this.props.onSelect(selected, name, isDouble);
     }
 
@@ -786,29 +882,18 @@ class ObjectBrowser extends React.Component {
     }
 
     onCopy(e, id) {
-        const el = window.document.createElement('input');
-        el.type = 'text';
-        el.value = id;
-        el.style.position = 'absolute';
-        el.style.left = '-9999px';
-        window.document.body.appendChild(el);
-        el.select();
-        const selection = window.document.getSelection();
-        const range = window.document.createRange();
-        range.selectNode(el);
-        selection.removeAllRanges();
-        selection.addRange(range);
-        console.log('copy success', window.document.execCommand('copy'));
-        selection.removeAllRanges();
-        window.document.body.removeChild(el);
-        console.log(id);
         e.stopPropagation();
         e.preventDefault();
+        copy(id);
     }
 
     installCopyButtons() {
-        if (!this.mainRef.current) return;
+        if (!this.mainRef.current) {
+            return;
+        }
+
         const rows = this.mainRef.current.getElementsByClassName('add-copy-button');
+
         for (let i = 0; i < rows.length; i++) {
             if (!rows[i].__installed) {
                 rows[i].addEventListener('mouseenter', e => {
@@ -841,12 +926,14 @@ class ObjectBrowser extends React.Component {
                         e.target.appendChild(div);
                     }
                 }, false);
+
                 rows[i].addEventListener('mouseleave', e => {
                     const copy = e.target.getElementsByClassName(this.props.classes.cellCopy);
                     if (copy && copy.length) {
                         e.target.removeChild(copy[0]);
                     }
                 }, false);
+
                 rows[i].__installed = true;
             }
         }
@@ -854,7 +941,9 @@ class ObjectBrowser extends React.Component {
 
     componentDidUpdate() {
         this.installCopyButtons();
+
         if (!this.selectedFound) {
+
             if (this.props.selected && this.treeTableRef.current) {
                 const node = findNode(this.root, this.props.selected);
                 this.treeTableRef.current.scrollIntoView(node);
@@ -866,9 +955,8 @@ class ObjectBrowser extends React.Component {
     checkUnsubscribes() {
         // Remove unused subscribed
         for (let i = this.subscribes.length - 1; i >= 0; i--) {
-            if (this.recordStates.indexOf(this.subscribes[i]) === -1) {
+            !this.recordStates.includes(this.subscribes[i]) &&
                 this.unsubscribe(this.subscribes[i]);
-            }
         }
         this.recordStates = [];
     }
@@ -877,18 +965,31 @@ class ObjectBrowser extends React.Component {
         // remove all subscribes
         this.subscribes.forEach(pattern => {
             console.log('- unsubscribe ' + pattern);
-            this.props.connection.unsubscribeState(pattern, this.onStateChangeBound);
+            this.props.socket.unsubscribeState(pattern, this.onStateChangeBound);
         });
+
         this.subscribes = [];
     }
 
     onStateChange(id, state) {
         this.states[id] = state;
         console.log('+ subscribe ' + id);
+
         if (!this.statesUpdateTimer) {
             this.statesUpdateTimer = setTimeout(() => {
                 this.statesUpdateTimer = null;
-                this.setState({statesUpdate: this.state.statesUpdate + 1});
+                this.forceUpdate();
+            }, 300);
+        }
+    }
+
+    onObjectChange(id, obj) {
+        console.log('+ subscribe ' + id);
+
+        if (!this.objectsUpdateTimer) {
+            this.objectsUpdateTimer = setTimeout(() => {
+                this.objectsUpdateTimer = null;
+                this.forceUpdate();
             }, 300);
         }
     }
@@ -896,7 +997,7 @@ class ObjectBrowser extends React.Component {
     subscribe(id) {
         if (this.subscribes.indexOf(id) === -1) {
             this.subscribes.push(id);
-            this.props.connection.subscribeState(id, this.onStateChangeBound);
+            this.props.socket.subscribeState(id, this.onStateChangeBound);
         }
     }
 
@@ -908,10 +1009,10 @@ class ObjectBrowser extends React.Component {
                 delete this.states[id];
             }
             console.log('- unsubscribe ' + id);
-            this.props.connection.unsubscribeState(id, this.onStateChangeBound);
+            this.props.socket.unsubscribeState(id, this.onStateChangeBound);
         }
     }
-
+/*
     renderIndexColumn(data, metadata, toggleChildren) {
         const selected = this.state.selected === data.id;
         const isExist = !!this.objects[data.id];
@@ -941,7 +1042,7 @@ class ObjectBrowser extends React.Component {
         const icon = getSelectIdIcon(this.objects, data.id, this.props.prefix);
         return (<span className={this.props.classes.cellWrapper}>
             <img src={icon.src} className={this.props.classes.icon} alt={icon.alt}/>
-            {data.obj && Utils.getObjectName(this.objects, data.obj._id, null, {language: this.lang})}
+            {data.obj && Utils.getObjectName(this.objects, data.obj._id, null, {language: this.props.lang})}
             </span>);
     }
     renderColumnRole(data, metadata, toggleChildren) {
@@ -950,12 +1051,12 @@ class ObjectBrowser extends React.Component {
     }
     renderColumnRoom(data, metadata, toggleChildren) {
         if (!data.obj) return null;
-        const list = findRoomsForObject(this.info, data.obj._id, this.lang) || [];
+        const list = findRoomsForObject(this.info, data.obj._id, this.props.lang) || [];
         return (<span className={this.props.classes.cellWrapper}>{list.join(', ')}</span>);
     }
     renderColumnFunc(data, metadata, toggleChildren) {
         if (!data.obj) return null;
-        const list = findFunctionsForObject(this.info, data.obj._id, this.lang) || [];
+        const list = findFunctionsForObject(this.info, data.obj._id, this.props.lang) || [];
         return (<span className={this.props.classes.cellWrapper}>{list.join(', ')}</span>);
     }
     renderColumnValue(data, metadata, toggleChildren) {
@@ -977,14 +1078,14 @@ class ObjectBrowser extends React.Component {
         const info = formatValue(id, state, data.obj, this.texts);
         return (<span className={this.props.classes.cellWrapper} style={info.style} title={info.valFull}>{info.valText}</span>);
     }
-
+*/
     onFilter(name, value) {
         if (this.state.filter[name] !== value) {
             const filter = JSON.parse(JSON.stringify(this.state.filter));
             filter[name] = value;
             this.filterTimer && clearTimeout(this.filterTimer);
             this.filterTimer = setTimeout(() => {
-                applyFilter(this.root, filter, this.lang, this.objects);
+                applyFilter(this.root, filter, this.props.lang, this.objects);
                 this.props.onFilterChanged && this.props.onFilterChanged(filter);
                 this.forceUpdate();
             }, 400);
@@ -993,48 +1094,47 @@ class ObjectBrowser extends React.Component {
     }
 
     getFilterInput(name) {
-        return (<FormControl className={this.props.classes.headerCellInput} style={{marginTop: 0, marginBottom: 0}} margin="dense">
+        return (<FormControl className={ this.props.classes.headerCellInput } style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
             <Input
                 classes={{underline: 'no-underline'}}
                 id={name}
-                placeholder={I18n.t('filter_' + name)}
+                placeholder={this.props.t('filter_' + name)}
                 value={this.state.filter[name]}
                 onChange={e => this.onFilter(name, e.target.value)}
                 autoComplete="off"
             />
         </FormControl>);
     }
-    getFilterSelect(name, values) {
-        //<!--InputLabel htmlFor="demo-controlled-open-select">Age</InputLabel-->
-        return (
-            <Select
-                className={this.props.classes.headerCellInput + ' no-underline'}
-                value={this.state.filter[name] || ''}
-                onChange={e => this.onFilter(name, e.target.value)}
-                inputProps={{name, id: name,}}
-                displayEmpty={true}
-            >
-                <MenuItem key="empty" value=""><span className={this.props.classes.selectNone}>{I18n.t('filter_' + name)}</span></MenuItem>
-                {values.map(item => {
-                    let id;
-                    let name;
-                    let icon;
-                    if (typeof item === 'object') {
-                        id = item.value;
-                        name = item.name;
-                        icon = getSelectIdIcon(this.objects, id, this.props.prefix);
-                    } else {
-                        id = item;
-                        name = item;
-                    }
 
-                    return (
-                        <MenuItem key={id} value={id}>
-                            {icon && (<img className={this.props.classes.selectIcon} src={icon.src} alt={name}/>)}
-                            {name}
-                        </MenuItem>)
-                })}
-            </Select>);
+    getFilterSelect(name, values) {
+        return <Select
+            className={this.props.classes.headerCellInput + ' no-underline'}
+            value={ this.state.filter[name] || '' }
+            onChange={ e => this.onFilter(name, e.target.value) }
+            inputProps={{ name, id: name }}
+            displayEmpty={ true }
+        >
+            <MenuItem key="empty" value=""><span className={this.props.classes.selectNone}>{this.props.t('filter_' + name)}</span></MenuItem>
+            { values.map(item => {
+                let id;
+                let name;
+                let icon;
+                if (typeof item === 'object') {
+                    id = item.value;
+                    name = item.name;
+                    icon = getSelectIdIcon(this.objects, id, this.props.prefix);
+                } else {
+                    id = item;
+                    name = item;
+                }
+
+                return (
+                    <MenuItem key={id} value={id}>
+                        {icon && (<img className={this.props.classes.selectIcon} src={icon.src} alt={name}/>)}
+                        {name}
+                    </MenuItem>)
+            }) }
+        </Select>;
     }
     getFilterSelectRole() {
         return this.getFilterSelect('role', this.info.roles);
@@ -1080,28 +1180,116 @@ class ObjectBrowser extends React.Component {
     getToolbar() {
         return (
             <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
-                <IconButton key="expert" variant="contained" className={this.props.classes.toolbarButtons} color={this.state.filter.expert ? 'secondary' : 'primary'} onClick={() => this.onFilter('expert', !this.state.filter.expert)}><IconExpert /></IconButton>
-                <IconButton key="expandAll" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onExpandAll()}><IconOpen /></IconButton>
-                <IconButton key="collapseAll" variant="contained" className={this.props.classes.toolbarButtons} onClick={() => this.onCollapseAll()}><IconClosed /></IconButton>
-                <IconButton key="expandVisible" variant="contained" className={this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onExpandVisible()}><IconOpen />{this.state.depth ? (<div className={this.props.classes.depth}>{this.state.depth}</div>) : null}</IconButton>
-                <IconButton key="collapseVisible" variant="contained" className={this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onCollapseVisible()}><IconClosed />{this.state.depth ? (<div className={this.props.classes.depth}>{this.state.depth}</div>) : null}</IconButton>
+                { this.props.showExpertButton ? <IconButton key="expert" variant="contained" className={this.props.classes.toolbarButtons} color={this.state.filter.expert ? 'secondary' : 'primary'} onClick={() => this.onFilter('expert', !this.state.filter.expert)}><IconExpert /></IconButton>: null }
+                <IconButton key="expandAll"       variant="contained" className={ this.props.classes.toolbarButtons } onClick={() => this.onExpandAll()}><IconOpen /></IconButton>
+                <IconButton key="collapseAll"     variant="contained" className={ this.props.classes.toolbarButtons } onClick={() => this.onCollapseAll()}><IconClosed /></IconButton>
+                <IconButton key="expandVisible"   variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onExpandVisible()}><IconOpen />{this.state.depth ? (<div className={ this.props.classes.depth }>{ this.state.depth }</div>) : null}</IconButton>
+                <IconButton key="collapseVisible" variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onCollapseVisible()}><IconClosed />{this.state.depth ? (<div className={ this.props.classes.depth }>{ this.state.depth }</div>) : null}</IconButton>
             </Toolbar>);
+    }
+
+    toggleExpanded(id) {
+        const expanded = JSON.parse(JSON.stringify(this.state.expanded));
+        const pos = expanded.indexOf(id);
+        if (pos === -1) {
+            expanded.push(id);
+            expanded.sort();
+        } else {
+            expanded.splice(pos, 1);
+        }
+
+        window.localStorage.setItem(this.props.key || 'App.objectExpanded', JSON.stringify(expanded));
+        this.setState({ expanded });
+    }
+
+    renderLeaf(item, isExpanded, widths) {
+        isExpanded = isExpanded === undefined ? this.state.expanded.includes(item.data.id) : isExpanded;
+
+        const icon = item.children ? (isExpanded ?
+            <IconOpen
+                className={ this.props.classes.cellNameIcon }
+                onClick={ () => this.toggleExpanded(item.data.id)}
+            />
+            :
+            <IconClosed
+                className={ this.props.classes.cellNameIcon }
+                onClick={ () => this.toggleExpanded(item.data.id)}
+            />)
+            : null;
+
+        return <div
+            className={ this.props.classes.tableRow }
+            key={ item.data.id }
+            id={ item.data.id }
+            style={{ paddingLeft: ITEM_LEVEL * item.data.level }}
+            onDoubleClick={ () => this.toggleExpanded(item.data.id) }
+        >
+            <div className={ this.props.classes.cellName } sytle={{ width: widths.widthName }}>
+                { icon }
+                <div className={this.props.classes.cellNameSpan}>{ item.data.name }</div>
+            </div>
+            {this.visibleCols.includes('name')    ? <div style={{ width: widths.widthName }}>{ this.getFilterInput('name') }</div> : null }
+            {this.visibleCols.includes('role')    ? <div style={{ width: widths.WIDTHS[0] }}>{ this.getFilterSelectRole() }</div> : null }
+            {this.visibleCols.includes('room')    ? <div style={{ width: widths.WIDTHS[1] }}>{ this.getFilterSelectRoom() }</div> : null }
+            {this.visibleCols.includes('func')    ? <div style={{ width: widths.WIDTHS[2] }}>{ this.getFilterSelectFunction() }</div> : null }
+            {this.visibleCols.includes('val')     ? <div style={{ width: widths.WIDTHS[3] }}>{ this.props.t('Value') }</div> : null }
+            {this.visibleCols.includes('buttons') ? <div style={{ width: widths.WIDTHS[4] }}></div> : null }
+
+        </div>;
+    }
+
+    renderItem(root, isExpanded, widths) {
+        const items = [];
+
+        root.data.id && items.push(this.renderLeaf(root, isExpanded, widths));
+
+        isExpanded = isExpanded === undefined ? binarySearch(this.state.expanded, root.data.id) : isExpanded;
+
+        if (!root.data.id || isExpanded) {
+            root.children && items.push(root.children.map(item => this.renderItem(item, undefined, widths)));
+        }
+
+        return items;
+    }
+
+    renderHeader(widths) {
+        const classes = this.props.classes;
+
+        return <div className={ classes.headerRow } >
+            <div className={ classes.headerCell } style={{ width: widths.idWidth   }}>{ this.getFilterInput('id') }</div>
+            {this.visibleCols.includes('name')    ? <div className={ classes.headerCell } style={{ width: widths.widthName }}>{ this.getFilterInput('name') }</div> : null }
+            {this.visibleCols.includes('role')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[0] }}>{ this.getFilterSelectRole() }</div> : null }
+            {this.visibleCols.includes('room')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[1] }}>{ this.getFilterSelectRoom() }</div> : null }
+            {this.visibleCols.includes('func')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[2] }}>{ this.getFilterSelectFunction() }</div> : null }
+            {this.visibleCols.includes('val')     ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[3] }}>{ this.props.t('Value') }</div> : null }
+            {this.visibleCols.includes('buttons') ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[4] }}></div> : null }
+        </div>;
     }
 
     render() {
         this.recordStates = [];
         this.unsubscribeTimer && clearTimeout(this.unsubscribeTimer);
+
         this.unsubscribeTimer = setTimeout(() => {
             this.unsubscribeTimer = null;
             this.checkUnsubscribes();
         }, 200);
+
         if (!this.state.loaded) {
             return (<CircularProgress/>);
         } else {
+           const idWidth = 300;
+            const WIDTHS = [120, 180, 180, 120, 64];
+
+            const widths = {
+                idWidth,
+                WIDTHS,
+                widthName: `calc(100% - ${idWidth + WIDTHS[0] + WIDTHS[1] + WIDTHS[2] + WIDTHS[3] + WIDTHS[4]}px)`
+            };
+
             const classes = this.props.classes;
-            const idWidth = 300;
-            const WIDTHS = [120, 180, 180, 120];
-            const width = `calc(100% - ${idWidth + WIDTHS[0] + WIDTHS[1] + WIDTHS[2] + WIDTHS[3]}px)`;
+            const items = this.renderItem(this.root, undefined, widths);
+
             return (
             <Grid 
                 container
@@ -1109,15 +1297,16 @@ class ObjectBrowser extends React.Component {
                 className={classes.mainDiv} ref={this.mainRef}
             >
                 { this.getToolbar() }
-                <Grid item key="header" className={classes.header}>
+                { this.renderHeader(widths) }
+                {/*<!--Grid item key="header" className={classes.header}>
                     <div className={classes.headerCell} style={{width: idWidth}}>{this.getFilterInput('id')}</div>
                     <div className={classes.headerCell} style={{width: width}}>{this.getFilterInput('name')}</div>
                     <div className={classes.headerCell} style={{width: WIDTHS[0]}}>{this.getFilterSelectRole()}</div>
                     <div className={classes.headerCell} style={{width: WIDTHS[1]}}>{this.getFilterSelectRoom()}</div>
                     <div className={classes.headerCell} style={{width: WIDTHS[2]}}>{this.getFilterSelectFunction()}</div>
-                    <div className={classes.headerCell} style={{width: WIDTHS[3]}}>{I18n.t('Value')}</div>
+                    <div className={classes.headerCell} style={{width: WIDTHS[3]}}>{this.props.t('Value')}</div>
                 </Grid>
-                <Grid item className={classes.tableDiv}>
+                <Grid-- item className={ classes.tableDiv }>
                     <TreeDataTable
                         ref={this.treeTableRef}
                         key="table"
@@ -1133,13 +1322,16 @@ class ObjectBrowser extends React.Component {
                             this.onSelect(data.id)}
                     >
                         <TreeDataTable.Column grow={0} renderCell={this.renderIndexColumn.bind(this)} className={classes.cellDivId} width={idWidth} />
-                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnName.bind(this)}  className={classes.cellDiv} width={width}/>
-                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnRole.bind(this)}  className={classes.cellDiv} width={WIDTHS[0]}/>
-                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnRoom.bind(this)}  className={classes.cellDiv} width={WIDTHS[1]}/>
-                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnFunc.bind(this)}  className={classes.cellDiv} width={WIDTHS[2]}/>
-                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnValue.bind(this)} className={classes.cellDiv} width={WIDTHS[3]}/>
+                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnName.bind(this)}  className={classes.cellDiv}   width={width}/>
+                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnRole.bind(this)}  className={classes.cellDiv}   width={WIDTHS[0]}/>
+                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnRoom.bind(this)}  className={classes.cellDiv}   width={WIDTHS[1]}/>
+                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnFunc.bind(this)}  className={classes.cellDiv}   width={WIDTHS[2]}/>
+                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnValue.bind(this)} className={classes.cellDiv}   width={WIDTHS[3]}/>
                     </TreeDataTable>
-                </Grid>
+                </Grid>*/}
+                <div className={ this.props.classes.tableDiv }>
+                    { items }
+                </div>
             </Grid>);
         }
     }
@@ -1152,9 +1344,13 @@ ObjectBrowser.propTypes = {
     selected: PropTypes.string,
     onSelect: PropTypes.func,
     onFilterChanged: PropTypes.func,
-    connection: PropTypes.object,
+    socket: PropTypes.object,
+    showExpertButton: PropTypes.bool,
+    expertMode: PropTypes.bool,
     prefix: PropTypes.string,
     theme: PropTypes.string,
+    t: PropTypes.func,
+    lang: PropTypes.string,
 };
 
 export default withStyles(styles)(ObjectBrowser);

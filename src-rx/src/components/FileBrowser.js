@@ -19,10 +19,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
+import copy from 'copy-to-clipboard';
 
 import Utils from '../Utils';
 import TextInputDialog from '../components/TextInputDialog';
 import FileViewer from '../components/FileViewer';
+import { EXTENSIONS } from '../components/FileViewer';
 
 // Icons
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -220,6 +222,7 @@ class FileBrowser extends React.Component {
             uploadFile: false,
             deleteItem: '',
             marked: [],
+            viewer: '',
             selected: window.localStorage.getItem('files.selected') || USER_DATA,
         };
 
@@ -501,11 +504,12 @@ class FileBrowser extends React.Component {
         return (<div
             key={ item.id }
             id={ item.id }
+            onDoubleClick={ () => this.setState({ viewer: 'files/' + item.id })}
             onClick={e => this.select(item.id, e) }
             style={{ paddingLeft: padding }}
             className={ clsx(this.props.classes['item' + this.state.viewType], this.props.classes['itemFile' + this.state.viewType], this.state.selected === item.id && this.props.classes.itemSelected) }
         >
-            { ext === 'png' || ext === 'jpg' || ext === 'svg' ?
+            { EXTENSIONS.images.includes(ext) ?
                 <img onError={e => {e.target.onerror = null; e.target.src = NoImage}} className={this.props.classes['itemImage' + this.state.viewType]} src={'files/' + item.id} alt={item.name}/> : this.getFileIcon(ext)}
             <div className={this.props.classes['itemName' + this.state.viewType]}>{ item.name }</div>
             {this.formatSize(item.size)}
@@ -826,6 +830,17 @@ class FileBrowser extends React.Component {
         }
     }
 
+    renderViewDialog() {
+        return this.state.viewer ? <FileViewer
+            key={ this.state.viewer }
+            href={ this.state.viewer }
+            t={ this.props.t }
+            lang={ this.props.lang }
+            expertMode={ this.props.expertMode }
+            onClose={ () => this.setState({ viewer: '' }) }
+        /> : null;
+    }
+
     render() {
         if (!this.props.ready) {
             return (
@@ -841,6 +856,7 @@ class FileBrowser extends React.Component {
             this.props.allowUpload ? this.renderInputDialog() : null,
             this.props.allowUpload ? this.renderUpload() : null,
             this.props.allowDelete ? this.renderDeleteDialog() : null,
+            this.props.allowView ?   this.renderViewDialog() : null,
         ];
     }
 }
@@ -856,6 +872,7 @@ FileBrowser.propTypes = {
     allowDownload: PropTypes.bool,
     allowCreateFolder: PropTypes.bool,
     allowDelete: PropTypes.bool,
+    allowView: PropTypes.bool,
 };
 
 export default withWidth()(withStyles(styles)(FileBrowser));

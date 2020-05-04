@@ -8,11 +8,11 @@ import ObjectBrowser from '../components/ObjectBrowser';
 
 const styles = theme => ({
     root: {
-        width: '100%',
+        width: 'calc(100% - ' + theme.spacing(4) + 'px)',
         overflow: 'hidden',
-        height: '100%',
+        height: 'calc(100% - ' + theme.spacing(1) + 'px)',
         marginTop: 0,
-        marginBottom: theme.spacing(2),
+        marginBottom: theme.spacing(0),
         marginLeft: theme.spacing(2),
         marginRight: theme.spacing(2),
     }
@@ -46,9 +46,11 @@ class Objects extends React.Component {
                     defaultFilters={ this.filters }
                     statesOnly={ this.props.statesOnly }
                     style={ {width: '100%', height: '100%'} }
-                    connection={ this.props.socket }
+                    socket={ this.props.socket }
                     selected={ this.state.selected }
                     name={ this.state.name }
+                    t={ this.props.t }
+                    lang={ this.props.lang }
                     theme={ this.props.themeName }
                     onFilterChanged={ filterConfig => {
                         this.filters = filterConfig;

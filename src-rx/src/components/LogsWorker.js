@@ -204,7 +204,9 @@ class LogsWorker {
 
                 lines.forEach(line => {
                     const obj = this._processLine(line, lastKey);
-                    lastKey = obj.key;
+                    if (obj) {
+                        lastKey = obj.key;
+                    }
                 });
 
                 this.logSize = logSize;
