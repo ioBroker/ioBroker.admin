@@ -1228,13 +1228,12 @@ class ObjectBrowser extends React.Component {
                 { icon }
                 <div className={this.props.classes.cellNameSpan}>{ item.data.name }</div>
             </div>
-            {this.visibleCols.includes('name')    ? <div style={{ width: widths.widthName }}>{ this.getFilterInput('name') }</div> : null }
-            {this.visibleCols.includes('role')    ? <div style={{ width: widths.WIDTHS[0] }}>{ this.getFilterSelectRole() }</div> : null }
-            {this.visibleCols.includes('room')    ? <div style={{ width: widths.WIDTHS[1] }}>{ this.getFilterSelectRoom() }</div> : null }
-            {this.visibleCols.includes('func')    ? <div style={{ width: widths.WIDTHS[2] }}>{ this.getFilterSelectFunction() }</div> : null }
-            {this.visibleCols.includes('val')     ? <div style={{ width: widths.WIDTHS[3] }}>{ this.props.t('Value') }</div> : null }
+            {this.visibleCols.includes('name')    ? <div style={{ width: widths.widthName }}>{  }</div> : null }
+            {this.visibleCols.includes('role')    ? <div style={{ width: widths.WIDTHS[0] }}>{  }</div> : null }
+            {this.visibleCols.includes('room')    ? <div style={{ width: widths.WIDTHS[1] }}>{  }</div> : null }
+            {this.visibleCols.includes('func')    ? <div style={{ width: widths.WIDTHS[2] }}>{  }</div> : null }
+            {this.visibleCols.includes('val')     ? <div style={{ width: widths.WIDTHS[3] }}>{  }</div> : null }
             {this.visibleCols.includes('buttons') ? <div style={{ width: widths.WIDTHS[4] }}></div> : null }
-
         </div>;
     }
 
