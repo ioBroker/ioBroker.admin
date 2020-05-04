@@ -27,7 +27,7 @@ const styles = theme => ({
     },
     noWrap: {
         flexWrap: 'nowrap',
-        minHeight: 49
+        height: 40
     }
 });
 
