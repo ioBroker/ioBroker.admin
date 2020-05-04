@@ -9,6 +9,9 @@
         "hobbyquaker <hq@ccu.io>",
         "ldittmar <iobroker@lmdsoft.de>"
     ],
+    "engines": {
+        "node": ">=10.0.0"
+    },
     "homepage": "https://github.com/ioBroker/ioBroker.admin",
     "repository": {
         "type": "git",
@@ -20,7 +23,7 @@
         "setup"
     ],
     "dependencies": {
-        "@iobroker/adapter-core": "^2.3.1",
+        "@iobroker/adapter-core": "^2.4.0",
         "body-parser": "^1.19.0",
         "connect-flash": "^0.1.1",
         "cookie-parser": "^1.4.5",
@@ -31,7 +34,7 @@
         "passport-local": "^1.0.0",
         "passport.socketio": "^3.7.0",
         "request": "^2.88.2",
-        "semver": "^6.3.0",
+        "semver": "^7.3.2",
         "ws": "^7.2.5"
     },
     "devDependencies": {
