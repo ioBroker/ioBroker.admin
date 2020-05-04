@@ -4,6 +4,11 @@ import { withStyles } from '@material-ui/core/styles';
 //import { MdContactPhone } from 'react-icons/md';
 
 import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -21,6 +26,7 @@ import AddIcon from '@material-ui/icons/Add';
 import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
 import BuildIcon from '@material-ui/icons/Build';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import CloseIcon from '@material-ui/icons/Close';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import HelpIcon from '@material-ui/icons/Help';
@@ -98,25 +104,27 @@ class Adapters extends React.Component {
             lastUpdate: 0,
             repository: {},
             installed: {},
-            instances: {},
+            instances: [],
             categories: [],
             hostData: {},
             hostOs: '',
             nodeJsVersion: '',
-            init: false
+            init: false,
+            addInstanceDialog: false,
+            addInstanceError: false
         };
 
         this.t = props.t;
     }
 
     componentDidMount() {
-        if(this.props.ready) {
+        if (this.props.ready) {
             this.getAdaptersInfo(true);
         }
     }
 
     componentDidUpdate() {
-        if(!this.state.init && this.props.ready) {
+        if (!this.state.init && this.props.ready) {
             this.getAdaptersInfo(true);
         }
     }
@@ -233,11 +241,37 @@ class Adapters extends React.Component {
         }
     }
 
-    addInstance(adapter) {
-        if (this.props.expertMode) {
-            /* TODO: Add Dialog */
+    addInstance(adapter, instance) {
+        if (isNaN(instance) && this.props.expertMode) {
+            this.setState({
+                addInstanceDialog: true
+            });
         } else {
-            this.props.executeCommand(`add ${adapter} --host ${this.props.currentHostName}`);
+            
+            if (instance) {
+
+                const cancel = false;
+
+                for(let i = 0; i < this.state.instances.length; i++) {
+
+                    const instance = this.state.instances[i];
+
+                    if (instance._id === `system.adapter.${adapter}.${instance}`) {
+
+                        cancel = true;
+
+                        break;
+                    }
+                }
+
+                cancel && this.setState({
+                    addInstanceError: true
+                });
+
+                return;
+            }
+
+            this.props.executeCommand(`add ${adapter} ${instance ? instance + ' ' : ''}--host ${this.props.currentHostName}`);
         }
     }
 
@@ -247,6 +281,12 @@ class Adapters extends React.Component {
 
     rebuild(adapter) {
         this.props.executeCommand('rebuild ' + adapter) 
+    }
+
+    closeAddInstanceDialog() {
+        this.setState({
+            addInstanceDialog: false
+        });
     }
 
     toggleCategory(category) {
@@ -474,6 +514,24 @@ class Adapters extends React.Component {
                         </Table>
                     </TableContainer>
                 </Grid>
+                <Dialog onClose={ () => this.closeAddInstanceDialog() } open={ this.state.addInstanceDialog }>
+                    <DialogTitle>
+                        { this.t('Dummy text') }
+                        <IconButton className={ classes.closeButton } onClick={ () => this.closeAddInstanceDialog() }>
+                            <CloseIcon />
+                        </IconButton>
+                    </DialogTitle>
+                    <DialogContent dividers>
+                        <Typography gutterBottom>
+                            { this.t('Dummy text') }
+                        </Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button autoFocus onClick={ () => this.closeAddInstanceDialog() } color="primary">
+                            { this.t('Close') }
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Paper>
         );
     }
