@@ -209,8 +209,8 @@ class Logs extends React.Component {
                         }
                     });
 
-                    if (this.props.logWorker) {
-                        this.props.logWorker.getLogs()
+                    if (this.props.logsWorker) {
+                        this.props.logsWorker.getLogs()
                             .then(results => {
                                 const logs = [...results.logs];
                                 const logSize = results.logSize;
@@ -237,13 +237,13 @@ class Logs extends React.Component {
     }
 
     componentDidMount() {
-        this.props.logWorker && this.props.logWorker.enableCountErrors(false);
-        this.props.logWorker.registerHandler(this.logHandlerBound);
+        this.props.logsWorker && this.props.logsWorker.enableCountErrors(false);
+        this.props.logsWorker.registerHandler(this.logHandlerBound);
     }
 
     componentWillUnmount() {
-        this.props.logWorker && this.props.logWorker.enableCountErrors(true);
-        this.props.logWorker.unregisterHandler(this.logHandlerBound);
+        this.props.logsWorker && this.props.logsWorker.enableCountErrors(true);
+        this.props.logsWorker.unregisterHandler(this.logHandlerBound);
     }
 
     logHandler(newLogs) {
@@ -260,7 +260,7 @@ class Logs extends React.Component {
     }
 
     clearLog() {
-        this.props.logWorker && this.props.logWorker.clearLines();
+        this.props.logsWorker && this.props.logsWorker.clearLines();
         this.setState({
             logs: []
         });
@@ -484,8 +484,8 @@ class Logs extends React.Component {
                         alignItems="center"
                     >
                         <IconButton
-                            onClick={ () => this.props.logWorker &&
-                                this.props.logWorker.getLogs(true).then(results => {
+                            onClick={ () => this.props.logsWorker &&
+                                this.props.logsWorker.getLogs(true).then(results => {
                                     const logs = results.logs;
                                     const logSize = results.logSize;
                                     this.setState({ logs: [...logs], logSize });
@@ -622,7 +622,7 @@ Logs.propTypes = {
     socket: PropTypes.object,
     currentHost: PropTypes.string,
     clearErrors: PropTypes.func,
-    logWorker: PropTypes.object,
+    logsWorker: PropTypes.object,
     lang: PropTypes.string,
     t: PropTypes.func,
 };

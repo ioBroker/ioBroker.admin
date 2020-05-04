@@ -45,7 +45,9 @@ import Connecting from './components/Connecting';
 
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './Theme';
-import LogWorker from './components/LogsWorker';
+import LogsWorker from './components/LogsWorker';
+import InstancesWorker from './components/InstancesWorker';
+import HostsWorker from './components/HostsWorker';
 
 import Login from './login/Login';
 
@@ -57,11 +59,10 @@ import Logs from './tabs/Logs';
 import Files from './tabs/Files';
 import Objects from './tabs/Objects';
 import BaseSettings from './tabs/BaseSettings';
+import CustomTab from './tabs/CustomTab';
 
 import i18n from '@iobroker/adapter-react/i18n';
 import CommandDialog from './components/CommandDialog';
-import PropTypes from "prop-types";
-
 
 const query = {};
 (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
@@ -111,7 +112,10 @@ const styles = theme => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+        paddingBottom: 0,
+        paddingLeft: 0,
+        paddingRight: 0,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -191,7 +195,6 @@ class App extends Router {
                 drawerState = this.props.width === 'xs' ? DrawerStates.closed : DrawerStates.opened;
             }
 
-
             this.state = {
                 connected:      false,
                 progress:       0,
@@ -248,7 +251,9 @@ class App extends Router {
                 cmd: null,
                 cmdDialog: false
             };
-            this.logWorker = null;
+            this.logsWorker = null;
+            this.instancesWorker = null;
+            this.hostsWorker = null;
         } else {
             this.state = {
                 login: true,
@@ -292,8 +297,10 @@ class App extends Router {
                 onReady: async (objects, scripts) => {
                     I18n.setLanguage(this.socket.systemLang);
 
-                    // create logWorker
-                    this.logWorker = this.logWorker || new LogWorker(this.socket, 1000);
+                    // create Workers
+                    this.logsWorker      = this.logsWorker      || new LogsWorker(this.socket, 1000);
+                    this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
+                    this.hostsWorker     = this.hostsWorker     || new HostsWorker(this.socket);
 
                     const newState = {
                         lang: this.socket.systemLang,
@@ -316,7 +323,7 @@ class App extends Router {
 
                     this.setState(newState);
 
-                    this.logWorker && this.logWorker.setCurrentHost(this.state.currentHost);
+                    this.logsWorker && this.logsWorker.setCurrentHost(this.state.currentHost);
                 },
                 //onObjectChange: (objects, scripts) => this.onObjectChange(objects, scripts),
                 onError: error => {
@@ -442,34 +449,6 @@ class App extends Router {
                 };
             });
         }
-    }
-
-    async onStateChange(id, state) {
-        //console.log('STATE: ' + id);
-        this.setState({
-            stateChanged: true
-        });
-        /*if (state) {
-            this.setState(prevState => {
-                
-                const states = prevState.states;
-                states[id] = state;
-
-                return {
-                    states: states
-                };
-            });
-        } else {
-            this.setState(prevState => {
-                
-                const states = prevState.states;
-                delete states[id];
-
-                return {
-                    states: states
-                };
-            });
-        }*/
     }
 
     async setTitle(title) {
@@ -608,7 +587,7 @@ class App extends Router {
                         lang={ this.state.lang }
                         socket={ this.socket }
                         ready={ this.state.ready }
-                        logWorker={ this.logWorker }
+                        logsWorker={ this.logsWorker }
                         expertMode={ this.state.expertMode }
                         currentHost={ this.state.currentHost }
                         clearErrors={ cb => this.clearLogErrors(cb) }
@@ -638,6 +617,32 @@ class App extends Router {
                         socket={ this.socket }
                     />
                 );
+            } else {
+                const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
+                if (m) {
+                    const adapter  = m[1];
+                    const instance = m[2] ? parseInt(m[2], 10) : null;
+
+                    /*let link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
+                    if (tab.common.materializeTab) {
+                        link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';
+                    }*/
+
+                    // /adapter/javascript/tab.html
+                    return (
+                        <CustomTab
+                            key={ this.state.currentTab.tab }
+                            t={ I18n.t }
+                            protocol={ this.state.protocol }
+                            hostname={ this.state.hostname }
+                            instancesWorker={ this.instancesWorker }
+                            tab={ this.state.currentTab.tab }
+                            themeName={ this.state.themeName }
+                            expertMode={ this.state.expertMode }
+                            lang={ I18n.getLanguage() }
+                        />
+                    );
+                }
             }
         } else {
             this.handleNavigation('tab-intro');
@@ -843,7 +848,8 @@ class App extends Router {
                         onStateChange={ state => this.handleDrawerState(state) }
                         onLogout={ () => this.logout() }
                         currentTab={ this.state.currentTab && this.state.currentTab.tab }
-                        logWorker={ this.logWorker }
+                        logsWorker={ this.logsWorker }
+                        instancesWorker={ this.instancesWorker }
                         logoutTitle={ I18n.t('Logout') }
                         isSecure={ this.socket.isSecure }
                         t={ I18n.t }

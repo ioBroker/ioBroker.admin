@@ -34,7 +34,7 @@ import { green } from '@material-ui/core/colors';
 
 const styles = theme => ({
     root:{
-        marginBottom: theme.spacing(2)
+        marginBottom: theme.spacing(2),
     },
     smallAvatar: {
         width: theme.spacing(3),
