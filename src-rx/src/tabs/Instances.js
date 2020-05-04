@@ -40,7 +40,10 @@ import Utils from '../Utils';
 
 const styles = theme => ({
     root: {
-        marginBottom: theme.spacing(2)
+        marginTop: 0,
+        marginBottom: theme.spacing(2),
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
     },
     table: {
         minWidth: 650,
@@ -174,21 +177,10 @@ class Instances extends React.Component {
         return this.promises.objects;
     }
 
-    getAdapterInstances(update) {
-        if (update) {
-            this.promises.instances = null;
-        }
-        
-        this.promises.instances = this.promises.instances || this.props.socket.getAdapterInstances()
-            .catch(error => console.log(error));
-        
-        return this.promises.instances;
-    }
-
     getData(update) {
         let instances;
         let states;
-        this.getAdapterInstances(update)
+        return this.props.socket.getAdapterInstances(update)
             .then(_instances => {
                 instances = _instances;
                 return this.getStates(update)
@@ -293,7 +285,9 @@ class Instances extends React.Component {
                     instances: formatted,
                     states,
                 });
-            });
+            })
+            .catch(error => console.log(error));
+
     }
 
     extendObject(id, data) {

@@ -4,16 +4,17 @@ class LogsWorker {
     constructor(socket, maxLogs) {
         this.socket = socket;
         this.handlers = [];
-        this.promises = {
-            logs: new Promise(resolve => this.logResolve = resolve)
-        };
+        this.promise = new Promise(resolve => this.resolve = resolve);
 
         this.logHandlerBound = this.logHandler.bind(this);
+        this.connectionHandlerBound = this.connectionHandler.bind(this);
         this.errorCountHandlers = [];
         socket.registerLogHandler(this.logHandlerBound);
+        socket.registerConnectionHandler(this.connectionHandlerBound);
         this.countErrors = true;
         this.errors = 0;
         this.currentHost = '';
+        this.connected = this.socket.isConnected();
         this.maxLogs = maxLogs || 1000;
         this.logs = null;
     }
@@ -44,6 +45,15 @@ class LogsWorker {
         obj && this.handlers.forEach(handler => handler && handler([obj]));
         if (errors !== this.errors) {
             this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
+        }
+    }
+
+    connectionHandler(isConnected) {
+        if (isConnected && !this.connected) {
+            this.connected = true;
+            this.getLogs(true);
+        } else if (!isConnected && this.connected) {
+            this.connected = false;
         }
     }
     
@@ -165,27 +175,26 @@ class LogsWorker {
 
     getLogs(update) {
         if (!this.currentHost) {
-            this.promises.logs = this.promises.logs ||
-                new Promise(resolve => this.logResolve = resolve);
+            this.promise = this.promise ||
+                new Promise(resolve => this.resolve = resolve);
 
-            return this.promises.logs;
+            return this.promise;
         }
 
         if (!update && this.logs) {
             return Promise.resolve({logs: this.logs, logSize: this.logSize});
         }
 
-        if (update) {
-            this.logResolve = null;
-            this.promises.logs = null;
+        if (update && this.logs) {
+            this.promise = null;
         }
 
-        this.promises.logs = this.promises.logs ||
-            new Promise(resolve => this.logResolve = resolve);
+        this.promise = this.promise ||
+            new Promise(resolve => this.resolve = resolve);
 
         this.errors = 0;
 
-        this.socket.getLogs(this.currentHost,200)
+        this.socket.getLogs(this.currentHost, 200)
             .then(lines => {
                 const logSize = lines ? Utils.formatBytes(lines.pop()) : -1;
 
@@ -205,11 +214,10 @@ class LogsWorker {
 
                 this.errors && this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
 
-                this.logResolve({logs: this.logs, logSize});
-                this.logResolve = null;
+                this.resolve({logs: this.logs, logSize});
             });
 
-        return this.promises.logs;
+        return this.promise;
     }
 
     clearLines() {

@@ -46,10 +46,11 @@ function SocketClient () {
     let connected = false;
     let connectTimer = null;
     let connectionCount = 0;
+    let callbacks = [];
+    this.pending = []; // pending requests till connection established
     let url;
     let options;
     let pingInterval;
-    let callbacks = [];
     let id = 0;
     let sessionID;
     let authTimeout = null;
@@ -142,6 +143,15 @@ function SocketClient () {
                 if (name === '___ready___') {
                     connected  = true;
                     handlers.connect && handlers.connect.forEach(cb => cb());
+
+                    // resend all pending requests
+                    if (this.pending.length) {
+                        this.pending.forEach(([name, arg1, arg2, arg3, arg4, arg5]) =>
+                            this.emit(name, arg1, arg2, arg3, arg4, arg5));
+
+                        this.pending = [];
+                    }
+
                 } else if (args) {
                     handlers[name] && handlers[name].forEach(cb => cb(args[0], args[1], args[2], args[3], args[4]));
                 } else {
@@ -213,8 +223,13 @@ function SocketClient () {
     };
 
     this.emit = (name, arg1, arg2, arg3, arg4, arg5) => {
-        if (!socket && !connected) {
-            console.log('Not connected');
+        if (!socket || !connected) {
+            if (!wasConnected) {
+                // cache all calls till connected
+                this.pending.push([name, arg1, arg2, arg3, arg4, arg5]);
+            } else {
+                console.log('Not connected');
+            }
             return;
         }
 
@@ -225,29 +240,34 @@ function SocketClient () {
             arg3 = arg3 && btoa(String.fromCharCode.apply(null, new Uint8Array(arg3)));
         }
 
-        if (typeof arg5 === 'function') {
-            this.withCallback(name, id, [arg1, arg2, arg3, arg4], arg5);
-        } else if (typeof arg4 === 'function') {
-            this.withCallback(name, id, [arg1, arg2, arg3], arg4);
-        } else if (typeof arg3 === 'function') {
-            this.withCallback(name, id, [arg1, arg2], arg3);
-        } else if (typeof arg2 === 'function') {
-            this.withCallback(name, id, [arg1], arg2);
-        } else if (typeof arg1 === 'function') {
-            this.withCallback(name, id, [], arg1);
-        } else
-        if (arg1 === undefined && arg2 === undefined && arg3 === undefined && arg4 === undefined && arg5 === undefined) {
-            socket.send(JSON.stringify([MESSAGE_TYPES.MESSAGE, id, name]));
-        } else if (arg2 === undefined && arg3 === undefined && arg4 === undefined && arg5 === undefined) {
-            socket.send(JSON.stringify([MESSAGE_TYPES.MESSAGE, id, name, [arg1]]));
-        } else if (arg3 === undefined && arg4 === undefined && arg5 === undefined) {
-            socket.send(JSON.stringify([MESSAGE_TYPES.MESSAGE, id, name, [arg1, arg2]]));
-        } else if (arg4 === undefined && arg5 === undefined) {
-            socket.send(JSON.stringify([MESSAGE_TYPES.MESSAGE, id, name, [arg1, arg2, arg3]]));
-        } else if (arg5 === undefined) {
-            socket.send(JSON.stringify([MESSAGE_TYPES.MESSAGE, id, name, [arg1, arg2, arg3, arg4]]));
-        } else {
-            socket.send(JSON.stringify([MESSAGE_TYPES.MESSAGE, id, name, [arg1, arg2, arg3, arg4, arg5]]));
+        try {
+            if (typeof arg5 === 'function') {
+                this.withCallback(name, id, [arg1, arg2, arg3, arg4], arg5);
+            } else if (typeof arg4 === 'function') {
+                this.withCallback(name, id, [arg1, arg2, arg3], arg4);
+            } else if (typeof arg3 === 'function') {
+                this.withCallback(name, id, [arg1, arg2], arg3);
+            } else if (typeof arg2 === 'function') {
+                this.withCallback(name, id, [arg1], arg2);
+            } else if (typeof arg1 === 'function') {
+                this.withCallback(name, id, [], arg1);
+            } else
+            if (arg1 === undefined && arg2 === undefined && arg3 === undefined && arg4 === undefined && arg5 === undefined) {
+                socket.send(JSON.stringify([MESSAGE_TYPES.MESSAGE, id, name]));
+            } else if (arg2 === undefined && arg3 === undefined && arg4 === undefined && arg5 === undefined) {
+                socket.send(JSON.stringify([MESSAGE_TYPES.MESSAGE, id, name, [arg1]]));
+            } else if (arg3 === undefined && arg4 === undefined && arg5 === undefined) {
+                socket.send(JSON.stringify([MESSAGE_TYPES.MESSAGE, id, name, [arg1, arg2]]));
+            } else if (arg4 === undefined && arg5 === undefined) {
+                socket.send(JSON.stringify([MESSAGE_TYPES.MESSAGE, id, name, [arg1, arg2, arg3]]));
+            } else if (arg5 === undefined) {
+                socket.send(JSON.stringify([MESSAGE_TYPES.MESSAGE, id, name, [arg1, arg2, arg3, arg4]]));
+            } else {
+                socket.send(JSON.stringify([MESSAGE_TYPES.MESSAGE, id, name, [arg1, arg2, arg3, arg4, arg5]]));
+            }
+        } catch (e) {
+            console.error('Cannot send: ' + e);
+            this.close();
         }
     };
 
@@ -273,6 +293,8 @@ function SocketClient () {
     this.close = function () {
         pingInterval && clearTimeout(pingInterval);
         pingInterval = null;
+        authTimeout && clearTimeout(authTimeout);
+        authTimeout = null;
 
         if (socket) {
             try {

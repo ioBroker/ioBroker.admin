@@ -2,37 +2,37 @@ import React from 'react';
 
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
-import PropTypes from "prop-types";
-import clsx from "clsx";
+import PropTypes from 'prop-types';
+import clsx from 'clsx';
 
 import { Drawer as MaterialDrawer } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import DrawerItem from './DrawerItem';
 
-import I18n from "@iobroker/adapter-react/i18n";
+import I18n from '@iobroker/adapter-react/i18n';
 
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { FaSignOutAlt as LogoutIcon } from 'react-icons/fa';
-import AppsIcon from "@material-ui/icons/Apps";
-import InfoIcon from "@material-ui/icons/Info";
-import StoreIcon from "@material-ui/icons/Store";
-import SubtitlesIcon from "@material-ui/icons/Subtitles";
-import ViewListIcon from "@material-ui/icons/ViewList";
-import ArtTrackIcon from "@material-ui/icons/ArtTrack";
-import DvrIcon from "@material-ui/icons/Dvr";
-import ViewHeadlineIcon from "@material-ui/icons/ViewHeadline";
-import SubscriptionsIcon from "@material-ui/icons/Subscriptions";
-import FlashOnIcon from "@material-ui/icons/FlashOn";
-import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
-import CodeIcon from "@material-ui/icons/Code";
-import AcUnitIcon from "@material-ui/icons/AcUnit";
-import DeviceHubIcon from "@material-ui/icons/DeviceHub";
-import PermContactCalendarIcon from "@material-ui/icons/PermContactCalendar";
-import StorageIcon from "@material-ui/icons/Storage";
-import FilesIcon from "@material-ui/icons/FileCopy";
-import LogWorker from "./LogsWorker";
+import AppsIcon from '@material-ui/icons/Apps';
+import InfoIcon from '@material-ui/icons/Info';
+import StoreIcon from '@material-ui/icons/Store';
+import SubtitlesIcon from '@material-ui/icons/Subtitles';
+import ViewListIcon from '@material-ui/icons/ViewList';
+import ArtTrackIcon from '@material-ui/icons/ArtTrack';
+import DvrIcon from '@material-ui/icons/Dvr';
+import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
+import SubscriptionsIcon from '@material-ui/icons/Subscriptions';
+import FlashOnIcon from '@material-ui/icons/FlashOn';
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import CodeIcon from '@material-ui/icons/Code';
+import AcUnitIcon from '@material-ui/icons/AcUnit';
+import DeviceHubIcon from '@material-ui/icons/DeviceHub';
+import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
+import StorageIcon from '@material-ui/icons/Storage';
+import FilesIcon from '@material-ui/icons/FileCopy';
+import {FaQuestionCircle as QuestionIcon} from 'react-icons/fa';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -93,15 +93,15 @@ const tabsInfo = {
     'tab-events':           {order: 40,   icon: <FlashOnIcon />},
     'tab-users':            {order: 45,   icon: <PersonOutlineIcon />},
     'tab-javascript':       {order: 50,   icon: <CodeIcon />},
-    'tab-text2command-0':   {order: 55,   icon: <AcUnitIcon />},
-    'tab-text2command-1':   {order: 56,   icon: <AcUnitIcon />},
-    'tab-text2command-2':   {order: 57,   icon: <AcUnitIcon />},
-    'tab-node-red-0':       {order: 60,   icon: <DeviceHubIcon />},
-    'tab-node-red-1':       {order: 61,   icon: <DeviceHubIcon />},
-    'tab-node-red-2':       {order: 62,   icon: <DeviceHubIcon />},
-    'tab-fullcalendar-0':   {order: 65,   icon: <PermContactCalendarIcon />},
-    'tab-fullcalendar-1':   {order: 66,   icon: <PermContactCalendarIcon />},
-    'tab-fullcalendar-2':   {order: 67,   icon: <PermContactCalendarIcon />},
+    'tab-text2command-0':   {order: 55,   icon: <AcUnitIcon />, instance: 0},
+    'tab-text2command-1':   {order: 56,   icon: <AcUnitIcon />, instance: 1},
+    'tab-text2command-2':   {order: 57,   icon: <AcUnitIcon />, instance: 2},
+    'tab-node-red-0':       {order: 60,   icon: <DeviceHubIcon />, instance: 0},
+    'tab-node-red-1':       {order: 61,   icon: <DeviceHubIcon />, instance: 1},
+    'tab-node-red-2':       {order: 62,   icon: <DeviceHubIcon />, instance: 2},
+    'tab-fullcalendar-0':   {order: 65,   icon: <PermContactCalendarIcon />, instance: 0},
+    'tab-fullcalendar-1':   {order: 66,   icon: <PermContactCalendarIcon />, instance: 1},
+    'tab-fullcalendar-2':   {order: 67,   icon: <PermContactCalendarIcon />, instance: 2},
     'tab-hosts':            {order: 100,  icon: <StorageIcon />},
     'tab-files':            {order: 110,  icon: <FilesIcon />},
 };
@@ -114,14 +114,27 @@ class Drawer extends React.Component {
             logErrors: 0,
             tabs: []
         };
+
         this.logErrorHandlerBound = this.logErrorHandler.bind(this);
+        this.instanceChangedHandlerBound = this.instanceChangedHandler.bind(this);
+
+        this.instances = null;
+
+        this.getTabs();
+    }
+
+    instanceChangedHandler(changes) {
+        this.getTabs();
     }
 
     componentDidMount() {
-        this.props.logWorker.registerErrorCountHandler(this.logErrorHandlerBound);
+        this.props.logsWorker.registerErrorCountHandler(this.logErrorHandlerBound);
+        this.props.instancesWorker.registerHandler(this.instanceChangedHandlerBound);
     }
+
     componentWillUnmount () {
-        this.props.logWorker.unregisterErrorCountHandler(this.logErrorHandlerBound);
+        this.props.logsWorker.unregisterErrorCountHandler(this.logErrorHandlerBound);
+        this.props.instancesWorker.unregisterHandler(this.instanceChangedHandlerBound);
     }
 
     logErrorHandler(logErrors) {
@@ -133,60 +146,103 @@ class Drawer extends React.Component {
     }
 
     getTabs() {
+        return this.props.instancesWorker.getInstances()
+            .then(instances => {
+                let dynamicTabs = [];
 
-        let allTabs = [];
-        /*for (let i = 0; i < main.instances.length; i++) {
-            const instance = main.instances[i];
-            const instanceObj = main.objects[instance];
-            if (!instanceObj.common || !instanceObj.common.adminTab) continue;
-            if (instanceObj.common.adminTab.singleton) {
-                let isFound = false;
-                const inst1 = instance.replace(/\.(\d+)$/, '.');
-                for (let j = 0; j < addTabs.length; j++) {
-                    const inst2 = addTabs[j].replace(/\.(\d+)$/, '.');
-                    if (inst1 === inst2) {
-                        isFound = true;
-                        break;
-                    }
-                }
-                if (!isFound) addTabs.push(instance);
-            } else {
-                addTabs.push(instance);
-            }*/
+                if (instances) {
+                    Object.keys(instances).forEach(id => {
+                        const instance = instances[id];
 
-        if (this.state.instances) {
-            this.state.instances.forEach(instanceIndex => {
-
-                const instance = this.state.instances[instanceIndex];
-
-                if (!instance.common || !instance.common.adminTab) {
-                    return;
-                }
-
-                if (instance.common.adminTab.singleton) {
-                    let isFound = false;
-                    const inst1 = instance._id.replace(/\.(\d+)$/, '.');
-
-                    for (const tabIndex in allTabs) {
-                        const inst2 = allTabs[tabIndex].replace(/\.(\d+)$/, '.');
-                        if (inst1 === inst2) {
-                            isFound = true;
-                            break;
+                        if (!instance.common || !instance.common.adminTab) {
+                            return;
                         }
-                    }
 
-                    !isFound && allTabs.push(instance._id);
-                } else {
-                    allTabs.push(instance._id);
+                        let tab = 'tab-' + id.replace('system.adapter.', '').replace(/\.\d+$/, '');
+
+                        const singleton = instance && instance.common && instance.common.adminTab && instance.common.adminTab.singleton;
+                        let instNum;
+                        if (!singleton) {
+                            const m = id.match(/\.(\d+)$/);
+                            if (m) {
+                                instNum = parseInt(m[1], 10);
+                                tab += '-' + instNum;
+                            }
+                        }
+
+                        if (dynamicTabs.find(item => item.name === tab)) {
+                            return;
+                        }
+
+                        let title;
+
+                        if (instance.common.adminTab.name) {
+                            if (typeof instance.common.adminTab.name === 'object') {
+                                if (instance.common.adminTab.name[this.props.lang]) {
+                                    title = instance.common.adminTab.name[this.props.lang];
+                                } else if (instance.common.adminTab.name.en) {
+                                    title = this.props.t(instance.common.adminTab.name.en);
+                                } else {
+                                    title = this.props.t(instance.common.name);
+                                }
+                            } else {
+                                title = this.props.t(instance.common.adminTab.name);
+                            }
+                        } else {
+                            title = this.props.t(instance.common.name);
+                        }
+
+
+                        let obj;
+                        if (tabsInfo[tab]) {
+                            obj = Object.assign({name: tab}, tabsInfo[tab]);
+                        } else {
+                            obj = {name: tab, order: 200, icon: <QuestionIcon />};
+                        }
+
+                        obj.title = title;
+
+                        if (!singleton) {
+                            obj.instance = instance;
+                            if (instNum) {
+                                obj.title += ' ' + instNum;
+                            }
+                        }
+                        dynamicTabs.push(obj);
+                    });
                 }
-            });
-        }
 
-        return allTabs;
-        this.setState({
-            allTabs,
-            tabs: []
-        });
+                const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files', 'tab-objects'];
+                // DEV ONLY
+                let tabs = Object.keys(tabsInfo).filter(name => READY_TO_USE.includes(name));
+
+                tabs = tabs.map(name => {
+                    const obj = Object.assign({name}, tabsInfo[name]);
+                    obj.title = I18n.t(name.replace('tab-', '').replace('-0', '').replace(/-(\d+)$/, ' $1').ucFirst());
+                    return obj;
+                });
+
+                // add dynamic tabs
+                tabs = tabs.concat(dynamicTabs);
+
+                // tabs ith order first, then by name
+                tabs.sort((a, b) => {
+                    if (a.order && b.order) {
+                        return a.order > b.order ? 1 : (a.order < b.order ? -1 : 0);
+                    } else if (a.order) {
+                        return 1;
+                    } else if (b.order) {
+                        return -1;
+                    } else {
+                        return a.name > b.name ? 1 : (a.name < b.name ? -1 : 0);
+                    }
+                });
+
+                // Convert
+                this.setState({
+                    tabs,
+                });
+            });
     }
 
     getHeader() {
@@ -218,27 +274,19 @@ class Drawer extends React.Component {
     }
 
     getNavigationItems() {
-
         const items = [];
-        const READY_TO_USE = ['tab-intro', 'tab-adapters', 'tab-instances', 'tab-logs', 'tab-files', 'tab-objects'];
 
-        Object.keys(tabsInfo).forEach(name => {
-
-            // For developing
-            if (!READY_TO_USE.includes(name)) {
-                return;
-            }
-
+        this.state.tabs.forEach(tab => {
             items.push(
                 <DrawerItem
-                    key={ name }
+                    key={ tab.name }
                     compact={ this.props.state !== STATES.opened }
-                    onClick={ () => this.props.handleNavigation(name) }
-                    icon={ tabsInfo[name].icon }
-                    text={ I18n.t(name.replace('tab-', '').ucFirst()) }
-                    selected={ this.props.currentTab === name }
-                    badgeContent={ name === 'tab-logs' ? this.props.logErrors : 0 }
-                    badgeColor={ name === 'tab-logs' ? 'error' : '' }
+                    onClick={ () => this.props.handleNavigation(tab.name) }
+                    icon={ tab.icon }
+                    text={ tab.title }
+                    selected={ this.props.currentTab === tab.name }
+                    badgeContent={ tab.name === 'tab-logs' ? this.props.logErrors : 0 }
+                    badgeColor={ tab.name === 'tab-logs' ? 'error' : '' }
                 />
             );
         });
@@ -299,7 +347,8 @@ Drawer.propTypes = {
     ready: PropTypes.bool,
     expertMode: PropTypes.bool,
     handleNavigation: PropTypes.func,
-    logWorker: PropTypes.object,
+    logsWorker: PropTypes.object,
+    instancesWorker: PropTypes.object,
 };
 
 export default withWidth()(withStyles(styles)(Drawer));

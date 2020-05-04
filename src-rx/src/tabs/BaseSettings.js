@@ -6,12 +6,15 @@ import Paper from '@material-ui/core/Paper';
 
 const styles = theme => ({
     root: {
-        paddingTop: 5,
-        paddingLeft: 5,
         width: 'calc(100% - 10px)',
         height: 'calc(100% - 10px)',
         overflow: 'hidden',
         position: 'relative',
+        marginTop: 0,
+        marginBottom: theme.spacing(2),
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
+
     },
 });
 

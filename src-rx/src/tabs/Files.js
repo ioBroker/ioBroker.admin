@@ -9,15 +9,16 @@ import FileBrowser from "../components/FileBrowser";
 
 const styles = theme => ({
     root: {
-        paddingTop: 5,
-        paddingLeft: 5,
-        width: 'calc(100% - 10px)',
+        marginTop: 0,
+        marginBottom: 0,
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
         height: 'calc(100% - 10px)',
+        width: 'calc(100% - ' + (theme.spacing(2) + 10) + 'px)',
         overflow: 'hidden',
         position: 'relative',
     }
 });
-
 
 class Files extends React.Component {
     constructor(props) {

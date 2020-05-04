@@ -88,6 +88,8 @@ const styles = theme => ({
         display: 'inline-block',
         width: 30,
         marginTop: 1,
+        objectFit: 'contain',
+        maxHeight: 30,
     },
     itemIconTable: {
         display: 'inline-block',
@@ -134,7 +136,6 @@ const styles = theme => ({
             fontSize: '1.5rem'
         }
     },
-
 
     uploadDiv: {
         top: 0,

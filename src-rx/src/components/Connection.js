@@ -48,6 +48,9 @@ class Connection {
         this.loadTimer = null;
         this.loadCounter = 0;
         this.certPromise = null;
+        
+        this.onConnectionHandlers = [];
+        this.onLogHandlers = [];
 
         this.promises = {};
 
@@ -76,14 +79,17 @@ class Connection {
 
                 if (this.waitForRestart) {
                     window.location.reload();
+                } else {
+                    this.onConnectionHandlers.forEach(cb => cb(true));
                 }
             });
         });
 
         this._socket.on('disconnect', () => {
-            this.connected = false;
+            this.connected  = false;
             this.subscribed = false;
-            this.onProgress(PROGRESS.CONNECTING)
+            this.onProgress(PROGRESS.CONNECTING);
+            this.onConnectionHandlers.forEach(cb => cb(false));
         });
 
         this._socket.on('reconnect', () => {
@@ -96,7 +102,7 @@ class Connection {
         this._socket.on('reauthenticate', () => this.authenticate());
         this._socket.on('log', message => {
             this.props.onLog && this.props.onLog(message);
-            this.onLogHandler && this.onLogHandler(message);
+            this.onLogHandlers.forEach(cb => cb(message));
         });
 
         this._socket.on('error', err => {
@@ -133,6 +139,10 @@ class Connection {
             this.onCmdExitHandler && this.onCmdExitHandler(id, exitCode);
         });
     }
+    
+    isConnected() {
+        return this.connected;
+    }
 
     onConnect() {
         this._socket.emit('getUserPermissions', (err, acl) => {
@@ -160,6 +170,7 @@ class Connection {
                         this.systemLang = 'en';
                     }
                 }
+
                 this.props.onLanguage && this.props.onLanguage(this.systemLang);
 
                 if (!this.doNotLoadAllObjects) {
@@ -202,8 +213,10 @@ class Connection {
             this.statesSubscribes[id].cbs.indexOf(cb) === -1 && this.statesSubscribes[id].cbs.push(cb);
         }
         if (typeof cb === 'function') {
-            this._socket.emit('getForeignStates', id, (err, states) =>
-                states && Object.keys(states).forEach(id => cb(id, states[id])));
+            if (this.connected) {
+                this._socket.emit('getForeignStates', id, (err, states) =>
+                    states && Object.keys(states).forEach(id => cb(id, states[id])));
+            }
         }
     }
 
@@ -235,7 +248,7 @@ class Connection {
                 this._socket.emit('subscribeObjects', id);
             }
         } else {
-            this.objectsSubscribes[id].cbs.indexOf(cb) === -1 && this.objectsSubscribes[id].cbs.push(cb);
+            !this.objectsSubscribes[id].cbs.includes(cb) && this.objectsSubscribes[id].cbs.push(cb);
         }
         return Promise.resolve();
     }
@@ -379,8 +392,17 @@ class Connection {
                 err ? reject(err) : resolve(obj)));
     }
 
-    getAdapterInstances(adapter) {
-        return new Promise((resolve, reject) => {
+    getAdapterInstances(adapter, update) {
+        if (typeof adapter === 'boolean') {
+            update = adapter;
+            adapter = '';
+        }
+        adapter = adapter || '';
+        if (update) {
+            this.promises['instances' + adapter] = null;
+        }
+
+        this.promises['instances' + adapter]  = this.promises['instances' + adapter] || new Promise((resolve, reject) => {
             this._socket.emit(
                 'getObjectView',
                 'system',
@@ -394,6 +416,8 @@ class Connection {
                     }
                 });
         });
+
+        return this.promises['instances' + adapter];
     }
 
     _renameGroups(objs, cb) {
@@ -451,11 +475,21 @@ class Connection {
     }
 
     registerLogHandler(handler) {
-        this.onLogHandler = handler;
+        !this.onLogHandlers.includes(handler) && this.onLogHandlers.push(handler);
     }
 
     unregisterLogHandler(handler) {
-        this.onLogHandler = null;
+        const pos = this.onLogHandlers.indexOf(handler);
+        pos !== -1 && this.onLogHandlers.splice(pos, 1);
+    }
+
+    registerConnectionHandler(handler) {
+        !this.onConnectionHandlers.includes(handler) && this.onConnectionHandlers.push(handler);
+    }
+    
+    unregisterConnectionHandler(handler) {
+        const pos = this.onConnectionHandlers.indexOf(handler);
+        pos !== -1 && this.onConnectionHandlers.splice(pos, 1);
     }
 
     registerCmdStdoutHandler(handler) {
