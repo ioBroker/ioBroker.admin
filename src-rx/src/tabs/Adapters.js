@@ -4,11 +4,6 @@ import { withStyles } from '@material-ui/core/styles';
 //import { MdContactPhone } from 'react-icons/md';
 
 import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -26,7 +21,6 @@ import AddIcon from '@material-ui/icons/Add';
 import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
 import BuildIcon from '@material-ui/icons/Build';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import CloseIcon from '@material-ui/icons/Close';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import HelpIcon from '@material-ui/icons/Help';
@@ -37,6 +31,8 @@ import { FaGithub as GithubIcon } from 'react-icons/fa';
 
 import { blue } from '@material-ui/core/colors';
 import { green } from '@material-ui/core/colors';
+
+import AddInstance from '../dialogs/AddInstance';
 
 const styles = theme => ({
     root: {
@@ -114,7 +110,10 @@ class Adapters extends React.Component {
             nodeJsVersion: '',
             init: false,
             addInstanceDialog: false,
-            addInstanceError: false
+            addInstanceError: false,
+            addInstanceAdapter: '',
+            addInstanceId: 'auto',
+            addInstanceHost: props.currentHostName
         };
 
         this.t = props.t;
@@ -245,9 +244,12 @@ class Adapters extends React.Component {
     }
 
     addInstance(adapter, instance) {
-        if (isNaN(instance) && this.props.expertMode) {
+        
+        if (!instance && this.props.expertMode) {
             this.setState({
-                addInstanceDialog: true
+                addInstanceDialog: true,
+                addInstanceAdapter: adapter,
+                addInstanceHost: this.props.currentHostName
             });
         } else {
             
@@ -267,11 +269,13 @@ class Adapters extends React.Component {
                     }
                 }
 
-                cancel && this.setState({
-                    addInstanceError: true
-                });
+                if (cancel) {
+                    this.setState({
+                        addInstanceError: true
+                    });
 
-                return;
+                    return;
+                }
             }
 
             this.props.executeCommand(`add ${adapter} ${instance ? instance + ' ' : ''}--host ${this.props.currentHostName}`);
@@ -299,6 +303,18 @@ class Adapters extends React.Component {
 
         this.setState({
             categories
+        });
+    }
+
+    handleHostsChange(event) {
+        this.setState({
+            addInstanceHost: event.target.value
+        });
+    }
+
+    handleInstanceChange(event) {
+        this.setState({
+            addInstanceId: event.target.value
         });
     }
 
@@ -517,24 +533,21 @@ class Adapters extends React.Component {
                         </Table>
                     </TableContainer>
                 </Grid>
-                <Dialog onClose={ () => this.closeAddInstanceDialog() } open={ this.state.addInstanceDialog }>
-                    <DialogTitle>
-                        { this.t('Dummy text') }
-                        <IconButton className={ classes.closeButton } onClick={ () => this.closeAddInstanceDialog() }>
-                            <CloseIcon />
-                        </IconButton>
-                    </DialogTitle>
-                    <DialogContent dividers>
-                        <Typography gutterBottom>
-                            { this.t('Dummy text') }
-                        </Typography>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button autoFocus onClick={ () => this.closeAddInstanceDialog() } color="primary">
-                            { this.t('Close') }
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                { this.state.addInstanceDialog &&
+                    <AddInstance
+                        open={ this.state.addInstanceDialog }
+                        adapter={ this.state.addInstanceAdapter }
+                        hosts={ this.props.hosts }
+                        instances={ this.state.instances }
+                        currentHost={ this.state.addInstanceHost }
+                        currentInstance={ this.state.addInstanceId }
+                        t={ this.t }
+                        onClick={ () => this.addInstance(this.state.addInstanceAdapter, this.state.addInstanceId) }
+                        onClose={ () => this.closeAddInstanceDialog() }
+                        onHostChange={ event => this.handleHostsChange(event) }
+                        onInstanceChange={ event => this.handleInstanceChange(event) }
+                    />
+                }
             </Paper>
         );
     }
