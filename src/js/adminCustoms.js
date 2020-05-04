@@ -533,7 +533,7 @@ function Customs(main) {
             }
             var $chart = this.$dialog.find('#iframe-history-chart');
 
-            var linkTemplate = 'http{isSecure}://{hostname}:{port}/{chart}/index.html?range=1440&zoom=true&axeX=lines&axeY=inside&hoverDetail=true&aggregate=onchange&chartType=step&live=30&instance={instance}&l%5B0%5D%5Bid%5D={id}&l%5B0%5D%5Boffset%5D=0&l%5B0%5D%5Baggregate%5D=minmax&l%5B0%5D%5Bcolor%5D=%231868a8&l%5B0%5D%5Bthickness%5D=1&l%5B0%5D%5Bshadowsize%5D=1&l%5B0%5D%5Bsmoothing%5D=0&l%5B0%5D%5BafterComma%5D=0&l%5B0%5D%5BignoreNull%5D=false&aggregateType=step&aggregateSpan=300&relativeEnd=now&timeType=relative&noBorder=noborder&bg=rgba(0%2C0%2C0%2C0)&timeFormat=%25H%3A%25M&useComma={comma}&noedit=false&animation=0';
+            var linkTemplate = 'http{isSecure}://{hostname}:{port}/{chart}/index.html?range=1440&zoom=true&axeX=lines&axeY=inside&hoverDetail=true&aggregate=onchange&chartType=step&live=30&instance={instance}&l%5B0%5D%5Bid%5D={id}&l%5B0%5D%5Boffset%5D=0&l%5B0%5D%5Baggregate%5D=onchange&l%5B0%5D%5Bcolor%5D=%231868a8&l%5B0%5D%5Bthickness%5D=1&l%5B0%5D%5Bshadowsize%5D=1&l%5B0%5D%5Bsmoothing%5D=0&l%5B0%5D%5BafterComma%5D=3&l%5B0%5D%5BignoreNull%5D=false&l%5B0%5D%5BchartType%5D=steps&aggregateType=step&aggregateSpan=0&relativeEnd=now&timeType=relative&noBorder=noborder&bg=rgba(0%2C0%2C0%2C0)&timeFormat=%25H%3A%25M%3A%25S+%25d.%25m.%25y&useComma={comma}&noedit=false&animation=0';
             linkTemplate = linkTemplate.replace('{isSecure}',   (isSecure ? 's' : ''));
             linkTemplate = linkTemplate.replace('{hostname}',   location.hostname);
             linkTemplate = linkTemplate.replace('{port}',       port);
