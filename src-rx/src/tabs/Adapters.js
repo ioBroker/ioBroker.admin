@@ -36,10 +36,7 @@ import AddInstance from '../dialogs/AddInstance';
 
 const styles = theme => ({
     root: {
-        marginTop: 0,
-        marginBottom: theme.spacing(2),
-        marginLeft: theme.spacing(2),
-        marginRight: theme.spacing(2),
+        margin: theme.spacing(1)
     },
     smallAvatar: {
         width: theme.spacing(3),
@@ -244,7 +241,7 @@ class Adapters extends React.Component {
     }
 
     addInstance(adapter, instance) {
-        
+
         if (!instance && this.props.expertMode) {
             this.setState({
                 addInstanceDialog: true,

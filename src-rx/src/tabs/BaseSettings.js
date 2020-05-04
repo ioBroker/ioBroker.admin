@@ -10,11 +10,7 @@ const styles = theme => ({
         height: 'calc(100% - 10px)',
         overflow: 'hidden',
         position: 'relative',
-        marginTop: 0,
-        marginBottom: theme.spacing(2),
-        marginLeft: theme.spacing(2),
-        marginRight: theme.spacing(2),
-
+        margin: theme.spacing(1)
     },
 });
 
