@@ -112,10 +112,7 @@ const styles = theme => ({
     },
     content: {
         flexGrow: 1,
-        paddingTop: theme.spacing(2),
-        paddingBottom: 0,
-        paddingLeft: 0,
-        paddingRight: 0,
+        padding: theme.spacing(1),
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -382,8 +379,8 @@ class App extends Router {
      * @returns {Theme}
      */
     getTheme(name) {
-        return theme(name ? name : window.localStorage && window.localStorage.getItem('App.theme') ?
-            window.localStorage.getItem('App.theme') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored');
+        return theme(name ? name : window.localStorage && window.localStorage.getItem('App.themeName') ?
+            window.localStorage.getItem('App.themeName') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored');
     }
 
     /**
@@ -415,7 +412,9 @@ class App extends Router {
             themeName === 'blue' ? 'colored' : themeName === 'colored' ? 'light' :
             themeName === 'light' ? 'dark' : 'colored';
 
-        window.localStorage.setItem('App.theme', newThemeName);
+        window.localStorage.setItem('App.themeName', newThemeName);
+        window.localStorage.setItem('App.theme', newThemeName === 'dark' || newThemeName === 'blue' ?
+            'dark' : 'light');
 
         const theme = this.getTheme(newThemeName);
 
@@ -541,6 +540,7 @@ class App extends Router {
                         key="adapters"
                         systemConfig={ this.state.systemConfig }
                         socket={ this.socket }
+                        hosts={ this.state.hosts }
                         currentHost={ this.state.currentHost }
                         currentHostName={ this.state.currentHostName }
                         ready={ this.state.ready }

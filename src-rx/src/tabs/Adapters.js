@@ -32,12 +32,11 @@ import { FaGithub as GithubIcon } from 'react-icons/fa';
 import { blue } from '@material-ui/core/colors';
 import { green } from '@material-ui/core/colors';
 
+import AddInstance from '../dialogs/AddInstance';
+
 const styles = theme => ({
     root: {
-        marginTop: 0,
-        marginBottom: theme.spacing(2),
-        marginLeft: theme.spacing(2),
-        marginRight: theme.spacing(2),
+        margin: theme.spacing(1)
     },
     smallAvatar: {
         width: theme.spacing(3),
@@ -101,26 +100,31 @@ class Adapters extends React.Component {
             lastUpdate: 0,
             repository: {},
             installed: {},
-            instances: {},
+            instances: [],
             categories: [],
             hostData: {},
             hostOs: '',
             nodeJsVersion: '',
-            init: false
+            init: false,
+            addInstanceDialog: false,
+            addInstanceError: false,
+            addInstanceAdapter: '',
+            addInstanceId: 'auto',
+            addInstanceHost: props.currentHostName
         };
 
         this.t = props.t;
     }
 
     componentDidMount() {
-        if(this.props.ready) {
-            this.getAdaptersInfo(this.props.currentHost, true);
+        if (this.props.ready) {
+            this.getAdaptersInfo(true);
         }
     }
 
     componentDidUpdate() {
-        if(!this.state.init && this.props.ready) {
-            this.getAdaptersInfo(this.props.currentHost, true);
+        if (!this.state.init && this.props.ready) {
+            this.getAdaptersInfo(true);
         }
     }
 
@@ -236,11 +240,42 @@ class Adapters extends React.Component {
         }
     }
 
-    addInstance(adapter) {
-        if (this.props.expertMode) {
-            /* TODO: Add Dialog */
+    addInstance(adapter, instance) {
+
+        if (!instance && this.props.expertMode) {
+            this.setState({
+                addInstanceDialog: true,
+                addInstanceAdapter: adapter,
+                addInstanceHost: this.props.currentHostName
+            });
         } else {
-            this.props.executeCommand(`add ${adapter} --host ${this.props.currentHostName}`);
+            
+            if (instance) {
+
+                const cancel = false;
+
+                for(let i = 0; i < this.state.instances.length; i++) {
+
+                    const instance = this.state.instances[i];
+
+                    if (instance._id === `system.adapter.${adapter}.${instance}`) {
+
+                        cancel = true;
+
+                        break;
+                    }
+                }
+
+                if (cancel) {
+                    this.setState({
+                        addInstanceError: true
+                    });
+
+                    return;
+                }
+            }
+
+            this.props.executeCommand(`add ${adapter} ${instance ? instance + ' ' : ''}--host ${this.props.currentHostName}`);
         }
     }
 
@@ -252,6 +287,12 @@ class Adapters extends React.Component {
         this.props.executeCommand('rebuild ' + adapter) 
     }
 
+    closeAddInstanceDialog() {
+        this.setState({
+            addInstanceDialog: false
+        });
+    }
+
     toggleCategory(category) {
 
         const categories = this.state.categories;
@@ -259,6 +300,18 @@ class Adapters extends React.Component {
 
         this.setState({
             categories
+        });
+    }
+
+    handleHostsChange(event) {
+        this.setState({
+            addInstanceHost: event.target.value
+        });
+    }
+
+    handleInstanceChange(event) {
+        this.setState({
+            addInstanceId: event.target.value
         });
     }
 
@@ -432,7 +485,9 @@ class Adapters extends React.Component {
                         container
                         alignItems="center"
                     >
-                        <IconButton>
+                        <IconButton
+                            onClick={ () => this.getAdaptersInfo(true, true) }
+                        >
                             <RefreshIcon />
                         </IconButton>
                         <IconButton>
@@ -475,6 +530,21 @@ class Adapters extends React.Component {
                         </Table>
                     </TableContainer>
                 </Grid>
+                { this.state.addInstanceDialog &&
+                    <AddInstance
+                        open={ this.state.addInstanceDialog }
+                        adapter={ this.state.addInstanceAdapter }
+                        hosts={ this.props.hosts }
+                        instances={ this.state.instances }
+                        currentHost={ this.state.addInstanceHost }
+                        currentInstance={ this.state.addInstanceId }
+                        t={ this.t }
+                        onClick={ () => this.addInstance(this.state.addInstanceAdapter, this.state.addInstanceId) }
+                        onClose={ () => this.closeAddInstanceDialog() }
+                        onHostChange={ event => this.handleHostsChange(event) }
+                        onInstanceChange={ event => this.handleInstanceChange(event) }
+                    />
+                }
             </Paper>
         );
     }

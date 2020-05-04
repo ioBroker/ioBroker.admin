@@ -12,12 +12,6 @@ import './index.css';
 console.log('iobroker.admin@' + version);
 let theme = window.localStorage ? window.localStorage.getItem('App.theme') || 'light' : 'light';
 
-if (theme === 'blue') {
-    theme = 'dark';
-} else if (theme === 'colored') {
-    theme = 'light';
-}
-
 function build() {
     return ReactDOM.render(<MuiThemeProvider theme={createTheme(theme)}>
         <App onThemeChange={_theme => {

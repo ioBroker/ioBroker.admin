@@ -32,7 +32,7 @@ import DeviceHubIcon from '@material-ui/icons/DeviceHub';
 import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
 import StorageIcon from '@material-ui/icons/Storage';
 import FilesIcon from '@material-ui/icons/FileCopy';
-import {FaQuestionCircle as QuestionIcon} from 'react-icons/fa';
+import HelpIcon from '@material-ui/icons/Help';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -52,7 +52,8 @@ const styles = theme => ({
         width: DRAWER_COMPACT_WIDTH,
     },
     paper: {
-        width: 'inherit'
+        width: 'inherit',
+        overflowX: 'hidden'
     },
     header: {
         display: 'flex',
@@ -74,6 +75,7 @@ const styles = theme => ({
         color: theme.palette.primary.main
     }
 });
+
 export const STATES = {
     opened: 0,
     closed: 1,
@@ -197,7 +199,7 @@ class Drawer extends React.Component {
                         if (tabsInfo[tab]) {
                             obj = Object.assign({name: tab}, tabsInfo[tab]);
                         } else {
-                            obj = {name: tab, order: 200, icon: <QuestionIcon />};
+                            obj = {name: tab, order: 200, icon: <HelpIcon />};
                         }
 
                         obj.title = title;
@@ -306,7 +308,7 @@ class Drawer extends React.Component {
                     open={ this.props.state !== STATES.closed }
                     onClose={ () => this.props.onStateChange(STATES.closed) }
                     onOpen={ () => this.props.onStateChange(STATES.opened) }
-                    classes={{ paper: classes.paper, }}
+                    classes={{ paper: classes.paper }}
                 >
                     { this.getHeader() }
                     <List>
@@ -321,7 +323,7 @@ class Drawer extends React.Component {
                     variant="persistent"
                     anchor="left"
                     open={ this.props.state !== STATES.closed }
-                    classes={{ paper: classes.paper, }}
+                    classes={{ paper: classes.paper }}
                 >
                     { this.getHeader() }
                     <List className={ classes.list }>
