@@ -543,6 +543,7 @@ class App extends Router {
                         key="adapters"
                         systemConfig={ this.state.systemConfig }
                         socket={ this.socket }
+                        hosts={ this.state.hosts }
                         currentHost={ this.state.currentHost }
                         currentHostName={ this.state.currentHostName }
                         ready={ this.state.ready }
