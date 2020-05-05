@@ -113,14 +113,6 @@ const styles = theme => ({
         '&:hover .copyButton': {
             display: 'block'
         },
-        '& .itemIcon': {
-            paddingRight: 2,
-            paddingLeft: 2,
-            paddingTop: 5,
-            width: 28,
-            height: 29,
-            zIndex: 2,
-        }
     },
     cellIdSpan: {
         display: 'inline-block',
@@ -159,6 +151,18 @@ const styles = theme => ({
     cellName : {
         display: 'inline-block',
         verticalAlign: 'top',
+    },
+    cellType: {
+        display: 'inline-block',
+        verticalAlign: 'top',
+        '& .itemIcon': {
+            paddingRight: 2,
+            paddingLeft: 2,
+            paddingTop: 5,
+            width: 28,
+            height: 29,
+            zIndex: 2,
+        },
     },
     cellRole : {
         display: 'inline-block',
@@ -233,8 +237,14 @@ const styles = theme => ({
             opacity: 1,
         }
     },
+
     filteredOut: {
         opacity: 0.3
+    },
+    selectIcon: {
+        width: 16,
+        height: 16,
+        paddingRight: 5
     },
     /*cellDiv: {
         display: 'inline-block',
@@ -259,11 +269,6 @@ const styles = theme => ({
     },
     selectNone: {
         opacity: 0.5,
-    },
-    selectIcon: {
-        width: 16,
-        height: 16,
-        paddingRight: 5
     },
     cellWrapperElement: {
         flexGrow: 1,
@@ -456,6 +461,7 @@ function buildTree(objects, options) {
         roomEnums: [],
         roles:     [],
         ids:       [],
+        types:     [],
         objects,
         hasSomeCustoms: false,
     };
@@ -465,6 +471,9 @@ function buildTree(objects, options) {
         const id = ids[i];
         const obj = objects[id];
         const parts = id.split('.');
+        if (!info.types.includes(obj.type)) {
+            info.types.push(obj.type);
+        }
 
         if (id.startsWith('alias')) {
             console.log(id);
@@ -575,6 +584,7 @@ function buildTree(objects, options) {
     info.roomEnums.sort();
     info.funcEnums.sort();
     info.roles.sort();
+    info.types.sort();
 
     return {info, root};
 }
@@ -1026,7 +1036,7 @@ class ObjectBrowser extends React.Component {
 
         this.onObjectChangeBound = this.onObjectChange.bind(this);
 
-        this.visibleCols = this.props.cols || ['name', 'role', 'room', 'func', 'val', 'buttons'];
+        this.visibleCols = this.props.cols || ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'];
 
         this.texts = {
             value:   this.props.t('tooltip_value'),
@@ -1279,17 +1289,17 @@ class ObjectBrowser extends React.Component {
                 let name;
                 let icon;
                 if (typeof item === 'object') {
-                    id = item.value;
+                    id   = item.value;
                     name = item.name;
                     icon = getSelectIdIcon(this.objects, id, this.props.prefix);
                 } else {
-                    id = item;
+                    id   = item;
                     name = item;
                 }
 
                 return (
                     <MenuItem key={id} value={id}>
-                        {icon && (<img className={this.props.classes.selectIcon} src={icon.src} alt={name}/>)}
+                        {icon && (<img className={ this.props.classes.selectIcon } src={icon.src} alt={name}/>)}
                         {name}
                     </MenuItem>)
             }) }
@@ -1313,6 +1323,14 @@ class ObjectBrowser extends React.Component {
         const func = this.info.funcEnums.map(id =>
             ({name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()), value: id}));
         return this.getFilterSelect('func', func);
+
+    }
+
+    getFilterSelectType() {
+        const types = this.info.types.map(id =>
+            ({name: id, value: id}));
+
+        return this.getFilterSelect('type', types);
 
     }
 
@@ -1526,16 +1544,16 @@ class ObjectBrowser extends React.Component {
         >
             <div className={ classes.cellId } style={{ width: widths.idWidth, paddingLeft }}>
                 { icon }
-                { img }
                 <div className={ classes.cellIdSpan }>{ item.data.name }</div>
                 <IconCopy className={ clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
             </div>
             {this.visibleCols.includes('name')    ? <div className={ classes.cellName } style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
-            {this.visibleCols.includes('role')    ? <div className={ classes.cellRole } style={{ width: widths.WIDTHS[0] }}>{ item.data.obj && item.data.obj.common && item.data.obj.common.role }</div> : null }
-            {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom } style={{ width: widths.WIDTHS[1] }}>{ item.data.rooms }</div> : null }
-            {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc } style={{ width: widths.WIDTHS[2] }}>{ item.data.funcs }</div> : null }
-            {this.visibleCols.includes('val')     ? <div className={ classes.cellValue } style={{ width: widths.WIDTHS[3] }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
-            {this.visibleCols.includes('buttons') ? <div className={ classes.cellButtons } style={{ width: widths.WIDTHS[4] }}>{ this.renderColumnButtons(id, item, classes) }</div> : null }
+            {this.visibleCols.includes('type')    ? <div className={ classes.cellType } style={{ width: widths.WIDTHS[0] }}>{ img } { item.data.obj && item.data.obj.type }</div> : null }
+            {this.visibleCols.includes('role')    ? <div className={ classes.cellRole } style={{ width: widths.WIDTHS[1] }}>{ item.data.obj && item.data.obj.common && item.data.obj.common.role }</div> : null }
+            {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom } style={{ width: widths.WIDTHS[2] }}>{ item.data.rooms }</div> : null }
+            {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc } style={{ width: widths.WIDTHS[3] }}>{ item.data.funcs }</div> : null }
+            {this.visibleCols.includes('val')     ? <div className={ classes.cellValue } style={{ width: widths.WIDTHS[4] }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
+            {this.visibleCols.includes('buttons') ? <div className={ classes.cellButtons } style={{ width: widths.WIDTHS[5] }}>{ this.renderColumnButtons(id, item, classes) }</div> : null }
         </div>;
     }
 
@@ -1560,11 +1578,12 @@ class ObjectBrowser extends React.Component {
         return <div className={ classes.headerRow } >
             <div className={ classes.headerCell } style={{ width: widths.idWidth }}>{ this.getFilterInput('id') }</div>
             {this.visibleCols.includes('name')    ? <div className={ classes.headerCell } style={{ width: widths.widthNameHeader }}>{ this.getFilterInput('name') }</div> : null }
-            {this.visibleCols.includes('role')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[0] }}>{ this.getFilterSelectRole() }</div> : null }
-            {this.visibleCols.includes('room')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[1] }}>{ this.getFilterSelectRoom() }</div> : null }
-            {this.visibleCols.includes('func')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[2] }}>{ this.getFilterSelectFunction() }</div> : null }
-            {this.visibleCols.includes('val')     ? <div className={ clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS[3] }}>{ this.props.t('Value') }</div> : null }
-            {this.visibleCols.includes('buttons') ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[4] }}></div> : null }
+            {this.visibleCols.includes('type')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[0] }}>{ this.getFilterSelectType() }</div> : null }
+            {this.visibleCols.includes('role')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[1] }}>{ this.getFilterSelectRole() }</div> : null }
+            {this.visibleCols.includes('room')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[2] }}>{ this.getFilterSelectRoom() }</div> : null }
+            {this.visibleCols.includes('func')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[3] }}>{ this.getFilterSelectFunction() }</div> : null }
+            {this.visibleCols.includes('val')     ? <div className={ clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS[4] }}>{ this.props.t('Value') }</div> : null }
+            {this.visibleCols.includes('buttons') ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[5] }}></div> : null }
         </div>;
     }
 
@@ -1619,13 +1638,13 @@ class ObjectBrowser extends React.Component {
             return (<CircularProgress/>);
         } else {
            const idWidth = 300;
-            const WIDTHS = [120, 180, 180, 120, 76];
+            const WIDTHS = [120, 80, 180, 180, 120, 76];
 
             const widths = {
                 idWidth,
                 WIDTHS,
-                widthName: `calc(100% - ${idWidth + WIDTHS[0] + WIDTHS[1] + WIDTHS[2] + WIDTHS[3] + WIDTHS[4]}px)`,
-                widthNameHeader: `calc(100% - ${idWidth + WIDTHS[0] + WIDTHS[1] + WIDTHS[2] + WIDTHS[3] + WIDTHS[4] + this.state.scrollBarWidth}px)`,
+                widthName: `calc(100% - ${idWidth + WIDTHS[0] + WIDTHS[1] + WIDTHS[2] + WIDTHS[3] + WIDTHS[4] + WIDTHS[5]}px)`,
+                widthNameHeader: `calc(100% - ${idWidth + WIDTHS[0] + WIDTHS[1] + WIDTHS[2] + WIDTHS[3] + WIDTHS[4] +  WIDTHS[5] + this.state.scrollBarWidth}px)`,
             };
 
             const classes = this.props.classes;
