@@ -117,9 +117,14 @@ const styles = theme => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        marginTop: theme.mixins.toolbar.minHeight,
         overflowY: 'auto',
-        /*backgroundColor: grey[200]*/
+        marginTop: theme.mixins.toolbar.minHeight,
+        ['@media (min-width:0px) and (orientation: landscape)']: {
+            marginTop: theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)'].minHeight
+        },
+        ['@media (min-width:600px)']: {
+            marginTop: theme.mixins.toolbar['@media (min-width:600px)'].minHeight
+        }
     },
     contentMargin: {
         marginLeft: -DRAWER_FULL_WIDTH,
