@@ -255,7 +255,7 @@ class Drawer extends React.Component {
             <div className={ clsx(
                 classes.header,
                 this.props.state === STATES.opened && this.props.isSecure && classes.headerLogout,
-                this.props.state !== STATES.opened && classes.headerCompact
+                !this.isSwipeable() && this.props.state !== STATES.opened && classes.headerCompact
             ) }>
                 { this.props.isSecure &&
                     <IconButton title={ this.props.logoutTitle } onClick={ this.props.onLogout }>
@@ -263,7 +263,7 @@ class Drawer extends React.Component {
                     </IconButton>
                 }
                 <IconButton onClick={ () => {
-                    if (this.props.state === STATES.compact) {
+                    if (this.isSwipeable() || this.props.state === STATES.compact) {
                         this.props.onStateChange(STATES.closed);
                     } else {
                         this.props.onStateChange(STATES.compact)
@@ -275,6 +275,10 @@ class Drawer extends React.Component {
         );
     }
 
+    isSwipeable() {
+        return this.props.width === 'xs' || this.props.width === 'sm';
+    }
+
     getNavigationItems() {
         const items = [];
 
@@ -282,7 +286,7 @@ class Drawer extends React.Component {
             items.push(
                 <DrawerItem
                     key={ tab.name }
-                    compact={ this.props.state !== STATES.opened }
+                    compact={ !this.isSwipeable() && this.props.state !== STATES.opened }
                     onClick={ () => this.props.handleNavigation(tab.name) }
                     icon={ tab.icon }
                     text={ tab.title }
@@ -300,7 +304,7 @@ class Drawer extends React.Component {
 
         const { classes } = this.props;
 
-        if (this.props.width === 'xs' || this.props.width === 'sm') {
+        if (this.isSwipeable()) {
             return (
                 <SwipeableDrawer
                     className={ classes.root }
