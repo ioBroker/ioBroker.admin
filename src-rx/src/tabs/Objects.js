@@ -45,6 +45,7 @@ class Objects extends React.Component {
                     socket={ this.props.socket }
                     selected={ this.state.selected }
                     name={ this.state.name }
+                    expertMode={ this.props.expertMode }
                     t={ this.props.t }
                     lang={ this.props.lang }
                     theme={ this.props.themeName }
