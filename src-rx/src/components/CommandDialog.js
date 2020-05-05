@@ -157,8 +157,8 @@ class ConfirmDialog extends React.Component {
             log.push(text);
 
             const upload = text.match(/^upload \[(\d+)]/);
-            const gotAdmin = !upload ? text.match(/^got [-_:\/\\.\w\d]+\/admin$/) : null;
-            const gotWww = !gotAdmin ? text.match(/^got [-_:\/\\.\w\d]+\/www$/) : null;
+            const gotAdmin = !upload ? text.match(/^got [-_:/\\.\w\d]+\/admin$/) : null;
+            const gotWww = !gotAdmin ? text.match(/^got [-_:/\\.\w\d]+\/www$/) : null;
 
             let max = this.state.max;
             let value = null;
