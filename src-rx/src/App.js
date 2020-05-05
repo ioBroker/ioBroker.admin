@@ -37,7 +37,8 @@ import Brightness7Icon from '@material-ui/icons/Brightness7';
 // @material-ui/lab
 import Alert from '@material-ui/lab/Alert';
 
-import ConfirmDialog from './components/ConfirmDialog';
+import ConfirmDialog from './dialogs/ConfirmDialog';
+import CommandDialog from './dialogs/CommandDialog';
 import Drawer from './components/Drawer';
 import { STATES as DrawerStates } from './components/Drawer';
 import { DRAWER_FULL_WIDTH, DRAWER_COMPACT_WIDTH } from './components/Drawer';
@@ -62,7 +63,6 @@ import BaseSettings from './tabs/BaseSettings';
 import CustomTab from './tabs/CustomTab';
 
 import i18n from '@iobroker/adapter-react/i18n';
-import CommandDialog from './components/CommandDialog';
 
 const query = {};
 (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
