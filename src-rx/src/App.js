@@ -119,10 +119,10 @@ const styles = theme => ({
         }),
         overflowY: 'auto',
         marginTop: theme.mixins.toolbar.minHeight,
-        ['@media (min-width:0px) and (orientation: landscape)']: {
+        '@media (min-width:0px) and (orientation: landscape)': {
             marginTop: theme.mixins.toolbar['@media (min-width:0px) and (orientation: landscape)'].minHeight
         },
-        ['@media (min-width:600px)']: {
+        '@media (min-width:600px)': {
             marginTop: theme.mixins.toolbar['@media (min-width:600px)'].minHeight
         }
     },
