@@ -37,14 +37,14 @@ import AddInstance from '../dialogs/AddInstance';
 const styles = theme => ({
     root: {
         width: '100%',
-        height: 'calc(100% - ' + theme.spacing(1) + 'px)',
-        marginTop: theme.spacing(1),
-        overflow: 'hidden',
-    },
-    scrollDiv: {
-        width: '100%',
         height: '100%',
-        overflow: 'auto',
+        overflow: 'hidden'
+    },
+    flexContainer: {
+        height: '100%'
+    },
+    container: {
+        height: '100%'
     },
     smallAvatar: {
         width: theme.spacing(3),
@@ -260,7 +260,7 @@ class Adapters extends React.Component {
             
             if (instance) {
 
-                const cancel = false;
+                let cancel = false;
 
                 for(let i = 0; i < this.state.instances.length; i++) {
 
@@ -486,6 +486,7 @@ class Adapters extends React.Component {
                 <Grid
                     container
                     direction="column"
+                    wrap="nowrap"
                     className={ classes.flexContainer }
                 >
                     <Grid

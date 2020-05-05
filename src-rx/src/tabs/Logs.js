@@ -46,12 +46,10 @@ const styles = theme => ({
     root: {
         width: '100%',
         overflow: 'hidden',
-        height: 'calc(100% - ' + theme.spacing(1) + 'px)',
-        marginTop: theme.spacing(1),
+        height: '100%'
     },
     flexContainer: {
-        height: '100%',
-        flexWrap: 'nowrap'
+        height: '100%'
     },
     container: {
         height: '100%'
@@ -502,6 +500,7 @@ class Logs extends React.Component {
                 <Grid
                     container
                     direction="column"
+                    wrap="nowrap"
                     className={ classes.flexContainer }
                 >
                     <Grid
