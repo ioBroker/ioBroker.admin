@@ -84,6 +84,7 @@ class CustomTab extends React.Component {
             return 'Test it in not development mode!';
         } else {
             return <iframe
+                title={ this.props.tab }
                 className={ this.props.classes.root }
                 src={ this.state.href }
                 onError={ e => {
