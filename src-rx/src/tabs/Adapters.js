@@ -36,7 +36,15 @@ import AddInstance from '../dialogs/AddInstance';
 
 const styles = theme => ({
     root: {
-        margin: theme.spacing(1)
+        width: '100%',
+        height: 'calc(100% - ' + theme.spacing(1) + 'px)',
+        marginTop: theme.spacing(1),
+        overflow: 'hidden',
+    },
+    scrollDiv: {
+        width: '100%',
+        height: '100%',
+        overflow: 'auto',
     },
     smallAvatar: {
         width: theme.spacing(3),

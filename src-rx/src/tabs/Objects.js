@@ -8,10 +8,10 @@ import ObjectBrowser from '../components/ObjectBrowser';
 
 const styles = theme => ({
     root: {
-        width: 'calc(100% - ' + theme.spacing(4) + 'px)',
+        width: '100%',
         overflow: 'hidden',
         height: 'calc(100% - ' + theme.spacing(1) + 'px)',
-        margin: theme.spacing(1)
+        marginTop: theme.spacing(1),
     }
 });
 

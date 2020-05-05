@@ -9,11 +9,11 @@ import FileBrowser from "../components/FileBrowser";
 
 const styles = theme => ({
     root: {
-        margin: theme.spacing(1),
-        height: 'calc(100% - 10px)',
-        width: 'calc(100% - ' + (theme.spacing(2) + 10) + 'px)',
-        overflow: 'hidden',
         position: 'relative',
+        width: '100%',
+        overflow: 'hidden',
+        height: 'calc(100% - ' + theme.spacing(1) + 'px)',
+        marginTop: theme.spacing(1),
     }
 });
 

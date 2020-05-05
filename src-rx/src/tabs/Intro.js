@@ -19,7 +19,9 @@ import Utils from '../Utils';
 
 const styles = theme => ({
     root: {
-        margin: theme.spacing(1)
+        width: '100%',
+        height: 'calc(100% - ' + theme.spacing(1) + 'px)',
+        marginTop: theme.spacing(1),
     },
     button: {
         position: 'absolute',

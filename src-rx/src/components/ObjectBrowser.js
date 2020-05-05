@@ -1233,7 +1233,7 @@ class ObjectBrowser extends React.Component {
             {this.visibleCols.includes('room')    ? <div style={{ width: widths.WIDTHS[1] }}>{  }</div> : null }
             {this.visibleCols.includes('func')    ? <div style={{ width: widths.WIDTHS[2] }}>{  }</div> : null }
             {this.visibleCols.includes('val')     ? <div style={{ width: widths.WIDTHS[3] }}>{  }</div> : null }
-            {this.visibleCols.includes('buttons') ? <div style={{ width: widths.WIDTHS[4] }}></div> : null }
+            {this.visibleCols.includes('buttons') ? <div style={{ width: widths.WIDTHS[4] }}>{  }</div> : null }
         </div>;
     }
 

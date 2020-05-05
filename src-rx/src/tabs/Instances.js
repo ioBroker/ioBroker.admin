@@ -40,7 +40,15 @@ import Utils from '../Utils';
 
 const styles = theme => ({
     root: {
-        margin: theme.spacing(1)
+        width: '100%',
+        height: 'calc(100% - ' + theme.spacing(1) + 'px)',
+        marginTop: theme.spacing(1),
+        overflow: 'hidden',
+    },
+    scrollDiv: {
+        width: '100%',
+        height: '100%',
+        overflow: 'auto',
     },
     table: {
         minWidth: 650,
@@ -511,7 +519,9 @@ class Instances extends React.Component {
         //if (this.props.width === 'xs' || this.props.width === 'sm') {
             return (
                 <Paper className={ classes.root }>
-                    { this.getPanels(classes) }
+                    <div className={ classes.scrollDiv }>
+                        { this.getPanels(classes) }
+                    </div>
                 </Paper>
             );
         //}
