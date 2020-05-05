@@ -19,7 +19,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import copy from 'copy-to-clipboard';
 
 import Utils from '../Utils';
 import TextInputDialog from '../components/TextInputDialog';
@@ -43,18 +42,21 @@ import {FaFileDownload as DownloadIcon} from 'react-icons/fa';
 import NoImage from '../assets/no-image.png';
 import DeleteIcon from '@material-ui/icons/Delete';
 
+const ROW_HEIGHT = 32;
+const BUTTON_WIDTH = 32;
+
 const styles = theme => ({
     filesDiv: {
         width: '100%',
-        height: 'calc(100% - 48px)',
+        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
         overflow: 'auto',
     },
     itemTable: {
         userSelect: 'none',
         cursor: 'pointer',
-        height: 32,
+        height: ROW_HEIGHT,
         width: '100%',
-        lineHeight: '32px',
+        lineHeight: ROW_HEIGHT + 'px',
         '&:hover': {
             background: theme.palette.secondary.main,
             color: Utils.invertColor(theme.palette.secondary.main, true),
@@ -66,7 +68,7 @@ const styles = theme => ({
     },
     itemNameTable: {
         display: 'inline-block',
-        width: 'calc(100% - 214px)', // 30 + 60 + 60 + 32 + 32
+        width: 'calc(100% - 214px)', // 30 + 60 + 60 + BUTTON_WIDTH + BUTTON_WIDTH
         paddingLeft: 10,
         fontSize: '1rem',
         verticalAlign: 'top',
@@ -114,8 +116,8 @@ const styles = theme => ({
     },
     itemDownloadButtonTable: {
         display: 'inline-block',
-        width: 32,
-        height: 32,
+        width: BUTTON_WIDTH,
+        height: ROW_HEIGHT,
         verticalAlign: 'top',
         padding: 0,
         '& span': {
@@ -129,8 +131,8 @@ const styles = theme => ({
     },
     itemDeleteButtonTable: {
         display: 'inline-block',
-        width: 32,
-        height: 32,
+        width: BUTTON_WIDTH,
+        height: ROW_HEIGHT,
         verticalAlign: 'top',
         padding: 0,
         '& svg': {

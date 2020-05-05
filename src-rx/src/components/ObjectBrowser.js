@@ -4,6 +4,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
+
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
 import {withStyles} from '@material-ui/core/styles';
@@ -15,6 +17,11 @@ import Input from '@material-ui/core/Input';
 import secondary from '@material-ui/core/colors/orange';
 import Grid from '@material-ui/core/Grid';
 import copy from 'copy-to-clipboard';
+import Badge from '@material-ui/core/Badge';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
+import Tooltip from '@material-ui/core/Tooltip';
+
 
 import {FaFolder as IconClosed} from 'react-icons/fa';
 import {FaFolderOpen as IconOpen} from 'react-icons/fa';
@@ -22,17 +29,20 @@ import {FaFileAlt as IconState} from 'react-icons/fa';
 import {FaFile as IconDocument} from 'react-icons/fa';
 import {MdPerson as IconExpert} from 'react-icons/md';
 import {FaCopy as IconCopy} from 'react-icons/fa';
+import {FaEdit as IconEdit} from 'react-icons/fa';
 import IconDefaultState from '../assets/state.png';
 import IconDefaultChannel from '../assets/channel.png';
 import IconDefaultDevice from '../assets/device.png';
 import IconDefault from '../assets/empty.png';
 
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import UtilsAdapter from '@iobroker/adapter-react/Components/Utils';
+import Utils from '../Utils';
 
 import CopyContentIcon from './CopyIcon';
 
 const ROW_HEIGHT = 32;
 const ITEM_LEVEL = ROW_HEIGHT;
+const SMALL_BUTTON_SIZE = 20;
 
 const styles = theme => ({
     toolbar: {
@@ -81,20 +91,130 @@ const styles = theme => ({
         lineHeight: ROW_HEIGHT + 'px',
         verticalAlign: 'top',
         userSelect: 'none',
+        cursor: 'pointer',
+        width: '100%',
+        '&:hover': {
+            background: theme.palette.secondary.main,
+            color: Utils.invertColor(theme.palette.secondary.main, true),
+        }
     },
-    cellName: {
+    cellId: {
+        display: 'inline-block',
         fontSize: '1rem',
         verticalAlign: 'top',
+        position: 'relative',
+        '& .copyButton': {
+            display: 'none'
+        },
+        '&:hover .copyButton': {
+            display: 'block'
+        }
     },
-    cellNameSpan: {
+    cellIdSpan: {
         display: 'inline-block',
         verticalAlign: 'top',
     },
-    cellNameIcon: {
+    cellIdIcon: {
         marginRight: theme.spacing(1),
-        width: ROW_HEIGHT - 2,
+        width:  ROW_HEIGHT - 2,
         height: ROW_HEIGHT - 2,
         cursor: 'pointer',
+    },
+    cellCopyButton: {
+        color: 'white',
+        width: SMALL_BUTTON_SIZE,
+        height: SMALL_BUTTON_SIZE,
+        position: 'absolute',
+        top: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
+        right: 0,
+        opacity: 0.7,
+        '&:hover': {
+            opacity: 1,
+        },
+    },
+    cellEditButton: {
+        width: SMALL_BUTTON_SIZE,
+        height: SMALL_BUTTON_SIZE,
+        color: 'white',
+        position: 'absolute',
+        top: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
+        right: SMALL_BUTTON_SIZE + 3,
+        opacity: 0.7,
+        '&:hover': {
+            opacity: 1,
+        },
+    },
+    cellName : {
+        display: 'inline-block',
+        verticalAlign: 'top',
+    },
+    cellRole : {
+        display: 'inline-block',
+        verticalAlign: 'top',
+    },
+    cellRoom : {
+        display: 'inline-block',
+        verticalAlign: 'top',
+    },
+    cellFunc : {
+        display: 'inline-block',
+        verticalAlign: 'top',
+    },
+    cellValue : {
+        display: 'inline-block',
+        verticalAlign: 'top'
+    },
+    cellValueTooltip: {
+        width: '100%',
+    },
+    cellValueText: {
+        width: '100%',
+        height: ROW_HEIGHT,
+        display: 'inline-block',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        position: 'relative',
+        verticalAlign: 'top',
+        '& .copyButton': {
+            display: 'none'
+        },
+        '&:hover .copyButton': {
+            display: 'block'
+        }
+    },
+    cellValueTooltipTitle: {
+        fontWeight: 'bold',
+        width: 80,
+        display: 'inline-block',
+    },
+    cellValueTooltipValue: {
+        width: 120,
+        display: 'inline-block',
+        //overflow: 'hidden',
+//        whiteSpace: 'nowrap',
+        //textOverflow: 'ellipsis',
+    },
+    cellValueTextUnit: {
+        opacity: 0.8,
+    },
+    cellValueTextState: {
+        opacity: 0.7,
+    },
+    cellValueTooltipCopy: {
+        position: 'absolute',
+        bottom: 3,
+        right: 3,
+    },
+    cellValueTooltipEdit: {
+        position: 'absolute',
+        bottom: 3,
+        right: 15,
+    },
+    cellButtons : {
+        display: 'inline-block',
+    },
+    filteredOut: {
+        opacity: 0.3
     },
     /*cellDiv: {
         display: 'inline-block',
@@ -165,69 +285,54 @@ const styles = theme => ({
         paddingRight: 2
     },
     */
+
     header: {
         width: '100%'
     },
     headerCell: {
-        display: 'inline-block'
+        display: 'inline-block',
+        verticalAlign: 'top',
+    },
+    headerCellValue: {
+        paddingTop: 8,
+        paddingLeft: 4,
     },
     headerCellInput: {
-        width: 'calc(100% - 5px)'
+        width: 'calc(100% - 5px)',
+        height: ROW_HEIGHT,
+        paddingTop: 3,
     },
     visibleButtons: {
         color: '#2196f3',
         opacity: 0.7
     },
-    depth: {
-        position: 'absolute',
-        top: 8,
-        left: 10,
-        color: 'black',
-        fontSize: 14
-    },
-
-    cellCopy: {
-        position: 'absolute',
-        top: 3,
-        right: 10,
-        width: 16,
-        height: 16,
-        background: 'lightblue',
-        cursor: 'grab',
-        borderRadius: 2,
-        padding: 2,
-    },
-    cellCopyPressed: {
-        cursor: 'grabbing',
-        background: secondary.A700,
-    }
 });
 
 // d=data, t=target, s=start, e=end, m=middle
-function binarySearch(d, t, s, e) {
-    s = s || 0;
-    if (e === undefined) {
-        e = d.length - 1;
-        if (!e) {
-            return d[0] === t;
+function binarySearch(list, find, _start, _end) {
+    _start = _start || 0;
+    if (_end === undefined) {
+        _end = list.length - 1;
+        if (!_end) {
+            return list[0] === find;
         }
     }
-    const m = Math.floor((s + e) / 2);
-    if (t === d[m]) {
-        return d[m];
+    const middle = Math.floor((_start + _end) / 2);
+    if (find === list[middle]) {
+        return list[middle];
     }
-    if (e - 1 === s) {
-        return d[s] === t || d[e] === t;
+    if (_end - 1 === _start) {
+        return list[_start] === find || list[_end] === find;
     }
-    if (t > d[m]) {
-        return binarySearch(d, t, m, e);
+    if (find > list[middle]) {
+        return binarySearch(list, find, middle, _end);
     }
-    if (t < d[m]) {
-        return binarySearch(d, t, s, m);
+    if (find < list[middle]) {
+        return binarySearch(list, find, _start, middle);
     }
 }
 
-function applyFilter(item, filters, lang, objects, context) {
+function applyFilter(item, filters, lang, objects, context, counter) {
     let filteredOut = false;
     if (!context) {
         context = {};
@@ -249,8 +354,12 @@ function applyFilter(item, filters, lang, objects, context) {
     }
 
     if (item.data.id) {
-        if (!filters.expert) {
-            filteredOut = item.data.id === 'system' || item.data.id.startsWith('system.') || (item.data.obj && item.data.obj.common && item.data.obj.common.expert);
+        if (!filters.expertMode) {
+            filteredOut =
+                item.data.id === 'system' ||
+                item.data.id.startsWith('system.') ||
+                item.data.id.startsWith('_design/') ||
+                (item.data.obj && item.data.obj.common && item.data.obj.common.expertMode);
         }
         if (!filteredOut && context.id) {
             if (item.data.fID === undefined) {
@@ -279,13 +388,19 @@ function applyFilter(item, filters, lang, objects, context) {
     item.data.hasVisibleChildren = false;
     if (item.children) {
         item.children.forEach(_item => {
-            const visible = applyFilter(_item, filters, lang, objects, context);
+            const visible = applyFilter(_item, filters, lang, objects, context, counter);
             if (visible) {
                 item.data.hasVisibleChildren = true;
             }
         });
     }
-    return item.data.visible || item.data.hasVisibleChildren;
+
+    const visible = item.data.visible || item.data.hasVisibleChildren;
+    if (counter && visible) {
+        counter.count++;
+    }
+
+    return visible;
 }
 
 function buildTree(objects, options) {
@@ -387,6 +502,7 @@ function buildTree(objects, options) {
                 const _croot = {
                     data: {
                         name:   parts[parts.length - 1],
+                        title:  getName(objects[id], options.lang),
                         obj:    objects[id],
                         parent: croot,
                         id,
@@ -486,7 +602,7 @@ function findRoomsForObject(data, id, lang, withParentInfo, rooms) {
             if (!withParentInfo) {
                 rooms.push(name);
             } else {
-                rooms.push({name: name, origin: id});
+                rooms.push({ name: name, origin: id });
             }
         }
     }
@@ -660,61 +776,65 @@ function formatValue(id, state, obj, texts) {
     const states = getStates(obj);
     const isCommon = obj.common;
 
-    let valText = state.val === null || state.val === undefined ? '' : state.val;
-    const type = typeof valText;
+    const valText = {};
+    let v = state.val === null || state.val === undefined ? '' : state.val;
+    const type = typeof v;
     if (type === 'number') {
-        valText = Math.round(valText * 1000000) / 1000000; // remove 4.00000000000000001
+        v = Math.round(v * 1000000) / 1000000; // remove 4.00000000000000001
     } else if (type === 'object') {
-        valText = JSON.stringify(valText);
+        v = JSON.stringify(v);
     } else if (type !== 'string') {
-        valText = valText.toString();
+        v = v.toString();
     }
 
     if (isCommon && isCommon.role && typeof isCommon.role === 'string' && isCommon.role.match(/^value\.time|^date/)) {
-        valText = valText ? (new Date(valText)).toString() : valText;
+        v = v ? new Date(v).toString() : v;
     }
 
-    if (states && states[valText] !== undefined) {
-        valText = states[valText] + '(' + valText + ')';
+    if (states && states[v] !== undefined) {
+        valText.s = v;
+        v = states[valText.s];
     }
 
     let valFull;
-    if (valText === undefined || valText === null) {
-        valText = '';
+    if (v === undefined || v === null) {
+        v = '';
     } else {
         // if less 2000.01.01 00:00:00
         if (state.ts && state.ts < 946681200000) state.ts *= 1000;
         if (state.lc && state.lc < 946681200000) state.lc *= 1000;
 
         if (isCommon && isCommon.unit) {
-            valText += ' ' + isCommon.unit;
+            valText.u = isCommon.unit;
         }
-        valFull =           texts.value   + ': ' + state.val;
+        valFull = [{t: texts.value, v: state.val}];
         if (state.ack !== undefined) {
-            valFull += '\x0A' + texts.ack     + ': ' + state.ack;
+            valFull.push({t: texts.ack, v: state.ack});
         }
         if (state.ts) {
-            valFull += '\x0A' + texts.ts + ': ' + (state.ts ? formatDate(new Date(state.ts)) : '');
+            valFull.push({t: texts.ts, v: state.ts ? formatDate(new Date(state.ts)) : ''});
         }
         if (state.lc) {
-            valFull += '\x0A' + texts.lc + ': ' + (state.lc ? formatDate(new Date(state.lc)) : '');
+            valFull.push({t: texts.lc, v: state.lc ? formatDate(new Date(state.lc)) : ''});
         }
         if (state.from) {
-            valFull += '\x0A' + texts.from + ': ' + (state.from || '');
+            valFull.push({t: texts.from, v: state.from || ''});
         }
         if (state.user) {
-            valFull += '\x0A' + texts.user    + ': ' + (state.user || '');
+            valFull.push({t: texts.user, v: state.user || ''});
         }
-        valFull += '\x0A' + texts.quality + ': ' + quality2text(state.q || 0);
+        valFull.push({t: texts.quality, v: quality2text(state.q || 0), nbr: true});
     }
-    if (typeof valText === 'string' && valText !== '') {
-        valText = valText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    if (typeof v === 'string' && v !== '') {
+        v = v.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
+    valText.v = v;
+
     return {
-        valText: valText,
-        valFull: valFull,
-        style: {color: state.ack ? (state.q ? 'orange' : '') : '#c00000'}
+        valText,
+        valFull,
+        style: { color: state.ack ? (state.q ? 'orange' : '') : '#c00000' }
     };
 }
 
@@ -794,28 +914,59 @@ const DEFAULT_FILTER = {
     room:   '',
     func:   '',
     role:   '',
-    expert: false
+    expertMode: false
 };
 
+const StyledBadge = withStyles((theme) => ({
+    badge: {
+        right: 3,
+        top: 3,
+        border: `2px solid ${theme.palette.background.paper}`,
+        padding: '0 4px',
+    },
+}))(Badge);
 
 class ObjectBrowser extends React.Component {
     constructor(props) {
         super(props);
 
-        let expanded = window.localStorage.getItem(this.props.key || 'App.objectExpanded') || '[]';
+        let expanded = window.localStorage.getItem((this.props.key || 'App') + '.objectExpanded') || '[]';
         try {
             expanded = JSON.parse(expanded);
         } catch (e) {
             expanded = [];
         }
 
+        let filter =
+            this.props.defaultFilters ||
+            window.localStorage.getItem(this.props.key || 'App.objectFilter') ||
+            Object.assign({}, DEFAULT_FILTER);
+
+        if (typeof filter === 'string') {
+            try {
+                filter = JSON.parse(filter);
+            } catch (e) {
+                filter = Object.assign({}, DEFAULT_FILTER);
+            }
+        }
+        filter.expertMode =  this.props.expertMode || false;
+
         this.state = {
             loaded: false,
             selected: (this.props.selected || '').replace(/["']/g, ''),
-            filter: this.props.defaultFilters || Object.assign({}, DEFAULT_FILTER),
+            filter,
             depth: 0,
+            expandAllVisible: false,
             expanded,
+            toast: '',
+            lang: this.props.lang,
         };
+
+        this.filterRefs =  {};
+        Object.keys(DEFAULT_FILTER).forEach(name =>
+            this.filterRefs[name] = React.createRef());
+
+        this.lastAppliedFilter = null;
 
         this.selectedFound = false;
         this.copyContentImg = CopyContentIcon;
@@ -851,15 +1002,15 @@ class ObjectBrowser extends React.Component {
                 let node = this.state.selected && findNode(this.root, this.state.selected);
 
                 // If selected ID is not visible, reset filter
-                if (node && !applyFilter(node, this.state.filter, this.props.lang, this.objects)) {
+                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects)) {
                     // reset filter
                     this.setState({ filter: Object.assign({}, DEFAULT_FILTER) }, () => {
-                        applyFilter(this.root, this.state.filter, this.props.lang, this.objects);
+                        //applyFilter(this.root, this.state.filter, this.props.lang, this.objects);
                         this.setState({ loaded: true });
                         this.state.selected && this.onSelect(this.state.selected);
                     });
                 } else {
-                    applyFilter(this.root, this.state.filter, this.props.lang, this.objects);
+                    // applyFilter(this.root, this.state.filter, this.props.lang, this.objects);
                     this.setState({ loaded: true });
 
                     this.state.selected && this.onSelect(this.state.selected);
@@ -867,9 +1018,20 @@ class ObjectBrowser extends React.Component {
             });
     }
 
+    static getDerivedStateFromProps(props, state) {
+        const newState = {};
+        let changed = false;
+        if (props.expertMode !== state.filter.expertMode) {
+            changed = true;
+            newState.filter = Object.assign({}, state.filter);
+            newState.filter.expertMode = props.expertMode;
+        }
+        return changed ? newState : null;
+    }
+
     onSelect(selected, isDouble) {
         selected !== this.state.selected && this.setState({selected});
-        const name = selected ? Utils.getObjectName(this.objects, selected, null, { language: this.props.lang }) : '';
+        const name = selected ? UtilsAdapter.getObjectName(this.objects, selected, null, { language: this.state.lang }) : '';
         this.props.onSelect && this.props.onSelect(selected, name, isDouble);
     }
 
@@ -881,69 +1043,8 @@ class ObjectBrowser extends React.Component {
         }
     }
 
-    onCopy(e, id) {
-        e.stopPropagation();
-        e.preventDefault();
-        copy(id);
-    }
-
-    installCopyButtons() {
-        if (!this.mainRef.current) {
-            return;
-        }
-
-        const rows = this.mainRef.current.getElementsByClassName('add-copy-button');
-
-        for (let i = 0; i < rows.length; i++) {
-            if (!rows[i].__installed) {
-                rows[i].addEventListener('mouseenter', e => {
-                    const copy = e.target.getElementsByClassName(this.props.classes.cellCopy);
-                    if (!copy || !copy.length) {
-                        const div = document.createElement('div');
-                        const img = document.createElement('img');
-                        img.src = this.copyContentImg;
-                        img.width = 16;
-                        img.height = 16;
-                        img.color = secondary.A200;
-                        div.appendChild(img);
-                        div.className = this.props.classes.cellCopy;
-                        div.addEventListener('click', e =>
-                            this.onCopy(e, e.target.parentNode.dataset.index || e.target.parentNode.parentNode.dataset.index), false);
-                        div.addEventListener('mousedown', e => {
-                            if (e.target.parentNode.className.indexOf(this.props.classes.cellCopyPressed) === -1) {
-                                e.target.parentNode.className += ' ' + this.props.classes.cellCopyPressed;
-                            }
-                        }, false);
-                        div.addEventListener('mouseup', e => {
-                            let className = e.target.parentNode.className.split(' ');
-                            let pos = className.indexOf(this.props.classes.cellCopyPressed);
-                            while (pos !== -1) {
-                                className.splice(pos);
-                                pos = className.indexOf(this.props.classes.cellCopyPressed);
-                            }
-                            e.target.parentNode.className = className.join(' ');
-                        }, false);
-                        e.target.appendChild(div);
-                    }
-                }, false);
-
-                rows[i].addEventListener('mouseleave', e => {
-                    const copy = e.target.getElementsByClassName(this.props.classes.cellCopy);
-                    if (copy && copy.length) {
-                        e.target.removeChild(copy[0]);
-                    }
-                }, false);
-
-                rows[i].__installed = true;
-            }
-        }
-    }
-
     componentDidUpdate() {
-        this.installCopyButtons();
-
         if (!this.selectedFound) {
-
             if (this.props.selected && this.treeTableRef.current) {
                 const node = findNode(this.root, this.props.selected);
                 this.treeTableRef.current.scrollIntoView(node);
@@ -1012,7 +1113,7 @@ class ObjectBrowser extends React.Component {
             this.props.socket.unsubscribeState(id, this.onStateChangeBound);
         }
     }
-/*
+    /*
     renderIndexColumn(data, metadata, toggleChildren) {
         const selected = this.state.selected === data.id;
         const isExist = !!this.objects[data.id];
@@ -1042,7 +1143,7 @@ class ObjectBrowser extends React.Component {
         const icon = getSelectIdIcon(this.objects, data.id, this.props.prefix);
         return (<span className={this.props.classes.cellWrapper}>
             <img src={icon.src} className={this.props.classes.icon} alt={icon.alt}/>
-            {data.obj && Utils.getObjectName(this.objects, data.obj._id, null, {language: this.props.lang})}
+            {data.obj && UtilsAdapter.getObjectName(this.objects, data.obj._id, null, {language: this.props.lang})}
             </span>);
     }
     renderColumnRole(data, metadata, toggleChildren) {
@@ -1078,29 +1179,40 @@ class ObjectBrowser extends React.Component {
         const info = formatValue(id, state, data.obj, this.texts);
         return (<span className={this.props.classes.cellWrapper} style={info.style} title={info.valFull}>{info.valText}</span>);
     }
-*/
+    */
     onFilter(name, value) {
-        if (this.state.filter[name] !== value) {
-            const filter = JSON.parse(JSON.stringify(this.state.filter));
-            filter[name] = value;
-            this.filterTimer && clearTimeout(this.filterTimer);
-            this.filterTimer = setTimeout(() => {
-                applyFilter(this.root, filter, this.props.lang, this.objects);
-                this.props.onFilterChanged && this.props.onFilterChanged(filter);
-                this.forceUpdate();
-            }, 400);
-            this.setState({filter});
+        this.filterTimer = null;
+        let filter = {};
+        Object.keys(this.filterRefs).forEach(name => {
+            if (this.filterRefs[name] && this.filterRefs[name].current) {
+                for (var i = 0; i < this.filterRefs[name].current.childNodes.length; i++) {
+                    if (this.filterRefs[name].current.childNodes[i].tagName === 'INPUT') {
+                        filter[name] =this.filterRefs[name].current.childNodes[i].value;
+                        break;
+                    }
+                }
+            }
+        });
+
+        filter = Object.assign({}, this.state.filter, filter);
+
+        if (JSON.stringify(this.state.filter) !== JSON.stringify(filter)) {
+            this.setState({ filter} );
         }
     }
 
     getFilterInput(name) {
         return (<FormControl className={ this.props.classes.headerCellInput } style={{ marginTop: 0, marginBottom: 0 }} margin="dense">
             <Input
-                classes={{underline: 'no-underline'}}
-                id={name}
+                ref={ this.filterRefs[name] }
+                classes={{ underline: 'no-underline' }}
+                id={ name }
                 placeholder={this.props.t('filter_' + name)}
-                value={this.state.filter[name]}
-                onChange={e => this.onFilter(name, e.target.value)}
+                defaultValue={ this.state.filter[name] }
+                onChange={e => {
+                    this.filterTimer && clearTimeout(this.filterTimer);
+                    this.filterTimer = setTimeout(() => this.onFilter(), 400);
+                }}
                 autoComplete="off"
             />
         </FormControl>);
@@ -1108,9 +1220,13 @@ class ObjectBrowser extends React.Component {
 
     getFilterSelect(name, values) {
         return <Select
+            ref={ this.filterRefs[name] }
             className={this.props.classes.headerCellInput + ' no-underline'}
-            value={ this.state.filter[name] || '' }
-            onChange={ e => this.onFilter(name, e.target.value) }
+            onChange={e => {
+                this.filterTimer && clearTimeout(this.filterTimer);
+                this.filterTimer = setTimeout(() => this.onFilter(), 400);
+            }}
+            defaultValue={ this.state.filter[name] || '' }
             inputProps={{ name, id: name }}
             displayEmpty={ true }
         >
@@ -1148,43 +1264,88 @@ class ObjectBrowser extends React.Component {
 
     }
     getFilterSelectFunction() {
-        const func = this.info.funcEnums.map(id => {
-            return {name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()), value: id};
-        });
+        const func = this.info.funcEnums.map(id =>
+            ({name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()), value: id}));
         return this.getFilterSelect('func', func);
 
     }
-    onExpandAll() {
-        this.treeTableRef.current.expandAll();
+
+    onExpandAll(root, expanded) {
+        root = root || this.root;
+        expanded = expanded || [];
+
+        root.children && root.children.forEach(item => {
+            if (item.hasVisibleChildren) {
+                expanded.push(item.data.id);
+                this.onExpandAll(item, expanded);
+            }
+        });
+
+        if (root === this.root) {
+            expanded.sort();
+            window.localStorage.setItem((this.props.key || 'App') + '.objectExpanded', JSON.stringify(expanded));
+
+            this.setState({ expanded });
+        }
     }
     onCollapseAll() {
-        this.treeTableRef.current.collapseAll();
+        window.localStorage.setItem((this.props.key || 'App') + '.objectExpanded', JSON.stringify([]));
+        this.setState({ expanded: [], depth: 0 });
     }
+
+    expandDepth(root, depth, expanded) {
+        root = root || this.root;
+        if (depth > 0) {
+            if (root.children) {
+                root.children.forEach(item => {
+                    if (item.data.visible || item.data.hasVisibleChildren) {
+                        if (!binarySearch(expanded, item.data.id)) {
+                            expanded.push(item.data.id);
+                            expanded.sort();
+                        }
+                        if (depth - 1 > 0) {
+                            this.expandDepth(item, depth - 1, expanded);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    collapseDepth(depth, expanded) {
+        return expanded.filter(id => id.split('.').length <= depth);
+    }
+
     onExpandVisible() {
         if (this.state.depth < 9) {
             const depth = this.state.depth + 1;
-            this.setState({depth: depth}, () => {
-                this.treeTableRef.current.expandAll(depth);
-            });
+            const expanded = [...this.state.expanded];
+            this.expandDepth(this.root, depth, expanded);
+            window.localStorage.setItem((this.props.key || 'App') + '.objectExpanded', JSON.stringify(expanded));
+            this.setState({ depth, expanded });
         }
     }
     onCollapseVisible() {
         if (this.state.depth > 0) {
             const depth = this.state.depth - 1;
-            this.setState({depth: depth}, () => {
-                this.treeTableRef.current.expandAll(depth);
-            });
+            const expanded = this.collapseDepth(depth, this.state.expanded);
+            window.localStorage.setItem((this.props.key || 'App') + '.objectExpanded', JSON.stringify(expanded));
+            this.setState({ depth, expanded });
         }
     }
 
     getToolbar() {
         return (
             <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
-                { this.props.showExpertButton ? <IconButton key="expert" variant="contained" className={this.props.classes.toolbarButtons} color={this.state.filter.expert ? 'secondary' : 'primary'} onClick={() => this.onFilter('expert', !this.state.filter.expert)}><IconExpert /></IconButton>: null }
-                <IconButton key="expandAll"       variant="contained" className={ this.props.classes.toolbarButtons } onClick={() => this.onExpandAll()}><IconOpen /></IconButton>
+                { this.props.showExpertButton ? <IconButton key="expertMode" variant="contained" className={this.props.classes.toolbarButtons} color={this.state.filter.expertMode ? 'secondary' : 'primary'} onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}><IconExpert /></IconButton>: null }
+                { this.state.expandAllVisible ? <IconButton key="expandAll"       variant="contained" className={ this.props.classes.toolbarButtons } onClick={() => this.onExpandAll()}><IconOpen /></IconButton> : null }
                 <IconButton key="collapseAll"     variant="contained" className={ this.props.classes.toolbarButtons } onClick={() => this.onCollapseAll()}><IconClosed /></IconButton>
-                <IconButton key="expandVisible"   variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onExpandVisible()}><IconOpen />{this.state.depth ? (<div className={ this.props.classes.depth }>{ this.state.depth }</div>) : null}</IconButton>
-                <IconButton key="collapseVisible" variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onCollapseVisible()}><IconClosed />{this.state.depth ? (<div className={ this.props.classes.depth }>{ this.state.depth }</div>) : null}</IconButton>
+                <StyledBadge badgeContent={ this.state.depth } color="secondary">
+                    <IconButton key="expandVisible"   variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onExpandVisible()}><IconOpen /></IconButton>
+                </StyledBadge>
+                <StyledBadge badgeContent={ this.state.depth } color="secondary">
+                    <IconButton key="collapseVisible" variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onCollapseVisible()}><IconClosed /></IconButton>
+                </StyledBadge>
             </Toolbar>);
     }
 
@@ -1198,54 +1359,128 @@ class ObjectBrowser extends React.Component {
             expanded.splice(pos, 1);
         }
 
-        window.localStorage.setItem(this.props.key || 'App.objectExpanded', JSON.stringify(expanded));
+        window.localStorage.setItem((this.props.key || 'App') + '.objectExpanded', JSON.stringify(expanded));
+
         this.setState({ expanded });
     }
 
-    renderLeaf(item, isExpanded, widths) {
-        isExpanded = isExpanded === undefined ? this.state.expanded.includes(item.data.id) : isExpanded;
+    onCopy(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        const text = e.target.parentNode.dataset.copy || '';
+        copy(text);
+        if (text.length < 50) {
+            this.setState({ toast: this.props.t('Copied %s', text) });
+        } else {
+            this.setState({ toast: this.props.t('Copied') });
+        }
+    }
 
+    renderColumnButtons(item) {
+        return null;
+    }
+
+    renderColumnValue(id, item, classes) {
+        if (!item.data.obj || !this.states) {
+            return null;
+        }
+
+        if (!this.states[id]) {
+            if (item.data.obj.type === 'state') {
+                this.recordStates.push(id);
+                this.states[id] = { val: null };
+                this.subscribe(id);
+            }
+            return null;
+        } else {
+            this.recordStates.push(id);
+        }
+
+        const state = this.states[id];
+        let info = item.data.state;
+        if (!info) {
+            info = item.data.state = item.data.state || formatValue(id, state, item.data.obj, this.texts);
+
+            info.valFull = info.valFull.map(item => [
+                <div className={ classes.cellValueTooltipTitle } key={ id + item.t }>{ item.t }:</div>,
+                <div className={ classes.cellValueTooltipValue } key={ id + '_' + item.t + '_v' }>{item.v}</div>,
+                !item.nbr ? <br key={ id + '_' + item.t + '_br' }/> : null]);
+
+            info.valFull.push(<IconCopy className={ classes.cellValueTooltipCopy }  key={ id + '_cc' }/>);
+            info.valFull.push(<IconEdit className={ classes.cellValueTooltipEdit }  key={ id + '_cc' }/>);
+
+            info.val = info.valText.v || '';
+
+            info.valText = [
+                <span key={ id + '_vv' }>{ info.valText.v }</span>,
+                <span className={ classes.cellValueTextUnit } key={ id + '_uu' }>{info.valText.u}</span>,
+                info.valText.s !== undefined ? <span  className={ classes.cellValueTextState } key={ id + '_ss' }>({ info.valText.s })</span> : null,
+            ];
+        }
+
+        return <Tooltip title={ info.valFull } >
+            <div style={ info.style } className={ classes.cellValueText }>{ info.valText }
+                <IconCopy className={ clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ 'id' } />
+                <IconEdit className={ clsx(classes.cellEditButton, 'copyButton') } onClick={e => this.onEdit(id) } />
+            </div>
+        </Tooltip>;
+    }
+
+    renderLeaf(item, isExpanded, widths, classes) {
+        const id = item.data.id;
+        isExpanded = isExpanded === undefined ? this.state.expanded.includes(id) : isExpanded;
+
+        // icon
         const icon = item.children ? (isExpanded ?
             <IconOpen
-                className={ this.props.classes.cellNameIcon }
-                onClick={ () => this.toggleExpanded(item.data.id)}
+                className={ classes.cellIdIcon }
+                onClick={ () => this.toggleExpanded(id)}
             />
             :
             <IconClosed
-                className={ this.props.classes.cellNameIcon }
-                onClick={ () => this.toggleExpanded(item.data.id)}
+                className={ classes.cellIdIcon }
+                onClick={ () => this.toggleExpanded(id)}
             />)
             : null;
 
+        const paddingLeft = ITEM_LEVEL * item.data.level;
+
+        if (item.data.lang !== this.state.lang) {
+            item.data.rooms = findRoomsForObject(this.info, id, this.state.lang).join(', ');
+            item.data.funcs = findFunctionsForObject(this.info, id, this.state.lang).join(', ');
+            item.data.lang = this.state.lang;
+        }
+
         return <div
-            className={ this.props.classes.tableRow }
-            key={ item.data.id }
-            id={ item.data.id }
-            style={{ paddingLeft: ITEM_LEVEL * item.data.level }}
-            onDoubleClick={ () => this.toggleExpanded(item.data.id) }
+            className={ clsx(classes.tableRow, !item.data.visible && classes.filteredOut) }
+            key={ id }
+            id={ id }
+            onDoubleClick={ () => this.toggleExpanded(id) }
         >
-            <div className={ this.props.classes.cellName } sytle={{ width: widths.widthName }}>
+            <div className={ classes.cellId } style={{ width: widths.idWidth, paddingLeft }}>
                 { icon }
-                <div className={this.props.classes.cellNameSpan}>{ item.data.name }</div>
+                <div className={ classes.cellIdSpan }>{ item.data.name }</div>
+                <IconCopy className={ clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
             </div>
-            {this.visibleCols.includes('name')    ? <div style={{ width: widths.widthName }}>{  }</div> : null }
-            {this.visibleCols.includes('role')    ? <div style={{ width: widths.WIDTHS[0] }}>{  }</div> : null }
-            {this.visibleCols.includes('room')    ? <div style={{ width: widths.WIDTHS[1] }}>{  }</div> : null }
-            {this.visibleCols.includes('func')    ? <div style={{ width: widths.WIDTHS[2] }}>{  }</div> : null }
-            {this.visibleCols.includes('val')     ? <div style={{ width: widths.WIDTHS[3] }}>{  }</div> : null }
-            {this.visibleCols.includes('buttons') ? <div style={{ width: widths.WIDTHS[4] }}>{  }</div> : null }
+            {this.visibleCols.includes('name')    ? <div className={ classes.cellName } style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
+            {this.visibleCols.includes('role')    ? <div className={ classes.cellRole } style={{ width: widths.WIDTHS[0] }}>{ item.data.obj && item.data.obj.common && item.data.obj.common.role }</div> : null }
+            {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom } style={{ width: widths.WIDTHS[1] }}>{ item.data.rooms }</div> : null }
+            {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc } style={{ width: widths.WIDTHS[2] }}>{ item.data.funcs }</div> : null }
+            {this.visibleCols.includes('val')     ? <div className={ classes.cellValue } style={{ width: widths.WIDTHS[3] }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
+            {this.visibleCols.includes('buttons') ? <div className={ classes.cellButtons } style={{ width: widths.WIDTHS[4] }}>{ this.renderColumnButtons(item) }</div> : null }
         </div>;
     }
 
-    renderItem(root, isExpanded, widths) {
+    renderItem(root, isExpanded, widths, classes) {
         const items = [];
 
-        root.data.id && items.push(this.renderLeaf(root, isExpanded, widths));
+        root.data.id && items.push(this.renderLeaf(root, isExpanded, widths, classes));
 
         isExpanded = isExpanded === undefined ? binarySearch(this.state.expanded, root.data.id) : isExpanded;
 
         if (!root.data.id || isExpanded) {
-            root.children && items.push(root.children.map(item => this.renderItem(item, undefined, widths)));
+            root.children && items.push(root.children.map(item =>
+                (item.data.visible || item.data.hasVisibleChildren) && this.renderItem(item, undefined, widths, classes)));
         }
 
         return items;
@@ -1255,19 +1490,41 @@ class ObjectBrowser extends React.Component {
         const classes = this.props.classes;
 
         return <div className={ classes.headerRow } >
-            <div className={ classes.headerCell } style={{ width: widths.idWidth   }}>{ this.getFilterInput('id') }</div>
+            <div className={ classes.headerCell } style={{ width: widths.idWidth }}>{ this.getFilterInput('id') }</div>
             {this.visibleCols.includes('name')    ? <div className={ classes.headerCell } style={{ width: widths.widthName }}>{ this.getFilterInput('name') }</div> : null }
             {this.visibleCols.includes('role')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[0] }}>{ this.getFilterSelectRole() }</div> : null }
             {this.visibleCols.includes('room')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[1] }}>{ this.getFilterSelectRoom() }</div> : null }
             {this.visibleCols.includes('func')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[2] }}>{ this.getFilterSelectFunction() }</div> : null }
-            {this.visibleCols.includes('val')     ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[3] }}>{ this.props.t('Value') }</div> : null }
+            {this.visibleCols.includes('val')     ? <div className={ clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS[3] }}>{ this.props.t('Value') }</div> : null }
             {this.visibleCols.includes('buttons') ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[4] }}></div> : null }
         </div>;
+    }
+
+    renderToast() {
+        return <Snackbar open={ !!this.state.toast } autoHideDuration={ 3000 } onClick={ () => this.setState({ toast: '' }) } onClose={ () => this.setState({ toast: '' }) }>
+            <Alert color="info" severity="success" >{ this.state.toast }</Alert>
+        </Snackbar>;
     }
 
     render() {
         this.recordStates = [];
         this.unsubscribeTimer && clearTimeout(this.unsubscribeTimer);
+
+        // apply filter if changed
+        const jsonFilter = JSON.stringify(this.state.filter);
+        if (this.lastAppliedFilter !== jsonFilter && this.objects && this.root) {
+            const counter = {count: 0};
+
+            applyFilter(this.root, this.state.filter, this.state.lang, this.objects, null, counter);
+
+            if (counter.count < 500 && !this.state.expandAllVisible) {
+                setTimeout(() => this.setState({ expandAllVisible: true }));
+            } else if (counter.count >= 500 && this.state.expandAllVisible) {
+                setTimeout(() => this.setState({ expandAllVisible: false }));
+            }
+
+            this.lastAppliedFilter = jsonFilter;
+        }
 
         this.unsubscribeTimer = setTimeout(() => {
             this.unsubscribeTimer = null;
@@ -1287,7 +1544,7 @@ class ObjectBrowser extends React.Component {
             };
 
             const classes = this.props.classes;
-            const items = this.renderItem(this.root, undefined, widths);
+            const items = this.renderItem(this.root, undefined, widths, classes);
 
             return (
             <Grid 
@@ -1331,6 +1588,7 @@ class ObjectBrowser extends React.Component {
                 <div className={ this.props.classes.tableDiv }>
                     { items }
                 </div>
+                { this.renderToast() }
             </Grid>);
         }
     }
