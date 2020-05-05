@@ -37,7 +37,7 @@ const styles = theme => ({
     }
 });
 
-class AddInstance extends React.Component {
+class AddInstanceDialog extends React.Component {
 
     constructor(props) {
         super(props);
@@ -147,7 +147,7 @@ class AddInstance extends React.Component {
     }
 }
 
-AddInstance.propTypes = {
+AddInstanceDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     adapter: PropTypes.string.isRequired,
     hosts: PropTypes.array.isRequired,
@@ -161,4 +161,4 @@ AddInstance.propTypes = {
     onInstanceChange: PropTypes.func.isRequired
 }
 
-export default withStyles(styles)(AddInstance);
+export default withStyles(styles)(AddInstanceDialog);
