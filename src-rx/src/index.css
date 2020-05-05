@@ -6,8 +6,26 @@
     url('./fonts/material.woff') format('woff');
 }
 
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: #ccc;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #575757;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #ccc;
+  border-radius: 5px;
+}
+
 * {
-  box-sizing: inherit
+  box-sizing: inherit;
+  scrollbar-width: thin;
+  scrollbar-color: #575757 #ccc;
 }
 
 html, body {
