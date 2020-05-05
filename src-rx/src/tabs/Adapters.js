@@ -32,7 +32,8 @@ import { FaGithub as GithubIcon } from 'react-icons/fa';
 import { blue } from '@material-ui/core/colors';
 import { green } from '@material-ui/core/colors';
 
-import AddInstance from '../dialogs/AddInstance';
+import AddInstanceDialog from '../dialogs/AddInstanceDialog';
+import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
 
 const styles = theme => ({
     root: {
@@ -118,7 +119,9 @@ class Adapters extends React.Component {
             addInstanceError: false,
             addInstanceAdapter: '',
             addInstanceId: 'auto',
-            addInstanceHost: props.currentHostName
+            addInstanceHost: '',
+            adapterDeletionDialog: false,
+            adapterDeletionAdapter: null
         };
 
         this.t = props.t;
@@ -295,9 +298,29 @@ class Adapters extends React.Component {
         this.props.executeCommand('rebuild ' + adapter) 
     }
 
+    delete(adapter) {
+        this.props.executeCommand('del ' + adapter);
+    }
+
     closeAddInstanceDialog() {
         this.setState({
-            addInstanceDialog: false
+            addInstanceDialog: false,
+            addInstanceAdapter: '',
+            addInstanceId: 'auto'
+        });
+    }
+
+    openAdapterDeletionDialog(adapter) {
+        this.setState({
+            adapterDeletionDialog: true,
+            adapterDeletionAdapter: adapter
+        });
+    }
+
+    closeAdapterDeletionDialog() {
+        this.setState({
+            adapterDeletionDialog: false,
+            adapterDeletionAdapter: null
         });
     }
 
@@ -445,7 +468,11 @@ class Adapters extends React.Component {
                                             <PublishIcon />
                                         </IconButton>
                                     }
-                                    <IconButton size="small" className={ !installed ? classes.hidden : '' }>
+                                    <IconButton
+                                        size="small"
+                                        className={ !installed ? classes.hidden : '' }
+                                        onClick={ () => this.openAdapterDeletionDialog(value) }
+                                    >
                                         <DeleteForeverIcon />
                                     </IconButton>
                                     { this.props.expertMode &&
@@ -540,7 +567,7 @@ class Adapters extends React.Component {
                     </TableContainer>
                 </Grid>
                 { this.state.addInstanceDialog &&
-                    <AddInstance
+                    <AddInstanceDialog
                         open={ this.state.addInstanceDialog }
                         adapter={ this.state.addInstanceAdapter }
                         hosts={ this.props.hosts }
@@ -552,6 +579,15 @@ class Adapters extends React.Component {
                         onClose={ () => this.closeAddInstanceDialog() }
                         onHostChange={ event => this.handleHostsChange(event) }
                         onInstanceChange={ event => this.handleInstanceChange(event) }
+                    />
+                }
+                { this.state.adapterDeletionDialog &&
+                    <AdapterDeletionDialog
+                        open={ this.state.adapterDeletionDialog }
+                        adapter={ this.state.adapterDeletionAdapter }
+                        t={ this.t }
+                        onClick={ () => this.delete(this.state.adapterDeletionAdapter) }
+                        onClose={ () => this.closeAdapterDeletionDialog() }
                     />
                 }
             </Paper>
