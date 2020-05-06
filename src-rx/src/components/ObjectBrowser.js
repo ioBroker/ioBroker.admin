@@ -22,22 +22,30 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import Tooltip from '@material-ui/core/Tooltip';
 
+// components
+import ObjectCustomDialog from './ObjectCustomDialog';
 
+// Icons
 import {FaFolder as IconClosed} from 'react-icons/fa';
 import {FaFolderOpen as IconOpen} from 'react-icons/fa';
 import {FaFile as IconDocument} from 'react-icons/fa';
 import {MdPerson as IconExpert} from 'react-icons/md';
 import {FaCopy as IconCopy} from 'react-icons/fa';
 import {FaEdit as IconEdit} from 'react-icons/fa';
-import {FaTrash as DeleteIcon} from 'react-icons/fa';
-import {FaWrench as ConfigIcon} from 'react-icons/fa';
-import IconDefaultState from '../assets/state.png';
-import IconDefaultChannel from '../assets/channel.png';
-import IconDefaultDevice from '../assets/device.png';
-import IconDefault from '../assets/empty.png';
+import {FaTrash as IconDelete} from 'react-icons/fa';
+import {FaWrench as IconConfig} from 'react-icons/fa';
 import IconState from '../assets/state.png';
 import IconChannel from '../assets/channel.png';
 import IconDevice from '../assets/device.png';
+import {FaCogs as IconSystem} from 'react-icons/fa';
+import {FaPhotoVideo as IconPhoto} from 'react-icons/fa';
+import {FaLightbulb as IconAlias} from 'react-icons/fa';
+import {FaUserFriends as IconGroup} from 'react-icons/fa';
+import {FaUser as IconUser} from 'react-icons/fa';
+import {FaDigitalTachograph as IconHost} from 'react-icons/fa';
+import {FaWifi as IconConnection} from 'react-icons/fa';
+import {FaInfoCircle as IconInfo} from 'react-icons/fa';
+import {FaFileCode as IconMeta} from 'react-icons/fa';
 
 import UtilsAdapter from '@iobroker/adapter-react/Components/Utils';
 import Utils from '../Utils';
@@ -98,8 +106,8 @@ const styles = theme => ({
         cursor: 'pointer',
         width: '100%',
         '&:hover': {
-            background: theme.palette.secondary.main,
-            color: Utils.invertColor(theme.palette.secondary.main, true),
+            background: theme.palette.primary.main,
+            color: Utils.invertColor(theme.palette.primary.main, true),
         },
     },
     cellId: {
@@ -113,16 +121,37 @@ const styles = theme => ({
         '&:hover .copyButton': {
             display: 'block'
         },
+        '& .iconOwn': {
+            display: 'block',
+            width:  ROW_HEIGHT - 4,
+            height: ROW_HEIGHT - 4,
+            marginTop: 2,
+            float: 'right',
+        },
+        '&:hover .iconOwn': {
+            display: 'none'
+        },
     },
     cellIdSpan: {
         display: 'inline-block',
         verticalAlign: 'top',
     },
-    cellIdIcon: {
+    cellIdIconFolder: {
         marginRight: theme.spacing(1),
-        width:  ROW_HEIGHT - 2,
-        height: ROW_HEIGHT - 2,
+        width:  ROW_HEIGHT - 4,
+        height: ROW_HEIGHT - 4,
         cursor: 'pointer',
+        color: theme.palette.secondary.main || '#fbff7d',
+    },
+    cellIdIconDocument: {
+        verticalAlign: 'middle',
+        marginLeft: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
+        marginRight: theme.spacing(1),
+        width:  SMALL_BUTTON_SIZE,
+        height: SMALL_BUTTON_SIZE,
+    },
+    cellIdIconOwn: {
+
     },
     cellCopyButton: {
         color: 'white',
@@ -156,12 +185,10 @@ const styles = theme => ({
         display: 'inline-block',
         verticalAlign: 'top',
         '& .itemIcon': {
-            paddingRight: 2,
-            paddingLeft: 2,
-            paddingTop: 5,
-            width: 28,
-            height: 29,
-            zIndex: 2,
+            verticalAlign: 'middle',
+            width: 24,
+            height: 24,
+            display: 'inline-block',
         },
     },
     cellRole : {
@@ -233,9 +260,14 @@ const styles = theme => ({
     cellButtonsButton: {
         display: 'inline-block',
         opacity: 0.7,
+        width:  SMALL_BUTTON_SIZE + 4,
+        height: SMALL_BUTTON_SIZE + 4,
         '&:hover': {
             opacity: 1,
         }
+    },
+    cellButtonsButtonAlone: {
+        marginLeft: SMALL_BUTTON_SIZE + 4,
     },
 
     filteredOut: {
@@ -245,6 +277,9 @@ const styles = theme => ({
         width: 16,
         height: 16,
         paddingRight: 5
+    },
+    selectNone: {
+        opacity: 0.5,
     },
     /*cellDiv: {
         display: 'inline-block',
@@ -267,9 +302,7 @@ const styles = theme => ({
 //        fontFamily: "'SF Mono', 'Segoe UI Mono', 'Roboto Mono', Menlo, Courier, monospace",
         lineHeight: '1em'
     },
-    selectNone: {
-        opacity: 0.5,
-    },
+
     cellWrapperElement: {
         flexGrow: 1,
         cursor: 'default'
@@ -330,6 +363,14 @@ const styles = theme => ({
         height: ROW_HEIGHT,
         paddingTop: 3,
     },
+    headerCellSelectItem: {
+        '& .itemIcon': {
+            width: 24,
+            height: 24,
+            marginRight: 5,
+            display: 'inline-block'
+        }
+    },
     visibleButtons: {
         color: '#2196f3',
         opacity: 0.7
@@ -370,6 +411,12 @@ function applyFilter(item, filters, lang, objects, context, counter) {
         if (filters.name) {
             context.name = filters.name.toLowerCase();
         }
+        if (filters.type) {
+            context.type = filters.type.toLowerCase();
+        }
+        if (filters.customs) {
+            context.customs = filters.customs.toLowerCase();
+        }
         if (filters.role) {
             context.role = filters.role.toLowerCase();
         }
@@ -381,54 +428,98 @@ function applyFilter(item, filters, lang, objects, context, counter) {
         }
     }
 
-    if (item.data.id) {
+    const data = item.data;
+
+    if (data && data.id) {
+        const common = data.obj && data.obj.common;
+
         if (!filters.expertMode) {
             filteredOut =
-                item.data.id === 'system' ||
-                item.data.id.startsWith('system.') ||
-                item.data.id.startsWith('_design/') ||
-                (item.data.obj && item.data.obj.common && item.data.obj.common.expertMode);
+                data.id === 'system' ||
+                data.id.startsWith('system.') ||
+                data.id.startsWith('_design/') ||
+                (common && common.expertMode);
         }
         if (!filteredOut && context.id) {
-            if (item.data.fID === undefined) {
-                item.data.fID = item.data.id.toLowerCase();
+            if (data.fID === undefined) {
+                data.fID = data.id.toLowerCase();
             }
-            filteredOut = item.data.fID.indexOf(context.id) === -1;
+            filteredOut = data.fID.indexOf(context.id) === -1;
         }
-        if (!filteredOut && context.name) {
-            if (item.data.fName === undefined) {
-                item.data.fName = (item.data.obj && item.data.obj.common && getName(item.data.obj.common.name, lang)) || '';
-                item.data.fName = item.data.fName.toLowerCase();
+        if (!filteredOut && context.name && common) {
+            if (data.fName === undefined) {
+                data.fName = (common && getName(common.name, lang)) || '';
+                data.fName = data.fName.toLowerCase();
             }
-            filteredOut = item.data.fName.indexOf(context.name) === -1;
+            filteredOut = !data.fName.includes(context.name);
         }
-        if (!filteredOut && filters.role) {
-            filteredOut = !(item.data && item.data.obj && item.data.obj.common && item.data.obj.common.role && item.data.obj.common.role.startsWith(context.role));
+        if (!filteredOut && filters.role && common) {
+            filteredOut = !(common.role && common.role.startsWith(context.role));
         }
         if (!filteredOut && context.room) {
-            filteredOut = !context.room.find(id => id === item.data.id || item.data.id.startsWith(id + '.'));
+            filteredOut = !context.room.find(id => id === data.id || data.id.startsWith(id + '.'));
         }
         if (!filteredOut && context.func) {
-            filteredOut = !context.func.find(id => id === item.data.id || item.data.id.startsWith(id + '.'));
+            filteredOut = !context.func.find(id => id === data.id || data.id.startsWith(id + '.'));
+        }
+        if (!filteredOut && context.type) {
+            filteredOut = !(data.obj && data.obj.type && data.obj.type === context.role);
+        }
+        if (!filteredOut && context.customs && common) {
+            filteredOut = !common.customs || !common.customs[context.customs];
         }
     }
-    item.data.visible = !filteredOut;
-    item.data.hasVisibleChildren = false;
+    data.visible = !filteredOut;
+    data.hasVisibleChildren = false;
     if (item.children) {
         item.children.forEach(_item => {
             const visible = applyFilter(_item, filters, lang, objects, context, counter);
             if (visible) {
-                item.data.hasVisibleChildren = true;
+                data.hasVisibleChildren = true;
             }
         });
     }
 
-    const visible = item.data.visible || item.data.hasVisibleChildren;
+    const visible = data.visible || data.hasVisibleChildren;
     if (counter && visible) {
         counter.count++;
     }
 
     return visible;
+}
+
+function getSystemIcon(objects, id, k) {
+    let icon;
+
+    // system or design have special icons
+    if (id.startsWith('_design/') || (id === 'system')) {
+        icon = <IconSystem className="iconOwn" />;
+    } else if (id === '0_userdata' || id === '0_userdata.0') {
+        icon = <IconPhoto className="iconOwn" />;
+    } else if (id === 'alias' || id === 'alias.0') {
+        icon = <IconAlias className="iconOwn" />;
+    } else if (id === 'system.adapter') {
+        icon = <IconSystem className="iconOwn" />;
+    } else if (id === 'system.group') {
+        icon = <IconGroup className="iconOwn" />;
+    } else if (id === 'system.user') {
+        icon = <IconUser className="iconOwn" />;
+    } else if (id === 'system.host') {
+        icon = <IconHost className="iconOwn" />;
+    } else if (id.endsWith('.connection') || id.endsWith('.connected')) {
+        icon = <IconConnection className="iconOwn" />;
+    } else if (id.endsWith('.info')) {
+        icon = <IconInfo className="iconOwn" />;
+    } else if (objects[id] && objects[id].type === 'meta') {
+        icon = <IconMeta className="iconOwn" />;
+    } else if (k < 2) {
+        // detect "cloud.0"
+        if (objects['system.adapter.' + id]) {
+            icon = getSelectIdIcon(objects, 'system.adapter.' + id, '.');
+        }
+    }
+
+    return icon || null;
 }
 
 function buildTree(objects, options) {
@@ -463,6 +554,7 @@ function buildTree(objects, options) {
         ids:       [],
         types:     [],
         objects,
+        customs:   [],
         hasSomeCustoms: false,
     };
 
@@ -471,7 +563,8 @@ function buildTree(objects, options) {
         const id = ids[i];
         const obj = objects[id];
         const parts = id.split('.');
-        if (!info.types.includes(obj.type)) {
+
+        if (obj.type && !info.types.includes(obj.type)) {
             info.types.push(obj.type);
         }
 
@@ -490,6 +583,7 @@ function buildTree(objects, options) {
                 info.funcEnums.push(id);
             } else if (obj.type === 'instance' && common && common.supportCustoms) {
                 info.hasSomeCustoms = true;
+                info.customs.push(id.substring('system.adapter.'.length));
             }
         }
 
@@ -515,6 +609,7 @@ function buildTree(objects, options) {
                         curPath += (curPath ? '.' : '') + parts[k];
                         // level does not exist
                         if (!binarySearch(info.ids, curPath)) {
+
                             const _croot = {
                                 data: {
                                     name:   parts[k],
@@ -522,6 +617,7 @@ function buildTree(objects, options) {
                                     id:     curPath,
                                     obj:    objects[curPath],
                                     level:  k,
+                                    icon:   getSystemIcon(objects, curPath, k),
                                     generated: true,
                                 }
                             };
@@ -529,7 +625,7 @@ function buildTree(objects, options) {
                             croot.children = croot.children || [];
                             croot.children.push(_croot);
                             croot = _croot;
-                            info.ids.push(curPath);
+                            info.ids.push(curPath); // IDs will be added by alphabet
                         } else {
                             croot = croot.children.find(item => item.data.name === parts[k]);
                         }
@@ -542,11 +638,13 @@ function buildTree(objects, options) {
                         title:  getName(obj, options.lang),
                         obj:    obj,
                         parent: croot,
+                        icon:   getSelectIdIcon(objects, id, '.') || getSystemIcon(objects, id, 0),
                         id,
                         level:  parts.length - 1,
                         generated: false,
                     }
                 };
+
                 croot.children = croot.children || [];
                 croot.children.push(_croot);
                 croot = _croot;
@@ -876,72 +974,60 @@ function formatValue(id, state, obj, texts) {
 
 function getSelectIdIcon(objects, id, prefix) {
     prefix = prefix || '.';//http://localhost:8081';
-    let icon = '';
-    let alt  = '';
+    let src = '';
     const _id_ = 'system.adapter.' + id;
-    if (id && objects[_id_] && objects[_id_].common && objects[_id_].common.icon) {
+    const aIcon = id && objects[_id_] && objects[_id_].common && objects[_id_].common.icon;
+    if (aIcon) {
         // if not BASE64
-        if (!objects[_id_].common.icon.match(/^data:image\//)) {
-            if (objects[_id_].common.icon.indexOf('.') !== -1) {
-                icon = prefix + '/adapter/' + objects[_id_].common.name + '/' + objects[_id_].common.icon;
+        if (!aIcon.startsWith('data:image/')) {
+            if (aIcon.includes('.')) {
+                src = prefix + '/adapter/' + objects[_id_].common.name + '/' + aIcon;
             } else {
                 return null; //'<i class="material-icons iob-list-icon">' + objects[_id_].common.icon + '</i>';
             }
         } else {
-            icon = objects[_id_].common.icon;
+            src = aIcon;
         }
     } else {
-        const obj = objects[id];
+        const common = objects[id] && objects[id].common;
 
-        if (obj && obj.common) {
-            if (obj.common.icon) {
-                if (!obj.common.icon.match(/^data:image\//)) {
-                    if (obj.common.icon.indexOf('.') !== -1) {
+        if (common) {
+            const cIcon = common.icon;
+            if (cIcon) {
+                if (!cIcon.startsWith('data:image/')) {
+                    if (cIcon.includes('.')) {
                         let instance;
-                        if (obj.type === 'instance') {
-                            icon = prefix + '/adapter/' + obj.common.name + '/' + obj.common.icon;
-                        } else if (id && id.match(/^system\.adapter\./)) {
+                        if (objects[id].type === 'instance' || objects[id].type === 'adapter') {
+                            src = prefix + '/adapter/' + common.name + '/' + cIcon;
+                        } else if (id && id.startsWith('system.adapter.')) {
                             instance = id.split('.', 3);
-                            if (obj.common.icon[0] === '/') {
-                                instance[2] += obj.common.icon;
+                            if (cIcon[0] === '/') {
+                                instance[2] += cIcon;
                             } else {
-                                instance[2] += '/' + obj.common.icon;
+                                instance[2] += '/' + cIcon;
                             }
-                            icon = prefix + '/adapter/' + instance[2];
+                            src = prefix + '/adapter/' + instance[2];
                         } else {
                             instance = id.split('.', 2);
-                            if (obj.common.icon[0] === '/') {
-                                instance[0] += obj.common.icon;
+                            if (cIcon[0] === '/') {
+                                instance[0] += cIcon;
                             } else {
-                                instance[0] += '/' + obj.common.icon;
+                                instance[0] += '/' + cIcon;
                             }
-                            icon = prefix + '/adapter/' + instance[0];
+                            src = prefix + '/adapter/' + instance[0];
                         }
                     } else {
-                        return null; // '<i class="material-icons iob-list-icon">' + obj.common.icon + '</i>';
+                        return null;
                     }
                 } else {
                     // base 64 image
-                    icon = obj.common.icon;
+                    src = cIcon;
                 }
-            } else if (obj.type === 'device') {
-                icon = IconDefaultDevice;
-                alt  = 'device';
-            } else if (obj.type === 'channel') {
-                icon = IconDefaultChannel;
-                alt  = 'channel';
-            } else if (obj.type === 'state') {
-                icon = IconDefaultState;
-                alt  = 'state';
             }
         }
     }
 
-    if (icon) {
-        return {src: icon, alt};
-    } else {
-        return  {src: IconDefault, alt: ''};
-    }
+    return src || null;
 }
 
 const DEFAULT_FILTER = {
@@ -1039,18 +1125,18 @@ class ObjectBrowser extends React.Component {
         this.visibleCols = this.props.cols || ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'];
 
         this.texts = {
-            value:   this.props.t('tooltip_value'),
-            ack:     this.props.t('tooltip_ack'),
-            ts:      this.props.t('tooltip_ts'),
-            lc:      this.props.t('tooltip_lc'),
-            from:    this.props.t('tooltip_from'),
-            user:    this.props.t('tooltip_user'),
-            quality: this.props.t('tooltip_quality'),
-            editObject: this.props.t('tooltip_editObject'),
+            value:        this.props.t('tooltip_value'),
+            ack:          this.props.t('tooltip_ack'),
+            ts:           this.props.t('tooltip_ts'),
+            lc:           this.props.t('tooltip_lc'),
+            from:         this.props.t('tooltip_from'),
+            user:         this.props.t('tooltip_user'),
+            quality:      this.props.t('tooltip_quality'),
+            editObject:   this.props.t('tooltip_editObject'),
             deleteObject: this.props.t('tooltip_deleteObject'),
             customConfig: this.props.t('tooltip_customConfig'),
-            copyState: this.props.t('tooltip_copyState'),
-            editState: this.props.t('tooltip_editState'),
+            copyState:    this.props.t('tooltip_copyState'),
+            editState:    this.props.t('tooltip_editState'),
         };
 
         this.onStateChangeBound = this.onStateChange.bind(this);
@@ -1185,57 +1271,11 @@ class ObjectBrowser extends React.Component {
             this.props.socket.unsubscribeState(id, this.onStateChangeBound);
         }
     }
-    /*
-    renderIndexColumn(data, metadata, toggleChildren) {
-        const selected = this.state.selected === data.id;
-        const isExist = !!this.objects[data.id];
-        const isState = isExist && this.objects[data.id].type === 'state';
-        // const isChannel = isExist && !isState && this.objects[data.id].type === 'channel';
-        // const isDevice = isExist && !isChannel && !isState && this.objects[data.id].type === 'device';
 
-        const padding = (metadata.depth * 25) + 'px';
-        const width = `calc(100% - ${padding})`;
-        return (
-            <div style={{paddingLeft: padding, width: width}}
-                 data-index={data.id}
-                 className={this.props.classes.cellWrapper + ' add-copy-button'}
-            >
-                <span className={(selected ? this.props.classes.selected : '') + ' ' + this.props.classes.toggleButtonWrapper}>
-                  {metadata.hasChildren
-                      ? (<span onClick={toggleChildren}>{metadata.hasVisibleChildren ? (<IconOpen/>) : (<IconClosed/>)}</span>)
-                      : (isState ? (<IconState/>) : (<IconDocument/>))
-                  }
-                </span>
-                <span className={this.props.classes.cellWrapperElement} style={{fontWeight: metadata.hasChildren ? 'bold' : 'normal'}}>{data.name}</span>
-            </div>
-        );
-    }
-
-    renderColumnName(data, metadata, toggleChildren) {
-        const icon = getSelectIdIcon(this.objects, data.id, this.props.prefix);
-        return (<span className={this.props.classes.cellWrapper}>
-            <img src={icon.src} className={this.props.classes.icon} alt={icon.alt}/>
-            {data.obj && UtilsAdapter.getObjectName(this.objects, data.obj._id, null, {language: this.props.lang})}
-            </span>);
-    }
-    renderColumnRole(data, metadata, toggleChildren) {
-        if (!data.obj) return null;
-        return (<span className={this.props.classes.cellWrapper}>{(data.obj.common && data.obj.common.role) || ''}</span>);
-    }
-    renderColumnRoom(data, metadata, toggleChildren) {
-        if (!data.obj) return null;
-        const list = findRoomsForObject(this.info, data.obj._id, this.props.lang) || [];
-        return (<span className={this.props.classes.cellWrapper}>{list.join(', ')}</span>);
-    }
-    renderColumnFunc(data, metadata, toggleChildren) {
-        if (!data.obj) return null;
-        const list = findFunctionsForObject(this.info, data.obj._id, this.props.lang) || [];
-        return (<span className={this.props.classes.cellWrapper}>{list.join(', ')}</span>);
-    }
-    */
     onFilter(name, value) {
         this.filterTimer = null;
         let filter = {};
+
         Object.keys(this.filterRefs).forEach(name => {
             if (this.filterRefs[name] && this.filterRefs[name].current) {
                 for (var i = 0; i < this.filterRefs[name].current.childNodes.length; i++) {
@@ -1272,9 +1312,11 @@ class ObjectBrowser extends React.Component {
     }
 
     getFilterSelect(name, values) {
+        const hasIcons = !!values.find(item => item.icon);
+
         return <Select
             ref={ this.filterRefs[name] }
-            className={this.props.classes.headerCellInput + ' no-underline'}
+            className={ this.props.classes.headerCellInput + ' no-underline' }
             onChange={e => {
                 this.filterTimer && clearTimeout(this.filterTimer);
                 this.filterTimer = setTimeout(() => this.onFilter(), 400);
@@ -1283,7 +1325,7 @@ class ObjectBrowser extends React.Component {
             inputProps={{ name, id: name }}
             displayEmpty={ true }
         >
-            <MenuItem key="empty" value=""><span className={this.props.classes.selectNone}>{this.props.t('filter_' + name)}</span></MenuItem>
+            <MenuItem key="empty" value=""><span className={ this.props.classes.selectNone }>{this.props.t('filter_' + name)}</span></MenuItem>
             { values.map(item => {
                 let id;
                 let name;
@@ -1291,17 +1333,16 @@ class ObjectBrowser extends React.Component {
                 if (typeof item === 'object') {
                     id   = item.value;
                     name = item.name;
-                    icon = getSelectIdIcon(this.objects, id, this.props.prefix);
+                    icon = item.icon;
                 } else {
                     id   = item;
                     name = item;
                 }
 
-                return (
-                    <MenuItem key={id} value={id}>
-                        {icon && (<img className={ this.props.classes.selectIcon } src={icon.src} alt={name}/>)}
-                        {name}
-                    </MenuItem>)
+                return <MenuItem className={ this.props.classes.headerCellSelectItem } key={ id } value={ id }>
+                        { icon ? icon : (hasIcons ? <div className="itemIcon"/> : null)}
+                        { name }
+                    </MenuItem>;
             }) }
         </Select>;
     }
@@ -1327,11 +1368,18 @@ class ObjectBrowser extends React.Component {
     }
 
     getFilterSelectType() {
-        const types = this.info.types.map(id =>
-            ({name: id, value: id}));
+        const types = this.info.types.map(type =>
+            ({name: type, value: type, icon: ITEM_IMAGES[type]}));
 
         return this.getFilterSelect('type', types);
+    }
 
+    getFilterSelectCustoms() {
+        if (this.info.customs.length) {
+            return this.getFilterSelect('customs', this.info.customs);
+        } else {
+            return null;
+        }
     }
 
     onExpandAll(root, expanded) {
@@ -1445,7 +1493,7 @@ class ObjectBrowser extends React.Component {
     renderColumnButtons(id, item, classes) {
         if (!item.data.obj) {
             return <IconButton className={ clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone) }  size="small" aria-label="delete" title={ this.texts.deleteObject }>
-                    <DeleteIcon className={ classes.cellButtonsButtonIcon }  />
+                    <IconDelete className={ classes.cellButtonsButtonIcon }  />
                 </IconButton>;
         }
 
@@ -1454,10 +1502,17 @@ class ObjectBrowser extends React.Component {
                 <IconEdit className={ classes.cellButtonsButtonIcon } />
             </IconButton>,
             <IconButton key="delete" className={ classes.cellButtonsButton }  size="small" aria-label="delete" title={ this.texts.deleteObject }>
-                <DeleteIcon className={ classes.cellButtonsButtonIcon }  />
+                <IconDelete className={ classes.cellButtonsButtonIcon }  />
             </IconButton>,
-            this.info.hasSomeCustoms ? <IconButton  key="custom" className={ classes.cellButtonsButton }  size="small" aria-label="config" title={ this.texts.customConfig }>
-                <ConfigIcon className={ classes.cellButtonsButtonIcon }  />
+            this.info.hasSomeCustoms ? <IconButton
+                key="custom"
+                className={ classes.cellButtonsButton }
+                size="small"
+                aria-label="config"
+                title={ this.texts.customConfig }
+                onClick={ () => this.setState({ customDialog: [id]})}
+            >
+                <IconConfig className={ classes.cellButtonsButtonIcon }  />
             </IconButton> : null,
         ];
     }
@@ -1483,14 +1538,15 @@ class ObjectBrowser extends React.Component {
         if (!info) {
             info = item.data.state = item.data.state || formatValue(id, state, item.data.obj, this.texts);
 
-
             info.valFull = info.valFull.map(item => [
                 <div className={ classes.cellValueTooltipTitle } key={ item.t }>{ item.t }:</div>,
                 <div className={ classes.cellValueTooltipValue } key={ item.t + '_v' }>{ item.v }</div>,
                 !item.nbr ? <br key={ item.t + '_br' }/> : null]);
 
+            /*
             info.valFull.push(<IconCopy className={ classes.cellValueTooltipCopy }  key="cc" />);
             info.valFull.push(<IconEdit className={ classes.cellValueTooltipEdit }  key="ce" />);
+            */
 
             info.val = info.valText.v || '';
 
@@ -1514,19 +1570,31 @@ class ObjectBrowser extends React.Component {
         isExpanded = isExpanded === undefined ? this.state.expanded.includes(id) : isExpanded;
 
         // icon
-        const icon = item.children ? (isExpanded ?
-            <IconOpen
-                className={ classes.cellIdIcon }
-                onClick={ () => this.toggleExpanded(id)}
-            />
-            :
-            <IconClosed
-                className={ classes.cellIdIcon }
-                onClick={ () => this.toggleExpanded(id)}
-            />)
-            : null;
+        let iconFolder;
+        if (item.children) {
+            iconFolder = isExpanded ? <IconOpen
+                    className={ classes.cellIdIconFolder }
+                    onClick={ () => this.toggleExpanded(id) }
+                /> : <IconClosed
+                    className={ classes.cellIdIconFolder }
+                    onClick={ () => this.toggleExpanded(id) }
+                />;
+        } else {
+            iconFolder = <IconDocument className={ classes.cellIdIconDocument } />;
+        }
+        let iconItem = null;
+        if (item.data.icon) {
+            if (typeof item.data.icon === 'string') {
+                iconItem = <img className={ clsx(classes.cellIdIconOwn, 'iconOwn') } src={ item.data.icon } />;
+            } else {
+                iconItem = item.data.icon;
+            }
+        }
 
-        const img = (item.data.obj && item.data.obj.type && ITEM_IMAGES[item.data.obj.type]) || null;
+
+        const obj = item.data.obj;
+
+        const typeImg = (obj && obj.type && ITEM_IMAGES[obj.type]) || <div className="itemIcon" />;
 
         const paddingLeft = ITEM_LEVEL * item.data.level;
 
@@ -1543,13 +1611,14 @@ class ObjectBrowser extends React.Component {
             onDoubleClick={ () => this.toggleExpanded(id) }
         >
             <div className={ classes.cellId } style={{ width: widths.idWidth, paddingLeft }}>
-                { icon }
+                { iconFolder }
                 <div className={ classes.cellIdSpan }>{ item.data.name }</div>
+                { iconItem }
                 <IconCopy className={ clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
             </div>
             {this.visibleCols.includes('name')    ? <div className={ classes.cellName } style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
-            {this.visibleCols.includes('type')    ? <div className={ classes.cellType } style={{ width: widths.WIDTHS[0] }}>{ img } { item.data.obj && item.data.obj.type }</div> : null }
-            {this.visibleCols.includes('role')    ? <div className={ classes.cellRole } style={{ width: widths.WIDTHS[1] }}>{ item.data.obj && item.data.obj.common && item.data.obj.common.role }</div> : null }
+            {this.visibleCols.includes('type')    ? <div className={ classes.cellType } style={{ width: widths.WIDTHS[0] }}>{ typeImg } { obj && obj.type }</div> : null }
+            {this.visibleCols.includes('role')    ? <div className={ classes.cellRole } style={{ width: widths.WIDTHS[1] }}>{ obj && obj.common && obj.common.role }</div> : null }
             {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom } style={{ width: widths.WIDTHS[2] }}>{ item.data.rooms }</div> : null }
             {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc } style={{ width: widths.WIDTHS[3] }}>{ item.data.funcs }</div> : null }
             {this.visibleCols.includes('val')     ? <div className={ classes.cellValue } style={{ width: widths.WIDTHS[4] }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
@@ -1583,7 +1652,7 @@ class ObjectBrowser extends React.Component {
             {this.visibleCols.includes('room')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[2] }}>{ this.getFilterSelectRoom() }</div> : null }
             {this.visibleCols.includes('func')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[3] }}>{ this.getFilterSelectFunction() }</div> : null }
             {this.visibleCols.includes('val')     ? <div className={ clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS[4] }}>{ this.props.t('Value') }</div> : null }
-            {this.visibleCols.includes('buttons') ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[5] }}></div> : null }
+            {this.visibleCols.includes('buttons') ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[5] }}> { this.getFilterSelectCustoms() }</div> : null }
         </div>;
     }
 
@@ -1609,6 +1678,22 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    renderCustomDialog() {
+        if (this.state.customDialog) {
+            return <ObjectCustomDialog
+                objectIDs={ this.state.customDialog }
+                expertMode={ this.props.expertMode }
+                t={ this.props.t }
+                lang={ this.props.lang }
+                objects={ this.objects }
+                customsInstances={ this.info.customs }
+                onClose={ () => this.setState({ customDialog: null })}
+            />;
+        } else {
+            return null;
+        }
+    }
+    
     render() {
         this.recordStates = [];
         this.unsubscribeTimer && clearTimeout(this.unsubscribeTimer);
@@ -1638,7 +1723,7 @@ class ObjectBrowser extends React.Component {
             return (<CircularProgress/>);
         } else {
            const idWidth = 300;
-            const WIDTHS = [120, 80, 180, 180, 120, 76];
+            const WIDTHS = [80, 120, 180, 180, 120, 76];
 
             const widths = {
                 idWidth,
@@ -1658,41 +1743,11 @@ class ObjectBrowser extends React.Component {
             >
                 { this.getToolbar() }
                 { this.renderHeader(widths) }
-                {/*<!--Grid item key="header" className={classes.header}>
-                    <div className={classes.headerCell} style={{width: idWidth}}>{this.getFilterInput('id')}</div>
-                    <div className={classes.headerCell} style={{width: width}}>{this.getFilterInput('name')}</div>
-                    <div className={classes.headerCell} style={{width: WIDTHS[0]}}>{this.getFilterSelectRole()}</div>
-                    <div className={classes.headerCell} style={{width: WIDTHS[1]}}>{this.getFilterSelectRoom()}</div>
-                    <div className={classes.headerCell} style={{width: WIDTHS[2]}}>{this.getFilterSelectFunction()}</div>
-                    <div className={classes.headerCell} style={{width: WIDTHS[3]}}>{this.props.t('Value')}</div>
-                </Grid>
-                <Grid-- item className={ classes.tableDiv }>
-                    <TreeDataTable
-                        ref={this.treeTableRef}
-                        key="table"
-                        data={this.root.children}
-                        height={'100%'}
-                        selected={this.state.selected}
-                        classNameSelected={classes.selected}
-                        classNamePartlyVisible={classes.partlyVisible}
-                        className={this.props.theme === 'dark' ? classes.treeTableDark : classes.treeTable}
-                        classNameRow={classes.treeTableRow}
-                        onRowClick={(data, metadata, toggleChildren, isDoubleClick) => isDoubleClick ?
-                            this.onDoubleClick(data, metadata, toggleChildren) :
-                            this.onSelect(data.id)}
-                    >
-                        <TreeDataTable.Column grow={0} renderCell={this.renderIndexColumn.bind(this)} className={classes.cellDivId} width={idWidth} />
-                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnName.bind(this)}  className={classes.cellDiv}   width={width}/>
-                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnRole.bind(this)}  className={classes.cellDiv}   width={WIDTHS[0]}/>
-                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnRoom.bind(this)}  className={classes.cellDiv}   width={WIDTHS[1]}/>
-                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnFunc.bind(this)}  className={classes.cellDiv}   width={WIDTHS[2]}/>
-                        <TreeDataTable.Column grow={1} renderCell={this.renderColumnValue.bind(this)} className={classes.cellDiv}   width={WIDTHS[3]}/>
-                    </TreeDataTable>
-                </Grid>*/}
                 <div className={ this.props.classes.tableDiv } ref={ this.tableRef }>
                     { items }
                 </div>
                 { this.renderToast() }
+                { this.renderCustomDialog() }
             </Grid>);
         }
     }
