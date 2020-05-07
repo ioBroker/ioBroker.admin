@@ -362,6 +362,12 @@ const styles = theme => ({
         width: 'calc(100% - 5px)',
         height: ROW_HEIGHT,
         paddingTop: 3,
+        '& .itemIcon': {
+            verticalAlign: 'middle',
+            width: 24,
+            height: 24,
+            display: 'inline-block',
+        }
     },
     headerCellSelectItem: {
         '& .itemIcon': {
@@ -436,7 +442,10 @@ function applyFilter(item, filters, lang, objects, context, counter) {
         if (!filters.expertMode) {
             filteredOut =
                 data.id === 'system' ||
+                data.id === 'enum' ||
+               // (data.obj && data.obj.type === 'meta') ||
                 data.id.startsWith('system.') ||
+                data.id.startsWith('enum.') ||
                 data.id.startsWith('_design/') ||
                 (common && common.expertMode);
         }
@@ -1504,7 +1513,7 @@ class ObjectBrowser extends React.Component {
             <IconButton key="delete" className={ classes.cellButtonsButton }  size="small" aria-label="delete" title={ this.texts.deleteObject }>
                 <IconDelete className={ classes.cellButtonsButtonIcon }  />
             </IconButton>,
-            this.info.hasSomeCustoms ? <IconButton
+            this.info.hasSomeCustoms && item.data.obj.type === 'state' ? <IconButton
                 key="custom"
                 className={ classes.cellButtonsButton }
                 size="small"
@@ -1685,6 +1694,7 @@ class ObjectBrowser extends React.Component {
                 expertMode={ this.props.expertMode }
                 t={ this.props.t }
                 lang={ this.props.lang }
+                socket={ this.props.socket }
                 objects={ this.objects }
                 customsInstances={ this.info.customs }
                 onClose={ () => this.setState({ customDialog: null })}

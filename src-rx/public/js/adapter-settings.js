@@ -8,7 +8,8 @@ if (location.pathname.match(/^\/admin\//)) {
 
 var systemConfig;
 var socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
-var instance = window.location.search.slice(1);
+var query = window.location.search.replace('?', '').split('&');
+var instance = query[0];
 var common   = null; // common information of adapter
 var host     = null; // host object on which the adapter runs
 var changed  = false;
@@ -19,7 +20,7 @@ var isMaterialize = false;
 var ___onChange = null;
 var systemSecret = 'Zgfr56gFe87jJOM';
 var supportedFeatures = [
-    'ADAPTER_AUTO_DECRYPT', // all native attributes, that start with "enc_" will be automatically decrypted and encrypted
+    'ADAPTER_AUTO_DECRYPT_NATIVE', // all native attributes, that are listed in an array `encryptedNative` in io-pack will be automatically decrypted and encrypted. Since js-controller 3.0
 ];
 
 function preInit () {
@@ -239,6 +240,13 @@ function preInit () {
         close();
     });
 
+    // detect, that we are now in react container
+    for (var q = 0; q < query.length; q++) {
+        if (query[q].indexOf('react=') !== -1) {
+            $('.adapter-container').addClass('react-' + query[q].substring(6));
+        }
+    }
+
     function saveSettings(native, common, callback) {
         if (typeof common === 'function') {
             callback = common;
@@ -246,7 +254,7 @@ function preInit () {
         }
 
         socket.emit('getObject', id, function (err, oldObj) {
-            if (!oldObj) oldObj = {};
+            oldObj = oldObj || {};
 
             for (var a in native) {
                 if (native.hasOwnProperty(a)) {
@@ -319,7 +327,9 @@ function preInit () {
                     if (res.native && res.native.certificates) {
                         certs = [];
                         for (var c in res.native.certificates) {
-                            if (!res.native.certificates.hasOwnProperty(c) || !res.native.certificates[c]) continue;
+                            if (!res.native.certificates.hasOwnProperty(c) || !res.native.certificates[c]) {
+                                continue;
+                            }
 
                             // If it is filename, it could be everything
                             if (res.native.certificates[c].length < 700 && (res.native.certificates[c].indexOf('/') !== -1 || res.native.certificates[c].indexOf('\\') !== -1)) {
@@ -390,12 +400,18 @@ function preInit () {
                 if (typeof load === 'undefined') {
                     alert('Please implement save function in your admin/index.html');
                 } else {
-                    // decode all native attributes starting with enc_
-                    if (res.native && typeof res.native === 'object') {
-                        for (var attr in res.native) {
-                            if (res.native.hasOwnProperty(attr) && attr.match(/^enc_/)) {
-                                res.native[attr] = decrypt(res.native[attr]);
+                    // decode all native attributes listed in res.encryptedNative
+                    if (res.encryptedNative && typeof res.encryptedNative === 'object' && res.encryptedNative instanceof Array) {
+                        for (var i = 0; i < res.encryptedNative.length; i++) {
+                            if (res.native[res.encryptedNative[i]]) {
+                                res.native[res.encryptedNative[i]] = decrypt(res.native[res.encryptedNative[i]]);
                             }
+                        }
+                    } else {
+                        var idx = supportedFeatures.indexOf('ADAPTER_AUTO_DECRYPT_NATIVE');
+                        if (idx !== -1) {
+                            // if no encryptedNative exists the feature is irrelevant, remove for compatibility reasons
+                            supportedFeatures.splice(idx, 1);
                         }
                     }
 
@@ -643,7 +659,9 @@ function prepareTooltips() {
                 if ($input.length) id = $input.attr('id');
             }
 
-            if (!id) return;
+            if (!id) {
+                return;
+            }
 
             var tooltip = '';
             if (systemDictionary['tooltip_' + id]) {
@@ -681,18 +699,30 @@ function prepareTooltips() {
             if (!id) {
                 var $prev = $(this).prev();
                 var $input = $prev.find('input');
-                if (!$input.length) $input = $prev.find('select');
-                if (!$input.length) $input = $prev.find('textarea');
+                if (!$input.length) {
+                    $input = $prev.find('select');
+                }
+                if (!$input.length) {
+                    $input = $prev.find('textarea');
+                }
                 if (!$input.length) {
                     $prev = $prev.parent();
                     $input = $prev.find('input');
-                    if (!$input.length) $input = $prev.find('select');
-                    if (!$input.length) $input = $prev.find('textarea');
+                    if (!$input.length) {
+                        $input = $prev.find('select');
+                    }
+                    if (!$input.length) {
+                        $input = $prev.find('textarea');
+                    }
                 }
-                if ($input.length) id = $input.attr('id');
+                if ($input.length) {
+                    id = $input.attr('id');
+                }
             }
 
-            if (!id) return;
+            if (!id) {
+                return;
+            }
 
             // check if translation for this exist
             if (systemDictionary['info_' + id]) {
@@ -808,7 +838,7 @@ function confirmMessageJQ(message, title, icon, buttons, callback) {
                     var cb = $(this).data('callback');
                     $(this).data('callback', null);
                     $(this).dialog('close');
-                    if (cb) cb(true);
+                    cb && cb(true);
                 }
             },
             {
@@ -817,7 +847,7 @@ function confirmMessageJQ(message, title, icon, buttons, callback) {
                     var cb = $(this).data('callback');
                     $(this).data('callback', null);
                     $(this).dialog('close');
-                    if (cb) cb(false);
+                    cb && cb(false);
                 }
             }
 
@@ -832,7 +862,7 @@ function confirmMessageJQ(message, title, icon, buttons, callback) {
                     var cb = $(this).data('callback');
                     $(this).data('callback', null);
                     $(this).dialog('close');
-                    if (cb) cb(id);
+                    cb && cb(id);
                 }
             }
         }
@@ -970,8 +1000,9 @@ function getEnums(_enum, callback) {
         if (!err && res) {
             var _res   = {};
             for (var i = 0; i < res.rows.length; i++) {
-                if (res.rows[i].id === 'enum.' + _enum) continue;
-                _res[res.rows[i].id] = res.rows[i].value;
+                if (res.rows[i].id !== 'enum.' + _enum) {
+                    _res[res.rows[i].id] = res.rows[i].value;
+                }
             }
             callback && callback(null, _res);
         } else {
@@ -1057,7 +1088,9 @@ function getIPs(host, callback) {
             var IPs6 = [{name: '[IPv6] ::',      address: '::',      family: 'ipv6'}];
             if (host.native.hardware && host.native.hardware.networkInterfaces) {
                 for (var eth in host.native.hardware.networkInterfaces) {
-                    if (!host.native.hardware.networkInterfaces.hasOwnProperty(eth)) continue;
+                    if (!host.native.hardware.networkInterfaces.hasOwnProperty(eth)) {
+                        continue;
+                    }
                     for (var num = 0; num < host.native.hardware.networkInterfaces[eth].length; num++) {
                         if (host.native.hardware.networkInterfaces[eth][num].family !== 'IPv6') {
                             IPs4.push({name: '[' + host.native.hardware.networkInterfaces[eth][num].family + '] ' + host.native.hardware.networkInterfaces[eth][num].address + ' - ' + eth, address: host.native.hardware.networkInterfaces[eth][num].address, family: 'ipv4'});
@@ -1079,8 +1112,12 @@ function fillSelectIPs(id, actualAddr, noIPv4, noIPv6, callback) {
     getIPs(function (ips) {
         var str = '';
         for (var i = 0; i < ips.length; i++) {
-            if (noIPv4 && ips[i].family === 'ipv4') continue;
-            if (noIPv6 && ips[i].family === 'ipv6') continue;
+            if (noIPv4 && ips[i].family === 'ipv4') {
+                continue;
+            }
+            if (noIPv6 && ips[i].family === 'ipv6') {
+                continue;
+            }
             str += '<option value="' + ips[i].address + '" ' + ((ips[i].address === actualAddr) ? 'selected' : '') + '>' + ips[i].name + '</option>';
         }
 
@@ -1125,7 +1162,9 @@ function getInterfaces(onlyNames, callback) {
 function fillSelectCertificates(id, type, actualValued) {
     var str = '<option value="">' + _('none') + '</option>';
     for (var i = 0; i < certs.length; i++) {
-        if (certs[i].type && certs[i].type !== type) continue;
+        if (certs[i].type && certs[i].type !== type) {
+            continue;
+        }
         str += '<option value="' + certs[i].name + '" ' + ((certs[i].name === actualValued) ? 'selected' : '') + '>' + certs[i].name + '</option>';
     }
 
@@ -1368,7 +1407,9 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
 //                width:    160,
             editable: true
         };
-        if (width) _obj.width = width;
+        if (width) {
+            _obj.width = width;
+        }
         if (checkbox) {
             _obj.edittype    = 'checkbox';
             _obj.editoptions = {value: 'true:false'};
@@ -1534,7 +1575,10 @@ function _editTable(tabId, cols, values, rooms, top, onChange) {
 function enumName2Id(enums, name) {
     name = name.toLowerCase();
     for (var enumId in enums) {
-        if (!enums.hasOwnProperty(enumId)) continue;
+        if (!enums.hasOwnProperty(enumId)) {
+            continue;
+        }
+
         if (enums[enumId] && enums[enumId].common && enums[enumId].common.name) {
             if (typeof enums[enumId].common.name === 'object') {
                 for (var lang in enums[enumId].common.name) {
@@ -1543,7 +1587,9 @@ function enumName2Id(enums, name) {
                     }
                 }
             } else {
-                if (enums[enumId].common.name && enums[enumId].common.name.toLowerCase() === name) return enumId;
+                if (enums[enumId].common.name && enums[enumId].common.name.toLowerCase() === name) {
+                    return enumId;
+                }
             }
         }
         if (enums[enumId] && enums[enumId].name) {
@@ -1554,7 +1600,9 @@ function enumName2Id(enums, name) {
                     }
                 }
             } else {
-                if (enums[enumId].name.toLowerCase() === name) return enumId;
+                if (enums[enumId].name.toLowerCase() === name) {
+                    return enumId;
+                }
             }
         }
     }
@@ -1776,8 +1824,9 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 var names  = $table.data('names');
                 var obj = {};
                 for (var i = 0; i < names.length; i++) {
-                    if (!names[i]) continue;
-                    obj[names[i].name] = names[i].def;
+                    if (names[i]) {
+                        obj[names[i].name] = names[i].def;
+                    }
                 }
                 values.push(obj);
                 onChange && onChange();
@@ -1815,9 +1864,13 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 nnames.sort(function (a, b) {
                     a = a.toLowerCase();
                     b = b.toLowerCase();
-                    if (a > b) return 1;
-                    if (a < b) return -1;
-                    return 0;
+                    if (a > b) {
+                        return 1;
+                    } else if (a < b) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
                 });
 
                 for (var l = 0; l < nnames.length; l++) {
@@ -1852,9 +1905,13 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 nnames.sort(function (a, b) {
                     a = a.toLowerCase();
                     b = b.toLowerCase();
-                    if (a > b) return 1;
-                    if (a < b) return -1;
-                    return 0;
+                    if (a > b) {
+                        return 1;
+                    } else if (a < b) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
                 });
 
                 for (var l = 0; l < nnames.length; l++) {
@@ -1893,7 +1950,9 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                     for (var v = 0; v < vals.length; v++) {
                         var parts = vals[v].split('/');
                         obj.options[parts[0]] = _(parts[1] || parts[0]);
-                        if (v === 0) obj.def = (obj.def === undefined) ? parts[0] : obj.def;
+                        if (v === 0) {
+                            obj.def = (obj.def === undefined) ? parts[0] : obj.def;
+                        }
                     }
                 } else {
                     obj.def = obj.def || '';
@@ -1935,7 +1994,9 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                 if (names[i]) {
 					if (names[i].name !== '_index') {
                         tdstyle = names[i].tdstyle || '';
-                        if (tdstyle && tdstyle[0] !== ';') tdstyle = ';' + tdstyle;
+                        if (tdstyle && tdstyle[0] !== ';') {
+                            tdstyle = ';' + tdstyle;
+                        }
                     }
 					if (names[i].name === '_index') {
                         style = (names[i].style ? names[i].style : 'text-align: right;');
@@ -1968,7 +2029,9 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
                         }
 
                         var val = (values[v][names[i].name] === undefined ? '' : values[v][names[i].name]);
-                        if (typeof val !== 'object') val = [val];
+                        if (typeof val !== 'object') {
+                            val = [val];
+                        }
                         for (var p in options) {
                             line += '<option value="' + p + '" ' + (val.indexOf(p) !== -1 ? ' selected' : '') + '>' + options[p] + '</option>';
                         }
@@ -2205,10 +2268,16 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
 
         $lines.find('.values-input').on('change.adaptersettings', function () {
             if ($(this).attr('type') === 'checkbox') {
-                if ($(this).prop('checked').toString() !== $(this).data('old-value')) onChange();
+                if ($(this).prop('checked').toString() !== $(this).data('old-value')) {
+                    onChange();
+                }
+
                 values[$(this).data('index')][$(this).data('name')] = $(this).prop('checked');
             } else {
-                if ($(this).val() !== $(this).data('old-value')) onChange();
+                if ($(this).val() !== $(this).data('old-value')) {
+                    onChange();
+                }
+
                 values[$(this).data('index')][$(this).data('name')] = $(this).val();
             }
         }).on('keyup', function () {
@@ -2232,7 +2301,7 @@ function values2table(divId, values, onChange, onReady, maxRaw) {
             }
         });
     }
-    if (typeof onReady === 'function') onReady();
+    typeof onReady === 'function' && onReady();
 }
 
 /**

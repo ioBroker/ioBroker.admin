@@ -47,12 +47,12 @@ class ObjectCustomDialog extends React.Component {
         super(props);
 
         this.state = {
-
+            allSaved: true,
         };
     }
 
     getContent() {
-        return <ObjectCustomsEditor { ...this.props }/>;
+        return <ObjectCustomsEditor { ...this.props } onChange={ haveChanges => this.setState({ allSaved: !haveChanges }) }/>;
     }
 
     onSave() {
@@ -77,8 +77,7 @@ class ObjectCustomDialog extends React.Component {
                 { this.getContent() }
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => this.props.onSave()}  color="primary"><ApplyIcon />{ this.props.t('Save') }</Button>
-                <Button onClick={() => this.props.onClose()} ><CloseIcon />{ this.props.t('Close') }</Button>
+                <Button disabled={ !this.state.allSaved } onClick={() => this.props.onClose()} ><CloseIcon />{ this.props.t('Close') }</Button>
             </DialogActions>
         </Dialog>;
     }

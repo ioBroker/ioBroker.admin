@@ -910,6 +910,10 @@ class Connection {
 
         return this.promises.systemConfig;
     }
+
+    getRawSocket() {
+        return this._socket;
+    }
 }
 
 Connection.Connection = {
