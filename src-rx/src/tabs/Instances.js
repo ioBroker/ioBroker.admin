@@ -656,6 +656,7 @@ class Instances extends React.Component {
                             adapter={ instance.id.split('.')[0] }
                             instance={ parseInt(instance.id.split('.')[1]) }
                             materialize={ instance.materialize }
+                            themeName={ this.props.themeName }
                             t={ this.props.t }
                             configStored={ this.props.configStored }
                         />
@@ -702,6 +703,7 @@ Instances.propTypes = {
     hostname: PropTypes.string,
     protocol: PropTypes.string,
     socket: PropTypes.object,
+    themeName: PropTypes.string,
     systemLang: PropTypes.string,
 };
 

@@ -582,6 +582,7 @@ class App extends Router {
                         lang={ I18n.getLanguage() }
                         protocol={ this.state.protocol }
                         hostname={ this.state.hostname }
+                        themeName={ this.state.themeName }
                         expertMode={ this.state.expertMode }
                         t={ I18n.t }
                         configStored={ value => this.allStored(value) }

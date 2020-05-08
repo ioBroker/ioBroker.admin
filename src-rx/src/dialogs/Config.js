@@ -66,7 +66,7 @@ class Config extends React.Component {
                 <iframe
                     title="config"
                     className={ this.props.className }
-                    src={ 'adapter/' + this.props.adapter + '/' + (this.props.materialize ? 'index_m.html' : '') + '?' + this.props.instance }>
+                    src={ `adapter/${this.props.adapter}/${this.props.materialize ? 'index_m.html' : ''}?${this.props.instance}&react=${this.props.themeName}` }>
                 </iframe>
             </Paper>
         );
@@ -78,6 +78,7 @@ Config.propTypes = {
     adapter: PropTypes.string,
     instance: PropTypes.number,
     materialize: PropTypes.bool,
+    themeName: PropTypes.string,
     t: PropTypes.func
 };
 
