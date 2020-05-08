@@ -708,14 +708,26 @@ class ObjectCustomEditor extends React.Component {
             const id = ids.shift();
             this.props.socket.getObject(id)
                 .then(obj => {
+                    if (!obj) {
+                        return window.alert('Invalid object ' + id);
+                    }
+                    
+                    if (obj.common && obj.common.custom) {
+                        Object.keys(obj.common.custom).forEach(ins => {
+                            if (!obj.common.custom[ins] || !obj.common.custom[ins].enabled) {
+                                obj.common.custom[ins] = null;
+                            }
+                        });
+                    }
+
                     const newObj = JSON.parse(JSON.stringify(obj));
                     Object.keys(this.commonConfig.newValues)
                         .forEach(instance => {
                             const adapter = instance.split('.')[0];
 
                             if (this.commonConfig.newValues[instance].enabled === false) {
-                                if (newObj.common.custom && newObj.common.custom[instance]) {
-                                    delete newObj.common.custom[instance];
+                                if (newObj.common && newObj.common.custom && newObj.common.custom[instance]) {
+                                    newObj.common.custom[instance] = null; // here must be null and not deleted, so controller can remove it
                                 }
                             } else if (this.commonConfig.newValues[instance].enabled === true) {
                                 newObj.common.custom = newObj.common.custom || {};
