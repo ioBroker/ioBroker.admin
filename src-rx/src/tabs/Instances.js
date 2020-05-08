@@ -5,6 +5,7 @@ import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 
 import Avatar from '@material-ui/core/Avatar';
+import Badge from '@material-ui/core/Badge';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -18,20 +19,32 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 
 import BuildIcon from '@material-ui/icons/Build';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import InputIcon from '@material-ui/icons/Input';
 import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import RefreshIcon from '@material-ui/icons/Refresh';
 
+import BugReportIcon from '@material-ui/icons/BugReport';
+import InfoIcon from '@material-ui/icons/Info';
+import WarningIcon from '@material-ui/icons/Warning';
+import ErrorIcon from '@material-ui/icons/Error';
+
+import ScheduleIcon from '@material-ui/icons/Schedule';
+import SettingsIcon from '@material-ui/icons/Settings';
+
+import blue from '@material-ui/core/colors/blue';
 import green from '@material-ui/core/colors/green';
 import grey from '@material-ui/core/colors/grey';
 import red from '@material-ui/core/colors/red';
+import yellow from '@material-ui/core/colors/yellow';
 
 import Router from '@iobroker/adapter-react/Components/Router';
 
@@ -69,23 +82,14 @@ const styles = theme => ({
     },
     enabled: {
         color: green[400],
-        //backgroundColor: green[300],
         '&:hover': {
-            backgroundColor: green[200],
-        },
-        '&:focus': {
-            backgroundColor: green[300]
+            backgroundColor: green[200]
         }
     },
     disabled: {
         color: red[400],
-        //backgroundColor: red[300],
         '&:hover': {
-            backgroundColor: red[200],
-            //color: '#ffffff'
-        },
-        '&:focus': {
-            backgroundColor: red[300]
+            backgroundColor: red[200]
         }
     },
     hide: {
@@ -97,13 +101,19 @@ const styles = theme => ({
         borderRadius: '100%'
     },
     green: {
-        backgroundColor: 'green'
+        backgroundColor: green[700]
     },
     red: {
-        backgroundColor: 'red'
+        backgroundColor: red[700]
     },
     grey: {
-        backgroundColor: 'grey'
+        backgroundColor: grey[700]
+    },
+    blue: {
+        backgroundColor: blue[700]
+    },
+    transparent: {
+        backgroundColor: 'transparent'
     },
     paper: {
         height: '100%'
@@ -112,6 +122,21 @@ const styles = theme => ({
         height: '100%',
         width: '100%',
         border: 0
+    },
+    silly: {
+
+    },
+    debug: {
+        backgroundColor: grey[700]
+    },
+    info: {
+        backgroundColor: blue[700]
+    },
+    warn: {
+        backgroundColor: yellow[700]
+    },
+    error: {
+        backgroundColor: red[700]
     }
 });
 
@@ -145,7 +170,15 @@ class Instances extends React.Component {
         
         this.promises = {};
         this.objects = null;
+        this.states = {};
+        this.objects = {};
+        this.statesUpdateTimer = null;
+        this.objectsUpdateTimer = null;
 
+        this.t = props.t;
+    }
+
+    componentDidMount() {
         this.getData();
     }
 
@@ -181,117 +214,129 @@ class Instances extends React.Component {
         return this.promises.objects;
     }
 
-    getData(update) {
+    async getData(update) {
+
         let instances;
-        let states;
-        return this.props.socket.getAdapterInstances(update)
-            .then(_instances => {
-                instances = _instances;
-                return this.getStates(update)
-            })
-            .then(_states => {
-                states = _states;
-                return this.getObjects();
-            })
-            .then(objects => {
-                const formatted = {};
-                this.objects = objects;
-                instances.forEach(obj => this.objects[obj._id] = obj);
 
-                instances.sort((a, b) => {
-                    a = a && a.common;
-                    b = b && b.common;
-                    a = a || {};
-                    b = b || {};
+        try {
+            instances = await this.props.socket.getAdapterInstances(update);
+            this.states = await this.getStates() || [];
+            this.objects = await this.getObjects() || [];
+        } catch(error) {
+            console.log(error)
+        }
 
-                    if (a.order === undefined && b.order === undefined) {
-                        if (a.name.toLowerCase() > b.name.toLowerCase()) {
-                            return 1;
-                        }
-                        if (a.name.toLowerCase() < b.name.toLowerCase()) {
-                            return -1;
-                        }
-                        return 0;
-                    } else if (a.order === undefined) {
-                        return -1;
-                    } else if (b.order === undefined) {
-                        return 1;
-                    } else {
-                        if (a.order > b.order) {
-                            return 1;
-                        }
-                        if (a.order < b.order) {
-                            return -1;
-                        }
-                        if (a.name.toLowerCase() > b.name.toLowerCase()) {
-                            return 1;
-                        }
-                        if (a.name.toLowerCase() < b.name.toLowerCase()) {
-                            return -1;
-                        }
-                        return 0;
-                    }
-                });
+        if(!instances || !this.states || !this.objects) {
+            return;
+        }
 
-                instances.forEach(obj => {
-                    const common = obj ? obj.common : null;
-                    const objId = obj._id.split('.');
-                    const instanceId = objId[objId.length - 1];
+        const formatted = {};
+        
+        instances.forEach(obj => this.objects[obj._id] = obj);
 
-                    const instance = {};
+        instances.sort((a, b) => {
 
-                    instance.id    = obj._id.replace('system.adapter.', '');
-                    instance.name  = common.titleLang ? common.titleLang[this.props.lang] : common.title;
-                    instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
-                    const link     = common.localLinks || common.localLink || '';
+            a = a && a.common;
+            b = b && b.common;
+            a = a || {};
+            b = b || {};
 
-                    instance.link = Utils.replaceLink(link, common.name, instanceId, {
-                        objects,
-                        hostname: this.props.hostname,
-                        protocol: this.props.protocol
-                    });
+            if (a.order === undefined && b.order === undefined) {
+                if (a.name.toLowerCase() > b.name.toLowerCase()) {
+                    return 1;
+                }
+                if (a.name.toLowerCase() < b.name.toLowerCase()) {
+                    return -1;
+                }
+            } else if (a.order === undefined) {
+                return -1;
+            } else if (b.order === undefined) {
+                return 1;
+            } else {
+                if (a.order > b.order) {
+                    return 1;
+                }
+                if (a.order < b.order) {
+                    return -1;
+                }
+                if (a.name.toLowerCase() > b.name.toLowerCase()) {
+                    return 1;
+                }
+                if (a.name.toLowerCase() < b.name.toLowerCase()) {
+                    return -1;
+                }
+            }
+            return 0;
+        });
 
-                    let state = common.mode === 'daemon' ? 'green' : 'blue';
+        instances.forEach(obj => {
+            const common = obj ? obj.common : null;
+            const objId = obj._id.split('.');
+            const instanceId = objId[objId.length - 1];
 
-                    if (common.enabled && (!common.webExtension || !obj.native.webInstance)) {
-                        if (!states[obj._id + '.connected'] || !states[obj._id + '.connected'].val) {
-                            state = (common.mode === 'daemon') ? 'red' : 'blue';
-                        }
+            const instance = {};
 
-                        if (!states[obj._id + '.alive'] || !states[obj._id + '.alive'].val) {
-                            state = (common.mode === 'daemon') ? 'red' : 'blue';
-                        }
+            instance.id    = obj._id.replace('system.adapter.', '');
+            instance.name  = common.titleLang ? common.titleLang[this.props.lang] : common.title;
+            instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+            const link     = common.localLinks || common.localLink || '';
 
-                        if (objects[instance.id + '.info.connection']) {
-                            const val = states[instance.id + '.info.connection'] ? states[instance.id + '.info.connection'].val : false;
+            instance.link = Utils.replaceLink(link, common.name, instanceId, {
+                objects: this.objects,
+                hostname: this.props.hostname,
+                protocol: this.props.protocol
+            });
 
-                            if (!val) {
-                                state = state === 'red' ? 'red' : 'orange';
-                            }
-                        }
-                    } else {
-                        state = common.mode === 'daemon' ? 'grey' : 'blue';
-                    }
+            instance.canStart = !common.onlyWWW;
+            instance.config = !common.noConfig;
+            instance.materialize = common.materialize || false;
+            instance.compactMode = common.runAsCompactMode || false;
+            instance.mode = common.mode || null;
+            instance.loglevel = common.loglevel || null;
 
-                    instance.state = state;
+            formatted[obj._id] = instance;
+        });
 
-                    const isRun = common.onlyWWW || common.enabled;
+        this.setState({
+            instances: formatted
+        });
 
-                    instance.canStart = !common.onlyWWW;
-                    instance.config = !common.noConfig;
-                    instance.isRun = isRun;
-                    instance.materialize = common.materialize || false;
+        this.props.socket.subscribeObject('system.adapter.*', this.onObjectChnage.bind(this));
+        this.props.socket.subscribeState('system.adapter.*', this.onStateChange.bind(this));
+        this.props.socket.subscribeObject('system.host.*', this.onObjectChnage.bind(this));
+        this.props.socket.subscribeState('system.host.*', this.onStateChange.bind(this));
+        this.props.socket.subscribeState('*.info.connection', this.onStateChange.bind(this));
+    }
 
-                    formatted[obj._id] = instance;
-                });
+    onStateChange(id, state) {
+        this.states[id] = state;
 
-                this.setState({
-                    instances: formatted,
-                    states,
-                });
-            })
-            .catch(error => console.log(error));
+        if (!this.statesUpdateTimer) {
+            this.statesUpdateTimer = setTimeout(() => {
+                this.statesUpdateTimer = null;
+                this.forceUpdate();
+            }, 300);
+        }
+    }
 
+    onObjectChnage(id, obj) {
+        
+        if (this.objects[id]) {
+            if (obj) {
+                this.objects[id] = obj;
+            } else {
+                delete this.objects[id];
+            }
+        } else if (this.objects[id]) {
+            delete this.objects[id];
+        }
+
+        if (!this.objectsUpdateTimer) {
+            this.objectsUpdateTimer = setTimeout(() => {
+                this.objectsUpdateTimer = null;
+                this.forceUpdate();
+            }, 300);
+        }
     }
 
     extendObject(id, data) {
@@ -301,6 +346,46 @@ class Instances extends React.Component {
     
     openConfig(instance) {
         Router.doNavigate('tab-instances', 'config', instance);
+    }
+
+    getInstanceState(id) {
+
+        const obj = this.objects[id];
+        const instance = this.state.instances[id];
+        const common = obj ? obj.common : null;
+        
+        let state = common && common.mode === 'daemon' ? 'green' : 'blue';
+        
+        if (common && common.enabled && (!common.webExtension || !obj.native.webInstance)) {
+
+            if (!this.states[id + '.connected'] || !this.states[id + '.connected'].val ||
+                !this.states[id + '.alive'] || !this.states[id + '.alive'].val) {
+                state = (common.mode === 'daemon') ? 'red' : 'blue';
+            }
+
+            if (this.states[instance.id + '.info.connection'] && !this.states[instance.id + '.info.connection'].val) {
+                state = state === 'red' ? 'red' : 'orange';
+            }
+        } else {
+            state = common && common.mode === 'daemon' ? 'grey' : 'blue';
+        }
+
+        return state;
+    }
+
+    isRunning(id) {
+
+        const obj = this.objects[id];
+        const common = obj ? obj.common : null;
+
+        return (common.onlyWWW || common.enabled) ? true : false;
+    }
+
+    getMemory(id) {
+
+        const state = this.states[id + '.memRss'];
+
+        return state ? state.val : 0;
     }
 
     getHeaders() {
@@ -389,46 +474,111 @@ class Instances extends React.Component {
         return rows;
     }
 
+    getModeIcon(mode) {
+
+        if (mode === 'daemon') {
+            return <SettingsIcon />;
+        } else if (mode === 'schedule') {
+           return <ScheduleIcon />
+        }
+
+        return null;
+    }
+
+    getLogLevelIcon(level) {
+
+        if (level === 'debug') {
+            return <BugReportIcon/>;
+        } else if (level === 'info') {
+            return <InfoIcon/>;
+        } else if (level === 'warn') {
+            return <WarningIcon/>;
+        } else if (level === 'error') {
+            return <ErrorIcon/>;
+        }
+
+        return null;
+    }
+
     getPanels(classes) {
         return Object.keys(this.state.instances).map(id => {
+
             const instance = this.state.instances[id];
-            return <ExpansionPanel key={ instance.id } square expanded={ this.state.expanded === instance.id } onChange={ () => this.handleChange(instance.id ) }>
+
+            return (
+                <ExpansionPanel key={ instance.id } square expanded={ this.state.expanded === instance.id } onChange={ () => this.handleChange(instance.id ) }>
                     <ExpansionPanelSummary
-                        expandIcon={<ExpandMoreIcon />}
+                        expandIcon={ <ExpandMoreIcon /> }
                     >
-                        <Grid container spacing={ 1 } alignItems="center">
-                            
-                            <Grid item md={2}>
-                                <Grid container spacing={ 1 } alignItems="center">
+                        <Grid container spacing={ 1 } alignItems="center" direction="row" wrap="nowrap">
+                            <Grid
+                                item
+                                container
+                                xs={ 12 }
+                                sm={ 6 }
+                                md={ 4 }
+                                lg={ 3 } 
+                                spacing={ 1 }
+                                alignItems="center"
+                                direction="row"
+                                wrap="nowrap"
+                            >
+                                <Grid item>
+                                    <Avatar className={ classes.smallAvatar + ' ' +
+                                        (instance.mode === 'daemon' || instance.mode === 'schedule' ?
+                                        classes[this.getInstanceState(id)] : classes.transparent) }
+                                    >
+                                        { this.getModeIcon(instance.mode) }
+                                    </Avatar>
+                                </Grid>
+                                { this.props.expertMode &&
                                     <Grid item>
-                                        <div
-                                            className={ classes.state + ' ' + classes[instance.state] }
+                                        <Tooltip title={ this.t('loglevel') + ' ' + instance.loglevel }>
+                                            <Avatar className={ classes.smallAvatar + ' ' + classes[instance.loglevel] }>
+                                                { this.getLogLevelIcon(instance.loglevel) }
+                                            </Avatar>
+                                        </Tooltip>
+                                    </Grid>
+                                }
+                                <Grid item>
+                                    <Badge color="secondary" variant="dot" invisible={ !instance.compactMode }>
+                                        <Avatar
+                                            variant="square"
+                                            alt={ instance.id }
+                                            src={ instance.image }
+                                            className={ classes.smallAvatar }
                                         />
-                                    </Grid>
-                                    <Grid item>
-                                        <Avatar alt={ instance.id } src={ instance.image } className={ classes.smallAvatar }/>
-                                    </Grid>
-                                    <Grid item>
-                                        { instance.id }
-                                    </Grid>
+                                    </Badge>
+                                </Grid>
+                                <Grid item>
+                                    { instance.id }
                                 </Grid>
                             </Grid>
-                            <Hidden mdDown>
-                                <Grid item>
+                            <Hidden smDown>
+                                <Grid item sm={ 4 } lg={ 3 }>
                                     <Typography className={classes.secondaryHeading}>{ instance.name }</Typography>
                                 </Grid>
                             </Hidden>
+                            { instance.mode === 'daemon' && this.isRunning(id) && 
+                                <Hidden xsDown>
+                                    <Grid item lg={ 2 } >
+                                        <Typography>{ this.getMemory(id) + ' MB' }</Typography>
+                                    </Grid>
+                                </Hidden>
+                            }
                         </Grid>
                         <IconButton
                             size="small"
                             onClick={ event => {
-                                this.extendObject('system.adapter.' + instance.id, {common: {enabled: !instance.isRun}});
+                                this.extendObject('system.adapter.' + instance.id, {common: {enabled: !this.isRunning(id)}});
                                 event.stopPropagation();
                             } }
                             onFocus={ event => event.stopPropagation() }
-                            className={ classes.button + ' ' + (instance.canStart ? instance.isRun ? classes.enabled : classes.disabled : classes.hide) }
+                            className={ classes.button + ' ' + (instance.canStart ?
+                                this.isRunning(id) ? classes.enabled : classes.disabled : classes.hide)
+                            }
                         >
-                            { instance.isRun ? <PauseIcon /> : <PlayArrowIcon /> }
+                            { this.isRunning(id) ? <PauseIcon /> : <PlayArrowIcon /> }
                         </IconButton>
                         <IconButton
                             size="small"
@@ -445,14 +595,14 @@ class Instances extends React.Component {
                             } }
                             onFocus={ event => event.stopPropagation() }
                             className={ classes.button + ' ' + (instance.canStart ? '' : classes.hide) }
-                            disabled={ !instance.isRun }
+                            disabled={ !this.isRunning(id) }
                         >
                             <RefreshIcon />
                         </IconButton>
                         <IconButton
                             size="small"
                             className={ classes.button + ' ' + (instance.link ? '' : classes.hide) }
-                            disabled={ !instance.isRun }
+                            disabled={ !this.isRunning(id) }
                             onClick={ event => {
                                 window.open(instance.link, "_blank")
                                 event.stopPropagation();
@@ -472,18 +622,17 @@ class Instances extends React.Component {
                         >
                             <DeleteIcon />
                         </IconButton>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-                        sit amet blandit leo lobortis eget. Lorem ipsum dolor sit amet, consectetur adipiscing
-                        elit. Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget.
+                        { this.getMemory(id) + ' MB' }
                     </ExpansionPanelDetails>
-                </ExpansionPanel>;
+                </ExpansionPanel>
+            );
         });
     }
 
     handleChange(panel) {
-        this.setState({
-            expanded: (this.state.expanded !== panel) ? panel : null
-        });
+        this.setState((prevState) => ({
+            expanded: prevState.expanded !== panel ? panel : null
+        }));
     }
 
     render() {
@@ -505,7 +654,7 @@ class Instances extends React.Component {
                         <Config
                             className={ classes.iframe }
                             adapter={ instance.id.split('.')[0] }
-                            instance={ instance.id.split('.')[1] }
+                            instance={ parseInt(instance.id.split('.')[1]) }
                             materialize={ instance.materialize }
                             t={ this.props.t }
                             configStored={ this.props.configStored }
@@ -525,7 +674,7 @@ class Instances extends React.Component {
             );
         //}
 
-        return (
+        /*return (
             <TableContainer component={ Paper }>
                 <Table className={ classes.table } size="small">
                     <TableHead>
@@ -538,7 +687,7 @@ class Instances extends React.Component {
                     </TableBody>
                 </Table>
             </TableContainer>
-        );
+        );*/
     }
 }
 
