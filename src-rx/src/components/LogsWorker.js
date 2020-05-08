@@ -123,7 +123,7 @@ class LogsWorker {
                 }
 
                 // detect from
-                const from = line.match(/: (\D+\.\d+ \(|host\..+? )/);
+                const from = line.match(/: (host\..+? |\D+\.\d+ \()/);
 
                 obj = {
                     key,
