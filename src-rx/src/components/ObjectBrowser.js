@@ -269,7 +269,9 @@ const styles = theme => ({
     cellButtonsButtonAlone: {
         marginLeft: SMALL_BUTTON_SIZE + 4,
     },
-
+    cellButtonsButtonWithCustoms: {
+        color: theme.palette.secondary.main,
+    },
     filteredOut: {
         opacity: 0.3
     },
@@ -645,10 +647,11 @@ function buildTree(objects, options) {
                     data: {
                         name:   parts[parts.length - 1],
                         title:  getName(obj, options.lang),
-                        obj:    obj,
+                        obj,
                         parent: croot,
                         icon:   getSelectIdIcon(objects, id, '.') || getSystemIcon(objects, id, 0),
                         id,
+                        hasCustoms: obj.common && obj.common.custom && Object.keys(obj.common.custom).length,
                         level:  parts.length - 1,
                         generated: false,
                     }
@@ -1514,8 +1517,8 @@ class ObjectBrowser extends React.Component {
                 <IconDelete className={ classes.cellButtonsButtonIcon }  />
             </IconButton>,
             this.info.hasSomeCustoms && item.data.obj.type === 'state' ? <IconButton
+                className={ clsx(classes.cellButtonsButton, item.data.hasCustoms && classes.cellButtonsButtonWithCustoms)}
                 key="custom"
-                className={ classes.cellButtonsButton }
                 size="small"
                 aria-label="config"
                 title={ this.texts.customConfig }
@@ -1594,12 +1597,11 @@ class ObjectBrowser extends React.Component {
         let iconItem = null;
         if (item.data.icon) {
             if (typeof item.data.icon === 'string') {
-                iconItem = <img className={ clsx(classes.cellIdIconOwn, 'iconOwn') } src={ item.data.icon } />;
+                iconItem = <img className={ clsx(classes.cellIdIconOwn, 'iconOwn') } src={ item.data.icon } alt="" />;
             } else {
                 iconItem = item.data.icon;
             }
         }
-
 
         const obj = item.data.obj;
 

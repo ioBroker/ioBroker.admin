@@ -9,12 +9,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-import Utils from "../Utils";
+import Router from '@iobroker/adapter-react/Components/Router';
 
 // Icons
-import {FaCheck as ApplyIcon} from 'react-icons/fa';
 import CloseIcon from '@material-ui/icons/Close';
-import ObjectCustomsEditor from "./ObjectCustomsEditor";
+import ObjectCustomEditor from './ObjectCustomEditor';
 
 const styles = theme => ({
     dialog: {
@@ -49,15 +48,19 @@ class ObjectCustomDialog extends React.Component {
         this.state = {
             allSaved: true,
         };
+
+        if (this.props.objectIDs.length > 1) {
+            Router.doNavigate('tab-objects', 'customs')
+        } else {
+            Router.doNavigate('tab-objects', 'customs', this.props.objectIDs[0]);
+        }
+
     }
 
     getContent() {
-        return <ObjectCustomsEditor { ...this.props } onChange={ haveChanges => this.setState({ allSaved: !haveChanges }) }/>;
+        return <ObjectCustomEditor { ...this.props } onChange={ haveChanges => this.setState({ allSaved: !haveChanges }) }/>;
     }
 
-    onSave() {
-
-    }
 
     render() {
         return <Dialog

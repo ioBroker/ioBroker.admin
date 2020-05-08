@@ -28,6 +28,7 @@ const styles = theme => ({
         height: '100%',
         maxHeight: '100%',
         maxWidth: '100%',
+        overflow: 'hidden',
     },
     headingIcon: {
         marginRight: 5,
@@ -49,6 +50,26 @@ const styles = theme => ({
             marginTop: 0,
             marginBottom: 10,
         },
+        '&.m select': {
+            display: 'inline-block',
+            fontSize: 16,
+            fontFamily: 'sans-serif',
+            fontWeight: 700,
+            color: theme.palette.text.primary,
+            lineHeight: 1.3,
+            padding: '.6em 1.4em .5em .8em',
+            margin: 0,
+            borderTop: 0,
+            borderLeft: 0,
+            borderRight: 0,
+            borderBottom: '1px solid #aaa',
+            boxShadow: '0 1px 0 1px rgba(0,0,0,.04)',
+            appearance: 'none',
+            backgroundColor: theme.palette.background.paper,
+            backgroundRepeat: 'no-repeat, repeat',
+            backgroundPosition: 'right .7em top 50%, 0 0',
+            backgroundSize: '.65em auto, 100%',
+        }
     },
     titleEnabled: {
         float: 'right',
@@ -57,8 +78,13 @@ const styles = theme => ({
         fontWeight: 'bold',
         paddingLeft: 20,
     },
-    tabDiv: {
+    expansionPanelDetailsTabDiv: {
         width: '100%'
+    },
+    scrollDiv: {
+        width: '100%',
+        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+        overflow: 'auto',
     }
 });
 
@@ -107,10 +133,12 @@ function jQ(el) {
             }
         } else {
             for (let i = 0; i < this.el.length; i++) {
-                if (this.el[i].value === 'checkbox') {
-                    return this.el.checked;
-                } else {
-                    return this.el.value;
+                if (this.el[i]) {
+                    if (this.el[i].value === 'checkbox') {
+                        return this.el.checked;
+                    } else {
+                        return this.el.value;
+                    }
                 }
             }
         }
@@ -173,6 +201,8 @@ function jQ(el) {
     return this;
 }
 
+const URL_PREFIX = 'http://localhost:8081'; // or './'
+
 // simulate jQuery
 window.$ = function (el) {
     return new jQ(el);
@@ -181,9 +211,17 @@ window.$ = function (el) {
 window.$.extend = function (systemDictionary, data) {
     return Object.assign(systemDictionary, data);
 };
+
 window.$.get = function (options) {
+    let url;
+    if (options.url[0] !== '/') {
+        url = URL_PREFIX + '/' + options.url;
+    } else {
+        url = URL_PREFIX + options.url;
+    }
+
     const promise = GLOBAL_PROMISES[options.url] =
-        fetch('http://localhost:8081/' + options.url)
+        fetch(url)
             .then(data => data.text())
             .then(data => {
                 try {
@@ -232,6 +270,8 @@ function translateWord(text, lang, dictionary) {
 function installTemplate(el, lang, id, commonConfig, wordDifferent, onChangedBound) {
     const template = el.getElementsByClassName('m')[0];
     const words = template.getElementsByClassName('translate');
+    const adapter = id.split('.')[0];
+
     for (let w = 0; w < words.length; w++) {
         words[w].innerHTML = translateWord(words[w].innerHTML, lang, window.systemDictionary || {});
     }
@@ -243,28 +283,43 @@ function installTemplate(el, lang, id, commonConfig, wordDifferent, onChangedBou
         const field = inputs[i].dataset.field;
 
         let def = inputs[i].dataset.default;
-        if (def !== undefined) {
-            if (def === 'true')  def = true;
-            if (def === 'false') def = false;
+        if (def !== undefined && (!window.defaults[adapter] || window.defaults[adapter][field] === undefined)) {
+            if (def === 'true')  {
+                def = true;
+            }
+            if (def === 'false') {
+                def = false;
+            }
             if (def !== undefined && def.toString().replace(/\+/, '') === parseFloat(def).toString()) {
                 def = parseFloat(def);
             }
+            window.defaults[adapter] = window.defaults[adapter] || {};
+            window.defaults[adapter][field] = def;
         }
 
         controls[field] = {
-            default: def,
-            el: inputs[i],
-            type: inputs[i].type
+            default: window.defaults[adapter] ? window.defaults[adapter][field] : undefined,
+            el:      inputs[i],
+            type:    inputs[i].type
         };
 
         if (controls[field].type === 'checkbox') {
-            controls[field].el.parentNode.onclick = function (event) {
+            controls[field].el.parentNode.onclick = function () {
                 const input = this.getElementsByTagName('input')[0];
-                input.checked = !input.checked;
-                const evt = document.createEvent("HTMLEvents");
+
+                if (input.indeterminate) {
+                    input.indeterminate = false;
+                    input.checked = true;
+                } else {
+                    input.checked = !input.checked;
+                }
+
+                const evt = document.createEvent('HTMLEvents');
                 evt.initEvent('change', false, true);
                 input.dispatchEvent(evt);
             };
+
+            // control opacity of expansion tab
             if (field === 'enabled') {
                 controls[field].el.addEventListener('change', function () {
                     const val = this.checked;
@@ -305,6 +360,7 @@ function installTemplate(el, lang, id, commonConfig, wordDifferent, onChangedBou
             }
 
             if (controls[field].el.tagName.toUpperCase() === 'INPUT' || controls[field].el.type !== 'checkbox') {
+                // labels control
                 if (true || controls[field].el.value) {
                     const label = controls[field].el.parentNode.getElementsByTagName('label')[0];
                     label && label.classList.add('active');
@@ -349,14 +405,26 @@ function installTemplate(el, lang, id, commonConfig, wordDifferent, onChangedBou
     return controls;
 }
 
-class ObjectCustomDialog extends React.Component {
+class ObjectCustomEditor extends React.Component {
     constructor(props) {
         super(props);
+
+        let expanded = window.localStorage.getItem('App.customsExpanded') || '[]';
+        try {
+            expanded = JSON.parse(expanded);
+        } catch (e) {
+            expanded = [];
+        }
 
         this.state = {
             loaded: false,
             hasChanges: false,
         };
+
+        this.scrollDone = false;
+        this.expanded = expanded;
+        this.lastExpanded = window.localStorage.getItem('App.customsLastExpanded') || '';
+        this.scrollDivRef = React.createRef();
 
         this.onChangedBound = this.onChange.bind(this);
         this.changedItems = [];
@@ -373,6 +441,7 @@ class ObjectCustomDialog extends React.Component {
         this.loadAllPromises = this.loadAllCustoms()
             .then(() => {
                 this.commonConfig = this.getCommonConfig();
+                this.commonConfig.newValues = {};
                 this.setState({ loaded: true });
             });
     }
@@ -401,9 +470,8 @@ class ObjectCustomDialog extends React.Component {
 
     getCustomTemplate(adapter) {
         //return fetch('./adapter/' + adapter + '/custom_m.html')
-        const url = 'http://localhost:8081'; // '.'
-        return fetch(url + '/adapter/' + adapter + '/custom_m.html')
-            .catch(err => fetch(url + '/adapter/' + adapter + '/custom.html'))
+        return fetch(URL_PREFIX + '/adapter/' + adapter + '/custom_m.html')
+            .catch(err => fetch(URL_PREFIX + '/adapter/' + adapter + '/custom.html'))
             .then(data => data.text())
             .catch(err => {
                 console.error('Cannot load template for ' + adapter + ': ' + err);
@@ -421,10 +489,6 @@ class ObjectCustomDialog extends React.Component {
                     } catch (e) {
                         console.error('Cannot add translations for ' + adapter + ': ' + e);
                     }
-
-                    // translate all words
-
-
 
                     GLOBAL_TEMPLATES[adapter] = template;
                 }
@@ -497,161 +561,40 @@ class ObjectCustomDialog extends React.Component {
             });
         });
 
-        // add all tabs to div
-        /*for (let j = 0; j < instances.length; j++) {
-            // try to find settings
-            const parts    = instances[j].split('.');
-            const adapter  = parts[2];
-            const instance = parts[3];
-            const data = adapter + '.' + instance;
-            let img = this.objects['system.adapter.' + adapter].common.icon;
-            img = '/adapter/' + adapter + '/' + img;
-            const tab =
-                '<li data-adapter="' + data + '" data-adapterOnly="' + adapter + '" class="custom-config ' + (collapsed.indexOf(data) === -1 ? 'active' : '') + '">' +
-                '   <div class="collapsible-header">' +
-                '       <img src="' + img + '" alt="picture"/>' + _('Settings for %s', data) +
-                '       <span class="activated" data-adapter="' + data + '" style="opacity: ' + (commons[data] && (commons[data].enabled === true || commons[data].enabled === STR_DIFFERENT) ? '1' : '0') + '">' + _('active') + '</span>' +
-                '   </div>' +
-                '   <div class="customs-settings collapsible-body">' +
-                $('script[data-template-name="' + adapter + '"]').html() +
-                '   </div>' +
-                '</li>';
-
-            const $tab = $(tab);
-            this.defaults[adapter] = {};
-            // set values
-            $tab.find('input, select').each(function() {
-                const $this = $(this);
-                $this.attr('data-instance', adapter + '.' + instance);
-                const field = $this.attr('data-field');
-                let def   = $this.attr('data-default');
-                if (def === 'true')  def = true;
-                if (def === 'false') def = false;
-                if (def !== undefined && def.toString().replace(/\+/, '') === parseFloat(def).toString()) {
-                    def = parseFloat(def);
-                }
-
-                that.defaults[adapter][field] = def;
-                if (field === 'enabled') {
-                    $this.on('click', function (event) {
-                        event.stopPropagation();
-                    });
-                }
-            });
-
-            $customTabs.append($tab);
-            // post init => add custom logic
-            if (customPostInits.hasOwnProperty(adapter) && typeof customPostInits[adapter] === 'function') {
-                customPostInits[adapter](
-                    $tab,
-                    commons[adapter + '.' + instance],
-                    objects['system.adapter.' + adapter + '.' + instance],
-                    type,
-                    role,
-                    ids.length > 1 ? false : objects[ids[id]] // only if one element
-                );
-            }
-        }*/
-
-        // set values
-        /* $customTabs.find('input, select').each(function() {
-            const $this    = $(this);
-            const instance = $this.data('instance');
-            const adapter  = instance.split('.')[0];
-            const attr     = $this.data('field');
-
-            if (commons[instance][attr] !== undefined) {
-                if ($this.attr('type') === 'checkbox') {
-                    if (commons[instance][attr] === STR_DIFFERENT) {
-                        // $('<select data-field="' + attr + '" data-instance="' + instance + '">\n' +
-                        //  '   <option value="' + wordDifferent + '" selected>' + wordDifferent + '</option>\n' +
-                        //  '   <option value="false">' + _('false') + '</option>\n' +
-                        //  '   <option value="true">'  + _('true')  + '</option>\n' +
-                        //  '</select>').insertBefore($this);
-                        //  $this.hide().attr('data-field', '').data('field', '');
-                        $this[0].indeterminate = true;
-                    } else {
-                        $this.prop('checked', commons[instance][attr]);
-                    }
-                } else {
-                    if (commons[instance][attr] === STR_DIFFERENT) {
-                        if ($this.attr('type') === 'number') {
-                            $this.attr('type', 'text');
-                        }
-                        if ($this.prop('tagName').toUpperCase() === 'SELECT'){
-                            $this.prepend('<option value="' + wordDifferent + '">' + wordDifferent + '</option>');
-                            $this.val(wordDifferent);
-                        } else {
-                            $this.val('').attr('placeholder', wordDifferent);
-                        }
-                    } else {
-                        $this.val(commons[instance][attr]);
-                    }
-                }
-            } else {
-                let def;
-                if (window.defaults[adapter] && window.defaults[adapter][attr] !== undefined) {
-                    def = that.defaults[adapter][attr];
-                }
-                if (def !== undefined) {
-                    if ($this.attr('type') === 'checkbox') {
-                        $this.prop('checked', def);
-                    } else {
-                        $this.val(def);
-                    }
-                }
-            }
-
-            // if ($this.attr('type') === 'checkbox') {
-            //     $this.on('change', function () {
-            //         if ($(this).data('field') === 'enabled') {
-            //             const instance = $this.data('instance');
-            //             const $headerActive = $customTabs.find('.activated[data-adapter="' + instance + '"]');
-            //             if ($(this).prop('checked')) {
-            //                 $headerActive.css('opacity', 1);
-            //             } else {
-            //                 $headerActive.css('opacity', 0);
-            //             }
-            //         }
-            //     });
-            // } else {
-            //     $this.on('change', function () {
-            //         that.$dialog.find('.dialog-system-buttons .btn-save').removeClass('disabled');
-            //     }).on('keyup', function () {
-            //         $(this).trigger('change');
-            //     });
-            // }
-        });*/
-
-        // this.showCustomsData(ids.length > 1 ? null : ids[0]);
-
-        /* that.$dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
-            const $input = $(this).prev();//.addClass('filled-in');
-            if (!$input.prop('disabled')) {
-                if ($input[0].indeterminate) {
-                    $input[0].indeterminate = false;
-                    $input.prop('checked', true).trigger('change');
-                } else {
-                    $input.prop('checked', !$input.prop('checked')).trigger('change');
-                }
-            }
-        });*/
-
         return {commons, type, role};
     }
 
     renderOneCustom(id) {
         const adapter = id.replace(/\.\d+$/, '');
-        const icon = 'http://localhost:8081/adapter/' + adapter + '/' + this.props.objects['system.adapter.' + id].common.icon;
+        const icon = URL_PREFIX + '/adapter/' + adapter + '/' + this.props.objects['system.adapter.' + id].common.icon;
         const enabled = this.commonConfig.commons[id] && (this.commonConfig.commons[id].enabled === true || this.commonConfig.commons[id].enabled === STR_DIFFERENT);
-        return <ExpansionPanel key={ id } className="expansionDiv" ref={ this.refTemplate[id] } style={ {opacity: enabled ? 1 : 0.6 }}>
+
+        // we use style here, because it will be controlled from non-react (vanilaJS) part
+        return <ExpansionPanel
+            key={ id }
+            id={ 'ExpansionPanel_' + id }
+            className="expansionDiv"
+            defaultExpanded={ this.expanded.includes(id) }
+            ref={ this.refTemplate[id] }
+            style={ {opacity: enabled ? 1 : 0.6 }}
+            onChange={(e, _expanded) => {
+                const pos = this.expanded.indexOf(id);
+                if (_expanded) {
+                    pos === -1 && this.expanded.push(id);
+                } else {
+                    pos !== -1 && this.expanded.splice(pos, 1);
+                }
+                window.localStorage.setItem('App.customsExpanded', JSON.stringify(this.expanded));
+                _expanded && window.localStorage.setItem('App.customsLastExpanded', id);
+            }}
+        >
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} data-id={ id }>
                 <img src={ icon } className={ this.props.classes.headingIcon } alt="" />
                 <Typography className={ this.props.classes.heading }>{ this.props.t('Settings %s', id)}</Typography>
                 <div className={ clsx(this.props.classes.titleEnabled, 'titleEnabled') } style={{ display: enabled ? 'display-block' : 'none'} }>{ this.props.t('Enabled') }</div>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails className={ clsx(this.props.classes.simulateM, 'm') } >
-                <div className={ this.props.classes.tabDiv } dangerouslySetInnerHTML={{__html: GLOBAL_TEMPLATES[adapter]}} />
+                <div className={ this.props.classes.expansionPanelDetailsTabDiv } dangerouslySetInnerHTML={{__html: GLOBAL_TEMPLATES[adapter]}} />
             </ExpansionPanelDetails>
         </ExpansionPanel>;
     }
@@ -672,52 +615,63 @@ class ObjectCustomDialog extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        const wordDifferent = this.props.t(STR_DIFFERENT);
+        // scroll to last expanded div
+        if (!this.scrollDone && this.scrollDivRef.current) {
+            const wordDifferent = this.props.t(STR_DIFFERENT);
 
-        Object.keys(this.refTemplate).forEach(id => {
-            if (this.refTemplate[id].current && !this.controls[id]) {
-                const adapter = id.replace(/\.\d+$/, '');
-                this.controls[id] = installTemplate(
-                    this.refTemplate[id].current,
-                    this.props.lang,
-                    id,
-                    this.commonConfig.commons,
-                    wordDifferent,
-                    this.onChangedBound
-                );
-
-                // post init => add custom logic
-                if (window.customPostInits.hasOwnProperty(adapter) && typeof window.customPostInits[adapter] === 'function') {
-                    window.customPostInits[adapter](
-                        window.$(this.refTemplate[id].current),
-                        this.commonConfig.commons[id],
-                        this.props.objects['system.adapter.' + id],
-                        this.commonConfig.type,
-                        this.commonConfig.role,
-                        this.props.objectIDs.length > 1 ? false : this.props.objects[this.props.objectIDs[0]] // only if one element
+            Object.keys(this.refTemplate).forEach(id => {
+                if (this.refTemplate[id].current && !this.controls[id]) {
+                    const adapter = id.replace(/\.\d+$/, '');
+                    this.controls[id] = installTemplate(
+                        this.refTemplate[id].current,
+                        this.props.lang,
+                        id,
+                        this.commonConfig.commons,
+                        wordDifferent,
+                        this.onChangedBound
                     );
+
+                    // post init => add custom logic
+                    if (window.customPostInits.hasOwnProperty(adapter) && typeof window.customPostInits[adapter] === 'function') {
+                        window.customPostInits[adapter](
+                            window.$(this.refTemplate[id].current),
+                            this.commonConfig.commons[id],
+                            this.props.objects['system.adapter.' + id],
+                            this.commonConfig.type,
+                            this.commonConfig.role,
+                            this.props.objectIDs.length > 1 ? false : this.props.objects[this.props.objectIDs[0]] // only if one element
+                        );
+                    }
                 }
+            });
+
+            this.scrollDone = true;
+
+            if (this.expanded.length) {
+                let item;
+                if (this.expanded.includes(this.lastExpanded)) {
+                    item = window.document.getElementById('ExpansionPanel_' + this.lastExpanded);
+                } else {
+                    item = window.document.getElementById('ExpansionPanel_' + this.expanded[0]);
+                }
+                item && item.scrollIntoView(true);
             }
-        });
+        }
     }
 
     renderErrorMessage() {
         return <Dialog
                 open={ !!this.state.error }
                 onClose={() => this.setState({ error: '' }) }
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
+                aria-labelledby="object-custom-dialog-title"
+                aria-describedby="object-custom-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">{ this.props.t('Error') }</DialogTitle>
+                <DialogTitle id="object-custom-dialog-title">{ this.props.t('Error') }</DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        { this.state.error }
-                    </DialogContentText>
+                    <DialogContentText id="object-custom-dialog-description">{ this.state.error }</DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.setState({ error: '' }) } color="primary" autoFocus>
-                        { this.props.t('Close') }
-                    </Button>
+                    <Button onClick={() => this.setState({ error: '' }) } color="primary" autoFocus>{ this.props.t('Close') }</Button>
                 </DialogActions>
             </Dialog>;
     }
@@ -726,12 +680,17 @@ class ObjectCustomDialog extends React.Component {
         const key = id + '_' + attr;
         const pos = this.changedItems.indexOf(key);
         if (isChanged) {
-            if (pos === -1) {
-                this.changedItems.push(key);
-            }
+            pos === -1 && this.changedItems.push(key);
+            this.commonConfig.newValues[id] = this.commonConfig.newValues[id] || {};
+            this.commonConfig.newValues[id][attr] = value;
         } else {
-            if (pos !== -1) {
-                this.changedItems.splice(pos, 1);
+            pos !== -1 && this.changedItems.splice(pos, 1);
+
+            if (this.commonConfig.newValues[id] && this.commonConfig.newValues[id][attr] !== undefined) {
+                delete this.commonConfig.newValues[id][attr]
+            }
+            if (!Object.keys(this.commonConfig.newValues[id]).length) {
+                delete this.commonConfig.newValues[id];
             }
         }
 
@@ -742,23 +701,99 @@ class ObjectCustomDialog extends React.Component {
         }
     }
 
+    saveOneState(ids, cb) {
+        if (!ids || !ids.length) {
+            cb && cb();
+        } else {
+            const id = ids.shift();
+            this.props.socket.getObject(id)
+                .then(obj => {
+                    const newObj = JSON.parse(JSON.stringify(obj));
+                    Object.keys(this.commonConfig.newValues)
+                        .forEach(instance => {
+                            const adapter = instance.split('.')[0];
+
+                            if (this.commonConfig.newValues[instance].enabled === false) {
+                                if (newObj.common.custom && newObj.common.custom[instance]) {
+                                    delete newObj.common.custom[instance];
+                                }
+                            } else if (this.commonConfig.newValues[instance].enabled === true) {
+                                newObj.common.custom = newObj.common.custom || {};
+
+                                if (!newObj.common.custom[instance]) {
+                                    // provide defaults
+                                    let _default;
+
+                                    if (window.defaults[adapter]) {
+                                        if (typeof window.defaults[adapter] === 'function') {
+                                            _default = window.defaults[adapter](newObj, this.props.objects['system.adapter.' + instance]);
+                                        } else {
+                                            _default = window.defaults[adapter];
+                                        }
+                                    }
+
+                                    if (_default) {
+                                        newObj.common.custom[instance] = JSON.parse(JSON.stringify(_default));
+                                    } else {
+                                        newObj.common.custom[instance] = {};
+                                    }
+                                }
+
+                                newObj.common.custom[instance].enabled = true;
+
+                                Object.keys(this.commonConfig.newValues[instance]).forEach(attr => {
+                                    let val = this.commonConfig.newValues[instance][attr];
+                                    let f = parseFloat(val);
+                                    // replace trailing 0 and prefix +
+                                    if (val.toString().replace(/^\+/, '').replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/,'$1') === f.toString()) {
+                                        val = f;
+                                    }
+
+                                    newObj.common.custom[instance][attr] = val;
+                                });
+                            }
+                        });
+
+                    if (JSON.stringify(obj) !== JSON.stringify(newObj)) {
+                        return this.props.socket.setObject(id, newObj)
+                            .then(() =>
+                                setTimeout(() =>
+                                    this.saveOneState(ids, cb)));
+                    } else {
+                        setTimeout(() =>
+                            this.saveOneState(ids, cb));
+                    }
+                });
+        }
+    }
+
+    onSave() {
+        this.saveOneState([...this.props.objectIDs], () => {
+            this.changedItems = [];
+            this.commonConfig.newValues = {};
+            this.setState({ hasChanges: false}, () =>
+                this.props.onChange(false));
+        });
+    }
+
     render() {
         if (!this.state.loaded) {
             return <LinearProgress />;
         }
         return <Paper className={ this.props.classes.paper }>
             <Toolbar>
-                <Button disabled={ !this.state.hasChanges } variant="contained" color="primary">{ this.props.t('Save') }</Button>
+                <Button disabled={ !this.state.hasChanges } variant="contained" color="primary" onClick={ () => this.onSave() }>{ this.props.t('Save') }</Button>
             </Toolbar>
-
-            { this.props.customsInstances.map(id =>
-                this.renderOneCustom(id)) }
+            <div className={ this.props.classes.scrollDiv } ref={ this.scrollDivRef }>
+                { this.props.customsInstances.map(id =>
+                    this.renderOneCustom(id)) }
+            </div>
             { this.renderErrorMessage() }
         </Paper>;
     }
 }
 
-ObjectCustomDialog.propTypes = {
+ObjectCustomEditor.propTypes = {
     t: PropTypes.func,
     onChange: PropTypes.func,
     lang: PropTypes.string,
@@ -767,7 +802,6 @@ ObjectCustomDialog.propTypes = {
     customsInstances: PropTypes.array,
     socket: PropTypes.object,
     objectIDs: PropTypes.array,
-    objectID: PropTypes.string,
 };
 
-export default withWidth()(withStyles(styles)(ObjectCustomDialog));
+export default withWidth()(withStyles(styles)(ObjectCustomEditor));
