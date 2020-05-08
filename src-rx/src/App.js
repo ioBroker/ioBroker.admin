@@ -274,6 +274,15 @@ class App extends Router {
 
     componentDidMount() {
         if (!this.state.login) {
+
+            window.addEventListener('hashchange', () => this.onHashChanged(), false);
+
+            if (!this.state.currentTab.tab) {
+                this.handleNavigation('tab-intro');
+            } else {
+                this.setTitle(this.state.currentTab.tab.replace('tab-', ''));
+            }
+
             this.socket = new Connection({
                 name: 'admin',
                 port: this.getPort(),
@@ -336,13 +345,22 @@ class App extends Router {
         }
     }
 
+    componentWillUnmount() {
+        window.removeEventListener('hashchange', () => this.onHashChanged(), false);
+    }
+
     /**
      * Updates the current currentTab in the states
      */
     onHashChanged() {
+
+        const currentTab = Router.getLocation();
+
         this.setState({
-            currentTab: Router.getLocation()
+            currentTab
         });
+
+        this.setTitle(currentTab.tab.replace('tab-', ''));
     }
 
     /**
@@ -649,10 +667,9 @@ class App extends Router {
                     );
                 }
             }
-        } else {
-            this.handleNavigation('tab-intro');
-            return null;
         }
+
+        return null;
     }
 
     handleAlertClose(event, reason) {
