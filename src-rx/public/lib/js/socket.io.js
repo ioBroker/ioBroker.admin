@@ -45,6 +45,7 @@ function SocketClient () {
     let wasConnected = false;
     let connected = false;
     let connectTimer = null;
+    let connectingTimer = null;
     let connectionCount = 0;
     let callbacks = [];
     this.pending = []; // pending requests till connection established
@@ -58,7 +59,8 @@ function SocketClient () {
     this.connect = (_url, _options) => {
         id = 0;
         connectTimer && clearInterval(connectTimer);
-        connectTimer = 0;
+        connectTimer = null;
+
         url = _url || window.location.href;
         options = _options;
         sessionID = Date.now();
@@ -75,9 +77,13 @@ function SocketClient () {
             socket = new WebSocket(u);
         } catch (error) {
             handlers.error && handlers.error.forEach(cb => cb(error));
-            this.close();
-            return;
+            return this.close();
         }
+
+        connectingTimer = setTimeout(() => {
+            connectingTimer = null;
+            this.close(); // re-init connection, because no ___ready___ received in 2000 ms
+        }, 3000);
 
         socket.onopen = event => {
             lastPong = Date.now();
@@ -143,6 +149,9 @@ function SocketClient () {
                 if (name === '___ready___') {
                     connected  = true;
                     handlers.connect && handlers.connect.forEach(cb => cb());
+
+                    connectingTimer && clearTimeout(connectingTimer);
+                    connectingTimer = null;
 
                     // resend all pending requests
                     if (this.pending.length) {
@@ -293,8 +302,12 @@ function SocketClient () {
     this.close = function () {
         pingInterval && clearTimeout(pingInterval);
         pingInterval = null;
+
         authTimeout && clearTimeout(authTimeout);
         authTimeout = null;
+
+        connectingTimer && clearTimeout(connectingTimer);
+        connectingTimer = null;
 
         if (socket) {
             try {
@@ -302,6 +315,7 @@ function SocketClient () {
             } catch (e) {
 
             }
+
             socket = null;
         }
 

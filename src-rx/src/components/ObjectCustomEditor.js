@@ -711,7 +711,7 @@ class ObjectCustomEditor extends React.Component {
                     if (!obj) {
                         return window.alert('Invalid object ' + id);
                     }
-                    
+
                     if (obj.common && obj.common.custom) {
                         Object.keys(obj.common.custom).forEach(ins => {
                             if (!obj.common.custom[ins] || !obj.common.custom[ins].enabled) {

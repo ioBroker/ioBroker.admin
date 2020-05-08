@@ -914,6 +914,12 @@ class Connection {
     getRawSocket() {
         return this._socket;
     }
+
+    getHistory(id, options) {
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getHistory', id, options, (err, values) =>
+                err ? reject(err) : resolve(values)));
+    }
 }
 
 Connection.Connection = {

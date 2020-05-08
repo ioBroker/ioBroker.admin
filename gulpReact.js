@@ -50,8 +50,11 @@ function build(gulp) {
         stdout: true  // default = true, false means don't write stdout
     };
 
+    fs.writeFileSync(src + 'public/lib/js/sparkline.js',     fs.readFileSync(src + 'node_modules/@fnando/sparkline/dist/sparkline.js'));
+    fs.writeFileSync(src + 'public/lib/js/sparkline.js.map', fs.readFileSync(src + 'node_modules/@fnando/sparkline/dist/sparkline.js.map'));
+
     const version = JSON.parse(fs.readFileSync(__dirname + '/package.json').toString('utf8')).version;
-    const data = JSON.parse(fs.readFileSync(src + 'package.json').toString('utf8'));
+    const data    = JSON.parse(fs.readFileSync(src + 'package.json').toString('utf8'));
     data.version = version;
     fs.writeFileSync(src + 'package.json', JSON.stringify(data, null, 2));
 

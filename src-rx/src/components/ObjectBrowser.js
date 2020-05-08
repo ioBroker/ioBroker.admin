@@ -1175,6 +1175,20 @@ class ObjectBrowser extends React.Component {
                     this.state.selected && this.onSelect(this.state.selected);
                 }
             });
+
+        // read default history
+        this.props.socket.getSystemConfig()
+            .then(config => {
+                this.defaultHistory = config && config.common && config.common.defaultHistory;
+                /*if (this.defaultHistory) {
+                    return this.props.socket.getState('system.adapter.' + this.defaultHistory + '.alive')
+                        .then(state => {
+                            if (!state || !state.val) {
+                                this.defaultHistory = '';
+                            }
+                        });
+                }*/
+            });
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -1227,9 +1241,40 @@ class ObjectBrowser extends React.Component {
         this.recordStates = [];
     }
 
+    findItem(id, _parts, _root, _partyId) {
+        _parts = _parts || id.split('.');
+        _root = _root || this.root;
+        if (!_root || !_parts.length) {
+            return null;
+        }
+
+        _partyId = (_partyId ? _partyId + '.' : '') + _parts.shift();
+
+        if (_root.children) {
+            const item = _root.children.find(i => i.data.id === _partyId);
+            if (item) {
+                if (item.data.id === id) {
+                    return item;
+                } else if (_parts.length) {
+                    return this.findItem(id, _parts, item, _partyId);
+                }
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
     onStateChange(id, state) {
-        this.states[id] = state;
         console.log('+ subscribe ' + id);
+        if (this.states[id]) {
+            const item = this.findItem(id);
+            if (item && item.data.state) {
+                item.data.state = null;
+            }
+        }
+        this.states[id] = state;
 
         if (!this.statesUpdateTimer) {
             this.statesUpdateTimer = setTimeout(() => {
@@ -1529,6 +1574,53 @@ class ObjectBrowser extends React.Component {
         ];
     }
 
+    readHistory(id) {
+        /*interface GetHistoryOptions {
+            instance?: string;
+            start?: number;
+            end?: number;
+            step?: number;
+            count?: number;
+            from?: boolean;
+            ack?: boolean;
+            q?: boolean;
+            addID?: boolean;
+            limit?: number;
+            ignoreNull?: boolean;
+            sessionId?: any;
+            aggregate?: 'minmax' | 'min' | 'max' | 'average' | 'total' | 'count' | 'none';
+        }*/
+        if (this.defaultHistory && this.objects[id] && this.objects[id].common && this.objects[id].common.custom && this.objects[id].common.custom[this.defaultHistory]) {
+
+            const now = new Date();
+            now.setHours(now.getHours() - 24);
+
+            this.props.socket.getHistory(id, {
+                instance: this.defaultHistory,
+                start: now.getTime(),
+                end: Date.now(),
+                count: 20,
+                from: false,
+                ack: false,
+                q: false,
+                addID: false,
+                aggregate: 'minmax'
+            })
+                .then(values => {
+                    const sparks = window.document.getElementsByClassName('sparkline');
+
+                    for (let s = 0; s < sparks.length; s++) {
+                        if (sparks[s].dataset.id === id) {
+                            const v = values.map(s => s.val).filter(v => v !== null && v !== undefined);
+
+                            window.sparkline.sparkline(sparks[s], v);
+                            break;
+                        }
+                    }
+                });
+        }
+    }
+
     renderColumnValue(id, item, classes) {
         if (!item.data.obj || !this.states) {
             return null;
@@ -1555,6 +1647,10 @@ class ObjectBrowser extends React.Component {
                 <div className={ classes.cellValueTooltipValue } key={ item.t + '_v' }>{ item.v }</div>,
                 !item.nbr ? <br key={ item.t + '_br' }/> : null]);
 
+
+            if (this.defaultHistory && this.objects[id] && this.objects[id].common && this.objects[id].common.custom && this.objects[id].common.custom[this.defaultHistory]) {
+                info.valFull.push(<svg className="sparkline" data-id={ id } style={ {fill: '#3d85de'} } width="200" height="30" strokeWidth="3"/>);
+            }
             /*
             info.valFull.push(<IconCopy className={ classes.cellValueTooltipCopy }  key="cc" />);
             info.valFull.push(<IconEdit className={ classes.cellValueTooltipEdit }  key="ce" />);
@@ -1569,10 +1665,9 @@ class ObjectBrowser extends React.Component {
             ];
         }
 
-        return <Tooltip title={ info.valFull } >
-            <div style={ info.style } className={ classes.cellValueText }>{ info.valText }
-                <IconCopy className={ clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ info.val } title={ this.texts.copyState }/>
-                <IconEdit className={ clsx(classes.cellEditButton, 'copyButton') } onClick={e => this.onEdit(id) }  title={ this.texts.editState }/>
+        return <Tooltip title={ info.valFull } onOpen={ () => this.readHistory(id) }>
+            <div style={ info.style } className={ classes.cellValueText }>
+                { info.valText }
             </div>
         </Tooltip>;
     }
@@ -1627,12 +1722,12 @@ class ObjectBrowser extends React.Component {
                 { iconItem }
                 <IconCopy className={ clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
             </div>
-            {this.visibleCols.includes('name')    ? <div className={ classes.cellName } style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
-            {this.visibleCols.includes('type')    ? <div className={ classes.cellType } style={{ width: widths.WIDTHS[0] }}>{ typeImg } { obj && obj.type }</div> : null }
-            {this.visibleCols.includes('role')    ? <div className={ classes.cellRole } style={{ width: widths.WIDTHS[1] }}>{ obj && obj.common && obj.common.role }</div> : null }
-            {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom } style={{ width: widths.WIDTHS[2] }}>{ item.data.rooms }</div> : null }
-            {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc } style={{ width: widths.WIDTHS[3] }}>{ item.data.funcs }</div> : null }
-            {this.visibleCols.includes('val')     ? <div className={ classes.cellValue } style={{ width: widths.WIDTHS[4] }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
+            {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
+            {this.visibleCols.includes('type')    ? <div className={ classes.cellType }    style={{ width: widths.WIDTHS[0] }}>{ typeImg } { obj && obj.type }</div> : null }
+            {this.visibleCols.includes('role')    ? <div className={ classes.cellRole }    style={{ width: widths.WIDTHS[1] }}>{ obj && obj.common && obj.common.role }</div> : null }
+            {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS[2] }}>{ item.data.rooms }</div> : null }
+            {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS[3] }}>{ item.data.funcs }</div> : null }
+            {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS[4] }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
             {this.visibleCols.includes('buttons') ? <div className={ classes.cellButtons } style={{ width: widths.WIDTHS[5] }}>{ this.renderColumnButtons(id, item, classes) }</div> : null }
         </div>;
     }
