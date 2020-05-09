@@ -56,7 +56,14 @@ function SocketClient () {
     let sessionID;
     let authTimeout = null;
 
+    this.log = {
+        debug: text => DEBUG && console.log(`[${new Date().toISOString()}] ${text}`),
+        warn: text => console.warn(`[${new Date().toISOString()}] ${text}`),
+        error: text => console.error(`[${new Date().toISOString()}] ${text}`),
+    };
+
     this.connect = (_url, _options) => {
+        this.log.debug('Try to connect');
         id = 0;
         connectTimer && clearInterval(connectTimer);
         connectTimer = null;
@@ -82,17 +89,13 @@ function SocketClient () {
 
         connectingTimer = setTimeout(() => {
             connectingTimer = null;
-            console.log('No READY flag received in 3 seconds. Re-init');
+            this.log.warn('No READY flag received in 3 seconds. Re-init');
             this.close(); // re-init connection, because no ___ready___ received in 2000 ms
         }, 3000);
 
         socket.onopen = event => {
             lastPong = Date.now();
             connectionCount = 0;
-            if (wasConnected) {
-                //this.emit('reconnect');
-            }
-            wasConnected = true;
 
             pingInterval = setInterval(() => {
                 if (Date.now() - lastPong > 5000) {
@@ -107,9 +110,9 @@ function SocketClient () {
 
         socket.onclose = event => {
             if (event.code === 3001) {
-                console.log('ws closed');
+                this.log.warn('ws closed');
             } else {
-                console.log('ws connection error: ' + ERRORS[event.code]);
+                this.log.error('ws connection error: ' + ERRORS[event.code]);
             }
             this.close();
         };
@@ -117,7 +120,7 @@ function SocketClient () {
         socket.onerror = error => {
             if (connected) {
                 if (socket.readyState === 1) {
-                    console.log('ws normal error: ' + error.type);
+                    this.log.error('ws normal error: ' + error.type);
                 }
                 handlers.error && handlers.error.forEach(cb => cb(ERRORS[error.code] || 'UNKNOWN'));
             }
@@ -149,7 +152,13 @@ function SocketClient () {
             if (type === MESSAGE_TYPES.MESSAGE) {
                 if (name === '___ready___') {
                     connected  = true;
-                    handlers.connect && handlers.connect.forEach(cb => cb());
+
+                    if (wasConnected) {
+                        handlers.reconnect && handlers.reconnect.forEach(cb => cb());
+                    } else {
+                        handlers.connect && handlers.connect.forEach(cb => cb());
+                        wasConnected = true;
+                    }
 
                     connectingTimer && clearTimeout(connectingTimer);
                     connectingTimer = null;
@@ -172,7 +181,7 @@ function SocketClient () {
             } else if (type === MESSAGE_TYPES.PONG) {
                 // lastPong saved
             } else {
-                console.log('Received unknown message type: ' + type)
+                this.log.warn('Received unknown message type: ' + type)
             }
         };
 
@@ -212,7 +221,7 @@ function SocketClient () {
             authTimeout = setTimeout(() => {
                 authTimeout = null;
                 if (connected) {
-                    DEBUG && console.log('Authenticate timeout');
+                    this.log.debug('Authenticate timeout');
                     handlers.error && handlers.error.forEach(cb => cb('Authenticate timeout'));
                 }
                 this.close();
@@ -238,7 +247,7 @@ function SocketClient () {
                 // cache all calls till connected
                 this.pending.push([name, arg1, arg2, arg3, arg4, arg5]);
             } else {
-                console.log('Not connected');
+                this.log.warn('Not connected');
             }
             return;
         }
@@ -331,6 +340,7 @@ function SocketClient () {
 
     this._reconnect = function () {
         if (!connectTimer) {
+            this.log.debug('Start reconnect ' + connectionCount);
             connectTimer = setTimeout(() => {
                 connectTimer = null;
                 if (connectionCount < 5) {
@@ -338,6 +348,8 @@ function SocketClient () {
                 }
                 this.connect(url, options);
             }, connectionCount * 1000);
+        } else {
+            this.log.debug('Reconnect is yet running ' + connectionCount);
         }
     }
 }

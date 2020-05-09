@@ -85,6 +85,17 @@ class Connection {
             });
         });
 
+        this._socket.on('reconnect', () => {
+            this.connected = true;
+            this.subscribe(true);
+
+            if (this.waitForRestart) {
+                window.location.reload();
+            } else {
+                this.onConnectionHandlers.forEach(cb => cb(true));
+            }
+        });
+
         this._socket.on('disconnect', () => {
             this.connected  = false;
             this.subscribed = false;
@@ -360,18 +371,29 @@ class Connection {
         if (isEnable && !this.subscribed) {
             this.subscribed = true;
             this.autoSubscribes.forEach(id => this._socket.emit('subscribeObjects', id));
+            // re subscribe objects
             Object.keys(this.objectsSubscribes).forEach(id => this._socket.emit('subscribeObjects', id));
+            // re-subscribe logs
             this.autoSubscribeLog && this._socket.emit('requireLog', true);
-
+            // re subscribe states
             Object.keys(this.statesSubscribes).forEach(id => this._socket.emit('subscribe', id));
         } else if (!isEnable && this.subscribed) {
             this.subscribed = false;
+            // un-subscribe objects
             this.autoSubscribes.forEach(id => this._socket.emit('unsubscribeObjects', id));
             Object.keys(this.objectsSubscribes).forEach(id => this._socket.emit('unsubscribeObjects', id));
+            // un-subscribe logs
             this.autoSubscribeLog && this._socket.emit('requireLog', false);
 
+            // un-subscribe states
             Object.keys(this.statesSubscribes).forEach(id => this._socket.emit('unsubscribe', id));
         }
+    }
+
+    requireLog(isEnabled) {
+        return new Promise((resolve, reject) =>
+            this._socket.emit('requireLog', isEnabled, err =>
+                err ? reject(err) : resolve()));
     }
 
     delObject(id) {

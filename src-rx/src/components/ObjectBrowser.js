@@ -23,6 +23,7 @@ import Alert from '@material-ui/lab/Alert';
 import Tooltip from '@material-ui/core/Tooltip';
 
 // components
+import Router from '@iobroker/adapter-react/Components/Router';
 import ObjectCustomDialog from './ObjectCustomDialog';
 
 // Icons
@@ -1136,26 +1137,14 @@ class ObjectBrowser extends React.Component {
             }
         }
         filter.expertMode =  this.props.expertMode || false;
-
-        this.state = {
-            loaded: false,
-            selected: (this.props.selected || '').replace(/["']/g, ''),
-            filter,
-            depth: 0,
-            expandAllVisible: false,
-            expanded,
-            toast: '',
-            lang: this.props.lang,
-            scrollBarWidth: 16,
-            hasSomeCustoms: false,
-        };
-
         this.tableRef  = React.createRef();
         this.filterRefs = {};
+
         Object.keys(DEFAULT_FILTER).forEach(name =>
             this.filterRefs[name] = React.createRef());
 
         this.lastAppliedFilter = null;
+        this.pausedSubscribes = false;
 
         this.selectedFound = false;
         this.copyContentImg = CopyContentIcon;
@@ -1170,6 +1159,30 @@ class ObjectBrowser extends React.Component {
         this.onObjectChangeBound = this.onObjectChange.bind(this);
 
         this.visibleCols = this.props.cols || ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'];
+
+        const location = Router.getLocation();
+        let customDialog = null;
+        if (location.id && location.dialog === 'custom') {
+            customDialog = [location.id];
+            this.pauseSubscribe(true);
+        }
+
+
+        this.state = {
+            loaded: false,
+            selected: (this.props.selected || '').replace(/["']/g, ''),
+            filter,
+            depth: 0,
+            expandAllVisible: false,
+            expanded,
+            toast: '',
+            lang: this.props.lang,
+            scrollBarWidth: 16,
+            hasSomeCustoms: false,
+            customDialog,
+        };
+
+
 
         this.texts = {
             value:        this.props.t('tooltip_value'),
@@ -1318,11 +1331,18 @@ class ObjectBrowser extends React.Component {
         }
         this.states[id] = state;
 
-        if (!this.statesUpdateTimer) {
-            this.statesUpdateTimer = setTimeout(() => {
+        if (!this.pausedSubscribes) {
+            if (!this.statesUpdateTimer) {
+                this.statesUpdateTimer = setTimeout(() => {
+                    this.statesUpdateTimer = null;
+                    this.forceUpdate();
+                }, 300);
+            }
+        } else {
+            if (this.statesUpdateTimer) {
+                clearTimeout(this.statesUpdateTimer);
                 this.statesUpdateTimer = null;
-                this.forceUpdate();
-            }, 300);
+            }
         }
     }
 
@@ -1347,7 +1367,10 @@ class ObjectBrowser extends React.Component {
                 this.info = info;
                 this.lastAppliedFilter = null; // apply filter anew
 
-                this.forceUpdate();
+                if (!this.pausedSubscribes) {
+                    this.forceUpdate();
+                }
+                // else it will be re-rendered when dialog will be closed
             }, 500);
         }
     }
@@ -1356,7 +1379,9 @@ class ObjectBrowser extends React.Component {
         if (this.subscribes.indexOf(id) === -1) {
             this.subscribes.push(id);
             console.log('+ subscribe ' + id);
-            this.props.socket.subscribeState(id, this.onStateChangeBound);
+            if (!this.pausedSubscribes) {
+                this.props.socket.subscribeState(id, this.onStateChangeBound);
+            }
         }
     }
 
@@ -1369,6 +1394,20 @@ class ObjectBrowser extends React.Component {
             }
             console.log('- unsubscribe ' + id);
             this.props.socket.unsubscribeState(id, this.onStateChangeBound);
+
+            if (this.pausedSubscribes) {
+                console.warn('Unsubscribe during pause?');
+            }
+        }
+    }
+
+    pauseSubscribe(isPause) {
+        if (!this.pausedSubscribes && isPause) {
+            this.pausedSubscribes = true;
+            this.subscribes.forEach(id => this.props.socket.unsubscribeState(id, this.onStateChangeBound));
+        } else if (this.pausedSubscribes && !isPause) {
+            this.pausedSubscribes = false;
+            this.subscribes.forEach(id => this.props.socket.subscribeState(id, this.onStateChangeBound));
         }
     }
 
@@ -1610,7 +1649,11 @@ class ObjectBrowser extends React.Component {
                 size="small"
                 aria-label="config"
                 title={ this.texts.customConfig }
-                onClick={ () => this.setState({ customDialog: [id]})}
+                onClick={ () => {
+                    this.pauseSubscribe(true);
+                    Router.doNavigate(null, 'custom', id);
+                    this.setState({ customDialog: [id]});
+                }}
             >
                 <IconConfig className={ classes.cellButtonsButtonIcon }  />
             </IconButton> : null,
@@ -1842,7 +1885,11 @@ class ObjectBrowser extends React.Component {
                 themeName={ this.props.themeName }
                 objects={ this.objects }
                 customsInstances={ this.info.customs }
-                onClose={ () => this.setState({ customDialog: null })}
+                onClose={ () => {
+                    this.pauseSubscribe(false);
+                    this.setState({ customDialog: null });
+                    Router.doNavigate('tab-objects');
+                }}
             />;
         } else {
             return null;
@@ -1922,6 +1969,7 @@ ObjectBrowser.propTypes = {
     themeName: PropTypes.string,
     t: PropTypes.func,
     lang: PropTypes.string,
+    onNavigate: PropTypes.func
 };
 
 export default withStyles(styles)(ObjectBrowser);

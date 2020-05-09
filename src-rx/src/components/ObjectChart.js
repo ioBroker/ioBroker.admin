@@ -22,7 +22,6 @@ import 'echarts/lib/component/title';
 import 'echarts/lib/component/dataZoom';
 import 'echarts/lib/component/timeline';
 
-
 import clsx from 'clsx';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
@@ -64,8 +63,8 @@ class ObjectChart extends React.Component {
 
         this.state = {
             loaded: false,
-            from,
-            to: new Date(),
+            start: from.getTime(),
+            end: new Date().getTime(),
             chartValues: null,
             rangeValues: null,
             historyInstance: '',
@@ -81,7 +80,7 @@ class ObjectChart extends React.Component {
 
         this.prepareData()
             .then(() => this.readHistoryRange())
-            .then(() => this.readHistory(this.state.from, this.state.to));
+            .then(() => this.readHistory(this.state.start, this.state.end));
 
         this.onChangeBound = this.onChange.bind(this);
     }
@@ -190,7 +189,8 @@ class ObjectChart extends React.Component {
                 this.setState( { rangeValues: values });
             });
     }
-    readHistory(from, to) {
+
+    readHistory(start, end) {
         /*interface GetHistoryOptions {
             instance?: string;
             start?: number;
@@ -208,8 +208,8 @@ class ObjectChart extends React.Component {
         }*/
         this.props.socket.getHistory(this.props.obj._id, {
             instance: this.defaultHistory,
-            start: from.getTime(),
-            end: to.getTime(),
+            start,
+            end,
             from: false,
             ack: false,
             q: false,
@@ -221,8 +221,9 @@ class ObjectChart extends React.Component {
                 let chart = [];
                 let r = 0;
                 let range = this.state.rangeValues;
+
                 for (let t = 0; t < values.length; t++) {
-                    while (range[r].ts < values[t].ts && r <= range.length) {
+                    while (range[r].ts < values[t].ts && r < range.length) {
                         chart.push(range[r]);
                         console.log('add ' + new Date(range[r].ts).toISOString() + ': ' + range[r].val);
                         r++;
@@ -230,10 +231,16 @@ class ObjectChart extends React.Component {
                     // if range and details are not equal
                     if (!chart.length || chart[chart.length - 1].ts < values[t].ts) {
                         chart.push(values[t]);
-                        console.log('add ' + new Date(values[t].ts).toISOString() + ': ' + values[t].val)
+                        console.log('add value ' + new Date(values[t].ts).toISOString() + ': ' + values[t].val)
                     } else if (chart[chart.length - 1].ts === values[t].ts && chart[chart.length - 1].val !== values[t].ts) {
                         console.error('Strange data!');
                     }
+                }
+
+                while (r < range.length) {
+                    chart.push(range[r]);
+                    console.log('add range ' + new Date(range[r].ts).toISOString() + ': ' + range[r].val);
+                    r++;
                 }
 
                 this.setState( { chartValues: chart });
@@ -251,7 +258,6 @@ class ObjectChart extends React.Component {
                     ]
                 });
         }
-
         const option = {
             title: {
                 text: Utils.getObjectName(this.props.objects, this.props.obj._id, { language: this.props.lang}),
@@ -259,11 +265,11 @@ class ObjectChart extends React.Component {
                     8,  // up
                     0, // right
                     0,  // down
-                    60, // left
+                    90, // left
                 ]
             },
             grid: {
-                left: 50,
+                left: 80,
                 top: 8,
                 right: 25,
                 bottom: 80
@@ -311,16 +317,30 @@ class ObjectChart extends React.Component {
             },
             dataZoom: [
                 {
-                    /*start: 10,
-                    end: 90,*/
+                    show: true,
+                    realtime: true,
                     startValue: this.state.start,
                     endValue: this.state.end,
                     type: 'slider',
                     y: this.state.chartHeight - 50,
+                    dataBackground: {
+                        lineStyle: {
+                            color: '#FFFFFF'
+                        },
+                        areaStyle: {
+                            color: '#FFFFFFE0'
+                        }
+                    },
+
                 },
-                /*{
-                    type: 'inside'
-                }*/
+                {
+                    show: true,
+                    type: 'inside',
+                    realtime: true,
+                    startValue: this.state.start,
+                    endValue: this.state.end,
+                    //y: this.state.chartHeight - 50,
+                },
             ],
             series: [{
                 type: 'line',
@@ -331,6 +351,10 @@ class ObjectChart extends React.Component {
         };
 
         return option;
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        return null;
     }
 
     renderChart() {

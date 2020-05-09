@@ -45,18 +45,22 @@ class ObjectCustomDialog extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            allSaved: true,
-            currentTab: 0,
-        };
+        let currentTab = 0;
+        this.chartAvailable = this.isChartAvailable();
 
-        if (this.props.objectIDs.length > 1) {
-            Router.doNavigate('tab-objects', 'customs')
-        } else {
-            Router.doNavigate('tab-objects', 'customs', this.props.objectIDs[0]);
+        if (this.chartAvailable) {
+            const location = Router.getLocation();
+            if (location.arg === 'chart') {
+                currentTab = 2;
+            } else if (location.arg === 'table') {
+                currentTab = 1;
+            }
         }
 
-        this.chartAvailable = this.isChartAvailable();
+        this.state = {
+            allSaved: true,
+            currentTab,
+        };
     }
 
     isChartAvailable() {
@@ -119,7 +123,10 @@ class ObjectCustomDialog extends React.Component {
             }</DialogTitle>
             <DialogContent className={ this.props.classes.content }>
                 <AppBar position="static">
-                    <Tabs value={ this.state.currentTab } onChange={(event, newTab) => this.setState({ currentTab: newTab })} aria-label="simple tabs example">
+                    <Tabs value={ this.state.currentTab } onChange={(event, newTab) => {
+                        Router.doNavigate(null, null, null, newTab === 1 ? 'table' : (newTab === 2 ? 'chart' : 'config'));
+                        this.setState({ currentTab: newTab });
+                    }} aria-label="simple tabs example">
                         <Tab label={ this.props.t('Custom settings') } id={ 'custom-settings-tab' } aria-controls={ 'simple-tabpanel-0' } />
                         {this.chartAvailable ? <Tab label={ this.props.t('History data') }   id={ 'history-data-tab' } aria-controls={ 'simple-tabpanel-1' } /> : null}
                         {this.chartAvailable ? <Tab label={ this.props.t('Chart') } id={ 'chart-tab' } aria-controls={ 'simple-tabpanel-2' } /> : null}
