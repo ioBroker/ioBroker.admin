@@ -4,6 +4,38 @@ import withWidth from "@material-ui/core/withWidth";
 import {withStyles} from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import Toolbar from '@material-ui/core/Toolbar';
+
+import ReactEchartsCore from 'echarts-for-react/lib/core';
+import echarts from 'echarts/lib/echarts';
+import 'echarts/lib/chart/line';
+import 'echarts/lib/component/tooltip';
+import 'echarts/lib/component/grid';
+
+import 'echarts/lib/component/toolbox';
+import 'echarts/lib/component/title';
+
+import 'echarts/lib/component/dataZoom';
+import 'echarts/lib/component/timeline';
+
+
+import clsx from 'clsx';
+import Utils from '@iobroker/adapter-react/Components/Utils';
+
+function padding(ms) {
+    if (ms < 10) {
+        return '00' + ms;
+    } else if (ms < 100) {
+        return '0' + ms;
+    } else {
+        return ms;
+    }
+}
+
 const styles = theme => ({
     paper: {
         height: '100%',
@@ -11,6 +43,17 @@ const styles = theme => ({
         maxWidth: '100%',
         overflow: 'hidden',
     },
+    chart: {
+        width: '100%',
+        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+        overflow: 'hidden',
+    },
+    selectHistoryControl: {
+        width: 200,
+    },
+    notAliveInstance: {
+        opacity: 0.5
+    }
 });
 
 class ObjectChart extends React.Component {
@@ -24,14 +67,41 @@ class ObjectChart extends React.Component {
             from,
             to: new Date(),
             chartValues: null,
+            rangeValues: null,
             historyInstance: '',
-            historyInstances: [],
+            historyInstances: null,
             defaultHistory: '',
+            chartHeight: 300,
+            chartWidth: 500,
         };
 
+        this.unit = this.props.obj.common && this.props.obj.common.unit ? ' ' + this.props.obj.common.unit : '';
+
+        this.divRef = React.createRef();
+
         this.prepareData()
-            .then(() =>
-                this.readHistory(this.props.obj._id, this.state.from, this.state.to));
+            .then(() => this.readHistoryRange())
+            .then(() => this.readHistory(this.state.from, this.state.to));
+
+        this.onChangeBound = this.onChange.bind(this);
+    }
+    componentDidMount() {
+        this.props.socket.subscribeState(this.props.obj._id, this.onChangeBound);
+    }
+
+    componentWillUnmount() {
+        this.props.socket.unsubscribeState(this.props.obj._id, this.onChangeBound);
+    }
+
+    onChange(id, state) {
+        if (id === this.props.obj._id &&
+            state &&
+            this.state.chartValues &&
+            (!this.state.chartValues.length || this.state.chartValues[this.state.chartValues.length - 1].ts < state.ts)) {
+            const chartValues = [...this.state.chartValues, {val: state.val, ts: state.ts}];
+            const rangeValues = [...this.state.rangeValues, {val: state.val, ts: state.ts}];
+            this.setState({ chartValues, rangeValues });
+        }
     }
 
     prepareData() {
@@ -96,7 +166,31 @@ class ObjectChart extends React.Component {
         }
     }
 
-    readHistory(id, from, to) {
+    readHistoryRange() {
+        const now = new Date();
+        now.setMonth(now.getMonth() + 1);
+        const oldest = new Date(2000, 0, 1);
+
+        this.props.socket.getHistory(this.props.obj._id, {
+            instance: this.defaultHistory,
+            start: oldest.getTime(),
+            end: now.getTime(),
+            step: 3600000, // hourly
+            from: false,
+            ack: false,
+            q: false,
+            addID: false,
+            aggregate: 'minmax'
+        })
+            .then(values => {
+                // remove interpolated first value
+                if (values[0].val === null) {
+                    values.shift();
+                }
+                this.setState( { rangeValues: values });
+            });
+    }
+    readHistory(from, to) {
         /*interface GetHistoryOptions {
             instance?: string;
             start?: number;
@@ -112,35 +206,186 @@ class ObjectChart extends React.Component {
             sessionId?: any;
             aggregate?: 'minmax' | 'min' | 'max' | 'average' | 'total' | 'count' | 'none';
         }*/
-        const now = new Date();
-        now.setHours(now.getHours() - 24);
-        now.setMinutes(0);
-        now.setSeconds(0);
-        now.setMilliseconds(0);
-        let nowMs = now.getTime();
-
-        this.props.socket.getHistory(id, {
+        this.props.socket.getHistory(this.props.obj._id, {
             instance: this.defaultHistory,
-            start: nowMs,
-            end: Date.now(),
-            step: 3600000,
+            start: from.getTime(),
+            end: to.getTime(),
             from: false,
             ack: false,
             q: false,
             addID: false,
-            aggregate: 'minmax'
+            aggregate: 'none'
         })
             .then(values => {
-                this.setState( { chartValues: values });
+                // merge range and chart
+                let chart = [];
+                let r = 0;
+                let range = this.state.rangeValues;
+                for (let t = 0; t < values.length; t++) {
+                    while (range[r].ts < values[t].ts && r <= range.length) {
+                        chart.push(range[r]);
+                        console.log('add ' + new Date(range[r].ts).toISOString() + ': ' + range[r].val);
+                        r++;
+                    }
+                    // if range and details are not equal
+                    if (!chart.length || chart[chart.length - 1].ts < values[t].ts) {
+                        chart.push(values[t]);
+                        console.log('add ' + new Date(values[t].ts).toISOString() + ': ' + values[t].val)
+                    } else if (chart[chart.length - 1].ts === values[t].ts && chart[chart.length - 1].val !== values[t].ts) {
+                        console.error('Strange data!');
+                    }
+                }
+
+                this.setState( { chartValues: chart });
             });
     }
 
-    render() {
-        if (!this.state.chartValues) {
+    getOption() {
+        const values = this.state.chartValues;
+        const data = [];
+        for (let i = 0; i < values.length; i++) {
+            data.push({
+                    value: [
+                        values[i].ts,
+                        values[i].val
+                    ]
+                });
+        }
+
+        const option = {
+            title: {
+                text: Utils.getObjectName(this.props.objects, this.props.obj._id, { language: this.props.lang}),
+                padding: [
+                    8,  // up
+                    0, // right
+                    0,  // down
+                    60, // left
+                ]
+            },
+            grid: {
+                left: 50,
+                top: 8,
+                right: 25,
+                bottom: 80
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: params => {
+                    params = params[0];
+                    const date = new Date(params.value[0]);
+                    return `${date.toLocaleString()}.${padding(date.getMilliseconds())}: ${params.value[1]}${this.unit}`;
+                },
+                axisPointer: {
+                    animation: true
+                }
+            },
+            xAxis: {
+                type: 'time',
+                splitLine: {
+                    show: false
+                }
+            },
+            yAxis: {
+                type: 'value',
+                boundaryGap: [0, '100%'],
+                splitLine: { show: false },
+                axisLabel: {
+                    formatter: '{value}' + this.unit
+                }
+            },
+            toolbox: {
+                left: 'right',
+                feature: {
+                    dataZoom: {
+                        yAxisIndex: 'none',
+                        title: this.props.t('Zoom'),
+                    },
+                    restore: {
+                        title: this.props.t('Restore')
+                    },
+                    saveAsImage: {
+                        title: this.props.t('Save as image'),
+                        show: true,
+                    }
+                }
+            },
+            dataZoom: [
+                {
+                    /*start: 10,
+                    end: 90,*/
+                    startValue: this.state.start,
+                    endValue: this.state.end,
+                    type: 'slider',
+                    y: this.state.chartHeight - 50,
+                },
+                /*{
+                    type: 'inside'
+                }*/
+            ],
+            series: [{
+                type: 'line',
+                showSymbol: false,
+                hoverAnimation: true,
+                data
+            }]
+        };
+
+        return option;
+    }
+
+    renderChart() {
+        if (this.state.chartValues) {
+            return <ReactEchartsCore
+                echarts={ echarts }
+                option={ this.getOption() }
+                notMerge={ true }
+                lazyUpdate={ true }
+                theme={ this.props.themeName === 'dark' ? 'dark' : '' }
+                style={{ height: this.state.chartHeight + 'px', width: '100%' }}
+
+                onEvents={ {
+                    datazoom: e => {
+                        // {"type":"datazoom","from":"viewComponent_104_0.28944","dataZoomId":"\u0000series\u00000\u00000","start":30.580204778156993,"end":65.73378839590444}
+                        console.log(JSON.stringify(e))
+                    }
+                } }
+                opts={{ renderer: 'svg' }}
+            />;
+        } else {
             return <LinearProgress/>;
         }
-        return <Paper className={ this.props.classes.paper }>
+    }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.divRef.current) {
+            const width = this.divRef.current.offsetWidth;
+            const height = this.divRef.current.offsetHeight;
+            if (this.state.chartWidth !== width) {// || this.state.chartHeight !== height) {
+                setTimeout(() => this.setState({ chartHeight: height, chartWidth: width }), 100);
+            }
+        }
+    }
+
+    render() {
+        if (!this.state.historyInstances) {
+            return <LinearProgress/>;
+        }
+
+        return <Paper className={ this.props.classes.paper }>
+            <Toolbar>
+                <FormControl className={ this.props.classes.selectHistoryControl }>
+                    <InputLabel>{ this.props.t('History instance') }</InputLabel>
+                    <Select
+                        value={ this.state.historyInstance}
+                        onChange={ e => this.setState({ historyInstance: e.target.value })}
+                    >
+                        { this.state.historyInstances.map(it => <MenuItem key={ it.id } value={ it.id } className={ clsx(!it.alive && this.props.classes.notAliveInstance )}>{ it.id }</MenuItem>) }
+                    </Select>
+                </FormControl>
+            </Toolbar>
+            <div ref={ this.divRef } className={ this.props.classes.chart }>
+                { this.renderChart() }
+            </div>
         </Paper>;
     }
 }
@@ -152,7 +397,7 @@ ObjectChart.propTypes = {
     socket: PropTypes.object,
     obj: PropTypes.object,
     customsInstances: PropTypes.array,
-    theme: PropTypes.string,
+    themeName: PropTypes.string,
     objects: PropTypes.object,
 };
 

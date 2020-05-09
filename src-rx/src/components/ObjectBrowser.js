@@ -1839,6 +1839,7 @@ class ObjectBrowser extends React.Component {
                 t={ this.props.t }
                 lang={ this.props.lang }
                 socket={ this.props.socket }
+                themeName={ this.props.themeName }
                 objects={ this.objects }
                 customsInstances={ this.info.customs }
                 onClose={ () => this.setState({ customDialog: null })}
@@ -1918,7 +1919,7 @@ ObjectBrowser.propTypes = {
     showExpertButton: PropTypes.bool,
     expertMode: PropTypes.bool,
     prefix: PropTypes.string,
-    theme: PropTypes.string,
+    themeName: PropTypes.string,
     t: PropTypes.func,
     lang: PropTypes.string,
 };

@@ -84,7 +84,7 @@ class ObjectCustomDialog extends React.Component {
             socket={ this.props.socket }
             obj={ this.props.objects[this.props.objectIDs[0]] }
             customsInstances={ this.props.customsInstances }
-            theme={ this.props.theme }
+            themeName={ this.props.themeName }
             objects={ this.props.objects }
         />;
     }
@@ -141,6 +141,7 @@ ObjectCustomDialog.propTypes = {
     expertMode: PropTypes.bool,
     objects: PropTypes.object,
     socket: PropTypes.object,
+    themeName: PropTypes.string,
     customsInstances: PropTypes.array,
     objectIDs: PropTypes.array,
     onClose: PropTypes.func,
