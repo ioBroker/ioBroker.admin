@@ -82,6 +82,7 @@ function SocketClient () {
 
         connectingTimer = setTimeout(() => {
             connectingTimer = null;
+            console.log('No READY flag received in 3 seconds. Reinit');
             this.close(); // re-init connection, because no ___ready___ received in 2000 ms
         }, 3000);
 

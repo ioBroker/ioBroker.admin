@@ -334,12 +334,12 @@ class Connection {
 
     getState(id) {
         return new Promise((resolve, reject) =>
-            this.getState(id, (err, state) => err ? reject(err) : resolve(state)));
+            this._socket.emit('getForeignState', id, (err, state) => err ? reject(err) : resolve(state)));
     }
 
     setState(id, val) {
         return new Promise((resolve, reject) =>
-            this.setState(id, val, err => err ? reject(err) : resolve()));
+            this._socket.emit('setForeignState', id, val, err => err ? reject(err) : resolve()));
     }
 
     getObjects(update, disableProgressUpdate) {
