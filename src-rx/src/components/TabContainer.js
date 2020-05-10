@@ -2,13 +2,18 @@ import React from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
+import PropTypes from 'prop-types';
+import clsx from 'clsx';
+
 import { Grid } from '@material-ui/core';
 import { Paper } from '@material-ui/core';
 
 const styles = {
     root: {
         width: '100%',
-        height: '100%',
+        height: '100%'
+    },
+    overflowHidden: {
         overflow: 'hidden'
     },
     container: {
@@ -21,9 +26,12 @@ class TabContainer extends React.Component {
     render() {
 
         const { classes } = this.props;
-
+        
         return (
-            <Paper className={ classes.root }>
+            <Paper
+                elevation={ !isNaN(this.props.elevation) ? this.props.elevation : 1 }
+                className={ clsx(classes.root, {[classes.overflowHidden]: this.props.overflow !== 'visible'}) }
+            >
                 <Grid
                     container
                     direction="column"
@@ -36,5 +44,10 @@ class TabContainer extends React.Component {
         );
     }
 }
+
+TabContainer.propTypes = {
+    elevation: PropTypes.number,
+    overflow: PropTypes.string
+};
 
 export default withStyles(styles)(TabContainer);
