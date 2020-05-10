@@ -5,7 +5,6 @@ import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -13,7 +12,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Menu from '@material-ui/core/Menu';
@@ -40,17 +38,13 @@ import red from '@material-ui/core/colors/red';
 import PropTypes from 'prop-types';
 
 import Utils from '../Utils';
-import LinearProgress from "@material-ui/core/LinearProgress";
+import LinearProgress from '@material-ui/core/LinearProgress';
+
+import TabContainer from '../components/TabContainer';
+import TabContent from '../components/TabContent';
+import TabHeader from '../components/TabHeader';
 
 const styles = theme => ({
-    root: {
-        width: '100%',
-        overflow: 'hidden',
-        height: '100%'
-    },
-    flexContainer: {
-        height: '100%'
-    },
     container: {
         height: '100%'
     },
@@ -496,74 +490,65 @@ class Logs extends React.Component {
             <Typography className={ classes.pauseCount }>{ this.state.logs.length - this.state.pause }</Typography>;
 
         return (
-            <Paper className={ classes.root }>
-                <Grid
-                    container
-                    direction="column"
-                    wrap="nowrap"
-                    className={ classes.flexContainer }
-                >
-                    <Grid
-                        item
-                        container
-                        alignItems="center"
+            <TabContainer>
+                <TabHeader>
+                    <IconButton
+                        onClick={ () => this.props.logsWorker &&
+                            this.props.logsWorker.getLogs(true).then(results => {
+                                const logs = results.logs;
+                                const logSize = results.logSize;
+                                this.setState({ logs: [...logs], logSize });
+                            }) }
                     >
-                        <IconButton
-                            onClick={ () => this.props.logsWorker &&
-                                this.props.logsWorker.getLogs(true).then(results => {
-                                    const logs = results.logs;
-                                    const logSize = results.logSize;
-                                    this.setState({ logs: [...logs], logSize });
-                                }) }
-                        >
-                            <RefreshIcon />
-                        </IconButton>
-                        <IconButton
-                            className={ classes.pauseButton }
-                            onClick={ () => this.handleLogPause() }
-                        >
-                            { pauseChild }
-                        </IconButton>
-                        <IconButton
-                            onClick={ () => this.clearLog() }
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                        <IconButton
-                            onClick={ () => this.openLogDelete() }
-                        >
-                            <DeleteForeverIcon />
-                        </IconButton>
-                        <div className={classes.grow} />
-                        { this.state.logFiles.length > 0 &&
-                            <div>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={ <SaveAltIcon />}
-                                    onClick={ event => this.openLogDownload(event) }
-                                >
-                                    { this.t('Download log') }
-                                </Button>
-                                <Menu
-                                    id="simple-menu"
-                                    anchorEl={ this.state.logDownloadDialog }
-                                    keepMounted
-                                    open={ Boolean(this.state.logDownloadDialog) }
-                                    onClose={ () => this.closeLogDownload() }
-                                >
-                                    { this.getLogFiles() }
-                                </Menu>
-                            </div>
-                        }
-                        <div className={classes.grow} />
-                        <Typography
-                            variant="body2"
-                            className={ classes.logSize }
-                        >
-                            { `${this.t('Log size:')} ${this.state.logSize || '-'}` }
-                        </Typography>
-                    </Grid>
+                        <RefreshIcon />
+                    </IconButton>
+                    <IconButton
+                        className={ classes.pauseButton }
+                        onClick={ () => this.handleLogPause() }
+                    >
+                        { pauseChild }
+                    </IconButton>
+                    <IconButton
+                        onClick={ () => this.clearLog() }
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                    <IconButton
+                        onClick={ () => this.openLogDelete() }
+                    >
+                        <DeleteForeverIcon />
+                    </IconButton>
+                    <div className={classes.grow} />
+                    { this.state.logFiles.length > 0 &&
+                        <div>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={ <SaveAltIcon />}
+                                onClick={ event => this.openLogDownload(event) }
+                            >
+                                { this.t('Download log') }
+                            </Button>
+                            <Menu
+                                id="simple-menu"
+                                anchorEl={ this.state.logDownloadDialog }
+                                keepMounted
+                                open={ Boolean(this.state.logDownloadDialog) }
+                                onClose={ () => this.closeLogDownload() }
+                            >
+                                { this.getLogFiles() }
+                            </Menu>
+                        </div>
+                    }
+                    <div className={classes.grow} />
+                    <Typography
+                        variant="body2"
+                        className={ classes.logSize }
+                    >
+                        { `${this.t('Log size:')} ${this.state.logSize || '-'}` }
+                    </Typography>
+                </TabHeader>
+                <TabContent>
                     <TableContainer className={ classes.container }>
                         <Table stickyHeader size="small" className={ classes.table }>
                             <TableHead>
@@ -619,9 +604,9 @@ class Logs extends React.Component {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                </Grid>
+                </TabContent>
                 { this.renderClearDialog() }
-            </Paper>
+            </TabContainer>
         );
     }
 }

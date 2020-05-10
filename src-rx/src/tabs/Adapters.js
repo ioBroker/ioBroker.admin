@@ -35,15 +35,11 @@ import { green } from '@material-ui/core/colors';
 import AddInstanceDialog from '../dialogs/AddInstanceDialog';
 import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
 
+import TabContainer from '../components/TabContainer';
+import TabContent from '../components/TabContent';
+import TabHeader from '../components/TabHeader';
+
 const styles = theme => ({
-    root: {
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden'
-    },
-    flexContainer: {
-        height: '100%'
-    },
     container: {
         height: '100%'
     },
@@ -509,30 +505,21 @@ class Adapters extends React.Component {
         const { classes } = this.props;
 
         return (
-            <Paper className={ classes.root }>
-                <Grid
-                    container
-                    direction="column"
-                    wrap="nowrap"
-                    className={ classes.flexContainer }
-                >
-                    <Grid
-                        item
-                        container
-                        alignItems="center"
+            <TabContainer>
+                <TabHeader>
+                    <IconButton
+                        onClick={ () => this.getAdaptersInfo(true, true) }
                     >
-                        <IconButton
-                            onClick={ () => this.getAdaptersInfo(true, true) }
-                        >
-                            <RefreshIcon />
-                        </IconButton>
-                        <IconButton>
-                            <GithubIcon />
-                        </IconButton>
-                        <div className={ classes.grow } />
-                        <TextField label={ this.t('Filter') } />
-                        <div className={ classes.grow } />
-                    </Grid>
+                        <RefreshIcon />
+                    </IconButton>
+                    <IconButton>
+                        <GithubIcon />
+                    </IconButton>
+                    <div className={ classes.grow } />
+                    <TextField label={ this.t('Filter') } />
+                    <div className={ classes.grow } />
+                </TabHeader>
+                <TabContent>
                     <TableContainer className={ classes.container }>
                         <Table stickyHeader size="small" className={ classes.table }>
                             <TableHead>
@@ -565,7 +552,7 @@ class Adapters extends React.Component {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                </Grid>
+                </TabContent>
                 { this.state.addInstanceDialog &&
                     <AddInstanceDialog
                         open={ this.state.addInstanceDialog }
@@ -590,7 +577,7 @@ class Adapters extends React.Component {
                         onClose={ () => this.closeAdapterDeletionDialog() }
                     />
                 }
-            </Paper>
+            </TabContainer>
         );
     }
 }
