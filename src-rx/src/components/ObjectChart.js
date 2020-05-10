@@ -51,7 +51,7 @@ const styles = theme => ({
         width: 200,
     },
     notAliveInstance: {
-        opacity: 0.5
+        opacity: 0.5,
     }
 });
 
@@ -59,7 +59,7 @@ class ObjectChart extends React.Component {
     constructor(props) {
         super(props);
         let from = new Date();
-        from.setHours(from.getHours() - 24);
+        from.setHours(from.getHours() - 24 * 7);
 
         this.state = {
             loaded: false,
@@ -74,22 +74,41 @@ class ObjectChart extends React.Component {
             chartWidth: 500,
         };
 
+        this.echartsReact = React.createRef();
+        this.readTimeout = null;
+
         this.unit = this.props.obj.common && this.props.obj.common.unit ? ' ' + this.props.obj.common.unit : '';
 
         this.divRef = React.createRef();
 
         this.prepareData()
             .then(() => this.readHistoryRange())
-            .then(() => this.readHistory(this.state.start, this.state.end));
+            .then(() => this.readHistory(this.state.start, this.state.end))
+            .then(chartValues => this.setState( { chartValues }));
 
         this.onChangeBound = this.onChange.bind(this);
+        this.onResizeBound = this.onResize.bind(this);
     }
+
     componentDidMount() {
         this.props.socket.subscribeState(this.props.obj._id, this.onChangeBound);
+        window.addEventListener('resize', this.onResizeBound)
+
     }
 
     componentWillUnmount() {
+        this.readTimeout && clearTimeout(this.readTimeout);
+        this.readTimeout = null;
         this.props.socket.unsubscribeState(this.props.obj._id, this.onChangeBound);
+        window.removeEventListener('resize', this.onResizeBound);
+    }
+
+    onResize() {
+        this.timerResize && clearTimeout(this.timerResize);
+        this.timerResize = setTimeout(() => {
+            this.timerResize = null;
+            this.componentDidUpdate();
+        });
     }
 
     onChange(id, state) {
@@ -167,7 +186,6 @@ class ObjectChart extends React.Component {
 
     readHistoryRange() {
         const now = new Date();
-        now.setMonth(now.getMonth() + 1);
         const oldest = new Date(2000, 0, 1);
 
         this.props.socket.getHistory(this.props.obj._id, {
@@ -206,7 +224,7 @@ class ObjectChart extends React.Component {
             sessionId?: any;
             aggregate?: 'minmax' | 'min' | 'max' | 'average' | 'total' | 'count' | 'none';
         }*/
-        this.props.socket.getHistory(this.props.obj._id, {
+        return this.props.socket.getHistory(this.props.obj._id, {
             instance: this.defaultHistory,
             start,
             end,
@@ -243,27 +261,29 @@ class ObjectChart extends React.Component {
                     r++;
                 }
 
-                this.setState( { chartValues: chart });
+                return chart;
             });
     }
 
-    getOption() {
-        const values = this.state.chartValues;
+    convertData(values) {
+        values = values || this.state.chartValues;
         const data = [];
         for (let i = 0; i < values.length; i++) {
             data.push({
-                    value: [
-                        values[i].ts,
-                        values[i].val
-                    ]
-                });
+                value: [values[i].ts, values[i].val]
+            });
         }
-        const option = {
+        return data;
+    }
+
+    getOption() {
+        return {
+            backgroundColor: 'transparent',
             title: {
-                text: Utils.getObjectName(this.props.objects, this.props.obj._id, { language: this.props.lang}),
+                text: Utils.getObjectName(this.props.objects, this.props.obj._id, { language: this.props.lang }),
                 padding: [
                     8,  // up
-                    0, // right
+                    0,  // right
                     0,  // down
                     90, // left
                 ]
@@ -272,7 +292,7 @@ class ObjectChart extends React.Component {
                 left: 80,
                 top: 8,
                 right: 25,
-                bottom: 80
+                bottom: 40,
             },
             tooltip: {
                 trigger: 'axis',
@@ -285,12 +305,14 @@ class ObjectChart extends React.Component {
                     animation: true
                 }
             },
-            xAxis: {
-                type: 'time',
-                splitLine: {
-                    show: false
+            xAxis: [
+                {
+                    type: 'time',
+                    splitLine: {
+                        show: false
+                    }
                 }
-            },
+            ],
             yAxis: {
                 type: 'value',
                 boundaryGap: [0, '100%'],
@@ -315,13 +337,12 @@ class ObjectChart extends React.Component {
                     }
                 }
             },
-            dataZoom: [
+            /*dataZoom: [
                 {
                     show: true,
                     realtime: true,
                     startValue: this.state.start,
                     endValue: this.state.end,
-                    type: 'slider',
                     y: this.state.chartHeight - 50,
                     dataBackground: {
                         lineStyle: {
@@ -331,26 +352,27 @@ class ObjectChart extends React.Component {
                             color: '#FFFFFFE0'
                         }
                     },
-
                 },
                 {
                     show: true,
                     type: 'inside',
                     realtime: true,
-                    startValue: this.state.start,
-                    endValue: this.state.end,
-                    //y: this.state.chartHeight - 50,
                 },
-            ],
-            series: [{
-                type: 'line',
-                showSymbol: false,
-                hoverAnimation: true,
-                data
-            }]
+            ],*/
+            series: [
+                {
+                    xAxisIndex: 0,
+                    type: 'line',
+                    showSymbol: false,
+                    hoverAnimation: true,
+                    animation: false,
+                    data: this.convertData(this.state.chartValues),
+                    lineStyle:{
+                        color: '#4dabf5',
+                    }
+                }
+            ]
         };
-
-        return option;
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -360,31 +382,44 @@ class ObjectChart extends React.Component {
     renderChart() {
         if (this.state.chartValues) {
             return <ReactEchartsCore
+                ref={e => this.echartsReact = e}
                 echarts={ echarts }
                 option={ this.getOption() }
                 notMerge={ true }
                 lazyUpdate={ true }
                 theme={ this.props.themeName === 'dark' ? 'dark' : '' }
                 style={{ height: this.state.chartHeight + 'px', width: '100%' }}
-
+                opts={{ renderer: 'svg' }}
                 onEvents={ {
                     datazoom: e => {
-                        // {"type":"datazoom","from":"viewComponent_104_0.28944","dataZoomId":"\u0000series\u00000\u00000","start":30.580204778156993,"end":65.73378839590444}
-                        console.log(JSON.stringify(e))
+                        const {startValue, endValue} = e.batch[0];
+                        this.readTimeout && clearTimeout(this.readTimeout);
+                        this.readTimeout = setTimeout(() => {
+                            this.readTimeout = null;
+                            this.readHistory(startValue, endValue)
+                                .then(values => {
+                                    this.echartsReact.getEchartsInstance().setOption({
+                                        series: [
+                                            {
+                                                data: this.convertData(values)
+                                            }
+                                        ]
+                                    });
+                                });
+                        }, 400);
                     }
-                } }
-                opts={{ renderer: 'svg' }}
+                }}
             />;
         } else {
             return <LinearProgress/>;
         }
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate() {
         if (this.divRef.current) {
             const width = this.divRef.current.offsetWidth;
             const height = this.divRef.current.offsetHeight;
-            if (this.state.chartWidth !== width) {// || this.state.chartHeight !== height) {
+            if (this.state.chartHeight !== height) {// || this.state.chartHeight !== height) {
                 setTimeout(() => this.setState({ chartHeight: height, chartWidth: width }), 100);
             }
         }
