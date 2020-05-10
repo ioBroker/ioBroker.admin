@@ -48,7 +48,7 @@ class Objects extends React.Component {
                     expertMode={ this.props.expertMode }
                     t={ this.props.t }
                     lang={ this.props.lang }
-                    theme={ this.props.themeName }
+                    themeName={ this.props.themeName }
                     onFilterChanged={ filterConfig => {
                         this.filters = filterConfig;
                         window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));

@@ -23,6 +23,7 @@ import Alert from '@material-ui/lab/Alert';
 import Tooltip from '@material-ui/core/Tooltip';
 
 // components
+import Router from '@iobroker/adapter-react/Components/Router';
 import ObjectCustomDialog from './ObjectCustomDialog';
 
 // Icons
@@ -1042,6 +1043,41 @@ function getSelectIdIcon(objects, id, prefix) {
     return src || null;
 }
 
+function prepareSparkData(values, from) {
+    // set every hour one point
+    let time = from;
+    let i = 1;
+    const v = [];
+
+    while (i < values.length && time < from + 25 * 3600000) {
+        // find the interval
+        while (values[i - 1].ts < time && time <= values[i].ts && i < values.length) {
+            i++;
+        }
+        if (i === 1 && values[i - 1].ts >= time) {
+            // assume the value was always null
+            v.push(0);
+        } else
+        if (i < values.length) {
+            if (typeof values[i].val === 'boolean' || typeof values[i - 1].val === 'boolean') {
+                v.push(values[i].val ? 1 : 0);
+            } else {
+                // remove nulls
+                values[i - 1].val = values[i - 1].val || 0;
+                values[i].val = values[i].val || 0;
+                // interpolate
+                let val = values[i - 1].val + (values[i].val - values[i - 1].val) * (time - values[i - 1].ts) / (values[i].ts - values[i - 1].ts);
+
+                v.push(val);
+            }
+        }
+
+        time += 3600000;
+    }
+
+    return v;
+}
+
 const DEFAULT_FILTER = {
     id:     '',
     name:   '',
@@ -1101,26 +1137,14 @@ class ObjectBrowser extends React.Component {
             }
         }
         filter.expertMode =  this.props.expertMode || false;
-
-        this.state = {
-            loaded: false,
-            selected: (this.props.selected || '').replace(/["']/g, ''),
-            filter,
-            depth: 0,
-            expandAllVisible: false,
-            expanded,
-            toast: '',
-            lang: this.props.lang,
-            scrollBarWidth: 16,
-            hasSomeCustoms: false,
-        };
-
         this.tableRef  = React.createRef();
         this.filterRefs = {};
+
         Object.keys(DEFAULT_FILTER).forEach(name =>
             this.filterRefs[name] = React.createRef());
 
         this.lastAppliedFilter = null;
+        this.pausedSubscribes = false;
 
         this.selectedFound = false;
         this.copyContentImg = CopyContentIcon;
@@ -1136,6 +1160,30 @@ class ObjectBrowser extends React.Component {
 
         this.visibleCols = this.props.cols || ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'];
 
+        const location = Router.getLocation();
+        let customDialog = null;
+        if (location.id && location.dialog === 'custom') {
+            customDialog = [location.id];
+            this.pauseSubscribe(true);
+        }
+
+
+        this.state = {
+            loaded: false,
+            selected: (this.props.selected || '').replace(/["']/g, ''),
+            filter,
+            depth: 0,
+            expandAllVisible: false,
+            expanded,
+            toast: '',
+            lang: this.props.lang,
+            scrollBarWidth: 16,
+            hasSomeCustoms: false,
+            customDialog,
+        };
+
+
+
         this.texts = {
             value:        this.props.t('tooltip_value'),
             ack:          this.props.t('tooltip_ack'),
@@ -1149,6 +1197,13 @@ class ObjectBrowser extends React.Component {
             customConfig: this.props.t('tooltip_customConfig'),
             copyState:    this.props.t('tooltip_copyState'),
             editState:    this.props.t('tooltip_editState'),
+            filter_id:    this.props.t('filter_id'),
+            filter_name:    this.props.t('filter_name'),
+            filter_type:    this.props.t('filter_type'),
+            filter_role:    this.props.t('filter_role'),
+            filter_room:    this.props.t('filter_room'),
+            filter_func:    this.props.t('filter_func'),
+            filter_customs: this.props.t('filter_customs'),
         };
 
         this.onStateChangeBound = this.onStateChange.bind(this);
@@ -1173,6 +1228,20 @@ class ObjectBrowser extends React.Component {
                     this.setState({ loaded: true });
 
                     this.state.selected && this.onSelect(this.state.selected);
+                }
+            });
+
+        // read default history
+        this.props.socket.getSystemConfig()
+            .then(config => {
+                this.defaultHistory = config && config.common && config.common.defaultHistory;
+                if (this.defaultHistory) {
+                    return this.props.socket.getState('system.adapter.' + this.defaultHistory + '.alive')
+                        .then(state => {
+                            if (!state || !state.val) {
+                                this.defaultHistory = '';
+                            }
+                        });
                 }
             });
     }
@@ -1227,20 +1296,58 @@ class ObjectBrowser extends React.Component {
         this.recordStates = [];
     }
 
-    onStateChange(id, state) {
-        this.states[id] = state;
-        console.log('+ subscribe ' + id);
+    findItem(id, _parts, _root, _partyId) {
+        _parts = _parts || id.split('.');
+        _root = _root || this.root;
+        if (!_root || !_parts.length) {
+            return null;
+        }
 
-        if (!this.statesUpdateTimer) {
-            this.statesUpdateTimer = setTimeout(() => {
+        _partyId = (_partyId ? _partyId + '.' : '') + _parts.shift();
+
+        if (_root.children) {
+            const item = _root.children.find(i => i.data.id === _partyId);
+            if (item) {
+                if (item.data.id === id) {
+                    return item;
+                } else if (_parts.length) {
+                    return this.findItem(id, _parts, item, _partyId);
+                }
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    onStateChange(id, state) {
+        console.log('> stateChange ' + id);
+        if (this.states[id]) {
+            const item = this.findItem(id);
+            if (item && item.data.state) {
+                item.data.state = null;
+            }
+        }
+        this.states[id] = state;
+
+        if (!this.pausedSubscribes) {
+            if (!this.statesUpdateTimer) {
+                this.statesUpdateTimer = setTimeout(() => {
+                    this.statesUpdateTimer = null;
+                    this.forceUpdate();
+                }, 300);
+            }
+        } else {
+            if (this.statesUpdateTimer) {
+                clearTimeout(this.statesUpdateTimer);
                 this.statesUpdateTimer = null;
-                this.forceUpdate();
-            }, 300);
+            }
         }
     }
 
     onObjectChange(id, obj, oldObj) {
-        console.log('+ subscribe ' + id);
+        console.log('> objectChange ' + id);
 
         if (this.objects[id]) {
             if (obj) {
@@ -1260,7 +1367,10 @@ class ObjectBrowser extends React.Component {
                 this.info = info;
                 this.lastAppliedFilter = null; // apply filter anew
 
-                this.forceUpdate();
+                if (!this.pausedSubscribes) {
+                    this.forceUpdate();
+                }
+                // else it will be re-rendered when dialog will be closed
             }, 500);
         }
     }
@@ -1268,7 +1378,10 @@ class ObjectBrowser extends React.Component {
     subscribe(id) {
         if (this.subscribes.indexOf(id) === -1) {
             this.subscribes.push(id);
-            this.props.socket.subscribeState(id, this.onStateChangeBound);
+            console.log('+ subscribe ' + id);
+            if (!this.pausedSubscribes) {
+                this.props.socket.subscribeState(id, this.onStateChangeBound);
+            }
         }
     }
 
@@ -1281,6 +1394,20 @@ class ObjectBrowser extends React.Component {
             }
             console.log('- unsubscribe ' + id);
             this.props.socket.unsubscribeState(id, this.onStateChangeBound);
+
+            if (this.pausedSubscribes) {
+                console.warn('Unsubscribe during pause?');
+            }
+        }
+    }
+
+    pauseSubscribe(isPause) {
+        if (!this.pausedSubscribes && isPause) {
+            this.pausedSubscribes = true;
+            this.subscribes.forEach(id => this.props.socket.unsubscribeState(id, this.onStateChangeBound));
+        } else if (this.pausedSubscribes && !isPause) {
+            this.pausedSubscribes = false;
+            this.subscribes.forEach(id => this.props.socket.subscribeState(id, this.onStateChangeBound));
         }
     }
 
@@ -1312,7 +1439,7 @@ class ObjectBrowser extends React.Component {
                 ref={ this.filterRefs[name] }
                 classes={{ underline: 'no-underline' }}
                 id={ name }
-                placeholder={this.props.t('filter_' + name)}
+                placeholder={ this.texts['filter_' + name] }
                 defaultValue={ this.state.filter[name] }
                 onChange={e => {
                     this.filterTimer && clearTimeout(this.filterTimer);
@@ -1337,7 +1464,7 @@ class ObjectBrowser extends React.Component {
             inputProps={{ name, id: name }}
             displayEmpty={ true }
         >
-            <MenuItem key="empty" value=""><span className={ this.props.classes.selectNone }>{this.props.t('filter_' + name)}</span></MenuItem>
+            <MenuItem key="empty" value=""><span className={ this.props.classes.selectNone }>{ this.texts['filter_' + name] }</span></MenuItem>
             { values.map(item => {
                 let id;
                 let name;
@@ -1522,11 +1649,66 @@ class ObjectBrowser extends React.Component {
                 size="small"
                 aria-label="config"
                 title={ this.texts.customConfig }
-                onClick={ () => this.setState({ customDialog: [id]})}
+                onClick={ () => {
+                    this.pauseSubscribe(true);
+                    Router.doNavigate(null, 'custom', id);
+                    this.setState({ customDialog: [id]});
+                }}
             >
                 <IconConfig className={ classes.cellButtonsButtonIcon }  />
             </IconButton> : null,
         ];
+    }
+
+    readHistory(id) {
+        /*interface GetHistoryOptions {
+            instance?: string;
+            start?: number;
+            end?: number;
+            step?: number;
+            count?: number;
+            from?: boolean;
+            ack?: boolean;
+            q?: boolean;
+            addID?: boolean;
+            limit?: number;
+            ignoreNull?: boolean;
+            sessionId?: any;
+            aggregate?: 'minmax' | 'min' | 'max' | 'average' | 'total' | 'count' | 'none';
+        }*/
+        if (this.defaultHistory && this.objects[id] && this.objects[id].common && this.objects[id].common.custom && this.objects[id].common.custom[this.defaultHistory]) {
+
+            const now = new Date();
+            now.setHours(now.getHours() - 24);
+            now.setMinutes(0);
+            now.setSeconds(0);
+            now.setMilliseconds(0);
+            let nowMs = now.getTime();
+
+            this.props.socket.getHistory(id, {
+                instance: this.defaultHistory,
+                start: nowMs,
+                end: Date.now(),
+                step: 3600000,
+                from: false,
+                ack: false,
+                q: false,
+                addID: false,
+                aggregate: 'minmax'
+            })
+                .then(values => {
+                    const sparks = window.document.getElementsByClassName('sparkline');
+
+                    for (let s = 0; s < sparks.length; s++) {
+                        if (sparks[s].dataset.id === id) {
+                            const v = prepareSparkData(values, nowMs);
+
+                            window.sparkline.sparkline(sparks[s], v);
+                            break;
+                        }
+                    }
+                });
+        }
     }
 
     renderColumnValue(id, item, classes) {
@@ -1555,6 +1737,10 @@ class ObjectBrowser extends React.Component {
                 <div className={ classes.cellValueTooltipValue } key={ item.t + '_v' }>{ item.v }</div>,
                 !item.nbr ? <br key={ item.t + '_br' }/> : null]);
 
+
+            if (this.defaultHistory && this.objects[id] && this.objects[id].common && this.objects[id].common.custom && this.objects[id].common.custom[this.defaultHistory]) {
+                info.valFull.push(<svg key="sparkline" className="sparkline" data-id={ id } style={ {fill: '#3d85de'} } width="200" height="30" strokeWidth="3"/>);
+            }
             /*
             info.valFull.push(<IconCopy className={ classes.cellValueTooltipCopy }  key="cc" />);
             info.valFull.push(<IconEdit className={ classes.cellValueTooltipEdit }  key="ce" />);
@@ -1569,10 +1755,9 @@ class ObjectBrowser extends React.Component {
             ];
         }
 
-        return <Tooltip title={ info.valFull } >
-            <div style={ info.style } className={ classes.cellValueText }>{ info.valText }
-                <IconCopy className={ clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ info.val } title={ this.texts.copyState }/>
-                <IconEdit className={ clsx(classes.cellEditButton, 'copyButton') } onClick={e => this.onEdit(id) }  title={ this.texts.editState }/>
+        return <Tooltip title={ info.valFull } onOpen={ () => this.readHistory(id) }>
+            <div style={ info.style } className={ classes.cellValueText }>
+                { info.valText }
             </div>
         </Tooltip>;
     }
@@ -1627,12 +1812,12 @@ class ObjectBrowser extends React.Component {
                 { iconItem }
                 <IconCopy className={ clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
             </div>
-            {this.visibleCols.includes('name')    ? <div className={ classes.cellName } style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
-            {this.visibleCols.includes('type')    ? <div className={ classes.cellType } style={{ width: widths.WIDTHS[0] }}>{ typeImg } { obj && obj.type }</div> : null }
-            {this.visibleCols.includes('role')    ? <div className={ classes.cellRole } style={{ width: widths.WIDTHS[1] }}>{ obj && obj.common && obj.common.role }</div> : null }
-            {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom } style={{ width: widths.WIDTHS[2] }}>{ item.data.rooms }</div> : null }
-            {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc } style={{ width: widths.WIDTHS[3] }}>{ item.data.funcs }</div> : null }
-            {this.visibleCols.includes('val')     ? <div className={ classes.cellValue } style={{ width: widths.WIDTHS[4] }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
+            {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
+            {this.visibleCols.includes('type')    ? <div className={ classes.cellType }    style={{ width: widths.WIDTHS[0] }}>{ typeImg } { obj && obj.type }</div> : null }
+            {this.visibleCols.includes('role')    ? <div className={ classes.cellRole }    style={{ width: widths.WIDTHS[1] }}>{ obj && obj.common && obj.common.role }</div> : null }
+            {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS[2] }}>{ item.data.rooms }</div> : null }
+            {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS[3] }}>{ item.data.funcs }</div> : null }
+            {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS[4] }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
             {this.visibleCols.includes('buttons') ? <div className={ classes.cellButtons } style={{ width: widths.WIDTHS[5] }}>{ this.renderColumnButtons(id, item, classes) }</div> : null }
         </div>;
     }
@@ -1697,9 +1882,14 @@ class ObjectBrowser extends React.Component {
                 t={ this.props.t }
                 lang={ this.props.lang }
                 socket={ this.props.socket }
+                themeName={ this.props.themeName }
                 objects={ this.objects }
                 customsInstances={ this.info.customs }
-                onClose={ () => this.setState({ customDialog: null })}
+                onClose={ () => {
+                    this.pauseSubscribe(false);
+                    this.setState({ customDialog: null });
+                    Router.doNavigate('tab-objects');
+                }}
             />;
         } else {
             return null;
@@ -1776,9 +1966,10 @@ ObjectBrowser.propTypes = {
     showExpertButton: PropTypes.bool,
     expertMode: PropTypes.bool,
     prefix: PropTypes.string,
-    theme: PropTypes.string,
+    themeName: PropTypes.string,
     t: PropTypes.func,
     lang: PropTypes.string,
+    onNavigate: PropTypes.func
 };
 
 export default withStyles(styles)(ObjectBrowser);
