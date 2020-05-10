@@ -1,18 +1,9 @@
 import withWidth from '@material-ui/core/withWidth';
-import {withStyles} from '@material-ui/core/styles';
+
 import React from 'react';
 import PropTypes from 'prop-types';
-import Paper from '@material-ui/core/Paper';
 
 import ObjectBrowser from '../components/ObjectBrowser';
-
-const styles = theme => ({
-    root: {
-        width: '100%',
-        overflow: 'hidden',
-        height: '100%'
-    }
-});
 
 class Objects extends React.Component {
 
@@ -36,25 +27,23 @@ class Objects extends React.Component {
 
     render() {
         return (
-            <Paper className={ this.props.classes.root }>
-                <ObjectBrowser
-                    prefix={ this.props.prefix }
-                    defaultFilters={ this.filters }
-                    statesOnly={ this.props.statesOnly }
-                    style={ {width: '100%', height: '100%'} }
-                    socket={ this.props.socket }
-                    selected={ this.state.selected }
-                    name={ this.state.name }
-                    expertMode={ this.props.expertMode }
-                    t={ this.props.t }
-                    lang={ this.props.lang }
-                    themeName={ this.props.themeName }
-                    onFilterChanged={ filterConfig => {
-                        this.filters = filterConfig;
-                        window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));
-                    }}
-                />
-            </Paper>
+            <ObjectBrowser
+                prefix={ this.props.prefix }
+                defaultFilters={ this.filters }
+                statesOnly={ this.props.statesOnly }
+                style={ {width: '100%', height: '100%'} }
+                socket={ this.props.socket }
+                selected={ this.state.selected }
+                name={ this.state.name }
+                expertMode={ this.props.expertMode }
+                t={ this.props.t }
+                lang={ this.props.lang }
+                themeName={ this.props.themeName }
+                onFilterChanged={ filterConfig => {
+                    this.filters = filterConfig;
+                    window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));
+                }}
+            />
         );
     }
 }
@@ -67,4 +56,4 @@ Objects.propTypes = {
     expertMode: PropTypes.bool,
 };
 
-export default withWidth()(withStyles(styles)(Objects));
+export default withWidth()(Objects);

@@ -53,6 +53,10 @@ import Utils from '../Utils';
 
 import CopyContentIcon from './CopyIcon';
 
+import TabContainer from './TabContainer';
+import TabContent from './TabContent';
+import TabHeader from './TabHeader';
+
 const ROW_HEIGHT = 32;
 const ITEM_LEVEL = ROW_HEIGHT;
 const SMALL_BUTTON_SIZE = 20;
@@ -82,11 +86,11 @@ const styles = theme => ({
     },
      */
 
-    mainDiv: {
+    /*mainDiv: {
         height: '100%',
         overflow: 'hidden',
         flexWrap: 'nowrap'
-    },
+    },*/
     headerRow: {
         paddingLeft: theme.spacing(1),
         height: 38,
@@ -112,10 +116,10 @@ const styles = theme => ({
         },
     },
     cellId: {
-        display: 'inline-block',
+        //display: 'inline-block',
         fontSize: '1rem',
-        verticalAlign: 'top',
-        position: 'relative',
+        //verticalAlign: 'top',
+        //position: 'relative',
         '& .copyButton': {
             display: 'none'
         },
@@ -132,10 +136,16 @@ const styles = theme => ({
         '&:hover .iconOwn': {
             display: 'none'
         },
+        '& *': {
+            width: 'initial'
+        }
     },
     cellIdSpan: {
-        display: 'inline-block',
-        verticalAlign: 'top',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
+        //display: 'inline-block',
+        //verticalAlign: 'top',
     },
     cellIdIconFolder: {
         marginRight: theme.spacing(1),
@@ -158,8 +168,8 @@ const styles = theme => ({
         color: 'white',
         width: SMALL_BUTTON_SIZE,
         height: SMALL_BUTTON_SIZE,
-        position: 'absolute',
-        top: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
+        //position: 'absolute',
+        //top: (ROW_HEIGHT - SMALL_BUTTON_SIZE) / 2,
         right: 0,
         opacity: 0.7,
         '&:hover': {
@@ -384,6 +394,9 @@ const styles = theme => ({
         color: '#2196f3',
         opacity: 0.7
     },
+    grow: {
+        flexGrow: 1
+    }
 });
 
 // d=data, t=target, s=start, e=end, m=middle
@@ -1800,26 +1813,60 @@ class ObjectBrowser extends React.Component {
             item.data.lang = this.state.lang;
         }
 
-        return <div
-            className={ clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected && classes.itemSelected) }
-            key={ id }
-            id={ id }
-            onDoubleClick={ () => this.toggleExpanded(id) }
-        >
-            <div className={ classes.cellId } style={{ width: widths.idWidth, paddingLeft }}>
-                { iconFolder }
-                <div className={ classes.cellIdSpan }>{ item.data.name }</div>
-                { iconItem }
-                <IconCopy className={ clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
-            </div>
-            {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
-            {this.visibleCols.includes('type')    ? <div className={ classes.cellType }    style={{ width: widths.WIDTHS[0] }}>{ typeImg } { obj && obj.type }</div> : null }
-            {this.visibleCols.includes('role')    ? <div className={ classes.cellRole }    style={{ width: widths.WIDTHS[1] }}>{ obj && obj.common && obj.common.role }</div> : null }
-            {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS[2] }}>{ item.data.rooms }</div> : null }
-            {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS[3] }}>{ item.data.funcs }</div> : null }
-            {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS[4] }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
-            {this.visibleCols.includes('buttons') ? <div className={ classes.cellButtons } style={{ width: widths.WIDTHS[5] }}>{ this.renderColumnButtons(id, item, classes) }</div> : null }
-        </div>;
+        return (
+            <Grid
+                container
+                direction="row"
+                className={ clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected && classes.itemSelected) }
+                key={ id }
+                id={ id }
+                onDoubleClick={ () => this.toggleExpanded(id) }
+            >
+                <Grid
+                    container
+                    wrap="nowrap"
+                    direction="row"
+                    className={ classes.cellId }
+                    style={{ width: widths.idWidth, paddingLeft }}
+                >
+                    <Grid
+                        item
+                        container
+                        alignItems="center"
+                    >
+                        { iconFolder }
+                    </Grid>
+                    <Grid
+                        item
+                        className={ classes.cellIdSpan }
+                    >
+                        { item.data.name }
+                    </Grid>
+                    <div className={ classes.grow } />
+                    <Grid
+                        item
+                        container
+                        alignItems="center"
+                    >
+                        { iconItem }
+                    </Grid>
+                    <Grid
+                        item
+                        container
+                        alignItems="center"
+                    >
+                        <IconCopy className={ clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
+                    </Grid>
+                </Grid>
+                {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
+                {this.visibleCols.includes('type')    ? <div className={ classes.cellType }    style={{ width: widths.WIDTHS[0] }}>{ typeImg } { obj && obj.type }</div> : null }
+                {this.visibleCols.includes('role')    ? <div className={ classes.cellRole }    style={{ width: widths.WIDTHS[1] }}>{ obj && obj.common && obj.common.role }</div> : null }
+                {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS[2] }}>{ item.data.rooms }</div> : null }
+                {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS[3] }}>{ item.data.funcs }</div> : null }
+                {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS[4] }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
+                {this.visibleCols.includes('buttons') ? <div className={ classes.cellButtons } style={{ width: widths.WIDTHS[5] }}>{ this.renderColumnButtons(id, item, classes) }</div> : null }
+            </Grid>
+        );
     }
 
     renderItem(root, isExpanded, widths, classes) {
@@ -1938,19 +1985,20 @@ class ObjectBrowser extends React.Component {
             const items = this.renderItem(this.root, undefined, widths, classes);
 
             return (
-            <Grid 
-                container
-                direction="column"
-                className={classes.mainDiv} ref={ this.mainRef }
-            >
-                { this.getToolbar() }
-                { this.renderHeader(widths) }
-                <div className={ this.props.classes.tableDiv } ref={ this.tableRef }>
-                    { items }
-                </div>
-                { this.renderToast() }
-                { this.renderCustomDialog() }
-            </Grid>);
+                <TabContainer>
+                    <TabHeader>
+                        { this.getToolbar() }
+                    </TabHeader>
+                    <TabContent>
+                        { this.renderHeader(widths) }
+                        <div className={ this.props.classes.tableDiv } ref={ this.tableRef }>
+                            { items }
+                        </div>
+                    </TabContent>
+                    { this.renderToast() }
+                    { this.renderCustomDialog() }
+                </TabContainer>
+            );
         }
     }
 }
@@ -1973,4 +2021,3 @@ ObjectBrowser.propTypes = {
 };
 
 export default withStyles(styles)(ObjectBrowser);
-
