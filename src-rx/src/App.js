@@ -332,7 +332,7 @@ class App extends Router {
                         newState.currentHostName = newState.hosts[0].common.name;
                     }
 
-                    this.setState(newState);
+                    this.setState(newState, () => this.setCurrentTabTitle());
 
                     this.logsWorker && this.logsWorker.setCurrentHost(this.state.currentHost);
                 },
@@ -353,14 +353,9 @@ class App extends Router {
      * Updates the current currentTab in the states
      */
     onHashChanged() {
-
-        const currentTab = Router.getLocation();
-
         this.setState({
-            currentTab
-        });
-
-        this.setTitle(currentTab.tab.replace('tab-', ''));
+            currentTab: Router.getLocation()
+        }, () => this.setCurrentTabTitle());
     }
 
     /**
@@ -473,7 +468,11 @@ class App extends Router {
         }
     }
 
-    async setTitle(title) {
+    setCurrentTabTitle() {
+        this.setTitle(this.state.currentTab.tab.replace('tab-', ''));
+    }
+
+    setTitle(title) {
         document.title = title + ' - ' + (this.state.currentHostName || 'ioBroker');
     }
 
