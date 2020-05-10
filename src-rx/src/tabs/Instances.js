@@ -40,11 +40,11 @@ import ErrorIcon from '@material-ui/icons/Error';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import SettingsIcon from '@material-ui/icons/Settings';
 
+import amber from '@material-ui/core/colors/amber';
 import blue from '@material-ui/core/colors/blue';
 import green from '@material-ui/core/colors/green';
 import grey from '@material-ui/core/colors/grey';
 import red from '@material-ui/core/colors/red';
-import yellow from '@material-ui/core/colors/yellow';
 
 import Router from '@iobroker/adapter-react/Components/Router';
 
@@ -113,6 +113,7 @@ const styles = theme => ({
         backgroundColor: blue[700]
     },
     transparent: {
+        color: 'transparent',
         backgroundColor: 'transparent'
     },
     paper: {
@@ -133,7 +134,7 @@ const styles = theme => ({
         backgroundColor: blue[700]
     },
     warn: {
-        backgroundColor: yellow[700]
+        backgroundColor: amber[700]
     },
     error: {
         backgroundColor: red[700]
@@ -320,7 +321,7 @@ class Instances extends React.Component {
     }
 
     onObjectChnage(id, obj) {
-        
+
         if (this.objects[id]) {
             if (obj) {
                 this.objects[id] = obj;
