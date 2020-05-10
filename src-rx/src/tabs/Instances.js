@@ -51,17 +51,10 @@ import Router from '@iobroker/adapter-react/Components/Router';
 import Config from '../dialogs/Config';
 import Utils from '../Utils';
 
+import TabContainer from '../components/TabContainer';
+import TabContent from '../components/TabContent';
+
 const styles = theme => ({
-    root: {
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-    },
-    scrollDiv: {
-        width: '100%',
-        height: '100%',
-        overflow: 'auto',
-    },
     table: {
         minWidth: 650,
     },
@@ -668,11 +661,11 @@ class Instances extends React.Component {
 
         //if (this.props.width === 'xs' || this.props.width === 'sm') {
             return (
-                <Paper className={ classes.root }>
-                    <div className={ classes.scrollDiv }>
+                <TabContainer>
+                    <TabContent overflow="auto">
                         { this.getPanels(classes) }
-                    </div>
-                </Paper>
+                    </TabContent>
+                </TabContainer>
             );
         //}
 

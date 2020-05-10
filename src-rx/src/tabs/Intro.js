@@ -17,6 +17,9 @@ import IntroCard from '../components/IntroCard';
 
 import Utils from '../Utils';
 
+import TabContainer from '../components/TabContainer';
+import TabContent from '../components/TabContent';
+
 const styles = theme => ({
     root: {
         width: '100%',
@@ -420,12 +423,17 @@ class Intro extends React.Component {
         const { classes } = this.props;
 
         return (
-            <div className={ this.props.classes.root }>
-                <Grid container spacing={ 2 }>
-                    { this.getCards() }
-                </Grid>
-                { this.getButtons(classes) }
-            </div>
+            <TabContainer
+                elevation={ 0 }
+                overflow="visible"
+            >
+                <TabContent>
+                    <Grid container spacing={ 2 }>
+                        { this.getCards() }
+                    </Grid>
+                    { this.getButtons(classes) }
+                </TabContent>
+            </TabContainer>
         );
     }
 }
