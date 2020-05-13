@@ -12,6 +12,7 @@ export const PROGRESS = {
 };
 
 const PERMISSION_ERROR = 'permissionError';
+const NOT_CONNECTED    = 'notConnectedError';
 
 class Connection {
     constructor(props) {
@@ -27,11 +28,6 @@ class Connection {
 
         // breaking change. Do not load all objects by default is true
         this.doNotLoadAllObjects = this.props.doNotLoadAllObjects === undefined ? true : this.props.doNotLoadAllObjects;
-
-        this._socket = window.io.connect(
-            this.props.protocol.replace(':', '') + '://' + this.props.host + ':' + this.props.port,
-            {query: 'ws=true', name: props.name}
-        );
 
         this.states = {};
         this.objects = null;
@@ -52,7 +48,40 @@ class Connection {
         this.onConnectionHandlers = [];
         this.onLogHandlers = [];
 
-        this.promises = {};
+        this._promises = {};
+        this.startSocket();
+    }
+
+    startSocket() {
+        // if socket io is not yet loaded
+        if (typeof window.io === 'undefined') {
+            // if in index.html the onLoad function not defined
+            if (typeof window.registerSocketOnLoad !== 'function') {
+                // poll if loaded
+                this.scriptLoadCounter = this.scriptLoadCounter || 0;
+                this.scriptLoadCounter++;
+
+                if (this.scriptLoadCounter < 30) {
+                    // wait till the script loaded
+                    return setTimeout(() => this.startSocket(), 100);
+                } else {
+                    window.alert('Cannot load socket.io.js!');
+                }
+            } else {
+                // register on load
+                window.registerSocketOnLoad(() => this.startSocket());
+            }
+            return;
+        } else {
+            // socket was initialized, do not repeat
+            if (this._socket) {
+                return;
+            }
+        }
+        this._socket = window.io.connect(
+            this.props.protocol.replace(':', '') + '://' + this.props.host + ':' + this.props.port,
+            {query: 'ws=true', name: this.props.name}
+        );
 
         this._socket.on('connect', () => {
             this._socket.emit('authenticate', (isOk, isSecure) => {
@@ -75,7 +104,7 @@ class Connection {
                     this.onProgress(PROGRESS.READY);
                 }
 
-                this.subscribe(true);
+                this._subscribe(true);
 
                 if (this.waitForRestart) {
                     window.location.reload();
@@ -87,7 +116,7 @@ class Connection {
 
         this._socket.on('reconnect', () => {
             this.connected = true;
-            this.subscribe(true);
+            this._subscribe(true);
 
             if (this.waitForRestart) {
                 window.location.reload();
@@ -110,7 +139,9 @@ class Connection {
             }
         });
 
-        this._socket.on('reauthenticate', () => this.authenticate());
+        this._socket.on('reauthenticate', () =>
+            this.authenticate());
+
         this._socket.on('log', message => {
             this.props.onLog && this.props.onLog(message);
             this.onLogHandlers.forEach(cb => cb(message));
@@ -129,26 +160,26 @@ class Connection {
                 window.alert('Socket Error: ' + err);
             }
         });
+
         this._socket.on('connect_error', err =>
             console.error('Connect error: ' + err));
 
         this._socket.on('permissionError', err =>
             this.onError({message: 'no permission', operation: err.operation, type: err.type, id: (err.id || '')}));
 
-        this._socket.on('objectChange', (id, obj) => setTimeout(() => this.objectChange(id, obj), 0));
-        this._socket.on('stateChange', (id, state) => setTimeout(() => this.stateChange(id, state), 0));
+        this._socket.on('objectChange', (id, obj) =>
+            setTimeout(() => this.objectChange(id, obj), 0));
+        this._socket.on('stateChange', (id, state) =>
+            setTimeout(() => this.stateChange(id, state), 0));
 
-        this._socket.on('cmdStdout', (id, text) => {
-            this.onCmdStdoutHandler && this.onCmdStdoutHandler(id, text);
-        });
+        this._socket.on('cmdStdout', (id, text) =>
+            this.onCmdStdoutHandler && this.onCmdStdoutHandler(id, text));
 
-        this._socket.on('cmdStderr', (id, text) => {
-            this.onCmdStderrHandler && this.onCmdStderrHandler(id, text);
-        });
+        this._socket.on('cmdStderr', (id, text) =>
+            this.onCmdStderrHandler && this.onCmdStderrHandler(id, text));
 
-        this._socket.on('cmdExit', (id, exitCode) => {
-            this.onCmdExitHandler && this.onCmdExitHandler(id, exitCode);
-        });
+        this._socket.on('cmdExit', (id, exitCode) =>
+            this.onCmdExitHandler && this.onCmdExitHandler(id, exitCode));
     }
     
     isConnected() {
@@ -223,11 +254,9 @@ class Connection {
         } else {
             this.statesSubscribes[id].cbs.indexOf(cb) === -1 && this.statesSubscribes[id].cbs.push(cb);
         }
-        if (typeof cb === 'function') {
-            if (this.connected) {
-                this._socket.emit('getForeignStates', id, (err, states) =>
-                    states && Object.keys(states).forEach(id => cb(id, states[id])));
-            }
+        if (typeof cb === 'function' && this.connected) {
+            this._socket.emit('getForeignStates', id, (err, states) =>
+                states && Object.keys(states).forEach(id => cb(id, states[id])));
         }
     }
 
@@ -255,9 +284,7 @@ class Connection {
             }
             this.objectsSubscribes[id] = {reg: new RegExp(reg), cbs: []};
             this.objectsSubscribes[id].cbs.push(cb);
-            if (this.connected) {
-                this._socket.emit('subscribeObjects', id);
-            }
+            this.connected && this._socket.emit('subscribeObjects', id);
         } else {
             !this.objectsSubscribes[id].cbs.includes(cb) && this.objectsSubscribes[id].cbs.push(cb);
         }
@@ -275,7 +302,7 @@ class Connection {
 
             if (this.connected && (!this.objectsSubscribes[id].cbs || !this.objectsSubscribes[id].cbs.length)) {
                 delete this.objectsSubscribes[id];
-                this._socket.emit('unsubscribeObjects', id);
+                this.connected && this._socket.emit('unsubscribeObjects', id);
             }
         }
         return Promise.resolve();
@@ -335,25 +362,40 @@ class Connection {
         }
     }
 
-    getStates(cb, disableProgressUpdate) {
-        this._socket.emit('getStates', (err, res) => {
-            this.states = res;
-            !disableProgressUpdate && this.onProgress(PROGRESS.STATES_LOADED);
-            cb && setTimeout(() => cb(this.states), 0);
-        });
+    getStates(disableProgressUpdate) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getStates', (err, res) => {
+                this.states = res;
+                !disableProgressUpdate && this.onProgress(PROGRESS.STATES_LOADED);
+                return err ? reject(err) : resolve(this.states);
+            }));
     }
 
     getState(id) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('getForeignState', id, (err, state) => err ? reject(err) : resolve(state)));
     }
 
     setState(id, val) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
         return new Promise((resolve, reject) =>
             this._socket.emit('setForeignState', id, val, err => err ? reject(err) : resolve()));
     }
 
     getObjects(update, disableProgressUpdate) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) => {
             if (!update && this.objects) {
                 return resolve(this.objects);
@@ -367,7 +409,7 @@ class Connection {
         });
     }
 
-    subscribe(isEnable) {
+    _subscribe(isEnable) {
         if (isEnable && !this.subscribed) {
             this.subscribed = true;
             this.autoSubscribes.forEach(id => this._socket.emit('subscribeObjects', id));
@@ -391,24 +433,36 @@ class Connection {
     }
 
     requireLog(isEnabled) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('requireLog', isEnabled, err =>
                 err ? reject(err) : resolve()));
     }
 
     delObject(id) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('delObject', id, err =>
                 err ? reject(err) : resolve()));
     }
 
     setObject(id, obj) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('setObject', id, obj, err =>
                 err ? reject(err) : resolve()));
     }
 
     getObject(id) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('getObject', id, (err, obj) =>
                 err ? reject(err) : resolve(obj)));
@@ -420,11 +474,16 @@ class Connection {
             adapter = '';
         }
         adapter = adapter || '';
-        if (update) {
-            this.promises['instances' + adapter] = null;
+
+        if (!update && this._promises['instances' + adapter]) {
+            return this._promises['instances' + adapter];
         }
 
-        this.promises['instances' + adapter]  = this.promises['instances' + adapter] || new Promise((resolve, reject) => {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises['instances' + adapter] = this._promises['instances' + adapter] || new Promise((resolve, reject) => {
             this._socket.emit(
                 'getObjectView',
                 'system',
@@ -439,7 +498,7 @@ class Connection {
                 });
         });
 
-        return this.promises['instances' + adapter];
+        return this._promises['instances' + adapter];
     }
 
     _renameGroups(objs, cb) {
@@ -487,11 +546,17 @@ class Connection {
     }
 
     sendTo(instance, command, data) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise(resolve =>
             this._socket.emit('sendTo', instance, command, data, result => resolve(result)));
     }
 
     extendObject(id, obj) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('extendObject', id, obj, err => err ? reject(err) : resolve()));
     }
@@ -538,13 +603,23 @@ class Connection {
         this.onCmdExitHandler = null;
     }
 
-    getEnums(_enum) {
-        return new Promise((resolve, reject) => {
+    getEnums(_enum, update) {
+        if (!update && this._promises['enums_' + (_enum || 'all')] ) {
+            return this._promises['enums_' + (_enum || 'all')];
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises['enums_' + (_enum || 'all')] = new Promise((resolve, reject) => {
             this._socket.emit('getObjectView', 'system', 'enum', {startkey: 'enum.' + (_enum || ''), endkey: 'enum.' + (_enum ? (_enum + '.') : '') + '\u9999'}, (err, res) => {
                 if (!err && res) {
                     const _res   = {};
                     for (let i = 0; i < res.rows.length; i++) {
-                        if (_enum && res.rows[i].id === 'enum.' + _enum) continue;
+                        if (_enum && res.rows[i].id === 'enum.' + _enum) {
+                            continue;
+                        }
                         _res[res.rows[i].id] = res.rows[i].value;
                     }
                     resolve(_res);
@@ -553,14 +628,20 @@ class Connection {
                 }
             });
         });
+
+        return this._promises['enums_' + (_enum || 'all')];
     }
 
-    getCertificates() {
-        if (this.certPromise) {
-            return this.certPromise;
+    getCertificates(update) {
+        if (this._promises.cert && !update) {
+            return this._promises.cert;
         }
 
-        this.certPromise = this.getObject('system.certificates')
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.cert = this.getObject('system.certificates')
             .then(res => {
                 const certs = [];
                 if (res && res.native && res.native.certificates) {
@@ -602,42 +683,58 @@ class Connection {
                 return certs;
             });
 
-        return this.certPromise;
+        return this._promises.cert;
     }
 
     getLogs(host, linesNumber) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise(resolve =>
             this._socket.emit('sendToHost', host, 'getLogs', linesNumber || 200, lines =>
                 resolve(lines)));
     }
 
     getLogsFiles() {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('readLogs', (err, files) =>
                 err ? reject(err) : resolve(files)));
     }
 
     delLogs(host) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('sendToHost', host, 'delLogs', null, error =>
                 error ? reject(error) : resolve()));
     }
 
     readMetaItems() {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('getObjectView', 'system', 'meta', {startkey: '', endkey: '\u9999'}, (err, objs) =>
                 err ? reject(err) : resolve(objs.rows && objs.rows.map(obj => obj.value))));
     }
 
     readDir(adapter, fileName) {
-        return new Promise((resolve, reject) => {
-            this._socket.emit('readDir', adapter, fileName, (err, files) => {
-                err ? reject(err) : resolve(files);
-            });
-        });
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+        return new Promise((resolve, reject) =>
+            this._socket.emit('readDir', adapter, fileName, (err, files) =>
+                err ? reject(err) : resolve(files)));
     }
 
     writeFile64(adapter, fileName, data) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) => {
             if (typeof data === 'string') {
                 this._socket.emit('writeFile', adapter, fileName, data, err =>
@@ -655,77 +752,104 @@ class Connection {
     }
     
     deleteFile(adapter, fileName) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('deleteFile', adapter, fileName, err =>
                 err ? reject(err) : resolve()));
     }
 
     getHosts(update) {
-        if (update || !this.promises.hosts) {
-            this.promises.hosts = new Promise((resolve, reject) =>
-                this._socket.emit(
-                    'getObjectView',
-                    'system',
-                    'host',
-                    {startkey: 'system.host.', endkey: 'system.host.\u9999'},
-                    (err, doc) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(doc.rows.map(item => item.value));
-                        }
-                    }));
+        if (!update && this._promises.hosts) {
+            return this._promises.hosts;
         }
 
-        return this.promises.hosts;
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises.hosts = new Promise((resolve, reject) =>
+            this._socket.emit(
+                'getObjectView',
+                'system',
+                'host',
+                {startkey: 'system.host.', endkey: 'system.host.\u9999'},
+                (err, doc) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(doc.rows.map(item => item.value));
+                    }
+                }));
+
+        return this._promises.hosts;
     }
 
     getUsers(update) {
-        if (update || !this.promises.users) {
-            this.promises.hosts = new Promise((resolve, reject) =>
-                this._socket.emit(
-                    'getObjectView',
-                    'system',
-                    'user',
-                    {startkey: 'system.user.', endkey: 'system.user.\u9999'},
-                    (err, doc) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(doc.rows.map(item => item.value));
-                        }
-                    }));
+        if (!update && this._promises.users) {
+            return this._promises.users;
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
         }
 
-        return this.promises.users;
+        this._promises.users = new Promise((resolve, reject) =>
+            this._socket.emit(
+                'getObjectView',
+                'system',
+                'user',
+                {startkey: 'system.user.', endkey: 'system.user.\u9999'},
+                (err, doc) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(doc.rows.map(item => item.value));
+                    }
+                }));
+
+        return this._promises.users;
     }
 
     getGroups(update) {
-        if (update || !this.promises.users) {
-            this.promises.hosts = new Promise((resolve, reject) =>
-                this._socket.emit(
-                    'getObjectView',
-                    'system',
-                    'group',
-                    {startkey: 'system.group.', endkey: 'system.group.\u9999'},
-                    (err, doc) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(doc.rows.map(item => item.value));
-                        }
-                    }));
+        if (!update && this._promises.groups) {
+            return this._promises.groups;
+        }
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
         }
 
-        return this.promises.users;
+        this._promises.groups = new Promise((resolve, reject) =>
+            this._socket.emit(
+                'getObjectView',
+                'system',
+                'group',
+                {startkey: 'system.group.', endkey: 'system.group.\u9999'},
+                (err, doc) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(doc.rows.map(item => item.value));
+                    }
+                }));
+
+        return this._promises.groups;
     }
 
-    getHostInfo(host) {
+    getHostInfo(host, update) {
         if (!host.startsWith(host)) {
             host += 'system.host.' + host;
         }
 
-        return new Promise((resolve, reject) => {
+        if (!update && this._promises['hostInfo' + host]) {
+            return this._promises['hostInfo' + host];
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises['hostInfo' + host] = new Promise((resolve, reject) => {
             let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
@@ -747,14 +871,24 @@ class Connection {
                 }
             });
         });
+
+        return this._promises['hostInfo' + host];
     }
 
-    getRepository(host, args) {
+    getRepository(host, args, update) {
+        if (!update && this._promises.repo) {
+            return this._promises.repo;
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
         if (!host.startsWith(host)) {
             host += 'system.host.' + host;
         }
 
-        return new Promise((resolve, reject) => {
+        this._promises.repo = new Promise((resolve, reject) => {
             let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
@@ -776,14 +910,24 @@ class Connection {
                 }
             });
         });
+
+        return this._promises.repo;
     }
 
-    getInstalled(host) {
+    getInstalled(host, update) {
+        if (!update && this._promises.installed) {
+            return this._promises.installed;
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
         if (!host.startsWith(host)) {
             host += 'system.host.' + host;
         }
 
-        return new Promise((resolve, reject) => {
+        this._promises.installed = new Promise((resolve, reject) => {
             let timeout = setTimeout(() => {
                 if (timeout) {
                     timeout = null;
@@ -805,9 +949,15 @@ class Connection {
                 }
             });
         });
+
+        return this._promises.installed;
     }
 
     cmdExec(host, cmd, cmdId) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
         if (!host.startsWith(host)) {
             host += 'system.host.' + host;
         }
@@ -835,20 +985,27 @@ class Connection {
     }
     
     checkFeatureSupported(feature, update) {
-        if (update) {
-            this.promises['supportedFeatures_' + feature] = null;
+        if (!update && this._promises['supportedFeatures_' + feature]) {
+            return this._promises['supportedFeatures_' + feature];
         }
 
-        this.promises['supportedFeatures_' + feature] = this.promises['supportedFeatures_' + feature] || new Promise((resolve, reject) =>
-            this._socket.emit('checkFeatureSupported', features => resolve(features)));
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
 
-        return this.promises['supportedFeatures_' + feature];
+        this._promises['supportedFeatures_' + feature] = this._promises['supportedFeatures_' + feature] || new Promise((resolve, reject) =>
+            this._socket.emit('checkFeatureSupported', (err, features) => err ? reject(err) : resolve(features)));
+
+        return this._promises['supportedFeatures_' + feature];
     }
 
     readBaseSettings(host) {
         return this.checkFeatureSupported('CONTROLLER_READWRITE_BASE_SETTINGS')
             .then(result => {
                 if (result) {
+                    if (!this.connected) {
+                        return Promise.reject(NOT_CONNECTED);
+                    }
                     return new Promise((resolve, reject) => {
                         let timeout = setTimeout(() => {
                             if (timeout) {
@@ -882,6 +1039,9 @@ class Connection {
         return this.checkFeatureSupported('CONTROLLER_READWRITE_BASE_SETTINGS')
             .then(result => {
                 if (result) {
+                    if (!this.connected) {
+                        return Promise.reject(NOT_CONNECTED);
+                    }
                     return new Promise((resolve, reject) => {
                         let timeout = setTimeout(() => {
                             if (timeout) {
@@ -912,6 +1072,9 @@ class Connection {
     }
 
     getForeignStates(pattern) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('getForeignStates', pattern || '*', (err, states) =>
                 err ? reject(err) : resolve(states)));
@@ -919,6 +1082,9 @@ class Connection {
 
     // type could be undefined
     getForeignObjects(pattern, type) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('getForeignObjects', pattern || '*', type, (err, states) =>
                 err ? reject(err) : resolve(states)));
@@ -926,11 +1092,15 @@ class Connection {
 
     getSystemConfig(update) {
         if (update) {
-            this.promises.systemConfig = null;
+            this._promises.systemConfig = null;
         }
-        this.promises.systemConfig = this.promises.systemConfig || this.getObject('system.config');
+        if (!this._promises.systemConfig && !this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
 
-        return this.promises.systemConfig;
+        this._promises.systemConfig = this._promises.systemConfig || this.getObject('system.config');
+
+        return this._promises.systemConfig;
     }
 
     getRawSocket() {
@@ -938,6 +1108,9 @@ class Connection {
     }
 
     getHistory(id, options) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
         return new Promise((resolve, reject) =>
             this._socket.emit('getHistory', id, options, (err, values) =>
                 err ? reject(err) : resolve(values)));

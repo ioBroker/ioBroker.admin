@@ -17,6 +17,7 @@ import Router from '@iobroker/adapter-react/Components/Router';
 // Icons
 import CloseIcon from '@material-ui/icons/Close';
 import ObjectCustomEditor from './ObjectCustomEditor';
+import ObjectHistoryData from './ObjectHistoryData';
 import ObjectChart from './ObjectChart';
 
 const styles = theme => ({
@@ -93,6 +94,20 @@ class ObjectCustomDialog extends React.Component {
         />;
     }
 
+    renderTable() {
+        return <ObjectHistoryData
+            id={'table-tabpanel' }
+            t={ this.props.t }
+            lang={ this.props.lang }
+            expertMode={ this.props.expertMode }
+            socket={ this.props.socket }
+            obj={ this.props.objects[this.props.objectIDs[0]] }
+            customsInstances={ this.props.customsInstances }
+            themeName={ this.props.themeName }
+            objects={ this.props.objects }
+        />;
+    }
+
     renderCustomEditor() {
         return <ObjectCustomEditor
             id={ 'custom-settings-tabpanel' }
@@ -133,6 +148,7 @@ class ObjectCustomDialog extends React.Component {
                     </Tabs>
                 </AppBar>
                 {this.state.currentTab === 0 ? <div className={ this.props.classes.tabPanel }>{ this.renderCustomEditor() }</div>: null }
+                {this.chartAvailable && this.state.currentTab === 1 ? <div className={ this.props.classes.tabPanel }>{ this.renderTable() }</div>: null }
                 {this.chartAvailable && this.state.currentTab === 2 ? <div className={ this.props.classes.tabPanel }>{ this.renderCharts() }</div>: null }
             </DialogContent>
             <DialogActions>

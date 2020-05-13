@@ -9,6 +9,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Toolbar from '@material-ui/core/Toolbar';
+import Fab from '@material-ui/core/Fab';
+
 
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 import echarts from 'echarts/lib/echarts';
@@ -21,17 +23,29 @@ import 'echarts/lib/component/title';
 
 import 'echarts/lib/component/dataZoom';
 import 'echarts/lib/component/timeline';
+import 'zrender/lib/svg/svg';
 
 import clsx from 'clsx';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
-function padding(ms) {
+// icons
+import {FaChartLine as SplitLineIcon} from 'react-icons/all';
+
+function padding3(ms) {
     if (ms < 10) {
         return '00' + ms;
     } else if (ms < 100) {
         return '0' + ms;
     } else {
         return ms;
+    }
+}
+
+function padding2(num) {
+    if (num < 10) {
+        return '0' + num;
+    } else {
+        return num;
     }
 }
 
@@ -44,47 +58,69 @@ const styles = theme => ({
     },
     chart: {
         width: '100%',
-        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+        height: 'calc(100% - ' + (theme.mixins.toolbar.minHeight + theme.spacing(1)) + 'px)',
         overflow: 'hidden',
     },
     selectHistoryControl: {
+        width: 130,
+    },
+    selectRelativeTime: {
+        marginLeft: 10,
         width: 200,
     },
     notAliveInstance: {
         opacity: 0.5,
-    }
+    },
+    splitLineButtonIcon: {
+        marginRight: theme.spacing(1),
+    },
+    splitLineButton: {
+        float: 'right',
+    },
+    grow: {
+        flexGrow: 1,
+    },
 });
+
+const GRID_PADDING_LEFT = 80;
+const GRID_PADDING_RIGHT = 25;
 
 class ObjectChart extends React.Component {
     constructor(props) {
         super(props);
         let from = new Date();
         from.setHours(from.getHours() - 24 * 7);
+        this.start = from.getTime();
+        this.end   = new Date().getTime();
+
+        let relativeRange = window.localStorage.getItem('App.relativeRange') || '30';
 
         this.state = {
             loaded: false,
-            start: from.getTime(),
-            end: new Date().getTime(),
-            chartValues: null,
-            rangeValues: null,
             historyInstance: '',
             historyInstances: null,
             defaultHistory: '',
             chartHeight: 300,
             chartWidth: 500,
+            relativeRange,
+            splitLine: window.localStorage.getItem('App.splitLine') === 'true',
         };
 
         this.echartsReact = React.createRef();
+        this.rangeRef = React.createRef();
         this.readTimeout = null;
+        this.chartValues = null;
+        this.rangeValues = null;
 
         this.unit = this.props.obj.common && this.props.obj.common.unit ? ' ' + this.props.obj.common.unit : '';
 
         this.divRef = React.createRef();
 
+        this.chart = {};
+
         this.prepareData()
             .then(() => this.readHistoryRange())
-            .then(() => this.readHistory(this.state.start, this.state.end))
-            .then(chartValues => this.setState( { chartValues }));
+            .then(() => this.setRelativeInterval(relativeRange, true, () => this.forceUpdate()));
 
         this.onChangeBound = this.onChange.bind(this);
         this.onResizeBound = this.onResize.bind(this);
@@ -114,11 +150,16 @@ class ObjectChart extends React.Component {
     onChange(id, state) {
         if (id === this.props.obj._id &&
             state &&
-            this.state.chartValues &&
-            (!this.state.chartValues.length || this.state.chartValues[this.state.chartValues.length - 1].ts < state.ts)) {
-            const chartValues = [...this.state.chartValues, {val: state.val, ts: state.ts}];
-            const rangeValues = [...this.state.rangeValues, {val: state.val, ts: state.ts}];
-            this.setState({ chartValues, rangeValues });
+            this.rangeValues &&
+            (!this.rangeValues.length || this.rangeValues[this.rangeValues.length - 1].ts < state.ts)) {
+
+            this.chartValues && this.chartValues.push({val: state.val, ts: state.ts});
+            this.rangeValues.push({val: state.val, ts: state.ts});
+
+            // update only if end is near to now
+            if (state.ts >= this.chart.min && state.ts <= this.chart.max + 300000) {
+                this.updateChart();
+            }
         }
     }
 
@@ -204,7 +245,7 @@ class ObjectChart extends React.Component {
                 if (values[0].val === null) {
                     values.shift();
                 }
-                this.setState( { rangeValues: values });
+                this.rangeValues = values;
             });
     }
 
@@ -224,7 +265,7 @@ class ObjectChart extends React.Component {
             sessionId?: any;
             aggregate?: 'minmax' | 'min' | 'max' | 'average' | 'total' | 'count' | 'none';
         }*/
-        return this.props.socket.getHistory(this.props.obj._id, {
+        const options = {
             instance: this.defaultHistory,
             start,
             end,
@@ -233,15 +274,22 @@ class ObjectChart extends React.Component {
             q: false,
             addID: false,
             aggregate: 'none'
-        })
+        };
+
+        if (end - start > 60000 * 24) {
+            options.aggregate = 'minmax';
+            //options.step = 60000;
+        }
+
+        return this.props.socket.getHistory(this.props.obj._id, options)
             .then(values => {
                 // merge range and chart
                 let chart = [];
                 let r = 0;
-                let range = this.state.rangeValues;
+                let range = this.rangeValues;
 
                 for (let t = 0; t < values.length; t++) {
-                    while (range[r].ts < values[t].ts && r < range.length) {
+                    while (r < range.length && range[r].ts < values[t].ts) {
                         chart.push(range[r]);
                         console.log('add ' + new Date(range[r].ts).toISOString() + ': ' + range[r].val);
                         r++;
@@ -261,18 +309,28 @@ class ObjectChart extends React.Component {
                     r++;
                 }
 
+                this.chartValues = chart;
+
                 return chart;
             });
     }
 
     convertData(values) {
-        values = values || this.state.chartValues;
+        values = values || this.chartValues;
         const data = [];
+        if (!values.length) {
+            return data;
+        }
         for (let i = 0; i < values.length; i++) {
             data.push({
                 value: [values[i].ts, values[i].val]
             });
         }
+        if (!this.chart.min) {
+            this.chart.min = values[0].ts;
+            this.chart.max = values[values.length - 1].ts;
+        }
+
         return data;
     }
 
@@ -289,9 +347,9 @@ class ObjectChart extends React.Component {
                 ]
             },
             grid: {
-                left: 80,
+                left: GRID_PADDING_LEFT,
                 top: 8,
-                right: 25,
+                right: GRID_PADDING_RIGHT,
                 bottom: 40,
             },
             tooltip: {
@@ -299,38 +357,60 @@ class ObjectChart extends React.Component {
                 formatter: params => {
                     params = params[0];
                     const date = new Date(params.value[0]);
-                    return `${date.toLocaleString()}.${padding(date.getMilliseconds())}: ${params.value[1]}${this.unit}`;
+                    return `${date.toLocaleString()}.${padding3(date.getMilliseconds())}: ${params.value[1]}${this.unit}`;
                 },
                 axisPointer: {
                     animation: true
                 }
             },
-            xAxis: [
-                {
-                    type: 'time',
-                    splitLine: {
-                        show: false
+            xAxis: {
+                type: 'time',
+                splitLine: {
+                    show: false
+                },
+                splitNumber: Math.round((this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT) / 50),
+                min: this.chart.min,
+                max: this.chart.max,
+                axisTick: {
+                    alignWithLabel: true,
+                },
+                axisLabel: {
+                    formatter: (value, index) => {
+                        const date = new Date(value);
+                        if (this.chart.withSeconds) {
+                            return padding2(date.getHours()) + ':' + padding2(date.getMinutes()) + ':' + padding2(date.getSeconds());
+                        } else if (this.chart.withTime) {
+                            return padding2(date.getHours()) + ':' + padding2(date.getMinutes()) + '\n' + padding2(date.getDate()) + '.' + padding2(date.getMonth() + 1);
+                        } else {
+                            return padding2(date.getDate()) + '.' + padding2(date.getMonth() + 1) + '\n' + date.getFullYear();
+                        }
                     }
                 }
-            ],
+            },
             yAxis: {
                 type: 'value',
                 boundaryGap: [0, '100%'],
-                splitLine: { show: false },
+                splitLine: {
+                    show: !!this.state.splitLine
+                },
+                splitNumber: Math.round(this.state.chartHeight / 50),
                 axisLabel: {
-                    formatter: '{value}' + this.unit
+                    formatter: '{value}' + this.unit,
+                },
+                axisTick: {
+                    alignWithLabel: true,
                 }
             },
             toolbox: {
                 left: 'right',
                 feature: {
-                    dataZoom: {
+                    /*dataZoom: {
                         yAxisIndex: 'none',
                         title: this.props.t('Zoom'),
                     },
                     restore: {
                         title: this.props.t('Restore')
-                    },
+                    },*/
                     saveAsImage: {
                         title: this.props.t('Save as image'),
                         show: true,
@@ -341,8 +421,8 @@ class ObjectChart extends React.Component {
                 {
                     show: true,
                     realtime: true,
-                    startValue: this.state.start,
-                    endValue: this.state.end,
+                    startValue: this.start,
+                    endValue: this.end,
                     y: this.state.chartHeight - 50,
                     dataBackground: {
                         lineStyle: {
@@ -366,7 +446,7 @@ class ObjectChart extends React.Component {
                     showSymbol: false,
                     hoverAnimation: true,
                     animation: false,
-                    data: this.convertData(this.state.chartValues),
+                    data: this.convertData(),
                     lineStyle:{
                         color: '#4dabf5',
                     }
@@ -379,8 +459,234 @@ class ObjectChart extends React.Component {
         return null;
     }
 
+    updateChart(start, end, withReadData, cb) {
+        if (start) {
+            this.start = start;
+        }
+        if (end) {
+            this.end = end;
+        }
+        start = start || this.start;
+        end   = end   || this.end;
+
+        this.readTimeout && clearTimeout(this.readTimeout);
+
+        this.readTimeout = setTimeout(() => {
+            this.readTimeout = null;
+
+            const diff = this.chart.max - this.chart.min;
+            if (diff !== this.chart.diff) {
+                this.chart.diff        = diff;
+                this.chart.withTime    = this.chart.diff < 3600000 * 24 * 7;
+                this.chart.withSeconds = this.chart.diff < 60000 * 30;
+            }
+
+            if (withReadData) {
+                this.readHistory(start, end)
+                    .then(values => {
+                        typeof this.echartsReact.getEchartsInstance === 'function' && this.echartsReact.getEchartsInstance().setOption({
+                            series: [{data: this.convertData(values)}],
+                            xAxis: {
+                                min: this.chart.min,
+                                max: this.chart.max,
+                            }
+                        });
+                        cb && cb();
+                    });
+            } else {
+                typeof this.echartsReact.getEchartsInstance === 'function' && this.echartsReact.getEchartsInstance().setOption({
+                    series: [{data: this.convertData()}],
+                    xAxis: {
+                        min: this.chart.min,
+                        max: this.chart.max,
+                    }
+                });
+                cb && cb();
+            }
+        }, 400);
+    }
+
+    setNewRange(updateChart) {
+        /*if (this.rangeRef.current &&
+            this.rangeRef.current.childNodes[1] &&
+            this.rangeRef.current.childNodes[1].value) {
+            this.rangeRef.current.childNodes[0].innerHTML = '';
+            this.rangeRef.current.childNodes[1].value = '';
+        }*/
+        this.chart.diff        = this.chart.max - this.chart.min;
+        this.chart.withTime    = this.chart.diff < 3600000 * 24 * 7;
+        this.chart.withSeconds = this.chart.diff < 60000 * 30;
+
+        if (this.state.relativeRange !== 'absolute') {
+            this.setState({ relativeRange: 'absolute' });
+        } else {
+            this.echartsReact.getEchartsInstance().setOption({
+                xAxis: {
+                    min: this.chart.min,
+                    max: this.chart.max,
+                }
+            });
+
+            updateChart && this.updateChart(this.chart.min, this.chart.max, true);
+        }
+    }
+
+    setRelativeInterval(mins, dontSave, cb) {
+        if (!dontSave) {
+            window.localStorage.setItem('App.relativeRange', mins);
+            this.setState({ relativeRange: mins });
+        }
+
+        const now = new Date();
+        if (now.getMilliseconds()) {
+            now.setMilliseconds(1000);
+        }
+        if (now.getSeconds()) {
+            now.setSeconds(60);
+        }
+
+        this.chart.max = now.getTime();
+
+        if (mins === 'day') {
+            now.setHours(0);
+            now.setMinutes(0);
+            this.chart.min = now.getTime();
+        } else if (mins === 'month') {
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setDate(1);
+            this.chart.min = now.getTime();
+        } else if (mins === 'year') {
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setDate(1);
+            now.setMonth(0);
+            this.chart.min = now.getTime();
+        }  else if (mins === '12months') {
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setFullYear(now.getFullYear() - 1);
+            this.chart.min = now.getTime();
+        } else {
+            mins = parseInt(mins, 10);
+            this.chart.min = this.chart.max - mins * 60000;
+        }
+        this.updateChart(this.chart.min, this.chart.max, true, cb);
+    }
+
+    installEventHandlers() {
+        const zr = this.echartsReact.getEchartsInstance().getZr();
+        if (!zr._iobInstalled) {
+            zr._iobInstalled = true;
+            zr.on('mousedown', e => {
+                console.log('mouse down');
+                this.mouseDown = true;
+                this.chart.lastX = e.offsetX;
+            });
+            zr.on('mouseup', () => {
+                console.log('mouse up');
+                this.mouseDown = false;
+                this.setNewRange(true);
+            });
+            zr.on('mousewheel', e => {
+                let diff = this.chart.max - this.chart.min;
+                const width = this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT;
+                const x = e.offsetX - GRID_PADDING_LEFT;
+                const pos = x / width;
+
+                const oldDiff = diff;
+                const amount = e.wheelDelta > 0 ? 1.1 : 0.9;
+                diff = diff * amount;
+                const move = oldDiff - diff;
+                this.chart.max += move * (1 - pos);
+                this.chart.min -= move * pos;
+
+                this.setNewRange();
+            });
+            zr.on('mousemove', e => {
+                if (this.mouseDown) {
+                    const moved = this.chart.lastX - (e.offsetX - GRID_PADDING_LEFT);
+                    this.chart.lastX = e.offsetX - GRID_PADDING_LEFT;
+                    const diff = this.chart.max - this.chart.min;
+                    const width = this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT;
+
+                    const shift = Math.round(moved * diff / width);
+                    this.chart.min += shift;
+                    this.chart.max += shift;
+                    this.setNewRange();
+                }
+            });
+
+            zr.on('touchstart', e => {
+                e.preventDefault();
+                this.mouseDown = true;
+                const touches = e.touches || e.originalEvent.touches;
+                if (touches) {
+                    this.chart.lastX = touches[touches.length - 1].pageX;
+                    if (touches.length > 1) {
+                        this.chart.lastWidth = Math.abs(touches[0].pageX - touches[1].pageX);
+                    } else {
+                        this.chart.lastWidth = null;
+                    }
+                }
+            });
+            zr.on('touchend', e => {
+                e.preventDefault();
+                this.mouseDown = false;
+                this.setNewRange(true);
+            });
+            zr.on('touchmove', e => {
+                e.preventDefault();
+                const touches = e.touches || e.originalEvent.touches;
+                if (!touches) {
+                    return;
+                }
+                const pageX = touches[touches.length - 1].pageX - GRID_PADDING_LEFT;
+                if (this.mouseDown) {
+                    if (touches.length > 1) {
+                        // zoom
+                        const fingerWidth = Math.abs(touches[0].pageX - touches[1].pageX);
+                        if (this.chart.lastWidth !== null && fingerWidth !== this.chart.lastWidth) {
+                            let diff = this.chart.max - this.chart.min;
+                            const chartWidth = this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT;
+
+                            const amount     = fingerWidth > this.chart.lastWidth ? 1.1 : 0.9;
+                            const positionX  = touches[0].pageX > touches[1].pageX ?
+                                touches[1].pageX - GRID_PADDING_LEFT + fingerWidth / 2 :
+                                touches[0].pageX - GRID_PADDING_LEFT + fingerWidth / 2;
+
+                            const pos = positionX / chartWidth;
+
+                            const oldDiff = diff;
+                            diff = diff * amount;
+                            const move = oldDiff - diff;
+
+                            this.chart.max += move * (1 - pos);
+                            this.chart.min -= move * pos;
+
+                            this.setNewRange();
+                        }
+                        this.chart.lastWidth = fingerWidth;
+                    } else {
+                        // swipe
+                        const moved = this.chart.lastX - pageX;
+                        const diff  = this.chart.max - this.chart.min;
+                        const chartWidth = this.state.chartWidth - GRID_PADDING_RIGHT - GRID_PADDING_LEFT;
+
+                        const shift = Math.round(moved * diff / chartWidth);
+                        this.chart.min += shift;
+                        this.chart.max += shift;
+
+                        this.setNewRange();
+                    }
+                }
+                this.chart.lastX = pageX;
+            });
+        }
+    }
+
     renderChart() {
-        if (this.state.chartValues) {
+        if (this.chartValues) {
             return <ReactEchartsCore
                 ref={e => this.echartsReact = e}
                 echarts={ echarts }
@@ -391,22 +697,12 @@ class ObjectChart extends React.Component {
                 style={{ height: this.state.chartHeight + 'px', width: '100%' }}
                 opts={{ renderer: 'svg' }}
                 onEvents={ {
-                    datazoom: e => {
+                    /*datazoom: e => {
                         const {startValue, endValue} = e.batch[0];
-                        this.readTimeout && clearTimeout(this.readTimeout);
-                        this.readTimeout = setTimeout(() => {
-                            this.readTimeout = null;
-                            this.readHistory(startValue, endValue)
-                                .then(values => {
-                                    this.echartsReact.getEchartsInstance().setOption({
-                                        series: [
-                                            {
-                                                data: this.convertData(values)
-                                            }
-                                        ]
-                                    });
-                                });
-                        }, 400);
+                        this.updateChart(startValue, endValue, true);
+                    },*/
+                    rendered: e => {
+                        this.installEventHandlers();
                     }
                 }}
             />;
@@ -425,23 +721,61 @@ class ObjectChart extends React.Component {
         }
     }
 
+    renderToolbar() {
+        return <Toolbar>
+            <FormControl className={ this.props.classes.selectHistoryControl }>
+                <InputLabel>{ this.props.t('History instance') }</InputLabel>
+                <Select
+                    value={ this.state.historyInstance}
+                    onChange={ e => this.setState({ historyInstance: e.target.value })}
+                >
+                    { this.state.historyInstances.map(it => <MenuItem key={ it.id } value={ it.id } className={ clsx(!it.alive && this.props.classes.notAliveInstance )}>{ it.id }</MenuItem>) }
+                </Select>
+            </FormControl>
+            <FormControl className={ this.props.classes.selectRelativeTime }>
+                <InputLabel>{ this.props.t('Relative') }</InputLabel>
+                <Select
+                    ref={ this.rangeRef }
+                    value={ this.state.relativeRange }
+                    onChange={ e => this.setRelativeInterval(e.target.value) }
+                >
+                    <MenuItem key={ 'custom' } value={ 'absolute' } className={ this.props.classes.notAliveInstance }>{ this.props.t('custom range') }</MenuItem>
+                    <MenuItem key={ '1' } value={ 10 }            >{ this.props.t('last 10 minutes') }</MenuItem>
+                    <MenuItem key={ '2' } value={ 30 }            >{ this.props.t('last 30 minutes') }</MenuItem>
+                    <MenuItem key={ '3' } value={ 60 }            >{ this.props.t('last hour') }</MenuItem>
+                    <MenuItem key={ '4' } value={ 'day' }         >{ this.props.t('this day') }</MenuItem>
+                    <MenuItem key={ '5' } value={ 24 * 60 }       >{ this.props.t('last 24 hours') }</MenuItem>
+                    <MenuItem key={ '6' } value={ 'month' }       >{ this.props.t('this month') }</MenuItem>
+                    <MenuItem key={ '7' } value={ 30 * 24 * 60 }  >{ this.props.t('last 30 days') }</MenuItem>
+                    <MenuItem key={ '8' } value={ 'year' }        >{ this.props.t('this year') }</MenuItem>
+                    <MenuItem key={ '9' } value={ '12months' }    >{ this.props.t('last 12 months') }</MenuItem>
+                </Select>
+            </FormControl>
+            <div className={this.props.classes.grow} />
+            <Fab
+                variant="extended"
+                size="small"
+                color={ this.state.splitLine ? 'primary' : '' }
+                aria-label="show lines"
+                onClick={() => {
+                    window.localStorage.setItem('App.splitLine', this.state.splitLine ? 'false' : 'true');
+                    this.setState({splitLine: !this.state.splitLine});
+                }}
+                className={ this.props.classes.splitLineButton }
+            >
+                <SplitLineIcon className={ this.props.classes.splitLineButtonIcon } />
+                { this.props.t('Show lines') }
+            </Fab>
+        </Toolbar>
+    }
+
     render() {
         if (!this.state.historyInstances) {
             return <LinearProgress/>;
         }
 
         return <Paper className={ this.props.classes.paper }>
-            <Toolbar>
-                <FormControl className={ this.props.classes.selectHistoryControl }>
-                    <InputLabel>{ this.props.t('History instance') }</InputLabel>
-                    <Select
-                        value={ this.state.historyInstance}
-                        onChange={ e => this.setState({ historyInstance: e.target.value })}
-                    >
-                        { this.state.historyInstances.map(it => <MenuItem key={ it.id } value={ it.id } className={ clsx(!it.alive && this.props.classes.notAliveInstance )}>{ it.id }</MenuItem>) }
-                    </Select>
-                </FormControl>
-            </Toolbar>
+            { this.renderToolbar() }
             <div ref={ this.divRef } className={ this.props.classes.chart }>
                 { this.renderChart() }
             </div>
