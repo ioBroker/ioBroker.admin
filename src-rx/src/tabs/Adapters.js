@@ -20,6 +20,8 @@ import AddIcon from '@material-ui/icons/Add';
 import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
 import BuildIcon from '@material-ui/icons/Build';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import CloudIcon from '@material-ui/icons/Cloud';
+import CloudOffIcon from '@material-ui/icons/CloudOff';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import HelpIcon from '@material-ui/icons/Help';
@@ -67,6 +69,9 @@ const styles = theme => ({
     },
     keywords: {
         
+    },
+    connectionType: {
+        width: 40
     },
     installed: {
         width: 120
@@ -401,6 +406,7 @@ class Adapters extends React.Component {
                         const title = (adapter.title.toString() || '').replace('ioBroker Visualisation - ', '');
                         const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] : '';
                         const image = installed ? installed.localIcon : adapter.extIcon;
+                        const connectionType = adapter.connectionType ? adapter.connectionType : '-';
 
                         if (title instanceof Object || !desc) {
                             console.log(adapter);
@@ -431,6 +437,10 @@ class Adapters extends React.Component {
                                 </TableCell>
                                 <TableCell>
                                     { adapter.keywords && adapter.keywords.join(' ') }
+                                </TableCell>
+                                <TableCell>
+                                    { connectionType === 'cloud' ? <CloudIcon /> :
+                                        connectionType === 'local' ? <CloudOffIcon /> : connectionType }
                                 </TableCell>
                                 <TableCell>
                                     { installed &&
@@ -532,6 +542,7 @@ class Adapters extends React.Component {
                                     <TableCell className={ classes.keywords }>
                                         <Typography>{ this.t('Keywords') }</Typography>
                                     </TableCell>
+                                    <TableCell className={ classes.connectionType } />
                                     <TableCell className={ classes.installed }>
                                         <Typography>{ this.t('Installed') }</Typography>
                                     </TableCell>
