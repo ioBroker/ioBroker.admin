@@ -389,7 +389,8 @@ class Connection {
         }
 
         return new Promise((resolve, reject) =>
-            this._socket.emit('setForeignState', id, val, err => err ? reject(err) : resolve()));
+            this._socket.emit('setState', id, val, err =>
+                err ? reject(err) : resolve()));
     }
 
     getObjects(update, disableProgressUpdate) {

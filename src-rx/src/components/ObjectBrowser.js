@@ -238,6 +238,7 @@ const styles = theme => ({
         textOverflow: 'ellipsis',
         position: 'relative',
         verticalAlign: 'top',
+        cursor: 'text',
         '& .copyButton': {
             display: 'none'
         },
@@ -258,6 +259,7 @@ const styles = theme => ({
         textOverflow: 'ellipsis',
     },
     cellValueTextUnit: {
+        marginLeft: theme.spacing(0.5),
         opacity: 0.8,
     },
     cellValueTextState: {
@@ -295,7 +297,7 @@ const styles = theme => ({
     cellButtonsValueButton: {
         position: 'absolute',
         display: 'inline-block',
-        top: SMALL_BUTTON_SIZE / 2,
+        top: SMALL_BUTTON_SIZE / 2 - 2,
         opacity: 0.7,
         width: SMALL_BUTTON_SIZE - 2,
         height: SMALL_BUTTON_SIZE - 2,
@@ -1213,12 +1215,13 @@ class ObjectBrowser extends React.Component {
             expandAllVisible: false,
             expanded,
             toast: '',
-            edit: {},
             lang: this.props.lang,
             scrollBarWidth: 16,
             hasSomeCustoms: false,
             customDialog,
         };
+
+        this.edit = {};
 
         this.texts = {
             value:        this.props.t('tooltip_value'),
@@ -1468,7 +1471,7 @@ class ObjectBrowser extends React.Component {
         filter = Object.assign({}, this.state.filter, filter);
 
         if (JSON.stringify(this.state.filter) !== JSON.stringify(filter)) {
-            this.setState({ filter} );
+            this.setState({ filter });
         }
     }
 
@@ -1786,7 +1789,6 @@ class ObjectBrowser extends React.Component {
                 <div className={ classes.cellValueTooltipValue } key={ item.t + '_v' }>{ item.v }</div>,
                 !item.nbr ? <br key={ item.t + '_br' }/> : null]);
 
-
             if (this.defaultHistory && this.objects[id] && this.objects[id].common && this.objects[id].common.custom && this.objects[id].common.custom[this.defaultHistory]) {
                 info.valFull.push(<svg key="sparkline" className="sparkline" data-id={ id } style={ {fill: '#3d85de'} } width="200" height="30" strokeWidth="3"/>);
             }
@@ -1798,15 +1800,7 @@ class ObjectBrowser extends React.Component {
                 info.valText.u ? <span className={ classes.cellValueTextUnit } key="unit">{ info.valText.u }</span> : null,
                 info.valText.s !== undefined ? <span  className={ classes.cellValueTextState } key="states">({ info.valText.s })</span> : null,
                 <IconCopy className={ clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonCopy) } onClick={e => this.onCopy(e) } data-copy={ info.valText.v } key="cc" />,
-                <IconEdit className={ clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonEdit) } onClick={e => {
-                    const edit = {
-                        val:    this.states[id].val,
-                        q:      this.states[id].q,
-                        ack:    this.states[id].ack,
-                        id,
-                    }
-                    this.setState({ edit, updateOpened: true });
-                }} key="ce" />
+                //<IconEdit className={ clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonEdit) } key="ce" />
             ];
         }
 
@@ -1905,7 +1899,18 @@ class ObjectBrowser extends React.Component {
                 {this.visibleCols.includes('role')    ? <div className={ classes.cellRole }    style={{ width: widths.WIDTHS[1] }}>{ obj && obj.common && obj.common.role }</div> : null }
                 {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS[2] }}>{ item.data.rooms }</div> : null }
                 {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS[3] }}>{ item.data.funcs }</div> : null }
-                {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS[4] }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
+                {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS[4] }} onClick={e => {
+                    if (!item.data.obj || !this.states) {
+                        return null;
+                    }
+                    this.edit = {
+                        val:    this.states[id].val,
+                        q:      0,
+                        ack:    false,
+                        id,
+                    };
+                    this.setState({ updateOpened: true });
+                }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
                 {this.visibleCols.includes('buttons') ? <div className={ classes.cellButtons } style={{ width: widths.WIDTHS[5] }}>{ this.renderColumnButtons(id, item, classes) }</div> : null }
             </Grid>
         );
@@ -1984,14 +1989,20 @@ class ObjectBrowser extends React.Component {
         }
     }
 
+    onUpdate() {
+        this.props.socket.setState(this.edit.id, {val: this.edit.val, ack: this.edit.ack, q: this.edit.q})
+            .then(err =>
+                err && window.alert('Cannot write value: ' + err));
+    }
+
     renderEditDialog() {
         if (!this.state.updateOpened) {
             return null;
         }
 
-        const type = (this.objects[this.state.edit.id].common &&
-            this.objects[this.state.edit.id].common) ?
-            typeof this.objects[this.state.edit.id].common.type : typeof this.state.edit.val;
+        const type = (this.objects[this.edit.id].common &&
+            this.objects[this.edit.id].common) ?
+            typeof this.objects[this.edit.id].common.type : typeof this.edit.val;
 
         return <Dialog
             open={ true }
@@ -2005,11 +2016,9 @@ class ObjectBrowser extends React.Component {
                     {type === 'boolean' ?
                         <FormControlLabel
                             control={<Checkbox
-                                defaultChecked={this.state.edit.val}
+                                defaultChecked={ this.edit.val }
                                 onChange={e => {
-                                    const edit = JSON.parse(JSON.stringify(this.state.edit));
-                                    edit.val = e.target.checked;
-                                    this.setState({ edit });
+                                    this.edit.val = e.target.checked;
                                 }}/>}
                             label={this.props.t('Value')}
                         />
@@ -2017,20 +2026,18 @@ class ObjectBrowser extends React.Component {
                         (type === 'number' ?
                             <TextField
                                 label={this.props.t('Value')}
-                                defaultValue={this.state.edit.val}
-                                onChange={e => {
-                                    const edit = JSON.parse(JSON.stringify(this.state.edit));
-                                    edit.val = e.target.value;
-                                    this.setState({ edit });
+                                defaultValue={ this.edit.val }
+                                onKeyUp={e => e.keyCode === 13 && this.onUpdate() }
+                                onChange={e => e.
+                                    this.edit.val = e.target.value;
                                 }}/>
                                 :
                             <TextField
                                 label={this.props.t('Value')}
-                                defaultValue={this.state.edit.val}
+                                onKeyUp={e => e.keyCode === 13 && this.onUpdate() }
+                                defaultValue={this.edit.val}
                                 onChange={e => {
-                                    const edit = JSON.parse(JSON.stringify(this.state.edit));
-                                    edit.val = e.target.value;
-                                    this.setState({ edit });
+                                    this.edit.val = e.target.value;
                                 }}/>
                         )
                     }
@@ -2038,11 +2045,9 @@ class ObjectBrowser extends React.Component {
                     <br/>
                     <FormControlLabel
                         control={<Checkbox
-                            defaultChecked={ this.state.edit.ack }
+                            defaultChecked={ this.edit.ack }
                             onChange={e => {
-                                const edit = JSON.parse(JSON.stringify(this.state.edit));
-                                edit.ack = e.target.checked;
-                                this.setState({ edit });
+                                this.edit.ack = e.target.checked;
                             }}/>}
                         label={ this.props.t('Acknowledged') }
                     />
@@ -2090,8 +2095,8 @@ class ObjectBrowser extends React.Component {
             const widths = {
                 idWidth,
                 WIDTHS,
-                widthName: `calc(100% - ${idWidth + WIDTHS[0] + WIDTHS[1] + WIDTHS[2] + WIDTHS[3] + WIDTHS[4] + WIDTHS[5]}px)`,
-                widthNameHeader: `calc(100% - ${idWidth + WIDTHS[0] + WIDTHS[1] + WIDTHS[2] + WIDTHS[3] + WIDTHS[4] +  WIDTHS[5] + this.state.scrollBarWidth}px)`,
+                widthName:       `calc(100% - ${idWidth + WIDTHS[0] + WIDTHS[1] + WIDTHS[2] + WIDTHS[3] + WIDTHS[4] + WIDTHS[5]}px)`,
+                widthNameHeader: `calc(100% - ${idWidth + WIDTHS[0] + WIDTHS[1] + WIDTHS[2] + WIDTHS[3] + WIDTHS[4] + WIDTHS[5] + this.state.scrollBarWidth}px)`,
             };
 
             const classes = this.props.classes;
