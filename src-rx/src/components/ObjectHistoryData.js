@@ -570,50 +570,53 @@ class ObjectHistoryData extends React.Component {
     }
 
     onDelete() {
-        this.props.socket.sendTo(this.state.historyInstance, 'delete', this.state.selected, result =>
+        const tasks = this.state.selected.map(ts => ({ts, id: this.props.obj._id}));
+        this.props.socket.sendTo(this.state.historyInstance, 'delete', tasks, result =>
             this.readHistory());
     }
 
     onUpdate() {
-        const entry = {
-            id:   this.state.selected[0],
+        const state = {
             val:  this.edit.val,
             ack:  this.edit.ack,
+            ts:   this.state.selected[0],
             from: 'system.adapter.admin.' + this.adminInstance,
             q:    this.edit.q,
         };
-        Object.keys(entry).forEach(attr => {
-            if (entry[attr] === undefined) {
-                delete entry[attr];
+        Object.keys(state).forEach(attr => {
+            if (state[attr] === undefined) {
+                delete state[attr];
             }
         });
-        this.props.socket.sendTo(this.state.historyInstance, 'update', entry, result =>
+        if (!this.state.lcVisible && state.lc) {
+            delete state.lc;
+        }
+        this.props.socket.sendTo(this.state.historyInstance, 'update', [{id: this.props.obj._id, state}], result =>
             this.readHistory());
     }
 
     onInsert() {
-        const entry = {
-            id:   this.state.selected[0],
+        const state = {
             ts:   this.edit.ts,
             val:  this.edit.val,
             ack:  this.edit.ack,
             from: 'system.adapter.admin.' + this.adminInstance,
-            lc:   this.edit.ts,
             q:    this.edit.q || 0,
         };
         
-        if (!this.state.lcVisible) {
-            delete entry.lc;
+        if (!this.state.lcVisible && state.lc) {
+            delete state.lc;
         }
         
-        Object.keys(entry).forEach(attr => {
-            if (entry[attr] === undefined) {
-                delete entry[attr];
+        Object.keys(state).forEach(attr => {
+            if (state[attr] === undefined) {
+                delete state[attr];
             }
         });
-        this.props.socket.sendTo(this.state.historyInstance, 'insert', entry, result =>
+        this.props.socket.sendTo(this.state.historyInstance, 'insert', [{id: this.props.obj._id, state}], result =>
             this.readHistory());
     }
+
     formatTime(ms) {
         const time = new Date(ms);
         return padding2(time.getHours()) + ':' + padding2(time.getMinutes()) + ':' + padding2(time.getSeconds()) + '.' + padding3(time.getMilliseconds());
@@ -746,7 +749,7 @@ class ObjectHistoryData extends React.Component {
 
             <div className={this.props.classes.grow} />
 
-            { this.props.expertMode ? <IconButton onClick={ () => {
+            { false && this.props.expertMode ? <IconButton onClick={ () => {
                 const time = new Date();
                 const date = time.getFullYear() + '.' + padding2(time.getMonth() + 1) + '.' + padding2(time.getDate());
                 const tm = padding2(time.getHours()) + ':' + padding2(time.getMinutes()) + ':' + padding2(time.getSeconds()) + '.' + padding3(time.getMilliseconds());
