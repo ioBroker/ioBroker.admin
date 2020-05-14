@@ -92,8 +92,9 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 ### 4.1.1 (2020-04-25)
 * (bluefox) Started the development of GUI based on React (only for developers)
 
-### 4.0.10 (2020-04-23)
-* (bluefox) Caught the web server errors
+### 4.0.10 (2020-05-14)
+* (bluefox/Apollon77) Caught the web server errors
+* (Apollon77) Prepare for js-controller 3.0 release
 
 ### 4.0.9 (2020-04-19)
 * (Apollon77) Fix password encryption logics and make compatible to js-controller 3.x again

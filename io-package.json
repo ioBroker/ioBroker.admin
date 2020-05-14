@@ -17,16 +17,16 @@
         "zh-cn": "开始开发基于React的GUI（仅适用于开发人员）"
       },
       "4.0.10": {
-        "en": "Caught the web server errors",
-        "de": "Fehler beim Webserver",
-        "ru": "Поймали ошибки веб-сервера",
-        "pt": "Detectou os erros do servidor web",
-        "nl": "Betrapte de webserverfouten",
-        "fr": "Pris les erreurs du serveur Web",
-        "it": "Catturati gli errori del web server",
-        "es": "Atrapado los errores del servidor web",
-        "pl": "Wyłapał błędy serwera WWW",
-        "zh-cn": "捕获了Web服务器错误"
+        "en": "webserver error handling optimized, preparations for js-controller 3",
+        "de": "Webserver Fehlerbehandlung optimiert, Vorbereitungen für js-controller 3",
+        "ru": "Оптимизирована обработка ошибок веб-сервера, подготовка к js-controller 3",
+        "pt": "manipulação de erros do servidor da web otimizada, preparativos para o controlador js 3",
+        "nl": "webserver foutafhandeling geoptimaliseerd, voorbereidingen voor js-controller 3",
+        "fr": "gestion des erreurs du serveur Web optimisée, préparations pour js-controller 3",
+        "it": "ottimizzazione della gestione degli errori del server web, preparazione per js-controller 3",
+        "es": "manejo de errores del servidor web optimizado, preparativos para js-controller 3",
+        "pl": "zoptymalizowana obsługa błędów serwera WWW, przygotowania do kontrolera js 3",
+        "zh-cn": "优化了Web服务器的错误处理，为js-controller 3做准备"
       },
       "4.0.9": {
         "en": "The attempt to process error by the log show.",
