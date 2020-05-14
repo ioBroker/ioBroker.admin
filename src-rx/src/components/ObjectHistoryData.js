@@ -20,13 +20,23 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
-
-
+import frLocale from "date-fns/locale/fr";
+import ruLocale from "date-fns/locale/ru";
+import enLocale from "date-fns/locale/en-US";
+import esLocale from "date-fns/locale/es";
+import plLocale from "date-fns/locale/pl";
+import ptLocale from "date-fns/locale/pt";
+import itLocale from "date-fns/locale/it";
+import cnLocale from "date-fns/locale/zh-CN";
+import brLocale from "date-fns/locale/pt-BR";
+import deLocale from "date-fns/locale/de";
+import nlLocale from "date-fns/locale/nl";
 import {
     MuiPickersUtilsProvider,
     KeyboardTimePicker,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
+
 
 import clsx from 'clsx';
 import Table from "@material-ui/core/Table";
@@ -41,6 +51,20 @@ import TableContainer from "@material-ui/core/TableContainer";
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { FaPlusSquare as InsertIcon} from 'react-icons/all';
+
+const localeMap = {
+    en: enLocale,
+    fr: frLocale,
+    ru: ruLocale,
+    de: deLocale,
+    es: esLocale,
+    br: brLocale,
+    nl: nlLocale,
+    it: itLocale,
+    pt: ptLocale,
+    pl: plLocale,
+    'zh-cn': cnLocale,
+};
 
 function padding3(ms) {
     if (ms < 10) {
@@ -130,6 +154,12 @@ const styles = theme => ({
     },
     editorTimePicker: {
         marginLeft: theme.spacing(1),
+    },
+    cellAckTrue: {
+
+    },
+    cellAckFalse: {
+        color: '#FF6666',
     }
 });
 
@@ -139,7 +169,16 @@ class ObjectHistoryData extends React.Component {
         let from = new Date();
         from.setHours(from.getHours() - 24 * 7);
 
-        let relativeRange = window.localStorage.getItem('App.relativeRange') || '30';
+        let relativeRange      = window.localStorage.getItem('App.relativeRange') || '30';
+        let selected           = window.localStorage.getItem('App.historySelected') || '[]';
+        let lastSelected       = parseInt(window.localStorage.getItem('App.historyLastSelected'), 10) || null;
+        let lastSelectedColumn = window.localStorage.getItem('App.historyLastSelectedColumn') || null;
+
+        try {
+            selected = JSON.parse(selected);
+        } catch (e) {
+            selected = [];
+        }
 
         this.state = {
             loaded: false,
@@ -149,20 +188,26 @@ class ObjectHistoryData extends React.Component {
             end: new Date().getTime(),
             values: null,
             relativeRange,
-            selected: [],
-            lastSelected: null,
-            lastSelectedColumn: null,
+            selected,
+            lastSelected,
+            lastSelectedColumn,
             historyInstance: '',
             updateOpened: false,
             insertOpened: false,
             historyInstances: null,
             defaultHistory: '',
             lcVisible: true,
+            qVisible: true,
+            ackVisible: true,
+            fromVisible: true,
+            supportedFeatures: [],
         };
         this.adminInstance = parseInt(window.location.search.slice(1), 10) || 0;
 
         this.readTimeout = null;
         this.edit = {};
+
+        this.supportedFeaturesPromises = {};
 
         this.unit = this.props.obj.common && this.props.obj.common.unit ? ' ' + this.props.obj.common.unit : '';
 
@@ -171,6 +216,36 @@ class ObjectHistoryData extends React.Component {
             .then(() => this.setRelativeInterval(this.state.relativeRange, true));
 
         this.onChangeBound = this.onChange.bind(this);
+    }
+
+    readSupportedFeatures(historyInstances) {
+        historyInstances = historyInstances || this.state.historyInstances;
+        if (!historyInstances) {
+            return Promise.resolve([]);
+        } else
+        if (this.supportedFeaturesPromises[historyInstances]) {
+            return this.supportedFeaturesPromises[historyInstances];
+        }
+
+        this.supportedFeaturesPromises[historyInstances] = new Promise(resolve => {
+            this.readSupportedFeaturesTimeout && clearTimeout(this.readSupportedFeaturesTimeout);
+            this.readSupportedFeaturesTimeout = setTimeout(() => {
+                this.readSupportedFeaturesTimeout = null;
+                resolve([]);
+            }, 2000);
+
+            this.props.socket.sendTo(historyInstances, 'features', null)
+                .then(result => {
+                    if (this.readSupportedFeaturesTimeout) {
+                        this.readSupportedFeaturesTimeout && clearTimeout(this.readSupportedFeaturesTimeout);
+                        this.readSupportedFeaturesTimeout = null;
+                        resolve(result ? result.supportedFeatures || [] : []);
+                    } else {
+                        this.setState({ supportedFeatures: result ? result.supportedFeatures || [] : [] });
+                    }
+                });
+        });
+        return this.supportedFeaturesPromises[historyInstances];
     }
 
     componentDidMount() {
@@ -219,11 +294,14 @@ class ObjectHistoryData extends React.Component {
                 if (!historyInstance && list.length) {
                     historyInstance = defaultHistory;
                 }
-                this.setState( {
-                    historyInstances: list,
-                    defaultHistory,
-                    historyInstance
-                });
+                this.readSupportedFeatures(historyInstance)
+                    .then(supportedFeatures =>
+                        this.setState( {
+                            historyInstances: list,
+                            defaultHistory,
+                            historyInstance,
+                            supportedFeatures,
+                        }));
             });
     }
 
@@ -287,13 +365,29 @@ class ObjectHistoryData extends React.Component {
             // merge range and chart
             let chart = [];
             let range = this.rangeValues;
-            let anyLC = false;
+            let lcVisible = false;
+            let qVisible = false;
+            let ackVisible = false;
+            let fromVisible = false;
+            let cVisible = false;
 
             // get the very first item
             if (range && range.length && (!values || !values.length || range[0].ts < values[0].ts)) {
                 chart.push(range[0]);
                 chart.push({ts: range[0].ts + 1, e: true});
                 console.log('add ' + new Date(range[0].ts).toISOString() + ': ' + range[0].val);
+                if (!qVisible && range[0].q !== undefined) {
+                    qVisible = true;
+                }
+                if (!ackVisible && range[0].ack !== undefined) {
+                    ackVisible = true;
+                }
+                if (!fromVisible && range[0].from) {
+                    fromVisible = true;
+                }
+                if (!cVisible && range[0].c) {
+                    cVisible = true;
+                }
             }
 
             if (values && values.length) {
@@ -304,8 +398,20 @@ class ObjectHistoryData extends React.Component {
                         if (values[t].from && values[t].from.startsWith('system.adapter.')) {
                             values[t].from = values[t].from.substring(15);
                         }
-                        if (values[t].lc) {
-                            anyLC = true;
+                        if (!lcVisible && values[t].lc) {
+                            lcVisible = true;
+                        }
+                        if (!qVisible && values[t].q !== undefined) {
+                            qVisible = true;
+                        }
+                        if (!ackVisible && values[t].ack !== undefined) {
+                            ackVisible = true;
+                        }
+                        if (!fromVisible && values[t].from) {
+                            fromVisible = true;
+                        }
+                        if (!cVisible && range[0].c) {
+                            cVisible = true;
                         }
                         console.log('add value ' + new Date(values[t].ts).toISOString() + ': ' + values[t].val)
                     } else if (chart[chart.length - 1].ts === values[t].ts && chart[chart.length - 1].val !== values[t].ts) {
@@ -320,7 +426,7 @@ class ObjectHistoryData extends React.Component {
                 chart.push({noData: true});
             }
 
-            this.setState( {values: chart, lcVisible: anyLC});
+            this.setState( {values: chart, lcVisible, fromVisible, qVisible, ackVisible, cVisible});
         });
     }
 
@@ -393,6 +499,9 @@ class ObjectHistoryData extends React.Component {
             selected = [ts];
         }
 
+        window.localStorage.setItem('App.historyLastSelected', ts.toString());
+        window.localStorage.setItem('App.historyLastSelectedColumn', column);
+        window.localStorage.setItem('App.historySelected', JSON.stringify(selected));
         this.setState({selected, lastSelected: ts, lastSelectedColumn: column});
     }
 
@@ -440,14 +549,14 @@ class ObjectHistoryData extends React.Component {
                         { state.val + this.unit }
                         { selected && this.state.lastSelectedColumn === 'val' ? <div key="focused" className={ classes.rowFocused } /> : ''}
                     </TableCell>
-                    <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'ack') }>
+                    { this.state.ackVisible ? <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'ack') } className={ clsx(state.ack ? classes.cellAckTrue : classes.cellAckFalse) }>
                         { state.ack ? 'true' : 'false' }
                         { selected && this.state.lastSelectedColumn === 'ack' ? <div key="focused" className={ classes.rowFocused } /> : ''}
-                    </TableCell>
-                    <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'from') }>
+                    </TableCell> : null }
+                    { this.state.fromVisible ? <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'from') }>
                         { state.from || '' }
                         { selected && this.state.lastSelectedColumn === 'from' ? <div key="focused" className={ classes.rowFocused } /> : ''}
-                    </TableCell>
+                    </TableCell> : null }
                     <TableCell onClick={ e => !interpolated && this.onToggleSelect(e, ts, 'ts') }>
                         { new Date(state.ts).toLocaleDateString() + ' ' + new Date(state.ts).toLocaleTimeString() + '.' + padding3(state.ts % 1000) }
                         { selected && this.state.lastSelectedColumn === 'ts' ? <div key="focused" className={ classes.rowFocused } /> : ''}
@@ -484,6 +593,29 @@ class ObjectHistoryData extends React.Component {
             now.setHours(0);
             now.setMinutes(0);
             start = now.getTime();
+        } else if (mins === 'week') {
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setFullYear(now.getFullYear() - 1);
+            // find week start
+            if (now.getDay()) { // if not sunday
+                now.setDate(now.getDate() - now.getDay() - 1);
+            } else {
+                now.setDate(now.getDate() - 6);
+            }
+
+            this.chart.min = now.getTime();
+        } else if (mins === '2weeks') {
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setFullYear(now.getFullYear() - 1);
+            // find week start
+            if (now.getDay()) { // if not sunday
+                now.setDate(now.getDate() - now.getDay() - 8);
+            } else {
+                now.setDate(now.getDate() - 13);
+            }
+            this.chart.min = now.getTime();
         } else if (mins === 'month') {
             now.setHours(0);
             now.setMinutes(0);
@@ -544,11 +676,12 @@ class ObjectHistoryData extends React.Component {
 
     renderConfirmDialog() {
         return <Dialog
-            open={ this.state.areYouSure }
+            open={ !!this.state.areYouSure }
             onClose={ () => this.setState({ areYouSure: false }) }
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
+
             <DialogTitle id="alert-dialog-title">{ this.props.t('') }</DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
@@ -570,12 +703,23 @@ class ObjectHistoryData extends React.Component {
     }
 
     onDelete() {
-        const tasks = this.state.selected.map(ts => ({ts, id: this.props.obj._id}));
-        this.props.socket.sendTo(this.state.historyInstance, 'delete', tasks, result =>
-            this.readHistory());
+        const tasks = this.state.selected.map(ts => ({state: {ts}, id: this.props.obj._id}));
+        this.props.socket.sendTo(this.state.historyInstance, 'delete', tasks)
+            .then(() =>
+                this.readHistory());
     }
 
     onUpdate() {
+        if (this.props.obj.common) {
+            if (this.props.obj.common.type === 'number') {
+                if (typeof this.edit.val !== 'number') {
+                    this.edit.val = parseFloat(this.edit.val.replace(',', '.'));
+                }
+            } else if (this.props.obj.common.type === 'boolean') {
+                this.edit.val = this.edit.val === 'true' || this.edit.val === 'TRUE' || this.edit.val === true || this.edit.val === '1' || this.edit.val === 1;
+            }
+        }
+
         const state = {
             val:  this.edit.val,
             ack:  this.edit.ack,
@@ -591,11 +735,20 @@ class ObjectHistoryData extends React.Component {
         if (!this.state.lcVisible && state.lc) {
             delete state.lc;
         }
-        this.props.socket.sendTo(this.state.historyInstance, 'update', [{id: this.props.obj._id, state}], result =>
-            this.readHistory());
+        this.props.socket.sendTo(this.state.historyInstance, 'update', [{id: this.props.obj._id, state}])
+            .then(() =>
+                this.readHistory());
     }
 
     onInsert() {
+        if (this.props.obj.common) {
+            if (this.props.obj.common.type === 'number') {
+                this.edit.val = parseFloat(this.edit.val.replace(',', '.'));
+            } else if (this.props.obj.common.type === 'boolean') {
+                this.edit.val = this.edit.val === 'true' || this.edit.val === 'TRUE' || this.edit.val === true || this.edit.val === '1' || this.edit.val === 1;
+            }
+        }
+
         const state = {
             ts:   this.edit.ts,
             val:  this.edit.val,
@@ -613,18 +766,21 @@ class ObjectHistoryData extends React.Component {
                 delete state[attr];
             }
         });
-        this.props.socket.sendTo(this.state.historyInstance, 'insert', [{id: this.props.obj._id, state}], result =>
-            this.readHistory());
+        this.props.socket.sendTo(this.state.historyInstance, 'insert', [{id: this.props.obj._id, state}])
+            .then(() =>
+                this.readHistory());
     }
 
     formatTime(ms) {
         const time = new Date(ms);
         return padding2(time.getHours()) + ':' + padding2(time.getMinutes()) + ':' + padding2(time.getSeconds()) + '.' + padding3(time.getMilliseconds());
     }
+
     formatDate(ms) {
         const time = new Date(ms);
         return padding2(time.getDate()) + '.' + padding2(time.getMonth() + 1) + '.' + time.getFullYear();
     }
+
     renderEditDialog() {
         return <Dialog
             open={ this.state.updateOpened || this.state.insertOpened }
@@ -635,13 +791,24 @@ class ObjectHistoryData extends React.Component {
             <DialogTitle id="edit-dialog-title">{ this.props.t('') }</DialogTitle>
             <DialogContent>
                 <form className={ this.props.classes.dialogForm } noValidate autoComplete="off">
-                    <TextField
-                        label={ this.props.t('Value') }
-                        defaultValue={ this.edit.val }
-                        onChange={e => {
-                            this.edit.val = e.target.value;
-                       } }
-                    />
+                    {typeof this.edit.val === 'boolean' ?
+                        <FormControlLabel
+                            control={<Checkbox
+                                defaultChecked={this.edit.val}
+                                onChange={e => {
+                                    this.edit.val = e.target.checked;
+                                }}/>}
+                            label={this.props.t('Value')}
+                        />
+                        :
+                        <TextField
+                            label={this.props.t('Value')}
+                            defaultValue={this.edit.val}
+                            onChange={e => {
+                                this.edit.val = e.target.value;
+                            }}
+                        />
+                    }
                     <br/>
                     <FormControlLabel
                         control={<Checkbox
@@ -649,69 +816,67 @@ class ObjectHistoryData extends React.Component {
                             onChange={e => {
                                 this.edit.ack = e.target.checked;
                             } }/>}
-                        label={ this.props.t('ack') }
+                        label={ this.props.t('Acknowledged') }
                     />
 
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <Grid container justify="space-around">
-                            {/*<KeyboardDatePicker
-                                margin="normal"
-                                id="date-picker-dialog"
-                                label="Date picker dialog"
-                                format="fullDate"
-                                value={ time }
-                                onChange={date => {
-                                    const edit = JSON.parse(JSON.stringify(this.state.edit));
-                                    edit.ts = date.getTime();
-                                    this.setState({ edit });
-                                } }
-                                KeyboardButtonProps={{ 'aria-label': 'change date', }}
-                            />*/}
-                            <TextField
-                                label={ this.props.t('Date')}
-                                defaultValue={ this.edit.date }
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                onChange={e => {
-                                    this.edit.date = e.target.value;
-                                } }
-                            />
-                            {/*<KeyboardTimePicker
-                                margin="normal"
-                                id="time-picker"
-                                label="Time picker"
-                                format="mm:HH:ss"
-                                className={ this.props.classes.editorTimePicker}
-                                value={ new Date(this.state.edit.ts) }
-                                onChange={date => {
-                                    const edit = JSON.parse(JSON.stringify(this.state.edit));
-                                    edit.ts = date.getTime();
-                                    this.setState({ edit });
-                                } }
-                                KeyboardButtonProps={{ 'aria-label': 'change time', }}
-                            />*/}
-                            <TextField
-                                className={ this.props.classes.editorTimePicker}
-                                label={ this.props.t('Value') }
-                                defaultValue={ this.edit.time }
-                                onChange={e => {
-                                    this.edit.time = e.target.value;
-                                } }
-                            />
-                        </Grid>
-                    </MuiPickersUtilsProvider>
+                    {this.state.insertOpened ?
+                        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[this.props.lang]}>
+                            <Grid container justify="space-around">
+                                {/*<KeyboardDatePicker
+                                    margin="normal"
+                                    id="date-picker-dialog"
+                                    label="Date picker dialog"
+                                    format="fullDate"
+                                    value={ time }
+                                    onChange={date => {
+                                        const edit = JSON.parse(JSON.stringify(this.state.edit));
+                                        edit.ts = date.getTime();
+                                        this.setState({ edit });
+                                    } }
+                                    KeyboardButtonProps={{ 'aria-label': 'change date', }}
+                                />*/}
+                                {/*<TextField
+                                    label={ this.props.t('Date')}
+                                    defaultValue={ this.edit.date }
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    onChange={e => {
+                                        this.edit.date = e.target.value;
+                                    } }
+                                />*/}
+                                <KeyboardTimePicker
+                                    margin="normal"
+                                    label="Time picker"
+                                    ampm={false}
+                                    className={ this.props.classes.editorTimePicker}
+                                    value={ new Date(this.edit.ts) }
+                                    onChange={date => {
+                                        this.edit.ts = date.getTime();
+                                    } }
+                                    KeyboardButtonProps={{ 'aria-label': 'change time', }}
+                                />*/}
+                                <TextField
+                                    className={ this.props.classes.editorTimePicker}
+                                    label={ this.props.t('Value') }
+                                    defaultValue={ this.edit.time }
+                                    onChange={e => {
+                                        this.edit.time = e.target.value;
+                                    } }
+                                />
+                            </Grid>
+                        </MuiPickersUtilsProvider>
+                        : null }
                 </form>
             </DialogContent>
             <DialogActions>
-                <Button onClick={ () => this.setState({ updateOpened: false, insertOpened: false }) } color="secondary">{ this.props.t('Cancel') }
-                </Button>
+                <Button onClick={ () => this.setState({ updateOpened: false, insertOpened: false }) } color="secondary">{ this.props.t('Cancel') }</Button>
                 <Button onClick={ () => {
                     const isUpdate = this.state.updateOpened;
                     this.setState({ updateOpened: false, insertOpened: false }, () =>
                         isUpdate ? this.onUpdate() : this.onInsert());
                 }} 
-                color="primary" autoFocus>{ this.state.insertOpened ? this.props.t('Update') : this.props.t('Add') }</Button>
+                color="primary" autoFocus>{ this.state.updateOpened ? this.props.t('Update') : this.props.t('Add') }</Button>
             </DialogActions>
         </Dialog>
     }
@@ -722,7 +887,12 @@ class ObjectHistoryData extends React.Component {
                 <InputLabel>{ this.props.t('History instance') }</InputLabel>
                 <Select
                     value={ this.state.historyInstance}
-                    onChange={ e => this.setState({ historyInstance: e.target.value })}
+                    onChange={ e => {
+                        this.readSupportedFeatures(e.target.value)
+                            .then(supportedFeatures =>
+                                this.setState({ historyInstance: e.target.value, supportedFeatures }, () =>
+                                    this.readHistory()));
+                    }}
                 >
                     { this.state.historyInstances.map(it => <MenuItem key={ it.id } value={ it.id } className={ clsx(!it.alive && this.props.classes.notAliveInstance )}>{ it.id }</MenuItem>) }
                 </Select>
@@ -735,21 +905,54 @@ class ObjectHistoryData extends React.Component {
                     onChange={ e => this.setRelativeInterval(e.target.value) }
                 >
                     <MenuItem key={ 'custom' } value={ 'absolute' } className={ this.props.classes.notAliveInstance }>{ this.props.t('custom range') }</MenuItem>
-                    <MenuItem key={ '1' } value={ 10 }            >{ this.props.t('last 10 minutes') }</MenuItem>
-                    <MenuItem key={ '2' } value={ 30 }            >{ this.props.t('last 30 minutes') }</MenuItem>
-                    <MenuItem key={ '3' } value={ 60 }            >{ this.props.t('last hour') }</MenuItem>
-                    <MenuItem key={ '4' } value={ 'day' }         >{ this.props.t('this day') }</MenuItem>
-                    <MenuItem key={ '5' } value={ 24 * 60 }       >{ this.props.t('last 24 hours') }</MenuItem>
-                    <MenuItem key={ '6' } value={ 'month' }       >{ this.props.t('this month') }</MenuItem>
-                    <MenuItem key={ '7' } value={ 30 * 24 * 60 }  >{ this.props.t('last 30 days') }</MenuItem>
-                    <MenuItem key={ '8' } value={ 'year' }        >{ this.props.t('this year') }</MenuItem>
-                    <MenuItem key={ '9' } value={ '12months' }    >{ this.props.t('last 12 months') }</MenuItem>
+                    <MenuItem key={ '1'  } value={ 10 }            >{ this.props.t('last 10 minutes') }</MenuItem>
+                    <MenuItem key={ '2'  } value={ 30 }            >{ this.props.t('last 30 minutes') }</MenuItem>
+                    <MenuItem key={ '3'  } value={ 60 }            >{ this.props.t('last hour') }</MenuItem>
+                    <MenuItem key={ '4'  } value={ 'day' }         >{ this.props.t('this day') }</MenuItem>
+                    <MenuItem key={ '5'  } value={ 24 * 60 }       >{ this.props.t('last 24 hours') }</MenuItem>
+                    <MenuItem key={ '6'  } value={ 'week' }        >{ this.props.t('this week') }</MenuItem>
+                    <MenuItem key={ '7'  } value={ 24 * 60 * 7 }   >{ this.props.t('last week') }</MenuItem>
+                    <MenuItem key={ '8'  } value={ '2weeks' }      >{ this.props.t('this 2 weeks') }</MenuItem>
+                    <MenuItem key={ '9'  } value={ 24 * 60 * 14 }  >{ this.props.t('last 2 weeks') }</MenuItem>
+                    <MenuItem key={ '10' } value={ 'month' }       >{ this.props.t('this month') }</MenuItem>
+                    <MenuItem key={ '11' } value={ 30 * 24 * 60 }  >{ this.props.t('last 30 days') }</MenuItem>
+                    <MenuItem key={ '12' } value={ 'year' }        >{ this.props.t('this year') }</MenuItem>
+                    <MenuItem key={ '13' } value={ '12months' }    >{ this.props.t('last 12 months') }</MenuItem>
                 </Select>
             </FormControl>
 
+            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[this.props.lang]}>
+                <Grid container justify="space-around">
+                    <KeyboardDatePicker
+                        disableToolbar
+                        variant="inline"
+                        margin="normal"
+                        label={ this.props.t('Start date') }
+                        value={this.state.start}
+                        onChange={date => {
+                            this.setState({start: date})
+                        }}
+                        KeyboardButtonProps={{
+                            'aria-label': 'change date',
+                        }}
+                    />
+                    <KeyboardTimePicker
+                        margin="normal"
+                        ampm={false}
+                        label={ this.props.t('Start time') }
+                        value={this.state.start}
+                        onChange={date => {
+                            this.setState({start: date})
+                        }}
+                        KeyboardButtonProps={{
+                            'aria-label': 'change time',
+                        }}
+                    />
+                </Grid>
+            </MuiPickersUtilsProvider>
             <div className={this.props.classes.grow} />
 
-            { false && this.props.expertMode ? <IconButton onClick={ () => {
+            { this.state.supportedFeatures.includes('insert') && this.props.expertMode ? <IconButton onClick={ () => {
                 const time = new Date();
                 const date = time.getFullYear() + '.' + padding2(time.getMonth() + 1) + '.' + padding2(time.getDate());
                 const tm = padding2(time.getHours()) + ':' + padding2(time.getMinutes()) + ':' + padding2(time.getSeconds()) + '.' + padding3(time.getMilliseconds());
@@ -768,7 +971,7 @@ class ObjectHistoryData extends React.Component {
             }}>
                 <InsertIcon />
             </IconButton> : null }
-            { this.props.expertMode ? <IconButton disabled={ this.state.selected.length !== 1 }
+            { this.state.supportedFeatures.includes('update') && this.props.expertMode ? <IconButton disabled={ this.state.selected.length !== 1 }
                 onClick={ () => {
                     const state = JSON.parse(JSON.stringify(this.state.values.find(it => it.ts === this.state.lastSelected)));
                     const time = new Date(state.ts);
@@ -777,11 +980,11 @@ class ObjectHistoryData extends React.Component {
                     this.edit = state;
 
                     this.setState( {
-                        insertOpened: true });
+                        updateOpened: true });
                 }}>
                 <EditIcon />
             </IconButton> : null }
-            { this.props.expertMode ? <IconButton disabled={ !this.state.selected.length } onClick={() => {
+            { this.state.supportedFeatures.includes('delete') && this.props.expertMode ? <IconButton disabled={ !this.state.selected.length } onClick={() => {
                 if (this.state.suppressMessage && Date.now() - this.state.suppressMessage < 300000) {
                     this.onDelete();
                 } else {

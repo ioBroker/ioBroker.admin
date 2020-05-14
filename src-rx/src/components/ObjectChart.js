@@ -11,7 +11,6 @@ import Select from '@material-ui/core/Select';
 import Toolbar from '@material-ui/core/Toolbar';
 import Fab from '@material-ui/core/Fab';
 
-
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 import echarts from 'echarts/lib/echarts';
 import 'echarts/lib/chart/line';
@@ -551,6 +550,29 @@ class ObjectChart extends React.Component {
             now.setHours(0);
             now.setMinutes(0);
             this.chart.min = now.getTime();
+        } else if (mins === 'week') {
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setFullYear(now.getFullYear() - 1);
+            // find week start
+            if (now.getDay()) { // if not sunday
+                now.setDate(now.getDate() - now.getDay() - 1);
+            } else {
+                now.setDate(now.getDate() - 6);
+            }
+
+            this.chart.min = now.getTime();
+        } else if (mins === '2weeks') {
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setFullYear(now.getFullYear() - 1);
+            // find week start
+            if (now.getDay()) { // if not sunday
+                now.setDate(now.getDate() - now.getDay() - 8);
+            } else {
+                now.setDate(now.getDate() - 13);
+            }
+            this.chart.min = now.getTime();
         } else if (mins === 'month') {
             now.setHours(0);
             now.setMinutes(0);
@@ -562,7 +584,7 @@ class ObjectChart extends React.Component {
             now.setDate(1);
             now.setMonth(0);
             this.chart.min = now.getTime();
-        }  else if (mins === '12months') {
+        } else if (mins === '12months') {
             now.setHours(0);
             now.setMinutes(0);
             now.setFullYear(now.getFullYear() - 1);
@@ -740,15 +762,19 @@ class ObjectChart extends React.Component {
                     onChange={ e => this.setRelativeInterval(e.target.value) }
                 >
                     <MenuItem key={ 'custom' } value={ 'absolute' } className={ this.props.classes.notAliveInstance }>{ this.props.t('custom range') }</MenuItem>
-                    <MenuItem key={ '1' } value={ 10 }            >{ this.props.t('last 10 minutes') }</MenuItem>
-                    <MenuItem key={ '2' } value={ 30 }            >{ this.props.t('last 30 minutes') }</MenuItem>
-                    <MenuItem key={ '3' } value={ 60 }            >{ this.props.t('last hour') }</MenuItem>
-                    <MenuItem key={ '4' } value={ 'day' }         >{ this.props.t('this day') }</MenuItem>
-                    <MenuItem key={ '5' } value={ 24 * 60 }       >{ this.props.t('last 24 hours') }</MenuItem>
-                    <MenuItem key={ '6' } value={ 'month' }       >{ this.props.t('this month') }</MenuItem>
-                    <MenuItem key={ '7' } value={ 30 * 24 * 60 }  >{ this.props.t('last 30 days') }</MenuItem>
-                    <MenuItem key={ '8' } value={ 'year' }        >{ this.props.t('this year') }</MenuItem>
-                    <MenuItem key={ '9' } value={ '12months' }    >{ this.props.t('last 12 months') }</MenuItem>
+                    <MenuItem key={ '1'  } value={ 10 }            >{ this.props.t('last 10 minutes') }</MenuItem>
+                    <MenuItem key={ '2'  } value={ 30 }            >{ this.props.t('last 30 minutes') }</MenuItem>
+                    <MenuItem key={ '3'  } value={ 60 }            >{ this.props.t('last hour') }</MenuItem>
+                    <MenuItem key={ '4'  } value={ 'day' }         >{ this.props.t('this day') }</MenuItem>
+                    <MenuItem key={ '5'  } value={ 24 * 60 }       >{ this.props.t('last 24 hours') }</MenuItem>
+                    <MenuItem key={ '6'  } value={ 'week' }        >{ this.props.t('this week') }</MenuItem>
+                    <MenuItem key={ '7'  } value={ 24 * 60 * 7 }   >{ this.props.t('last week') }</MenuItem>
+                    <MenuItem key={ '8'  } value={ '2weeks' }      >{ this.props.t('this 2 weeks') }</MenuItem>
+                    <MenuItem key={ '9'  } value={ 24 * 60 * 14 }  >{ this.props.t('last 2 weeks') }</MenuItem>
+                    <MenuItem key={ '10' } value={ 'month' }       >{ this.props.t('this month') }</MenuItem>
+                    <MenuItem key={ '11' } value={ 30 * 24 * 60 }  >{ this.props.t('last 30 days') }</MenuItem>
+                    <MenuItem key={ '12' } value={ 'year' }        >{ this.props.t('this year') }</MenuItem>
+                    <MenuItem key={ '13' } value={ '12months' }    >{ this.props.t('last 12 months') }</MenuItem>
                 </Select>
             </FormControl>
             <div className={this.props.classes.grow} />

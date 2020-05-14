@@ -14,7 +14,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
-import secondary from '@material-ui/core/colors/orange';
 import Grid from '@material-ui/core/Grid';
 import copy from 'copy-to-clipboard';
 import Badge from '@material-ui/core/Badge';
@@ -56,6 +55,16 @@ import CopyContentIcon from './CopyIcon';
 import TabContainer from './TabContainer';
 import TabContent from './TabContent';
 import TabHeader from './TabHeader';
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
+import TextField from "@material-ui/core/TextField";
+import {KeyboardTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
 
 const ROW_HEIGHT = 32;
 const ITEM_LEVEL = ROW_HEIGHT;
@@ -282,6 +291,24 @@ const styles = theme => ({
     },
     cellButtonsButtonWithCustoms: {
         color: theme.palette.secondary.main,
+    },
+    cellButtonsValueButton: {
+        position: 'absolute',
+        display: 'inline-block',
+        top: SMALL_BUTTON_SIZE / 2,
+        opacity: 0.7,
+        width: SMALL_BUTTON_SIZE - 2,
+        height: SMALL_BUTTON_SIZE - 2,
+        color: theme.palette.action.active,
+        '&:hover': {
+            opacity: 1,
+        }
+    },
+    cellButtonsValueButtonCopy: {
+        right: theme.spacing(1),
+    },
+    cellButtonsValueButtonEdit: {
+        right: SMALL_BUTTON_SIZE / 2 + theme.spacing(2),
     },
     filteredOut: {
         opacity: 0.3
@@ -634,7 +661,6 @@ function buildTree(objects, options) {
                         curPath += (curPath ? '.' : '') + parts[k];
                         // level does not exist
                         if (!binarySearch(info.ids, curPath)) {
-
                             const _croot = {
                                 data: {
                                     name:   parts[k],
@@ -1130,6 +1156,7 @@ class ObjectBrowser extends React.Component {
     constructor(props) {
         super(props);
 
+        this.lastSelectedItem = window.localStorage.getItem((this.props.key || 'App') + '.objectSelected') || '';
         let expanded = window.localStorage.getItem((this.props.key || 'App') + '.objectExpanded') || '[]';
         try {
             expanded = JSON.parse(expanded);
@@ -1161,8 +1188,6 @@ class ObjectBrowser extends React.Component {
 
         this.selectedFound = false;
         this.copyContentImg = CopyContentIcon;
-        this.treeTableRef = React.createRef();
-        this.mainRef = React.createRef();
         this.root = null;
         this.states = {};
         this.subscribes = [];
@@ -1180,7 +1205,6 @@ class ObjectBrowser extends React.Component {
             this.pauseSubscribe(true);
         }
 
-
         this.state = {
             loaded: false,
             selected: (this.props.selected || '').replace(/["']/g, ''),
@@ -1189,13 +1213,12 @@ class ObjectBrowser extends React.Component {
             expandAllVisible: false,
             expanded,
             toast: '',
+            edit: {},
             lang: this.props.lang,
             scrollBarWidth: 16,
             hasSomeCustoms: false,
             customDialog,
         };
-
-
 
         this.texts = {
             value:        this.props.t('tooltip_value'),
@@ -1287,7 +1310,10 @@ class ObjectBrowser extends React.Component {
     }
 
     onSelect(selected, isDouble) {
-        selected !== this.state.selected && this.setState({selected});
+        this.lastSelectedItem = selected;
+        window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', selected);
+
+        selected !== this.state.selected && this.setState({ selected });
         const name = selected ? UtilsAdapter.getObjectName(this.objects, selected, null, { language: this.state.lang }) : '';
         this.props.onSelect && this.props.onSelect(selected, name, isDouble);
     }
@@ -1650,10 +1676,18 @@ class ObjectBrowser extends React.Component {
         }
 
         return [
-            <IconButton key="edit" className={ classes.cellButtonsButton } size="small" aria-label="edit" title={ this.texts.editObject }>
+            <IconButton key="edit" className={ classes.cellButtonsButton } size="small" aria-label="edit" title={ this.texts.editObject }
+                        onClick={ () => {
+                            window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', id);
+
+                        }}>
                 <IconEdit className={ classes.cellButtonsButtonIcon } />
             </IconButton>,
-            <IconButton key="delete" className={ classes.cellButtonsButton }  size="small" aria-label="delete" title={ this.texts.deleteObject }>
+            <IconButton key="delete" className={ classes.cellButtonsButton }  size="small" aria-label="delete"
+                        onClick={ () => {
+                            window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', id);
+                        }}
+                        title={ this.texts.deleteObject }>
                 <IconDelete className={ classes.cellButtonsButtonIcon }  />
             </IconButton>,
             this.info.hasSomeCustoms && item.data.obj.type === 'state' ? <IconButton
@@ -1663,6 +1697,8 @@ class ObjectBrowser extends React.Component {
                 aria-label="config"
                 title={ this.texts.customConfig }
                 onClick={ () => {
+                    window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', id);
+
                     this.pauseSubscribe(true);
                     Router.doNavigate(null, 'custom', id);
                     this.setState({ customDialog: [id]});
@@ -1754,10 +1790,6 @@ class ObjectBrowser extends React.Component {
             if (this.defaultHistory && this.objects[id] && this.objects[id].common && this.objects[id].common.custom && this.objects[id].common.custom[this.defaultHistory]) {
                 info.valFull.push(<svg key="sparkline" className="sparkline" data-id={ id } style={ {fill: '#3d85de'} } width="200" height="30" strokeWidth="3"/>);
             }
-            /*
-            info.valFull.push(<IconCopy className={ classes.cellValueTooltipCopy }  key="cc" />);
-            info.valFull.push(<IconEdit className={ classes.cellValueTooltipEdit }  key="ce" />);
-            */
 
             info.val = info.valText.v || '';
 
@@ -1765,6 +1797,16 @@ class ObjectBrowser extends React.Component {
                 <span key="valText">{ info.valText.v.toString() }</span>,
                 info.valText.u ? <span className={ classes.cellValueTextUnit } key="unit">{ info.valText.u }</span> : null,
                 info.valText.s !== undefined ? <span  className={ classes.cellValueTextState } key="states">({ info.valText.s })</span> : null,
+                <IconCopy className={ clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonCopy) } onClick={e => this.onCopy(e) } data-copy={ info.valText.v } key="cc" />,
+                <IconEdit className={ clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonEdit) } onClick={e => {
+                    const edit = {
+                        val:    this.states[id].val,
+                        q:      this.states[id].q,
+                        ack:    this.states[id].ack,
+                        id,
+                    }
+                    this.setState({ edit, updateOpened: true });
+                }} key="ce" />
             ];
         }
 
@@ -1910,13 +1952,12 @@ class ObjectBrowser extends React.Component {
             const scrollBarWidth = this.tableRef.current.offsetWidth - this.tableRef.current.clientWidth;
             if (this.state.scrollBarWidth !== scrollBarWidth) {
                 setTimeout(() => this.setState({ scrollBarWidth }), 100);
-            }
-        }
-        if (!this.selectedFound) {
-            if (this.props.selected && this.treeTableRef.current) {
-                const node = findNode(this.root, this.props.selected);
-                this.treeTableRef.current.scrollIntoView(node);
-                this.selectedFound = true;
+            } else {
+                if (!this.selectedFound && (this.props.selected || this.lastSelectedItem)) {
+                    const node = window.document.getElementById(this.props.selected || this.lastSelectedItem);
+                    node && node.scrollIntoView();
+                    this.selectedFound = true;
+                }
             }
         }
     }
@@ -1941,6 +1982,78 @@ class ObjectBrowser extends React.Component {
         } else {
             return null;
         }
+    }
+
+    renderEditDialog() {
+        if (!this.state.updateOpened) {
+            return null;
+        }
+
+        const type = (this.objects[this.state.edit.id].common &&
+            this.objects[this.state.edit.id].common) ?
+            typeof this.objects[this.state.edit.id].common.type : typeof this.state.edit.val;
+
+        return <Dialog
+            open={ true }
+            onClose={ () => this.setState({ updateOpened: false }) }
+            aria-labelledby="edit-value-dialog-title"
+            aria-describedby="edit-value-dialog-description"
+        >
+            <DialogTitle id="edit-value-dialog-title">{ this.props.t('') }</DialogTitle>
+            <DialogContent>
+                <form className={ this.props.classes.dialogForm } noValidate autoComplete="off">
+                    {type === 'boolean' ?
+                        <FormControlLabel
+                            control={<Checkbox
+                                defaultChecked={this.state.edit.val}
+                                onChange={e => {
+                                    const edit = JSON.parse(JSON.stringify(this.state.edit));
+                                    edit.val = e.target.checked;
+                                    this.setState({ edit });
+                                }}/>}
+                            label={this.props.t('Value')}
+                        />
+                        :
+                        (type === 'number' ?
+                            <TextField
+                                label={this.props.t('Value')}
+                                defaultValue={this.state.edit.val}
+                                onChange={e => {
+                                    const edit = JSON.parse(JSON.stringify(this.state.edit));
+                                    edit.val = e.target.value;
+                                    this.setState({ edit });
+                                }}/>
+                                :
+                            <TextField
+                                label={this.props.t('Value')}
+                                defaultValue={this.state.edit.val}
+                                onChange={e => {
+                                    const edit = JSON.parse(JSON.stringify(this.state.edit));
+                                    edit.val = e.target.value;
+                                    this.setState({ edit });
+                                }}/>
+                        )
+                    }
+
+                    <br/>
+                    <FormControlLabel
+                        control={<Checkbox
+                            defaultChecked={ this.state.edit.ack }
+                            onChange={e => {
+                                const edit = JSON.parse(JSON.stringify(this.state.edit));
+                                edit.ack = e.target.checked;
+                                this.setState({ edit });
+                            }}/>}
+                        label={ this.props.t('Acknowledged') }
+                    />
+                </form>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={ () => this.setState({ updateOpened: false }) } color="secondary">{ this.props.t('Cancel') }</Button>
+                <Button onClick={ () => this.setState({ updateOpened: false }, () => this.onUpdate())}
+                        color="primary" autoFocus>{ this.props.t('Write') }</Button>
+            </DialogActions>
+        </Dialog>
     }
     
     render() {
@@ -1997,6 +2110,7 @@ class ObjectBrowser extends React.Component {
                     </TabContent>
                     { this.renderToast() }
                     { this.renderCustomDialog() }
+                    { this.renderEditDialog() }
                 </TabContainer>
             );
         }

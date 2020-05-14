@@ -318,7 +318,7 @@ class Instances extends React.Component {
 
         this.states[id] = state;
 
-        if (!oldState && state || oldState && !state || oldState && state && oldState.val !== state.val) {
+        if ((!oldState && state) || (oldState && !state) || (oldState && state && oldState.val !== state.val)) {
             if (!this.statesUpdateTimer) {
                 this.statesUpdateTimer = setTimeout(() => {
                     this.statesUpdateTimer = null;
