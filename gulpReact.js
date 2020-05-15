@@ -214,7 +214,7 @@ function init(gulp) {
 
     gulp.task('react-3-build', () => build(gulp));
 
-    gulp.task('react-3-build-dep', gulp.series('react-2-npm', 'react-3-build'));
+    gulp.task('react-3-build-dep', gulp.series('react-2-npm-dep', 'react-3-build'));
 
     gulp.task('react-5-copy', () => copyFiles(gulp));
 
@@ -222,7 +222,7 @@ function init(gulp) {
 
     gulp.task('react-6-patch', () => patchIndex(gulp));
 
-    gulp.task('react-6-patch-dep', gulp.series('react-5-copy', 'react-6-patch'));
+    gulp.task('react-6-patch-dep', gulp.series('react-5-copy-dep', 'react-6-patch'));
 
     gulp.task('react-build', gulp.series('react-6-patch-dep'));
 }
