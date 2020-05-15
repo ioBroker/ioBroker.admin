@@ -2028,9 +2028,7 @@ class ObjectBrowser extends React.Component {
                                 label={this.props.t('Value')}
                                 defaultValue={ this.edit.val }
                                 onKeyUp={e => e.keyCode === 13 && this.onUpdate() }
-                                onChange={e => e.
-                                    this.edit.val = e.target.value;
-                                }}/>
+                                onChange={e => this.edit.val = e.target.value}/>
                                 :
                             <TextField
                                 label={this.props.t('Value')}

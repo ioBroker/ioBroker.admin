@@ -97,10 +97,21 @@ function copyFiles(gulp) {
             ])
                 .pipe(replace('s.p+"static/media/copy-content', '"./static/media/copy-content'))
                 .pipe(gulp.dest(dest + 'static/js/')),
-        ]);
+        ])
     });
 }
 
+function patchIndex() {
+    return new Promise(resolve => {
+        if (fs.existsSync(dest + '/index.html')) {
+            let code = fs.readFileSync(dest + '/index.html').toString('utf8');
+            // replace code
+            code = code.replace(/<script>var script=document[^<]+<\/script>/, `<script type="text/javascript" src="./lib/js/socket.io.js"></script>`);
+            fs.writeFileSync(dest + '/index.html', code);
+        }
+        resolve();
+    });
+}
 function i18n2flat() {
     const files = fs.readdirSync(dir).filter(name => name.match(/\.json$/));
     const index = {};
@@ -209,7 +220,11 @@ function init(gulp) {
 
     gulp.task('react-5-copy-dep', gulp.series('react-3-build-dep', 'react-5-copy'));
 
-    gulp.task('react-build', gulp.series('react-5-copy-dep'));
+    gulp.task('react-6-patch', () => patchIndex(gulp));
+
+    gulp.task('react-6-patch-dep', gulp.series('react-5-copy', 'react-6-patch'));
+
+    gulp.task('react-build', gulp.series('react-6-patch-dep'));
 }
 
 module.exports = init;

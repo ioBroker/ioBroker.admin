@@ -160,6 +160,15 @@ const styles = theme => ({
     },
     cellAckFalse: {
         color: '#FF6666',
+    },
+    toolbarTime: {
+        width: 100
+    },
+    toolbarDate: {
+        width: 100
+    },
+    toolbarTimeGrid: {
+
     }
 });
 
@@ -882,8 +891,10 @@ class ObjectHistoryData extends React.Component {
     }
 
     renderToolbar() {
+        const classes = this.props.classes;
+
         return <Toolbar>
-            <FormControl className={ this.props.classes.selectHistoryControl }>
+            <FormControl className={ classes.selectHistoryControl }>
                 <InputLabel>{ this.props.t('History instance') }</InputLabel>
                 <Select
                     value={ this.state.historyInstance}
@@ -894,17 +905,17 @@ class ObjectHistoryData extends React.Component {
                                     this.readHistory()));
                     }}
                 >
-                    { this.state.historyInstances.map(it => <MenuItem key={ it.id } value={ it.id } className={ clsx(!it.alive && this.props.classes.notAliveInstance )}>{ it.id }</MenuItem>) }
+                    { this.state.historyInstances.map(it => <MenuItem key={ it.id } value={ it.id } className={ clsx(!it.alive && classes.notAliveInstance )}>{ it.id }</MenuItem>) }
                 </Select>
             </FormControl>
-            <FormControl className={ this.props.classes.selectRelativeTime }>
+            <FormControl className={ classes.selectRelativeTime }>
                 <InputLabel>{ this.props.t('Relative') }</InputLabel>
                 <Select
                     ref={ this.rangeRef }
                     value={ this.state.relativeRange }
                     onChange={ e => this.setRelativeInterval(e.target.value) }
                 >
-                    <MenuItem key={ 'custom' } value={ 'absolute' } className={ this.props.classes.notAliveInstance }>{ this.props.t('custom range') }</MenuItem>
+                    <MenuItem key={ 'custom' } value={ 'absolute' } className={ classes.notAliveInstance }>{ this.props.t('custom range') }</MenuItem>
                     <MenuItem key={ '1'  } value={ 10 }            >{ this.props.t('last 10 minutes') }</MenuItem>
                     <MenuItem key={ '2'  } value={ 30 }            >{ this.props.t('last 30 minutes') }</MenuItem>
                     <MenuItem key={ '3'  } value={ 60 }            >{ this.props.t('last hour') }</MenuItem>
@@ -922,8 +933,9 @@ class ObjectHistoryData extends React.Component {
             </FormControl>
 
             <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[this.props.lang]}>
-                <Grid container justify="space-around">
+                <Grid container justify="space-around" className={ classes.toolbarTimeGrid }>
                     <KeyboardDatePicker
+                        className={ classes.toolbarDate }
                         disableToolbar
                         variant="inline"
                         margin="normal"
@@ -937,6 +949,7 @@ class ObjectHistoryData extends React.Component {
                         }}
                     />
                     <KeyboardTimePicker
+                        className={ classes.toolbarTime }
                         margin="normal"
                         ampm={false}
                         label={ this.props.t('Start time') }
@@ -949,8 +962,34 @@ class ObjectHistoryData extends React.Component {
                         }}
                     />
                 </Grid>
+
+                <Grid container justify="space-around"  className={ classes.toolbarTimeGrid }>
+                    <KeyboardDatePicker
+                        className={ classes.toolbarDate }
+                        disableToolbar
+                        variant="inline"
+                        margin="normal"
+                        label={ this.props.t('End date') }
+                        value={ this.state.end }
+                        onChange={date => {
+                            this.setState({end: date});
+                        }}
+                        KeyboardButtonProps={{'aria-label': 'change date',}}
+                    />
+                    <KeyboardTimePicker
+                        className={ classes.toolbarTime }
+                        margin="normal"
+                        ampm={ false }
+                        label={ this.props.t('End time') }
+                        value={ this.state.end }
+                        onChange={date => {
+                            this.setState({end: date});
+                        }}
+                        KeyboardButtonProps={{ 'aria-label': 'change time', }}
+                    />
+                </Grid>
             </MuiPickersUtilsProvider>
-            <div className={this.props.classes.grow} />
+            <div className={classes.grow} />
 
             { this.state.supportedFeatures.includes('insert') && this.props.expertMode ? <IconButton onClick={ () => {
                 const time = new Date();
