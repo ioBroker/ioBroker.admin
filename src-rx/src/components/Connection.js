@@ -87,28 +87,28 @@ class Connection {
             this._socket.emit('authenticate', (isOk, isSecure) => {
                 this.connected = true;
                 this.isSecure = isSecure;
-                if (this.firstConnect) {
-                    // retry strategy
-                    this.loadTimer = setTimeout(() => {
-                        this.loadTimer = null;
-                        this.loadCounter++;
-                        if (this.loadCounter < 10) {
-                            this.onConnect();
-                        }
-                    }, 1000);
-
-                    if (!this.loaded) {
-                        this.onConnect();
-                    }
-                } else {
-                    this.onProgress(PROGRESS.READY);
-                }
-
-                this._subscribe(true);
 
                 if (this.waitForRestart) {
                     window.location.reload();
                 } else {
+                    if (this.firstConnect) {
+                        // retry strategy
+                        this.loadTimer = setTimeout(() => {
+                            this.loadTimer = null;
+                            this.loadCounter++;
+                            if (this.loadCounter < 10) {
+                                this.onConnect();
+                            }
+                        }, 1000);
+
+                        if (!this.loaded) {
+                            this.onConnect();
+                        }
+                    } else {
+                        this.onProgress(PROGRESS.READY);
+                    }
+
+                    this._subscribe(true);
                     this.onConnectionHandlers.forEach(cb => cb(true));
                 }
             });
@@ -116,11 +116,11 @@ class Connection {
 
         this._socket.on('reconnect', () => {
             this.connected = true;
-            this._subscribe(true);
 
             if (this.waitForRestart) {
                 window.location.reload();
             } else {
+                this._subscribe(true);
                 this.onConnectionHandlers.forEach(cb => cb(true));
             }
         });

@@ -23,7 +23,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 // components
 import Router from '@iobroker/adapter-react/Components/Router';
-import ObjectCustomDialog from './ObjectCustomDialog';
+import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
 
 // Icons
 import {FaFolder as IconClosed} from 'react-icons/fa';

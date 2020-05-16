@@ -62,7 +62,8 @@ class Intro extends React.Component {
 
         this.state = {
             instances: null,
-            edit: false
+            edit: false,
+            introLinks: [],
         };
 
         this.promises = {};
@@ -90,22 +91,18 @@ class Intro extends React.Component {
     }
 
     toggleCard(id) {
-
-        const instances = this.state.instances.slice();
-        
         if (!instances) return;
+
+        const instances = [...this.state.instances];
 
         for (const index in instances) {
             if (instances[index].id === id) {
-                
                 instances[index].editActive = !instances[index].editActive;
                 break;
             }
         }
 
-        this.setState({
-            instances: instances
-        });
+        this.setState({ instances });
     }
 
     saveCards() {
@@ -126,7 +123,7 @@ class Intro extends React.Component {
     getCards() {
         return this.state.instances.map((instance, index) => {
 
-            if ((!this.state.edit && instance.active) || this.state.edit) {
+            if (instance.active || this.state.edit) {
 
                 let linkText = instance.link ? instance.link.replace(/^https?:\/\//, '') : '';
                 const pos = linkText.indexOf('/');
@@ -156,10 +153,56 @@ class Intro extends React.Component {
         });
     }
 
+    toggleLinkCard(i) {
+        const introLinks = [...this.state.introLinks];
+
+        introLinks[i].enabled = !introLinks[i].enabled;
+
+        this.setState({ introLinks });
+    }
+
+    getLinkCards() {
+        return this.state.introLinks.map((item, i) => {
+            if (!item.enabled && !this.state.edit) {
+                return null;
+            } else {
+                return (
+                    <IntroCard
+                        key={ 'link' + i }
+                        image={ item.image }
+                        title={ item.name }
+                        action={{ link: item.link, text: item.linkName }}
+                        t={ this.props.t }
+                        color={ item.color }
+                        edit={ this.state.edit }
+                        enabled={ item.enabled }
+                        toggleActivation={ () => this.toggleLinkCard(i) }
+                    >
+                        { /*instance.description || this.getHostDescription(instance.id)*/ }
+                    </IntroCard>
+                );
+            }
+        });
+    }
+
+    addLinkCard() {
+
+    }
+
     getButtons(classes) {
         const buttons = [];
 
         if (this.state.edit) {
+            buttons.push(
+                <Fab
+                    key="add"
+                    color="primary"
+                    className={ classes.button + ' ' + classes.add }
+                    onClick={ () => this.addLinkCard() }
+                >
+                    <CheckIcon />
+                </Fab>
+            );
             buttons.push(
                 <Fab
                     key="save"
@@ -249,20 +292,16 @@ class Intro extends React.Component {
         if (update) {
             this.promises.hosts = null;
         }
+
         this.promises.hosts = this.promises.hosts || this.props.socket.getHosts(update);
 
         return this.promises.hosts;
     }
 
-    getInstances(update, hosts, hostsData) {
-        hosts     = hosts     || this.state.hosts;
-        hostsData = hostsData || this.state.hostsData;
+    getInstances(update, hosts) {
+        hosts = hosts || this.state.hosts;
 
-        if (update) {
-            this.promises.instances = null;
-        }
-
-        this.promises.instances = this.promises.instances || this.props.socket.getAdapterInstances()
+        return this.props.socket.getAdapterInstances('', update)
             .then(instances => {
                 const deactivated = this.props.systemConfig ? this.props.systemConfig.common.intro || {} : {};
                 const introInstances = [];
@@ -397,27 +436,34 @@ class Intro extends React.Component {
 
     getData(update) {
         let hosts;
+        let systemConfig;
 
-        return this.getHosts(update)
+        return this.props.socket.getSystemConfig(update)
+            .then(_systemConfig => {
+                systemConfig = _systemConfig;
+                return this.getHosts(update);
+            })
             .then(_hosts => {
                 hosts = _hosts;
                 return this.getInstances(update, hosts);
             })
             .then(instances => {
-                this.setState({instances, hosts});
+                this.setState({
+                    instances,
+                    hosts,
+                    introLinks: systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : []
+                });
 
                 // hosts data could last a long time, so show some results to user now and then get the info about hosts
                 return this.getHostsData(hosts)
             })
             .then(hostsData =>
-                this.setState({hostsData}));
+                this.setState({ hostsData }));
     }
 
     render() {
         if (!this.state.instances) {
-            return (
-                <LinearProgress />
-            );
+            return <LinearProgress />;
         }
 
         const { classes } = this.props;
@@ -430,6 +476,7 @@ class Intro extends React.Component {
                 <TabContent>
                     <Grid container spacing={ 2 }>
                         { this.getCards() }
+                        { this.getLinkCards() }
                     </Grid>
                     { this.getButtons(classes) }
                 </TabContent>

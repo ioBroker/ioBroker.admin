@@ -16,9 +16,9 @@ import Router from '@iobroker/adapter-react/Components/Router';
 
 // Icons
 import CloseIcon from '@material-ui/icons/Close';
-import ObjectCustomEditor from './ObjectCustomEditor';
-import ObjectHistoryData from './ObjectHistoryData';
-import ObjectChart from './ObjectChart';
+import ObjectCustomEditor from '../components/ObjectCustomEditor';
+import ObjectHistoryData from '../components/ObjectHistoryData';
+import ObjectChart from '../components/ObjectChart';
 
 const styles = theme => ({
     dialog: {

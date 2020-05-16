@@ -47,10 +47,13 @@ import TextField from "@material-ui/core/TextField";
 import TableBody from "@material-ui/core/TableBody";
 import TableContainer from "@material-ui/core/TableContainer";
 
+import Utils from '@iobroker/adapter-react/Components/Utils';
+
 // icons
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { FaPlusSquare as InsertIcon} from 'react-icons/all';
+import { FaDownload as ExportIcon} from 'react-icons/all';
 
 const localeMap = {
     en: enLocale,
@@ -162,26 +165,45 @@ const styles = theme => ({
         color: '#FF6666',
     },
     toolbarTime: {
-        width: 100
+        width: 100,
+        marginTop: 11,
+        marginLeft: theme.spacing(1),
     },
     toolbarDate: {
-        width: 100
+        width: 150,
+        marginTop: 11,
     },
     toolbarTimeGrid: {
-
+        marginLeft: theme.spacing(1),
+        paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1),
+        border: '1px dotted #AAAAAA',
+        borderRadius: theme.spacing(1),
+    },
+    noLoadingProgress: {
+        width: '100%',
+        height: 4,
     }
 });
 
 class ObjectHistoryData extends React.Component {
     constructor(props) {
         super(props);
-        let from = new Date();
-        from.setHours(from.getHours() - 24 * 7);
 
-        let relativeRange      = window.localStorage.getItem('App.relativeRange') || '30';
+        let relativeRange      = window.localStorage.getItem('App.relativeRange') || 'absolute';
+        let start              = parseInt(window.localStorage.getItem('App.absoluteStart'), 10) || 0;
+        let end                = parseInt(window.localStorage.getItem('App.absoluteEnd'), 10)   || 0;
         let selected           = window.localStorage.getItem('App.historySelected') || '[]';
         let lastSelected       = parseInt(window.localStorage.getItem('App.historyLastSelected'), 10) || null;
         let lastSelectedColumn = window.localStorage.getItem('App.historyLastSelectedColumn') || null;
+
+        if ((!start || !end) && (!relativeRange || relativeRange === 'absolute')) {
+            relativeRange = '30';
+        }
+
+        if (start && end) {
+            relativeRange = 'absolute';
+        }
 
         try {
             selected = JSON.parse(selected);
@@ -193,8 +215,8 @@ class ObjectHistoryData extends React.Component {
             loaded: false,
             min: null,
             max: null,
-            start: from.getTime(),
-            end: new Date().getTime(),
+            start,
+            end,
             values: null,
             relativeRange,
             selected,
@@ -222,7 +244,15 @@ class ObjectHistoryData extends React.Component {
 
         this.prepareData()
             .then(() => this.readHistoryRange())
-            .then(() => this.setRelativeInterval(this.state.relativeRange, true));
+            .then(() => {
+                if (relativeRange !== 'absolute') {
+                    this.setRelativeInterval(this.state.relativeRange, true)
+                } else {
+                    this.readHistory();
+                }
+            });
+
+        this.timeTimer = null;
 
         this.onChangeBound = this.onChange.bind(this);
     }
@@ -361,6 +391,7 @@ class ObjectHistoryData extends React.Component {
         start = start || this.state.start;
         end   = end   || this.state.end;
 
+        this.setState({ loading: true });
         return this.props.socket.getHistory(this.props.obj._id, {
             instance: this.defaultHistory,
             start,
@@ -435,7 +466,7 @@ class ObjectHistoryData extends React.Component {
                 chart.push({noData: true});
             }
 
-            this.setState( {values: chart, lcVisible, fromVisible, qVisible, ackVisible, cVisible});
+            this.setState( {loading: false, values: chart, lcVisible, fromVisible, qVisible, ackVisible, cVisible});
         });
     }
 
@@ -443,6 +474,7 @@ class ObjectHistoryData extends React.Component {
         const now = new Date();
         const oldest = new Date(2000, 0, 1);
 
+        this.setState({ loading: true });
         this.props.socket.getHistory(this.props.obj._id, {
             instance: this.defaultHistory,
             start: oldest.getTime(),
@@ -463,9 +495,10 @@ class ObjectHistoryData extends React.Component {
                     // mark interpolated
                     values.forEach(it => it.i = true);
                     this.rangeValues = values;
-                    this.setState({min: values[0].ts, max: values[values.length - 1].ts});
+                    this.setState({ min: values[0].ts, max: values[values.length - 1].ts, loading: false, });
                 } else {
                     this.rangeValues = [];
+                    this.setState({ loading: false, });
                 }
             });
     }
@@ -581,13 +614,89 @@ class ObjectHistoryData extends React.Component {
         return rows;
     }
 
+    shiftTime() {
+        const now = new Date();
+        const delay = 60000 - now.getSeconds() - (1000 - now.getMilliseconds());
+
+        if (now.getMilliseconds()) {
+            now.setMilliseconds(1000);
+        }
+        if (now.getSeconds()) {
+            now.setSeconds(60);
+        }
+
+        const end = now.getTime();
+        let start;
+        let mins = this.state.relativeRange;
+
+        if (mins === 'day') {
+            now.setHours(0);
+            now.setMinutes(0);
+            start = now.getTime();
+        } else if (mins === 'week') {
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setFullYear(now.getFullYear() - 1);
+            // find week start
+            if (now.getDay()) { // if not sunday
+                now.setDate(now.getDate() - now.getDay() - 1);
+            } else {
+                now.setDate(now.getDate() - 6);
+            }
+
+            this.chart.min = now.getTime();
+        } else if (mins === '2weeks') {
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setFullYear(now.getFullYear() - 1);
+            // find week start
+            if (now.getDay()) { // if not sunday
+                now.setDate(now.getDate() - now.getDay() - 8);
+            } else {
+                now.setDate(now.getDate() - 13);
+            }
+            this.chart.min = now.getTime();
+        } else if (mins === 'month') {
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setDate(1);
+            start = now.getTime();
+        } else if (mins === 'year') {
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setDate(1);
+            now.setMonth(0);
+            start = now.getTime();
+        }  else if (mins === '12months') {
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setFullYear(now.getFullYear() - 1);
+            start = now.getTime();
+        } else {
+            mins = parseInt(mins, 10);
+            start = end - mins * 60000;
+        }
+
+        this.setState({ start, end });
+
+        this.timeTimer = setTimeout(() => this.shiftTime(), delay || 60000);
+    }
+
     setRelativeInterval(mins, dontSave) {
         if (!dontSave) {
             window.localStorage.setItem('App.relativeRange', mins);
+            window.localStorage.setItem('App.absoluteStart', '0');
+            window.localStorage.setItem('App.absoluteEnd', '0');
             this.setState({ relativeRange: mins });
         }
 
         const now = new Date();
+
+        if (!this.timeTimer) {
+            const delay = 60000 - now.getSeconds() - (1000 - now.getMilliseconds());
+            this.timeTimer = setTimeout(() => this.shiftTime(), delay || 60000);
+        }
+
         if (now.getMilliseconds()) {
             now.setMilliseconds(1000);
         }
@@ -890,6 +999,30 @@ class ObjectHistoryData extends React.Component {
         </Dialog>
     }
 
+    setStartDate(start) {
+        start = start.getTime();
+        if (this.timeTimer) {
+            clearTimeout(this.timeTimer);
+            this.timeTimer = null;
+        }
+        window.localStorage.setItem('App.relativeRange', 'absolute');
+        window.localStorage.setItem('App.absoluteStart', start);
+        window.localStorage.setItem('App.absoluteEnd', this.state.end);
+        this.setState({ start, relativeRange: 'absolute' }, () => this.readHistory());
+    }
+
+    setEndDate(end) {
+        end = end.getTime();
+        window.localStorage.setItem('App.relativeRange', 'absolute');
+        window.localStorage.setItem('App.absoluteStart', this.state.start);
+        window.localStorage.setItem('App.absoluteEnd', end);
+        if (this.timeTimer) {
+            clearTimeout(this.timeTimer);
+            this.timeTimer = null;
+        }
+        this.setState({ end, relativeRange: 'absolute'  }, () => this.readHistory());
+    }
+
     renderToolbar() {
         const classes = this.props.classes;
 
@@ -933,17 +1066,15 @@ class ObjectHistoryData extends React.Component {
             </FormControl>
 
             <MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[this.props.lang]}>
-                <Grid container justify="space-around" className={ classes.toolbarTimeGrid }>
+                <div className={ classes.toolbarTimeGrid }>
                     <KeyboardDatePicker
                         className={ classes.toolbarDate }
                         disableToolbar
                         variant="inline"
                         margin="normal"
                         label={ this.props.t('Start date') }
-                        value={this.state.start}
-                        onChange={date => {
-                            this.setState({start: date})
-                        }}
+                        value={ new Date(this.state.start) }
+                        onChange={date => this.setStartDate(date)}
                         KeyboardButtonProps={{
                             'aria-label': 'change date',
                         }}
@@ -951,29 +1082,24 @@ class ObjectHistoryData extends React.Component {
                     <KeyboardTimePicker
                         className={ classes.toolbarTime }
                         margin="normal"
-                        ampm={false}
+                        ampm={ false }
                         label={ this.props.t('Start time') }
-                        value={this.state.start}
-                        onChange={date => {
-                            this.setState({start: date})
-                        }}
+                        value={ new Date(this.state.start) }
+                        onChange={date => this.setStartDate(date)}
                         KeyboardButtonProps={{
                             'aria-label': 'change time',
                         }}
                     />
-                </Grid>
-
-                <Grid container justify="space-around"  className={ classes.toolbarTimeGrid }>
+                </div>
+                <div className={ classes.toolbarTimeGrid }>
                     <KeyboardDatePicker
                         className={ classes.toolbarDate }
                         disableToolbar
                         variant="inline"
                         margin="normal"
                         label={ this.props.t('End date') }
-                        value={ this.state.end }
-                        onChange={date => {
-                            this.setState({end: date});
-                        }}
+                        value={ new Date(this.state.end) }
+                        onChange={date => this.setEndDate(date)}
                         KeyboardButtonProps={{'aria-label': 'change date',}}
                     />
                     <KeyboardTimePicker
@@ -981,15 +1107,17 @@ class ObjectHistoryData extends React.Component {
                         margin="normal"
                         ampm={ false }
                         label={ this.props.t('End time') }
-                        value={ this.state.end }
-                        onChange={date => {
-                            this.setState({end: date});
-                        }}
+                        value={ new Date(this.state.end) }
+                        onChange={date => this.setEndDate(date)}
                         KeyboardButtonProps={{ 'aria-label': 'change time', }}
                     />
-                </Grid>
+                </div>
             </MuiPickersUtilsProvider>
             <div className={classes.grow} />
+
+            { this.state.values && this.state.values.length ? <IconButton onClick={ () => this.exportData() }>
+                <ExportIcon />
+            </IconButton> : null }
 
             { this.state.supportedFeatures.includes('insert') && this.props.expertMode ? <IconButton onClick={ () => {
                 const time = new Date();
@@ -1036,12 +1164,41 @@ class ObjectHistoryData extends React.Component {
         </Toolbar>;
     }
 
+    exportData() {
+        let element = window.document.getElementById('export-file');
+        if (!element) {
+            element = document.createElement('a');
+            element.setAttribute('id', 'export-file');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+        }
+
+        let lines = ['timestamp;value;acknowledged;from;'];
+
+        this.state.values.forEach(state => !state.i && !state.e &&
+            lines.push([
+                new Date(state.ts).toISOString(),
+                state.val === null || state.val === undefined ? 'null' : state.val.toString(),
+                state.ack ? 'true' : 'false',
+                state.from || ''
+            ].join(';')));
+
+
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(lines.join('\n')));
+        element.setAttribute('download', Utils.getObjectName({[this.props.obj._id]: this.props.obj}, this.props.obj._id, { language: this.props.lang }) + '.csv');
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+
     render() {
         if (!this.state.historyInstances) {
             return <LinearProgress/>;
         }
 
         return <Paper className={ this.props.classes.paper }>
+            { this.state.loading ? <LinearProgress /> : <div className={ this.props.classes.noLoadingProgress} /> }
             { this.renderToolbar() }
             <div className={ this.props.classes.tableDiv }>
                 { this.renderTable() }

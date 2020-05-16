@@ -1,7 +1,7 @@
-const exec    = require('gulp-exec');
 const fs      = require('fs');
 const del     = require('del');
 const replace = require('gulp-replace');
+const cp      = require('child_process');
 
 const srcRx = 'src-rx/';
 const src = __dirname + '/' + srcRx;
@@ -37,39 +37,42 @@ function npmInstall() {
     });
 }
 
-function build(gulp) {
-    const options = {
-        continueOnError:       false, // default = false, true means don't emit error event
-        pipeStdout:            false, // default = false, true means stdout is written to file.contents
-        customTemplatingThing: 'build', // content passed to gutil.template()
-        cwd:                   src
-    };
-    const reportOptions = {
-        err:    true, // default = true, false means don't write err
-        stderr: true, // default = true, false means don't write stderr
-        stdout: true  // default = true, false means don't write stdout
-    };
-
+function build() {
     fs.writeFileSync(src + 'public/lib/js/sparkline.js',     fs.readFileSync(src + 'node_modules/@fnando/sparkline/dist/sparkline.js'));
     fs.writeFileSync(src + 'public/lib/js/sparkline.js.map', fs.readFileSync(src + 'node_modules/@fnando/sparkline/dist/sparkline.js.map'));
 
     const version = JSON.parse(fs.readFileSync(__dirname + '/package.json').toString('utf8')).version;
     const data    = JSON.parse(fs.readFileSync(src + 'package.json').toString('utf8'));
+
     data.version = version;
+
     fs.writeFileSync(src + 'package.json', JSON.stringify(data, null, 2));
 
-    console.log(options.cwd);
+    return new Promise((resolve, reject) => {
+        const options = {
+            stdio: 'pipe',
+            cwd:   src
+        };
 
-    if (fs.existsSync(src + 'node_modules/react-scripts/scripts/build.js')) {
-        return gulp.src(src + 'node_modules/react-scripts/scripts/build.js')
-            .pipe(exec('node <%= file.path %>', options))
-            .pipe(exec.reporter(reportOptions));
-    } else {
-        return gulp.src(__dirname + '/node_modules/react-scripts/scripts/build.js')
-            .pipe(exec('node <%= file.path %>', options))
-            .pipe(exec.reporter(reportOptions));
+        console.log(options.cwd);
 
-    }
+        let script = src + 'node_modules/react-scripts/scripts/build.js';
+        if (!fs.existsSync(script)) {
+            script = __dirname + '/node_modules/react-scripts/scripts/build.js';
+        }
+        if (!fs.existsSync(script)) {
+            console.error('Cannot find execution file: ' + script);
+            reject('Cannot find execution file: ' + script);
+        } else {
+            const child = cp.fork(script, [], options);
+            child.stdout.on('data', data => console.log(data.toString()));
+            child.stderr.on('data', data => console.log(data.toString()));
+            child.on('close', code => {
+                console.log(`child process exited with code ${code}`);
+                code ? reject('Exit code: ' + code) : resolve();
+            });
+        }
+    });
 }
 
 function copyFiles(gulp) {
@@ -112,6 +115,7 @@ function patchIndex() {
         resolve();
     });
 }
+
 function i18n2flat() {
     const files = fs.readdirSync(dir).filter(name => name.match(/\.json$/));
     const index = {};

@@ -54,7 +54,6 @@
         "gulp-concat": "^2.6.1",
         "gulp-htmlmin": "^5.0.1",
         "gulp-less": "^4.0.1",
-        "gulp-exec": "^4.0.0",
         "gulp-replace": "^1.0.0",
         "gulp-sass": "^4.1.0",
         "gulp-sourcemaps": "^2.6.5",
