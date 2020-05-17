@@ -9,7 +9,8 @@ import { Grid } from '@material-ui/core';
 
 const styles = {
     root: {
-        height: '100%'
+        height: '100%',
+        overflow: 'hidden'
     },
     overflowAuto: {
         overflow: 'auto'
