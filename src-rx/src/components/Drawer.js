@@ -37,6 +37,10 @@ import HelpIcon from '@material-ui/icons/Help';
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
 
+function ucFirst(str) {
+    return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+}
+
 const styles = theme => ({
     root: {
         flexShrink: 0,
@@ -220,7 +224,7 @@ class Drawer extends React.Component {
 
                 tabs = tabs.map(name => {
                     const obj = Object.assign({name}, tabsInfo[name]);
-                    obj.title = I18n.t(name.replace('tab-', '').replace('-0', '').replace(/-(\d+)$/, ' $1').ucFirst());
+                    obj.title = I18n.t(ucFirst(name.replace('tab-', '').replace('-0', '').replace(/-(\d+)$/, ' $1')));
                     return obj;
                 });
 

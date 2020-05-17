@@ -91,7 +91,9 @@ class Intro extends React.Component {
     }
 
     toggleCard(id) {
-        if (!instances) return;
+        if (!this.state.instances || !this.state.instances.length) {
+            return;
+        }
 
         const instances = [...this.state.instances];
 
@@ -399,9 +401,8 @@ class Intro extends React.Component {
 
                 return introInstances;
             })
-            .catch(error => console.log(error));
-
-        return this.promises.instances;
+            .catch(error =>
+                console.log(error));
     }
 
     getHostDescription(id) {

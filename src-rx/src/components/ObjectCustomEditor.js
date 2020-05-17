@@ -483,6 +483,7 @@ class ObjectCustomEditor extends React.Component {
                     translations = translations.replace('</script>', '');
                     template = template.replace('<script type="text/x-iobroker" data-template-name="' + adapter + '">', '');
                     template = template.replace('</script>', '');
+                    // eslint-disable-next-line
                     const addTranslations = new Function('systemDictionary', translations + '\nreturn systemDictionary;');
                     try {
                         window.systemDictionary = addTranslations(window.systemDictionary || {});

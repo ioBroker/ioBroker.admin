@@ -132,18 +132,29 @@ const styles = theme => ({
     }
 });
 
+// Number prototype is read only, properties should not be added
+function padding2(num) {
+    let s = num.toString();
+    if (s.length < 2) {
+        s = '0' + s;
+    }
+    return s;
+}
+function padding3(num) {
+    let s = num.toString();
+    if (s.length < 2) {
+        s = '00' + s;
+    } else
+    if (s.length < 3) {
+        s = '0' + s;
+    }
+    return s;
+}
+
 class Logs extends React.Component {
 
     constructor(props) {
         super(props);
-
-        Number.prototype.pad = function (size) {
-            let s = this + '';
-            while (s.length < size) {
-                s = '0' + s;
-            }
-            return s;
-        };
 
         this.state = {
             source: '1',
@@ -213,8 +224,8 @@ class Logs extends React.Component {
                                 logs.forEach(item => {
                                     if (!item.time) {
                                         const date = new Date(item.ts);
-                                        item.time = `${date.getFullYear()}-${(date.getMonth() + 1).pad(2)}-${date.getDate().pad(2)} ` +
-                                            `${date.getHours().pad(2)}:${date.getMinutes().pad(2)}:${date.getSeconds().pad(2)}.${date.getMilliseconds().pad(3)}`;
+                                        item.time = `${date.getFullYear()}-${padding2(date.getMonth() + 1)}-${padding2(date.getDate())} ` +
+                                            `${padding2(date.getHours())}:${padding2(date.getMinutes())}:${padding2(date.getSeconds())}.${padding3(date.getMilliseconds())}`;
                                     }
                                 });
 
@@ -247,8 +258,8 @@ class Logs extends React.Component {
         logs.forEach(item => {
             if (!item.time) {
                 const date = new Date(item.ts);
-                item.time = `${date.getFullYear()}-${(date.getMonth() + 1).pad(2)}-${date.getDate().pad(2)} ` +
-                    `${date.getHours().pad(2)}:${date.getMinutes().pad(2)}:${date.getSeconds().pad(2)}.${date.getMilliseconds().pad(3)}`;
+                item.time = `${date.getFullYear()}-${padding2(date.getMonth() + 1)}-${padding2(date.getDate())} ` +
+                    `${padding2(date.getHours())}:${padding2(date.getMinutes())}:${padding2(date.getSeconds())}.${padding3(date.getMilliseconds())}`;
             }
         });
         this.setState({logs});

@@ -158,10 +158,6 @@ class App extends Router {
 
         super(props);
 
-        String.prototype.ucFirst = function() {
-            return this.substring(0, 1).toUpperCase() + this.substring(1).toLowerCase();
-        };
-
         window.alert = message => {
             if (message.toLowerCase().includes('error')) {
                 console.error(message);
@@ -643,10 +639,10 @@ class App extends Router {
             } else {
                 const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
                 if (m) {
-                    const adapter  = m[1];
+                    /*const adapter  = m[1];
                     const instance = m[2] ? parseInt(m[2], 10) : null;
 
-                    /*let link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
+                    let link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab.html';
                     if (tab.common.materializeTab) {
                         link  = tab.common.adminTab.link || '/adapter/' + tab.common.name + '/tab_m.html';
                     }*/

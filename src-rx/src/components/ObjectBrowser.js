@@ -61,8 +61,6 @@ import DialogContent from "@material-ui/core/DialogContent";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import TextField from "@material-ui/core/TextField";
-import {KeyboardTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 
@@ -79,27 +77,6 @@ const styles = theme => ({
         padding: 4,
         marginLeft: 4
     },
-    /*treeTable: {
-        background: '#ffffff',
-        borderTop: '1px solid #999',
-        borderBottom: '1px solid #999'
-    },
-    treeTableDark: {
-        background: 'inherit',
-        borderTop: '1px solid #999',
-        borderBottom: '1px solid #999'
-    },
-    treeTableRow: {
-        boxShadow: 'inset 0 1px 0 #eeeeee',
-        display: 'block'
-    },
-     */
-
-    /*mainDiv: {
-        height: '100%',
-        overflow: 'hidden',
-        flexWrap: 'nowrap'
-    },*/
     headerRow: {
         paddingLeft: theme.spacing(1),
         height: 38,
