@@ -592,7 +592,6 @@ class App extends Router {
                         hostname={ this.state.hostname }
                         showAlert={ (message, type) => this.showAlert(message, type) }
                         socket={ this.socket }
-                        systemConfig={ this.state.systemConfig }
                         t={ I18n.t }
                         lang={ I18n.getLanguage() }
                     />

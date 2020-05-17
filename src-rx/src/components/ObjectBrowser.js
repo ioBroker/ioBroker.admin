@@ -50,8 +50,6 @@ import {FaFileCode as IconMeta} from 'react-icons/fa';
 import UtilsAdapter from '@iobroker/adapter-react/Components/Utils';
 import Utils from '../Utils';
 
-import CopyContentIcon from './CopyIcon';
-
 import TabContainer from './TabContainer';
 import TabContent from './TabContent';
 import TabHeader from './TabHeader';
@@ -1166,7 +1164,6 @@ class ObjectBrowser extends React.Component {
         this.pausedSubscribes = false;
 
         this.selectedFound = false;
-        this.copyContentImg = CopyContentIcon;
         this.root = null;
         this.states = {};
         this.subscribes = [];

@@ -11,6 +11,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import CreateIcon from '@material-ui/icons/Create';
+import AddIcon from '@material-ui/icons/Add';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import IntroCard from '../components/IntroCard';
@@ -19,6 +20,7 @@ import Utils from '../Utils';
 
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
+import EditIntroLinkDialog from '../dialogs/EditIntroLinkDialog';
 
 const styles = theme => ({
     root: {
@@ -30,14 +32,21 @@ const styles = theme => ({
         bottom: theme.spacing(2),
         right: theme.spacing(2),
     },
-    save: {
+    saveButton: {
         backgroundColor: theme.palette.success.main,
         right: theme.spacing(10),
         '&:hover': {
             backgroundColor: theme.palette.success.dark
         }
     },
-    close: {
+    addButton: {
+        backgroundColor: theme.palette.secondary.main,
+        right: theme.spacing(18),
+        '&:hover': {
+            backgroundColor: theme.palette.secondary.dark
+        }
+    },
+    closeButton: {
         backgroundColor: theme.palette.error.main,
         '&:hover': {
             backgroundColor: theme.palette.error.dark
@@ -63,10 +72,18 @@ class Intro extends React.Component {
         this.state = {
             instances: null,
             edit: false,
+
             introLinks: [],
+            editLink: false,
+            editLinkIndex: -1,
+
+            hasUnsavedChanges: false,
         };
 
         this.promises = {};
+
+        this.introLinksOriginal = null;
+        this.instancesOriginal = null;
 
         this.t = props.t;
 
@@ -74,19 +91,41 @@ class Intro extends React.Component {
     }
 
     activateEditMode() {
-        this.getInstances(true)
-            .then(instances => this.setState({instances, edit: true}));
+        let systemConfig;
+        this.props.socket.getSystemConfig(true)
+            .then(_systemConfig => {
+                systemConfig = _systemConfig;
+                return this.getInstances(true, null, systemConfig);
+            })
+            .then(instances => {
+                const introLinks = systemConfig && systemConfig.native && systemConfig.native.introLinks ? systemConfig.native.introLinks : [];
+
+                this.introLinksOriginal = JSON.parse(JSON.stringify(introLinks));
+                this.instancesOriginal  = JSON.parse(JSON.stringify(instances));
+
+                this.setState({
+                    instances,
+                    edit: true,
+                    introLinks,
+                    hasUnsavedChanges: false,
+                });
+            });
     }
 
     deactivateEditMode() {
+        if (!this.state.hasUnsavedChanges) {
+            // todo: implement confirmation dialog
+        }
 
-        const instances = [...this.state.instances];
-
-        instances.forEach((instance, i) => instances[i].editActive = instance.active);
-
+        // restore old state
         this.setState({
-            instances: instances,
+            instances:  this.instancesOriginal,
+            introLinks: this.introLinksOriginal,
+            hasUnsavedChanges: false,
             edit: false
+        }, () => {
+            this.instancesOriginal = null;
+            this.introLinksOriginal = null;
         });
     }
 
@@ -95,37 +134,24 @@ class Intro extends React.Component {
             return;
         }
 
-        const instances = [...this.state.instances];
+        const instances = JSON.parse(JSON.stringify(this.state.instances));
 
-        for (const index in instances) {
-            if (instances[index].id === id) {
-                instances[index].editActive = !instances[index].editActive;
-                break;
-            }
+        const instance = instances.find(instance => instance.id === id);
+
+        if (instance) {
+            instance.enabled = !instance.enabled;
+
+            const hasUnsavedChanges = JSON.stringify(instances) !== JSON.stringify(this.instancesOriginal) ||
+                JSON.stringify(this.state.introLinks) !== JSON.stringify(this.introLinksOriginal);
+
+            this.setState({ instances, hasUnsavedChanges });
         }
-
-        this.setState({ instances });
     }
 
-    saveCards() {
-        const instances = this.state.instances.slice();
+    getInstancesCards() {
+        return this.state.instances.map(instance => {
 
-        for (const index in instances) {
-            instances[index].active = instances[index].editActive;
-        }
-
-        this.setState({
-            instances: instances,
-            edit: false
-        });
-
-        this.updateIntro(instances);
-    }
-
-    getCards() {
-        return this.state.instances.map((instance, index) => {
-
-            if (instance.active || this.state.edit) {
+            if (instance.enabled || this.state.edit) {
 
                 let linkText = instance.link ? instance.link.replace(/^https?:\/\//, '') : '';
                 const pos = linkText.indexOf('/');
@@ -135,7 +161,7 @@ class Intro extends React.Component {
 
                 return (
                     <IntroCard
-                        key={ index }
+                        key={ instance.id }
                         image={ instance.image }
                         title={ instance.name }
                         action={{ link: instance.link, text: linkText }}
@@ -143,7 +169,7 @@ class Intro extends React.Component {
                         color={ instance.color }
                         reveal={ instance.info }
                         edit={ this.state.edit }
-                        enabled={ this.state.edit ? instance.editActive : instance.active }
+                        enabled={ instance.enabled }
                         toggleActivation={ () => this.toggleCard(instance.id) }
                     >
                         { instance.description || this.getHostDescription(instance.id) }
@@ -156,11 +182,14 @@ class Intro extends React.Component {
     }
 
     toggleLinkCard(i) {
-        const introLinks = [...this.state.introLinks];
+        const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
 
         introLinks[i].enabled = !introLinks[i].enabled;
 
-        this.setState({ introLinks });
+        const hasUnsavedChanges = JSON.stringify(this.state.instances) !== JSON.stringify(this.instancesOriginal) ||
+            JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
+
+        this.setState({ introLinks, hasUnsavedChanges });
     }
 
     getLinkCards() {
@@ -177,18 +206,50 @@ class Intro extends React.Component {
                         t={ this.props.t }
                         color={ item.color }
                         edit={ this.state.edit }
+                        onEdit={ () => this.setState({
+                            editLink: true,
+                            editLinkIndex: i,
+                            link: JSON.parse(JSON.stringify(this.state.introLinks[i]))
+                        }) }
                         enabled={ item.enabled }
                         toggleActivation={ () => this.toggleLinkCard(i) }
                     >
-                        { /*instance.description || this.getHostDescription(instance.id)*/ }
+                        { item.desc || '' }
                     </IntroCard>
                 );
             }
         });
     }
 
-    addLinkCard() {
+    editLinkCard() {
+        if (this.state.editLink) {
+            return <EditIntroLinkDialog
+                open={ this.state.editLink }
+                link={ this.state.link }
+                isNew={ this.state.editLinkIndex === -1}
+                t={ this.props.t }
+                lang={ this.props.lang }
+                onClose={ link => {
+                    if (link) {
+                        const introLinks = JSON.parse(JSON.stringify(this.state.introLinks));
+                        if (this.state.editLinkIndex === -1) {
+                            link.enabled = true;
+                            introLinks.push(link);
+                        } else {
+                            link.enabled = introLinks[this.state.editLinkIndex].enabled;
+                            introLinks[this.state.editLinkIndex] = link;
+                        }
+                        const hasUnsavedChanges = JSON.stringify(this.state.instances) !== JSON.stringify(this.instancesOriginal) ||
+                            JSON.stringify(introLinks) !== JSON.stringify(this.introLinksOriginal);
 
+                        this.setState({introLinks, editLink: false, hasUnsavedChanges, link: null});
+                    } else {
+                        this.setState({ editLink: false });
+                    }
+                }}/>;
+        } else {
+            return null;
+        }
     }
 
     getButtons(classes) {
@@ -199,17 +260,23 @@ class Intro extends React.Component {
                 <Fab
                     key="add"
                     color="primary"
-                    className={ classes.button + ' ' + classes.add }
-                    onClick={ () => this.addLinkCard() }
+                    className={ classes.button + ' ' + classes.addButton }
+                    onClick={ () =>
+                        this.setState({
+                            editLink: true,
+                            editLinkIndex: -1,
+                            link: {}
+                        }) }
                 >
-                    <CheckIcon />
+                    <AddIcon />
                 </Fab>
             );
             buttons.push(
                 <Fab
                     key="save"
                     color="primary"
-                    className={ classes.button + ' ' + classes.save }
+                    disabled={ !this.state.hasUnsavedChanges }
+                    className={ classes.button + ' ' + classes.saveButton }
                     onClick={ () => this.saveCards() }
                 >
                     <CheckIcon />
@@ -220,7 +287,7 @@ class Intro extends React.Component {
                 <Fab
                     key="close"
                     color="primary"
-                    className={ classes.button + ' ' + classes.close }
+                    className={ classes.button + ' ' + classes.closeButton }
                     onClick={ () => this.deactivateEditMode() }
                 >
                     <CloseIcon />
@@ -242,33 +309,44 @@ class Intro extends React.Component {
         return buttons;
     }
 
-    updateIntro(instances) {
-        const systemConfig = this.props.systemConfig;
+    saveCards() {
+        return this.props.socket.getSystemConfig(true)
+            .then(systemConfig => {
+                let changed = false;
 
-        let changed = false;
+                systemConfig.common.intro = systemConfig.common.intro || {};
 
-        for (const index in instances) {
+                this.state.instances.forEach(instance => {
+                    if (systemConfig.common.intro.hasOwnProperty(instance.id) || !instance.enabled) {
+                        if (systemConfig.common.intro[instance.id] !== instance.enabled) {
+                            if (instance.enabled) {
+                                delete systemConfig.common.intro[instance.id];
+                            } else {
+                                systemConfig.common.intro[instance.id] = false;
+                            }
 
-            const instance = instances[index];
+                            changed = true;
+                        }
+                    }
+                });
 
-            if (systemConfig.common.intro.hasOwnProperty(instance.id) || !instance.editActive) {
-                if (systemConfig.common.intro[instance.id] !== instance.editActive) {
-                    systemConfig.common.intro[instance.id] = instance.editActive;
+                if (!changed && JSON.stringify(systemConfig.native.introLinks) !== JSON.stringify(this.state.introLinks)) {
                     changed = true;
+                    systemConfig.native.introLinks = this.state.introLinks;
                 }
-            }
-        }
 
-        if (changed) {
-            this.props.socket.getObject('system.config').then(obj => {
-                obj.common.intro = systemConfig.common.intro;
-                this.props.socket.setObject('system.config', obj);
-                this.props.showAlert('Updated', 'success');
-            }, error => {
-                console.log(error);
-                this.props.showAlert(error, 'error');
+                if (changed) {
+                    this.props.socket.setSystemConfig(systemConfig)
+                        .then(() => this.props.showAlert('Updated', 'success'))
+                        .catch(error => {
+                            console.log(error);
+                            this.props.showAlert(error, 'error');
+                        })
+                        .then(() => this.setState({ edit: false }));
+                } else {
+                    this.setState({ edit: false });
+                }
             });
-        }
     }
 
     getHostsData(hosts) {
@@ -300,12 +378,12 @@ class Intro extends React.Component {
         return this.promises.hosts;
     }
 
-    getInstances(update, hosts) {
+    getInstances(update, hosts, systemConfig) {
         hosts = hosts || this.state.hosts;
 
         return this.props.socket.getAdapterInstances('', update)
             .then(instances => {
-                const deactivated = this.props.systemConfig ? this.props.systemConfig.common.intro || {} : {};
+                const deactivated = systemConfig.common.intro || {};
                 const introInstances = [];
                 const objects = {};
                 instances.forEach(obj => objects[obj._id] = obj);
@@ -351,11 +429,11 @@ class Intro extends React.Component {
                         const instance = {};
                         const ws = (common.welcomeScreen) ? common.welcomeScreen : null;
 
-                        instance.id = obj._id.replace('system.adapter.', '');
-                        instance.name = /*(ws && ws.name) ? ws.name :*/ (common.titleLang) ? common.titleLang[this.props.lang] : common.title;
-                        instance.color = ws && ws.color ? ws.color : '';
+                        instance.id          = obj._id.replace('system.adapter.', '');
+                        instance.name        = /*(ws && ws.name) ? ws.name :*/ (common.titleLang) ? common.titleLang[this.props.lang] : common.title;
+                        instance.color       = ws && ws.color ? ws.color : '';
                         instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
-                        instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+                        instance.image       = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
 
                         const link = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
                         instance.link = Utils.replaceLink(link, common.name, instanceId, {
@@ -363,8 +441,8 @@ class Intro extends React.Component {
                             hostname: this.props.hostname,
                             protocol: this.props.protocol
                         }) || '';
-                        instance.active = deactivated.hasOwnProperty(instance.id) ? deactivated[instance.id] : true;
-                        instance.editActive = instance.active;
+
+                        instance.enabled = deactivated.hasOwnProperty(instance.id) ? !!deactivated[instance.id] : true;
 
                         introInstances.push(instance);
                     }
@@ -383,18 +461,17 @@ class Intro extends React.Component {
 
                 Object.keys(hosts).forEach(key => {
                     const obj = hosts[key];
-                    const common = (obj) ? obj.common : null;
+                    const common = obj && obj.common;
 
                     if (common) {
                         const instance = {};
 
-                        instance.id = obj._id;
-                        instance.name = common.name;
-                        instance.color = '';
-                        instance.image = (common.icon) ? common.icon : 'img/no-image.png';
-                        instance.active = (deactivated.hasOwnProperty(instance.id)) ? deactivated[instance.id] : true;
-                        instance.editActive = instance.active;
-                        instance.info = this.t('Info');
+                        instance.id      = obj._id;
+                        instance.name    = common.name;
+                        instance.color   = '';
+                        instance.image   = common.icon || 'img/no-image.png';
+                        instance.enabled = deactivated.hasOwnProperty(instance.id) ? !!deactivated[instance.id] : true;
+                        instance.info    = this.t('Info');
                         introInstances.push(instance);
                     }
                 });
@@ -446,7 +523,7 @@ class Intro extends React.Component {
             })
             .then(_hosts => {
                 hosts = _hosts;
-                return this.getInstances(update, hosts);
+                return this.getInstances(update, hosts, systemConfig);
             })
             .then(instances => {
                 this.setState({
@@ -476,10 +553,11 @@ class Intro extends React.Component {
             >
                 <TabContent>
                     <Grid container spacing={ 2 }>
-                        { this.getCards() }
+                        { this.getInstancesCards() }
                         { this.getLinkCards() }
                     </Grid>
                     { this.getButtons(classes) }
+                    { this.editLinkCard() }
                 </TabContent>
             </TabContainer>
         );

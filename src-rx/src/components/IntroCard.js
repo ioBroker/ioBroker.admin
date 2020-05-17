@@ -17,13 +17,13 @@ import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 
 import CheckIcon from '@material-ui/icons/Check';
+import EditIcon from '@material-ui/icons/Create';
 import CloseIcon from '@material-ui/icons/Close';
 import SaveIcon from '@material-ui/icons/Save';
 
 import blue from '@material-ui/core/colors/blue';
 import grey from '@material-ui/core/colors/grey';
-
-import Utils from '@iobroker/adapter-react/Components/Utils';
+import copy from 'copy-to-clipboard';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -104,9 +104,9 @@ const styles = theme => ({
         color: '#ffffff',
         backgroundColor: blue[500],
         position: 'absolute',
-        top: '1rem',
-        right:'1rem',
-        boxShadow: boxShadow,
+        top: theme.spacing(1),
+        right: theme.spacing(1),
+        boxShadow,
         '&:hover': {
             backgroundColor: blue[300]
         },
@@ -118,9 +118,23 @@ const styles = theme => ({
         color: '#ffffff',
         backgroundColor: grey[500],
         position: 'absolute',
-        top: '1rem',
-        right:'1rem',
-        boxShadow: boxShadow,
+        top: theme.spacing(1),
+        right: theme.spacing(1),
+        boxShadow,
+        '&:hover': {
+            backgroundColor: grey[300]
+        },
+        '&:focus': {
+            backgroundColor: grey[500]
+        }
+    },
+    editButton: {
+        color: '#ffffff',
+        backgroundColor: grey[500],
+        position: 'absolute',
+        top: theme.spacing(2) + 48, // 48 is the height of button
+        right: theme.spacing(1),
+        boxShadow,
         '&:hover': {
             backgroundColor: grey[300]
         },
@@ -216,7 +230,7 @@ class IntroCard extends React.Component {
                             timeout="auto"
                             unmountOnExit
                         >
-                            <IconButton className={ classes.save } size="small" onClick={ () => Utils.copyToClipboard(this.props.reveal) }>
+                            <IconButton className={ classes.save } size="small" onClick={ () => copy(this.props.reveal) }>
                                 <SaveIcon />
                             </IconButton>
                             <IconButton className={ classes.close } size="small" onClick={ () => this.handleExpandClick() }>
@@ -232,8 +246,14 @@ class IntroCard extends React.Component {
                     }
                     {
                         this.props.edit && this.props.toggleActivation &&
-                        <IconButton className={ (this.props.enabled) ? classes.enabled : classes.disabled } onClick={ () => this.props.toggleActivation() }>
+                        <IconButton className={ this.props.enabled ? classes.enabled : classes.disabled } onClick={ () => this.props.toggleActivation() }>
                             <CheckIcon />
+                        </IconButton>
+                    }
+                    {
+                        this.props.edit && this.props.onEdit &&
+                        <IconButton className={ classes.editButton } onClick={ () => this.props.onEdit() }>
+                            <EditIcon />
                         </IconButton>
                     }
                 </Card>
@@ -246,6 +266,8 @@ IntroCard.propTypes = {
     ready: PropTypes.bool,
     instances: PropTypes.object,
     updateIntro: PropTypes.string,
+    openLinksInNewWindow: PropTypes.bool,
+    onEdit: PropTypes.func,
     t: PropTypes.func,
 };
 

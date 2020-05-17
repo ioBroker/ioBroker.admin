@@ -1099,9 +1099,20 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
 
-        this._promises.systemConfig = this._promises.systemConfig || this.getObject('system.config');
+        this._promises.systemConfig = this._promises.systemConfig || this.getObject('system.config')
+            .then(systemConfig => {
+                systemConfig = systemConfig || {};
+                systemConfig.common = systemConfig.common || {};
+                systemConfig.native = systemConfig.native || {};
+                return systemConfig;
+            });
 
         return this._promises.systemConfig;
+    }
+
+    setSystemConfig(obj) {
+        return this.setObject('system.config', obj)
+            .then(() => this._promises.systemConfig = Promise.resolve(obj));
     }
 
     getRawSocket() {
