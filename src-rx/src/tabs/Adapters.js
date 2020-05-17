@@ -1,9 +1,7 @@
 import React from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
-//import { MdContactPhone } from 'react-icons/md';
 
-import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -16,16 +14,6 @@ import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import AddIcon from '@material-ui/icons/Add';
-import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
-import BuildIcon from '@material-ui/icons/Build';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import CloudIcon from '@material-ui/icons/Cloud';
-import CloudOffIcon from '@material-ui/icons/CloudOff';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import HelpIcon from '@material-ui/icons/Help';
-import PublishIcon from '@material-ui/icons/Publish';
 import RefreshIcon from '@material-ui/icons/Refresh';
 
 import { FaGithub as GithubIcon } from 'react-icons/fa';
@@ -36,9 +24,13 @@ import { green } from '@material-ui/core/colors';
 import AddInstanceDialog from '../dialogs/AddInstanceDialog';
 import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
 
+import AdapterRow from '../components/AdapterRow';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
+import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
+
+import Router from '@iobroker/adapter-react/Components/Router';
 
 const styles = theme => ({
     container: {
@@ -77,7 +69,12 @@ const styles = theme => ({
         width: 120
     },
     available: {
-        width: 100
+        width: 120,
+        paddingRight: 6
+    },
+    update: {
+        width: 40,
+        padding: 0
     },
     license: {
         width: 150
@@ -96,6 +93,9 @@ const styles = theme => ({
     },
     grow: {
         flexGrow: 1
+    },
+    updateAvailable: {
+        color: green[700]
     }
 });
 
@@ -121,7 +121,10 @@ class Adapters extends React.Component {
             addInstanceId: 'auto',
             addInstanceHost: '',
             adapterDeletionDialog: false,
-            adapterDeletionAdapter: null
+            adapterDeletionAdapter: null,
+            update: false,
+            dialog: null,
+            dialogProp: null
         };
 
         this.t = props.t;
@@ -129,124 +132,142 @@ class Adapters extends React.Component {
 
     componentDidMount() {
         if (this.props.ready) {
-            this.getAdaptersInfo(true);
+            this.getAdaptersInfo();
         }
     }
 
     componentDidUpdate() {
-        if (!this.state.init && this.props.ready) {
-            this.getAdaptersInfo(true);
+        if (!this.state.init && !this.state.update && this.props.ready) {
+            this.getAdaptersInfo();
         }
     }
 
-    async getAdaptersInfo(update, updateRepo = false) {
+    static getDerivedStateFromProps() {
+
+        const location = Router.getLocation();
+        
+        const newState = {
+            dialog: location.dialog,
+            dialogProp: location.id
+        };
+
+        return newState;
+    }
+
+    async getAdaptersInfo(updateRepo = false) {
         if (!this.props.currentHost) {
             return;
         }
 
-        if (update) {
-            // Do not update too often
-            if (new Date().getTime() - this.state.lastUpdate > 1000) {
+        // Do not update too often
+        if (new Date().getTime() - this.state.lastUpdate > 1000) {
+            
+            this.setState({
+                update: true
+            });
 
-                const currentHost = this.props.currentHost;
+            const currentHost = this.props.currentHost;
 
-                try {
-                    const hostData = await this.props.socket.getHostInfo(currentHost);
-                    const nodeJsVersion = hostData['Node.js'].replace('v', '');
-                    const hostOs = hostData.os;
-        
-                    const repository = await this.props.socket.getRepository(currentHost, {repo: this.props.systemConfig.common.activeRepo, update: updateRepo});
-                    const installed = await this.props.socket.getInstalled(currentHost);
-                    const instances = await this.props.socket.getAdapterInstances();
-                    const categories = {};
-                    const categoriesSorted = [];
+            try {
+                const hostData = await this.props.socket.getHostInfo(currentHost);
+                const nodeJsVersion = hostData['Node.js'].replace('v', '');
+                const hostOs = hostData.os;
+    
+                const repository = await this.props.socket.getRepository(currentHost, {repo: this.props.systemConfig.common.activeRepo, update: updateRepo});
+                const installed = await this.props.socket.getInstalled(currentHost);
+                const instances = await this.props.socket.getAdapterInstances();
+                const categories = {};
+                const categoriesSorted = [];
+                const categoriesExpanded = JSON.parse(window.localStorage.getItem('Adapters.expandedCategories')) || {};
 
-                    Object.keys(installed).forEach(value => {
-                        
-                        const adapter = installed[value];
+                Object.keys(installed).forEach(value => {
+                    
+                    const adapter = installed[value];
 
-                        if (!adapter.controller && value !== 'hosts') {
-                            if (!repository[value]) {
-                                repository[value] = adapter;
+                    if (!adapter.controller && value !== 'hosts') {
+                        if (!repository[value]) {
+                            repository[value] = adapter;
+                        }
+                    }
+                });
+
+                Object.keys(repository).forEach(value => {
+                    
+                    const adapter = repository[value];
+
+                    if (!adapter.controller) {
+
+                        const type = adapter.type;
+                        const installedInGroup = installed[value];
+
+                        if (!categories[type]) {
+                            categories[type] = {
+                                name: type,
+                                translation: this.t(type + '_group'),
+                                count: 1,
+                                installed: installedInGroup ? 1 : 0,
+                                adapters: [value]
+                            };
+                        } else {
+                            categories[type].count++;
+                            categories[type].adapters.push(value);
+                            if (installedInGroup) {
+                                categories[type].installed++;
                             }
                         }
-                    });
+                    }
+                });
 
-                    Object.keys(repository).forEach(value => {
-                        
-                        const adapter = repository[value];
+                Object.keys(instances).forEach(value => {
 
-                        if (!adapter.controller) {
+                    const instance = instances[value];
+                    const name = instance.common.name;
+                    const enabled = instance.common.enabled;
 
-                            const type = adapter.type;
-                            const installedInGroup = installed[value];
+                    if (installed[name]) {
+                        if (installed[name].count) {
+                            installed[name].count++;
+                        } else {
+                            installed[name].count = 1;
+                        }
 
-                            if (!categories[type]) {
-                                categories[type] = {
-                                    name: type,
-                                    translation: this.t(type + '_group'),
-                                    expanded: false,
-                                    count: 1,
-                                    installed: installedInGroup ? 1 : 0
-                                };
+                        if (enabled) {
+                            if (installed[name].enabled) {
+                                installed[name].enabled++;
                             } else {
-                                categories[type].count++;
-                                if (installedInGroup) {
-                                    categories[type].installed++;
-                                }
+                                installed[name].enabled = 1;
                             }
                         }
-                    });
+                    }
+                });
 
-                    Object.keys(instances).forEach(value => {
+                Object.keys(categories).forEach(value => {
+                    categoriesSorted.push(categories[value]);
+                });
 
-                        const instance = instances[value];
-                        const name = instance.common.name;
-                        const enabled = instance.common.enabled;
+                categoriesSorted.sort((a, b) => {
 
-                        if (installed[name]) {
-                            if (installed[name].count) {
-                                installed[name].count++;
-                            } else {
-                                installed[name].count = 1;
-                            }
+                    const result = b.installed - a.installed;
 
-                            if (enabled) {
-                                if (installed[name].enabled) {
-                                    installed[name].enabled++;
-                                } else {
-                                    installed[name].enabled = 1;
-                                }
-                            }
-                        }
-                    });
+                    return result !== 0 ? result : a.translation < b.translation ? -1 :
+                        a.translation > b.translation ? 1 : 0;
+                });
 
-                    Object.keys(categories).forEach(value => {
-                        categoriesSorted.push(categories[value]);
-                    });
-
-                    categoriesSorted.sort((a, b) => {
-
-                        const result = b.installed - a.installed;
-
-                        return result !== 0 ? result : a.translation < b.translation ? -1 :
-                            a.translation > b.translation ? 1 : 0;
-                    });
-
-                    this.setState({
-                        lastUpdate: Date.now(),
-                        hostData,
-                        hostOs,
-                        nodeJsVersion,
-                        repository,
-                        installed,
-                        instances,
-                        categories: categoriesSorted,
-                        init: true
-                    });
-                } catch(error) {
-                    console.error(error);
-                }
+                this.setState({
+                    lastUpdate: Date.now(),
+                    hostData,
+                    hostOs,
+                    nodeJsVersion,
+                    repository,
+                    installed,
+                    instances,
+                    categories: categoriesSorted,
+                    categoriesExpanded,
+                    init: true,
+                    update: false
+                });
+            } catch(error) {
+                console.error(error);
             }
         }
     }
@@ -326,11 +347,14 @@ class Adapters extends React.Component {
 
     toggleCategory(category) {
 
-        const categories = this.state.categories;
-        categories[category].expanded = !categories[category].expanded;
+        this.setState(oldState => {
 
-        this.setState({
-            categories
+            const categoriesExpanded = oldState.categoriesExpanded;
+            categoriesExpanded[category] = !categoriesExpanded[category];
+
+            window.localStorage.setItem('Adapters.expandedCategories', JSON.stringify(categoriesExpanded));
+
+            return { categoriesExpanded };
         });
     }
 
@@ -346,60 +370,68 @@ class Adapters extends React.Component {
         });
     }
 
+    updateAvailable(oldVersion, newVersion) {
+
+        newVersion = newVersion.split('.');
+        oldVersion = oldVersion.split('.');
+
+        newVersion[0] = parseInt(newVersion[0], 10);
+        oldVersion[0] = parseInt(oldVersion[0], 10);
+
+        if (newVersion[0] > oldVersion[0]) {
+            return true;
+        } else if (newVersion[0] === oldVersion[0]) {
+
+            newVersion[1] = parseInt(newVersion[1], 10);
+            oldVersion[1] = parseInt(oldVersion[1], 10);
+
+            if (newVersion[1] > oldVersion[1]) {
+                return true;
+            } else if (newVersion[1] === oldVersion[1]) {
+
+                newVersion[2] = parseInt(newVersion[2], 10);
+                oldVersion[2] = parseInt(oldVersion[2], 10);
+
+                return (newVersion[2] > oldVersion[2]);
+            }
+        }
+
+        return false;
+    }
+
+    openInfoDialog(adapter) {
+        Router.doNavigate('tab-adapters', 'readme', adapter);
+    } 
+
     getRows() {
+
         const rows = [];
-        const { classes } = this.props;
 
-        Object.keys(this.state.categories).forEach(value => {
+        this.state.categories.forEach(category => {
 
-            const category = this.state.categories[value];
             const categoryName = category.name;
+            const expanded = this.state.categoriesExpanded[categoryName];
 
             rows.push(
-                <TableRow
+                <AdapterRow
                     key={ categoryName }
-                    className={ classes.category }
-                >
-                    <TableCell>
-                        <Grid container spacing={ 1 } alignItems="center" className={ classes.name }>
-                            <Grid item>
-                                <IconButton
-                                    size="small"
-                                    onClick={ () => this.toggleCategory(value) }
-                                >
-                                    { category.expanded ? <ExpandMoreIcon /> : <ChevronRightIcon />}
-                                </IconButton>
-                            </Grid>
-                            <Grid item>
-                                { category.translation }
-                            </Grid>
-                        </Grid>
-                    </TableCell>
-                    <TableCell>
-                        <Typography component="span" variant="body2" className={ classes.green }>
-                            { category.installed }
-                        </Typography>
-                        { ` ${this.t('of')} ` }
-                        <Typography component="span" variant="body2" className={ classes.blue }>
-                            { category.count }
-                        </Typography>
-                        { ` ${this.t('Adapters from this Group installed')}` }
-                    </TableCell>
-                    <TableCell />
-                    <TableCell />
-                    <TableCell />
-                    <TableCell />
-                    <TableCell />
-                </TableRow>
+                    category
+                    count={ category.count }
+                    expanded={ expanded }
+                    installedCount={ category.installed }
+                    name={ category.translation }
+                    onToggle={ () => this.toggleCategory(categoryName) }
+                    t={ this.t }
+                />
             );
 
-            if (category.expanded) {
+            if (expanded) {
             
-                Object.keys(this.state.repository).forEach(value => {
+                category.adapters.forEach(value => {
+                    console.log(value);
+                    const adapter = this.state.repository[value];
 
-                    const adapter = this.state.repository[value];  
-
-                    if (!adapter.controller && adapter.type === categoryName) {
+                    if (!adapter.controller) {
 
                         const installed = this.state.installed[value];
 
@@ -407,95 +439,33 @@ class Adapters extends React.Component {
                         const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] : '';
                         const image = installed ? installed.localIcon : adapter.extIcon;
                         const connectionType = adapter.connectionType ? adapter.connectionType : '-';
+                        const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
 
                         if (title instanceof Object || !desc) {
-                            console.log(adapter);
+                            console.warn(adapter);
                         }
 
                         rows.push(
-                            <TableRow
+                            <AdapterRow
                                 key={ value }
-                                hover
-                            >
-                                <TableCell>
-                                    <Grid container spacing={ 1 } alignItems="center" className={ classes.name }>
-                                        <Grid item>
-                                            <Avatar
-                                                variant="square"
-                                                alt={ title.toString() }
-                                                src={ image }
-                                                className={ classes.smallAvatar }
-                                            />
-                                        </Grid>
-                                        <Grid item>
-                                            { title.toString() }
-                                        </Grid>
-                                    </Grid>
-                                </TableCell>
-                                <TableCell>
-                                    { desc }
-                                </TableCell>
-                                <TableCell>
-                                    { adapter.keywords && adapter.keywords.join(' ') }
-                                </TableCell>
-                                <TableCell>
-                                    { connectionType === 'cloud' ? <CloudIcon /> :
-                                        connectionType === 'local' ? <CloudOffIcon /> : connectionType }
-                                </TableCell>
-                                <TableCell>
-                                    { installed &&
-                                        installed.version +
-                                        (installed.count ? ` (${installed.count}${installed.count !== installed.enabled ? '~' : ''})` : '')
-                                    }
-                                </TableCell>
-                                <TableCell>
-                                    { adapter.version }
-                                </TableCell>
-                                <TableCell>
-                                    { adapter.license }
-                                </TableCell>
-                                <TableCell>
-                                    <IconButton
-                                        size="small"
-                                        onClick={ () => this.addInstance(value) }
-                                    >
-                                        <AddIcon />
-                                    </IconButton>
-                                    <IconButton size="small">
-                                        <HelpIcon />
-                                    </IconButton>
-                                    { this.props.expertMode &&
-                                        <IconButton
-                                            size="small"
-                                            className={ !installed ? classes.hidden : '' }
-                                            onClick={ () => this.upload(value) }
-                                        >
-                                            <PublishIcon />
-                                        </IconButton>
-                                    }
-                                    <IconButton
-                                        size="small"
-                                        className={ !installed ? classes.hidden : '' }
-                                        onClick={ () => this.openAdapterDeletionDialog(value) }
-                                    >
-                                        <DeleteForeverIcon />
-                                    </IconButton>
-                                    { this.props.expertMode &&
-                                        <IconButton size="small" className={ !installed ? classes.hidden : '' }>
-                                            <AddToPhotosIcon />
-                                        </IconButton>
-                                    }
-                                    { this.props.expertMode &&
-                                        <IconButton
-                                            size="small"
-                                            className={ !installed ? classes.hidden : '' }
-                                            onClick={ () => this.rebuild(value) }
-                                        >
-                                            <BuildIcon />
-                                        </IconButton>
-                                    }
-                                </TableCell>
-                            </TableRow>
+                                connectionType={ connectionType }
+                                description={ desc }
+                                enabledCount={ installed && installed.enabled }
+                                expertMode={ this.props.expertMode }
+                                image={ image }
+                                installedCount={ installed && installed.count }
+                                installedVersion={ installed && installed.version }
+                                keywords={ adapter.keywords }
+                                name={ title }
+                                license={ adapter.license }
+                                onAddInstance={ () => this.addInstance(value) }
+                                onDeletion={ () => this.openAdapterDeletionDialog(value) }
+                                onInfo={ () => this.openInfoDialog(value) }
+                                onRebuild={ () => this.rebuild(value) }
+                                onUpload={ () => this.upload(value) }
+                                updateAvailable={ updateAvailable }
+                                version={ adapter.version }
+                            />
                         );
                     }
                 });
@@ -511,13 +481,34 @@ class Adapters extends React.Component {
             return <LinearProgress />
         }
 
+        if (this.state.dialog === 'readme' && this.state.dialogProp) {
+
+            const adapter = this.state.repository[this.state.dialogProp] || null;
+
+            if (adapter) {
+                return (
+                    <TabContainer>
+                        <AdapterInfoDialog
+                            link={ adapter.readme || '' }
+                            t={ this.t }
+                        />
+                    </TabContainer>
+                );
+            }
+        }
+
         const { classes } = this.props;
 
         return (
             <TabContainer>
+                { this.state.update &&
+                    <Grid item>
+                        <LinearProgress />
+                    </Grid>
+                }
                 <TabHeader>
                     <IconButton
-                        onClick={ () => this.getAdaptersInfo(true, true) }
+                        onClick={ () => this.getAdaptersInfo(true) }
                     >
                         <RefreshIcon />
                     </IconButton>
