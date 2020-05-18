@@ -53,6 +53,9 @@ const styles = theme => ({
     },
     grow: {
         flexGrow: 1
+    },
+    displayNone: {
+        display: 'none'
     }
 });
 
@@ -69,7 +72,7 @@ class AdapterRow extends React.Component {
         return (
             <TableRow
                 hover={ !isCategory }
-                className={ clsx({ [classes.category]: isCategory }) }
+                className={ clsx({ [classes.category]: isCategory, [classes.displayNone]: this.props.hidden }) }
             >
                 <TableCell>
                     <Grid container spacing={ 1 } alignItems="center" className={ classes.name }>
@@ -204,6 +207,7 @@ AdapterRow.propTypes = {
     enabledCount: PropTypes.number,
     expanded: PropTypes.bool,
     expertMode: PropTypes.bool,
+    hidden: PropTypes.bool,
     image: PropTypes.string,
     installedCount: PropTypes.number,
     installedVersion: PropTypes.string,
