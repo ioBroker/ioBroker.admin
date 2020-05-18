@@ -414,7 +414,7 @@ class Adapters extends React.Component {
 
             rows.push(
                 <AdapterRow
-                    key={ categoryName }
+                    key={ 'category-' + categoryName }
                     category
                     count={ category.count }
                     expanded={ expanded }
@@ -428,7 +428,7 @@ class Adapters extends React.Component {
             if (expanded) {
             
                 category.adapters.forEach(value => {
-                    console.log(value);
+                    
                     const adapter = this.state.repository[value];
 
                     if (!adapter.controller) {
@@ -447,7 +447,7 @@ class Adapters extends React.Component {
 
                         rows.push(
                             <AdapterRow
-                                key={ value }
+                                key={ 'adapter-' + value }
                                 connectionType={ connectionType }
                                 description={ desc }
                                 enabledCount={ installed && installed.enabled }
