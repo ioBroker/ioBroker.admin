@@ -36,6 +36,7 @@ class DrawerItem extends React.Component {
     render() {
 
         const { classes } = this.props;
+        const text = this.props.text ? this.props.text.replace('&gt;', '>') : '';
 
         return (
             <ListItem
@@ -61,7 +62,9 @@ class DrawerItem extends React.Component {
                     </Grid>
                     { !this.props.compact &&
                         <Grid item>
-                            <ListItemText primary={this.props.text}/>
+                            <ListItemText>
+                                { text }
+                            </ListItemText>
                         </Grid>
                     }
                 </Grid>
