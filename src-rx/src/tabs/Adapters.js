@@ -401,51 +401,72 @@ class Adapters extends React.Component {
 
     openInfoDialog(adapter) {
         Router.doNavigate('tab-adapters', 'readme', adapter);
-    } 
+    }
+
+    handleFilterChange(event) {
+
+        clearTimeout(this.typingTimer);
+
+        if (event.type === 'keyup') {
+
+            const value = event.target.value;
+
+            this.typingTimer = setTimeout(this.setState({ search: value }), 300);
+        }
+    }
 
     getRows() {
 
-        const rows = [];
+        let rows = [];
+        const search = (this.state.search || '').toLowerCase().trim();
 
         this.state.categories.forEach(category => {
 
             const categoryName = category.name;
             const expanded = this.state.categoriesExpanded[categoryName];
-
-            rows.push(
-                <AdapterRow
-                    key={ 'category-' + categoryName }
-                    category
-                    count={ category.count }
-                    expanded={ expanded }
-                    installedCount={ category.installed }
-                    name={ category.translation }
-                    onToggle={ () => this.toggleCategory(categoryName) }
-                    t={ this.t }
-                />
-            );
-
-            if (expanded) {
+            const adapters = [];
+            let showCategory = false;
             
-                category.adapters.forEach(value => {
-                    
-                    const adapter = this.state.repository[value];
+            category.adapters.forEach(value => {
+                
+                const adapter = this.state.repository[value];
 
-                    if (!adapter.controller) {
+                if (!adapter.controller) {
 
-                        const installed = this.state.installed[value];
+                    const installed = this.state.installed[value];
 
-                        const title = (adapter.title.toString() || '').replace('ioBroker Visualisation - ', '');
-                        const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] : '';
-                        const image = installed ? installed.localIcon : adapter.extIcon;
-                        const connectionType = adapter.connectionType ? adapter.connectionType : '-';
-                        const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
+                    const title = (adapter.title.toString() || '').replace('ioBroker Visualisation - ', '');
+                    const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '';
+                    const image = installed ? installed.localIcon : adapter.extIcon;
+                    const connectionType = adapter.connectionType ? adapter.connectionType : '-';
+                    const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
 
-                        if (title instanceof Object || !desc) {
-                            console.warn(adapter);
+                    let show = search ? false : true;
+
+                    if (search) {
+                        if (title && title.toLowerCase().includes(search)) {
+                            show = true;
+                        } else if(desc && desc.toLowerCase().includes(search)) {
+                            show = true;
+                        } else {
+                            adapter.keywords && adapter.keywords.forEach(value => {
+                                if(value.toLowerCase().includes(search)) {
+                                    show = true;
+                                }
+                            });
                         }
+                    }
 
-                        rows.push(
+                    if (show) {
+                        showCategory = true;
+                    }
+
+                    if (title instanceof Object || !desc) {
+                        console.warn(adapter);
+                    }
+
+                    if(expanded) {
+                        adapters.push(
                             <AdapterRow
                                 key={ 'adapter-' + value }
                                 connectionType={ connectionType }
@@ -465,11 +486,28 @@ class Adapters extends React.Component {
                                 onUpload={ () => this.upload(value) }
                                 updateAvailable={ updateAvailable }
                                 version={ adapter.version }
+                                hidden={ !show }
                             />
                         );
                     }
-                });
-            }
+                }
+            });
+
+            rows.push(
+                <AdapterRow
+                    key={ 'category-' + categoryName }
+                    category
+                    count={ category.count }
+                    expanded={ expanded }
+                    installedCount={ category.installed }
+                    name={ category.translation }
+                    onToggle={ () => this.toggleCategory(categoryName) }
+                    t={ this.t }
+                    hidden={ !showCategory }
+                />
+            );
+
+            rows = [...rows, ...adapters];
         });
 
         return rows;
@@ -516,7 +554,11 @@ class Adapters extends React.Component {
                         <GithubIcon />
                     </IconButton>
                     <div className={ classes.grow } />
-                    <TextField label={ this.t('Filter') } />
+                    <TextField
+                        label={ this.t('Filter') }
+                        onKeyDown={ event => this.handleFilterChange(event) }
+                        onKeyUp={ event => this.handleFilterChange(event) }
+                    />
                     <div className={ classes.grow } />
                 </TabHeader>
                 <TabContent>
