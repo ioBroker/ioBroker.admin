@@ -14,6 +14,9 @@ import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Dropzone from 'react-dropzone'
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import Slider from '@material-ui/core/Slider';
 
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from "clsx";
@@ -45,6 +48,9 @@ const styles = theme => ({
     },
     editItem: {
         marginTop: theme.spacing(1),
+    },
+    editItemSlider: {
+        marginTop: theme.spacing(3),
     },
     editColor: {
         width: '100%',
@@ -112,8 +118,10 @@ class EditIntroLinkDialog extends React.Component {
             color: '',
             desc: '',
             enabled: true,
+            addTs: true,
+            interval: 5000,
+            camera: false,
         }, props.link);
-
 
         this.state = state;
     }
@@ -198,7 +206,28 @@ class EditIntroLinkDialog extends React.Component {
                                     />
                                     <TextField className={ this.props.classes.editItem } label={ this.props.t('Name')}      value={ this.state.name     || ''}  onChange={ e => this.setState({ name:     e.target.value }) } />
                                     <TextField className={ this.props.classes.editItem } label={ this.props.t('Link name')} value={ this.state.linkName || '' } onChange={ e => this.setState({ linkName: e.target.value }) } />
-                                    <TextField className={ this.props.classes.editItem } label={ this.props.t('Description')} value={ this.state.desc   || '' } onChange={ e => this.setState({ desc: e.target.value }) } />
+                                    {/*<FormControlLabel className={ this.props.classes.editItem }
+                                        control={<Checkbox checked={ this.state.camera } onChange={ e => this.setState({ camera: e.target.checked }) } />}
+                                        label={ this.props.t('Camera')}
+                                    />*/}
+                                    <TextField className={ this.props.classes.editItem } label={ this.state.camera ? this.props.t('Camera URL') : this.props.t('Description') } value={ this.state.desc   || '' } onChange={ e => this.setState({ desc: e.target.value }) } />
+                                    { this.state.camera ? <FormControlLabel className={ this.props.classes.editItem }
+                                                      control={<Checkbox checked={ this.state.addTs } onChange={ e => this.setState({ addTs: e.target.checked }) } />}
+                                                      label={ this.props.t('Add timestamp to URL')}
+                                    /> : null }
+                                    { this.state.camera ? <Typography id="disabled-slider" gutterBottom>
+                                        Polling interval in ms
+                                    </Typography> : null }
+                                    { this.state.camera ? <Slider
+                                        className={ this.props.classes.editItemSlider }
+                                        value={ this.state.interval }
+                                        getAriaValueText={ () => this.state.interval + 'ms' }
+                                        onChange={ (e, interval) => this.setState({ interval }) }
+                                        step={ 200 }
+                                        min={ 500 }
+                                        max={ 60000 }
+                                        valueLabelDisplay="on"
+                                    /> : null }
                                     <div style={{ width: 50 }} className={ this.props.classes.editItem }>
                                         <TextField fullWidth={ true } label={ this.props.t('Color')}     className={ this.props.editColor } type="color" value={ this.state.color }    onChange={ e => this.setState({ color:    e.target.value }) } />
                                     </div>
@@ -236,7 +265,9 @@ class EditIntroLinkDialog extends React.Component {
                                 </Grid>
                             </Grid>
                             <IntroCard
-
+                                interval={ this.state.interval }
+                                camera={ this.state.camera }
+                                addTs={ this.state.addTs }
                                 image={ this.state.image }
                                 title={ this.state.name }
                                 action={{ link: this.state.link, text: this.state.linkName }}
@@ -262,9 +293,13 @@ class EditIntroLinkDialog extends React.Component {
                             this.props.onClose({
                                 link:     this.state.link,
                                 name:     this.state.name,
+                                desc:     this.state.desc,
                                 linkName: this.state.linkName,
                                 color:    this.state.color,
                                 image:    this.state.image,
+                                addTs:    this.state.addTs,
+                                camera:   this.state.camera,
+                                interval: this.state.interval,
                             });
                         }}
                         color="primary">

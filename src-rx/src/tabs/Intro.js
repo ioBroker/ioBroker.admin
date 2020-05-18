@@ -206,6 +206,10 @@ class Intro extends React.Component {
                         t={ this.props.t }
                         color={ item.color }
                         edit={ this.state.edit }
+                        interval={ item.interval }
+                        camera={ item.camera }
+                        addTs={ item.addTs }
+
                         onEdit={ () => this.setState({
                             editLink: true,
                             editLinkIndex: i,

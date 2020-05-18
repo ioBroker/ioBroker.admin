@@ -54,22 +54,26 @@ class Config extends React.Component {
 
         const { classes } = this.props;
 
-        return (
-            <Paper className={ classes.root }>
-                <AppBar color="default" position="static">
-                    <Toolbar variant="dense">
-                        <Typography variant="h6" color="inherit">
-                            { `${this.props.t('adapterConfig')}: ${this.props.adapter}.${this.props.instance}` }
-                        </Typography>
-                    </Toolbar>
-                </AppBar>
-                <iframe
-                    title="config"
-                    className={ this.props.className }
-                    src={ `adapter/${this.props.adapter}/${this.props.materialize ? 'index_m.html' : ''}?${this.props.instance}&react=${this.props.themeName}` }>
-                </iframe>
-            </Paper>
-        );
+        if (window.location.port === '3000') {
+            return 'Test it in not development mode!';
+        } else {
+            return (
+                <Paper className={classes.root}>
+                    <AppBar color="default" position="static">
+                        <Toolbar variant="dense">
+                            <Typography variant="h6" color="inherit">
+                                {`${this.props.t('adapterConfig')}: ${this.props.adapter}.${this.props.instance}`}
+                            </Typography>
+                        </Toolbar>
+                    </AppBar>
+                    <iframe
+                        title="config"
+                        className={this.props.className}
+                        src={`adapter/${this.props.adapter}/${this.props.materialize ? 'index_m.html' : ''}?${this.props.instance}&react=${this.props.themeName}`}>
+                    </iframe>
+                </Paper>
+            );
+        }
     }
 }
 

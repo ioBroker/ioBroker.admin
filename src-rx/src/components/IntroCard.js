@@ -141,6 +141,13 @@ const styles = theme => ({
         '&:focus': {
             backgroundColor: grey[500]
         }
+    },
+    cameraImg: {
+        width: '100%',
+        height: '100%',
+        maxWidth: 200,
+        maxHeight: 200,
+        objectFit: 'contain',
     }
 });
 
@@ -151,7 +158,33 @@ class IntroCard extends React.Component {
 
         this.state = {
             expanded: false
+        };
+
+        this.cameraRef = React.createRef();
+        this.cameraUpdateTimer = null;
+    }
+
+    componentDidMount() {
+        if (this.props.camera) {
+            this.cameraUpdateTimer = setInterval(() => {
+                if (this.cameraRef.current) {
+                    let url = this.props.children;
+                    if (this.props.addTs) {
+                        if (url.includes('?')) {
+                            url += '&ts=' + Date.now();
+                        } else {
+                            url += '?ts=' + Date.now();
+                        }
+                    }
+                    this.cameraRef.current.src = url;
+                }
+            }, Math.max(parseInt(this.props.interval, 10), 500));
         }
+    }
+
+    componentWillUnmount() {
+        this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
+        this.cameraUpdateTimer = null;
     }
 
     static getDerivedStateFromProps(props) {
@@ -166,6 +199,23 @@ class IntroCard extends React.Component {
         this.setState({
             expanded: !this.state.expanded
         });
+    }
+
+    renderContent() {
+        if (!this.props.camera) {
+            return this.props.children
+        } else {
+            let url = this.props.children;
+            if (this.props.addTs) {
+                if (url.includes('?')) {
+                    url += '&ts=' + Date.now();
+                } else {
+                    url += '?ts=' + Date.now();
+                }
+            }
+
+            return <img ref={ this.cameraRef } src={ url } alt="camera" className={ this.props.classes.cameraImg } />;
+        }
     }
 
     render() {
@@ -207,7 +257,7 @@ class IntroCard extends React.Component {
                             <Typography gutterBottom variant="h5" component="h5">
                                 { this.props.title }
                             </Typography>
-                            { this.props.children }
+                            { this.renderContent() }
                         </CardContent>
                         {
                             this.props.action && this.props.action.link &&
