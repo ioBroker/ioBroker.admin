@@ -159,12 +159,12 @@ class App extends Router {
         super(props);
 
         window.alert = message => {
-            if (message.toLowerCase().includes('error')) {
+            if (message && message.toString().toLowerCase().includes('error')) {
                 console.error(message);
-                this.showAlert(message, 'error');
+                this.showAlert(message.toString(), 'error');
             } else {
                 console.log(message);
-                this.showAlert(message, 'info');
+                this.showAlert(message.toString(), 'info');
             }
         };
 
