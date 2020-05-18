@@ -167,7 +167,7 @@ class AdapterInfoDialog extends React.Component {
     }
 
     transformUri(uri) {
-        return (uri.startsWith('http') ? '' : this.state.rawUri) + uri;
+        return (uri && uri.startsWith('http') ? '' : this.state.rawUri) + uri;
     }
 
     render() {
