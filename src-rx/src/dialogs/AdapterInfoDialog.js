@@ -21,7 +21,10 @@ const styles = {
     },
     scroll: {
         height: '100%',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        '& img': {
+            maxWidth: '100%'
+        }
     }
 };
 
@@ -180,46 +183,46 @@ class AdapterInfoDialog extends React.Component {
                 wrap="nowrap"
                 className={ classes.root }
             >
-                    <AppBar color="default" position="static">
-                        <Tabs value={ this.state.tab } onChange={ (event, newValue) => this.changeTab(event, newValue) }>
-                            <Tab label="README" />
-                            <Tab label="Changelog" />
-                            <Tab label="License" />
-                        </Tabs>
-                    </AppBar>
-                    <Box p={ 3 } className={ classes.scroll }>
-                        <ReactMarkdown
-                            source={ this.state[tab === 1 ? 'changelog' : tab === 2 ? 'license' : 'readme'] }
-                            linkTarget="_blank"
-                            transformLinkUri={ (uri) => this.transformUri(uri) }
-                            transformImageUri={ (uri) => this.transformUri(uri) }
-                            escapeHtml={ false }
-                        />
-                    </Box>
-                    <AppBar  color="default" position="static">
-                        <Toolbar>
-                            <Grid container spacing={ 1 }>
-                                <Grid item>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={ () => this.openTab(this.props.link) }
-                                    >
-                                        { this.t('Open original') }
-                                    </Button>
-                                </Grid>
-                                <Grid item>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={ () => this.closeDialog() }
-                                    >
-                                        { this.t('Close') }
-                                    </Button>
-                                </Grid>
+                <AppBar color="default" position="static">
+                    <Tabs value={ this.state.tab } onChange={ (event, newValue) => this.changeTab(event, newValue) }>
+                        <Tab label="README" disabled={ !this.state.readme }/>
+                        <Tab label="Changelog" disabled={ !this.state.changelog }/>
+                        <Tab label="License" disabled={ !this.state.license }/>
+                    </Tabs>
+                </AppBar>
+                <Box p={ 3 } className={ classes.scroll }>
+                    <ReactMarkdown
+                        source={ this.state[tab === 1 ? 'changelog' : tab === 2 ? 'license' : 'readme'] }
+                        linkTarget="_blank"
+                        transformLinkUri={ (uri) => this.transformUri(uri) }
+                        transformImageUri={ (uri) => this.transformUri(uri) }
+                        escapeHtml={ false }
+                    />
+                </Box>
+                <AppBar  color="default" position="static">
+                    <Toolbar>
+                        <Grid container spacing={ 1 }>
+                            <Grid item>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={ () => this.openTab(this.props.link) }
+                                >
+                                    { this.t('Open original') }
+                                </Button>
                             </Grid>
-                        </Toolbar>
-                    </AppBar>
+                            <Grid item>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={ () => this.closeDialog() }
+                                >
+                                    { this.t('Close') }
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Toolbar>
+                </AppBar>
             </Grid>
         );
     }
