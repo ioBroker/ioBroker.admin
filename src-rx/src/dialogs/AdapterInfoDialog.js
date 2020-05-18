@@ -5,13 +5,13 @@ import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
 
-import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-import Toolbar from '@material-ui/core/Toolbar';
+import { AppBar } from '@material-ui/core';
+import { Box } from '@material-ui/core';
+import { Button } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
+import { Tab } from '@material-ui/core';
+import { Tabs } from '@material-ui/core';
+import { Toolbar } from '@material-ui/core';
 
 import Router from '@iobroker/adapter-react/Components/Router';
 
@@ -31,12 +31,13 @@ class AdapterInfoDialog extends React.Component {
 
         super(props);
 
-        let rawUri = this.props.link.replace('https://github.com', 'https://raw.githubusercontent.com').replace('blob/', '');
-        rawUri = rawUri.substring(0, rawUri.lastIndexOf('/') + 1);
+        const uri = this.props.link.replace('https://github.com', 'https://raw.githubusercontent.com').replace('blob/', '');
+        const rawUri = uri.substring(0, uri.lastIndexOf('/') + 1);
 
         this.state = {
             tab: 0,
             readme: '',
+            uri,
             rawUri
         };
 
@@ -44,14 +45,15 @@ class AdapterInfoDialog extends React.Component {
     }
 
     async componentDidMount() {
+        try {
+            const data = await fetch(this.state.uri);
+            const readme = await data.text();
+            const splitted = this.splitReadMe(readme);
 
-        const link = this.props.link.replace('https://github.com', 'https://raw.githubusercontent.com').replace('blob/', '');
-
-        const data = await fetch(link);
-        const readme = await data.text();
-        const splitted = this.splitReadMe(readme);
-
-        this.setState(splitted);
+            this.setState(splitted);
+        } catch(error) {
+            window.alert(error);
+        }
     }
 
     trimArr(lines) {
@@ -103,6 +105,8 @@ class AdapterInfoDialog extends React.Component {
             } else if (lines[i].match(/^###?\s+License/)) {
                 part = 'license';
                 continue;
+            } else if (lines[i].match(/^##?\s+.+/)) {
+                part = 'readme';
             }
 
             if (!result[part].length && !lines[i]) {
@@ -159,7 +163,7 @@ class AdapterInfoDialog extends React.Component {
         Router.doNavigate('tab-adapters');
     }
 
-    transformImageUri(uri) {
+    transformUri(uri) {
         return (uri.startsWith('http') ? '' : this.state.rawUri) + uri;
     }
 
@@ -187,8 +191,9 @@ class AdapterInfoDialog extends React.Component {
                         <ReactMarkdown
                             source={ this.state[tab === 1 ? 'changelog' : tab === 2 ? 'license' : 'readme'] }
                             linkTarget="_blank"
-                            transformLinkUri={ (uri) => console.log(uri) }
-                            transformImageUri={ (uri) => this.transformImageUri(uri) }
+                            transformLinkUri={ (uri) => this.transformUri(uri) }
+                            transformImageUri={ (uri) => this.transformUri(uri) }
+                            escapeHtml={ false }
                         />
                     </Box>
                     <AppBar  color="default" position="static">
