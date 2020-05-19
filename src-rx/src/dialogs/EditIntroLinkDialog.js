@@ -17,6 +17,10 @@ import Dropzone from 'react-dropzone'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Slider from '@material-ui/core/Slider';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from "clsx";
@@ -29,7 +33,7 @@ import IntroCard from '../components/IntroCard';
 
 const styles = theme => ({
     formControl: {
-        marginTop: theme.spacing(3)
+        marginTop: theme.spacing(4)
     },
     rootGrid: {
         flexGrow: 1,
@@ -51,6 +55,10 @@ const styles = theme => ({
     },
     editItemSlider: {
         marginTop: theme.spacing(3),
+    },
+    labelSlider: {
+        marginTop: theme.spacing(2),
+        fontSize: '1rem',
     },
     editColor: {
         width: '100%',
@@ -120,10 +128,43 @@ class EditIntroLinkDialog extends React.Component {
             enabled: true,
             addTs: true,
             interval: 5000,
-            camera: false,
+            camera: 'text',
+            cameraList: []
         }, props.link);
 
         this.state = state;
+    }
+
+    componentDidMount() {
+        this.getCamerasInstances();
+    }
+
+    getCamerasInstances() {
+        this.props.socket.getAdapterInstances('cameras', true)
+            .then(list => {
+
+                const cameraList = [];
+                const promises = [];
+                list.forEach(obj => {
+                    const instance = obj._id.replace('system.adapter.', '');
+
+                    if (obj.common && obj.common.enabled) {
+                        promises.push(
+                            // if instance is alive
+                            this.props.socket.getState(obj._id + '.alive')
+                                // get the list of cameras
+                                .then(state => state && state.val && this.props.socket.sendTo(instance, 'list', null))
+                                .then(result =>
+                                        result && result.list && result.list.forEach(cam =>
+                                            cameraList.push({id: cam.id, name: `${cam.desc} [${instance}/${cam.name}]`}))));
+
+                    }
+                });
+
+                Promise.all(promises)
+                    .then(() =>
+                        this.setState({ cameraList }));
+            });
     }
 
     getLinkNameFromLink(link) {
@@ -191,6 +232,19 @@ class EditIntroLinkDialog extends React.Component {
                                     container
                                     direction="column"
                                 >
+                                    <FormControl className={ classes.formControl }>
+                                        <InputLabel id="select-helper-label">{ this.props.t('Link type') }</InputLabel>
+                                        <Select
+                                            labelId="select-helper-label"
+                                            value={ this.state.camera }
+                                            onChange={e => this.setState( { camera: e.target.value })}
+                                        >
+                                            <MenuItem value="text" key="desc"><em>{ this.props.t('Description') }</em></MenuItem>
+                                            { this.state.cameraList.map(cam => <MenuItem key={ cam.id } value={ cam.id }>{ cam.name }</MenuItem>) }
+                                            <MenuItem value="custom" key="custom">{ this.props.t('Custom camera URL') }</MenuItem>
+                                        </Select>
+                                    </FormControl>
+
                                     <TextField
                                         label={ this.props.t('URL')}
                                         value={ this.state.link }
@@ -204,30 +258,32 @@ class EditIntroLinkDialog extends React.Component {
                                             }
                                         } }
                                     />
-                                    <TextField className={ this.props.classes.editItem } label={ this.props.t('Name')}      value={ this.state.name     || ''}  onChange={ e => this.setState({ name:     e.target.value }) } />
-                                    <TextField className={ this.props.classes.editItem } label={ this.props.t('Link name')} value={ this.state.linkName || '' } onChange={ e => this.setState({ linkName: e.target.value }) } />
-                                    {/*<FormControlLabel className={ this.props.classes.editItem }
-                                        control={<Checkbox checked={ this.state.camera } onChange={ e => this.setState({ camera: e.target.checked }) } />}
-                                        label={ this.props.t('Camera')}
-                                    />*/}
-                                    <TextField className={ this.props.classes.editItem } label={ this.state.camera ? this.props.t('Camera URL') : this.props.t('Description') } value={ this.state.desc   || '' } onChange={ e => this.setState({ desc: e.target.value }) } />
-                                    { this.state.camera ? <FormControlLabel className={ this.props.classes.editItem }
+
+                                    <TextField className={ this.props.classes.editItem } label={ this.props.t('Name')} value={ this.state.name || ''}  onChange={ e => this.setState({ name:     e.target.value }) } />
+
+                                    {this.state.link ? <TextField className={ this.props.classes.editItem } label={ this.props.t('Link name')} value={ this.state.linkName || '' } onChange={ e => this.setState({ linkName: e.target.value }) } /> : null }
+
+                                    { this.state.camera === 'custom' || this.state.camera === 'text' ? <TextField className={ this.props.classes.editItem } label={ this.state.camera === 'custom' ? this.props.t('Camera URL') : this.props.t('Description') } value={ this.state.desc   || '' } onChange={ e => this.setState({ desc: e.target.value }) } /> : null }
+
+                                    { this.state.camera === 'custom' ? <FormControlLabel className={ this.props.classes.editItem }
                                                       control={<Checkbox checked={ this.state.addTs } onChange={ e => this.setState({ addTs: e.target.checked }) } />}
                                                       label={ this.props.t('Add timestamp to URL')}
                                     /> : null }
-                                    { this.state.camera ? <Typography id="disabled-slider" gutterBottom>
+
+                                    { this.state.camera !== 'text' ? <Typography  className={ this.props.classes.labelSlider } gutterBottom>
                                         Polling interval in ms
                                     </Typography> : null }
-                                    { this.state.camera ? <Slider
+                                    { this.state.camera !== 'text' ? <Slider
                                         className={ this.props.classes.editItemSlider }
                                         value={ this.state.interval }
                                         getAriaValueText={ () => this.state.interval + 'ms' }
                                         onChange={ (e, interval) => this.setState({ interval }) }
-                                        step={ 200 }
+                                        step={ 100 }
                                         min={ 500 }
                                         max={ 60000 }
                                         valueLabelDisplay="on"
                                     /> : null }
+
                                     <div style={{ width: 50 }} className={ this.props.classes.editItem }>
                                         <TextField fullWidth={ true } label={ this.props.t('Color')}     className={ this.props.editColor } type="color" value={ this.state.color }    onChange={ e => this.setState({ color:    e.target.value }) } />
                                     </div>
@@ -270,6 +326,7 @@ class EditIntroLinkDialog extends React.Component {
                                 addTs={ this.state.addTs }
                                 image={ this.state.image }
                                 title={ this.state.name }
+                                socket={ this.props.socket }
                                 action={{ link: this.state.link, text: this.state.linkName }}
                                 t={ this.props.t }
                                 color={ this.state.color }
@@ -313,6 +370,7 @@ class EditIntroLinkDialog extends React.Component {
 
 EditIntroLinkDialog.propTypes = {
     t: PropTypes.func.isRequired,
+    socket: PropTypes.object.isRequired,
     lang: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     link: PropTypes.object.isRequired,
