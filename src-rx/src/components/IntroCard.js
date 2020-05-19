@@ -328,11 +328,15 @@ class IntroCard extends React.Component {
                         }
                         {
                             this.props.action && this.props.action.link &&
-                                <CardActions className={ classes.action }>
-                                    <Link href={ this.props.action.link } underline="none">
-                                        { this.props.action.text }
-                                    </Link>
-                                </CardActions>
+                            <CardActions className={ classes.action }>
+                                <Link
+                                    href={ this.props.action.link }
+                                    underline="none"
+                                    target="_blank"
+                                >
+                                    { this.props.action.text }
+                                </Link>
+                            </CardActions>
                         }
                     </div>
                     {
