@@ -2,18 +2,22 @@ import React from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import { Grid } from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
+import { LinearProgress } from '@material-ui/core';
+import { Table } from '@material-ui/core';
+import { TableBody } from '@material-ui/core';
+import { TableCell } from '@material-ui/core';
+import { TableContainer } from '@material-ui/core';
+import { TableHead } from '@material-ui/core';
+import { TableRow } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 
+import CloudOffIcon from '@material-ui/icons/CloudOff';
+import FolderIcon from '@material-ui/icons/Folder';
+import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import RefreshIcon from '@material-ui/icons/Refresh';
 
 import { FaGithub as GithubIcon } from 'react-icons/fa';
@@ -31,6 +35,8 @@ import TabHeader from '../components/TabHeader';
 import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
 
 import Router from '@iobroker/adapter-react/Components/Router';
+
+import Semver from 'semver';
 
 const styles = theme => ({
     container: {
@@ -124,7 +130,9 @@ class Adapters extends React.Component {
             adapterDeletionAdapter: null,
             update: false,
             dialog: null,
-            dialogProp: null
+            dialogProp: null,
+            filterConnectionType: false,
+            search: ''
         };
 
         this.t = props.t;
@@ -173,9 +181,9 @@ class Adapters extends React.Component {
                 const nodeJsVersion = hostData['Node.js'].replace('v', '');
                 const hostOs = hostData.os;
     
-                const repository = await this.props.socket.getRepository(currentHost, {repo: this.props.systemConfig.common.activeRepo, update: updateRepo});
-                const installed = await this.props.socket.getInstalled(currentHost);
-                const instances = await this.props.socket.getAdapterInstances();
+                const repository = await this.props.socket.getRepository(currentHost, {repo: this.props.systemConfig.common.activeRepo, update: updateRepo}, updateRepo);
+                const installed = await this.props.socket.getInstalled(currentHost, updateRepo);
+                const instances = await this.props.socket.getAdapterInstances(updateRepo);
                 const categories = {};
                 const categoriesSorted = [];
                 const categoriesExpanded = JSON.parse(window.localStorage.getItem('Adapters.expandedCategories')) || {};
@@ -399,6 +407,61 @@ class Adapters extends React.Component {
         return false;
     }
 
+    rightDependencies(value) {
+
+        const adapter = this.state.repository[value];
+        let result = true;
+
+        if (adapter) {
+
+            const dependencies = adapter.dependencies;
+            const nodeVersion = adapter.node;
+
+            dependencies && dependencies.forEach(dependency => {
+
+                const checkVersion = typeof dependency !== 'string';
+                const keys = Object.keys(dependency);
+                const name = !checkVersion ? dependency : keys ? keys[0] : null;
+
+                if (result && name) {
+
+                    const installed = this.state.installed[name];
+
+                    result = installed ? checkVersion ? Semver.satisfies(installed.version, dependency[name]): true : false;
+                }
+            });
+
+            if (result && nodeVersion) {
+                result = Semver.satisfies(this.state.nodeJsVersion, nodeVersion);
+            }
+        }
+
+        return result;
+    }
+
+    rightOs(value) {
+
+        const adapter = this.state.repository[value];
+
+        if (adapter) {
+
+            const os = adapter.os;
+
+            if (os) {
+
+                os.forEach(value => {
+                    if (this.state.hostOs === value) {
+                        return true;
+                    }
+                });
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     openInfoDialog(adapter) {
         Router.doNavigate('tab-adapters', 'readme', adapter);
     }
@@ -413,6 +476,37 @@ class Adapters extends React.Component {
 
             this.typingTimer = setTimeout(this.setState({ search: value }), 300);
         }
+    }
+
+    toogleConnectionTypeFilter() {
+        this.setState(oldState => ({
+            filterConnectionType: !oldState.filterConnectionType
+        }));
+    }
+
+    expandAll() {
+        this.setState(oldState => {
+
+            const categories = oldState.categories;
+            const categoriesExpanded = oldState.categoriesExpanded;
+
+            categories.forEach(category => {
+                categoriesExpanded[category.name] = true;
+            });
+
+            window.localStorage.setItem('Adapters.expandedCategories', JSON.stringify(categoriesExpanded));
+
+            return { categoriesExpanded };
+        });
+    }
+
+    collapseAll() {
+
+        const categoriesExpanded = {};
+
+        window.localStorage.setItem('Adapters.expandedCategories', JSON.stringify(categoriesExpanded));
+
+        this.setState({ categoriesExpanded });
     }
 
     getRows() {
@@ -440,6 +534,8 @@ class Adapters extends React.Component {
                     const image = installed ? installed.localIcon : adapter.extIcon;
                     const connectionType = adapter.connectionType ? adapter.connectionType : '-';
                     const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
+                    const rightDependencies = this.rightDependencies(value);
+                    const rightOs = this.rightOs(value);
 
                     let show = search ? false : true;
 
@@ -455,6 +551,10 @@ class Adapters extends React.Component {
                                 }
                             });
                         }
+                    }
+
+                    if (show && this.state.filterConnectionType) {
+                        show = connectionType === 'local';
                     }
 
                     if (show) {
@@ -487,6 +587,8 @@ class Adapters extends React.Component {
                                 updateAvailable={ updateAvailable }
                                 version={ adapter.version }
                                 hidden={ !show }
+                                rightDependencies={ rightDependencies }
+                                rightOs={ rightOs }
                             />
                         );
                     }
@@ -550,9 +652,32 @@ class Adapters extends React.Component {
                     >
                         <RefreshIcon />
                     </IconButton>
-                    <IconButton>
-                        <GithubIcon />
-                    </IconButton>
+                    <Tooltip title={ this.t('expand all')}>
+                        <IconButton
+                            onClick={ () => this.expandAll() }
+                        >
+                            <FolderOpenIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={ this.t('collapse all')}>
+                        <IconButton
+                            onClick={ () => this.collapseAll() }
+                        >
+                            <FolderIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={ this.t('Filter local connection type')}>
+                        <IconButton
+                            onClick={ () => this.toogleConnectionTypeFilter() }
+                        >
+                            <CloudOffIcon color={ this.state.filterConnectionType ? 'primary' : 'inherit' } />
+                        </IconButton>
+                    </Tooltip>
+                    { this.props.expertMode &&
+                        <IconButton>
+                            <GithubIcon />
+                        </IconButton>
+                    }
                     <div className={ classes.grow } />
                     <TextField
                         label={ this.t('Filter') }
