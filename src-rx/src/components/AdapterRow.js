@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
 import { Avatar } from '@material-ui/core';
+import { Badge } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
 import { IconButton } from '@material-ui/core';
 import { TableCell } from '@material-ui/core';
@@ -14,6 +15,7 @@ import { Typography } from '@material-ui/core';
 
 import AddIcon from '@material-ui/icons/Add';
 import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
+import BugReportIcon from '@material-ui/icons/BugReport';
 import BuildIcon from '@material-ui/icons/Build';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import CloudIcon from '@material-ui/icons/Cloud';
@@ -60,6 +62,9 @@ const styles = theme => ({
     },
     displayNone: {
         display: 'none'
+    },
+    sentryIcon: {
+        fontSize: '1.2rem'
     }
 });
 
@@ -69,10 +74,13 @@ class AdapterRow extends React.Component {
 
         const isCategory = this.props.category;
 
-        const { classes, connectionType, installedCount,
+        const {
+            classes, connectionType, installedCount,
             installedVersion, enabledCount,
             updateAvailable, name,
-            rightDependencies, rightOs } = this.props;
+            rightDependencies, rightOs,
+            sentry
+        } = this.props;
 
         return (
             <TableRow
@@ -90,12 +98,14 @@ class AdapterRow extends React.Component {
                                     { this.props.expanded ? <ExpandMoreIcon /> : <ChevronRightIcon /> }
                                 </IconButton>
                                 :
-                                <Avatar
-                                    variant="square"
-                                    alt={ name }
-                                    src={ this.props.image }
-                                    className={ classes.smallAvatar }
-                                />
+                                <Badge badgeContent={ sentry && <BugReportIcon classes={{ root: classes.sentryIcon }} /> }>
+                                    <Avatar
+                                        variant="square"
+                                        alt={ name }
+                                        src={ this.props.image }
+                                        className={ classes.smallAvatar }
+                                    />
+                                </Badge>
                             }
                         </Grid>
                         <Grid item>
@@ -226,6 +236,9 @@ AdapterRow.propTypes = {
     onRebuild: PropTypes.func,
     onToggle: PropTypes.func,
     onUpload: PropTypes.func,
+    rightDependencies: PropTypes.bool,
+    rightOs: PropTypes.bool,
+    sentry: PropTypes.bool,
     t: PropTypes.func,
     updateAvailable: PropTypes.bool,
     version: PropTypes.string

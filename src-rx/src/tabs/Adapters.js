@@ -536,6 +536,7 @@ class Adapters extends React.Component {
                     const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
                     const rightDependencies = this.rightDependencies(value);
                     const rightOs = this.rightOs(value);
+                    const sentry = adapter.plugins && adapter.plugins.sentry ? true : false;
 
                     let show = search ? false : true;
 
@@ -589,6 +590,7 @@ class Adapters extends React.Component {
                                 hidden={ !show }
                                 rightDependencies={ rightDependencies }
                                 rightOs={ rightOs }
+                                sentry={ sentry }
                             />
                         );
                     }
