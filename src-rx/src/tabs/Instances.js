@@ -51,8 +51,8 @@ import Utils from '../Utils';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 
-import InstanceState from '../components/InstanceState';
 import InstanceInfo from '../components/InstanceInfo';
+import State from '../components/State';
 
 const styles = theme => ({
     table: {
@@ -692,16 +692,16 @@ class Instances extends React.Component {
                                     sm={ 6 }
                                     md={ 4 }
                                 >
-                                    <InstanceState state={ connectedToHost } >
+                                    <State state={ connectedToHost } >
                                         { this.t('Connected to host') }
-                                    </InstanceState>
-                                    <InstanceState state={ alive } >
+                                    </State>
+                                    <State state={ alive } >
                                         { this.t('Heartbeat') }
-                                    </InstanceState>
+                                    </State>
                                     { connected !== null &&
-                                        <InstanceState state={ connected }>
+                                        <State state={ connected }>
                                             { this.t('Connected to %s', instance.adapter) }
-                                        </InstanceState>
+                                        </State>
                                     }
                                 </Grid>
                                 <Grid
