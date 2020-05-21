@@ -17,8 +17,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import clsx from 'clsx';
-
 
 import I18n from '@iobroker/adapter-react/i18n';
 
@@ -45,8 +43,12 @@ const styles = theme => ({
         height: 'calc(100% - ' + (theme.mixins.toolbar.minHeight + theme.spacing(1) + 70) + 'px)',
         overflow: 'auto'
     },
+    grow: {
+        flexGrow: 1,
+    },
     statAccept: {
         marginTop: 10,
+        color: '#ff636e',
     },
     statAcceptDiv: {
         display: 'inline-block',
@@ -54,6 +56,9 @@ const styles = theme => ({
     statAcceptNote: {
         textAlign: 'left',
         marginLeft: 32,
+    },
+    greenButton: {
+        marginRight: theme.spacing(1),
     }
 });
 
@@ -66,6 +71,11 @@ class WizardLicenseTab extends React.Component {
             lang: this.props.lang,
             notAgree: false,
         };
+        this.focusRef = React.createRef();
+    }
+
+    componentDidMount() {
+        this.focusRef.current && this.focusRef.current.focus();
     }
 
     renderNotAgree() {
@@ -92,7 +102,7 @@ class WizardLicenseTab extends React.Component {
 
     render() {
         return <Paper className={ this.props.classes.paper }>
-            <Grid container className={ this.props.classes.gridDiv }>
+            <Grid container className={ this.props.classes.gridDiv } direction="column">
                 <Grid item>
                     <FormControl className={ this.props.classes.languageSelect }>
                         <InputLabel>{ this.props.t('Language') }</InputLabel>
@@ -117,20 +127,26 @@ class WizardLicenseTab extends React.Component {
                     <div className={ this.props.classes.statAcceptDiv }>
                         <FormControlLabel
                             className={ this.props.classes.statAccept }
-                            control={<Checkbox checked={ this.state.statisticsAccepted } onChange={e => this.setState({statisticsAccepted: e.target.checked }) } />}
+                            control={<Checkbox ref={ this.focusRef } checked={ this.state.statisticsAccepted } onChange={e => this.setState({statisticsAccepted: e.target.checked }) } />}
                             label={ this.props.t('I agree with the collection of anonymous statistics.') }
                         />
                         <div className={ this.props.classes.statAcceptNote }>{ this.props.t('(This can be disabled later in settings)') }</div>
                     </div>
+                </Grid>
+                <Grid item>
+                    <h2>{ this.props.t('License terms') }</h2>
                 </Grid>
                 <Grid item className={ this.props.classes.licenseDiv }>
                     This is a very long license
                 </Grid>
             </Grid>
             <Toolbar>
-                <Button disabled={ !this.props.statisticsAccepted } onClick={ () => this.props.onDone() }>{ this.props.t('Agree') }</Button>
-                <Button onClick={ () => this.setState({notAgree: true}) }>{ this.props.t('Not agree') }</Button>
+                <div className={ this.props.classes.grow }/>
+                <Button variant="contained" color="secondary" className={ this.props.classes.greenButton } disabled={ !this.state.statisticsAccepted } onClick={ () => this.props.onDone() }>{ this.props.t('Agree') }</Button>
+                <Button variant="contained" onClick={ () => this.setState({notAgree: true}) }>{ this.props.t('Not agree') }</Button>
+                <div className={ this.props.classes.grow }/>
             </Toolbar>
+            { this.renderNotAgree() }
         </Paper>;
     }
 }
@@ -138,7 +154,7 @@ class WizardLicenseTab extends React.Component {
 WizardLicenseTab.propTypes = {
     t: PropTypes.func,
     socket: PropTypes.object,
-    onDone: PropTypes.string.isRequired,
+    onDone: PropTypes.func.isRequired,
 };
 
 export default withWidth()(withStyles(styles)(WizardLicenseTab));

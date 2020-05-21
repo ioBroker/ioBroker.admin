@@ -249,7 +249,7 @@ class App extends Router {
 
                 cmd: null,
                 cmdDialog: false,
-                wizard: false,
+                wizard: true,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -311,6 +311,8 @@ class App extends Router {
                     this.instancesWorker = this.instancesWorker || new InstancesWorker(this.socket);
                     this.hostsWorker     = this.hostsWorker     || new HostsWorker(this.socket);
 
+
+
                     const newState = {
                         lang: this.socket.systemLang,
                         ready: true,
@@ -319,6 +321,7 @@ class App extends Router {
 
                     try {
                         newState.systemConfig = await this.socket.getSystemConfig();
+                        newState.wizard = !newState.systemConfig.common.licenseConfirmed;
                     } catch (error) {
                         console.log(error);
                     }

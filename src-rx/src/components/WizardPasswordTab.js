@@ -2,12 +2,9 @@ import React from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-
-
-import clsx from 'clsx';
+import Toolbar from '@material-ui/core/Grid';
 
 import Button from '@material-ui/core/Button';
 import Paper from  '@material-ui/core/Paper';
@@ -19,20 +16,38 @@ const styles = theme => ({
         maxWidth: '100%',
         overflow: 'hidden',
     },
+    title: {
+        color: theme.palette.secondary.main,
+    },
+    form: {
+        height: 'calc(100% - ' + (theme.mixins.toolbar.minHeight + theme.spacing(1)) + 'px)',
+        overflow: 'auto',
+    },
+    input: {
+        width: 400,
+        marginBottom: theme.spacing(2)
+    },
+    grow: {
+        flexGrow: 1,
+    }
 });
-
-const NO_CHANGE = '__NO_CHANGE__';
 
 class WizardPasswordTab extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            password: NO_CHANGE,
-            passwordRepeat: NO_CHANGE,
+            password: '',
+            passwordRepeat: '',
             errorPassword: false,
             errorPasswordRepeat: false,
         };
+
+        this.focusRef = React.createRef();
+    }
+
+    componentDidMount() {
+        this.focusRef.current && this.focusRef.current.focus();
     }
 
     checkPassword(password, passwordRepeat) {
@@ -41,7 +56,7 @@ class WizardPasswordTab extends React.Component {
         } else {
             if (passwordRepeat.length < 8 || !passwordRepeat.match(/\d/) || !passwordRepeat.match(/[a-z]/) || !passwordRepeat.match(/[A-Z]/)) {
                 return this.props.t('Password must be at least 8 characters long and have numbers, upper and lower case letters');
-            } else if (password !== passwordRepeat) {
+            } else if (this.state.password !== passwordRepeat) {
                 return this.props.t('Passwords are not equal');
             } else {
                 return false;
@@ -51,31 +66,54 @@ class WizardPasswordTab extends React.Component {
 
     render() {
         return <Paper className={ this.props.classes.paper }>
-            <form className={ this.props.classes.paper} noValidate autoComplete="off">
-                <Grid container>
+            <form className={ this.props.classes.form} noValidate autoComplete="off">
+                <Grid container direction="column">
+                    <Grid item>
+                        <h2 className={ this.props.classes.title }>{ this.props.t('You must set the administrator password') }</h2>
+                    </Grid>
                     <Grid item>
                         <TextField
+                            inputProps={{
+                                autoComplete: 'new-password',
+                                form: {
+                                    autoComplete: 'off',
+                                },
+                            }}
+                            autoComplete="off"
+                            className={ this.props.classes.input }
+                            ref={ this.focusRef }
                             label="Administrator password"
+                            type="password"
                             value={ this.state.password }
                             error={ this.state.errorPassword }
-                            onChange={ e => this.setState({ password: e.target.value, errorPassword: this.checkPassword(e.target.value)}) }
+                            onChange={ e => this.setState({ password: e.target.value, errorPassword: this.checkPassword(e.target.value), errorPasswordRepeat: this.checkPassword(null, this.state.passwordRepeat)}) }
                             helperText={ this.props.t('Password must be at least 8 characters long and have numbers, upper and lower case letters') }
                         />
                     </Grid>
                     <Grid item>
                         <TextField
+                            inputProps={{
+                                autoComplete: 'new-password',
+                                form: {
+                                    autoComplete: 'off',
+                                },
+                            }}
+                            autoComplete="off"
+                            className={ this.props.classes.input }
                             label={ this.props.t('Repeat administrator password') }
                             value={ this.state.passwordRepeat }
+                            type="password"
                             error={ !!this.state.errorPasswordRepeat }
-                            onChange={ e => this.setState({ password: e.target.value, errorPassword: this.checkPassword(e.target.value)}) }
-                            helperText={ this.state.errorPasswordRepeat ? this.state.errorPasswordRepeat : this.props.t('Password must be at least 8 characters long and have numbers, upper and lower case letters') }
+                            onChange={ e => this.setState({ passwordRepeat: e.target.value, errorPasswordRepeat: this.checkPassword(null, e.target.value), errorPassword: this.checkPassword(this.state.password)}) }
+                            helperText={ this.state.errorPasswordRepeat || '' }
                         />
-                    </Grid>
-                    <Grid item>
-                        <Button onClick={ () => this.props.onDone() } disabled={ !!this.state.errorPasswordRepeat || this.state.errorPassword }>{ this.props.t('Set administrator password') }</Button>
                     </Grid>
                 </Grid>
             </form>
+            <Toolbar>
+                <div className={ this.props.classes.grow }/>
+                <Button variant={"contained"} onClick={ () => this.props.onDone(this.state.password) } disabled={ !!this.state.errorPasswordRepeat || this.state.errorPassword }>{ this.props.t('Set administrator password') }</Button>
+            </Toolbar>
         </Paper>;
     }
 }
@@ -83,7 +121,7 @@ class WizardPasswordTab extends React.Component {
 WizardPasswordTab.propTypes = {
     t: PropTypes.func,
     socket: PropTypes.object,
-    onDone: PropTypes.string.isRequired,
+    onDone: PropTypes.func.isRequired,
 };
 
 export default withWidth()(withStyles(styles)(WizardPasswordTab));

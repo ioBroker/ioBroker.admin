@@ -1158,6 +1158,12 @@ class Connection {
             this._socket.emit('getHistory', id, options, (err, values) =>
                 err ? reject(err) : resolve(values)));
     }
+
+    changePassword(user, password) {
+        return new Promise((resolve, reject) =>
+            this._socket.emit('changePassword', user, password, err =>
+                err ? reject(err) : resolve()));
+    }
 }
 
 Connection.Connection = {
