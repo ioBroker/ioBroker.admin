@@ -22,7 +22,7 @@ const styles = {
     }
 };
 
-class InstanceState extends React.Component {
+class State extends React.Component {
 
     getIcon() {
         if (this.props.state) {
@@ -54,8 +54,8 @@ class InstanceState extends React.Component {
     }
 }
 
-InstanceState.propTypes = {
+State.propTypes = {
     state: PropTypes.bool
 };
 
-export default withStyles(styles)(InstanceState);
+export default withStyles(styles)(State);
