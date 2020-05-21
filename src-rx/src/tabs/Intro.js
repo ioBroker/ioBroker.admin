@@ -162,6 +162,7 @@ class Intro extends React.Component {
                 return (
                     <IntroCard
                         key={ instance.id }
+                        socket={ this.props.socket }
                         image={ instance.image }
                         title={ instance.name }
                         action={{ link: instance.link, text: linkText }}
@@ -204,6 +205,7 @@ class Intro extends React.Component {
                         title={ item.name }
                         action={{ link: item.link, text: item.linkName }}
                         t={ this.props.t }
+                        socket={ this.props.socket }
                         color={ item.color }
                         edit={ this.state.edit }
                         interval={ item.interval }
@@ -230,6 +232,7 @@ class Intro extends React.Component {
             return <EditIntroLinkDialog
                 open={ this.state.editLink }
                 link={ this.state.link }
+                socket={ this.props.socket }
                 isNew={ this.state.editLinkIndex === -1}
                 t={ this.props.t }
                 lang={ this.props.lang }
@@ -578,6 +581,7 @@ Intro.propTypes = {
     color: PropTypes.string,
     edit: PropTypes.bool,
     enabled: PropTypes.bool,
+    socket: PropTypes.object,
     image: PropTypes.string,
     reveal: PropTypes.node,
     title: PropTypes.string,

@@ -233,7 +233,12 @@ class Connection {
         window.location = `${window.location.protocol}//${window.location.host}${window.location.pathname}?login&href=${window.location.search}${window.location.hash}`;
     }
 
-    subscribeState(id, cb) {
+    subscribeState(id, binary, cb) {
+        if (typeof binary === 'function') {
+            cb = binary;
+            binary = false;
+        }
+
         if (!this.statesSubscribes[id]) {
             let reg = id
                 .replace(/\./g, '\\.')
@@ -255,8 +260,13 @@ class Connection {
             this.statesSubscribes[id].cbs.indexOf(cb) === -1 && this.statesSubscribes[id].cbs.push(cb);
         }
         if (typeof cb === 'function' && this.connected) {
-            this._socket.emit('getForeignStates', id, (err, states) =>
-                states && Object.keys(states).forEach(id => cb(id, states[id])));
+            if (binary) {
+                this.getBinaryState(id)
+                    .then(base64 => cb(id, base64));
+            } else {
+                this._socket.emit('getForeignStates', id, (err, states) =>
+                    states && Object.keys(states).forEach(id => cb(id, states[id])));
+            }
         }
     }
 
@@ -379,8 +389,29 @@ class Connection {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
+
         return new Promise((resolve, reject) =>
-            this._socket.emit('getForeignState', id, (err, state) => err ? reject(err) : resolve(state)));
+            this._socket.emit('getState', id, (err, state) => err ? reject(err) : resolve(state)));
+    }
+
+    getBinaryState(id) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        // the data will come in base64
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getBinaryState', id, (err, state) => err ? reject(err) : resolve(state)));
+    }
+
+    setBinaryState(id, base64) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        // the data will come in base64
+        return new Promise((resolve, reject) =>
+            this._socket.emit('setBinaryState', id, base64, err => err ? reject(err) : resolve()));
     }
 
     setState(id, val) {

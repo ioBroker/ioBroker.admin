@@ -25,6 +25,8 @@ import blue from '@material-ui/core/colors/blue';
 import grey from '@material-ui/core/colors/grey';
 import copy from 'copy-to-clipboard';
 
+import CameraIntroDialog from "../dialogs/CameraIntroDialog";
+
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
 
@@ -157,34 +159,75 @@ class IntroCard extends React.Component {
         super(props);
 
         this.state = {
-            expanded: false
+            expanded: false,
+            dialog: false,
         };
 
         this.cameraRef = React.createRef();
         this.cameraUpdateTimer = null;
+
+        this.interval = this.props.interval;
+        this.camera   = this.props.camera;
+    }
+
+    updateCamera() {
+        if (this.cameraRef.current) {
+            if (this.props.camera === 'custom') {
+                let url = this.props.children;
+                if (this.props.addTs) {
+                    if (url.includes('?')) {
+                        url += '&ts=' + Date.now();
+                    } else {
+                        url += '?ts=' + Date.now();
+                    }
+                }
+                this.cameraRef.current.src = url;
+            } else {
+                const parts = this.props.camera.split('.');
+                const adapter = parts.shift();
+                const instance = parts.shift();
+                this.props.socket.sendTo(adapter + '.' + instance, 'image', {name: parts.pop(), width: this.cameraRef.current.width})
+                    .then(result => {
+                        if (result && result.data && this.cameraRef.current) {
+                            this.cameraRef.current.src = 'data:image/jpeg;base64,' + result.data;
+                        }
+                    });
+            }
+        }
     }
 
     componentDidMount() {
-        if (this.props.camera) {
-            this.cameraUpdateTimer = setInterval(() => {
-                if (this.cameraRef.current) {
-                    let url = this.props.children;
-                    if (this.props.addTs) {
-                        if (url.includes('?')) {
-                            url += '&ts=' + Date.now();
-                        } else {
-                            url += '?ts=' + Date.now();
-                        }
-                    }
-                    this.cameraRef.current.src = url;
-                }
-            }, Math.max(parseInt(this.props.interval, 10), 500));
+        if (this.props.camera && this.props.camera !== 'text') {
+            this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval, 10), 500));
+            this.updateCamera();
         }
     }
 
     componentWillUnmount() {
         this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
         this.cameraUpdateTimer = null;
+    }
+
+    renderCameraDialog() {
+        if (!this.state.dialog) {
+            return null;
+        } else {
+            return <CameraIntroDialog
+                socket={ this.props.socket }
+                camera={ this.props.camera }
+                name={ this.props.title }
+                t={ this.props.t }
+                onClose={ () => {
+                    if (this.props.camera && this.props.camera !== 'text') {
+                        this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
+                        this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval, 10), 500));
+                        this.updateCamera();
+                    }
+
+                    this.setState({ dialog: false });
+                }}
+                />;
+        }
     }
 
     static getDerivedStateFromProps(props) {
@@ -202,9 +245,9 @@ class IntroCard extends React.Component {
     }
 
     renderContent() {
-        if (!this.props.camera) {
+        if (!this.props.camera || this.props.camera === 'text') {
             return this.props.children
-        } else {
+        } else if (this.props.camera === 'custom') {
             let url = this.props.children;
             if (this.props.addTs) {
                 if (url.includes('?')) {
@@ -215,6 +258,8 @@ class IntroCard extends React.Component {
             }
 
             return <img ref={ this.cameraRef } src={ url } alt="camera" className={ this.props.classes.cameraImg } />;
+        } else if (this.props.camera.startsWith('cameras.')) {
+            return <img ref={ this.cameraRef } src="" alt="camera" className={ this.props.classes.cameraImg } />;
         }
     }
 
@@ -222,6 +267,17 @@ class IntroCard extends React.Component {
 
         const { classes } = this.props;
         const editClass = this.props.edit ? ' ' + classes.edit : '';
+
+        if (this.props.camera && this.props.camera !== 'text') {
+            if (this.interval !== this.props.interval) {
+                this.interval = this.props.interval;
+                this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
+                this.cameraUpdateTimer = setInterval(() => this.updateCamera(), Math.max(parseInt(this.props.interval, 10), 500));
+            }
+        } else if (this.cameraUpdateTimer) {
+            clearInterval(this.cameraUpdateTimer);
+            this.cameraUpdateTimer = null;
+        }
 
         return (
             <Grid
@@ -232,7 +288,14 @@ class IntroCard extends React.Component {
                 lg={ 3 }
                 className={ classes.root }
             >
-                <Card className={ classes.card }>
+                <Card className={ classes.card } onClick={ e => {
+                    e.stopPropagation();
+                    if (!this.props.action || !this.props.action.link || !this.state.camera !== 'text') {
+                        this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
+                        this.cameraUpdateTimer = null;
+                        this.setState( { dialog: true });
+                    }
+                }}>
                     {
                         this.props.reveal &&
                         <Button
@@ -242,7 +305,7 @@ class IntroCard extends React.Component {
                             onClick={ () => this.handleExpandClick() }
                             color="primary"
                         >
-                            INFO
+                            { this.props.t('Info') }
                         </Button>
                     }
                     <div className={ classes.media + editClass } style={{ backgroundColor: this.props.color }}>
@@ -310,6 +373,7 @@ class IntroCard extends React.Component {
                             <EditIcon />
                         </IconButton>
                     }
+                    { this.renderCameraDialog() }
                 </Card>
             </Grid>
         );
@@ -317,11 +381,15 @@ class IntroCard extends React.Component {
 }
 
 IntroCard.propTypes = {
+    camera: PropTypes.string,
+    addTs: PropTypes.bool,
+    interval: PropTypes.number,
     ready: PropTypes.bool,
     instances: PropTypes.object,
     updateIntro: PropTypes.string,
     openLinksInNewWindow: PropTypes.bool,
     onEdit: PropTypes.func,
+    socket: PropTypes.object,
     t: PropTypes.func,
 };
 
