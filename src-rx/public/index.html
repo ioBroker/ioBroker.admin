@@ -29,22 +29,23 @@
     </script>
     <script type="text/javascript" src="%PUBLIC_URL%/lib/js/sparkline.js"></script>
     <title>Admin</title>
+
+    <script>
+      window.loginHideLogo  = '@@loginHideLogo@@';
+      window.loginMotto     = '@@loginMotto@@';
+      window.login          = '@@auth@@';
+    </script>
+    <style>
+      body {
+        background-color: '@@loginBackgroundColor@@' !important;
+        background-image: url('@@loginBackgroundImage@@');
+      }
+      .root {
+        background-color: rgba(255, 255, 255, 0.87);
+        border-radius: 10px;
+      }
+    </style>
   </head>
-  <script>
-    window.loginHideLogo        = '@@loginHideLogo@@';
-    window.loginMotto           = '@@loginMotto@@';
-    window.login                = '@@auth@@';
-  </script>
-  <style>
-    body {
-      background-color: '@@loginBackgroundColor@@' !important;
-      background-image: url('@@loginBackgroundImage@@');
-    }
-    .root {
-      background-color: rgba(255,255,255,0.87);
-      border-radius: 10px;
-    }
-  </style>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root">
