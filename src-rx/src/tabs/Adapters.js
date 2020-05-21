@@ -25,14 +25,15 @@ import { FaGithub as GithubIcon } from 'react-icons/fa';
 import { blue } from '@material-ui/core/colors';
 import { green } from '@material-ui/core/colors';
 
-import AddInstanceDialog from '../dialogs/AddInstanceDialog';
 import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
+import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
+import AdapterUpdateDialog from '../dialogs/AdapterUpdateDialog';
+import AddInstanceDialog from '../dialogs/AddInstanceDialog';
 
 import AdapterRow from '../components/AdapterRow';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 import TabHeader from '../components/TabHeader';
-import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
 
 import Router from '@iobroker/adapter-react/Components/Router';
 
@@ -331,6 +332,10 @@ class Adapters extends React.Component {
         this.props.executeCommand('del ' + adapter);
     }
 
+    update(adapter) {
+        this.props.executeCommand('upgrade ' + adapter);
+    }
+
     closeAddInstanceDialog() {
         this.setState({
             addInstanceDialog: false,
@@ -407,6 +412,62 @@ class Adapters extends React.Component {
         return false;
     }
 
+    getDependencies(value) {
+
+        const adapter = this.state.repository[value];
+        let result = [];
+
+        if (adapter) {
+
+            const dependencies = adapter.dependencies;
+            const nodeVersion = adapter.node;
+
+            dependencies && dependencies.forEach(dependency => {
+
+                const entry = {
+                    name: '',
+                    version: null,
+                    installed: false,
+                    installedVersion: null,
+                    rightVersion: false
+                }
+
+                const checkVersion = typeof dependency !== 'string';
+                const keys = Object.keys(dependency);
+                entry.name = !checkVersion ? dependency : keys ? keys[0] : null;
+                entry.version = checkVersion ? dependency[entry.name] : null;
+
+                if (result && entry.name) {
+
+                    const installed = this.state.installed[entry.name];
+
+                    entry.installed = installed ? true : false;
+                    entry.installedVersion = installed ? installed.version : null
+                    entry.rightVersion = installed ? checkVersion ? Semver.satisfies(installed.version, entry.version): true : false;
+                }
+
+                result.push(entry);
+            });
+
+            if (nodeVersion) {
+
+                const entry = {
+                    name: 'node',
+                    version: nodeVersion,
+                    installed: true,
+                    installedVersion: this.state.nodeJsVersion,
+                    rightVersion: false
+                }
+
+                entry.rightVersion = Semver.satisfies(this.state.nodeJsVersion, nodeVersion);
+
+                result.push(entry);
+            }
+        }
+
+        return result;
+    }
+
     rightDependencies(value) {
 
         const adapter = this.state.repository[value];
@@ -464,6 +525,43 @@ class Adapters extends React.Component {
 
     openInfoDialog(adapter) {
         Router.doNavigate('tab-adapters', 'readme', adapter);
+    }
+
+    openUpdateDialog(adapter) {
+        this.setState({
+            adapterUpdateDialog: true,
+            adapterUpdateAdapter: adapter
+        });
+    }
+
+    closeAdapterUpdateDialog() {
+        this.setState({
+            adapterUpdateDialog: false,
+            adapterUpdateAdapter: null
+        });
+    }
+
+    getNews(value) {
+
+        const adapter = this.state.repository[value];
+        const installed = this.state.installed[value];
+        const news = [];
+
+        if (installed && adapter && adapter.news) {
+
+            Object.keys(adapter.news).forEach(version => {
+                console.log(Semver.gt(version, installed.version));
+                if (Semver.gt(version, installed.version)) {
+
+                    news.push({
+                        version: version,
+                        news: adapter.news[version][this.props.lang] || adapter.news[version].en
+                    });
+                }
+            });
+        }
+
+        return news;
     }
 
     handleFilterChange(event) {
@@ -584,6 +682,7 @@ class Adapters extends React.Component {
                                 onDeletion={ () => this.openAdapterDeletionDialog(value) }
                                 onInfo={ () => this.openInfoDialog(value) }
                                 onRebuild={ () => this.rebuild(value) }
+                                onUpdate={ () => this.openUpdateDialog(value) }
                                 onUpload={ () => this.upload(value) }
                                 updateAvailable={ updateAvailable }
                                 version={ adapter.version }
@@ -745,6 +844,18 @@ class Adapters extends React.Component {
                         t={ this.t }
                         onClick={ () => this.delete(this.state.adapterDeletionAdapter) }
                         onClose={ () => this.closeAdapterDeletionDialog() }
+                    />
+                }
+                { this.state.adapterUpdateDialog &&
+                    <AdapterUpdateDialog
+                        open={ this.state.adapterUpdateDialog }
+                        adapter={ this.state.adapterUpdateAdapter }
+                        t={ this.t }
+                        dependencies={ this.getDependencies(this.state.adapterUpdateAdapter) }
+                        rightDependencies={ this.rightDependencies(this.state.adapterUpdateAdapter) }
+                        news={ this.getNews(this.state.adapterUpdateAdapter) }
+                        onClick={ () => this.update(this.state.adapterUpdateAdapter) }
+                        onClose={ () => this.closeAdapterUpdateDialog() }
                     />
                 }
             </TabContainer>
