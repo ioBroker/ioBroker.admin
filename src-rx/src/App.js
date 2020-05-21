@@ -63,6 +63,7 @@ import BaseSettings from './tabs/BaseSettings';
 import CustomTab from './tabs/CustomTab';
 
 import i18n from '@iobroker/adapter-react/i18n';
+import Wizard from "./tabs/Wizard";
 
 const query = {};
 (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
@@ -247,7 +248,8 @@ class App extends Router {
                 unsavedDataInDialog: false,
 
                 cmd: null,
-                cmdDialog: false
+                cmdDialog: false,
+                wizard: false,
             };
             this.logsWorker = null;
             this.instancesWorker = null;
@@ -766,6 +768,17 @@ class App extends Router {
         });
     }
 
+    renderWizard() {
+        if (this.state.wizard) {
+            return <Wizard
+                socket={ this.socket }
+                t={ I18n.t }
+                lang={ I18n.getLanguage() }
+                onClose={ () => this.setState({ wizard: false }) }
+            />;
+        }
+    }
+
     render() {
         if (this.state.login) {
             return (
@@ -918,6 +931,7 @@ class App extends Router {
                         t={ I18n.t }
                     />
                 }
+                { this.renderWizard() }
                 { !this.state.connected && <Connecting /> }
             </ThemeProvider>
         );
