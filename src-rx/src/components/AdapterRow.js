@@ -153,7 +153,10 @@ class AdapterRow extends React.Component {
                         { !isCategory && this.props.version }
                         <div className={ classes.grow } />
                         { !isCategory && updateAvailable &&
-                            <IconButton size="small">
+                            <IconButton
+                                size="small"
+                                onClick={ this.props.onUpdate }
+                            >
                                 <RefreshIcon />
                             </IconButton>
                         }
@@ -235,6 +238,7 @@ AdapterRow.propTypes = {
     onDeletion: PropTypes.func,
     onRebuild: PropTypes.func,
     onToggle: PropTypes.func,
+    onUpdate: PropTypes.func,
     onUpload: PropTypes.func,
     rightDependencies: PropTypes.bool,
     rightOs: PropTypes.bool,
