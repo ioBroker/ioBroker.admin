@@ -26,6 +26,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 
 import { blue } from '@material-ui/core/colors';
 import { green } from '@material-ui/core/colors';
+import { red } from '@material-ui/core/colors';
 
 const styles = theme => ({
     smallAvatar: {
@@ -51,6 +52,9 @@ const styles = theme => ({
     updateAvailable: {
         color: green[700]
     },
+    wrongDependencies: {
+        color: red[700]
+    },
     grow: {
         flexGrow: 1
     },
@@ -67,7 +71,8 @@ class AdapterRow extends React.Component {
 
         const { classes, connectionType, installedCount,
             installedVersion, enabledCount,
-            updateAvailable, name } = this.props;
+            updateAvailable, name,
+            rightDependencies, rightOs } = this.props;
 
         return (
             <TableRow
@@ -129,7 +134,8 @@ class AdapterRow extends React.Component {
                         (installedCount ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})` : '')
                     }
                 </TableCell>
-                <TableCell className={ clsx({ [classes.updateAvailable]: !isCategory && updateAvailable }) }>
+                <TableCell className={ clsx({ [classes.updateAvailable]: !isCategory && updateAvailable && rightDependencies,
+                    [classes.wrongDependencies]: !rightDependencies }) }>
                     <Grid
                         container
                         alignItems="center"
@@ -152,7 +158,8 @@ class AdapterRow extends React.Component {
                     <TableCell>
                         <IconButton
                             size="small"
-                            onClick={ this.props.onAddInstance }
+                            className={ !rightOs ? classes.hidden : '' }
+                            onClick={ rightOs ? this.props.onAddInstance : null }
                         >
                             <AddIcon />
                         </IconButton>
