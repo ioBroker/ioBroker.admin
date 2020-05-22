@@ -90,11 +90,10 @@ class Wizard extends React.Component {
                 <Button
                     variant="contained"
                     color="secondary"
-                    focused
                     onClick={ () =>
                         this.props.socket.getSystemConfig(true)
                             .then(obj =>
-                                this.setState( {activeStep: this.state.activeStep + 1 + (obj.common.licenseConfirmed ? 1 : 0) }))
+                                this.setState( {activeStep: this.state.activeStep + 2 + (obj.common.licenseConfirmed ? 1 : 0) }))
                     }>
                     { this.props.t('Start wizard') } <PlayIcon/></Button>
                 <div  className={ this.props.classes.grow }/>
@@ -150,7 +149,7 @@ class Wizard extends React.Component {
             </div>
             <Toolbar>
                 <div  className={ this.props.classes.grow }/>
-                <Button variant="contained" color="secondary" focused onClick={ () => this.props.onClose() }><CheckIcon/>{ this.props.t('Finish') }</Button>
+                <Button variant="contained" color="secondary" onClick={ () => this.props.onClose() }><CheckIcon/>{ this.props.t('Finish') }</Button>
                 <div  className={ this.props.classes.grow }/>
             </Toolbar>
         </div>;
@@ -172,12 +171,13 @@ class Wizard extends React.Component {
                         <Step><StepLabel>{ this.props.t('Welcome') }</StepLabel></Step>
                         <Step><StepLabel>{ this.props.t('License agreement') }</StepLabel></Step>
                         <Step><StepLabel>{ this.props.t('Password') }</StepLabel></Step>
+                        <Step><StepLabel>{ this.props.t('Settings') }</StepLabel></Step>
                         <Step><StepLabel>{ this.props.t('Finish') }</StepLabel></Step>
                     </Stepper>
                 </AppBar>
                 {this.state.activeStep === 0 ? <div className={ this.props.classes.tabPanel }>{ this.renderWelcome()  }</div> : null }
                 {this.state.activeStep === 1 ? <div className={ this.props.classes.tabPanel }>{ this.renderLicense()  }</div> : null }
-                {this.state.activeStep === 2 ? <div className={ this.props.classes.tabPanel }>{ this.renderPassword() }</div> : null }
+                {this.state.activeStep === 10 ? <div className={ this.props.classes.tabPanel }>{ this.renderPassword() }</div> : null }
                 {this.state.activeStep === 3 ? <div className={ this.props.classes.tabPanel }>{ this.renderSettings() }</div> : null }
                 {this.state.activeStep === 4 ? <div className={ this.props.classes.tabPanel }>{ this.renderFinish()   }</div> : null }
             </DialogContent>
