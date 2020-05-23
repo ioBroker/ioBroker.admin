@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import AppBar from '@material-ui/core/AppBar';
@@ -25,6 +24,8 @@ import WizardFinishImage from '../assets/wizard-finish.jpg';
 import WizardWelcomeImage from '../assets/wizard-welcome.jpg';
 import WizardSettingsTab from '../components/WizardSettingsTab';
 
+const TOOLBAR_HEIGHT = 64;
+
 const styles = theme => ({
     dialog: {
         height: '100%',
@@ -33,7 +34,7 @@ const styles = theme => ({
     },
     paper: {
         width: '100%',
-        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+        height: '100%',
         overflow: 'hidden'
     },
     content: {
@@ -42,28 +43,34 @@ const styles = theme => ({
     tabPanel: {
         width: '100%',
         overflow: 'hidden',
-        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+        height: 'calc(100% - ' + 72 + 'px)',
     },
     fullHeightWithoutToolbar: {
-        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
+        height: 'calc(100% - ' + TOOLBAR_HEIGHT + 'px)',
         width: '100%',
         overflow: 'auto',
     },
     finishBackground: {
         backgroundImage: 'url(' + WizardFinishImage + ')',
         backgroundRepeat: 'no-repeat',
-        backgroundSize: 'auto',
+        backgroundSize: 'cover',
         backgroundPosition: 'center',
     },
     welcomeBackground: {
         backgroundImage: 'url(' + WizardWelcomeImage + ')',
         backgroundRepeat: 'no-repeat',
-        backgroundSize: 'auto',
+        backgroundSize: 'cover',
         backgroundPosition: 'center',
     },
     grow: {
         flexGrow: 1,
     },
+    playIcon: {
+        marginLeft: theme.spacing(1),
+    },
+    toolbar: {
+        height: TOOLBAR_HEIGHT,
+    }
 });
 
 class Wizard extends React.Component {
@@ -85,17 +92,17 @@ class Wizard extends React.Component {
             <div className={ this.props.classes.fullHeightWithoutToolbar }>
 
             </div>
-            <Toolbar>
-                <div  className={ this.props.classes.grow }/>
+            <Toolbar className={ this.props.classes.toolbar }>
+                <div className={ this.props.classes.grow }/>
                 <Button
                     variant="contained"
                     color="secondary"
                     onClick={ () =>
                         this.props.socket.getSystemConfig(true)
                             .then(obj =>
-                                this.setState( {activeStep: this.state.activeStep + 2 + (obj.common.licenseConfirmed ? 1 : 0) }))
+                                this.setState( {activeStep: this.state.activeStep + 1 + (obj.common.licenseConfirmed ? 0 : 0) }))
                     }>
-                    { this.props.t('Start wizard') } <PlayIcon/></Button>
+                    { this.props.t('Start wizard') } <PlayIcon className={ this.props.classes.playIcon }/></Button>
                 <div  className={ this.props.classes.grow }/>
             </Toolbar>
         </div>;
@@ -133,7 +140,7 @@ class Wizard extends React.Component {
             socket={ this.props.socket }
             themeName={ this.props.themeName }
             onDone={settings =>
-                this.props.socket.getSystemConfig(true)
+                this.props.socket.getSystemConfig()
                     .then(obj => {
                         Object.assign(obj.common, settings);
                         return this.props.socket.setSystemConfig(obj);
@@ -147,10 +154,10 @@ class Wizard extends React.Component {
             <div className={ this.props.classes.fullHeightWithoutToolbar }>
 
             </div>
-            <Toolbar>
-                <div  className={ this.props.classes.grow }/>
+            <Toolbar className={ this.props.classes.toolbar }>
+                <div className={ this.props.classes.grow }/>
                 <Button variant="contained" color="secondary" onClick={ () => this.props.onClose() }><CheckIcon/>{ this.props.t('Finish') }</Button>
-                <div  className={ this.props.classes.grow }/>
+                <div className={ this.props.classes.grow }/>
             </Toolbar>
         </div>;
     }
@@ -164,7 +171,7 @@ class Wizard extends React.Component {
             fullScreen={ true }
             aria-labelledby="wizard-dialog-title"
         >
-            <DialogTitle id="wizard-dialog-title">{ this.props.t('Initial setup') }</DialogTitle>
+            <DialogTitle id="wizard-dialog-title">{ this.props.t('Initial ioBroker setup') }</DialogTitle>
             <DialogContent className={ this.props.classes.content }>
                 <AppBar position="static">
                     <Stepper activeStep={ this.state.activeStep }>
@@ -177,12 +184,10 @@ class Wizard extends React.Component {
                 </AppBar>
                 {this.state.activeStep === 0 ? <div className={ this.props.classes.tabPanel }>{ this.renderWelcome()  }</div> : null }
                 {this.state.activeStep === 1 ? <div className={ this.props.classes.tabPanel }>{ this.renderLicense()  }</div> : null }
-                {this.state.activeStep === 10 ? <div className={ this.props.classes.tabPanel }>{ this.renderPassword() }</div> : null }
+                {this.state.activeStep === 2 ? <div className={ this.props.classes.tabPanel }>{ this.renderPassword() }</div> : null }
                 {this.state.activeStep === 3 ? <div className={ this.props.classes.tabPanel }>{ this.renderSettings() }</div> : null }
                 {this.state.activeStep === 4 ? <div className={ this.props.classes.tabPanel }>{ this.renderFinish()   }</div> : null }
             </DialogContent>
-            <DialogActions>
-            </DialogActions>
         </Dialog>;
     }
 }

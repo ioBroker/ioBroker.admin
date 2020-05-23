@@ -9,6 +9,8 @@ import Toolbar from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Paper from  '@material-ui/core/Paper';
 
+const TOOLBAR_HEIGHT = 64;
+
 const styles = theme => ({
     paper: {
         height: '100%',
@@ -20,7 +22,7 @@ const styles = theme => ({
         color: theme.palette.secondary.main,
     },
     form: {
-        height: 'calc(100% - ' + (theme.mixins.toolbar.minHeight + theme.spacing(1)) + 'px)',
+        height: 'calc(100% - ' + (TOOLBAR_HEIGHT + theme.spacing(1)) + 'px)',
         overflow: 'auto',
     },
     input: {
@@ -29,6 +31,10 @@ const styles = theme => ({
     },
     grow: {
         flexGrow: 1,
+    },
+    toolbar: {
+        height: TOOLBAR_HEIGHT,
+        lineHeight: TOOLBAR_HEIGHT + 'px',
     }
 });
 
@@ -39,7 +45,7 @@ class WizardPasswordTab extends React.Component {
         this.state = {
             password: '',
             passwordRepeat: '',
-            errorPassword: false,
+            errorPassword: true,
             errorPasswordRepeat: false,
         };
 
@@ -110,7 +116,7 @@ class WizardPasswordTab extends React.Component {
                     </Grid>
                 </Grid>
             </form>
-            <Toolbar>
+            <Toolbar className={ this.props.classes.toolbar }>
                 <div className={ this.props.classes.grow }/>
                 <Button variant={"contained"} onClick={ () => this.props.onDone(this.state.password) } disabled={ !!this.state.errorPasswordRepeat || this.state.errorPassword }>{ this.props.t('Set administrator password') }</Button>
             </Toolbar>

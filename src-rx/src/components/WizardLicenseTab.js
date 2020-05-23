@@ -20,16 +20,17 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import I18n from '@iobroker/adapter-react/i18n';
 
+const TOOLBAR_HEIGHT = 64;
+
 const styles = theme => ({
     paper: {
         height: '100%',
         maxHeight: '100%',
         maxWidth: '100%',
         overflow: 'hidden',
-        padding: theme.spacing(2),
     },
     gridDiv: {
-        height: 'calc(100% - ' + (theme.mixins.toolbar.minHeight + theme.spacing(1)) + 'px)',
+        height: 'calc(100% - ' + TOOLBAR_HEIGHT + 'px)',
         width: '100%',
         overflow: 'hidden',
         padding: theme.spacing(2),
@@ -59,6 +60,10 @@ const styles = theme => ({
     },
     greenButton: {
         marginRight: theme.spacing(1),
+    },
+    toolbar: {
+        height: TOOLBAR_HEIGHT,
+        lineHeight: TOOLBAR_HEIGHT + 'px',
     }
 });
 
@@ -89,7 +94,7 @@ class WizardLicenseTab extends React.Component {
             <DialogTitle >{ this.props.t('Message') }</DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
-                    😒 { this.props.t('Sorry, you cannot use ioBroker.')}
+                    <span role="img" aria-label="unhappy">😒</span> { this.props.t('Sorry, you cannot use ioBroker.')}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -140,7 +145,7 @@ class WizardLicenseTab extends React.Component {
                     This is a very long license
                 </Grid>
             </Grid>
-            <Toolbar>
+            <Toolbar className={ this.props.classes.toolbar }>
                 <div className={ this.props.classes.grow }/>
                 <Button variant="contained" color="secondary" className={ this.props.classes.greenButton } disabled={ !this.state.statisticsAccepted } onClick={ () => this.props.onDone() }>{ this.props.t('Agree') }</Button>
                 <Button variant="contained" onClick={ () => this.setState({notAgree: true}) }>{ this.props.t('Not agree') }</Button>
