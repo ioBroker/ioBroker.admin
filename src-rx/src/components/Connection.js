@@ -1026,7 +1026,10 @@ class Connection {
         }
 
         this._promises['supportedFeatures_' + feature] = this._promises['supportedFeatures_' + feature] || new Promise((resolve, reject) =>
-            this._socket.emit('checkFeatureSupported', (err, features) => err ? reject(err) : resolve(features)));
+            this._socket.emit('checkFeatureSupported', (err, features) => {
+                console.log(features);
+                err ? reject(err) : resolve(features)
+            }));
 
         return this._promises['supportedFeatures_' + feature];
     }

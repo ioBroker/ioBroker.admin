@@ -49,7 +49,6 @@ import theme from './Theme';
 import LogsWorker from './components/LogsWorker';
 import InstancesWorker from './components/InstancesWorker';
 import HostsWorker from './components/HostsWorker';
-
 import Login from './login/Login';
 
 // Tabs
@@ -59,11 +58,11 @@ import Intro from './tabs/Intro';
 import Logs from './tabs/Logs';
 import Files from './tabs/Files';
 import Objects from './tabs/Objects';
-import BaseSettings from './tabs/BaseSettings';
 import CustomTab from './tabs/CustomTab';
 
 import i18n from '@iobroker/adapter-react/i18n';
-import Wizard from "./tabs/Wizard";
+import WizardDialog from "./dialogs/WizardDialog";
+import BaseSettingsDialog from './dialogs/BaseSettingsDialog';
 
 const query = {};
 (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
@@ -244,7 +243,7 @@ class App extends Router {
                 dataNotStoredDialog: false,
                 dataNotStoredTab: '',
 
-                baseSettingsOpened: null,
+                baseSettingsOpened: false,
                 unsavedDataInDialog: false,
 
                 cmd: null,
@@ -544,18 +543,6 @@ class App extends Router {
     }*/
 
     getCurrentTab() {
-
-        if (this.state.baseSettingsOpened) {
-            return (<BaseSettings
-                key="intro"
-                onUnsaveChanged={ hasUnsavedData => this.setUnsavedData(hasUnsavedData) }
-                lang={ this.state.lang }
-                showAlert={ (message, type) => this.showAlert(message, type) }
-                socket={ this.socket }
-                t={ I18n.t }
-            />);
-        }
-
         if (this.state && this.state.currentTab && this.state.currentTab.tab) {
             if (this.state.currentTab.tab === 'tab-adapters') {
                 return (
@@ -672,6 +659,25 @@ class App extends Router {
         return null;
     }
 
+    getBaseSettingsDialog() {
+        if (this.state.baseSettingsOpened) {
+            return (<BaseSettingsDialog
+                currentHost={ this.state.currentHost }
+                hosts={ this.state.hosts }
+                currentHostName={ this.state.currentHostName }
+                key="base"
+                onClose={ () =>
+                    this.setState({ baseSettingsOpened: false} ) }
+                lang={ this.state.lang }
+                showAlert={ (message, type) => this.showAlert(message, type) }
+                socket={ this.socket }
+                t={ I18n.t }
+            />);
+        } else {
+            return null;
+        }
+    }
+
     handleAlertClose(event, reason) {
         if (reason === 'clickaway') {
           return;
@@ -771,9 +777,9 @@ class App extends Router {
         });
     }
 
-    renderWizard() {
+    renderWizardDialog() {
         if (this.state.wizard) {
-            return <Wizard
+            return <WizardDialog
                 socket={ this.socket }
                 t={ I18n.t }
                 lang={ I18n.getLanguage() }
@@ -859,7 +865,7 @@ class App extends Router {
                             </IconButton>
                             {/*This will be removed later to settings, to not allow so easy to edit it*/}
                             {   this.state.expertMode && 
-                                <IconButton>
+                                <IconButton onClick={() => this.setState({ baseSettingsOpened: true })}>
                                     <BuildIcon className={ classes.baseSettingsButton }/>
                                 </IconButton>
                             }
@@ -934,7 +940,8 @@ class App extends Router {
                         t={ I18n.t }
                     />
                 }
-                { this.renderWizard() }
+                { this.renderWizardDialog() }
+                { this.getBaseSettingsDialog() }
                 { !this.state.connected && <Connecting /> }
             </ThemeProvider>
         );

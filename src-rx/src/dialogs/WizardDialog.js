@@ -73,7 +73,7 @@ const styles = theme => ({
     }
 });
 
-class Wizard extends React.Component {
+class WizardDialog extends React.Component {
     constructor(props) {
         super(props);
 
@@ -192,11 +192,11 @@ class Wizard extends React.Component {
     }
 }
 
-Wizard.propTypes = {
+WizardDialog.propTypes = {
     t: PropTypes.func,
     lang: PropTypes.string,
     socket: PropTypes.object,
     onClose: PropTypes.func,
 };
 
-export default withWidth()(withStyles(styles)(Wizard));
+export default withWidth()(withStyles(styles)(WizardDialog));
