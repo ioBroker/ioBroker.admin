@@ -664,6 +664,7 @@ class App extends Router {
             return (<BaseSettingsDialog
                 currentHost={ this.state.currentHost }
                 hosts={ this.state.hosts }
+                themeName={ this.state.themeName }
                 currentHostName={ this.state.currentHostName }
                 key="base"
                 onClose={ () =>

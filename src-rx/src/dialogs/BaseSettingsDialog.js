@@ -16,22 +16,18 @@ import ConfirmDialog from '@iobroker/adapter-react/Dialogs/Confirm';
 import BaseSettingsSystem from '../components/BaseSettingsSystem';
 import BaseSettingsMultihost from '../components/BaseSettingsMultihost';
 import BaseSettingsObjects from '../components/BaseSettingsObjects';
+import BaseSettingsStates from '../components/BaseSettingsStates';
+import BaseSettingsLog from '../components/BaseSettingsLog';
+import BaseSettingsPlugins from '../components/BaseSettingsPlugins';
 
 // icons
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 
 const styles = theme => ({
-    root: {
-        width: 'calc(100% - ' + theme.spacing(2) + 'px)',
-        height: 'calc(100% - ' + theme.spacing(2) + 'px)',
-        overflow: 'hidden',
-        position: 'relative',
-        margin: theme.spacing(1)
-    },
     tabPanel: {
         width:    '100%',
-        height:   '100%',
+        height: 'calc(100% - ' + theme.mixins.toolbar.minHeight + 'px)',
         overflow: 'hidden',
     }
 });
@@ -172,7 +168,7 @@ class BaseSettingsDialog extends React.Component {
 
     renderStates() {
         const name = 'states';
-        return <BaseSettingsObjects
+        return <BaseSettingsStates
             settings={ this.state[name] }
             t={ this.props.t }
             socket={ this.props.socket }
@@ -192,6 +188,52 @@ class BaseSettingsDialog extends React.Component {
             }}
         />;
     }
+
+    renderLog() {
+        const name = 'log';
+        return <BaseSettingsLog
+            settings={ this.state[name] }
+            t={ this.props.t }
+            socket={ this.props.socket }
+            currentHost={ this.props.currentHost }
+            onChange={ settings => {
+                const hasChanges = [...this.state.hasChanges];
+                const changed = JSON.stringify(this.originalSettings[name]) !== JSON.stringify(settings);
+
+                const pos = hasChanges.indexOf(name);
+                if (changed && pos === -1) {
+                    hasChanges.push(name);
+                } else if (!changed && pos !== -1) {
+                    hasChanges.splice(pos, 1);
+                }
+
+                this.setState({ [name]: settings, hasChanges});
+            }}
+        />;
+    }
+
+    renderPlugins() {
+        const name = 'plugins';
+        return <BaseSettingsPlugins
+            settings={ this.state[name] }
+            t={ this.props.t }
+            themeName={ this.props.themeName }
+            onChange={ settings => {
+                const hasChanges = [...this.state.hasChanges];
+                const changed = JSON.stringify(this.originalSettings[name]) !== JSON.stringify(settings);
+
+                const pos = hasChanges.indexOf(name);
+                if (changed && pos === -1) {
+                    hasChanges.push(name);
+                } else if (!changed && pos !== -1) {
+                    hasChanges.splice(pos, 1);
+                }
+
+                this.setState({ [name]: settings, hasChanges});
+            }}
+        />;
+    }
+
     render() {
         return <Dialog
             className={ this.props.classes.dialog }
@@ -220,10 +262,9 @@ class BaseSettingsDialog extends React.Component {
                 {!this.state.loading && this.state.currentTab === 0 ? <div className={ this.props.classes.tabPanel }>{ this.renderSystem()  }</div> : null }
                 {!this.state.loading && this.state.currentTab === 1 ? <div className={ this.props.classes.tabPanel }>{ this.renderMultihost() }</div> : null }
                 {!this.state.loading && this.state.currentTab === 2 ? <div className={ this.props.classes.tabPanel }>{ this.renderObjects() }</div> : null }
-                {!this.state.loading && this.state.currentTab === 3 ? <div className={ this.props.classes.tabPanel }>{  }</div> : null }
-                {!this.state.loading && this.state.currentTab === 4 ? <div className={ this.props.classes.tabPanel }>{  }</div> : null }
-                {!this.state.loading && this.state.currentTab === 5 ? <div className={ this.props.classes.tabPanel }>{  }</div> : null }
-                {!this.state.loading && this.state.currentTab === 6 ? <div className={ this.props.classes.tabPanel }>{  }</div> : null }
+                {!this.state.loading && this.state.currentTab === 3 ? <div className={ this.props.classes.tabPanel }>{ this.renderStates() }</div> : null }
+                {!this.state.loading && this.state.currentTab === 4 ? <div className={ this.props.classes.tabPanel }>{ this.renderLog() }</div> : null }
+                {!this.state.loading && this.state.currentTab === 5 ? <div className={ this.props.classes.tabPanel }>{ this.renderPlugins() }</div> : null }
                 { this.renderConfirmDialog() }
             </DialogContent>
             <DialogActions>
@@ -241,6 +282,7 @@ BaseSettingsDialog.propTypes = {
     hosts: PropTypes.array,
     lang: PropTypes.string,
     socket: PropTypes.object,
+    themeName: PropTypes.string,
     onClose: PropTypes.func.isRequired,
 };
 

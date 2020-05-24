@@ -8,9 +8,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
-import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Paper from  '@material-ui/core/Paper';
 
@@ -37,17 +35,16 @@ class BaseSettingsObjects extends React.Component {
         super(props);
 
         const settings   = this.props.settings || {};
-        settings.options = settings.options || {};
-        settings.backup  = settings.backup || {};
+        settings.options = settings.options    || {};
+        settings.backup  = settings.backup     || {};
 
         this.state = {
             type:                    settings.type                    || 'file',
             host:                    settings.host                    || '127.0.0.1',
-            port:                    settings.port                    || 9001,
-            noFileCache:             settings.noFileCache             || false,
-            dataDir:                 settings.dataDir                 || '',
+            port:                    settings.port                    || 9000,
             connectTimeout:          settings.connectTimeout          || 2000,
             writeFileInterval:       settings.writeFileInterval       || 5000,
+            dataDir:                 settings.dataDir                 || '',
             options_auth_pass:       settings.options.auth_pass       || settings.pass || '',
             options_retry_max_delay: settings.options.retry_max_delay || 2000,
             options_retry_max_count: settings.options.retry_max_count || 19,
@@ -153,23 +150,6 @@ class BaseSettingsObjects extends React.Component {
                             label={ this.props.t('Port') }
                         />
                     </Grid>
-
-                    { this.state.type === 'file' ? <Grid item>
-                        <FormControl component="fieldset" className={ this.props.classes.controlItem }>
-                            <FormGroup>
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={ this.state.noFileCache }
-                                            onChange={ e => this.setState( { noFileCache: e.target.checked }, () => this.onChange()) }
-                                        />
-                                    }
-                                    label={ this.props.t(`No file cache`) }
-                                />
-                            </FormGroup>
-                            <FormHelperText>{ this.props.t('Always read files from disk and do not cache them in RAM. Used for debugging.') }</FormHelperText>
-                        </FormControl>
-                    </Grid> : null }
 
                     { this.state.type === 'file' ? <Grid item>
                         <TextField

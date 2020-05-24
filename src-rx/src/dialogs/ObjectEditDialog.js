@@ -73,8 +73,8 @@ class ObjectEditDialog extends React.Component {
                     width="100%"
                     height="100%"
                     language="json"
-                    theme={ this.prop.themeName === 'dark' ? 'vs-dark' : 'vs-light' }
-                    value={this.state.code}
+                    theme={ this.props.themeName === 'dark' ? 'vs-dark' : 'vs-light' }
+                    value={ this.state.code }
                     options={{
                         selectOnLineNumbers: true
                     }}
