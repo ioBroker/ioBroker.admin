@@ -1025,8 +1025,8 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
 
-        this._promises['supportedFeatures_' + feature] = this._promises['supportedFeatures_' + feature] || new Promise((resolve, reject) =>
-            this._socket.emit('checkFeatureSupported', (err, features) => {
+        this._promises['supportedFeatures_' + feature] = new Promise((resolve, reject) =>
+            this._socket.emit('checkFeatureSupported', feature, (err, features) => {
                 console.log(features);
                 err ? reject(err) : resolve(features)
             }));
@@ -1166,6 +1166,45 @@ class Connection {
         return new Promise((resolve, reject) =>
             this._socket.emit('changePassword', user, password, err =>
                 err ? reject(err) : resolve()));
+    }
+
+    getIpAddresses(host, update) {
+        if (!host.startsWith('system.host.')) {
+            host = 'system.host.' + host;
+        }
+
+        if (!update && this._promises['IPs_' + host]) {
+            return this._promises['IPs_' + host];
+        }
+        this._promises['IPs_' + host] = this.getObject(host)
+            .then(obj => obj && obj.common ? obj.common.address || [] : []);
+
+        return this._promises['IPs_' + host];
+
+    }
+
+    decryptPhrase(encryptedPhrase) {
+        return new Promise((resolve, reject) =>
+        this._socket.emit('decryptPhrase', encryptedPhrase, (err, text) =>
+            err ? reject(err) : resolve(text)));
+    }
+
+    encryptPhrase(phrasePlainText) {
+        return new Promise((resolve, reject) =>
+            this._socket.emit('encryptPhrase', phrasePlainText, (err, text) =>
+                err ? reject(err) : resolve(text)));
+    }
+
+    encrypt(text) {
+        return new Promise((resolve, reject) =>
+            this._socket.emit('encrypt', text, (err, text) =>
+                err ? reject(err) : resolve(text)));
+    }
+
+    decrypt(encryptedText) {
+        return new Promise((resolve, reject) =>
+            this._socket.emit('decrypt', encryptedText, (err, text) =>
+                err ? reject(err) : resolve(text)));
     }
 }
 
