@@ -24,6 +24,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 // components
 import Router from '@iobroker/adapter-react/Components/Router';
 import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
+import ObjectBrowserValue from './ObjectBrowserValue';
+import ObjectBrowserEditObject from './ObjectBrowserEditObject';
 
 // Icons
 import {FaFolder as IconClosed} from 'react-icons/fa';
@@ -1153,6 +1155,7 @@ class ObjectBrowser extends React.Component {
                 filter = Object.assign({}, DEFAULT_FILTER);
             }
         }
+
         filter.expertMode =  this.props.expertMode || false;
         this.tableRef  = React.createRef();
         this.filterRefs = {};
@@ -1193,6 +1196,7 @@ class ObjectBrowser extends React.Component {
             scrollBarWidth: 16,
             hasSomeCustoms: false,
             customDialog,
+            editObjectDialog: ''
         };
 
         this.edit = {};
@@ -1243,6 +1247,7 @@ class ObjectBrowser extends React.Component {
                     this.state.selected && this.onSelect(this.state.selected);
                 }
             });
+
 
         // read default history
         this.props.socket.getSystemConfig()
@@ -1656,7 +1661,7 @@ class ObjectBrowser extends React.Component {
             <IconButton key="edit" className={ classes.cellButtonsButton } size="small" aria-label="edit" title={ this.texts.editObject }
                         onClick={ () => {
                             window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', id);
-
+                            this.setState({ editObjectDialog: id});
                         }}>
                 <IconEdit className={ classes.cellButtonsButtonIcon } />
             </IconButton>,
@@ -1963,74 +1968,46 @@ class ObjectBrowser extends React.Component {
         }
     }
 
-    onUpdate() {
-        this.props.socket.setState(this.edit.id, {val: this.edit.val, ack: this.edit.ack, q: this.edit.q})
+    onUpdate(valAck) {
+        this.props.socket.setState(this.edit.id, {val: valAck.val, ack: valAck.ack, q: valAck.q || 0})
             .then(err =>
                 err && window.alert('Cannot write value: ' + err));
     }
 
-    renderEditDialog() {
+    renderEditObjectDialog() {
+        if (!this.state.editObjectDialog) {
+            return null;
+        }
+        return <ObjectBrowserEditObject
+            obj={ this.objects[this.state.editObjectDialog] }
+            themeName={ this.props.themeName }
+            t={ this.props.t }
+            expertMode={ this.props.expertMode }
+            onClose={ obj => {
+                this.setState({editObjectDialog: ''});
+                obj && this.props.socket.setObject(obj._id, obj);
+            }}
+        />
+
+    }
+    renderEditValueDialog() {
         if (!this.state.updateOpened) {
             return null;
         }
 
-        const type = (this.objects[this.edit.id].common &&
-            this.objects[this.edit.id].common) ?
-            typeof this.objects[this.edit.id].common.type : typeof this.edit.val;
+        const type = (this.objects[this.edit.id].common && this.objects[this.edit.id].common.type) ?
+            this.objects[this.edit.id].common.type : typeof this.edit.val;
 
-        return <Dialog
-            open={ true }
-            onClose={ () => this.setState({ updateOpened: false }) }
-            aria-labelledby="edit-value-dialog-title"
-            aria-describedby="edit-value-dialog-description"
-        >
-            <DialogTitle id="edit-value-dialog-title">{ this.props.t('') }</DialogTitle>
-            <DialogContent>
-                <form className={ this.props.classes.dialogForm } noValidate autoComplete="off">
-                    {type === 'boolean' ?
-                        <FormControlLabel
-                            control={<Checkbox
-                                defaultChecked={ this.edit.val }
-                                onChange={e => {
-                                    this.edit.val = e.target.checked;
-                                }}/>}
-                            label={this.props.t('Value')}
-                        />
-                        :
-                        (type === 'number' ?
-                            <TextField
-                                label={this.props.t('Value')}
-                                defaultValue={ this.edit.val }
-                                onKeyUp={e => e.keyCode === 13 && this.onUpdate() }
-                                onChange={e => this.edit.val = e.target.value}/>
-                                :
-                            <TextField
-                                label={this.props.t('Value')}
-                                onKeyUp={e => e.keyCode === 13 && this.onUpdate() }
-                                defaultValue={this.edit.val}
-                                onChange={e => {
-                                    this.edit.val = e.target.value;
-                                }}/>
-                        )
-                    }
-
-                    <br/>
-                    <FormControlLabel
-                        control={<Checkbox
-                            defaultChecked={ this.edit.ack }
-                            onChange={e => {
-                                this.edit.ack = e.target.checked;
-                            }}/>}
-                        label={ this.props.t('Acknowledged') }
-                    />
-                </form>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={ () => this.setState({ updateOpened: false }) } color="secondary">{ this.props.t('Cancel') }</Button>
-                <Button onClick={ () => this.setState({ updateOpened: false }, () => this.onUpdate())}
-                        color="primary" autoFocus>{ this.props.t('Write') }</Button>
-            </DialogActions>
-        </Dialog>
+        return <ObjectBrowserValue
+            t={ this.props.t }
+            type={ type }
+            expertMode={ this.props.expertMode }
+            value={ this.edit.val }
+            onClose={ res => {
+                this.setState({ updateOpened: false });
+                res && this.onUpdate(res)
+            }}
+        />;
     }
     
     render() {
@@ -2087,7 +2064,8 @@ class ObjectBrowser extends React.Component {
                     </TabContent>
                     { this.renderToast() }
                     { this.renderCustomDialog() }
-                    { this.renderEditDialog() }
+                    { this.renderEditValueDialog() }
+                    { this.renderEditObjectDialog() }
                 </TabContainer>
             );
         }

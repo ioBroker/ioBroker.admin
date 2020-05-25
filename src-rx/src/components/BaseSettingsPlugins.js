@@ -4,7 +4,11 @@ import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import Paper from  '@material-ui/core/Paper';
-import MonacoEditor from 'react-monaco-editor';
+import "ace-builds/src-noconflict/mode-json";
+import "ace-builds/src-noconflict/theme-clouds_midnight";
+import "ace-builds/src-noconflict/theme-chrome";
+import "ace-builds/src-noconflict/ext-language_tools";
+import AceEditor from "react-ace";
 
 const styles = theme => ({
     paper: {
@@ -43,7 +47,6 @@ class BaseSettingsPlugins extends React.Component {
         return null;
     }
 
-
     editorDidMount(editor, monaco) {
         editor.focus();
     }
@@ -68,17 +71,21 @@ class BaseSettingsPlugins extends React.Component {
         return <Paper className={ this.props.classes.paper }>
             <div className={ this.props.classes.title }>{ this.props.t('For future use') }</div>
             <div className={ clsx(this.props.classes.divWithoutTitle, this.state.error && this.props.classes.error) }>
-                <MonacoEditor
+                <AceEditor
+                    mode="json"
                     width="100%"
-                    height="calc(100% - 32px)"
-                    language="json"
-                    theme={ this.props.themeName === 'dark' ? 'vs-dark' : 'vs-light' }
-                    value={ this.state.settings }
-                    options={{
-                        selectOnLineNumbers: true
+                    height="100%"
+                    theme={ this.props.themeName === 'dark' ? 'clouds_midnight' : 'chrome' }
+                    value={ this.state.text }
+                    onChange={ newValue => this.onChange(newValue) }
+                    name="UNIQUE_ID_OF_DIV1"
+                    fontSize={14}
+                    setOptions={{
+                        enableBasicAutocompletion: true,
+                        enableLiveAutocompletion: true,
+                        enableSnippets: true
                     }}
-                    onChange={(newValue, e) => this.onChange(newValue, e) }
-                    editorDidMount={(editor, monaco) => this.editorDidMount(editor, monaco)}
+                    editorProps={{ $blockScrolling: true }}
                 />
             </div>
         </Paper>;
