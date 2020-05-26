@@ -113,7 +113,12 @@ class AdapterUpdateDialog extends React.Component {
                             <Typography variant="h6" gutterBottom>
                                 { this.t('News') }
                             </Typography>
-                            <Grid container spacing={ 2 }>
+                            <Grid
+                                container
+                                spacing={ 2 }
+                                direction="column"
+                                wrap="nowrap"
+                            >
                                 { this.getNews() }
                             </Grid>
                         </Grid>
