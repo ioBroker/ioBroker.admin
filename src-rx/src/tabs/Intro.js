@@ -1,25 +1,26 @@
 import React from 'react';
 
-import { withStyles } from '@material-ui/core/styles';
-
 import PropTypes from 'prop-types';
 
-import Fab from '@material-ui/core/Fab';
-import Grid from '@material-ui/core/Grid';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import { withStyles } from '@material-ui/core/styles';
 
+import { Fab } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
+import { LinearProgress } from '@material-ui/core';
+
+import { Skeleton } from '@material-ui/lab';
+
+import AddIcon from '@material-ui/icons/Add';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import CreateIcon from '@material-ui/icons/Create';
-import AddIcon from '@material-ui/icons/Add';
-import CircularProgress from '@material-ui/core/CircularProgress';
-
-import IntroCard from '../components/IntroCard';
 
 import Utils from '../Utils';
 
+import IntroCard from '../components/IntroCard';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
+
 import EditIntroLinkDialog from '../dialogs/EditIntroLinkDialog';
 
 const styles = theme => ({
@@ -51,6 +52,9 @@ const styles = theme => ({
         '&:hover': {
             backgroundColor: theme.palette.error.dark
         }
+    },
+    bold: {
+        fontWeight: 'bold'
     }
 });
 
@@ -490,33 +494,30 @@ class Intro extends React.Component {
     }
 
     getHostDescription(id) {
-        if (!this.state.hostsData) {
-            return <CircularProgress />;
-        } else {
-            const hostData = this.state.hostsData[id];
-            if (hostData && typeof hostData === 'object') {
-                return <ul>
-                        <li>
-                            <b>Platform: </b>
-                            <span>{(formatInfo['Platform'] ? formatInfo['Platform'](hostData['Platform']) : hostData['Platform'] || ' --')}</span>
-                        </li>
-                        <li>
-                            <b>RAM: </b>
-                            <span>{(formatInfo['RAM'] ? formatInfo['RAM'](hostData['RAM']) : hostData['RAM'] || ' --')}</span>
-                        </li>
-                        <li>
-                            <b>Node.js: </b>
-                            <span>{(formatInfo['Node.js'] ? formatInfo['Node.js'](hostData['Node.js']) : hostData['Node.js'] || ' --')}</span>
-                        </li>
-                        <li>
-                            <b>NPM: </b>
-                            <span>{(formatInfo['NPM'] ? formatInfo['NPM'](hostData['NPM']) : hostData['NPM'] || ' --')}</span>
-                        </li>
-                    </ul>;
-            } else {
-                return hostData || '...'; // error text
-            }
-        }
+
+        const { classes } = this.props;
+        const hostData = this.state.hostsData ? this.state.hostsData[id] : null;
+
+        return (
+            <ul>
+                {
+                    ['Platform', 'RAM', 'Node.js', 'NPM'].map(value => {
+                        return (
+                            <li key={ value }>
+                                { hostData && typeof hostData === 'object' ?
+                                    <span>
+                                        <span className={ classes.bold }>{ this.t(value) }: </span>
+                                        { (formatInfo[value] ? formatInfo[value](hostData[value]) : hostData[value] || '--') }
+                                    </span>
+                                    :
+                                    <Skeleton />
+                                }
+                            </li>
+                        )
+                    })
+                }
+            </ul>
+        );
     }
 
     getData(update) {
