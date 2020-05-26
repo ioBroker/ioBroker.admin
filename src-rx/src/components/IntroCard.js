@@ -4,20 +4,23 @@ import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
 
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Collapse from '@material-ui/core/Collapse';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import IconButton  from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
+import { Button } from '@material-ui/core';
+import { Card } from '@material-ui/core';
+import { CardActions } from '@material-ui/core';
+import { CardContent } from '@material-ui/core';
+import { CardMedia } from '@material-ui/core';
+import { Collapse } from '@material-ui/core';
+import { Divider } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
+import { IconButton }  from '@material-ui/core';
+import { Link } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
+
+import { Skeleton } from '@material-ui/lab';
 
 import CheckIcon from '@material-ui/icons/Check';
 import EditIcon from '@material-ui/icons/Create';
+import ErrorIcon from '@material-ui/icons/Error';
 import CloseIcon from '@material-ui/icons/Close';
 import SaveIcon from '@material-ui/icons/Save';
 
@@ -25,7 +28,7 @@ import blue from '@material-ui/core/colors/blue';
 import grey from '@material-ui/core/colors/grey';
 import copy from 'copy-to-clipboard';
 
-import CameraIntroDialog from "../dialogs/CameraIntroDialog";
+import CameraIntroDialog from '../dialogs/CameraIntroDialog';
 
 const boxShadow = '0 2px 2px 0 rgba(0, 0, 0, .14),0 3px 1px -2px rgba(0, 0, 0, .12),0 1px 5px 0 rgba(0, 0, 0, .2)';
 const boxShadowHover = '0 8px 17px 0 rgba(0, 0, 0, .2),0 6px 20px 0 rgba(0, 0, 0, .19)';
@@ -83,6 +86,7 @@ const styles = theme => ({
         bottom: '10px'
     },
     collapse: {
+        minHeight: '100%',
         backgroundColor: '#ffffff',
         position: 'absolute',
         width: '100%',
@@ -150,6 +154,18 @@ const styles = theme => ({
         maxWidth: 200,
         maxHeight: 200,
         objectFit: 'contain',
+    },
+    imgContainer: {
+        height: '100%'
+    },
+    hidden: {
+        display: 'none'
+    },
+    contentGrid: {
+        height: '100%'
+    },
+    imgSkeleton: {
+        transform: 'initial'
     }
 });
 
@@ -159,8 +175,10 @@ class IntroCard extends React.Component {
         super(props);
 
         this.state = {
+            error: false,
             expanded: false,
             dialog: false,
+            loaded: false
         };
 
         this.cameraRef = React.createRef();
@@ -226,7 +244,9 @@ class IntroCard extends React.Component {
 
                     this.setState({ dialog: false });
                 }}
-                />;
+                >
+                    { this.props.children }
+                </CameraIntroDialog>;
         }
     }
 
@@ -244,11 +264,34 @@ class IntroCard extends React.Component {
         });
     }
 
+    handleImageLoad() {
+        if (!this.state.loaded) {
+            this.setState({
+                loaded: true,
+                error: false
+            });
+        }
+    }
+
+    handleImageError() {
+        if (!this.state.erro) {
+            this.setState({
+                loaded: false,
+                error: true
+            });
+        }
+    }
+
     renderContent() {
+
+        const { classes } = this.props;
+
         if (!this.props.camera || this.props.camera === 'text') {
             return this.props.children
         } else if (this.props.camera === 'custom') {
+
             let url = this.props.children;
+
             if (this.props.addTs) {
                 if (url.includes('?')) {
                     url += '&ts=' + Date.now();
@@ -257,7 +300,35 @@ class IntroCard extends React.Component {
                 }
             }
 
-            return <img ref={ this.cameraRef } src={ url } alt="camera" className={ this.props.classes.cameraImg } />;
+            return (
+                <Grid
+                    item
+                    container
+                    className={ classes.imgContainer }
+                    justify="center"
+                    alignItems="center"
+                >
+                    <img
+                        ref={ this.cameraRef }
+                        src={ url }
+                        alt="Camera"
+                        className={ this.state.loaded && !this.state.error ? classes.cameraImg : classes.hidden }
+                        onLoad={ () => this.handleImageLoad() }
+                        onError={ () => this.handleImageError() }
+                    />
+                    { !this.state.loaded && !this.state.error &&
+                        <Skeleton
+                            height="100%"
+                            width="100%"
+                            animation="wave"
+                            className={ classes.imgSkeleton }
+                        />
+                    }
+                    { this.state.error &&
+                        <ErrorIcon fontSize="large" />
+                    }
+                </Grid>
+            );
         } else if (this.props.camera.startsWith('cameras.')) {
             return <img ref={ this.cameraRef } src="" alt="camera" className={ this.props.classes.cameraImg } />;
         }
@@ -290,7 +361,7 @@ class IntroCard extends React.Component {
             >
                 <Card className={ classes.card } onClick={ e => {
                     e.stopPropagation();
-                    if (!this.props.action || !this.props.action.link || !this.state.camera !== 'text') {
+                    if (!this.props.edit && this.props.camera && this.props.camera !== 'text') {
                         this.cameraUpdateTimer && clearInterval(this.cameraUpdateTimer);
                         this.cameraUpdateTimer = null;
                         this.setState( { dialog: true });
@@ -317,10 +388,17 @@ class IntroCard extends React.Component {
                     </div>
                     <div className={ classes.contentContainer + editClass }>
                         <CardContent className={ classes.content }>
-                            <Typography gutterBottom variant="h5" component="h5">
-                                { this.props.title }
-                            </Typography>
-                            { this.renderContent() }
+                            <Grid
+                                container
+                                direction="column"
+                                wrap="nowrap"
+                                className={ classes.contentGrid }
+                            >
+                                <Typography gutterBottom variant="h5" component="h5">
+                                    { this.props.title }
+                                </Typography>
+                                { this.renderContent() }
+                            </Grid>
                         </CardContent>
                         {
                             this.props.action && this.props.action.link &&
