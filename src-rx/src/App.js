@@ -283,7 +283,7 @@ class App extends Router {
             this.socket = new Connection({
                 name: 'admin',
                 port: this.getPort(),
-                autoSubscribes: ['*', 'system.adapter.*'],
+                autoSubscribes: ['system.adapter.*'], // do not subscribe on '*' and really we don't need a 'system.adapter.*' too. Every tab must subscribe itself on everything that it needs
                 autoSubscribeLog: true,
                 onProgress: progress => {
                     if (progress === PROGRESS.CONNECTING) {
