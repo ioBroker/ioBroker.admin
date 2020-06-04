@@ -160,7 +160,7 @@ function Instances(main) {
         var common   = that.main.objects[instanceId] ? that.main.objects[instanceId].common || {} : {};
         var state = (common.mode === 'daemon') ? 'green' : 'blue';
         var title = '';
-        if (common.enabled && (!common.webExtension || !that.main.objects[instanceId].native.webInstance)) {
+        if (common.enabled && (!common.webExtension || !that.main.objects[instanceId].native.webInstance || common.mode === 'daemon')) {
             title = '<table style="border: 0">';
             title += '<tr style="border: 0"><td style="border: 0">' + _('Connected to host: ') + '</td><td style="border: 0">';
 
