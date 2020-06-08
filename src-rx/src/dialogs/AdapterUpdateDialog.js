@@ -100,7 +100,12 @@ class AdapterUpdateDialog extends React.Component {
                     </Typography>
                 </DialogTitle>
                 <DialogContent dividers>
-                    <Grid container spacing={ 2 }>
+                    <Grid
+                        container
+                        direction="column"
+                        spacing={ 2 }
+                        wrap="nowrap"
+                    >
                         { this.props.dependencies && this.props.dependencies.length > 0 &&
                             <Grid item>
                                 <Typography variant="h6" gutterBottom>
