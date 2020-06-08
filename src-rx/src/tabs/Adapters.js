@@ -136,6 +136,8 @@ class Adapters extends React.Component {
             search: ''
         };
 
+        this.rebuildSupported = false;
+
         this.t = props.t;
     }
 
@@ -178,13 +180,27 @@ class Adapters extends React.Component {
             const currentHost = this.props.currentHost;
 
             try {
-                const hostData = await this.props.socket.getHostInfo(currentHost);
+                const hostDataProm = this.props.socket.getHostInfo(currentHost);
+                const repositoryProm = this.props.socket.getRepository(currentHost, {repo: this.props.systemConfig.common.activeRepo, update: updateRepo}, updateRepo);
+                const installedProm = this.props.socket.getInstalled(currentHost, updateRepo);
+                const instancesProm = this.props.socket.getAdapterInstances(updateRepo);
+                const rebuildProm = this.props.socket.checkFeatureSupported('CONTROLLER_NPM_AUTO_REBUILD');
+
+                const [hostData, repository, installed, instances, rebuild] = await Promise.all(
+                    [
+                        hostDataProm,
+                        repositoryProm,
+                        installedProm,
+                        instancesProm,
+                        rebuildProm
+                    ]
+                );
+
+                this.rebuildSupported = rebuild || false;
+
                 const nodeJsVersion = hostData['Node.js'].replace('v', '');
                 const hostOs = hostData.os;
-    
-                const repository = await this.props.socket.getRepository(currentHost, {repo: this.props.systemConfig.common.activeRepo, update: updateRepo}, updateRepo);
-                const installed = await this.props.socket.getInstalled(currentHost, updateRepo);
-                const instances = await this.props.socket.getAdapterInstances(updateRepo);
+
                 const categories = {};
                 const categoriesSorted = [];
                 const categoriesExpanded = JSON.parse(window.localStorage.getItem('Adapters.expandedCategories')) || {};
@@ -690,6 +706,7 @@ class Adapters extends React.Component {
                                 rightDependencies={ rightDependencies }
                                 rightOs={ rightOs }
                                 sentry={ sentry }
+                                rebuild={ this.rebuildSupported }
                             />
                         );
                     }
