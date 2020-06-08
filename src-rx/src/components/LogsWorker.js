@@ -164,8 +164,8 @@ class LogsWorker {
             if (length + 1 === this.maxLogs) {
                 this.logs.shift();
             }
-
-            if (isNew && obj.severity === 'error' && obj.countErrors) {
+            
+            if (isNew && obj.severity === 'error' && this.countErrors) {
                 this.errors++;
             }
         }
