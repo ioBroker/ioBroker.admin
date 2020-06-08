@@ -4,19 +4,26 @@ import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grid,
+    IconButton,
+    LinearProgress,
+    Paper,
+    Typography
+} from '@material-ui/core';
 
 import CloseIcon from '@material-ui/icons/Close';
 
-import { grey } from '@material-ui/core/colors';
+import {
+    amber,
+    blue,
+    red
+} from '@material-ui/core/colors';
 
 const styles = theme => ({
     closeButton: {
@@ -28,9 +35,17 @@ const styles = theme => ({
     log: {
         height: 400,
         width: 860,
-        backgroundColor: grey[500],
         padding: theme.spacing(1),
-        overflowY: 'scroll'
+        overflowY: 'auto'
+    },
+    error: {
+        color: red[500]
+    },
+    info: {
+        color: blue[500]
+    },
+    warn: {
+        color: amber[500]
     }
 });
 
@@ -151,6 +166,7 @@ class ConfirmDialog extends React.Component {
     }
 
     cmdStdoutHandler(id, text) {
+
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
 
             const log = this.state.log.slice();
@@ -190,12 +206,14 @@ class ConfirmDialog extends React.Component {
 
     cmdStderrHandler(id, text) {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
+
             const log = this.state.log.slice();
             log.push(text);
 
             this.setState({
                 log
             });
+
             console.log('cmdStderr');
             console.log(id);
             console.log(text);
@@ -204,16 +222,57 @@ class ConfirmDialog extends React.Component {
 
     cmdExitHandler(id, exitCode) {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
+
             const log = this.state.log.slice();
-            log.push(exitCode);
+            log.push((exitCode !== 0 ? 'ERROR: ' : '') + 'Process warn exited with code ' + exitCode);
 
             this.setState({
                 log
             });
+
             console.log('cmdExit');
             console.log(id);
             console.log(exitCode);
         }
+    }
+
+    colorize(text) {
+
+        const pattern = ['error', 'warn', 'info'];
+        const regExp = new RegExp(pattern.join('|'), 'i');
+
+        if (text.search(regExp) >= 0) {
+
+            const result = [];
+            const { classes } = this.props;
+
+            while (text.search(regExp) >= 0) {
+
+                const [ match ] = text.match(regExp);
+                const pos = text.search(regExp);
+
+                if (pos > 0) {
+
+                    const part = text.substring(0, pos);
+
+                    result.push(part);
+                    text = text.replace(part, '');
+                }
+                
+                const part = text.substr(0, match.length);
+
+                result.push(<span className={ classes[match.toLowerCase()] }>{ part }</span>);
+                text = text.replace(part, '');
+            }
+
+            if (text.length > 0) {
+                result.push(text);
+            }
+
+            return result;
+        }
+
+        return text;
     }
 
     getLog() {
@@ -222,9 +281,9 @@ class ConfirmDialog extends React.Component {
                 <Typography
                     key={ index }
                     component="p"
-                    variant="caption"
+                    variant="body2"
                 >
-                    { value }
+                    { this.colorize(value) }
                 </Typography>
             )
         });
@@ -237,22 +296,31 @@ class ConfirmDialog extends React.Component {
         return (
             <Dialog onClose={ this.props.onClose } open={ this.props.open } maxWidth="lg">
                 <DialogTitle>
-                    { this.state.progressText || '' }
+                    { this.state.progressText || 'Run Command' }
                     <IconButton className={ classes.closeButton } onClick={ this.props.onClose }>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
                 <DialogContent dividers>
-                    <LinearProgress
-                        variant={ this.state.max ? 'determinate' : 'indeterminate' }
-                        value={ this.state.max && this.state.value ? 100 - Math.round((this.state.value / this.state.max) * 100) : 0 }
-                    />
-                    <Paper
-                        elevation={ 0 }
-                        className={ classes.log }
+                    <Grid
+                        container
+                        direction="column"
+                        spacing={ 2 }
                     >
-                        { this.getLog() }
-                    </Paper>
+                        <Grid item>
+                            <LinearProgress
+                                variant={ this.state.max ? 'determinate' : 'indeterminate' }
+                                value={ this.state.max && this.state.value ? 100 - Math.round((this.state.value / this.state.max) * 100) : 0 }
+                            />
+                        </Grid>
+                        <Grid item>
+                            <Paper
+                                className={ classes.log }
+                            >
+                                { this.getLog() }
+                            </Paper>
+                        </Grid>
+                    </Grid>
                 </DialogContent>
                 <DialogActions>
                     <Button autoFocus onClick={ this.props.onConfirm } color="primary">
