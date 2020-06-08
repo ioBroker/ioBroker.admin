@@ -4,7 +4,7 @@ function InfoAdapter(main) {
 
     var that = this;
     
-    this.systemData = {"node": null, "npm": null, "os": null};
+    this.systemData = {"node": null, "npm": null, "os": null, "uuid": null};
     this.main = main;
 
     this.checkVersion = function (smaller, bigger) {
@@ -172,6 +172,21 @@ function InfoAdapter(main) {
                     }
                     if (showIt && message['repo']) {
                         showIt = that.main.systemConfig.common.activeRepo === message['repo'];
+                    }                    
+                    if (showIt && message['uuid']) {
+                        if (Array.isArray(message['uuid'])) {
+                            let oneMustBe = false;
+                            if(that.systemData.uuid){
+                                await asyncForEach(message['uuid'], function(uuid){
+                                    if (!oneMustBe) {
+                                        oneMustBe = that.systemData.uuid === uuid;
+                                    }
+                                });
+                            }
+                            showIt = oneMustBe;
+                        } else {
+                            showIt = that.systemData.uuid && that.systemData.uuid === message['uuid'];
+                        }
                     }
 
                     if (showIt) {
@@ -201,6 +216,11 @@ function InfoAdapter(main) {
         that.main.socket.emit('getState', 'info.0.sysinfo.os.info.platform', function (err, data) {
             if (!err && data) {
                 that.systemData.os = data.val;
+            }
+        });
+        that.main.socket.emit('getState', 'info.0.uuid', function (err, data) {
+            if (!err && data) {
+                that.systemData.uuid = data.val;
             }
         });
 
