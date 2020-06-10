@@ -216,9 +216,22 @@ class Instances extends React.Component {
         let instances;
 
         try {
-            instances = await this.props.socket.getAdapterInstances(update);
-            this.states = await this.getStates() || [];
-            this.objects = await this.getObjects() || [];
+            const instancesProm = this.props.socket.getAdapterInstances(update);
+            const statesProm = this.getStates();
+            const objectsProm = this.getObjects();
+
+            const [_instances, states, objects] = await Promise.all(
+                [
+                    instancesProm,
+                    statesProm,
+                    objectsProm
+                ]
+            );
+            
+            instances = _instances;
+            this.states = states || [];
+            this.objects = objects || [];
+
         } catch(error) {
             console.log(error)
         }
@@ -381,21 +394,25 @@ class Instances extends React.Component {
         const obj = this.objects[id];
         const instance = this.state.instances[id];
         const common = obj ? obj.common : null;
+        const mode = common.mode || '';
         
-        let state = common && common.mode === 'daemon' ? 'green' : 'blue';
+        let state = mode === 'daemon' ? 'green' : 'blue';
         
-        if (common && common.enabled && (!common.webExtension || !obj.native.webInstance)) {
+        if (common && common.enabled && (!common.webExtension || !obj.native.webInstance || mode === 'daemon')) {
 
-            if (!this.states[id + '.connected'] || !this.states[id + '.connected'].val ||
-                !this.states[id + '.alive'] || !this.states[id + '.alive'].val) {
-                state = (common.mode === 'daemon') ? 'red' : 'blue';
+            const alive = this.states[id + '.alive'];
+            const connected = this.states[id + '.connected'];
+            const connection = this.states[instance.id + '.info.connection'];
+
+            if (!connected || !connected.val || !alive || !alive.val) {
+                state = mode === 'daemon' ? 'red' : 'blue';
             }
 
-            if (this.states[instance.id + '.info.connection'] && !this.states[instance.id + '.info.connection'].val) {
+            if (connection && !connection.val) {
                 state = state === 'red' ? 'red' : 'orange';
             }
         } else {
-            state = common && common.mode === 'daemon' ? 'grey' : 'blue';
+            state = mode === 'daemon' ? 'grey' : 'blue';
         }
 
         return state;

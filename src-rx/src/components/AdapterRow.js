@@ -203,7 +203,7 @@ class AdapterRow extends React.Component {
                                 <AddToPhotosIcon />
                             </IconButton>
                         }
-                        { this.props.expertMode &&
+                        { this.props.rebuild && this.props.expertMode &&
                             <IconButton
                                 size="small"
                                 className={ !installedVersion ? classes.hidden : '' }
@@ -240,6 +240,7 @@ AdapterRow.propTypes = {
     onToggle: PropTypes.func,
     onUpdate: PropTypes.func,
     onUpload: PropTypes.func,
+    rebuild: PropTypes.bool,
     rightDependencies: PropTypes.bool,
     rightOs: PropTypes.bool,
     sentry: PropTypes.bool,

@@ -295,7 +295,7 @@ class Drawer extends React.Component {
                     icon={ tab.icon }
                     text={ tab.title }
                     selected={ this.props.currentTab === tab.name }
-                    badgeContent={ tab.name === 'tab-logs' ? this.props.logErrors : 0 }
+                    badgeContent={ tab.name === 'tab-logs' ? this.state.logErrors : 0 }
                     badgeColor={ tab.name === 'tab-logs' ? 'error' : '' }
                 />
             );
