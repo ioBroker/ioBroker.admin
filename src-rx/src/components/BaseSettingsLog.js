@@ -606,6 +606,8 @@ class BaseSettingsLog extends React.Component {
     add(type) {
         if (type === 'file') {
             let i = 1;
+
+            // eslint-disable-next-line
             while (Object.keys(this.state.transport).find(id => id === type + i)) {
                 i++;
             }
@@ -622,6 +624,7 @@ class BaseSettingsLog extends React.Component {
             this.setState( { transport }, () => this.onChange());
         } else if (type === 'syslog') {
             let i = 1;
+            // eslint-disable-next-line
             while (Object.keys(this.state.transport).find(id => id === type + i)) {
                 i++;
             }
@@ -644,6 +647,7 @@ class BaseSettingsLog extends React.Component {
             this.setState( { transport }, () => this.onChange())
         } else if (type === 'http') {
             let i = 1;
+            // eslint-disable-next-line
             while (Object.keys(this.state.transport).find(id => id === type + i)) {
                 i++;
             }
@@ -662,6 +666,7 @@ class BaseSettingsLog extends React.Component {
             this.setState( { transport }, () => this.onChange())
         } else if (type === 'stream') {
             let i = 1;
+            // eslint-disable-next-line
             while (Object.keys(this.state.transport).find(id => id === type + i)) {
                 i++;
             }
