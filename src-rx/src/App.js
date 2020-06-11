@@ -79,7 +79,6 @@ const styles = theme => ({
         height:     '100%',
     },
     appBar: {
-        /*backgroundColor: blue[300],*/
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -365,7 +364,7 @@ class App extends Router {
         let port = parseInt(window.location.port, 10);
 
         if (isNaN(port)) {
-            switch(this.getProtocol()) {
+            switch (this.getProtocol()) {
                 case 'https:':
                     port = 443;
                     break;
@@ -423,7 +422,6 @@ class App extends Router {
      * Changes the current theme
      */
     toggleTheme() {
-
         const themeName = this.state.themeName;
 
         const newThemeName = themeName === 'dark' ? 'blue' :

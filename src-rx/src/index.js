@@ -10,7 +10,7 @@ import App from './App';
 import './index.css';
 
 console.log('iobroker.admin@' + version);
-let theme = window.localStorage ? window.localStorage.getItem('App.theme') || 'light' : 'light';
+let theme = window.localStorage ? window.localStorage.getItem('App.themeName') || 'light' : 'light';
 
 function build() {
     return ReactDOM.render(<MuiThemeProvider theme={createTheme(theme)}>
@@ -22,7 +22,7 @@ function build() {
 }
 
 Sentry.init({
-    dsn: "https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58",
+    dsn: 'https://43643152dab3481db69950ba866ee9d6@sentry.iobroker.net/58',
     release: 'iobroker.admin@' + version,
     integrations: [
         new SentryIntegrations.Dedupe()
