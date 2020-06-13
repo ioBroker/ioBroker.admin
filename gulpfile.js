@@ -701,19 +701,21 @@ gulp.task('4_static', gulp.parallel('appHTML', 'aceCopy', 'colorpickerCopy', 'ap
 // add react tasks
 require('./gulpReact')(gulp);
 
-gulp.task('betaCopy', function (done) {
-    var ioPack = require('./io-package.json');
-    var pack = require('./package.json');
-    ioPack.common.name = 'admin-beta';
-    ioPack.common.title = 'ioBroker Admin Beta';
-    ioPack.native.port = 9081;
-    ioPack.native.react = true;
-    fs.writeFileSync('./io-package.json', JSON.stringify(ioPack, null, 2));
-    pack.name = 'iobroker.admin-beta';
-    fs.writeFileSync('./package.json', JSON.stringify(pack, null, 2));
-});
+gulp.task('betaCopy', () => 
+	new Promise(resolve => {
+		const ioPack = require('./io-package.json');
+        const pack = require('./package.json');
+		ioPack.common.name = 'admin-beta';
+		ioPack.common.title = 'ioBroker Admin Beta';
+		ioPack.native.port = 9081;
+		ioPack.native.react = true;
+		fs.writeFileSync('./io-package.json', JSON.stringify(ioPack, null, 2));
+		pack.name = 'iobroker.admin-beta';
+		fs.writeFileSync('./package.json', JSON.stringify(pack, null, 2));
+		resolve();
+	}));
 
-gulp.task('beta', gulp.series('gulpReact', 'betaCopy'));
+gulp.task('beta', gulp.series('react-build', 'betaCopy'));
 
 gulp.task('default', gulp.series(
     '1_words',
