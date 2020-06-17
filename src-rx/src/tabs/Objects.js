@@ -4,6 +4,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import ObjectBrowser from '../components/ObjectBrowser';
+import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
+import Router from '@iobroker/adapter-react/Components/Router';
+import ObjectBrowserValue from '../components/ObjectBrowserValue';
+import ObjectBrowserEditObject from '../components/ObjectBrowserEditObject';
 
 class Objects extends React.Component {
 
@@ -39,6 +43,10 @@ class Objects extends React.Component {
                 t={ this.props.t }
                 lang={ this.props.lang }
                 themeName={ this.props.themeName }
+                objectCustomDialog={ ObjectCustomDialog }
+                objectBrowserValue={ ObjectBrowserValue }
+                objectBrowserEditObject={ ObjectBrowserEditObject }
+                router={ Router }
                 onFilterChanged={ filterConfig => {
                     this.filters = filterConfig;
                     window.localStorage.setItem(this.dialogName, JSON.stringify(filterConfig));

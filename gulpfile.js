@@ -9,7 +9,6 @@ const uglify      = require('gulp-terser');
 const htmlmin     = require('gulp-htmlmin');
 const concat      = require('gulp-concat');
 const sourcemaps  = require('gulp-sourcemaps');
-const materialize = require.resolve('materialize-css');
 const cleanCSS    = require('gulp-clean-css');
 const pkg         = require('./package.json');
 const iopackage   = require('./io-package.json');
@@ -701,6 +700,22 @@ gulp.task('4_static', gulp.parallel('appHTML', 'aceCopy', 'colorpickerCopy', 'ap
 
 // add react tasks
 require('./gulpReact')(gulp);
+
+gulp.task('betaCopy', () => 
+	new Promise(resolve => {
+		const ioPack = require('./io-package.json');
+        const pack = require('./package.json');
+		ioPack.common.name = 'admin-beta';
+		ioPack.common.title = 'ioBroker Admin Beta';
+		ioPack.native.port = 9081;
+		ioPack.native.react = true;
+		fs.writeFileSync('./io-package.json', JSON.stringify(ioPack, null, 2));
+		pack.name = 'iobroker.admin-beta';
+		fs.writeFileSync('./package.json', JSON.stringify(pack, null, 2));
+		resolve();
+	}));
+
+gulp.task('beta', gulp.series('react-build', 'betaCopy'));
 
 gulp.task('default', gulp.series(
     '1_words',

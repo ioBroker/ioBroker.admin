@@ -15,17 +15,15 @@ import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import Grid from '@material-ui/core/Grid';
-import copy from 'copy-to-clipboard';
 import Badge from '@material-ui/core/Badge';
+import Tooltip from '@material-ui/core/Tooltip';
+import copy from 'copy-to-clipboard';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
-import Tooltip from '@material-ui/core/Tooltip';
+import Checkbox from '@material-ui/core/Checkbox';
 
-// components
-import Router from '@iobroker/adapter-react/Components/Router';
-import ObjectCustomDialog from '../dialogs/ObjectCustomDialog';
-import ObjectBrowserValue from './ObjectBrowserValue';
-import ObjectBrowserEditObject from './ObjectBrowserEditObject';
+// own
+import UtilsAdapter from '@iobroker/adapter-react/Components/Utils';
 
 // Icons
 import {FaFolder as IconClosed} from 'react-icons/fa';
@@ -36,37 +34,31 @@ import {FaCopy as IconCopy} from 'react-icons/fa';
 import {FaEdit as IconEdit} from 'react-icons/fa';
 import {FaTrash as IconDelete} from 'react-icons/fa';
 import {FaWrench as IconConfig} from 'react-icons/fa';
-import IconState from '../assets/state.png';
-import IconChannel from '../assets/channel.png';
-import IconDevice from '../assets/device.png';
 import {FaCogs as IconSystem} from 'react-icons/fa';
 import {FaPhotoVideo as IconPhoto} from 'react-icons/fa';
 import {FaLightbulb as IconAlias} from 'react-icons/fa';
 import {FaUserFriends as IconGroup} from 'react-icons/fa';
+import {FaCalendarAlt as IconSchedule} from 'react-icons/fa';
 import {FaUser as IconUser} from 'react-icons/fa';
 import {FaDigitalTachograph as IconHost} from 'react-icons/fa';
 import {FaWifi as IconConnection} from 'react-icons/fa';
 import {FaInfoCircle as IconInfo} from 'react-icons/fa';
 import {FaFileCode as IconMeta} from 'react-icons/fa';
+import {FaScroll as IconScript} from 'react-icons/fa';
 
-import UtilsAdapter from '@iobroker/adapter-react/Components/Utils';
-import Utils from '../Utils';
+import {FaScrewdriver as IconInstance} from 'react-icons/fa';
+import {FaChartLine as IconChart} from 'react-icons/fa';
+import {FaListOl as IconEnum} from 'react-icons/fa';
+import {FaScrewdriver as IconAdapter} from 'react-icons/fa';
 
 import TabContainer from './TabContainer';
 import TabContent from './TabContent';
 import TabHeader from './TabHeader';
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import TextField from "@material-ui/core/TextField";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
 
 const ROW_HEIGHT = 32;
 const ITEM_LEVEL = ROW_HEIGHT;
 const SMALL_BUTTON_SIZE = 20;
+const ICON_SIZE = 24;
 
 const styles = theme => ({
     toolbar: {
@@ -98,8 +90,11 @@ const styles = theme => ({
         width: '100%',
         '&:hover': {
             background: theme.palette.primary.main,
-            color: Utils.invertColor(theme.palette.primary.main, true),
+            color: invertColor(theme.palette.primary.main, true),
         },
+    },
+    checkBox: {
+        padding: 0,
     },
     cellId: {
         //display: 'inline-block',
@@ -183,8 +178,8 @@ const styles = theme => ({
         verticalAlign: 'top',
         '& .itemIcon': {
             verticalAlign: 'middle',
-            width: 24,
-            height: 24,
+            width: ICON_SIZE,
+            height: ICON_SIZE,
             display: 'inline-block',
         },
     },
@@ -364,7 +359,7 @@ const styles = theme => ({
     */
     itemSelected: {
         background: theme.palette.primary.main,
-        color: Utils.invertColor(theme.palette.primary.main, true),
+        color: invertColor(theme.palette.primary.main, true),
     },
     header: {
         width: '100%'
@@ -383,15 +378,15 @@ const styles = theme => ({
         paddingTop: 3,
         '& .itemIcon': {
             verticalAlign: 'middle',
-            width: 24,
-            height: 24,
+            width: ICON_SIZE,
+            height: ICON_SIZE,
             display: 'inline-block',
         }
     },
     headerCellSelectItem: {
         '& .itemIcon': {
-            width: 24,
-            height: 24,
+            width: ICON_SIZE,
+            height: ICON_SIZE,
             marginRight: 5,
             display: 'inline-block'
         }
@@ -404,6 +399,37 @@ const styles = theme => ({
         flexGrow: 1
     }
 });
+
+// move this function to adapter-react Utils
+// Big thanks to : https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
+function invertColor(hex, bw) {
+    if (hex.indexOf('#') === 0) {
+        hex = hex.slice(1);
+    }
+    // convert 3-digit hex to 6-digits.
+    if (hex.length === 3) {
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    if (hex.length !== 6) {
+        throw new Error('Invalid HEX color.');
+    }
+    let r = parseInt(hex.slice(0, 2), 16);
+    let g = parseInt(hex.slice(2, 4), 16);
+    let b = parseInt(hex.slice(4, 6), 16);
+
+    if (bw) {
+        // http://stackoverflow.com/a/3943023/112731
+        return (r * 0.299 + g * 0.587 + b * 0.114) > 186
+            ? '#000000'
+            : '#FFFFFF';
+    }
+    // invert color components
+    r = (255 - r).toString(16);
+    g = (255 - g).toString(16);
+    b = (255 - b).toString(16);
+    // pad each with zeros and return
+    return '#' + r.padStart(2, '0') + g.padStart(2, '0') + b.padStart(2, '0');
+}
 
 // d=data, t=target, s=start, e=end, m=middle
 function binarySearch(list, find, _start, _end) {
@@ -465,7 +491,7 @@ function applyFilter(item, filters, lang, objects, context, counter) {
             filteredOut =
                 data.id === 'system' ||
                 data.id === 'enum' ||
-               // (data.obj && data.obj.type === 'meta') ||
+                // (data.obj && data.obj.type === 'meta') ||
                 data.id.startsWith('system.') ||
                 data.id.startsWith('enum.') ||
                 data.id.startsWith('_design/') ||
@@ -616,10 +642,6 @@ function buildTree(objects, options) {
                 info.hasSomeCustoms = true;
                 info.customs.push(id.substring('system.adapter.'.length));
             }
-        }
-
-        if (options.statesOnly && (!obj || obj.type !== 'state')) {
-            continue;
         }
 
         info.ids.push(id);
@@ -1105,21 +1127,65 @@ const DEFAULT_FILTER = {
     expertMode: false
 };
 
+class IconState extends React.Component {
+    render() {
+        return <svg viewBox="0 0 320 320" width={ICON_SIZE} height={ICON_SIZE} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
+            <g>
+                <rect rx="32" id="svg_1" height="272" width="267" y="25" x="25" strokeWidth="15" stroke="currentColor" fill="none"/>
+                <ellipse ry="54" rx="54" id="svg_2" cy="160" cx="160" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="#fff"/>
+            </g>
+        </svg>;
+    }
+}
+
+class IconChannel extends React.Component {
+    render() {
+        return <svg viewBox="0 0 320 320" width={ICON_SIZE} height={ICON_SIZE} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
+            <g>
+                <rect rx="32" id="svg_1" height="272" width="267" y="25" x="25" strokeWidth="15" stroke="currentColor" fill="none"/>
+                <ellipse stroke="currentColor" ry="26" rx="26" id="svg_2" cy="248" cx="160" fill="none" strokeWidth="15"/>
+                <line strokeLinecap="null" strokeLinejoin="null" id="svg_3" y2="201.94531" x2="159.5" y1="46.94531" x1="159.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="none"/>
+                <rect id="svg_4" height="27" width="50" y="79.7979" x="133.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="#fff"/>
+            </g>
+        </svg>;
+    }
+}
+
+class IconDevice extends React.Component {
+    render() {
+        return <svg viewBox="0 0 320 320" width={ICON_SIZE} height={ICON_SIZE} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
+            <g>
+                <title>Layer 1</title>
+                <rect rx="32" id="svg_1" height="272" width="267" y="25" x="25" strokeWidth="15" stroke="currentColor" fill="none"/>
+                <ellipse stroke="currentColor" ry="26" rx="26" id="svg_2" cy="252" cx="160" fillOpacity="null" strokeOpacity="null" strokeWidth="15" fill="#fff"/>
+                <line strokeLinecap="null" strokeLinejoin="null" id="svg_3" y2="201.94531" x2="159.5" y1="46.94531" x1="159.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="none"/>
+                <rect height="27" width="50" y="140.83068" x="133.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="#fff"/>
+                <ellipse stroke="currentColor" ry="26" rx="26" id="svg_5" cy="251" cx="241" fillOpacity="null" strokeOpacity="null" strokeWidth="15" fill="#fff"/>
+                <line strokeLinecap="null" strokeLinejoin="null" id="svg_6" y2="200.94531" x2="240.5" y1="45.94531" x1="240.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="none"/>
+                <rect height="27" width="50" y="78.7979" x="214.5" strokeWidth="15" stroke="currentColor" fill="#fff"/>
+                <ellipse stroke="currentColor" ry="26" rx="26" id="svg_8" cy="252" cx="84" fillOpacity="null" strokeOpacity="null" strokeWidth="15" fill="#fff"/>
+                <line strokeLinecap="null" strokeLinejoin="null" id="svg_9" y2="201.94531" x2="83.5" y1="46.94531" x1="83.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="none"/>
+                <rect height="27" width="50" y="79.7979" x="57.5" fillOpacity="null" strokeOpacity="null" strokeWidth="15" stroke="currentColor" fill="#fff"/>
+            </g>
+        </svg>;
+    }
+}
+
 const ITEM_IMAGES = {
-    state: <img className="itemIcon" src={ IconState } alt="state" />,
-    channel: <img className="itemIcon" src={ IconChannel } alt="state" />,
-    device: <img className="itemIcon" src={ IconDevice } alt="state" />,
-    adapter: null,
-    meta: null,
-    instance: null,
-    enum: null,
-    chart: null,
-    config: null,
-    group: null,
-    user: null,
-    host: null,
-    schedule: null,
-    script: null,
+    state: <IconState className="itemIcon" />,
+    channel: <IconChannel className="itemIcon" />,
+    device: <IconDevice className="itemIcon" />,
+    adapter: <IconAdapter className="itemIcon" />,
+    meta: <IconMeta className="itemIcon" />,
+    instance: <IconInstance className="itemIcon" style={{color: '#7da7ff'}}/>,
+    enum: <IconEnum className="itemIcon" />,
+    chart: <IconChart className="itemIcon" />,
+    config: <IconConfig className="itemIcon" />,
+    group: <IconGroup className="itemIcon" />,
+    user: <IconUser className="itemIcon" />,
+    host: <IconHost className="itemIcon" />,
+    schedule: <IconSchedule className="itemIcon" />,
+    script: <IconScript className="itemIcon" />,
 };
 
 const StyledBadge = withStyles((theme) => ({
@@ -1135,7 +1201,17 @@ class ObjectBrowser extends React.Component {
     constructor(props) {
         super(props);
 
-        this.lastSelectedItem = window.localStorage.getItem((this.props.key || 'App') + '.objectSelected') || '';
+        this.lastSelectedItems = window.localStorage.getItem((this.props.key || 'App') + '.objectSelected') || '[]';
+        try {
+            this.lastSelectedItems = JSON.parse(this.lastSelectedItems);
+            if (typeof this.lastSelectedItems !== 'object') {
+                this.lastSelectedItems = [this.lastSelectedItems];
+            }
+            this.lastSelectedItems = this.lastSelectedItems.filter(id => id);
+        } catch (e) {
+
+        }
+
         let expanded = window.localStorage.getItem((this.props.key || 'App') + '.objectExpanded') || '[]';
         try {
             expanded = JSON.parse(expanded);
@@ -1175,18 +1251,33 @@ class ObjectBrowser extends React.Component {
 
         this.onObjectChangeBound = this.onObjectChange.bind(this);
 
-        this.visibleCols = this.props.cols || ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'];
+        this.visibleCols = this.props.columns || ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'];
 
-        const location = Router.getLocation();
-        let customDialog = null;
-        if (location.id && location.dialog === 'custom') {
-            customDialog = [location.id];
-            this.pauseSubscribe(true);
+        // remove type column if only one type must be selected
+        if (this.props.types && this.props.types.length === 1) {
+            const pos = this.visibleCols.indexOf('type');
+            pos !== -1 && this.visibleCols.splice(pos, 1);
         }
+
+        let customDialog = null;
+
+        if (props.router) {
+            const location = props.router.getLocation();
+            if (location.id && location.dialog === 'custom') {
+                customDialog = [location.id];
+                this.pauseSubscribe(true);
+            }
+        }
+
+        let selected = (this.props.selected || '');
+        if (typeof selected !== 'object') {
+            selected = [selected];
+        }
+        selected = selected.map(id => id.replace(/["']/g, '')).filter(id => id);
 
         this.state = {
             loaded: false,
-            selected: (this.props.selected || '').replace(/["']/g, ''),
+            selected,
             filter,
             depth: 0,
             expandAllVisible: false,
@@ -1202,19 +1293,19 @@ class ObjectBrowser extends React.Component {
         this.edit = {};
 
         this.texts = {
-            value:        this.props.t('tooltip_value'),
-            ack:          this.props.t('tooltip_ack'),
-            ts:           this.props.t('tooltip_ts'),
-            lc:           this.props.t('tooltip_lc'),
-            from:         this.props.t('tooltip_from'),
-            user:         this.props.t('tooltip_user'),
-            quality:      this.props.t('tooltip_quality'),
-            editObject:   this.props.t('tooltip_editObject'),
-            deleteObject: this.props.t('tooltip_deleteObject'),
-            customConfig: this.props.t('tooltip_customConfig'),
-            copyState:    this.props.t('tooltip_copyState'),
-            editState:    this.props.t('tooltip_editState'),
-            filter_id:    this.props.t('filter_id'),
+            value:          this.props.t('tooltip_value'),
+            ack:            this.props.t('tooltip_ack'),
+            ts:             this.props.t('tooltip_ts'),
+            lc:             this.props.t('tooltip_lc'),
+            from:           this.props.t('tooltip_from'),
+            user:           this.props.t('tooltip_user'),
+            quality:        this.props.t('tooltip_quality'),
+            editObject:     this.props.t('tooltip_editObject'),
+            deleteObject:   this.props.t('tooltip_deleteObject'),
+            customConfig:   this.props.t('tooltip_customConfig'),
+            copyState:      this.props.t('tooltip_copyState'),
+            editState:      this.props.t('tooltip_editState'),
+            filter_id:      this.props.t('filter_id'),
             filter_name:    this.props.t('filter_name'),
             filter_type:    this.props.t('filter_type'),
             filter_role:    this.props.t('filter_role'),
@@ -1225,26 +1316,36 @@ class ObjectBrowser extends React.Component {
 
         this.onStateChangeBound = this.onStateChange.bind(this);
 
-        this.props.socket.getObjects(true)
+        this.props.socket.getObjects(true, true)
             .then(objects => {
-                this.objects = objects;
+                if (this.props.types) {
+                    this.objects = {};
+                    Object.keys(objects).forEach(id => {
+                        if (objects[id] && this.props.types.includes(objects[id].type)) {
+                            this.objects[id] = objects[id];
+                        }
+                    });
+                } else {
+                    this.objects = objects;
+                }
+
                 const {info, root} = buildTree(this.objects, this.props);
                 this.root = root;
                 this.info = info;
 
-                let node = this.state.selected && findNode(this.root, this.state.selected);
+                // Show first selected item
+                let node = this.state.selected && this.state.selected.length && findNode(this.root, this.state.selected[0]);
 
                 // If selected ID is not visible, reset filter
                 if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects)) {
                     // reset filter
                     this.setState({ filter: Object.assign({}, DEFAULT_FILTER) }, () => {
-                        this.setState({ loaded: true });
-                        this.state.selected && this.onSelect(this.state.selected);
+                        this.setState({ loaded: true }, () =>
+                            this.state.selected && this.state.selected.length && this.onSelect());
                     });
                 } else {
-                    this.setState({ loaded: true });
-
-                    this.state.selected && this.onSelect(this.state.selected);
+                    this.setState({ loaded: true }, () =>
+                        this.state.selected && this.state.selected.length && this.onSelect());
                 }
             });
 
@@ -1291,20 +1392,44 @@ class ObjectBrowser extends React.Component {
         this.subscribes = [];
     }
 
-    onSelect(selected, isDouble) {
-        this.lastSelectedItem = selected;
-        window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', selected);
+    onSelect(toggleItem, isDouble) {
+        if (!this.props.multiSelect) {
+            if (this.objects[toggleItem] && (!this.props.types || this.props.types.includes(this.objects[toggleItem].type))) {
+                if (this.state.selected[0] !== toggleItem) {
+                    this.lastSelectedItems = [toggleItem];
 
-        selected !== this.state.selected && this.setState({ selected });
-        const name = selected ? UtilsAdapter.getObjectName(this.objects, selected, null, { language: this.state.lang }) : '';
-        this.props.onSelect && this.props.onSelect(selected, name, isDouble);
-    }
+                    window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', JSON.stringify(this.lastSelectedItems));
 
-    onDoubleClick(data, metadata, toggleChildren) {
-        if (metadata.hasChildren) {
-            toggleChildren();
-        } else if (data.obj && data.obj.type === 'state') {
-            this.onSelect(data.obj._id, true);
+                    this.setState({ selected: this.lastSelectedItems }, () => {
+                        const name = this.props.onSelect ? UtilsAdapter.getObjectName(this.objects, toggleItem, null, { language: this.state.lang }) : '';
+                        this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
+                    });
+                } else if (isDouble && this.props.onSelect) {
+                    const name = toggleItem ? UtilsAdapter.getObjectName(this.objects, toggleItem, null, { language: this.state.lang }) : '';
+                    this.props.onSelect(this.lastSelectedItems, name, isDouble);
+                }
+            } else {
+                this.lastSelectedItems = [];
+                window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', '');
+                this.setState({ selected: [] }, () => this.props.onSelect && this.props.onSelect([], ''));
+            }
+        } else {
+            if (this.objects[toggleItem] && (!this.props.types || this.props.types.includes(this.objects[toggleItem].type))) {
+                this.lastSelectedItems = [...this.state.selected];
+                const pos = this.lastSelectedItems.indexOf(toggleItem);
+                if (pos === -1) {
+                    this.lastSelectedItems.push(toggleItem);
+                    this.lastSelectedItems.sort();
+                } else if (!isDouble) {
+                    this.lastSelectedItems.splice(pos, 1);
+                }
+                window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', JSON.stringify(this.lastSelectedItems));
+
+                this.setState({ selected: this.lastSelectedItems }, () => {
+                    const name = this.lastSelectedItems.length === 1 ? UtilsAdapter.getObjectName(this.objects, this.lastSelectedItems[0], null, { language: this.state.lang }) : '';
+                    this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
+                });
+            }
         }
     }
 
@@ -1312,7 +1437,7 @@ class ObjectBrowser extends React.Component {
         // Remove unused subscribed
         for (let i = this.subscribes.length - 1; i >= 0; i--) {
             !this.recordStates.includes(this.subscribes[i]) &&
-                this.unsubscribe(this.subscribes[i]);
+            this.unsubscribe(this.subscribes[i]);
         }
         this.recordStates = [];
     }
@@ -1500,9 +1625,9 @@ class ObjectBrowser extends React.Component {
                 }
 
                 return <MenuItem className={ this.props.classes.headerCellSelectItem } key={ id } value={ id }>
-                        { icon ? icon : (hasIcons ? <div className="itemIcon"/> : null)}
-                        { name }
-                    </MenuItem>;
+                    { icon ? icon : (hasIcons ? <div className="itemIcon"/> : null)}
+                    { name }
+                </MenuItem>;
             }) }
         </Select>;
     }
@@ -1653,8 +1778,8 @@ class ObjectBrowser extends React.Component {
     renderColumnButtons(id, item, classes) {
         if (!item.data.obj) {
             return <IconButton className={ clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone) }  size="small" aria-label="delete" title={ this.texts.deleteObject }>
-                    <IconDelete className={ classes.cellButtonsButtonIcon }  />
-                </IconButton>;
+                <IconDelete className={ classes.cellButtonsButtonIcon }  />
+            </IconButton>;
         }
 
         return [
@@ -1672,7 +1797,7 @@ class ObjectBrowser extends React.Component {
                         title={ this.texts.deleteObject }>
                 <IconDelete className={ classes.cellButtonsButtonIcon }  />
             </IconButton>,
-            this.info.hasSomeCustoms && item.data.obj.type === 'state' ? <IconButton
+            this.props.objectCustomDialog && this.info.hasSomeCustoms && item.data.obj.type === 'state' ? <IconButton
                 className={ clsx(classes.cellButtonsButton, item.data.hasCustoms && classes.cellButtonsButtonWithCustoms)}
                 key="custom"
                 size="small"
@@ -1682,7 +1807,7 @@ class ObjectBrowser extends React.Component {
                     window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', id);
 
                     this.pauseSubscribe(true);
-                    Router.doNavigate(null, 'custom', id);
+                    this.props.router && this.props.router.doNavigate(null, 'custom', id);
                     this.setState({ customDialog: [id]});
                 }}
             >
@@ -1707,7 +1832,12 @@ class ObjectBrowser extends React.Component {
             sessionId?: any;
             aggregate?: 'minmax' | 'min' | 'max' | 'average' | 'total' | 'count' | 'none';
         }*/
-        if (this.defaultHistory && this.objects[id] && this.objects[id].common && this.objects[id].common.custom && this.objects[id].common.custom[this.defaultHistory]) {
+        if (window.sparkline &&
+            this.defaultHistory &&
+            this.objects[id] &&
+            this.objects[id].common &&
+            this.objects[id].common.custom &&
+            this.objects[id].common.custom[this.defaultHistory]) {
 
             const now = new Date();
             now.setHours(now.getHours() - 24);
@@ -1798,15 +1928,16 @@ class ObjectBrowser extends React.Component {
         let iconFolder;
         if (item.children) {
             iconFolder = isExpanded ? <IconOpen
-                    className={ classes.cellIdIconFolder }
-                    onClick={ () => this.toggleExpanded(id) }
-                /> : <IconClosed
-                    className={ classes.cellIdIconFolder }
-                    onClick={ () => this.toggleExpanded(id) }
-                />;
+                className={ classes.cellIdIconFolder }
+                onClick={ () => this.toggleExpanded(id) }
+            /> : <IconClosed
+                className={ classes.cellIdIconFolder }
+                onClick={ () => this.toggleExpanded(id) }
+            />;
         } else {
             iconFolder = <IconDocument className={ classes.cellIdIconDocument } />;
         }
+
         let iconItem = null;
         if (item.data.icon) {
             if (typeof item.data.icon === 'string') {
@@ -1825,17 +1956,33 @@ class ObjectBrowser extends React.Component {
         if (item.data.lang !== this.state.lang) {
             item.data.rooms = findRoomsForObject(this.info, id, this.state.lang).join(', ');
             item.data.funcs = findFunctionsForObject(this.info, id, this.state.lang).join(', ');
-            item.data.lang = this.state.lang;
+            item.data.lang  = this.state.lang;
         }
+
+        const checkbox =
+            this.props.multiSelect &&
+            this.objects[id] && (!this.props.types || this.props.types.includes(this.objects[id].type)) ?
+                <Checkbox
+                    className={ classes.checkBox }
+                    checked={ this.state.selected.includes(id) }
+                /> :
+                null;
 
         return (
             <Grid
                 container
                 direction="row"
-                className={ clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected && classes.itemSelected) }
+                className={ clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected) }
                 key={ id }
                 id={ id }
-                onDoubleClick={ () => this.toggleExpanded(id) }
+                onClick={ () => this.onSelect(id) }
+                onDoubleClick={ () => {
+                    if (!item.children) {
+                        this.onSelect(id, true);
+                    } else {
+                        this.toggleExpanded(id);
+                    }
+                } }
             >
                 <Grid
                     container
@@ -1849,6 +1996,7 @@ class ObjectBrowser extends React.Component {
                         container
                         alignItems="center"
                     >
+                        { checkbox }
                         { iconFolder }
                     </Grid>
                     <Grid
@@ -1874,11 +2022,11 @@ class ObjectBrowser extends React.Component {
                     </Grid>
                 </Grid>
                 {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
-                {this.visibleCols.includes('type')    ? <div className={ classes.cellType }    style={{ width: widths.WIDTHS[0] }}>{ typeImg } { obj && obj.type }</div> : null }
-                {this.visibleCols.includes('role')    ? <div className={ classes.cellRole }    style={{ width: widths.WIDTHS[1] }}>{ obj && obj.common && obj.common.role }</div> : null }
-                {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS[2] }}>{ item.data.rooms }</div> : null }
-                {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS[3] }}>{ item.data.funcs }</div> : null }
-                {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS[4] }} onClick={e => {
+                {this.visibleCols.includes('type')    ? <div className={ classes.cellType }    style={{ width: widths.WIDTHS.type }}>{ typeImg } { obj && obj.type }</div> : null }
+                {this.visibleCols.includes('role')    ? <div className={ classes.cellRole }    style={{ width: widths.WIDTHS.role }}>{ obj && obj.common && obj.common.role }</div> : null }
+                {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS.room }}>{ item.data.rooms }</div> : null }
+                {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS.func }}>{ item.data.funcs }</div> : null }
+                {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS.val }} onClick={e => {
                     if (!item.data.obj || !this.states) {
                         return null;
                     }
@@ -1890,7 +2038,7 @@ class ObjectBrowser extends React.Component {
                     };
                     this.setState({ updateOpened: true });
                 }}>{ this.renderColumnValue(id, item, classes) }</div> : null }
-                {this.visibleCols.includes('buttons') ? <div className={ classes.cellButtons } style={{ width: widths.WIDTHS[5] }}>{ this.renderColumnButtons(id, item, classes) }</div> : null }
+                {this.visibleCols.includes('buttons') ? <div className={ classes.cellButtons } style={{ width: widths.WIDTHS.buttons }}>{ this.renderColumnButtons(id, item, classes) }</div> : null }
             </Grid>
         );
     }
@@ -1916,12 +2064,12 @@ class ObjectBrowser extends React.Component {
         return <div className={ classes.headerRow } >
             <div className={ classes.headerCell } style={{ width: widths.idWidth }}>{ this.getFilterInput('id') }</div>
             {this.visibleCols.includes('name')    ? <div className={ classes.headerCell } style={{ width: widths.widthNameHeader }}>{ this.getFilterInput('name') }</div> : null }
-            {this.visibleCols.includes('type')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[0] }}>{ this.getFilterSelectType() }</div> : null }
-            {this.visibleCols.includes('role')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[1] }}>{ this.getFilterSelectRole() }</div> : null }
-            {this.visibleCols.includes('room')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[2] }}>{ this.getFilterSelectRoom() }</div> : null }
-            {this.visibleCols.includes('func')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[3] }}>{ this.getFilterSelectFunction() }</div> : null }
-            {this.visibleCols.includes('val')     ? <div className={ clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS[4] }}>{ this.props.t('Value') }</div> : null }
-            {this.visibleCols.includes('buttons') ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS[5] }}> { this.getFilterSelectCustoms() }</div> : null }
+            {this.visibleCols.includes('type')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.type }}>{ this.getFilterSelectType() }</div> : null }
+            {this.visibleCols.includes('role')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.role }}>{ this.getFilterSelectRole() }</div> : null }
+            {this.visibleCols.includes('room')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.room }}>{ this.getFilterSelectRoom() }</div> : null }
+            {this.visibleCols.includes('func')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.func }}>{ this.getFilterSelectFunction() }</div> : null }
+            {this.visibleCols.includes('val')     ? <div className={ clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS.val}}>{ this.props.t('Value') }</div> : null }
+            {this.visibleCols.includes('buttons') ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.buttons }}> { this.getFilterSelectCustoms() }</div> : null }
         </div>;
     }
 
@@ -1937,8 +2085,8 @@ class ObjectBrowser extends React.Component {
             if (this.state.scrollBarWidth !== scrollBarWidth) {
                 setTimeout(() => this.setState({ scrollBarWidth }), 100);
             } else {
-                if (!this.selectedFound && (this.props.selected || this.lastSelectedItem)) {
-                    const node = window.document.getElementById(this.props.selected || this.lastSelectedItem);
+                if (!this.selectedFound && ((this.state.selected && this.state.selected[0]) || this.lastSelectedItems)) {
+                    const node = window.document.getElementById((this.state.selected && this.state.selected[0]) || this.lastSelectedItems);
                     node && node.scrollIntoView();
                     this.selectedFound = true;
                 }
@@ -1947,7 +2095,9 @@ class ObjectBrowser extends React.Component {
     }
 
     renderCustomDialog() {
-        if (this.state.customDialog) {
+        if (this.state.customDialog && this.props.objectCustomDialog) {
+            const ObjectCustomDialog = this.props.objectCustomDialog;
+
             return <ObjectCustomDialog
                 objectIDs={ this.state.customDialog }
                 expertMode={ this.props.expertMode }
@@ -1960,7 +2110,7 @@ class ObjectBrowser extends React.Component {
                 onClose={ () => {
                     this.pauseSubscribe(false);
                     this.setState({ customDialog: null });
-                    Router.doNavigate('tab-objects');
+                    this.props.router && this.props.router.doNavigate('tab-objects');
                 }}
             />;
         } else {
@@ -1975,9 +2125,11 @@ class ObjectBrowser extends React.Component {
     }
 
     renderEditObjectDialog() {
-        if (!this.state.editObjectDialog) {
+        if (!this.state.editObjectDialog || !this.props.objectBrowserEditObject) {
             return null;
         }
+        const ObjectBrowserEditObject = this.props.objectBrowserEditObject;
+
         return <ObjectBrowserEditObject
             obj={ this.objects[this.state.editObjectDialog] }
             themeName={ this.props.themeName }
@@ -1991,12 +2143,14 @@ class ObjectBrowser extends React.Component {
 
     }
     renderEditValueDialog() {
-        if (!this.state.updateOpened) {
+        if (!this.state.updateOpened || !this.props.objectBrowserValue) {
             return null;
         }
 
         const type = (this.objects[this.edit.id].common && this.objects[this.edit.id].common.type) ?
             this.objects[this.edit.id].common.type : typeof this.edit.val;
+
+        const ObjectBrowserValue = this.props.objectBrowserValue;
 
         return <ObjectBrowserValue
             t={ this.props.t }
@@ -2009,7 +2163,7 @@ class ObjectBrowser extends React.Component {
             }}
         />;
     }
-    
+
     render() {
         this.recordStates = [];
         this.unsubscribeTimer && clearTimeout(this.unsubscribeTimer);
@@ -2038,14 +2192,29 @@ class ObjectBrowser extends React.Component {
         if (!this.state.loaded) {
             return (<CircularProgress/>);
         } else {
-           const idWidth = 300;
-            const WIDTHS = [80, 120, 180, 180, 120, 76];
+            const idWidth = 300;
+            const WIDTHS = {
+                type: 80,
+                role: 120,
+                room: 180,
+                func: 180,
+                val: 120,
+                buttons: 76
+            };
+
+            let widthSum = idWidth;
+            widthSum += this.visibleCols.includes('type')    ? WIDTHS.type : 0;
+            widthSum += this.visibleCols.includes('role')    ? WIDTHS.role : 0;
+            widthSum += this.visibleCols.includes('room')    ? WIDTHS.room : 0;
+            widthSum += this.visibleCols.includes('func')    ? WIDTHS.func : 0;
+            widthSum += this.visibleCols.includes('val')     ? WIDTHS.val : 0;
+            widthSum += this.visibleCols.includes('buttons') ? WIDTHS.buttons : 0;
 
             const widths = {
                 idWidth,
                 WIDTHS,
-                widthName:       `calc(100% - ${idWidth + WIDTHS[0] + WIDTHS[1] + WIDTHS[2] + WIDTHS[3] + WIDTHS[4] + WIDTHS[5]}px)`,
-                widthNameHeader: `calc(100% - ${idWidth + WIDTHS[0] + WIDTHS[1] + WIDTHS[2] + WIDTHS[3] + WIDTHS[4] + WIDTHS[5] + this.state.scrollBarWidth}px)`,
+                widthName:       `calc(100% - ${widthSum}px)`,
+                widthNameHeader: `calc(100% - ${widthSum + this.state.scrollBarWidth}px)`,
             };
 
             const classes = this.props.classes;
@@ -2075,7 +2244,6 @@ class ObjectBrowser extends React.Component {
 ObjectBrowser.propTypes = {
     classes: PropTypes.object,
     defaultFilters: PropTypes.object,
-    statesOnly: PropTypes.bool,
     selected: PropTypes.string,
     onSelect: PropTypes.func,
     onFilterChanged: PropTypes.func,
@@ -2086,7 +2254,14 @@ ObjectBrowser.propTypes = {
     themeName: PropTypes.string,
     t: PropTypes.func,
     lang: PropTypes.string,
-    onNavigate: PropTypes.func
+    columns: PropTypes.array,
+    multiSelect: PropTypes.bool,
+
+    // components
+    objectCustomDialog: PropTypes.object,
+    objectBrowserValue: PropTypes.object,
+    objectBrowserEditObject: PropTypes.object,
+    router: PropTypes.object,
 };
 
 export default withStyles(styles)(ObjectBrowser);
