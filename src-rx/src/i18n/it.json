@@ -915,5 +915,8 @@
   "filter_func": "Funzione",
   "filter_customs": "impostazioni",
   "Logs": "Registra",
-  "Files": "File"
+  "Files": "File",
+  "loginTitle": "Admin",
+  "Edit object:": "Modifica oggetto:",
+  "Write": "Scrivi"
 }

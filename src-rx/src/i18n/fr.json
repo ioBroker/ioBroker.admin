@@ -915,5 +915,8 @@
   "filter_func": "Une fonction",
   "filter_customs": "Réglages",
   "Logs": "Journal",
-  "Files": "Des dossiers"
+  "Files": "Des dossiers",
+  "loginTitle": "Admin",
+  "Edit object:": "Modifier l'objet:",
+  "Write": "Écrire"
 }

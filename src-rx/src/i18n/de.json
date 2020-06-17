@@ -916,5 +916,7 @@
   "filter_func": "Funktion",
   "filter_customs": "die Einstellungen",
   "Logs": "Protokoll",
-  "Files": "Dateien"
+  "Files": "Dateien",
+  "Edit object:": "Objekt bearbeiten:",
+  "Write": "Specihern"
 }

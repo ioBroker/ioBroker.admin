@@ -192,6 +192,8 @@ class App extends Router {
                 drawerState = this.props.width === 'xs' ? DrawerStates.closed : DrawerStates.opened;
             }
 
+            const theme = this.createTheme();
+
             this.state = {
                 connected:      false,
                 progress:       0,
@@ -228,9 +230,9 @@ class App extends Router {
 
                 stateChanged: false,
 
-                theme:          this.getTheme(),
-                themeName:      this.getThemeName(this.getTheme()),
-                themeType:      this.getThemeType(this.getTheme()),
+                theme,
+                themeName:      this.getThemeName(theme),
+                themeType:      this.getThemeType(theme),
 
                 alert: false,
                 alertType: 'info',
@@ -253,11 +255,12 @@ class App extends Router {
             this.instancesWorker = null;
             this.hostsWorker = null;
         } else {
+            const theme = this.createTheme();
             this.state = {
-                login: true,
-                theme:          this.getTheme(),
-                themeName:      this.getThemeName(this.getTheme()),
-                themeType:      this.getThemeType(this.getTheme())
+                login:     true,
+                theme,
+                themeName: this.getThemeName(theme),
+                themeType: this.getThemeType(theme)
             }
         }
     }
@@ -395,9 +398,8 @@ class App extends Router {
      * @param {string} name Theme name
      * @returns {Theme}
      */
-    getTheme(name) {
-        return theme(name ? name : window.localStorage && window.localStorage.getItem('App.themeName') ?
-            window.localStorage.getItem('App.themeName') : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'colored');
+    createTheme(name) {
+        return theme(Utils.getThemeName(name));
     }
 
     /**
@@ -428,11 +430,9 @@ class App extends Router {
             themeName === 'blue' ? 'colored' : themeName === 'colored' ? 'light' :
             themeName === 'light' ? 'dark' : 'colored';
 
-        window.localStorage.setItem('App.themeName', newThemeName);
-        window.localStorage.setItem('App.theme', newThemeName === 'dark' || newThemeName === 'blue' ?
-            'dark' : 'light');
+        Utils.setThemeName(newThemeName);
 
-        const theme = this.getTheme(newThemeName);
+        const theme = this.createTheme(newThemeName);
 
         this.setState({
             theme: theme,
@@ -857,7 +857,7 @@ class App extends Router {
                             >
                                 <ExpertIcon
                                     title={ I18n.t('Toggle expert mode')}
-                                    glowColor={ this.getTheme().palette.secondary.main }
+                                    glowColor={ this.state.theme.palette.secondary.main }
                                     active={ this.state.expertMode }
                                     className={ clsx(classes.expertIcon, this.state.expertMode && classes.expertIconActive)}
                                 />

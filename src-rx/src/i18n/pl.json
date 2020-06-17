@@ -915,5 +915,8 @@
   "filter_func": "Funkcjonować",
   "filter_customs": "Ustawienia",
   "Logs": "Zaloguj wiadomości",
-  "Files": "Akta"
+  "Files": "Akta",
+  "loginTitle": "Admin",
+  "Edit object:": "Edytuj obiekt:",
+  "Write": "pisać"
 }

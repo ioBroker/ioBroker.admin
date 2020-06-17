@@ -915,5 +915,8 @@
   "filter_func": "功能",
   "filter_customs": "设定值",
   "Logs": "日志信息",
-  "Files": "档案"
+  "Files": "档案",
+  "loginTitle": "管理员",
+  "Edit object:": "编辑对象：",
+  "Write": "写"
 }

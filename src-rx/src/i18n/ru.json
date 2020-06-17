@@ -916,5 +916,7 @@
   "filter_func": "функция",
   "filter_customs": "настройки",
   "Logs": "Журнал",
-  "Files": "Файлы"
+  "Files": "Файлы",
+  "Edit object:": "Изменить объект:",
+  "Write": "Сохранить"
 }

@@ -201,7 +201,7 @@ function jQ(el) {
     return this;
 }
 
-const URL_PREFIX = 'http://localhost:8081'; // or './'
+const URL_PREFIX = '.'; // or './' or 'http://localhost:8081' for debug
 
 // simulate jQuery
 window.$ = function (el) {

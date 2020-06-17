@@ -437,25 +437,31 @@ class Intro extends React.Component {
                     } else if (common.name && common.name.match(/^icons-/)) {
                         return;
                     } else if (common && (common.enabled || common.onlyWWW) && (common.localLinks || common.localLink)) {
-                        const instance = {};
-                        const ws = (common.welcomeScreen) ? common.welcomeScreen : null;
+                        const ws = common.welcomeScreen ? common.welcomeScreen : null;
+                        let links = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
+                        if (typeof links === 'string') {
+                            links = {_default: links};
+                        }
 
-                        instance.id          = obj._id.replace('system.adapter.', '');
-                        instance.name        = /*(ws && ws.name) ? ws.name :*/ (common.titleLang) ? common.titleLang[this.props.lang] : common.title;
-                        instance.color       = ws && ws.color ? ws.color : '';
-                        instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
-                        instance.image       = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+                        Object.keys(links).forEach(linkName => {
+                            const link = links[linkName];
+                            const instance = {};
 
-                        const link = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
-                        instance.link = Utils.replaceLink(link, common.name, instanceId, {
-                            objects,
-                            hostname: this.props.hostname,
-                            protocol: this.props.protocol
-                        }) || '';
+                            instance.id          = obj._id.replace('system.adapter.', '') + (linkName === '_default' ? '' : ' ' + linkName);
+                            instance.name        = (/*(ws && ws.name) ? ws.name :*/ common.titleLang ? common.titleLang[this.props.lang] : common.title) + (linkName === '_default' ? '' : ' ' + linkName);
+                            instance.color       = ws && ws.color ? ws.color : '';
+                            instance.description = common.desc && typeof common.desc === 'object' ? (common.desc[this.props.lang] || common.desc.en) : common.desc || '';
+                            instance.image       = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
+                            instance.link        = Utils.replaceLink(link, common.name, instanceId, {
+                                objects,
+                                hostname: this.props.hostname,
+                                protocol: this.props.protocol
+                            }) || '';
 
-                        instance.enabled = deactivated.hasOwnProperty(instance.id) ? !!deactivated[instance.id] : true;
+                            instance.enabled = deactivated.hasOwnProperty(instance.id) ? !!deactivated[instance.id] : true;
 
-                        introInstances.push(instance);
+                            introInstances.push(instance);
+                        });
                     }
                 });
 

@@ -916,5 +916,7 @@
   "filter_func": "Function",
   "filter_customs": "Settings",
   "Logs": "Logs",
-  "Files": "Files"
+  "Files": "Files",
+  "Edit object:": "Edit object:",
+  "Write": "Write"
 }
