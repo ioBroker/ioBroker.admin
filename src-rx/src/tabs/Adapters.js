@@ -2,18 +2,20 @@ import React from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
-import { Grid } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
-import { LinearProgress } from '@material-ui/core';
-import { Table } from '@material-ui/core';
-import { TableBody } from '@material-ui/core';
-import { TableCell } from '@material-ui/core';
-import { TableContainer } from '@material-ui/core';
-import { TableHead } from '@material-ui/core';
-import { TableRow } from '@material-ui/core';
-import { TextField } from '@material-ui/core';
-import { Tooltip } from '@material-ui/core';
-import { Typography } from '@material-ui/core';
+import {
+    Grid,
+    IconButton,
+    LinearProgress,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Tooltip,
+    Typography
+} from '@material-ui/core';
 
 import CloudOffIcon from '@material-ui/icons/CloudOff';
 import FolderIcon from '@material-ui/icons/Folder';
@@ -22,8 +24,10 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 
 import { FaGithub as GithubIcon } from 'react-icons/fa';
 
-import { blue } from '@material-ui/core/colors';
-import { green } from '@material-ui/core/colors';
+import {
+    blue,
+    green
+} from '@material-ui/core/colors';
 
 import AdapterDeletionDialog from '../dialogs/AdapterDeletionDialog';
 import AdapterInfoDialog from '../dialogs/AdapterInfoDialog';
@@ -211,7 +215,8 @@ class Adapters extends React.Component {
 
                     if (!adapter.controller && value !== 'hosts') {
                         if (!repository[value]) {
-                            repository[value] = adapter;
+                            repository[value] = JSON.parse(JSON.stringify(adapter));
+                            repository[value].version = '';
                         }
                     }
                 });
@@ -248,20 +253,32 @@ class Adapters extends React.Component {
                     const instance = instances[value];
                     const name = instance.common.name;
                     const enabled = instance.common.enabled;
+                    let installedFrom = instance.common.installedFrom;
+                    const inst = installed[name];
+                    let nonNpmVersion = false;
 
-                    if (installed[name]) {
-                        if (installed[name].count) {
-                            installed[name].count++;
+                    if (installedFrom && installedFrom.search(/^iobroker.*?@\d+.\d+.\d+.*$/) === -1) {
+                        nonNpmVersion = true;
+                        installedFrom = installedFrom.substr(installedFrom.lastIndexOf('/') + 1, 8).trim();
+                    }
+
+                    if (inst) {
+                        if (inst.count) {
+                            inst.count++;
                         } else {
-                            installed[name].count = 1;
+                            inst.count = 1;
                         }
 
                         if (enabled) {
-                            if (installed[name].enabled) {
-                                installed[name].enabled++;
+                            if (inst.enabled) {
+                                inst.enabled++;
                             } else {
-                                installed[name].enabled = 1;
+                                inst.enabled = 1;
                             }
+                        }
+
+                        if (nonNpmVersion) {
+                            inst.installedFrom = installedFrom;
                         }
                     }
                 });
@@ -690,6 +707,7 @@ class Adapters extends React.Component {
                                 expertMode={ this.props.expertMode }
                                 image={ image }
                                 installedCount={ installed && installed.count }
+                                installedFrom={ installed && installed.installedFrom }
                                 installedVersion={ installed && installed.version }
                                 keywords={ adapter.keywords }
                                 name={ title }

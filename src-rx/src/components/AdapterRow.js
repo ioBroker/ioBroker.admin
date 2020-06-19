@@ -5,13 +5,16 @@ import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 
-import { Avatar } from '@material-ui/core';
-import { Badge } from '@material-ui/core';
-import { Grid } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
-import { TableCell } from '@material-ui/core';
-import { TableRow } from '@material-ui/core';
-import { Typography } from '@material-ui/core';
+import {
+    Avatar,
+    Badge,
+    Grid,
+    IconButton,
+    TableCell,
+    TableRow,
+    Tooltip,
+    Typography
+} from '@material-ui/core';
 
 import AddIcon from '@material-ui/icons/Add';
 import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
@@ -25,10 +28,14 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import HelpIcon from '@material-ui/icons/Help';
 import PublishIcon from '@material-ui/icons/Publish';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import WarningIcon from '@material-ui/icons/Warning';
 
-import { blue } from '@material-ui/core/colors';
-import { green } from '@material-ui/core/colors';
-import { red } from '@material-ui/core/colors';
+import {
+    amber,
+    blue,
+    green,
+    red
+} from '@material-ui/core/colors';
 
 const styles = theme => ({
     smallAvatar: {
@@ -65,20 +72,66 @@ const styles = theme => ({
     },
     sentryIcon: {
         fontSize: '1.2rem'
+    },
+    versionWarn: {
+        color: amber[500]
     }
 });
 
 class AdapterRow extends React.Component {
+
+    renderVersion() {
+
+        const {
+            classes,
+            enabledCount,
+            installedCount,
+            installedFrom,
+            installedVersion
+        } = this.props;
+
+        return (
+            <Grid
+                container
+                wrap="nowrap"
+                alignItems="center"
+                spacing={ 1 }
+            >
+                { installedFrom &&
+                    <Grid
+                        item
+                        container
+                    >
+                        <Tooltip title={ 'Non-NPM-Version: ' + installedFrom }>
+                            <WarningIcon
+                                className={ classes.versionWarn }
+                                fontSize="small"
+                            />
+                        </Tooltip>
+                    </Grid>
+                }
+                <Grid item>
+                    { installedVersion + 
+                        (installedCount ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})` : '')
+                    }
+                </Grid>
+            </Grid>
+        )
+    }
 
     render() {
 
         const isCategory = this.props.category;
 
         const {
-            classes, connectionType, installedCount,
-            installedVersion, enabledCount,
-            updateAvailable, name,
-            rightDependencies, rightOs,
+            classes,
+            connectionType,
+            installedCount,
+            installedVersion,
+            updateAvailable,
+            name,
+            rightDependencies,
+            rightOs,
             sentry
         } = this.props;
 
@@ -139,10 +192,7 @@ class AdapterRow extends React.Component {
                     }
                 </TableCell>
                 <TableCell>
-                    { !isCategory && installedVersion &&
-                        installedVersion +
-                        (installedCount ? ` (${installedCount}${installedCount !== enabledCount ? '~' : ''})` : '')
-                    }
+                    { !isCategory && installedVersion && this.renderVersion() }
                 </TableCell>
                 <TableCell className={ clsx({ [classes.updateAvailable]: !isCategory && updateAvailable && rightDependencies,
                     [classes.wrongDependencies]: !rightDependencies }) }>
@@ -230,6 +280,7 @@ AdapterRow.propTypes = {
     hidden: PropTypes.bool,
     image: PropTypes.string,
     installedCount: PropTypes.number,
+    installedFrom: PropTypes.string,
     installedVersion: PropTypes.string,
     keywords: PropTypes.array,
     name: PropTypes.string,
