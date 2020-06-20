@@ -289,12 +289,19 @@ class Instances extends React.Component {
             instance.id    = obj._id.replace('system.adapter.', '');
             instance.name  = common.titleLang ? common.titleLang[this.props.lang] : common.title;
             instance.image = common.icon ? 'adapter/' + common.name + '/' + common.icon : 'img/no-image.png';
-            const link     = common.localLinks || common.localLink || '';
+            let links = /*(ws && ws.link) ? ws.link :*/ common.localLinks || common.localLink || '';
+            if (typeof links === 'string') {
+                links = {_default: links};
+            }
 
-            instance.link = Utils.replaceLink(link, common.name, instanceId, {
-                objects: this.objects,
-                hostname: this.props.hostname,
-                protocol: this.props.protocol
+            Object.keys(links).forEach(linkName => {
+                instance.link = instance.link || [];
+                const link = links[linkName];
+                instance.link.push(Utils.replaceLink(link, common.name, instanceId, {
+                    objects:  this.objects,
+                    hostname: this.props.hostname,
+                    protocol: this.props.protocol
+                }));
             });
 
             instance.canStart = !common.onlyWWW;
@@ -466,7 +473,7 @@ class Instances extends React.Component {
 
         const instance = this.state.instances[id];
         
-        return this.states[instance.id + '.info.connection'] ? this.states[instance.id + '.info.connection'].val : null;
+        return this.states[instance.id + '.info.connection'] ? !!this.states[instance.id + '.info.connection'].val : null;
     }
 
     getHeaders() {
@@ -538,9 +545,9 @@ class Instances extends React.Component {
                         </IconButton>
                         <IconButton
                             size="small"
-                            className={ classes.button + ' ' + (instance.link ? '' : classes.hide) }
+                            className={ classes.button + ' ' + (instance.links && instance.links.length ? '' : classes.hide) }
                             disabled={ !instance.isRun }
-                            onClick={ ()=> window.open(instance.link, "_blank") }
+                            onClick={ ()=> window.open(instance.links[0], '_blank') }
                         >
                             <InputIcon />
                         </IconButton>
@@ -589,6 +596,7 @@ class Instances extends React.Component {
             const alive = this.isAlive(id);
             const connectedToHost = this.isConnectedToHost(id);
             const connected = this.isConnected(id);
+
             const loglevelIcon = this.getLogLevelIcon(instance.loglevel);
 
             return (
