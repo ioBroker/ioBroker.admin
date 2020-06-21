@@ -2,13 +2,20 @@
     Later it will be moved to adapter-react
  */
 
+/**
+ * Copyright 2020, bluefox <dogafox@gmail.com>
+ *
+ * MIT License
+ *
+ **/
 import React from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
+import copy from '@iobroker/adapter-react/Components/copy-to-clipboard';
 
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
 import {withStyles} from '@material-ui/core/styles';
+import withWidth from '@material-ui/core/withWidth';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -17,13 +24,22 @@ import Input from '@material-ui/core/Input';
 import Grid from '@material-ui/core/Grid';
 import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip';
-import copy from 'copy-to-clipboard';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import Checkbox from '@material-ui/core/Checkbox';
+import Avatar from '@material-ui/core/Avatar';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
 
 // own
-import UtilsAdapter from '@iobroker/adapter-react/Components/Utils';
+import Utils from '@iobroker/adapter-react/Components/Utils';
+import TabContainer from './TabContainer';
+import TabContent from './TabContent';
+import TabHeader from './TabHeader';
 
 // Icons
 import {FaFolder as IconClosed} from 'react-icons/fa';
@@ -50,10 +66,6 @@ import {FaScrewdriver as IconInstance} from 'react-icons/fa';
 import {FaChartLine as IconChart} from 'react-icons/fa';
 import {FaListOl as IconEnum} from 'react-icons/fa';
 import {FaScrewdriver as IconAdapter} from 'react-icons/fa';
-
-import TabContainer from './TabContainer';
-import TabContent from './TabContent';
-import TabHeader from './TabHeader';
 
 const ROW_HEIGHT = 32;
 const ITEM_LEVEL = ROW_HEIGHT;
@@ -90,7 +102,7 @@ const styles = theme => ({
         width: '100%',
         '&:hover': {
             background: theme.palette.primary.main,
-            color: invertColor(theme.palette.primary.main, true),
+            color: Utils.invertColor(theme.palette.primary.main, true),
         },
     },
     checkBox: {
@@ -190,21 +202,24 @@ const styles = theme => ({
     cellRoom : {
         display: 'inline-block',
         verticalAlign: 'top',
+        cursor: 'text',
     },
     cellFunc : {
         display: 'inline-block',
         verticalAlign: 'top',
+        cursor: 'text',
     },
     cellValue : {
         display: 'inline-block',
         verticalAlign: 'top'
     },
     cellValueTooltip: {
-        width: '100%',
+        fontSize: 12,
     },
     cellValueText: {
         width: '100%',
         height: ROW_HEIGHT,
+        fontSize: 16,
         display: 'inline-block',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -220,7 +235,7 @@ const styles = theme => ({
     },
     cellValueTooltipTitle: {
         fontStyle: 'italic',
-        width: 80,
+        width: 100,
         display: 'inline-block',
     },
     cellValueTooltipValue: {
@@ -229,6 +244,9 @@ const styles = theme => ({
         //overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
+    },
+    cellValueTooltipBox: {
+        width: 250,
     },
     cellValueTextUnit: {
         marginLeft: theme.spacing(0.5),
@@ -359,7 +377,7 @@ const styles = theme => ({
     */
     itemSelected: {
         background: theme.palette.primary.main,
-        color: invertColor(theme.palette.primary.main, true),
+        color: Utils.invertColor(theme.palette.primary.main, true),
     },
     header: {
         width: '100%'
@@ -399,37 +417,6 @@ const styles = theme => ({
         flexGrow: 1
     }
 });
-
-// move this function to adapter-react Utils
-// Big thanks to : https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
-function invertColor(hex, bw) {
-    if (hex.indexOf('#') === 0) {
-        hex = hex.slice(1);
-    }
-    // convert 3-digit hex to 6-digits.
-    if (hex.length === 3) {
-        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-    }
-    if (hex.length !== 6) {
-        throw new Error('Invalid HEX color.');
-    }
-    let r = parseInt(hex.slice(0, 2), 16);
-    let g = parseInt(hex.slice(2, 4), 16);
-    let b = parseInt(hex.slice(4, 6), 16);
-
-    if (bw) {
-        // http://stackoverflow.com/a/3943023/112731
-        return (r * 0.299 + g * 0.587 + b * 0.114) > 186
-            ? '#000000'
-            : '#FFFFFF';
-    }
-    // invert color components
-    r = (255 - r).toString(16);
-    g = (255 - g).toString(16);
-    b = (255 - b).toString(16);
-    // pad each with zeros and return
-    return '#' + r.padStart(2, '0') + g.padStart(2, '0') + b.padStart(2, '0');
-}
 
 // d=data, t=target, s=start, e=end, m=middle
 function binarySearch(list, find, _start, _end) {
@@ -1197,9 +1184,43 @@ const StyledBadge = withStyles((theme) => ({
     },
 }))(Badge);
 
+const SCREEN_WIDTHS = {
+    // extra-small: 0px
+    xs: {idWidth: 300, fields: ['room'], widths: {room: 200}},
+    // small: 600px
+    sm: {idWidth: 300, fields: ['room', 'func', 'buttons'], widths: {room: 180, func: 180, buttons: 76}},
+    // medium: 960px
+    md: {idWidth: 300, fields: ['room', 'func', 'val', 'buttons'], widths: {room: 150, func: 150, val: 120, buttons: 76}},
+    // large: 1280px
+    lg: {idWidth: 300, fields: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'],
+        widths: {
+            type: 80,
+            role: 120,
+            room: 180,
+            func: 180,
+            val: 120,
+            buttons: 76
+        }
+    },
+
+    // extra-large: 1920px
+    xl: {idWidth: 650, fields: ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'],
+        widths: {
+            type: 80,
+            role: 120,
+            room: 180,
+            func: 180,
+            val: 170,
+            buttons: 76
+        }
+    },
+};
+
 class ObjectBrowser extends React.Component {
     constructor(props) {
         super(props);
+
+        console.log('Width: ' + this.props.width);
 
         this.lastSelectedItems = window.localStorage.getItem((this.props.key || 'App') + '.objectSelected') || '[]';
         try {
@@ -1251,7 +1272,7 @@ class ObjectBrowser extends React.Component {
 
         this.onObjectChangeBound = this.onObjectChange.bind(this);
 
-        this.visibleCols = this.props.columns || ['name', 'type', 'role', 'room', 'func', 'val', 'buttons'];
+        this.visibleCols = this.props.columns || SCREEN_WIDTHS[props.width].fields;
 
         // remove type column if only one type must be selected
         if (this.props.types && this.props.types.length === 1) {
@@ -1287,7 +1308,8 @@ class ObjectBrowser extends React.Component {
             scrollBarWidth: 16,
             hasSomeCustoms: false,
             customDialog,
-            editObjectDialog: ''
+            editObjectDialog: '',
+            enumDialog: null,
         };
 
         this.edit = {};
@@ -1349,7 +1371,6 @@ class ObjectBrowser extends React.Component {
                 }
             });
 
-
         // read default history
         this.props.socket.getSystemConfig()
             .then(config => {
@@ -1401,11 +1422,11 @@ class ObjectBrowser extends React.Component {
                     window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', JSON.stringify(this.lastSelectedItems));
 
                     this.setState({ selected: this.lastSelectedItems }, () => {
-                        const name = this.props.onSelect ? UtilsAdapter.getObjectName(this.objects, toggleItem, null, { language: this.state.lang }) : '';
+                        const name = this.props.onSelect ? Utils.getObjectName(this.objects, toggleItem, null, { language: this.state.lang }) : '';
                         this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
                     });
                 } else if (isDouble && this.props.onSelect) {
-                    const name = toggleItem ? UtilsAdapter.getObjectName(this.objects, toggleItem, null, { language: this.state.lang }) : '';
+                    const name = toggleItem ? Utils.getObjectName(this.objects, toggleItem, null, { language: this.state.lang }) : '';
                     this.props.onSelect(this.lastSelectedItems, name, isDouble);
                 }
             } else {
@@ -1426,7 +1447,7 @@ class ObjectBrowser extends React.Component {
                 window.localStorage.setItem((this.props.key || 'App') + '.objectSelected', JSON.stringify(this.lastSelectedItems));
 
                 this.setState({ selected: this.lastSelectedItems }, () => {
-                    const name = this.lastSelectedItems.length === 1 ? UtilsAdapter.getObjectName(this.objects, this.lastSelectedItems[0], null, { language: this.state.lang }) : '';
+                    const name = this.lastSelectedItems.length === 1 ? Utils.getObjectName(this.objects, this.lastSelectedItems[0], null, { language: this.state.lang }) : '';
                     this.props.onSelect && this.props.onSelect(this.lastSelectedItems, name, isDouble);
                 });
             }
@@ -1777,7 +1798,7 @@ class ObjectBrowser extends React.Component {
 
     renderColumnButtons(id, item, classes) {
         if (!item.data.obj) {
-            return <IconButton className={ clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone) }  size="small" aria-label="delete" title={ this.texts.deleteObject }>
+            return <IconButton className={ Utils.clsx(classes.cellButtonsButton, classes.cellButtonsButtonAlone) }  size="small" aria-label="delete" title={ this.texts.deleteObject }>
                 <IconDelete className={ classes.cellButtonsButtonIcon }  />
             </IconButton>;
         }
@@ -1798,7 +1819,7 @@ class ObjectBrowser extends React.Component {
                 <IconDelete className={ classes.cellButtonsButtonIcon }  />
             </IconButton>,
             this.props.objectCustomDialog && this.info.hasSomeCustoms && item.data.obj.type === 'state' ? <IconButton
-                className={ clsx(classes.cellButtonsButton, item.data.hasCustoms && classes.cellButtonsButtonWithCustoms)}
+                className={ Utils.clsx(classes.cellButtonsButton, item.data.hasCustoms && classes.cellButtonsButtonWithCustoms)}
                 key="custom"
                 size="small"
                 aria-label="config"
@@ -1908,16 +1929,40 @@ class ObjectBrowser extends React.Component {
                 <span key="valText">{ info.valText.v.toString() }</span>,
                 info.valText.u ? <span className={ classes.cellValueTextUnit } key="unit">{ info.valText.u }</span> : null,
                 info.valText.s !== undefined ? <span  className={ classes.cellValueTextState } key="states">({ info.valText.s })</span> : null,
-                <IconCopy className={ clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonCopy) } onClick={e => this.onCopy(e) } data-copy={ info.valText.v } key="cc" />,
-                //<IconEdit className={ clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonEdit) } key="ce" />
+                <IconCopy className={ Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonCopy) } onClick={e => this.onCopy(e) } data-copy={ info.valText.v } key="cc" />,
+                //<IconEdit className={ Utils.clsx(classes.cellButtonsValueButton, 'copyButton', classes.cellButtonsValueButtonEdit) } key="ce" />
             ];
         }
 
-        return <Tooltip title={ info.valFull } onOpen={ () => this.readHistory(id) }>
+        return <Tooltip title={ info.valFull } classes={ {tooltip: this.props.classes.cellValueTooltip, popper: this.props.classes.cellValueTooltipBox} } onOpen={ () => this.readHistory(id) }>
             <div style={ info.style } className={ classes.cellValueText }>
                 { info.valText }
             </div>
         </Tooltip>;
+    }
+
+    renderEnumDialog() {
+        if (this.state.enumDialog) {
+
+            const type = this.state.enumDialog.type;
+            const item = this.state.enumDialog.item;
+
+            return <Dialog onClose={() => this.setState({enumDialog: null})} aria-labelledby="enum-dialog-title" open={ true }>
+                <DialogTitle id="simple-dialog-title">{ type === 'func' ? this.props.t('Define functions') : this.props.t('Define rooms') }</DialogTitle>
+                <List>
+                    <ListItem autoFocus button onClick={() => console.log('A')}>
+                        <ListItemAvatar>
+                            <Avatar>
+                                <IconScript/>
+                            </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText primary="Add account" />
+                    </ListItem>
+                </List>
+            </Dialog>
+        } else {
+            return null;
+        }
     }
 
     renderLeaf(item, isExpanded, widths, classes) {
@@ -1941,7 +1986,7 @@ class ObjectBrowser extends React.Component {
         let iconItem = null;
         if (item.data.icon) {
             if (typeof item.data.icon === 'string') {
-                iconItem = <img className={ clsx(classes.cellIdIconOwn, 'iconOwn') } src={ item.data.icon } alt="" />;
+                iconItem = <img className={ Utils.clsx(classes.cellIdIconOwn, 'iconOwn') } src={ item.data.icon } alt="" />;
             } else {
                 iconItem = item.data.icon;
             }
@@ -1968,11 +2013,15 @@ class ObjectBrowser extends React.Component {
                 /> :
                 null;
 
+        if (item.data.funcs && item.data.funcs.length) {
+            console.log(item.data.funcs);
+        }
+
         return (
             <Grid
                 container
                 direction="row"
-                className={ clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected) }
+                className={ Utils.clsx(classes.tableRow, !item.data.visible && classes.filteredOut, this.state.selected.includes(id) && classes.itemSelected) }
                 key={ id }
                 id={ id }
                 onClick={ () => this.onSelect(id) }
@@ -2018,15 +2067,15 @@ class ObjectBrowser extends React.Component {
                         container
                         alignItems="center"
                     >
-                        <IconCopy className={ clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
+                        <IconCopy className={ Utils.clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
                     </Grid>
                 </Grid>
                 {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
                 {this.visibleCols.includes('type')    ? <div className={ classes.cellType }    style={{ width: widths.WIDTHS.type }}>{ typeImg } { obj && obj.type }</div> : null }
                 {this.visibleCols.includes('role')    ? <div className={ classes.cellRole }    style={{ width: widths.WIDTHS.role }}>{ obj && obj.common && obj.common.role }</div> : null }
-                {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS.room }}>{ item.data.rooms }</div> : null }
-                {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS.func }}>{ item.data.funcs }</div> : null }
-                {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS.val }} onClick={e => {
+                {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS.room }} onClick={ e => this.setState({enumDialog: {item, type: 'room'}}) }>{ item.data.rooms }</div> : null }
+                {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS.func }} onClick={ e => this.setState({enumDialog: {item, type: 'func'}}) }>{ item.data.funcs }</div> : null }
+                {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS.val }}  onClick={ e => {
                     if (!item.data.obj || !this.states) {
                         return null;
                     }
@@ -2068,7 +2117,7 @@ class ObjectBrowser extends React.Component {
             {this.visibleCols.includes('role')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.role }}>{ this.getFilterSelectRole() }</div> : null }
             {this.visibleCols.includes('room')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.room }}>{ this.getFilterSelectRoom() }</div> : null }
             {this.visibleCols.includes('func')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.func }}>{ this.getFilterSelectFunction() }</div> : null }
-            {this.visibleCols.includes('val')     ? <div className={ clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS.val}}>{ this.props.t('Value') }</div> : null }
+            {this.visibleCols.includes('val')     ? <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS.val}}>{ this.props.t('Value') }</div> : null }
             {this.visibleCols.includes('buttons') ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.buttons }}> { this.getFilterSelectCustoms() }</div> : null }
         </div>;
     }
@@ -2142,6 +2191,7 @@ class ObjectBrowser extends React.Component {
         />
 
     }
+
     renderEditValueDialog() {
         if (!this.state.updateOpened || !this.props.objectBrowserValue) {
             return null;
@@ -2192,15 +2242,8 @@ class ObjectBrowser extends React.Component {
         if (!this.state.loaded) {
             return (<CircularProgress/>);
         } else {
-            const idWidth = 300;
-            const WIDTHS = {
-                type: 80,
-                role: 120,
-                room: 180,
-                func: 180,
-                val: 120,
-                buttons: 76
-            };
+            const idWidth = SCREEN_WIDTHS[this.props.width].idWidth;
+            const WIDTHS = SCREEN_WIDTHS[this.props.width].widths;
 
             let widthSum = idWidth;
             widthSum += this.visibleCols.includes('type')    ? WIDTHS.type : 0;
@@ -2235,6 +2278,7 @@ class ObjectBrowser extends React.Component {
                     { this.renderCustomDialog() }
                     { this.renderEditValueDialog() }
                     { this.renderEditObjectDialog() }
+                    { this.renderEnumDialog() }
                 </TabContainer>
             );
         }
@@ -2244,7 +2288,10 @@ class ObjectBrowser extends React.Component {
 ObjectBrowser.propTypes = {
     classes: PropTypes.object,
     defaultFilters: PropTypes.object,
-    selected: PropTypes.string,
+    selected: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.array
+    ]),
     onSelect: PropTypes.func,
     onFilterChanged: PropTypes.func,
     socket: PropTypes.object,
@@ -2258,10 +2305,16 @@ ObjectBrowser.propTypes = {
     multiSelect: PropTypes.bool,
 
     // components
-    objectCustomDialog: PropTypes.object,
+    objectCustomDialog: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.func
+    ]),
     objectBrowserValue: PropTypes.object,
     objectBrowserEditObject: PropTypes.object,
-    router: PropTypes.object,
+    router: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.func
+    ]),
 };
 
-export default withStyles(styles)(ObjectBrowser);
+export default withWidth()(withStyles(styles)(ObjectBrowser));

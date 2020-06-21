@@ -61,7 +61,8 @@ import Objects from './tabs/Objects';
 import CustomTab from './tabs/CustomTab';
 
 import i18n from '@iobroker/adapter-react/i18n';
-import WizardDialog from "./dialogs/WizardDialog";
+import Utils from '@iobroker/adapter-react/Components/Utils';
+import WizardDialog from './dialogs/WizardDialog';
 import BaseSettingsDialog from './dialogs/BaseSettingsDialog';
 
 const query = {};
