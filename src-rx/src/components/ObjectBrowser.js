@@ -27,10 +27,10 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import Checkbox from '@material-ui/core/Checkbox';
-import Avatar from '@material-ui/core/Avatar';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
@@ -415,6 +415,25 @@ const styles = theme => ({
     },
     grow: {
         flexGrow: 1
+    },
+    enumIconDiv: {
+        marginRight: theme.spacing(1),
+        width: 32,
+        height: 32,
+        borderRadius: 8,
+        background: '#FFFFFF'
+    },
+    enumIcon: {
+        marginTop: 4,
+        marginLeft: 4,
+        width: 24,
+        height: 24
+    },
+    enumList: {
+        minWidth: 250,
+    },
+    enumCheckbox: {
+        minWidth: 0,
     }
 });
 
@@ -792,21 +811,22 @@ function findRoomsForObject(data, id, lang, withParentInfo, rooms) {
     return rooms;
 }
 
-/* function findRoomsForObjectAsIds(data, id, rooms) {
+function findEnumsForObjectAsIds(data, id, enumName, funcs) {
     if (!id) {
         return [];
     }
-    rooms = rooms || [];
-    for (let i = 0; i < data.roomEnums.length; i++) {
-        const common = data.objects[data.roomEnums[i]] && data.objects[data.roomEnums[i]].common;
+    funcs = funcs || [];
+    for (let i = 0; i < data[enumName].length; i++) {
+        const common = data.objects[data[enumName][i]] && data.objects[data[enumName][i]].common;
         if (common && common.members && common.members.indexOf(id) !== -1 &&
-            rooms.indexOf(data.roomEnums[i]) === -1) {
-            rooms.push(data.roomEnums[i]);
+            funcs.indexOf(data[enumName][i]) === -1) {
+            funcs.push(data[enumName][i]);
         }
     }
-    return rooms;
+
+    return funcs;
 }
-*/
+
 function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
     if (!id) {
         return [];
@@ -833,22 +853,6 @@ function findFunctionsForObject(data, id, lang, withParentInfo, funcs) {
     return funcs;
 }
 
-/*function findFunctionsForObjectAsIds(data, id, funcs) {
-    if (!id) {
-        return [];
-    }
-    funcs = funcs || [];
-    for (let i = 0; i < data.funcEnums.length; i++) {
-        const common = data.objects[data.funcEnums[i]] && data.objects[data.funcEnums[i]].common;
-        if (common && common.members && common.members.indexOf(id) !== -1 &&
-            funcs.indexOf(data.funcEnums[i]) === -1) {
-            funcs.push(data.funcEnums[i]);
-        }
-    }
-
-    return funcs;
-}
-*/
 function getStates(obj) {
     let states;
     if (obj &&
@@ -1658,12 +1662,13 @@ class ObjectBrowser extends React.Component {
     }
 
     getFilterSelectRoom() {
-        const rooms = this.info.roomEnums.map(id => {
-            return {name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()), value: id};
-        });
+        const rooms = this.info.roomEnums.map(id =>
+            ({
+                name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop()),
+                value: id,
+            }));
 
         return this.getFilterSelect('room', rooms);
-
     }
 
     getFilterSelectFunction() {
@@ -1946,18 +1951,59 @@ class ObjectBrowser extends React.Component {
 
             const type = this.state.enumDialog.type;
             const item = this.state.enumDialog.item;
+            const itemEnums = findEnumsForObjectAsIds(this.info, item.data.id, type === 'room' ? 'roomEnums' : 'funcEnums');
+
+            const enums = (type === 'room' ? this.info.roomEnums : this.info.funcEnums).map(id =>
+                ({
+                    name: getName((this.objects[id] && this.objects[id].common && this.objects[id].common.name) || id.split('.').pop(), this.props.lang),
+                    value: id,
+                    icon: getSelectIdIcon(this.objects, id, '.')  // todo other for web
+                }));
+
+            enums.forEach(item => {
+                if (item.icon) {
+                    item.icon = <div className={ this.props.classes.enumIconDiv }><img src={ item.icon } className={ this.props.classes.enumIcon } alt={ item.name }/></div>;
+                }
+            });
+
+            // const hasIcons = !!enums.find(item => item.icon);
 
             return <Dialog onClose={() => this.setState({enumDialog: null})} aria-labelledby="enum-dialog-title" open={ true }>
                 <DialogTitle id="simple-dialog-title">{ type === 'func' ? this.props.t('Define functions') : this.props.t('Define rooms') }</DialogTitle>
-                <List>
-                    <ListItem autoFocus button onClick={() => console.log('A')}>
-                        <ListItemAvatar>
-                            <Avatar>
-                                <IconScript/>
-                            </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText primary="Add account" />
-                    </ListItem>
+                <List classes={{ root: this.props.classes.enumList }}>
+                    {
+                        enums.map(item => {
+                            let id;
+                            let name;
+                            let icon;
+
+                            if (typeof item === 'object') {
+                                id   = item.value;
+                                name = item.name;
+                                icon = item.icon;
+                            } else {
+                                id   = item;
+                                name = item;
+                            }
+                            const labelId = `checkbox-list-label-${id}`;
+
+                            return <ListItem className={ this.props.classes.headerCellSelectItem } key={ id } onClick={() => {
+
+                            }}>
+                                <ListItemIcon classes={{ root: this.props.classes.enumCheckbox }}>
+                                    <Checkbox
+                                        edge="start"
+                                        checked={ itemEnums.includes(id) }
+                                        tabIndex={ -1 }
+                                        disableRipple
+                                        inputProps={{ 'aria-labelledby': labelId }}
+                                    />
+                                </ListItemIcon>
+                                <ListItemText id={ labelId }>{ name }</ListItemText>
+                                { icon ? <ListItemSecondaryAction>{ icon }</ListItemSecondaryAction> : null }
+                            </ListItem>;
+                        })
+                    }
                 </List>
             </Dialog>
         } else {
