@@ -9,6 +9,7 @@ import {
     Avatar,
     Badge,
     Grid,
+    Icon,
     IconButton,
     TableCell,
     TableRow,
@@ -28,7 +29,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import HelpIcon from '@material-ui/icons/Help';
 import PublishIcon from '@material-ui/icons/Publish';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import WarningIcon from '@material-ui/icons/Warning';
+
+import { FaGithub as GithubIcon } from 'react-icons/fa';
 
 import {
     amber,
@@ -103,10 +105,12 @@ class AdapterRow extends React.Component {
                         container
                     >
                         <Tooltip title={ 'Non-NPM-Version: ' + installedFrom }>
-                            <WarningIcon
+                            <Icon
                                 className={ classes.versionWarn }
                                 fontSize="small"
-                            />
+                            >
+                                <GithubIcon />
+                            </Icon>
                         </Tooltip>
                     </Grid>
                 }
