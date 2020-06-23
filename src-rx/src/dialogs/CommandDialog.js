@@ -56,7 +56,7 @@ class ConfirmDialog extends React.Component {
         super(props);
 
         this.state = {
-            log: ['$ /.iobroker ' + (props.cmd || '')],
+            log: ['$ iobroker ' + (props.cmd || '')],
             init: false,
             max: null,
             value: null,
@@ -224,7 +224,7 @@ class ConfirmDialog extends React.Component {
         if (this.state.activeCmdId && this.state.activeCmdId === id) {
 
             const log = this.state.log.slice();
-            log.push((exitCode !== 0 ? 'ERROR: ' : '') + 'Process warn exited with code ' + exitCode);
+            log.push((exitCode !== 0 ? 'ERROR: ' : '') + 'Process exited with code ' + exitCode);
 
             this.setState({
                 log
