@@ -17,12 +17,15 @@ console.log('iobroker.' + window.adapterName + '@' + version);
 let themeName = Utils.getThemeName();
 
 function build() {
-    return ReactDOM.render(<MuiThemeProvider theme={ theme(themeName) }>
-        <App onThemeChange={_themeName => {
-            themeName = _themeName;
-            build();
-        }}/>
-    </MuiThemeProvider>, document.getElementById('root'));
+    return ReactDOM.render(
+        <MuiThemeProvider theme={ theme(themeName) }>
+            <App onThemeChange={ _themeName => {
+                themeName = _themeName;
+                build();
+            }} />
+        </MuiThemeProvider>,
+        document.getElementById('root')
+    );
 }
 
 if (window.location.host !== 'localhost:3000') {
