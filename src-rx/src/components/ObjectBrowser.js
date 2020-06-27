@@ -184,6 +184,8 @@ const styles = theme => ({
     cellName : {
         display: 'inline-block',
         verticalAlign: 'top',
+        fontSize: 14,
+        marginLeft: 5,
     },
     cellType: {
         display: 'inline-block',
@@ -202,12 +204,10 @@ const styles = theme => ({
     cellRoom : {
         display: 'inline-block',
         verticalAlign: 'top',
-        cursor: 'text',
     },
     cellFunc : {
         display: 'inline-block',
         verticalAlign: 'top',
-        cursor: 'text',
     },
     cellValue : {
         display: 'inline-block',
@@ -225,7 +225,6 @@ const styles = theme => ({
         textOverflow: 'ellipsis',
         position: 'relative',
         verticalAlign: 'top',
-        cursor: 'text',
         '& .copyButton': {
             display: 'none'
         },
@@ -693,7 +692,7 @@ function buildTree(objects, options) {
                 const _croot = {
                     data: {
                         name:   parts[parts.length - 1],
-                        title:  getName(obj, options.lang),
+                        title:  getName(obj && obj.common && obj.common.name, options.lang),
                         obj,
                         parent: croot,
                         icon:   getSelectIdIcon(objects, id, '.') || getSystemIcon(objects, id, 0),
@@ -1224,8 +1223,6 @@ class ObjectBrowser extends React.Component {
     constructor(props) {
         super(props);
 
-        console.log('Width: ' + this.props.width);
-
         this.lastSelectedItems = window.localStorage.getItem((this.props.key || 'App') + '.objectSelected') || '[]';
         try {
             this.lastSelectedItems = JSON.parse(this.lastSelectedItems);
@@ -1257,7 +1254,7 @@ class ObjectBrowser extends React.Component {
             }
         }
 
-        filter.expertMode =  this.props.expertMode || false;
+        filter.expertMode = this.props.expertMode !== undefined ? this.props.expertMode : (window.localStorage.getItem('App.expertMode') === 'true');
         this.tableRef  = React.createRef();
         this.filterRefs = {};
 
@@ -1347,7 +1344,7 @@ class ObjectBrowser extends React.Component {
                 if (this.props.types) {
                     this.objects = {};
                     Object.keys(objects).forEach(id => {
-                        if (objects[id] && this.props.types.includes(objects[id].type)) {
+                        if (objects[id] && (objects[id].type === 'enum' || this.props.types.includes(objects[id].type))) {
                             this.objects[id] = objects[id];
                         }
                     });
@@ -1393,7 +1390,7 @@ class ObjectBrowser extends React.Component {
     static getDerivedStateFromProps(props, state) {
         const newState = {};
         let changed = false;
-        if (props.expertMode !== state.filter.expertMode) {
+        if (props.expertMode !== undefined && props.expertMode !== state.filter.expertMode) {
             changed = true;
             newState.filter = Object.assign({}, state.filter);
             newState.filter.expertMode = props.expertMode;
@@ -1588,7 +1585,7 @@ class ObjectBrowser extends React.Component {
 
         Object.keys(this.filterRefs).forEach(name => {
             if (this.filterRefs[name] && this.filterRefs[name].current) {
-                for (var i = 0; i < this.filterRefs[name].current.childNodes.length; i++) {
+                for (let i = 0; i < this.filterRefs[name].current.childNodes.length; i++) {
                     if (this.filterRefs[name].current.childNodes[i].tagName === 'INPUT') {
                         filter[name] =this.filterRefs[name].current.childNodes[i].value;
                         break;
@@ -1596,6 +1593,13 @@ class ObjectBrowser extends React.Component {
                 }
             }
         });
+
+        if (name) {
+            filter[name] = value;
+            if (name === 'expertMode') {
+                window.localStorage.setItem('App.expertMode', value ? 'true' : 'false');
+            }
+        }
 
         filter = Object.assign({}, this.state.filter, filter);
 
@@ -1762,14 +1766,14 @@ class ObjectBrowser extends React.Component {
     getToolbar() {
         return (
             <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
-                { this.props.showExpertButton ? <IconButton key="expertMode" variant="contained" className={this.props.classes.toolbarButtons} color={this.state.filter.expertMode ? 'secondary' : 'primary'} onClick={() => this.onFilter('expertMode', !this.state.filter.expertMode)}><IconExpert /></IconButton>: null }
-                { this.state.expandAllVisible ? <IconButton key="expandAll"       variant="contained" className={ this.props.classes.toolbarButtons } onClick={() => this.onExpandAll()}><IconOpen /></IconButton> : null }
-                <IconButton key="collapseAll"     variant="contained" className={ this.props.classes.toolbarButtons } onClick={() => this.onCollapseAll()}><IconClosed /></IconButton>
+                { this.props.showExpertButton ? <IconButton key="expertMode" variant="contained" className={ this.props.classes.toolbarButtons } color={ this.state.filter.expertMode ? 'secondary' : 'default' } onClick={ () => this.onFilter('expertMode', !this.state.filter.expertMode) }><IconExpert /></IconButton>: null }
+                { this.state.expandAllVisible ? <IconButton key="expandAll"  variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onExpandAll() }><IconOpen /></IconButton> : null }
+                <IconButton key="collapseAll"     variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onCollapseAll() }><IconClosed /></IconButton>
                 <StyledBadge badgeContent={ this.state.depth } color="secondary">
-                    <IconButton key="expandVisible"   variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onExpandVisible()}><IconOpen /></IconButton>
+                    <IconButton key="expandVisible"   variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={ () => this.onExpandVisible() }><IconOpen /></IconButton>
                 </StyledBadge>
                 <StyledBadge badgeContent={ this.state.depth } color="secondary">
-                    <IconButton key="collapseVisible" variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={() => this.onCollapseVisible()}><IconClosed /></IconButton>
+                    <IconButton key="collapseVisible" variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={ () => this.onCollapseVisible() }><IconClosed /></IconButton>
                 </StyledBadge>
             </Toolbar>);
     }
@@ -2097,6 +2101,7 @@ class ObjectBrowser extends React.Component {
                     <Grid
                         item
                         className={ classes.cellIdSpan }
+                        style={ {color: id === 'system' ? 'red' : 'inherit'} }
                     >
                         { item.data.name }
                     </Grid>
@@ -2119,9 +2124,12 @@ class ObjectBrowser extends React.Component {
                 {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
                 {this.visibleCols.includes('type')    ? <div className={ classes.cellType }    style={{ width: widths.WIDTHS.type }}>{ typeImg } { obj && obj.type }</div> : null }
                 {this.visibleCols.includes('role')    ? <div className={ classes.cellRole }    style={{ width: widths.WIDTHS.role }}>{ obj && obj.common && obj.common.role }</div> : null }
-                {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS.room }} onClick={ e => this.setState({enumDialog: {item, type: 'room'}}) }>{ item.data.rooms }</div> : null }
-                {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS.func }} onClick={ e => this.setState({enumDialog: {item, type: 'func'}}) }>{ item.data.funcs }</div> : null }
-                {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS.val }}  onClick={ e => {
+                {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS.room, cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => !this.props.notEditable && this.setState({enumDialog: {item, type: 'room'}}) }>{ item.data.rooms }</div> : null }
+                {this.visibleCols.includes('func')    ? <div className={ classes.cellFunc }    style={{ width: widths.WIDTHS.func, cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => !this.props.notEditable && this.setState({enumDialog: {item, type: 'func'}}) }>{ item.data.funcs }</div> : null }
+                {this.visibleCols.includes('val')     ? <div className={ classes.cellValue }   style={{ width: widths.WIDTHS.val,  cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => {
+                    if (!this.props.notEditable) {
+                        return;
+                    }
                     if (!item.data.obj || !this.states) {
                         return null;
                     }
@@ -2195,7 +2203,7 @@ class ObjectBrowser extends React.Component {
 
             return <ObjectCustomDialog
                 objectIDs={ this.state.customDialog }
-                expertMode={ this.props.expertMode }
+                expertMode={ this.state.filter.expertMode }
                 t={ this.props.t }
                 lang={ this.props.lang }
                 socket={ this.props.socket }
@@ -2229,7 +2237,7 @@ class ObjectBrowser extends React.Component {
             obj={ this.objects[this.state.editObjectDialog] }
             themeName={ this.props.themeName }
             t={ this.props.t }
-            expertMode={ this.props.expertMode }
+            expertMode={ this.state.filter.expertMode }
             onClose={ obj => {
                 this.setState({editObjectDialog: ''});
                 obj && this.props.socket.setObject(obj._id, obj);
@@ -2251,7 +2259,7 @@ class ObjectBrowser extends React.Component {
         return <ObjectBrowserValue
             t={ this.props.t }
             type={ type }
-            expertMode={ this.props.expertMode }
+            expertMode={ this.state.filter.expertMode }
             value={ this.edit.val }
             onClose={ res => {
                 this.setState({ updateOpened: false });
@@ -2302,8 +2310,8 @@ class ObjectBrowser extends React.Component {
             const widths = {
                 idWidth,
                 WIDTHS,
-                widthName:       `calc(100% - ${widthSum}px)`,
-                widthNameHeader: `calc(100% - ${widthSum + this.state.scrollBarWidth}px)`,
+                widthName:       `calc(100% - ${widthSum + 5}px)`,
+                widthNameHeader: `calc(100% - ${widthSum + 5 + this.state.scrollBarWidth}px)`,
             };
 
             const classes = this.props.classes;
@@ -2346,9 +2354,10 @@ ObjectBrowser.propTypes = {
     prefix: PropTypes.string,
     themeName: PropTypes.string,
     t: PropTypes.func,
-    lang: PropTypes.string,
+    lang: PropTypes.string.isRequired,
     columns: PropTypes.array,
     multiSelect: PropTypes.bool,
+    notEditable: PropTypes.bool,
 
     // components
     objectCustomDialog: PropTypes.oneOfType([
