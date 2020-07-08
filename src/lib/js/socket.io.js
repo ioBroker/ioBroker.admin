@@ -2,7 +2,7 @@
  * ioBroker WebSockets
  * Copyright 2020, bluefox <dogafox@gmail.com>
  * Released under the MIT License.
- * v 0.1.0
+ * v 0.1.1
  */
 /* jshint -W097 */
 /* jshint strict: false */
@@ -43,7 +43,6 @@ function SocketClient () {
     let lastPong;
     let socket;
     let wasConnected = false;
-    let connected = false;
     let connectTimer = null;
     let connectingTimer = null;
     let connectionCount = 0;
@@ -118,7 +117,7 @@ function SocketClient () {
         };
 
         socket.onerror = error => {
-            if (connected) {
+            if (this.connected) {
                 if (socket.readyState === 1) {
                     this.log.error('ws normal error: ' + error.type);
                 }
@@ -151,12 +150,12 @@ function SocketClient () {
             } else
             if (type === MESSAGE_TYPES.MESSAGE) {
                 if (name === '___ready___') {
-                    connected  = true;
+                    this.connected  = true;
 
                     if (wasConnected) {
-                        handlers.reconnect && handlers.reconnect.forEach(cb => cb());
+                        handlers.reconnect && handlers.reconnect.forEach(cb => cb(true));
                     } else {
-                        handlers.connect && handlers.connect.forEach(cb => cb());
+                        handlers.connect && handlers.connect.forEach(cb => cb(true));
                         wasConnected = true;
                     }
 
@@ -220,7 +219,7 @@ function SocketClient () {
         if (name === 'authenticate') {
             authTimeout = setTimeout(() => {
                 authTimeout = null;
-                if (connected) {
+                if (this.connected) {
                     this.log.debug('Authenticate timeout');
                     handlers.error && handlers.error.forEach(cb => cb('Authenticate timeout'));
                 }
@@ -242,7 +241,7 @@ function SocketClient () {
     };
 
     this.emit = (name, arg1, arg2, arg3, arg4, arg5) => {
-        if (!socket || !connected) {
+        if (!socket || !this.connected) {
             if (!wasConnected) {
                 // cache all calls till connected
                 this.pending.push([name, arg1, arg2, arg3, arg4, arg5]);
@@ -328,9 +327,9 @@ function SocketClient () {
             socket = null;
         }
 
-        if (connected) {
+        if (this.connected) {
             handlers.disconnect && handlers.disconnect.forEach(cb => cb());
-            connected = false;
+            this.connected = false;
         }
 
         callbacks = [];
@@ -351,7 +350,9 @@ function SocketClient () {
         } else {
             this.log.debug('Reconnect is yet running ' + connectionCount);
         }
-    }
+    };
+
+    this.connected = false; // simulate socket.io interface
 }
 
 window.io = new SocketClient();

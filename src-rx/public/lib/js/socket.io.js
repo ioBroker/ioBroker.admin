@@ -2,7 +2,7 @@
  * ioBroker WebSockets
  * Copyright 2020, bluefox <dogafox@gmail.com>
  * Released under the MIT License.
- * v 0.1.0
+ * v 0.1.1
  */
 /* jshint -W097 */
 /* jshint strict: false */
@@ -153,9 +153,9 @@ function SocketClient () {
                     this.connected  = true;
 
                     if (wasConnected) {
-                        handlers.reconnect && handlers.reconnect.forEach(cb => cb());
+                        handlers.reconnect && handlers.reconnect.forEach(cb => cb(true));
                     } else {
-                        handlers.connect && handlers.connect.forEach(cb => cb());
+                        handlers.connect && handlers.connect.forEach(cb => cb(true));
                         wasConnected = true;
                     }
 
