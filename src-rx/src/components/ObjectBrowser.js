@@ -11,10 +11,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import copy from '@iobroker/adapter-react/Components/copy-to-clipboard';
+import withStyles from '@material-ui/core/styles/withStyles';
 
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
-import {withStyles} from '@material-ui/core/styles';
 import withWidth from '@material-ui/core/withWidth';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -34,6 +34,10 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
 
 // own
 import Utils from '@iobroker/adapter-react/Components/Utils';
@@ -42,30 +46,22 @@ import TabContent from './TabContent';
 import TabHeader from './TabHeader';
 
 // Icons
-import {FaFolder as IconClosed} from 'react-icons/fa';
-import {FaFolderOpen as IconOpen} from 'react-icons/fa';
-import {FaFile as IconDocument} from 'react-icons/fa';
-import {MdPerson as IconExpert} from 'react-icons/md';
-import {FaCopy as IconCopy} from 'react-icons/fa';
-import {FaEdit as IconEdit} from 'react-icons/fa';
-import {FaTrash as IconDelete} from 'react-icons/fa';
-import {FaWrench as IconConfig} from 'react-icons/fa';
-import {FaCogs as IconSystem} from 'react-icons/fa';
-import {FaPhotoVideo as IconPhoto} from 'react-icons/fa';
-import {FaLightbulb as IconAlias} from 'react-icons/fa';
-import {FaUserFriends as IconGroup} from 'react-icons/fa';
-import {FaCalendarAlt as IconSchedule} from 'react-icons/fa';
-import {FaUser as IconUser} from 'react-icons/fa';
-import {FaDigitalTachograph as IconHost} from 'react-icons/fa';
-import {FaWifi as IconConnection} from 'react-icons/fa';
-import {FaInfoCircle as IconInfo} from 'react-icons/fa';
-import {FaFileCode as IconMeta} from 'react-icons/fa';
-import {FaScroll as IconScript} from 'react-icons/fa';
-
-import {FaScrewdriver as IconInstance} from 'react-icons/fa';
-import {FaChartLine as IconChart} from 'react-icons/fa';
-import {FaListOl as IconEnum} from 'react-icons/fa';
-import {FaScrewdriver as IconAdapter} from 'react-icons/fa';
+import IconExpert from '@material-ui/icons/Person';
+import IconEdit from '@material-ui/icons/Edit';
+import IconDelete from '@material-ui/icons/Delete';
+import IconConfig from '@material-ui/icons/Settings';
+import IconSystem from '@material-ui/icons/SettingsApplications';
+import IconPhoto from '@material-ui/icons/Photo';
+import IconGroup from '@material-ui/icons/SupervisedUserCircle';
+import IconSchedule from '@material-ui/icons/CalendarToday';
+import IconUser from '@material-ui/icons/PersonOutlined';
+import IconHost from '@material-ui/icons/Router';
+import IconConnection from '@material-ui/icons/Wifi';
+import IconInfo from '@material-ui/icons/Info';
+import IconMeta from '@material-ui/icons/Description';
+import IconScript from '@material-ui/icons/Code';
+import IconChart from '@material-ui/icons/ShowChart';
+import IconEnum from '@material-ui/icons/ListAlt';
 
 const ROW_HEIGHT = 32;
 const ITEM_LEVEL = ROW_HEIGHT;
@@ -88,12 +84,13 @@ const styles = theme => ({
 
     tableDiv: {
         paddingTop: theme.spacing(1),
-        marginLeft: theme.spacing(1),
+        paddingLeft: 0,
         width: 'calc(100% - ' + theme.spacing(1) + 'px)',
         height: 'calc(100% - ' + 38 + 'px)',
         overflow: 'auto'
     },
     tableRow: {
+        paddingLeft: theme.spacing(1),
         height: ROW_HEIGHT,
         lineHeight: ROW_HEIGHT + 'px',
         verticalAlign: 'top',
@@ -777,9 +774,9 @@ function findNode(root, id, _parts, _path, _level) {
 
 function getName(name, lang) {
     if (name && typeof name === 'object') {
-        return name[lang] || name.en;
+        return (name[lang] || name.en || '').toString();
     } else {
-        return name || '';
+        return (name || '').toString();
     }
 }
 
@@ -1161,6 +1158,56 @@ class IconDevice extends React.Component {
     }
 }
 
+// all icons are copied from https://github.com/FortAwesome/Font-Awesome/blob/0d1f27efb836eb2ab994ba37221849ed64a73e5c/svgs/regular/
+class IconClosed extends React.Component {
+    render() {
+        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 650 512" xmlns="http://www.w3.org/2000/svg" width={this.props.width || 28} height={this.props.height || 28} className={ this.props.className }>
+            <path fill="currentColor" d="M464 128H272l-64-64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48z"/>
+        </svg>;
+    }
+}
+class IconOpen extends React.Component {
+    render() {
+        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 650 512" xmlns="http://www.w3.org/2000/svg" width={this.props.width || 28} height={this.props.height || 28} className={ this.props.className }>
+            <path fill="currentColor" d="M572.694 292.093L500.27 416.248A63.997 63.997 0 0 1 444.989 448H45.025c-18.523 0-30.064-20.093-20.731-36.093l72.424-124.155A64 64 0 0 1 152 256h399.964c18.523 0 30.064 20.093 20.73 36.093zM152 224h328v-48c0-26.51-21.49-48-48-48H272l-64-64H48C21.49 64 0 85.49 0 112v278.046l69.077-118.418C86.214 242.25 117.989 224 152 224z"/>
+        </svg>;
+    }
+}
+class IconDocument extends React.Component {
+    render() {
+        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 512 512" width={this.props.width || 20} height={this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
+            <path fill="currentColor" d="M369.9 97.9L286 14C277 5 264.8-.1 252.1-.1H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V131.9c0-12.7-5.1-25-14.1-34zM332.1 128H256V51.9l76.1 76.1zM48 464V48h160v104c0 13.3 10.7 24 24 24h104v288H48z"/>
+        </svg>;
+    }
+}
+class IconCopy extends React.Component {
+    render() {
+        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 512 512" width={this.props.width || 20} height={this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
+            <path fill="currentColor" d="M433.941 65.941l-51.882-51.882A48 48 0 0 0 348.118 0H176c-26.51 0-48 21.49-48 48v48H48c-26.51 0-48 21.49-48 48v320c0 26.51 21.49 48 48 48h224c26.51 0 48-21.49 48-48v-48h80c26.51 0 48-21.49 48-48V99.882a48 48 0 0 0-14.059-33.941zM266 464H54a6 6 0 0 1-6-6V150a6 6 0 0 1 6-6h74v224c0 26.51 21.49 48 48 48h96v42a6 6 0 0 1-6 6zm128-96H182a6 6 0 0 1-6-6V54a6 6 0 0 1 6-6h106v88c0 13.255 10.745 24 24 24h88v202a6 6 0 0 1-6 6zm6-256h-64V48h9.632c1.591 0 3.117.632 4.243 1.757l48.368 48.368a6 6 0 0 1 1.757 4.243V112z"/>
+        </svg>;
+    }
+}
+class IconAlias extends React.Component {
+    render() {
+        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 512 512" width={this.props.width || 20} height={this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
+            <path fill="currentColor" d="M96.06 454.35c.01 6.29 1.87 12.45 5.36 17.69l17.09 25.69a31.99 31.99 0 0 0 26.64 14.28h61.71a31.99 31.99 0 0 0 26.64-14.28l17.09-25.69a31.989 31.989 0 0 0 5.36-17.69l.04-38.35H96.01l.05 38.35zM0 176c0 44.37 16.45 84.85 43.56 115.78 16.52 18.85 42.36 58.23 52.21 91.45.04.26.07.52.11.78h160.24c.04-.26.07-.51.11-.78 9.85-33.22 35.69-72.6 52.21-91.45C335.55 260.85 352 220.37 352 176 352 78.61 272.91-.3 175.45 0 73.44.31 0 82.97 0 176zm176-80c-44.11 0-80 35.89-80 80 0 8.84-7.16 16-16 16s-16-7.16-16-16c0-61.76 50.24-112 112-112 8.84 0 16 7.16 16 16s-7.16 16-16 16z"/>
+        </svg>;
+    }
+}
+class IconInstance extends React.Component {
+    render() {
+        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 512 512" width={this.props.width || 20} height={this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
+            <path fill="currentColor" d="M448 0L320 96v62.06l-83.03 83.03c6.79 4.25 13.27 9.06 19.07 14.87 5.8 5.8 10.62 12.28 14.87 19.07L353.94 192H416l96-128-64-64zM128 278.59L10.92 395.67c-14.55 14.55-14.55 38.15 0 52.71l52.7 52.7c14.56 14.56 38.15 14.56 52.71 0L233.41 384c29.11-29.11 29.11-76.3 0-105.41s-76.3-29.11-105.41 0z"/>        </svg>;
+    }
+}
+class IconAdapter extends React.Component {
+    render() {
+        return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 512 512" width={this.props.width || 20} height={this.props.width || 20} xmlns="http://www.w3.org/2000/svg" className={ this.props.className }>
+            <path d="M448 0L320 96v62.06l-83.03 83.03c6.79 4.25 13.27 9.06 19.07 14.87 5.8 5.8 10.62 12.28 14.87 19.07L353.94 192H416l96-128-64-64zM128 278.59L10.92 395.67c-14.55 14.55-14.55 38.15 0 52.71l52.7 52.7c14.56 14.56 38.15 14.56 52.71 0L233.41 384c29.11-29.11 29.11-76.3 0-105.41s-76.3-29.11-105.41 0z"/>
+        </svg>;
+    }
+}
+
 const ITEM_IMAGES = {
     state: <IconState className="itemIcon" />,
     channel: <IconChannel className="itemIcon" />,
@@ -1384,7 +1431,8 @@ class ObjectBrowser extends React.Component {
                             }
                         });
                 }
-            });
+            })
+            .catch(e => this.showError(e));
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -1412,6 +1460,31 @@ class ObjectBrowser extends React.Component {
         });
 
         this.subscribes = [];
+    }
+
+    renderErrorDialog() {
+        return this.state.error ? <Dialog
+            open={true}
+            maxWidth="sm"
+            fullWidth={true}
+            onClose={ () => this.setState({error: ''}) }
+            aria-labelledby="error-dialog-title"
+            aria-describedby="error-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">{this.props.title || this.props.t('Error')}</DialogTitle>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    { this.state.error }
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={ () => this.setState({error: ''}) } color="primary" autoFocus>{ this.props.t('Ok') }</Button>
+            </DialogActions>
+        </Dialog> : null;
+    }
+
+    showError(error) {
+        this.setState({error: typeof error !== 'string' ? JSON.stringify(error) : error});
     }
 
     onSelect(toggleItem, isDouble) {
@@ -1516,6 +1589,8 @@ class ObjectBrowser extends React.Component {
 
     onObjectChange(id, obj, oldObj) {
         console.log('> objectChange ' + id);
+
+        this.objects = this.objects || [];
 
         if (this.objects[id]) {
             if (obj) {
@@ -1768,7 +1843,9 @@ class ObjectBrowser extends React.Component {
             <Toolbar variant="dense" className={this.props.classes.toolbar} key="toolbar">
                 { this.props.showExpertButton ? <IconButton key="expertMode" variant="contained" className={ this.props.classes.toolbarButtons } color={ this.state.filter.expertMode ? 'secondary' : 'default' } onClick={ () => this.onFilter('expertMode', !this.state.filter.expertMode) }><IconExpert /></IconButton>: null }
                 { this.state.expandAllVisible ? <IconButton key="expandAll"  variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onExpandAll() }><IconOpen /></IconButton> : null }
-                <IconButton key="collapseAll"     variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onCollapseAll() }><IconClosed /></IconButton>
+                <IconButton key="collapseAll"     variant="contained" className={ this.props.classes.toolbarButtons } onClick={ () => this.onCollapseAll() }>
+                    <IconClosed/>
+                </IconButton>
                 <StyledBadge badgeContent={ this.state.depth } color="secondary">
                     <IconButton key="expandVisible"   variant="contained" className={ this.props.classes.toolbarButtons + ' ' + this.props.classes.visibleButtons} onClick={ () => this.onExpandVisible() }><IconOpen /></IconButton>
                 </StyledBadge>
@@ -1898,7 +1975,8 @@ class ObjectBrowser extends React.Component {
                             break;
                         }
                     }
-                });
+                })
+                .catch(e => this.showError(e));
         }
     }
 
@@ -2121,7 +2199,7 @@ class ObjectBrowser extends React.Component {
                         <IconCopy className={ Utils.clsx(classes.cellCopyButton, 'copyButton') } onClick={e => this.onCopy(e) } data-copy={ id } />
                     </Grid>
                 </Grid>
-                {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ item.data.title || '' }</div> : null }
+                {this.visibleCols.includes('name')    ? <div className={ classes.cellName }    style={{ width: widths.widthName }}>{ (item.data && item.data.title) || '' }</div> : null }
                 {this.visibleCols.includes('type')    ? <div className={ classes.cellType }    style={{ width: widths.WIDTHS.type }}>{ typeImg } { obj && obj.type }</div> : null }
                 {this.visibleCols.includes('role')    ? <div className={ classes.cellRole }    style={{ width: widths.WIDTHS.role }}>{ obj && obj.common && obj.common.role }</div> : null }
                 {this.visibleCols.includes('room')    ? <div className={ classes.cellRoom }    style={{ width: widths.WIDTHS.room, cursor: this.props.notEditable ? 'default': 'text'}} onClick={ e => !this.props.notEditable && this.setState({enumDialog: {item, type: 'room'}}) }>{ item.data.rooms }</div> : null }
@@ -2223,8 +2301,7 @@ class ObjectBrowser extends React.Component {
 
     onUpdate(valAck) {
         this.props.socket.setState(this.edit.id, {val: valAck.val, ack: valAck.ack, q: valAck.q || 0})
-            .then(err =>
-                err && window.alert('Cannot write value: ' + err));
+            .catch(e => this.showError('Cannot write value: ' + e));
     }
 
     renderEditObjectDialog() {
@@ -2240,10 +2317,12 @@ class ObjectBrowser extends React.Component {
             expertMode={ this.state.filter.expertMode }
             onClose={ obj => {
                 this.setState({editObjectDialog: ''});
-                obj && this.props.socket.setObject(obj._id, obj);
+                if (obj) {
+                    this.props.socket.setObject(obj._id, obj)
+                        .catch(e => this.showError('Cannot write object: ' + e));
+                }
             }}
         />
-
     }
 
     renderEditValueDialog() {
@@ -2333,6 +2412,7 @@ class ObjectBrowser extends React.Component {
                     { this.renderEditValueDialog() }
                     { this.renderEditObjectDialog() }
                     { this.renderEnumDialog() }
+                    { this.renderErrorDialog() }
                 </TabContainer>
             );
         }
