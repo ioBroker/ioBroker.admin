@@ -153,7 +153,6 @@ const styles = theme => ({
 });
 
 class App extends Router {
-
     constructor(props) {
 
         super(props);
@@ -167,8 +166,21 @@ class App extends Router {
                 this.showAlert(message.toString(), 'info');
             }
         };
-
+        // init translations
         this.translations = {
+            'en': require('@iobroker/adapter-react/i18n/en'),
+            'de': require('@iobroker/adapter-react/i18n/de'),
+            'ru': require('@iobroker/adapter-react/i18n/ru'),
+            'pt': require('@iobroker/adapter-react/i18n/pt'),
+            'nl': require('@iobroker/adapter-react/i18n/nl'),
+            'fr': require('@iobroker/adapter-react/i18n/fr'),
+            'it': require('@iobroker/adapter-react/i18n/it'),
+            'es': require('@iobroker/adapter-react/i18n/es'),
+            'pl': require('@iobroker/adapter-react/i18n/pl'),
+            'zh-cn': require('@iobroker/adapter-react/i18n/zh-cn'),
+        };
+
+        const translations = {
             'en': require('./i18n/en'),
             'de': require('./i18n/de'),
             'ru': require('./i18n/ru'),
@@ -180,7 +192,9 @@ class App extends Router {
             'pl': require('./i18n/pl'),
             'zh-cn': require('./i18n/zh-cn'),
         };
-        
+        // merge together
+        Object.keys(translations).forEach(lang => this.translations[lang] = Object.assign(this.translations[lang], translations[lang]));
+
         // init translations
         I18n.setTranslations(this.translations);
         I18n.setLanguage((navigator.language || navigator.userLanguage || 'en').substring(0, 2).toLowerCase());

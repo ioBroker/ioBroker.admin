@@ -83,7 +83,7 @@ const styles = theme => ({
     },
 
     tableDiv: {
-        paddingTop: theme.spacing(1),
+        paddingTop: 0,//theme.spacing(1),
         paddingLeft: 0,
         width: 'calc(100% - ' + theme.spacing(1) + 'px)',
         height: 'calc(100% - ' + 38 + 'px)',
@@ -457,7 +457,7 @@ function binarySearch(list, find, _start, _end) {
     }
 }
 
-function applyFilter(item, filters, lang, objects, context, counter) {
+function applyFilter(item, filters, lang, objects, context, counter, customFilter) {
     let filteredOut = false;
     if (!context) {
         context = {};
@@ -489,7 +489,18 @@ function applyFilter(item, filters, lang, objects, context, counter) {
     if (data && data.id) {
         const common = data.obj && data.obj.common;
 
-        if (!filters.expertMode) {
+        if (customFilter) {
+            if (customFilter.type && customFilter.type !== data.obj.type) {
+                filteredOut = true;
+            } else
+            if (customFilter.common && customFilter.common.custom) {
+                if (!common || !common.custom || (customFilter.common.custom !== true && !common.custom[customFilter.common.custom])) {
+                    filteredOut = true;
+                }
+            }
+        }
+
+        if (!filteredOut && !filters.expertMode) {
             filteredOut =
                 data.id === 'system' ||
                 data.id === 'enum' ||
@@ -497,7 +508,7 @@ function applyFilter(item, filters, lang, objects, context, counter) {
                 data.id.startsWith('system.') ||
                 data.id.startsWith('enum.') ||
                 data.id.startsWith('_design/') ||
-                (common && common.expertMode);
+                (common && common.expert);
         }
         if (!filteredOut && context.id) {
             if (data.fID === undefined) {
@@ -532,7 +543,7 @@ function applyFilter(item, filters, lang, objects, context, counter) {
     data.hasVisibleChildren = false;
     if (item.children) {
         item.children.forEach(_item => {
-            const visible = applyFilter(_item, filters, lang, objects, context, counter);
+            const visible = applyFilter(_item, filters, lang, objects, context, counter, customFilter);
             if (visible) {
                 data.hasVisibleChildren = true;
             }
@@ -1363,25 +1374,25 @@ class ObjectBrowser extends React.Component {
         this.edit = {};
 
         this.texts = {
-            value:          this.props.t('tooltip_value'),
-            ack:            this.props.t('tooltip_ack'),
-            ts:             this.props.t('tooltip_ts'),
-            lc:             this.props.t('tooltip_lc'),
-            from:           this.props.t('tooltip_from'),
-            user:           this.props.t('tooltip_user'),
-            quality:        this.props.t('tooltip_quality'),
-            editObject:     this.props.t('tooltip_editObject'),
-            deleteObject:   this.props.t('tooltip_deleteObject'),
-            customConfig:   this.props.t('tooltip_customConfig'),
-            copyState:      this.props.t('tooltip_copyState'),
-            editState:      this.props.t('tooltip_editState'),
-            filter_id:      this.props.t('filter_id'),
-            filter_name:    this.props.t('filter_name'),
-            filter_type:    this.props.t('filter_type'),
-            filter_role:    this.props.t('filter_role'),
-            filter_room:    this.props.t('filter_room'),
-            filter_func:    this.props.t('filter_func'),
-            filter_customs: this.props.t('filter_customs'),
+            value:          this.props.t('ra_tooltip_value'),
+            ack:            this.props.t('ra_tooltip_ack'),
+            ts:             this.props.t('ra_tooltip_ts'),
+            lc:             this.props.t('ra_tooltip_lc'),
+            from:           this.props.t('ra_tooltip_from'),
+            user:           this.props.t('ra_tooltip_user'),
+            quality:        this.props.t('ra_tooltip_quality'),
+            editObject:     this.props.t('ra_tooltip_editObject'),
+            deleteObject:   this.props.t('ra_tooltip_deleteObject'),
+            customConfig:   this.props.t('ra_tooltip_customConfig'),
+            copyState:      this.props.t('ra_tooltip_copyState'),
+            editState:      this.props.t('ra_tooltip_editState'),
+            filter_id:      this.props.t('ra_filter_id'),
+            filter_name:    this.props.t('ra_filter_name'),
+            filter_type:    this.props.t('ra_filter_type'),
+            filter_role:    this.props.t('ra_filter_role'),
+            filter_room:    this.props.t('ra_filter_room'),
+            filter_func:    this.props.t('ra_filter_func'),
+            filter_customs: this.props.t('ra_filter_customs'),
         };
 
         this.onStateChangeBound = this.onStateChange.bind(this);
@@ -1407,7 +1418,7 @@ class ObjectBrowser extends React.Component {
                 let node = this.state.selected && this.state.selected.length && findNode(this.root, this.state.selected[0]);
 
                 // If selected ID is not visible, reset filter
-                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects)) {
+                if (node && !applyFilter(node, this.state.filter, this.state.lang, this.objects, null, null, this.props.customFilter)) {
                     // reset filter
                     this.setState({ filter: Object.assign({}, DEFAULT_FILTER) }, () => {
                         this.setState({ loaded: true }, () =>
@@ -1471,14 +1482,14 @@ class ObjectBrowser extends React.Component {
             aria-labelledby="error-dialog-title"
             aria-describedby="error-dialog-description"
         >
-            <DialogTitle id="alert-dialog-title">{this.props.title || this.props.t('Error')}</DialogTitle>
+            <DialogTitle id="alert-dialog-title">{this.props.title || this.props.t('ra_Error')}</DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                     { this.state.error }
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={ () => this.setState({error: ''}) } color="primary" autoFocus>{ this.props.t('Ok') }</Button>
+                <Button onClick={ () => this.setState({error: ''}) } color="primary" autoFocus>{ this.props.t('ra_Ok') }</Button>
             </DialogActions>
         </Dialog> : null;
     }
@@ -1876,9 +1887,9 @@ class ObjectBrowser extends React.Component {
         const text = e.target.parentNode.dataset.copy || '';
         copy(text);
         if (text.length < 50) {
-            this.setState({ toast: this.props.t('Copied %s', text) });
+            this.setState({ toast: this.props.t('ra_Copied %s', text) });
         } else {
-            this.setState({ toast: this.props.t('Copied') });
+            this.setState({ toast: this.props.t('ra_Copied') });
         }
     }
 
@@ -2051,7 +2062,7 @@ class ObjectBrowser extends React.Component {
             // const hasIcons = !!enums.find(item => item.icon);
 
             return <Dialog onClose={() => this.setState({enumDialog: null})} aria-labelledby="enum-dialog-title" open={ true }>
-                <DialogTitle id="simple-dialog-title">{ type === 'func' ? this.props.t('Define functions') : this.props.t('Define rooms') }</DialogTitle>
+                <DialogTitle id="simple-dialog-title">{ type === 'func' ? this.props.t('ra_Define functions') : this.props.t('ra_Define rooms') }</DialogTitle>
                 <List classes={{ root: this.props.classes.enumList }}>
                     {
                         enums.map(item => {
@@ -2249,7 +2260,7 @@ class ObjectBrowser extends React.Component {
             {this.visibleCols.includes('role')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.role }}>{ this.getFilterSelectRole() }</div> : null }
             {this.visibleCols.includes('room')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.room }}>{ this.getFilterSelectRoom() }</div> : null }
             {this.visibleCols.includes('func')    ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.func }}>{ this.getFilterSelectFunction() }</div> : null }
-            {this.visibleCols.includes('val')     ? <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS.val}}>{ this.props.t('Value') }</div> : null }
+            {this.visibleCols.includes('val')     ? <div className={ Utils.clsx(classes.headerCell, classes.headerCellValue) } style={{ width: widths.WIDTHS.val}}>{ this.props.t('ra_Value') }</div> : null }
             {this.visibleCols.includes('buttons') ? <div className={ classes.headerCell } style={{ width: widths.WIDTHS.buttons }}> { this.getFilterSelectCustoms() }</div> : null }
         </div>;
     }
@@ -2356,7 +2367,7 @@ class ObjectBrowser extends React.Component {
         if (this.lastAppliedFilter !== jsonFilter && this.objects && this.root) {
             const counter = {count: 0};
 
-            applyFilter(this.root, this.state.filter, this.state.lang, this.objects, null, counter);
+            applyFilter(this.root, this.state.filter, this.state.lang, this.objects, null, counter, this.props.customFilter);
 
             if (counter.count < 500 && !this.state.expandAllVisible) {
                 setTimeout(() => this.setState({ expandAllVisible: true }));
@@ -2435,7 +2446,6 @@ ObjectBrowser.propTypes = {
     themeName: PropTypes.string,
     t: PropTypes.func,
     lang: PropTypes.string.isRequired,
-    columns: PropTypes.array,
     multiSelect: PropTypes.bool,
     notEditable: PropTypes.bool,
 
@@ -2444,12 +2454,15 @@ ObjectBrowser.propTypes = {
         PropTypes.object,
         PropTypes.func
     ]),
+    customFilter: PropTypes.object, // optional {common: {custom: true}} or {common: {custom: 'sql.0'}}
     objectBrowserValue: PropTypes.object,
     objectBrowserEditObject: PropTypes.object,
     router: PropTypes.oneOfType([
         PropTypes.object,
         PropTypes.func
     ]),
+    types: PropTypes.array,   // optional ['state', 'instance', 'channel']
+    columns: PropTypes.array, // optional ['name', 'type', 'role', 'room', 'func', 'val', 'buttons']
 };
 
 export default withWidth()(withStyles(styles)(ObjectBrowser));

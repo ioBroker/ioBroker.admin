@@ -128,7 +128,6 @@ class ObjectChart extends React.Component {
     componentDidMount() {
         this.props.socket.subscribeState(this.props.obj._id, this.onChangeBound);
         window.addEventListener('resize', this.onResizeBound)
-
     }
 
     componentWillUnmount() {
