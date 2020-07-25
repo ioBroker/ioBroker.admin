@@ -30,6 +30,7 @@ import CodeIcon from '@material-ui/icons/Code';
 import AcUnitIcon from '@material-ui/icons/AcUnit';
 import DeviceHubIcon from '@material-ui/icons/DeviceHub';
 import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
+import ShowChartIcon from '@material-ui/icons/ShowChart';
 import StorageIcon from '@material-ui/icons/Storage';
 import FilesIcon from '@material-ui/icons/FileCopy';
 import HelpIcon from '@material-ui/icons/Help';
@@ -108,6 +109,7 @@ const tabsInfo = {
     'tab-fullcalendar-0':   {order: 65,   icon: <PermContactCalendarIcon />, instance: 0},
     'tab-fullcalendar-1':   {order: 66,   icon: <PermContactCalendarIcon />, instance: 1},
     'tab-fullcalendar-2':   {order: 67,   icon: <PermContactCalendarIcon />, instance: 2},
+    'tab-echarts':          {order: 70,   icon: <ShowChartIcon />, instance: 2},
     'tab-hosts':            {order: 100,  icon: <StorageIcon />},
     'tab-files':            {order: 110,  icon: <FilesIcon />},
 };
