@@ -4,10 +4,13 @@ function InfoAdapter(main) {
 
     var that = this;
     
-    this.systemData = {"node": null, "npm": null, "os": null};
+    this.systemData = {"node": null, "npm": null, "os": null, "uuid": null};
     this.main = main;
 
     this.checkVersion = function (smaller, bigger) {
+        if (smaller === undefined || bigger === undefined) {
+            return false;
+        }
         smaller = smaller.split('.');
         bigger = bigger.split('.');
         smaller[0] = parseInt(smaller[0], 10);
@@ -74,6 +77,26 @@ function InfoAdapter(main) {
             that.main.socket.emit('setState', 'info.0.last_popup', {val: new Date().toISOString(), ack: true});
         }
     };
+    
+    this.checkActive = function (adapterName) {
+        const instances = that.main.instances;
+        if (!instances) {
+            return false;
+        }
+        const instCreated = instances.filter(function (str) {
+            return str.includes("." + adapterName + ".");
+        });
+        if (instCreated.length === 0) {
+            return false;
+        }
+        let i;
+        for (i = 0; i < instCreated.length; i++) {
+            if (that.main.objects[instCreated[i]].common.enabled) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     this.checkConditions = function (condition, installedVersion) {
         if (condition.startsWith("equals")) {
@@ -125,6 +148,10 @@ function InfoAdapter(main) {
                                     showIt = false;
                                 } else if (adapter && condition === "!installed") {
                                     showIt = false;
+                                } else if (adapter && condition === "active") {
+                                    showIt = that.checkActive(key);
+                                } else if (adapter && condition === "!active") {
+                                    showIt = !that.checkActive(key);
                                 } else if (adapter) {
                                     showIt = that.checkConditions(condition, adapter.version);
                                 }
@@ -145,6 +172,21 @@ function InfoAdapter(main) {
                     }
                     if (showIt && message['repo']) {
                         showIt = that.main.systemConfig.common.activeRepo === message['repo'];
+                    }                    
+                    if (showIt && message['uuid']) {
+                        if (Array.isArray(message['uuid'])) {
+                            let oneMustBe = false;
+                            if(that.systemData.uuid){
+                                await asyncForEach(message['uuid'], function(uuid){
+                                    if (!oneMustBe) {
+                                        oneMustBe = that.systemData.uuid === uuid;
+                                    }
+                                });
+                            }
+                            showIt = oneMustBe;
+                        } else {
+                            showIt = that.systemData.uuid && that.systemData.uuid === message['uuid'];
+                        }
                     }
 
                     if (showIt) {
@@ -174,6 +216,11 @@ function InfoAdapter(main) {
         that.main.socket.emit('getState', 'info.0.sysinfo.os.info.platform', function (err, data) {
             if (!err && data) {
                 that.systemData.os = data.val;
+            }
+        });
+        that.main.socket.emit('getState', 'info.0.uuid', function (err, data) {
+            if (!err && data) {
+                that.systemData.uuid = data.val;
             }
         });
 
