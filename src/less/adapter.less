@@ -233,3 +233,38 @@ h4 {
 *::-webkit-scrollbar-thumb {
     background-color: @admin-sidemenu-scrollbar-thumb-color;
 }
+
+// for new react interface
+.m.react-dark {
+    color:#fff;
+    * {
+        color: #fff;
+    }
+    .table-values tr:nth-child(2n) {
+        background: #121212;
+    }
+    .select-wrapper .caret {
+        color: #fff;
+        fill: #fff;
+    }
+    [type="checkbox"] + span:not(.lever)::before {
+        border-color: #fff;
+    }
+    .dropdown-content {
+        background-color: #272727;
+    }
+    .tabs {
+        background-color: #272727;
+        .tab a {
+            color: #fff;
+            opacity: 0.7;
+            .active {
+                color: #fff;
+                opacity: 1;
+            }
+        }
+        .active {
+            border-bottom-color: #436a93;
+        }
+    }
+}

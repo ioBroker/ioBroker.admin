@@ -1697,6 +1697,7 @@ $(document).ready(function () {
         'tab-fullcalendar-0':   {order: 65,   icon: 'perm_contact_calendar'},
         'tab-fullcalendar-1':   {order: 66,   icon: 'perm_contact_calendar'},
         'tab-fullcalendar-2':   {order: 67,   icon: 'perm_contact_calendar'},
+        'tab-echarts':          {order: 70,   icon: 'show_chart'},
         'tab-hosts':            {order: 100,  icon: 'storage'},
     };
 
