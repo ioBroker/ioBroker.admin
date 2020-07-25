@@ -4,7 +4,7 @@ function InfoAdapter(main) {
 
     var that = this;
     
-    this.systemData = {"node": null, "npm": null, "os": null, "uuid": null};
+    this.systemData = {node: null, npm: null, os: null, uuid: null};
     this.main = main;
 
     this.checkVersion = function (smaller, bigger) {
@@ -58,19 +58,19 @@ function InfoAdapter(main) {
             const message = messages[0];
             that.main.showMessage(message.content, message.title, message.class);
         } else if (messages.length > 1) {
-            let content = "<ol>";
+            let content = '<ol>';
             const idArray = [];
             messages.forEach(function (message) {
                 if (idArray.indexOf(message.id) === -1) {
-                    content += "<li>";
-                    content += "<h5>" + message.title + "</h5>";
-                    content += "<p>" + message.content + "</p>";
-                    content += "</li>";
+                    content += '<li>';
+                    content += '<h5>' + message.title + '</h5>';
+                    content += '<p>' + message.content + '</p>';
+                    content += '</li>';
                     idArray.push(message.id);
                 }
             });
-            content += "</ol>";
-            that.main.showMessage(content, _("Please read these important notes:"), "error");
+            content += '</ol>';
+            that.main.showMessage(content, _('Please read these important notes:'), 'error');
         }
         if (messages.length > 0) {
             sessionStorage.setItem('ioBroker.info.lastPopup', new Date().toISOString());
@@ -84,7 +84,7 @@ function InfoAdapter(main) {
             return false;
         }
         const instCreated = instances.filter(function (str) {
-            return str.includes("." + adapterName + ".");
+            return str.includes('.' + adapterName + '.');
         });
         if (instCreated.length === 0) {
             return false;
@@ -99,16 +99,16 @@ function InfoAdapter(main) {
     }
 
     this.checkConditions = function (condition, installedVersion) {
-        if (condition.startsWith("equals")) {
+        if (condition.startsWith('equals')) {
             const vers = condition.substring(7, condition.length - 1).trim();
             return (installedVersion === vers);
-        } else if (condition.startsWith("bigger")) {
+        } else if (condition.startsWith('bigger')) {
             const vers = condition.substring(7, condition.length - 1).trim();
             return that.checkVersion(vers, installedVersion);
-        } else if (condition.startsWith("smaller")) {
+        } else if (condition.startsWith('smaller')) {
             const vers = condition.substring(8, condition.length - 1).trim();
             return that.checkVersion(installedVersion, vers);
-        } else if (condition.startsWith("between")) {
+        } else if (condition.startsWith('between')) {
             const vers1 = condition.substring(8, condition.indexOf(',')).trim();
             const vers2 = condition.substring(condition.indexOf(',') + 1, condition.length - 1).trim();
             return that.checkVersionBetween(installedVersion, vers1, vers2);
@@ -140,17 +140,17 @@ function InfoAdapter(main) {
                     } else if (showIt && message.conditions && Object.keys(message.conditions).length > 0) {
                         const adapters = that.main.tabs.adapters.curInstalled;
                         await asyncForEach(Object.keys(message.conditions), function (key) {
-                            if(showIt) {
+                            if (showIt) {
                                 const adapter = adapters[key];
                                 const condition = message.conditions[key];
 
-                                if (!adapter && condition !== "!installed") {
+                                if (!adapter && condition !== '!installed') {
                                     showIt = false;
-                                } else if (adapter && condition === "!installed") {
+                                } else if (adapter && condition === '!installed') {
                                     showIt = false;
-                                } else if (adapter && condition === "active") {
+                                } else if (adapter && condition === 'active') {
                                     showIt = that.checkActive(key);
-                                } else if (adapter && condition === "!active") {
+                                } else if (adapter && condition === '!active') {
                                     showIt = !that.checkActive(key);
                                 } else if (adapter) {
                                     showIt = that.checkConditions(condition, adapter.version);
@@ -175,9 +175,9 @@ function InfoAdapter(main) {
                     }                    
                     if (showIt && message['uuid']) {
                         if (Array.isArray(message['uuid'])) {
-                            let oneMustBe = false;
-                            if(that.systemData.uuid){
-                                await asyncForEach(message['uuid'], function(uuid){
+                            var oneMustBe = false;
+                            if (that.systemData.uuid){
+                                await asyncForEach(message['uuid'], function (uuid){
                                     if (!oneMustBe) {
                                         oneMustBe = that.systemData.uuid === uuid;
                                     }
@@ -190,12 +190,19 @@ function InfoAdapter(main) {
                     }
 
                     if (showIt) {
-                        messagesToShow.push({"id": message.id, "title": message.title[systemLang], "content": message.content[systemLang], "class": message.class, "icon": message['fa-icon'], "created": message.created});
+                        messagesToShow.push({
+                            id: message.id,
+                            title: message.title[systemLang],
+                            content: message.content[systemLang],
+                            'class': message.class,
+                            icon: message['fa-icon'],
+                            created: message.created
+                        });
                     }
                 });
             }
-
         } catch (err) {
+
         }
 
         return messagesToShow;
@@ -224,11 +231,11 @@ function InfoAdapter(main) {
             }
         });
 
-        if (that.main.objects["info.0.newsfeed"] && that.main.objects["info.0.last_popup"]) {
+        if (that.main.objects['info.0.newsfeed'] && that.main.objects['info.0.last_popup']) {
             that.main.socket.emit('subscribe', 'info.0.newsfeed');
 
             that.main.socket.on('stateChange', function (id, obj) {
-                if (id === "info.0.newsfeed") {
+                if (id === 'info.0.newsfeed') {
                     that.showPopup(obj.val);
                 }
             });
@@ -273,12 +280,9 @@ function InfoAdapter(main) {
                 obj.common = obj.common || {};
                 obj.common.infoAdapterInstall = true;
                 main.socket.emit('setObject', 'system.config', obj, function (err) {
-                    if (err) {
-                        main.showError(err);
-                    }
+                    err && main.showError(err);
                 });
             });
         }
     };
-
 }
