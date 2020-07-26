@@ -2,8 +2,20 @@
     "common": {
         "name": "admin",
         "title": "Admin",
-        "version": "4.1.5",
+        "version": "4.1.6",
         "news": {
+            "4.1.6": {
+                "en": "Increased the socket ping Interval and Timeout to maybe prevent the too fast reconnect attempts.",
+                "de": "Das Socking-Ping-Intervall und das Timeout wurden erhöht, um möglicherweise zu schnelle Wiederverbindungsversuche zu verhindern.",
+                "ru": "Увеличен интервал проверки связи сокета и время ожидания, чтобы, возможно, предотвратить слишком быстрые попытки повторного подключения.",
+                "pt": "Aumento do intervalo de ping do soquete e tempo limite para talvez impedir as tentativas de reconexão muito rápidas.",
+                "nl": "Verhoogde de socket ping Interval en Timeout om misschien de te snelle pogingen tot opnieuw verbinden te voorkomen.",
+                "fr": "Augmentation de l'intervalle et du délai de ping du socket pour peut-être empêcher les tentatives de reconnexion trop rapides.",
+                "it": "Aumento dell'intervallo e del timeout del socket ping per impedire forse i tentativi di riconnessione troppo veloci.",
+                "es": "Se aumentó el intervalo de ping del socket y el tiempo de espera para evitar los intentos de reconexión demasiado rápidos.",
+                "pl": "Zwiększono interwał i limit czasu polecenia ping dla gniazda, aby być może zapobiec zbyt szybkim próbom ponownego połączenia.",
+                "zh-cn": "增加了套接字ping间隔和超时，以防止重新连接尝试过快。"
+            },
             "4.1.5": {
                 "en": "Add option to check for active/inactive instances and uuid-hash\nprevent Sentry crash IOBROKER-ADMIN-Z",
                 "de": "Option hinzufügen, um nach aktiven / inaktiven Instanzen und UUID-Hash zu suchen\nSentry-Absturz verhindern IOBROKER-ADMIN-Z",
@@ -278,26 +290,26 @@
                 "write": false,
                 "role": "text"
             }
-    },
-    {
-      "_id": "info.newsfeed",
-      "type": "state",
-      "common": {
-        "name": "Last news feed as JSON",
-        "type": "json",
-        "read":  true,
-        "write": false
-      }
-    },
-    {
-      "_id": "info.newsETag",
-      "type": "state",
-      "common": {
-        "name": "Etag for news feed",
-        "type": "string",
-        "read":  true,
-        "write": false
-      }
+        },
+        {
+            "_id": "info.newsfeed",
+            "type": "state",
+            "common": {
+                "name": "Last news feed as JSON",
+                "type": "json",
+                "read": true,
+                "write": false
+            }
+        },
+        {
+            "_id": "info.newsETag",
+            "type": "state",
+            "common": {
+                "name": "Etag for news feed",
+                "type": "string",
+                "read": true,
+                "write": false
+            }
         }
     ]
 }

@@ -1,3 +1,8 @@
+## 4.0.8 (2020-04-18)
+* (bluefox) The attempt to process error by the gz log show.
+* (bluefox) Implement new automatic encryption/decryption for js-controller 3.0
+* (bluefox) add Sentry for error reporting with js-controller 3.0
+
 ## 4.0.5 (2020-02-23)
 * (Apollon77) Workaround for socket.io bug #3555 added to make sure always the correct client files are delivered
 * (Apollon77) remove socket.io-client dep again because we lookup via socket.io lib

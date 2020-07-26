@@ -89,7 +89,7 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
-### __WORK IN PROGRESS__
+### 4.1.6 (2020-07-26)
 * (Apollon77) Increased the socket ping Interval and Timeout to maybe prevent the too fast reconnect attempts.
 
 ### 4.1.5 (2020-07-26)
@@ -106,11 +106,6 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ### 4.0.9 (2020-04-19)
 * (Apollon77) Fix password encryption logics and make compatible to js-controller 3.x again
-
-### 4.0.8 (2020-04-18)
-* (bluefox) The attempt to process error by the gz log show.
-* (bluefox) Implement new automatic encryption/decryption for js-controller 3.0
-* (bluefox) add Sentry for error reporting with js-controller 3.0
 
 ## License
 
