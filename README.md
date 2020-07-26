@@ -90,7 +90,7 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 
 ## Changelog
 
-### 4.1.4 (2020-07-26)
+### __WORK IN PROGRESS__
 * (ldittmar) Add option to check for active/inactive instances and uuid-hash
 * (Apollon77) prevent Sentry crash IOBROKER-ADMIN-Z
 
