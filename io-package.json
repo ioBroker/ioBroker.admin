@@ -1,276 +1,283 @@
 {
-  "common": {
-    "name": "admin",
-    "title": "Admin",
-    "version": "4.1.4",
-    "news": {
-      "4.1.3": {
-        "en": "Added binary state read and write\nsmall fixes",
-        "de": "Lesen und Schreiben des Binärzustands hinzugefügt\nkleine Korrekturen",
-        "ru": "Добавлено чтения и записи для binary states\nнебольшие исправления",
-        "pt": "Adicionado estado binário de leitura e gravação\npequenas correções",
-        "nl": "Binaire status lezen en schrijven toegevoegd\nkleine oplossingen",
-        "fr": "Ajout de l'état binaire en lecture et en écriture\npetites corrections",
-        "it": "Aggiunto stato binario di lettura e scrittura\npiccole correzioni",
-        "es": "Agregado estado binario de lectura y escritura\npequeñas correcciones",
-        "pl": "Dodano odczyt i zapis stanu binarnego\nmałe poprawki",
-        "zh-cn": "添加了二进制状态读写\n小修正"
-      },
-      "4.0.10": {
-        "en": "webserver error handling optimized, preparations for js-controller 3",
-        "de": "Webserver Fehlerbehandlung optimiert, Vorbereitungen für js-controller 3",
-        "ru": "Оптимизирована обработка ошибок веб-сервера, подготовка к js-controller 3",
-        "pt": "manipulação de erros do servidor da web otimizada, preparativos para o controlador js 3",
-        "nl": "webserver foutafhandeling geoptimaliseerd, voorbereidingen voor js-controller 3",
-        "fr": "gestion des erreurs du serveur Web optimisée, préparations pour js-controller 3",
-        "it": "ottimizzazione della gestione degli errori del server web, preparazione per js-controller 3",
-        "es": "manejo de errores del servidor web optimizado, preparativos para js-controller 3",
-        "pl": "zoptymalizowana obsługa błędów serwera WWW, przygotowania do kontrolera js 3",
-        "zh-cn": "优化了Web服务器的错误处理，为js-controller 3做准备"
-      },
-      "4.0.9": {
-        "en": "The attempt to process error by the log show.",
-        "de": "Der Versuch, Fehler durch das Protokoll zu verarbeiten, wird angezeigt.",
-        "ru": "Попытка обработать ошибку в журнале.",
-        "pt": "A tentativa de processar o erro pelo log mostra.",
-        "nl": "De poging om fouten te verwerken door de logshow.",
-        "fr": "La tentative de traitement de l'erreur par le journal affiche.",
-        "it": "Il tentativo di elaborare l'errore da parte del registro.",
-        "es": "El intento de procesar el error por el registro muestra.",
-        "pl": "Próba przetworzenia błędu przez przedstawienie dziennika.",
-        "zh-cn": "尝试通过日志显示来处理错误。"
-      },
-      "4.0.5": {
-        "en": "workaround for a socket.io bug added, warning message for GitHub installs added",
-        "de": "Problemumgehung für einen socket.io-Fehler hinzugefügt, Warnmeldung für GitHub-Installationen hinzugefügt",
-        "ru": "добавлено обходное решение для ошибки socket.io, добавлено предупреждающее сообщение для установки GitHub",
-        "pt": "solução alternativa para um bug do socket.io adicionado, mensagem de aviso para instalações do GitHub adicionada",
-        "nl": "tijdelijke oplossing voor een socket.io-bug toegevoegd, waarschuwingsbericht voor GitHub-installaties toegevoegd",
-        "fr": "solution de contournement pour un bug socket.io ajoutée, message d'avertissement pour les installations GitHub ajouté",
-        "it": "soluzione alternativa per un bug socket.io aggiunto, aggiunto un messaggio di avviso per le installazioni di GitHub",
-        "es": "solución alternativa para un error socket.io agregado, mensaje de advertencia para las instalaciones de GitHub agregadas",
-        "pl": "dodano obejście dla błędu socket.io, dodano komunikat ostrzegawczy dla instalacji GitHub",
-        "zh-cn": "添加了socket.io错误的解决方法，添加了GitHub安装的警告消息"
-      },
-      "4.0.4": {
-        "en": "fix socketio client dependency",
-        "de": "Behebung der Socketio-Client-Abhängigkeit",
-        "ru": "исправить зависимость клиента socketio",
-        "pt": "corrigir dependência do cliente socketio",
-        "nl": "fix socketio client afhankelijkheid",
-        "fr": "correction de la dépendance du client socketio",
-        "it": "correzione della dipendenza client socketio",
-        "es": "arreglar la dependencia del cliente socketio",
-        "pl": "napraw zależność klienta socketio",
-        "zh-cn": "修复socketio客户端依赖性"
-      },
-      "4.0.3": {
-        "en": "Encrypted configuration was corrected.",
-        "de": "Die verschlüsselte Konfiguration wurde korrigiert.",
-        "ru": "Зашифрованная конфигурация была исправлена.",
-        "pt": "A configuração criptografada foi corrigida.",
-        "nl": "Gecodeerde configuratie is gecorrigeerd.",
-        "fr": "La configuration cryptée a été corrigée.",
-        "it": "La configurazione crittografata è stata corretta.",
-        "es": "La configuración encriptada fue corregida.",
-        "pl": "Szyfrowana konfiguracja została poprawiona.",
-        "zh-cn": "加密的配置已得到纠正。"
-      },
-      "4.0.2": {
-        "en": "Fixed the loading of some adapter configurations",
-        "de": "Das Laden einiger Adapterkonfigurationen wurde behoben",
-        "ru": "Исправлена загрузка некоторых конфигураций адаптера",
-        "pt": "Corrigido o carregamento de algumas configurações do adaptador",
-        "nl": "Het laden van sommige adapterconfiguraties opgelost",
-        "fr": "Correction du chargement de certaines configurations d'adaptateur",
-        "it": "Risolto il problema con il caricamento di alcune configurazioni dell'adattatore",
-        "es": "Se corrigió la carga de algunas configuraciones de adaptadores",
-        "pl": "Naprawiono ładowanie niektórych konfiguracji adaptera",
-        "zh-cn": "修复了某些适配器配置的加载"
-      },
-      "4.0.0": {
-        "en": "socket.io upgraded to latest version. Attention: This might break compatibility with older devices like iPad 1/2!",
-        "de": "socket.io wurde auf die neueste Version aktualisiert. Achtung: Dies könnte die Kompatibilität mit älteren Geräten wie dem iPad 1/2 beeinträchtigen!",
-        "ru": "socket.io обновлен до последней версии. Внимание: это может нарушить совместимость со старыми устройствами, такими как iPad 1/2!",
-        "pt": "socket.io atualizado para a versão mais recente. Atenção: Isso pode quebrar a compatibilidade com dispositivos mais antigos, como o iPad 1/2!",
-        "nl": "socket.io opgewaardeerd naar de nieuwste versie. Let op: hierdoor kan de compatibiliteit met oudere apparaten zoals iPad 1/2 worden verbroken!",
-        "fr": "socket.io mis à niveau vers la dernière version. Attention: cela pourrait casser la compatibilité avec les appareils plus anciens comme l'iPad 1/2!",
-        "it": "socket.io aggiornato all'ultima versione. Attenzione: questo potrebbe interrompere la compatibilità con dispositivi più vecchi come iPad 1/2!",
-        "es": "socket.io actualizado a la última versión. Atención: ¡Esto podría romper la compatibilidad con dispositivos más antiguos como iPad 1/2!",
-        "pl": "socket.io zaktualizowane do najnowszej wersji. Uwaga: może to spowodować uszkodzenie kompatybilności ze starszymi urządzeniami, takimi jak iPad 1/2!",
-        "zh-cn": "socket.io已升级到最新版本。注意：这可能会破坏与iPad 1/2等旧设备的兼容性！"
-      },
-      "3.7.9": {
-        "en": "The log downloading was fixed",
-        "de": "Das Herunterladen des Protokolls wurde behoben",
-        "ru": "Загрузка журнала была исправлена",
-        "pt": "O download do log foi corrigido",
-        "nl": "Het downloaden van het logboek is opgelost",
-        "fr": "Le téléchargement du journal a été corrigé",
-        "it": "Il download del registro è stato corretto",
-        "es": "La descarga del registro fue corregida",
-        "pl": "Pobieranie dziennika zostało naprawione",
-        "zh-cn": "日志下载已修复"
-      },
-      "3.7.8": {
-        "en": "The disabling of custom settings was corrected",
-        "de": "Das Deaktivieren von benutzerdefinierten Einstellungen wurde korrigiert",
-        "ru": "Исправлено отключение пользовательских настроек",
-        "pt": "A desativação das configurações personalizadas foi corrigida",
-        "nl": "Het uitschakelen van aangepaste instellingen is gecorrigeerd",
-        "fr": "La désactivation des paramètres personnalisés a été corrigée",
-        "it": "La disabilitazione delle impostazioni personalizzate è stata corretta",
-        "es": "Se corrigió la desactivación de la configuración personalizada",
-        "pl": "Wyłączono niestandardowe ustawienia",
-        "zh-cn": "自定义设置的禁用已得到纠正"
-      }
+    "common": {
+        "name": "admin",
+        "title": "Admin",
+        "version": "4.1.5",
+        "news": {
+            "4.1.5": {
+                "en": "Add option to check for active/inactive instances and uuid-hash\nprevent Sentry crash IOBROKER-ADMIN-Z",
+                "de": "Option hinzufügen, um nach aktiven / inaktiven Instanzen und UUID-Hash zu suchen\nSentry-Absturz verhindern IOBROKER-ADMIN-Z",
+                "ru": "Добавить опцию, чтобы проверить наличие активных / неактивных экземпляров и uuid-hash\nпредотвратить сбой Sentry IOBROKER-ADMIN-Z",
+                "pt": "Adicionar opção para verificar instâncias ativas / inativas e uuid-hash\nimpedir o Sentry crash IOBROKER-ADMIN-Z",
+                "nl": "Optie toevoegen om te controleren op actieve / inactieve instanties en uuid-hash\nvoorkomen dat Sentry crash IOBROKER-ADMIN-Z",
+                "fr": "Ajouter une option pour vérifier les instances actives / inactives et uuid-hash\nempêcher le crash de Sentry IOBROKER-ADMIN-Z",
+                "it": "Aggiungi un'opzione per verificare le istanze attive / inattive e uuid-hash\nimpedire l'arresto anomalo di Sentry IOBROKER-ADMIN-Z",
+                "es": "Agregar opción para verificar instancias activas / inactivas y uuid-hash\nprevenir el bloqueo de Sentry IOBROKER-ADMIN-Z",
+                "pl": "Dodaj opcję sprawdzania aktywnych / nieaktywnych instancji i skrótu uuid\nzapobiega awariom Sentry IOBROKER-ADMIN-Z",
+                "zh-cn": "添加选项以检查活动/非活动实例和uuid哈希\n防止Sentry崩溃IOBROKER-ADMIN-Z"
+            },
+            "4.1.3": {
+                "en": "Added binary state read and write\nsmall fixes",
+                "de": "Lesen und Schreiben des Binärzustands hinzugefügt\nkleine Korrekturen",
+                "ru": "Добавлено чтения и записи для binary states\nнебольшие исправления",
+                "pt": "Adicionado estado binário de leitura e gravação\npequenas correções",
+                "nl": "Binaire status lezen en schrijven toegevoegd\nkleine oplossingen",
+                "fr": "Ajout de l'état binaire en lecture et en écriture\npetites corrections",
+                "it": "Aggiunto stato binario di lettura e scrittura\npiccole correzioni",
+                "es": "Agregado estado binario de lectura y escritura\npequeñas correcciones",
+                "pl": "Dodano odczyt i zapis stanu binarnego\nmałe poprawki",
+                "zh-cn": "添加了二进制状态读写\n小修正"
+            },
+            "4.0.10": {
+                "en": "webserver error handling optimized, preparations for js-controller 3",
+                "de": "Webserver Fehlerbehandlung optimiert, Vorbereitungen für js-controller 3",
+                "ru": "Оптимизирована обработка ошибок веб-сервера, подготовка к js-controller 3",
+                "pt": "manipulação de erros do servidor da web otimizada, preparativos para o controlador js 3",
+                "nl": "webserver foutafhandeling geoptimaliseerd, voorbereidingen voor js-controller 3",
+                "fr": "gestion des erreurs du serveur Web optimisée, préparations pour js-controller 3",
+                "it": "ottimizzazione della gestione degli errori del server web, preparazione per js-controller 3",
+                "es": "manejo de errores del servidor web optimizado, preparativos para js-controller 3",
+                "pl": "zoptymalizowana obsługa błędów serwera WWW, przygotowania do kontrolera js 3",
+                "zh-cn": "优化了Web服务器的错误处理，为js-controller 3做准备"
+            },
+            "4.0.9": {
+                "en": "The attempt to process error by the log show.",
+                "de": "Der Versuch, Fehler durch das Protokoll zu verarbeiten, wird angezeigt.",
+                "ru": "Попытка обработать ошибку в журнале.",
+                "pt": "A tentativa de processar o erro pelo log mostra.",
+                "nl": "De poging om fouten te verwerken door de logshow.",
+                "fr": "La tentative de traitement de l'erreur par le journal affiche.",
+                "it": "Il tentativo di elaborare l'errore da parte del registro.",
+                "es": "El intento de procesar el error por el registro muestra.",
+                "pl": "Próba przetworzenia błędu przez przedstawienie dziennika.",
+                "zh-cn": "尝试通过日志显示来处理错误。"
+            },
+            "4.0.5": {
+                "en": "workaround for a socket.io bug added, warning message for GitHub installs added",
+                "de": "Problemumgehung für einen socket.io-Fehler hinzugefügt, Warnmeldung für GitHub-Installationen hinzugefügt",
+                "ru": "добавлено обходное решение для ошибки socket.io, добавлено предупреждающее сообщение для установки GitHub",
+                "pt": "solução alternativa para um bug do socket.io adicionado, mensagem de aviso para instalações do GitHub adicionada",
+                "nl": "tijdelijke oplossing voor een socket.io-bug toegevoegd, waarschuwingsbericht voor GitHub-installaties toegevoegd",
+                "fr": "solution de contournement pour un bug socket.io ajoutée, message d'avertissement pour les installations GitHub ajouté",
+                "it": "soluzione alternativa per un bug socket.io aggiunto, aggiunto un messaggio di avviso per le installazioni di GitHub",
+                "es": "solución alternativa para un error socket.io agregado, mensaje de advertencia para las instalaciones de GitHub agregadas",
+                "pl": "dodano obejście dla błędu socket.io, dodano komunikat ostrzegawczy dla instalacji GitHub",
+                "zh-cn": "添加了socket.io错误的解决方法，添加了GitHub安装的警告消息"
+            },
+            "4.0.4": {
+                "en": "fix socketio client dependency",
+                "de": "Behebung der Socketio-Client-Abhängigkeit",
+                "ru": "исправить зависимость клиента socketio",
+                "pt": "corrigir dependência do cliente socketio",
+                "nl": "fix socketio client afhankelijkheid",
+                "fr": "correction de la dépendance du client socketio",
+                "it": "correzione della dipendenza client socketio",
+                "es": "arreglar la dependencia del cliente socketio",
+                "pl": "napraw zależność klienta socketio",
+                "zh-cn": "修复socketio客户端依赖性"
+            },
+            "4.0.3": {
+                "en": "Encrypted configuration was corrected.",
+                "de": "Die verschlüsselte Konfiguration wurde korrigiert.",
+                "ru": "Зашифрованная конфигурация была исправлена.",
+                "pt": "A configuração criptografada foi corrigida.",
+                "nl": "Gecodeerde configuratie is gecorrigeerd.",
+                "fr": "La configuration cryptée a été corrigée.",
+                "it": "La configurazione crittografata è stata corretta.",
+                "es": "La configuración encriptada fue corregida.",
+                "pl": "Szyfrowana konfiguracja została poprawiona.",
+                "zh-cn": "加密的配置已得到纠正。"
+            },
+            "4.0.2": {
+                "en": "Fixed the loading of some adapter configurations",
+                "de": "Das Laden einiger Adapterkonfigurationen wurde behoben",
+                "ru": "Исправлена загрузка некоторых конфигураций адаптера",
+                "pt": "Corrigido o carregamento de algumas configurações do adaptador",
+                "nl": "Het laden van sommige adapterconfiguraties opgelost",
+                "fr": "Correction du chargement de certaines configurations d'adaptateur",
+                "it": "Risolto il problema con il caricamento di alcune configurazioni dell'adattatore",
+                "es": "Se corrigió la carga de algunas configuraciones de adaptadores",
+                "pl": "Naprawiono ładowanie niektórych konfiguracji adaptera",
+                "zh-cn": "修复了某些适配器配置的加载"
+            },
+            "4.0.0": {
+                "en": "socket.io upgraded to latest version. Attention: This might break compatibility with older devices like iPad 1/2!",
+                "de": "socket.io wurde auf die neueste Version aktualisiert. Achtung: Dies könnte die Kompatibilität mit älteren Geräten wie dem iPad 1/2 beeinträchtigen!",
+                "ru": "socket.io обновлен до последней версии. Внимание: это может нарушить совместимость со старыми устройствами, такими как iPad 1/2!",
+                "pt": "socket.io atualizado para a versão mais recente. Atenção: Isso pode quebrar a compatibilidade com dispositivos mais antigos, como o iPad 1/2!",
+                "nl": "socket.io opgewaardeerd naar de nieuwste versie. Let op: hierdoor kan de compatibiliteit met oudere apparaten zoals iPad 1/2 worden verbroken!",
+                "fr": "socket.io mis à niveau vers la dernière version. Attention: cela pourrait casser la compatibilité avec les appareils plus anciens comme l'iPad 1/2!",
+                "it": "socket.io aggiornato all'ultima versione. Attenzione: questo potrebbe interrompere la compatibilità con dispositivi più vecchi come iPad 1/2!",
+                "es": "socket.io actualizado a la última versión. Atención: ¡Esto podría romper la compatibilidad con dispositivos más antiguos como iPad 1/2!",
+                "pl": "socket.io zaktualizowane do najnowszej wersji. Uwaga: może to spowodować uszkodzenie kompatybilności ze starszymi urządzeniami, takimi jak iPad 1/2!",
+                "zh-cn": "socket.io已升级到最新版本。注意：这可能会破坏与iPad 1/2等旧设备的兼容性！"
+            },
+            "3.7.9": {
+                "en": "The log downloading was fixed",
+                "de": "Das Herunterladen des Protokolls wurde behoben",
+                "ru": "Загрузка журнала была исправлена",
+                "pt": "O download do log foi corrigido",
+                "nl": "Het downloaden van het logboek is opgelost",
+                "fr": "Le téléchargement du journal a été corrigé",
+                "it": "Il download del registro è stato corretto",
+                "es": "La descarga del registro fue corregida",
+                "pl": "Pobieranie dziennika zostało naprawione",
+                "zh-cn": "日志下载已修复"
+            },
+            "3.7.8": {
+                "en": "The disabling of custom settings was corrected",
+                "de": "Das Deaktivieren von benutzerdefinierten Einstellungen wurde korrigiert",
+                "ru": "Исправлено отключение пользовательских настроек",
+                "pt": "A desativação das configurações personalizadas foi corrigida",
+                "nl": "Het uitschakelen van aangepaste instellingen is gecorrigeerd",
+                "fr": "La désactivation des paramètres personnalisés a été corrigée",
+                "it": "La disabilitazione delle impostazioni personalizzate è stata corretta",
+                "es": "Se corrigió la desactivación de la configuración personalizada",
+                "pl": "Wyłączono niestandardowe ustawienia",
+                "zh-cn": "自定义设置的禁用已得到纠正"
+            }
+        },
+        "desc": {
+            "en": "The configuration of ioBroker via Web-Interface",
+            "de": "Die Konfiguration von ioBroker über das Web-Interface",
+            "ru": "Конфигурация ioBroker через веб-интерфейс",
+            "pt": "A configuração do ioBroker via Web-Interface",
+            "fr": "La configuration de ioBroker via Web-Interface",
+            "nl": "De configuratie van ioBroker via de webinterface",
+            "it": "La configurazione di ioBroker tramite interfaccia Web",
+            "zh-cn": "配置ioBroker的Web界面"
+        },
+        "docs": {
+            "en": "docs/en/admin.md",
+            "ru": "docs/ru/admin.md",
+            "de": [
+                "docs/de/admin.md",
+                "docs/de/admin/tab-adapters.md",
+                "docs/de/admin/tab-instances.md",
+                "docs/de/admin/tab-objects.md",
+                "docs/de/admin/tab-states.md",
+                "docs/de/admin/tab-groups.md",
+                "docs/de/admin/tab-users.md",
+                "docs/de/admin/tab-events.md",
+                "docs/de/admin/tab-hosts.md",
+                "docs/de/admin/tab-enums.md",
+                "docs/de/admin/tab-log.md",
+                "docs/de/admin/tab-system.md"
+            ],
+            "pt": "docs/pt/admin.md",
+            "nl": "docs/nl/admin.md",
+            "es": "docs/es/admin.md",
+            "fr": "docs/fr/admin.md",
+            "it": "docs/it/admin.md",
+            "pl": "docs/pl/admin.md",
+            "zh-cn": "docs/zh-cn/admin.md"
+        },
+        "materialize": true,
+        "mode": "daemon",
+        "platform": "Javascript/Node.js",
+        "loglevel": "info",
+        "icon": "admin.png",
+        "messagebox": true,
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/admin/admin.png",
+        "keywords": [
+            "setup",
+            "config",
+            "update",
+            "upgrade",
+            "system",
+            "konfiguration",
+            "administration",
+            "einrichtung",
+            "wartung"
+        ],
+        "compact": true,
+        "readme": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
+        "authors": [
+            "bluefox <bluefox@ccu.io>",
+            "hobbyquaker <hq@ccu.io>"
+        ],
+        "dependencies": [
+            {
+                "js-controller": ">=2.0.0"
+            }
+        ],
+        "type": "general",
+        "license": "MIT",
+        "logTransporter": true,
+        "stopBeforeUpdate": true,
+        "wwwDontUpload": true,
+        "nogit": true,
+        "welcomeScreenPro": {
+            "link": "admin/index.html",
+            "name": "Admin",
+            "img": "admin/img/admin.png",
+            "color": "pink",
+            "order": 5,
+            "localLink": true
+        },
+        "localLink": "%protocol%://%ip%:%port%",
+        "plugins": {
+            "sentry": {
+                "dsn": "https://9d2aaf29332a4999b133c693f43203b9@sentry.iobroker.net/18"
+            }
+        }
     },
-    "desc": {
-      "en": "The configuration of ioBroker via Web-Interface",
-      "de": "Die Konfiguration von ioBroker über das Web-Interface",
-      "ru": "Конфигурация ioBroker через веб-интерфейс",
-      "pt": "A configuração do ioBroker via Web-Interface",
-      "fr": "La configuration de ioBroker via Web-Interface",
-      "nl": "De configuratie van ioBroker via de webinterface",
-      "it": "La configurazione di ioBroker tramite interfaccia Web",
-      "zh-cn": "配置ioBroker的Web界面"
+    "native": {
+        "port": 8081,
+        "auth": false,
+        "secure": false,
+        "bind": "0.0.0.0",
+        "cache": false,
+        "accessLimit": false,
+        "accessApplyRights": false,
+        "accessAllowedConfigs": [],
+        "accessAllowedTabs": [],
+        "certPublic": "",
+        "certPrivate": "",
+        "certChained": "",
+        "ttl": 3600,
+        "defaultUser": "admin",
+        "tmpPath": "/tmp",
+        "tmpPathAllow": false,
+        "thresholdValue": 200,
+        "leEnabled": false,
+        "leUpdate": false,
+        "leCheckPort": 80,
+        "loginBackgroundColor": "",
+        "loginBackgroundImage": false,
+        "loginHideLogo": false,
+        "loginMotto": ""
     },
-    "docs": {
-      "en": "docs/en/admin.md",
-      "ru": "docs/ru/admin.md",
-      "de": [
-        "docs/de/admin.md",
-        "docs/de/admin/tab-adapters.md",
-        "docs/de/admin/tab-instances.md",
-        "docs/de/admin/tab-objects.md",
-        "docs/de/admin/tab-states.md",
-        "docs/de/admin/tab-groups.md",
-        "docs/de/admin/tab-users.md",
-        "docs/de/admin/tab-events.md",
-        "docs/de/admin/tab-hosts.md",
-        "docs/de/admin/tab-enums.md",
-        "docs/de/admin/tab-log.md",
-        "docs/de/admin/tab-system.md"
-      ],
-      "pt": "docs/pt/admin.md",
-      "nl": "docs/nl/admin.md",
-      "es": "docs/es/admin.md",
-      "fr": "docs/fr/admin.md",
-      "it": "docs/it/admin.md",
-      "pl": "docs/pl/admin.md",
-      "zh-cn": "docs/zh-cn/admin.md"
-    },
-    "materialize": true,
-    "mode": "daemon",
-    "platform": "Javascript/Node.js",
-    "loglevel": "info",
-    "icon": "admin.png",
-    "messagebox": true,
-    "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/admin/admin.png",
-    "keywords": [
-      "setup",
-      "config",
-      "update",
-      "upgrade",
-      "system",
-      "konfiguration",
-      "administration",
-      "einrichtung",
-      "wartung"
-    ],
-    "compact": true,
-    "readme": "https://github.com/ioBroker/ioBroker.admin/blob/master/README.md",
-    "authors": [
-      "bluefox <bluefox@ccu.io>",
-      "hobbyquaker <hq@ccu.io>"
-    ],
-    "dependencies": [
-      {
-        "js-controller": ">=2.0.0"
-      }
-    ],
-    "type": "general",
-    "license": "MIT",
-    "logTransporter": true,
-    "stopBeforeUpdate": true,
-    "wwwDontUpload": true,
-    "nogit": true,
-    "welcomeScreenPro": {
-      "link": "admin/index.html",
-      "name": "Admin",
-      "img": "admin/img/admin.png",
-      "color": "pink",
-      "order": 5,
-      "localLink": true
-    },
-    "localLink": "%protocol%://%ip%:%port%",
-    "plugins": {
-      "sentry": {
-        "dsn": "https://9d2aaf29332a4999b133c693f43203b9@sentry.iobroker.net/18"
-      }
-    }
-  },
-  "native": {
-    "port": 8081,
-    "auth": false,
-    "secure": false,
-    "bind": "0.0.0.0",
-    "cache": false,
-
-    "accessLimit": false,
-    "accessApplyRights": false,
-    "accessAllowedConfigs": [],
-    "accessAllowedTabs": [],
-
-    "certPublic": "",
-    "certPrivate": "",
-    "certChained": "",
-
-    "ttl": 3600,
-    "defaultUser": "admin",
-    "tmpPath": "/tmp",
-    "tmpPathAllow": false,
-    "thresholdValue": 200,
-
-    "leEnabled": false,
-    "leUpdate": false,
-    "leCheckPort": 80,
-
-    "loginBackgroundColor": "",
-    "loginBackgroundImage": false,
-    "loginHideLogo": false,
-    "loginMotto": ""
-  },
-  "objects": [],
-  "instanceObjects": [
-    {
-      "_id": "info",
-      "type": "channel",
-      "common": {
-        "name": "Information"
-      },
-      "native": {}
-    },
-    {
-      "_id": "",
-      "type": "meta",
-      "common": {
-        "name": "user files and images for background image",
-        "type": "meta.user"
-      },
-      "native": {}
-    },
-    {
-      "_id": "connected",
-      "type": "state",
-      "common": {
-        "name": "Info about connected socket clients",
-        "type": "string",
-        "read":  true,
-        "write": false,
-        "role":  "text"
-      }
-    }
-  ]
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "",
+            "type": "meta",
+            "common": {
+                "name": "user files and images for background image",
+                "type": "meta.user"
+            },
+            "native": {}
+        },
+        {
+            "_id": "connected",
+            "type": "state",
+            "common": {
+                "name": "Info about connected socket clients",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "role": "text"
+            }
+        }
+    ]
 }
