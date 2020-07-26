@@ -278,6 +278,26 @@
                 "write": false,
                 "role": "text"
             }
+    },
+    {
+      "_id": "info.newsfeed",
+      "type": "state",
+      "common": {
+        "name": "Last news feed as JSON",
+        "type": "json",
+        "read":  true,
+        "write": false
+      }
+    },
+    {
+      "_id": "info.newsETag",
+      "type": "state",
+      "common": {
+        "name": "Etag for news feed",
+        "type": "string",
+        "read":  true,
+        "write": false
+      }
         }
     ]
 }
