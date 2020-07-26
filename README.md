@@ -89,6 +89,8 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### __WORK IN PROGRESS__
+* (Apollon77) Increased the socket ping Interval and Timeout to maybe prevent the too fast reconnect attempts.
 
 ### 4.1.5 (2020-07-26)
 * (ldittmar) Add option to check for active/inactive instances and uuid-hash
