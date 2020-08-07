@@ -894,6 +894,7 @@
   "enterLogin": "Nome de acesso",
   "enterPassword": "Senha",
   "login": "Entrar",
+  "loginTitle": "Admin",
   "Stay signed in": "Mantenha-se conectado",
   "tooltip_value": "Valor",
   "tooltip_ack": "Reconhecido",
@@ -916,7 +917,6 @@
   "filter_customs": "Definições",
   "Logs": "Log",
   "Files": "arquivos",
-  "loginTitle": "Admin",
   "Edit object:": "Editar objeto:",
   "Write": "Escreva"
 }
