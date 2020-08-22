@@ -894,6 +894,7 @@
   "enterLogin": "Identifiant",
   "enterPassword": "Mot de passe",
   "login": "S'identifier",
+  "loginTitle": "Admin",
   "Stay signed in": "rester connecté",
   "tooltip_value": "Valeur",
   "tooltip_ack": "Reconnu",
@@ -916,7 +917,6 @@
   "filter_customs": "Réglages",
   "Logs": "Journal",
   "Files": "Des dossiers",
-  "loginTitle": "Admin",
   "Edit object:": "Modifier l'objet:",
   "Write": "Écrire"
 }
