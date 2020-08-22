@@ -1444,6 +1444,8 @@ $(document).ready(function () {
         }
         // if config dialog opened and has some unsaved data
         main.navigateCheckDialog(function (err) {
+            window.useDock = main.objects['system.adapter.admin.0'].native.dock;
+
             if (!err) {
                 configNotSaved = null;
                 main.currentHash = window.location.hash;
@@ -1474,46 +1476,110 @@ $(document).ready(function () {
                 if (!$panel.length) {
                     tab = 'intro';
                 }
+                
+				if (window.useDock) {
+					if (!window._dockCssAdded) {
+						window._dockCssAdded = true;
 
-                // if tab was changed
-                if (main.currentTab !== tab || !$actualTab.length) {
-                    let link;
-                    // destroy actual tab
-                    if (main.currentTab && tabs[main.currentTab] && typeof tabs[main.currentTab].destroy === 'function') {
-                        tabs[main.currentTab].destroy();
-                    } else if (main.currentTab) {
-                        const $oldPanel = $('#tab-' + main.currentTab);
-                        // destroy current iframe
-                        if ($oldPanel.length && (link = $oldPanel.data('src'))) {
-                            const $iframe_ = $oldPanel.find('>iframe');
-                            if ($iframe_.attr('src')) {
-                                console.log('clear');
-                                $iframe_.attr('src', '');
+						let divDockManager = document.createElement("div");
+						divDockManager.style.position = "relative"; divDockManager.style.width = "100%"; divDockManager.style.height = "100%";
+						let bodyContainer = document.getElementsByClassName("admin-sidemenu-body")[0];
+						bodyContainer.appendChild(divDockManager);
+
+						let dockManager = new DockSpawnTS.DockManager(divDockManager);
+						dockManager.initialize();
+						window.onresize = () => dockManager.resize(bodyContainer.clientWidth - 10, bodyContainer.clientHeight - 10);
+
+                        window.dockManager = dockManager;
+
+                        dockManager.addLayoutListener({
+                            onClosePanel: (dockManager, panel) => {
+                               $(panel.elementContent).hide().appendTo('body');
+                           }
+                       });
+                    }
+                    let tabContent = $panel[0];
+                    tabContent.__tabId = tab;
+
+                    // Open Tab only once
+                    let tabAlreadyOpened = false;
+                    for (let item of window.dockManager.getPanels()) {
+                        if (item.elementContent.__tabId === tab) {
+                            window.dockManager.context.documentManagerView.tabHost.setActiveTab(item);
+                            tabAlreadyOpened = true;
+                            break;
+                        }
+                    }
+                    if (!tabAlreadyOpened) {
+                        let link;
+
+                        if (!dialog) {
+                            $panel.addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
+                            $actualTab = $panel;
+                        }
+
+                        let panelContainer = new DockSpawnTS.PanelContainer(tabContent, dockManager, tab);
+                        let documentNode = dockManager.context.model.documentManagerNode;
+                        dockManager.dockFill(documentNode, panelContainer);
+
+                        // init new tab
+                        if (tabs[tab] && typeof tabs[tab].init === 'function') {
+                            tabs[tab].init();
+                        }
+
+                        // if iframe like node-red
+                        if ($panel.length && (link = $panel.data('src'))) {
+                            if (link.indexOf('%') === -1) {
+                                const $iframe = $panel.find('>iframe');
+                                if ($iframe.length && !$iframe.attr('src')) {
+                                    $iframe.attr('src', link);
+                                }
+                            } else {
+                                $adminSideMenu.data('problem-link', 'tab-' + tab);
                             }
                         }
                     }
-                    main.currentTab = tab;
-
-                    $actualTab.hide().appendTo('body');
-                    if (!dialog) {
-                        $panel.addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
-                        $actualTab = $panel;
-                    }
-
-                    // init new tab
-                    if (tabs[tab] && typeof tabs[tab].init === 'function') {
-                        tabs[tab].init();
-                    }
-
-                    // if iframe like node-red
-                    if ($panel.length && (link = $panel.data('src'))) {
-                        if (link.indexOf('%') === -1) {
-                            const $iframe = $panel.find('>iframe');
-                            if ($iframe.length && !$iframe.attr('src')) {
-                                $iframe.attr('src', link);
+                } else {
+                    // if tab was changed
+                    if (main.currentTab !== tab || !$actualTab.length) {
+                        let link;
+                        // destroy actual tab
+                        if (main.currentTab && tabs[main.currentTab] && typeof tabs[main.currentTab].destroy === 'function') {
+                            tabs[main.currentTab].destroy();
+                        } else if (main.currentTab) {
+                            const $oldPanel = $('#tab-' + main.currentTab);
+                            // destroy current iframe
+                            if ($oldPanel.length && (link = $oldPanel.data('src'))) {
+                                const $iframe_ = $oldPanel.find('>iframe');
+                                if ($iframe_.attr('src')) {
+                                    console.log('clear');
+                                    $iframe_.attr('src', '');
+                                }
                             }
-                        } else {
-                            $adminSideMenu.data('problem-link', 'tab-' + tab);
+                        }
+                        main.currentTab = tab;
+
+                        $actualTab.hide().appendTo('body');
+                        if (!dialog) {
+                            $panel.addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
+                            $actualTab = $panel;
+                        }
+
+                        // init new tab
+                        if (tabs[tab] && typeof tabs[tab].init === 'function') {
+                            tabs[tab].init();
+                        }
+
+                        // if iframe like node-red
+                        if ($panel.length && (link = $panel.data('src'))) {
+                            if (link.indexOf('%') === -1) {
+                                const $iframe = $panel.find('>iframe');
+                                if ($iframe.length && !$iframe.attr('src')) {
+                                    $iframe.attr('src', link);
+                                }
+                            } else {
+                                $adminSideMenu.data('problem-link', 'tab-' + tab);
+                            }
                         }
                     }
                 }
@@ -1529,24 +1595,52 @@ $(document).ready(function () {
                     $('#host-adapters-btn').css('opacity', 0.3);
                 }
                 document.title = tab + ' - ioBroker';
-                // if some dialog opened or must be shown
-                if (main.currentDialog !== dialog) {
-                    // destroy it
-                    if (main.dialogs[main.currentDialog] && typeof main.dialogs[main.currentDialog].destroy === 'function') {
-                        main.dialogs[main.currentDialog].destroy();
-                    }
-                    main.currentDialog = dialog;
-                    if (dialog && main.dialogs[dialog]) {
-                        if (typeof main.dialogs[dialog].init === 'function') {
-                            main.dialogs[dialog].init(params ? params.split(',') : undefined);
+
+                if (window.useDock) {
+                    // if some dialog opened or must be shown
+                    if (main.currentDialog !== dialog) {
+                       // destroy it
+                       if (main.dialogs[main.currentDialog] && typeof main.dialogs[main.currentDialog].destroy === 'function') {
+                           main.dialogs[main.currentDialog].destroy();
+                       }
+                       main.currentDialog = dialog;
+                       if (dialog && main.dialogs[dialog]) {
+                           if (typeof main.dialogs[dialog].init === 'function') {
+                               main.dialogs[dialog].init(params ? params.split(',') : undefined);
+                           }
+                           //$actualTab.hide().appendTo('body');
+                           $('#dialog-' + dialog)[0].style.width="90%";
+                           $('#dialog-' + dialog)[0].style.height="90%";
+                           $('#dialog-' + dialog).addClass('admin-sidemenu-body-content').show(); //.appendTo($adminBody);
+                           let panelContainer = new DockSpawnTS.PanelContainer($('#dialog-' + dialog)[0], dockManager, tab);
+                           window.dockManager.floatDialog(panelContainer, 50, 50);
+                       } /* else if ($actualTab.attr('id') !== $panel.attr('id')) {
+                           $actualTab.hide().appendTo('body');
+                           $panel.addClass('admin-sidemenu-body-content').show(); //.appendTo($adminBody);
+                           let panelContainer = new DockSpawnTS.PanelContainer($panel[0], dockManager, tab);
+                           window.dockManager.floatDialog(panelContainer, 50, 50);
+                       } */
+                   }
+                } else {
+                    // if some dialog opened or must be shown
+                    if (main.currentDialog !== dialog) {
+                        // destroy it
+                        if (main.dialogs[main.currentDialog] && typeof main.dialogs[main.currentDialog].destroy === 'function') {
+                            main.dialogs[main.currentDialog].destroy();
                         }
-                        tabs[main.currentTab] && tabs[main.currentTab].saveScroll && tabs[main.currentTab].saveScroll();
-                        $actualTab.hide().appendTo('body');
-                        $('#dialog-' + dialog).addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
-                    } else if ($actualTab.attr('id') !== $panel.attr('id')) {
-                        $actualTab.hide().appendTo('body');
-                        $panel.addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
-                        tabs[main.currentTab] && tabs[main.currentTab].restoreScroll && tabs[main.currentTab].restoreScroll();
+                        main.currentDialog = dialog;
+                        if (dialog && main.dialogs[dialog]) {
+                            if (typeof main.dialogs[dialog].init === 'function') {
+                                main.dialogs[dialog].init(params ? params.split(',') : undefined);
+                            }
+                            tabs[main.currentTab] && tabs[main.currentTab].saveScroll && tabs[main.currentTab].saveScroll();
+                            $actualTab.hide().appendTo('body');
+                            $('#dialog-' + dialog).addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
+                        } else if ($actualTab.attr('id') !== $panel.attr('id')) {
+                            $actualTab.hide().appendTo('body');
+                            $panel.addClass('admin-sidemenu-body-content').show().appendTo($adminBody);
+                            tabs[main.currentTab] && tabs[main.currentTab].restoreScroll && tabs[main.currentTab].restoreScroll();
+                        }
                     }
                 }
             } else {

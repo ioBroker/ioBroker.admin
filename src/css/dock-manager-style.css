@@ -1,0 +1,161 @@
+/************* Panel with title bar ************/
+.panel-base {
+}
+
+.panel-titlebar {
+	background-color: #333;
+}
+
+.panel-titlebar-text {
+	font-weight: bold;
+	color:#aaa;
+}
+
+.panel-titlebar-button-close {
+	color:#aaa;
+}
+
+.panel-titlebar-button-close:hover {
+	color:red;
+}
+
+.panel-content {
+	background-color: #FFF;
+    overflow: auto;
+}
+
+.panel-content * {
+}
+
+/***************** Floating dialog box ****************/
+.dialog-floating {
+	box-shadow: 5px 5px 20px #000;
+}
+
+/************ Resize decorator ************/
+.resize-handle {
+}
+
+.resize-handle-corner {
+}
+
+.resize-handle-e  {  }
+.resize-handle-w  {  }
+.resize-handle-s  {  }
+.resize-handle-n  {  }
+.resize-handle-ne {  }
+.resize-handle-nw {  }
+.resize-handle-se {  }
+.resize-handle-sw {  }
+
+
+/******************* Dock Manager ********************/
+.dock-container {
+	background-color: #888;
+}
+
+.dock-container-fill {
+
+}
+
+/******************* Document Manager ********************/
+.document-manager {
+	background-color: #666;
+}
+
+
+
+/**************************** Splitter *********************************/
+.splitter-container-horizontal {
+}
+
+.splitter-container-vertical {
+}
+
+.splitbar-horizontal {
+	background-color: #000000;
+}
+
+.splitbar-horizontal:hover {
+	background-color: #5b636c;
+}
+
+.splitbar-horizontal:active {
+	background-color: #5b636c;
+}
+
+.splitbar-vertical {
+	background-color: #000000;
+}
+
+.splitbar-vertical:hover {
+	background-color: #5b636c;
+}
+
+.splitbar-vertical:active {
+	background-color: #5b636c;
+}
+
+.splitbar-horizontal-ghoust{
+	background-color: #ffcc00;
+}
+.splitbar-vertical-ghoust {
+	background-color: #ffcc00;
+}
+
+
+/*************************** Tab Host ********************************/
+.dockspan-tab-host {
+	background-color: #fff;
+}
+
+.dockspan-tab-content {
+	background-color: #fff;
+	margin: 5px;
+}
+
+.dockspan-tab-content > * {
+	background-color: #fff;
+}
+
+/*.tab-content * {
+    margin: 0px;
+}*/
+
+.dockspan-tab-handle {
+	background-color: #808080;
+	color:#D5D5D5;
+	box-shadow: 0px 5px 20px #000;
+}
+.dockspan-tab-handle:hover {
+    background-color: #0d5794;
+	color:#fff;
+}
+
+.dockspan-tab-handle-selected {
+    background-color: #2196f3;
+	color:#fff;
+}
+
+.dockspan-tab-handle-selected:hover {
+    background-color: #0d5794;
+	color:#fff;
+}
+
+.dockspan-tab-handle-text {
+}
+
+.dockspan-tab-handle-close-button {
+}
+
+.dockspan-tab-handle-close-button:hover {
+	color: red;
+}
+
+.dockspan-tab-handle-list-container {
+	background-color: #ffffff;
+}
+
+.dockspan-tab-handle-content-seperator {
+	background-color: #2196f3;
+} 

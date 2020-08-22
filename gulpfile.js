@@ -468,6 +468,30 @@ gulp.task('materializeCSS', () => {
 
 });
 
+gulp.task('copyDockSpawnCss', () => {
+    return gulp.src(['./node_modules/dock-spawn-ts/lib/css/dock-manager.css'])
+        .pipe(gulp.src('./src/css/*.css'))
+        .pipe(gulp.dest('./www/css'))
+        .pipe(gulp.dest('./www-react/css'));
+});
+
+gulp.task('copyDockSpawnJs', () => {
+    return gulp.src(['./node_modules/dock-spawn-ts/lib/es5/*.js'])
+        .pipe(gulp.dest('./www/js'))
+        .pipe(gulp.dest('./www-react/js'));
+});
+
+gulp.task('copyDockSpawnImages', () => {
+    return gulp.src(['./node_modules/dock-spawn-ts/lib/images/*.*'])
+        .pipe(gulp.dest('./www/images'))
+        .pipe(gulp.dest('./www-react/images'));
+});
+
+gulp.task('copyDockSpawn', gulp.series(
+    'copyDockSpawnCss',
+    'copyDockSpawnJs',
+    'copyDockSpawnImages'));
+
 gulp.task('materializeJS', () => {
     return gulp.src([
         './src/materialize-css/js/global.js',
@@ -694,7 +718,7 @@ gulp.task('watch', () => {
 });
 
 gulp.task('1_words',  gulp.parallel('www (json => words.js)', 'admin (json => words.js)'));
-gulp.task('2_css',    gulp.parallel('iobCSS', 'adminCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS'));
+gulp.task('2_css',    gulp.parallel('iobCSS', 'adminCSS', 'appCSS', 'treeTableCSS', 'configCSS', 'materializeCSS', 'copyDockSpawn'));
 gulp.task('3_js',     gulp.parallel('vendorJS', 'materializeJS', 'appJS', 'fancyTreeJS')); //compressApp is last, to give the time for 1_words to be finshed. Because words.js is used in app.js
 gulp.task('4_static', gulp.parallel('appHTML', 'aceCopy', 'colorpickerCopy', 'appCopy'));
 
