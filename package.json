@@ -47,6 +47,7 @@
         "ansi-colors": "^4.1.1",
         "chai": "^4.2.0",
         "del": "^5.1.0",
+        "dock-spawn-ts": "^2.49.0",
         "fancy-log": "^1.3.3",
         "gulp": "^4.0.2",
         "gulp-babel": "^8.0.0",
