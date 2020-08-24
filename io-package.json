@@ -2,8 +2,20 @@
     "common": {
         "name": "admin",
         "title": "Admin",
-        "version": "4.1.6",
+        "version": "4.1.7",
         "news": {
+            "4.1.7": {
+                "en": "Fixed editing of the objects with % sign in the ID",
+                "de": "Die Bearbeitung der Objekte mit% -Zeichen in der ID wurde korrigiert",
+                "ru": "Исправлено редактирование объектов со знаком% в идентификаторе",
+                "pt": "Edição corrigida dos objetos com% de sinal no ID",
+                "nl": "Vaste bewerking van de objecten met% -teken in de ID",
+                "fr": "Correction de l'édition des objets avec le signe% dans l'ID",
+                "it": "Risolto il problema con la modifica degli oggetti con il segno% nell'ID",
+                "es": "Se corrigió la edición de los objetos con% de signo en la ID.",
+                "pl": "Poprawiono edycję obiektów ze znakiem% w ID",
+                "zh-cn": "修复了ID中带有％号的对象的编辑"
+            },
             "4.1.6": {
                 "en": "Increased the socket ping Interval and Timeout to maybe prevent the too fast reconnect attempts.",
                 "de": "Das Socking-Ping-Intervall und das Timeout wurden erhöht, um möglicherweise zu schnelle Wiederverbindungsversuche zu verhindern.",
