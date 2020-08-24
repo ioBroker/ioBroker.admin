@@ -1412,7 +1412,17 @@ $(document).ready(function () {
 
     main.navigateGetParams = function () {
         const parts = decodeURI(window.location.hash).split('/');
-        return parts[2] ? decodeURIComponent(parts[2]) : null;
+        if (parts[2] && parts[2].match('%\d\d')) {
+            try {
+                return decodeURIComponent(parts[2]);
+            } catch (e) {
+                return parts[2];
+            }
+        } else if (parts[2]) {
+            return parts[2];
+        } else {
+            return null;
+        }
     };
 
     main.navigate = function (options) {
