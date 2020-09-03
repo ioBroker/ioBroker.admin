@@ -1412,14 +1412,12 @@ $(document).ready(function () {
 
     main.navigateGetParams = function () {
         const parts = decodeURI(window.location.hash).split('/');
-        if (parts[2] && parts[2].match('%\d\d')) {
+        if (parts[2]) {
             try {
                 return decodeURIComponent(parts[2]);
             } catch (e) {
                 return parts[2];
             }
-        } else if (parts[2]) {
-            return parts[2];
         } else {
             return null;
         }
