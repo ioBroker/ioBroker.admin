@@ -2,9 +2,9 @@
     "common": {
         "name": "admin",
         "title": "Admin",
-        "version": "4.1.7",
+        "version": "4.1.8",
         "news": {
-            "4.1.7": {
+            "4.1.8": {
                 "en": "Fixed editing of the objects with % sign in the ID",
                 "de": "Die Bearbeitung der Objekte mit% -Zeichen in der ID wurde korrigiert",
                 "ru": "Исправлено редактирование объектов со знаком% в идентификаторе",
