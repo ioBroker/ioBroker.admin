@@ -110,6 +110,9 @@ const tabsInfo = {
     'tab-fullcalendar-1':   {order: 66,   icon: <PermContactCalendarIcon />, instance: 1},
     'tab-fullcalendar-2':   {order: 67,   icon: <PermContactCalendarIcon />, instance: 2},
     'tab-echarts':          {order: 70,   icon: <ShowChartIcon />, instance: 2},
+    'tab-eventlist-0':      {order: 80,   icon: <FlashOnIcon />},
+    'tab-eventlist-1':      {order: 81,   icon: <FlashOnIcon />},
+    'tab-eventlist-2':      {order: 82,   icon: <FlashOnIcon />},
     'tab-hosts':            {order: 100,  icon: <StorageIcon />},
     'tab-files':            {order: 110,  icon: <FilesIcon />},
 };
