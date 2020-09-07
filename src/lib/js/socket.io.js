@@ -2,7 +2,7 @@
  * ioBroker WebSockets
  * Copyright 2020, bluefox <dogafox@gmail.com>
  * Released under the MIT License.
- * v 0.1.1
+ * v 0.2.0
  */
 /* jshint -W097 */
 /* jshint strict: false */
@@ -67,8 +67,8 @@ function SocketClient () {
         connectTimer && clearInterval(connectTimer);
         connectTimer = null;
 
-        url = _url || window.location.href;
-        options = _options;
+        url = url || _url || window.location.href;
+        options = options || _options;
         sessionID = Date.now();
         try {
             if (url === '/') {
@@ -253,7 +253,7 @@ function SocketClient () {
 
         id++;
 
-        if (name === 'writeFile') {
+        if (name === 'writeFile' && typeof arg3 !== 'string') {
             // _adapter, filename, data, callback
             arg3 = arg3 && btoa(String.fromCharCode.apply(null, new Uint8Array(arg3)));
         }
