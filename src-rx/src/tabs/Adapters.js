@@ -71,7 +71,7 @@ const styles = theme => ({
         width: 600
     },
     keywords: {
-        
+
     },
     connectionType: {
         width: 40
@@ -160,7 +160,7 @@ class Adapters extends React.Component {
     static getDerivedStateFromProps() {
 
         const location = Router.getLocation();
-        
+
         const newState = {
             dialog: location.dialog,
             dialogProp: location.id
@@ -176,7 +176,7 @@ class Adapters extends React.Component {
 
         // Do not update too often
         if (new Date().getTime() - this.state.lastUpdate > 1000) {
-            
+
             this.setState({
                 update: true
             });
@@ -210,7 +210,7 @@ class Adapters extends React.Component {
                 const categoriesExpanded = JSON.parse(window.localStorage.getItem('Adapters.expandedCategories')) || {};
 
                 Object.keys(installed).forEach(value => {
-                    
+
                     const adapter = installed[value];
 
                     if (!adapter.controller && value !== 'hosts') {
@@ -222,7 +222,7 @@ class Adapters extends React.Component {
                 });
 
                 Object.keys(repository).forEach(value => {
-                    
+
                     const adapter = repository[value];
 
                     if (!adapter.controller) {
@@ -323,7 +323,7 @@ class Adapters extends React.Component {
                 addInstanceHost: this.props.currentHostName
             });
         } else {
-            
+
             if (instance) {
 
                 let cancel = false;
@@ -358,7 +358,7 @@ class Adapters extends React.Component {
     }
 
     rebuild(adapter) {
-        this.props.executeCommand('rebuild ' + adapter) 
+        this.props.executeCommand('rebuild ' + adapter)
     }
 
     delete(adapter) {
@@ -490,7 +490,7 @@ class Adapters extends React.Component {
                     installed: true,
                     installedVersion: this.state.nodeJsVersion,
                     rightVersion: false
-                }
+                };
 
                 entry.rightVersion = Semver.satisfies(this.state.nodeJsVersion, nodeVersion);
 
@@ -511,19 +511,32 @@ class Adapters extends React.Component {
             const dependencies = adapter.dependencies;
             const nodeVersion = adapter.node;
 
-            dependencies && dependencies.forEach(dependency => {
+            if (dependencies) {
+                if (dependencies instanceof Array) {
+                    dependencies.forEach(dependency => {
+                        const checkVersion = typeof dependency !== 'string';
+                        const keys = Object.keys(dependency);
+                        const name = !checkVersion ? dependency : keys ? keys[0] : null;
 
-                const checkVersion = typeof dependency !== 'string';
-                const keys = Object.keys(dependency);
-                const name = !checkVersion ? dependency : keys ? keys[0] : null;
+                        if (result && name) {
 
-                if (result && name) {
+                            const installed = this.state.installed[name];
 
-                    const installed = this.state.installed[name];
-
-                    result = installed ? checkVersion ? Semver.satisfies(installed.version, dependency[name]): true : false;
+                            result = installed ? (checkVersion ? Semver.satisfies(installed.version, dependency[name]) : true) : false;
+                        }
+                    });
+                } else if (typeof dependencies === 'object') {
+                    Object.keys(dependencies).forEach(dependency => {
+                        if (dependency && dependencies[dependency] !== undefined && result) {
+                            const installed = this.state.installed[dependency];
+                            const checkVersion = typeof dependencies[dependency] !== 'string';
+                            result = installed ? (checkVersion ? Semver.satisfies(installed.version, dependency[dependency]) : true) : false;
+                        }
+                    });
+                } else {
+                    console.error(`Invalid dependencies for ${value}: ${JSON.stringify(dependencies)}`)
                 }
-            });
+            }
 
             if (result && nodeVersion) {
                 result = Semver.satisfies(this.state.nodeJsVersion, nodeVersion);
@@ -651,25 +664,25 @@ class Adapters extends React.Component {
             const expanded = this.state.categoriesExpanded[categoryName];
             const adapters = [];
             let showCategory = false;
-            
+
             category.adapters.forEach(value => {
-                
+
                 const adapter = this.state.repository[value];
 
                 if (!adapter.controller) {
 
                     const installed = this.state.installed[value];
 
-                    const title = (adapter.title.toString() || '').replace('ioBroker Visualisation - ', '');
+                    const title = ((adapter.title || '').toString() || '').replace('ioBroker Visualisation - ', '');
                     const desc = adapter.desc ? adapter.desc[this.props.lang] || adapter.desc['en'] || adapter.desc : '';
                     const image = installed ? installed.localIcon : adapter.extIcon;
                     const connectionType = adapter.connectionType ? adapter.connectionType : '-';
                     const updateAvailable = installed ? this.updateAvailable(installed.version, adapter.version) : false;
                     const rightDependencies = this.rightDependencies(value);
                     const rightOs = this.rightOs(value);
-                    const sentry = adapter.plugins && adapter.plugins.sentry ? true : false;
+                    const sentry = !!(adapter.plugins && adapter.plugins.sentry);
 
-                    let show = search ? false : true;
+                    let show = !search;
 
                     if (search) {
                         if (title && title.toLowerCase().includes(search)) {
