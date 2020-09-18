@@ -1472,7 +1472,7 @@ class ObjectBrowser extends React.Component {
             customConfig:   this.props.t('ra_tooltip_customConfig'),
             copyState:      this.props.t('ra_tooltip_copyState'),
             editState:      this.props.t('ra_tooltip_editState'),
-            close:          this.props.t('ra_close'),
+            close:          this.props.t('ra_Close'),
             filter_id:      this.props.t('ra_filter_id'),
             filter_name:    this.props.t('ra_filter_name'),
             filter_type:    this.props.t('ra_filter_type'),
@@ -2661,7 +2661,7 @@ class ObjectBrowser extends React.Component {
 
             if (columnsForAdmin && columns) {
                 Object.keys(columnsForAdmin).sort().map(adapter =>
-                    columnsForAdmin[adapter].map(column => {
+                    columnsForAdmin[adapter].forEach(column => {
                         const id = '_' + adapter + '_' + column.path;
                         this.columnsVisibility[id] = columns.includes(id);
                         if (columns.includes(id)) {

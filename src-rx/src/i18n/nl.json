@@ -918,12 +918,5 @@
   "Logs": "Log",
   "Files": "Bestanden",
   "Edit object:": "Object bewerken:",
-  "Write": "Schrijven",
-  "ra_Auto (no custom columns)": "Auto (geen aangepaste kolommen)",
-  "ra_Transparent dialog": "Transparant dialoogvenster",
-  "ra_Width": "Breedte",
-  "ra_val": "Waarde",
-  "ra_buttons": "Toetsen",
-  "ra_Configure visible columns": "Configureer zichtbare kolommen",
-  "ra_close": "Dichtbij"
+  "Write": "Schrijven"
 }

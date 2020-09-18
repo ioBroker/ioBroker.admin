@@ -918,12 +918,5 @@
   "Logs": "Registro",
   "Files": "Archivos",
   "Edit object:": "Editar objeto:",
-  "Write": "Escribir",
-  "ra_Auto (no custom columns)": "Automático (sin columnas personalizadas)",
-  "ra_Transparent dialog": "Diálogo transparente",
-  "ra_Width": "Anchura",
-  "ra_val": "Valor",
-  "ra_buttons": "Botones",
-  "ra_Configure visible columns": "Configurar columnas visibles",
-  "ra_close": "Cerca"
+  "Write": "Escribir"
 }

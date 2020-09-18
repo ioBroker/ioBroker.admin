@@ -918,12 +918,5 @@
   "Logs": "Журнал",
   "Files": "Файлы",
   "Edit object:": "Изменить объект:",
-  "Write": "Сохранить",
-  "ra_Auto (no custom columns)": "Авто (без настраиваемых столбцов)",
-  "ra_Transparent dialog": "Прозрачный диалог",
-  "ra_Width": "Ширина",
-  "ra_val": "Значение",
-  "ra_buttons": "Кнопки",
-  "ra_Configure visible columns": "Настроить видимые столбцы",
-  "ra_close": "Закрыть"
+  "Write": "Сохранить"
 }

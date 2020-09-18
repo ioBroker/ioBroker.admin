@@ -918,12 +918,5 @@
   "Logs": "Registra",
   "Files": "File",
   "Edit object:": "Modifica oggetto:",
-  "Write": "Scrivi",
-  "ra_Auto (no custom columns)": "Auto (nessuna colonna personalizzata)",
-  "ra_Transparent dialog": "Finestra di dialogo trasparente",
-  "ra_Width": "Larghezza",
-  "ra_val": "Valore",
-  "ra_buttons": "Bottoni",
-  "ra_Configure visible columns": "Configura colonne visibili",
-  "ra_close": "Vicino"
+  "Write": "Scrivi"
 }
