@@ -918,5 +918,12 @@
   "Logs": "Log",
   "Files": "arquivos",
   "Edit object:": "Editar objeto:",
-  "Write": "Escreva"
+  "Write": "Escreva",
+  "ra_Auto (no custom columns)": "Auto (no custom columns)",
+  "ra_Transparent dialog": "Transparent dialog",
+  "ra_Width": "Width",
+  "ra_val": "Value",
+  "ra_buttons": "Buttons",
+  "ra_Configure visible columns": "Configure visible columns",
+  "ra_close": "Close"
 }
