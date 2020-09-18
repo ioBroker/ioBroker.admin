@@ -918,5 +918,12 @@
   "Logs": "Zaloguj wiadomości",
   "Files": "Akta",
   "Edit object:": "Edytuj obiekt:",
-  "Write": "pisać"
+  "Write": "pisać",
+  "ra_Auto (no custom columns)": "Auto (bez kolumn niestandardowych)",
+  "ra_Transparent dialog": "Przejrzyste okno dialogowe",
+  "ra_Width": "Szerokość",
+  "ra_val": "Wartość",
+  "ra_buttons": "guziki",
+  "ra_Configure visible columns": "Skonfiguruj widoczne kolumny",
+  "ra_close": "Blisko"
 }

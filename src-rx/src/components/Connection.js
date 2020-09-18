@@ -2,6 +2,12 @@
     Later it will be moved to adapter-react
  */
 
+/**
+ * Copyright 2020, bluefox <dogafox@gmail.com>
+ *
+ * MIT License
+ *
+ **/
 import PropTypes from 'prop-types';
 
 export const PROGRESS = {
@@ -22,9 +28,10 @@ class Connection {
         this.autoSubscribes   = this.props.autoSubscribes || [];
         this.autoSubscribeLog = this.props.autoSubscribeLog;
 
-        this.props.protocol = this.props.protocol || window.location.protocol;
-        this.props.host     = this.props.host     || (window.location.host && window.location.host.substr(0, window.location.host.indexOf(':')));
-        this.props.port     = this.props.port     || 8081;
+        this.props.protocol  = this.props.protocol || window.location.protocol;
+        this.props.host      = this.props.host     || window.location.hostname;
+        this.props.port      = this.props.port     || (window.location.port === '3000' ? 8081 : window.location.port);
+        this.props.ioTimeout = Math.max(this.props.ioTimeout || 20000, 20000);
 
         // breaking change. Do not load all objects by default is true
         this.doNotLoadAllObjects = this.props.doNotLoadAllObjects === undefined ? true : this.props.doNotLoadAllObjects;
@@ -44,7 +51,7 @@ class Connection {
         this.loadTimer = null;
         this.loadCounter = 0;
         this.certPromise = null;
-        
+
         this.onConnectionHandlers = [];
         this.onLogHandlers = [];
 
@@ -78,24 +85,54 @@ class Connection {
                 return;
             }
         }
+
+        let host = this.props.host;
+        let port = this.props.port;
+        let protocol = this.props.protocol.replace(':', '');
+
+        // if web adapter, socket io could be on other port or even host
+        if (window.socketUrl) {
+            let parts = window.socketUrl.split(':');
+            host = parts[0] || host;
+            port = parts[1] || port;
+            if (host.includes('://')) {
+                parts = host.split('://');
+                protocol = parts[0];
+                host = parts[1];
+            }
+        }
+
+        const url = `${protocol}://${host}:${port}`;
+
         this._socket = window.io.connect(
-            this.props.protocol.replace(':', '') + '://' + this.props.host + ':' + this.props.port,
-            {query: 'ws=true', name: this.props.name}
+            url,
+            {
+                query: 'ws=true',
+                name: this.props.name,
+                timeout: this.props.ioTimeout
+            }
         );
 
-        this._socket.on('connect', () => {
-            this.getAdminVersion()
-                .then(version => {
-                    const [major, minor, patch] = version.split('.');
-                    const v = parseInt(major, 10) * 10000 + parseInt(minor, 10) * 100 + parseInt(patch, 10);
-                    if (v < 40102) {
-                        this._authTimer = null;
-                        // possible this is old version of admin
-                        this.onPreConnect(false, false);
-                    } else {
-                        this._socket.emit('authenticate', (isOk, isSecure) => this.onPreConnect(isOk, isSecure));
-                    }
-                });
+        this._socket.on('connect', noTimeout => {
+            // If the user is not admin it takes some time to install the handlers, because all rights must be checked
+            if (noTimeout !== true) {
+                setTimeout(() =>
+                    this.getVersion()
+                        .then(info => {
+                            const [major, minor, patch] = info.version.split('.');
+                            const v = parseInt(major, 10) * 10000 + parseInt(minor, 10) * 100 + parseInt(patch, 10);
+                            if (v < 40102) {
+                                this._authTimer = null;
+                                // possible this is old version of admin
+                                this.onPreConnect(false, false);
+                            } else {
+                                this._socket.emit('authenticate', (isOk, isSecure) => this.onPreConnect(isOk, isSecure));
+                            }
+                        }), 500);
+            } else {
+                // iobroker websocket waits, till all handlers are installed
+                this._socket.emit('authenticate', (isOk, isSecure) => this.onPreConnect(isOk, isSecure));
+            }
         });
 
         this._socket.on('reconnect', () => {
@@ -276,15 +313,18 @@ class Connection {
                 this._socket.emit('subscribe', id);
             }
         } else {
-            this.statesSubscribes[id].cbs.indexOf(cb) === -1 && this.statesSubscribes[id].cbs.push(cb);
+            !this.statesSubscribes[id].cbs.includes(cb) && this.statesSubscribes[id].cbs.push(cb);
         }
         if (typeof cb === 'function' && this.connected) {
             if (binary) {
                 this.getBinaryState(id)
-                    .then(base64 => cb(id, base64));
+                    .then(base64 => cb(id, base64))
+                    .catch(e =>console.error(`Cannot getForeignStates "${id}": ${JSON.stringify(e)}`));
             } else {
-                this._socket.emit('getForeignStates', id, (err, states) =>
-                    states && Object.keys(states).forEach(id => cb(id, states[id])));
+                this._socket.emit('getForeignStates', id, (err, states) => {
+                    err && console.error(`Cannot getForeignStates "${id}": ${JSON.stringify(err)}`);
+                    states && Object.keys(states).forEach(id => cb(id, states[id]));
+                });
             }
         }
     }
@@ -371,19 +411,12 @@ class Connection {
             }
         });
 
-        if (this.props.onBlocklyChanges && id.match(/^system\.adapter\.[-\w\d]+\$/)) {
-            if (obj[id].common && obj[id].common.blockly) {
-                this.props.onBlocklyChanges(id);
-            }
-        }
-
         if (changed && this.props.onObjectChange) {
-            this.props.onObjectChange(this.objects);
+            this.props.onObjectChange(id, obj);
         }
     }
 
     stateChange(id, state) {
-        id = id ? id.replace(/[\s'"]/g, '_') : '';
         for (const task in this.statesSubscribes) {
             if (this.statesSubscribes.hasOwnProperty(task) && this.statesSubscribes[task].reg.test(id)) {
                 this.statesSubscribes[task].cbs.forEach(cb => cb(id, state));
@@ -459,24 +492,24 @@ class Connection {
                         disableProgressUpdate && this.onProgress(PROGRESS.OBJECTS_LOADED);
                         callback(this.objects);
                     });
-
                 }
             }
         } else {
             if (!this.connected) {
                 return Promise.reject(NOT_CONNECTED);
-            }
-            return new Promise((resolve, reject) => {
-                if (!update && this.objects) {
-                    return resolve(this.objects);
-                }
+            } else {
+                return new Promise((resolve, reject) => {
+                    if (!update && this.objects) {
+                        return resolve(this.objects);
+                    }
 
-                this._socket.emit('getAllObjects', (err, res) => {
-                    this.objects = res;
-                    disableProgressUpdate && this.onProgress(PROGRESS.OBJECTS_LOADED);
-                    err ? reject(err) : resolve(this.objects);
+                    this._socket.emit('getAllObjects', (err, res) => {
+                        this.objects = res;
+                        disableProgressUpdate && this.onProgress(PROGRESS.OBJECTS_LOADED);
+                        err ? reject(err) : resolve(this.objects);
+                    });
                 });
-            });
+            }
         }
     }
 
@@ -559,7 +592,7 @@ class Connection {
                 'getObjectView',
                 'system',
                 'instance',
-                {startkey: 'system.adapter.' + (adapter || ''), endkey: 'system.adapter.' + (adapter ? adapter + '.' : '') + '\u9999'},
+                {startkey: `system.adapter.${adapter || ''}`, endkey: `system.adapter.${adapter ? adapter + '.' : ''}\u9999`},
                 (err, doc) => {
                     if (err) {
                         reject(err);
@@ -570,6 +603,39 @@ class Connection {
         });
 
         return this._promises['instances' + adapter];
+    }
+
+    getAdapters(adapter, update) {
+        if (typeof adapter === 'boolean') {
+            update = adapter;
+            adapter = '';
+        }
+        adapter = adapter || '';
+
+        if (!update && this._promises['adapter_' + adapter]) {
+            return this._promises['adapter_' + adapter];
+        }
+
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        this._promises['adapter_' + adapter] = this._promises['adapter_' + adapter] || new Promise((resolve, reject) => {
+            this._socket.emit(
+                'getObjectView',
+                'system',
+                'adapter',
+                {startkey: `system.adapter.${adapter || ''}`, endkey: `system.adapter.${adapter || ''}\u9999`},
+                (err, doc) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(doc.rows.map(item => item.value).filter(obj => obj && (!adapter || (obj.common && obj.common.name === adapter))));
+                    }
+                });
+        });
+
+        return this._promises['adapter_' + adapter];
     }
 
     _renameGroups(objs, cb) {
@@ -621,7 +687,8 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
         return new Promise(resolve =>
-            this._socket.emit('sendTo', instance, command, data, result => resolve(result)));
+            this._socket.emit('sendTo', instance, command, data, result =>
+                resolve(result)));
     }
 
     extendObject(id, obj) {
@@ -644,7 +711,7 @@ class Connection {
     registerConnectionHandler(handler) {
         !this.onConnectionHandlers.includes(handler) && this.onConnectionHandlers.push(handler);
     }
-    
+
     unregisterConnectionHandler(handler) {
         const pos = this.onConnectionHandlers.indexOf(handler);
         pos !== -1 && this.onConnectionHandlers.splice(pos, 1);
@@ -708,6 +775,9 @@ class Connection {
             return Promise.reject(NOT_CONNECTED);
         }
 
+        start = start || '';
+        end   = end   || '\u9999';
+
         return new Promise((resolve, reject) => {
             this._socket.emit('getObjectView', 'system', type, {startkey: start, endkey: end}, (err, res) => {
                 if (!err) {
@@ -739,39 +809,39 @@ class Connection {
                 const certs = [];
                 if (res && res.native && res.native.certificates) {
                     Object.keys(res.native.certificates).forEach(c => {
-                            const cert = res.native.certificates[c];
-                            if (!cert) {
-                                return;
+                        const cert = res.native.certificates[c];
+                        if (!cert) {
+                            return;
+                        }
+                        const _cert = {
+                            name: c,
+                            type: ''
+                        };
+                        // If it is filename, it could be everything
+                        if (cert.length < 700 && (cert.indexOf('/') !== -1 || cert.indexOf('\\') !== -1)) {
+                            if (c.toLowerCase().includes('private')) {
+                                _cert.type = 'private';
+                            } else if (cert.toLowerCase().includes('private')) {
+                                _cert.type = 'private';
+                            } else if (c.toLowerCase().includes('public')) {
+                                _cert.type = 'public';
+                            } else if (cert.toLowerCase().includes('public')) {
+                                _cert.type = 'public';
                             }
-                            const _cert = {
-                                name: c,
-                                type: ''
-                            };
-                            // If it is filename, it could be everything
-                            if (cert.length < 700 && (cert.indexOf('/') !== -1 || cert.indexOf('\\') !== -1)) {
-                                if (c.toLowerCase().includes('private')) {
-                                    _cert.type = 'private';
-                                } else if (cert.toLowerCase().includes('private')) {
-                                    _cert.type = 'private';
-                                } else if (c.toLowerCase().includes('public')) {
-                                    _cert.type = 'public';
-                                } else if (cert.toLowerCase().includes('public')) {
-                                    _cert.type = 'public';
-                                }
-                                certs.push(_cert);
-                            } else {
-                                _cert.type = (cert.substring(0, '-----BEGIN RSA PRIVATE KEY'.length) === '-----BEGIN RSA PRIVATE KEY' || cert.substring(0, '-----BEGIN PRIVATE KEY'.length) === '-----BEGIN PRIVATE KEY') ? 'private' : 'public';
+                            certs.push(_cert);
+                        } else {
+                            _cert.type = (cert.substring(0, '-----BEGIN RSA PRIVATE KEY'.length) === '-----BEGIN RSA PRIVATE KEY' || cert.substring(0, '-----BEGIN PRIVATE KEY'.length) === '-----BEGIN PRIVATE KEY') ? 'private' : 'public';
 
-                                if (_cert.type === 'public') {
-                                    const m = cert.split('-----END CERTIFICATE-----');
-                                    if (m.filter(t => t.replace(/\r\n|\r|\n/, '').trim()).length > 1) {
-                                        _cert.type = 'chained';
-                                    }
+                            if (_cert.type === 'public') {
+                                const m = cert.split('-----END CERTIFICATE-----');
+                                if (m.filter(t => t.replace(/\r\n|\r|\n/, '').trim()).length > 1) {
+                                    _cert.type = 'chained';
                                 }
-
-                                certs.push(_cert);
                             }
-                        });
+
+                            certs.push(_cert);
+                        }
+                    });
                 }
                 return certs;
             });
@@ -839,11 +909,11 @@ class Connection {
                 );
 
                 this._socket.emit('writeFile64', adapter, fileName, base64, err =>
-                    err ? reject(err) : resolve());   
+                    err ? reject(err) : resolve());
             }
         });
     }
-    
+
     deleteFile(adapter, fileName) {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
@@ -1076,7 +1146,7 @@ class Connection {
             });
         });
     }
-    
+
     checkFeatureSupported(feature, update) {
         if (!update && this._promises['supportedFeatures_' + feature]) {
             return this._promises['supportedFeatures_' + feature];
@@ -1218,9 +1288,20 @@ class Connection {
         if (!this.connected) {
             return Promise.reject(NOT_CONNECTED);
         }
+
         return new Promise((resolve, reject) =>
             this._socket.emit('getHistory', id, options, (err, values) =>
                 err ? reject(err) : resolve(values)));
+    }
+
+    getHistoryEx(id, options) {
+        if (!this.connected) {
+            return Promise.reject(NOT_CONNECTED);
+        }
+
+        return new Promise((resolve, reject) =>
+            this._socket.emit('getHistory', id, options, (err, values, stepIgnore, sessionId) =>
+                err ? reject(err) : resolve({values, sessionId, stepIgnore})));
     }
 
     changePassword(user, password) {
@@ -1246,8 +1327,8 @@ class Connection {
 
     decryptPhrase(encryptedPhrase) {
         return new Promise((resolve, reject) =>
-        this._socket.emit('decryptPhrase', encryptedPhrase, (err, text) =>
-            err ? reject(err) : resolve(text)));
+            this._socket.emit('decryptPhrase', encryptedPhrase, (err, text) =>
+                err ? reject(err) : resolve(text)));
     }
 
     encryptPhrase(phrasePlainText) {
@@ -1268,12 +1349,31 @@ class Connection {
                 err ? reject(err) : resolve(text)));
     }
 
-    getAdminVersion() {
+    getVersion() {
         this._promises.version = this._promises.version || new Promise((resolve, reject) =>
-            this._socket.emit('getVersion', (err, version) =>
-                err ? reject(err) : resolve(version)));
+            this._socket.emit('getVersion', (err, version, serverName) => {
+                // support of old socket.io
+                if (err && !version && typeof err === 'string' && err.match(/\d+\.\d+\.\d+/)) {
+                    resolve({version: err, serverName: 'socketio'});
+                } else {
+                    return err ? reject(err) : resolve({version, serverName});
+                }
+            }));
 
         return this._promises.version;
+    }
+
+    getWebServerName() {
+        this._promises.webName = this._promises.webName || new Promise((resolve, reject) =>
+            this._socket.emit('getAdapterName', (err, name) =>
+                err ? reject(err) : resolve(name)));
+
+        return this._promises.webName;
+    }
+
+    getAdminVersion() {
+        console.log('Deprecated: use getVersion');
+        return this.getVersion();
     }
 }
 

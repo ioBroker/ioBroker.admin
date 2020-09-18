@@ -918,5 +918,12 @@
   "Files": "档案",
   "loginTitle": "管理员",
   "Edit object:": "编辑对象：",
-  "Write": "写"
+  "Write": "写",
+  "ra_Auto (no custom columns)": "自动（无自定义列）",
+  "ra_Transparent dialog": "透明对话框",
+  "ra_Width": "宽度",
+  "ra_val": "值",
+  "ra_buttons": "纽扣",
+  "ra_Configure visible columns": "配置可见列",
+  "ra_close": "关"
 }

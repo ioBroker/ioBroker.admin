@@ -918,5 +918,12 @@
   "Logs": "Journal",
   "Files": "Des dossiers",
   "Edit object:": "Modifier l'objet:",
-  "Write": "Écrire"
+  "Write": "Écrire",
+  "ra_Auto (no custom columns)": "Auto (pas de colonnes personnalisées)",
+  "ra_Transparent dialog": "Dialogue transparent",
+  "ra_Width": "Largeur",
+  "ra_val": "Valeur",
+  "ra_buttons": "Boutons",
+  "ra_Configure visible columns": "Configurer les colonnes visibles",
+  "ra_close": "Fermer"
 }

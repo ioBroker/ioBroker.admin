@@ -918,5 +918,12 @@
   "Logs": "Protokoll",
   "Files": "Dateien",
   "Edit object:": "Objekt bearbeiten:",
-  "Write": "Specihern"
+  "Write": "Specihern",
+  "ra_Auto (no custom columns)": "Auto (keine benutzerdefinierten Spalten)",
+  "ra_Transparent dialog": "Transparenter Dialog",
+  "ra_Width": "Breite",
+  "ra_val": "Wert",
+  "ra_buttons": "Tasten",
+  "ra_Configure visible columns": "Spalten Konfigurieren",
+  "ra_close": "Schließen"
 }
