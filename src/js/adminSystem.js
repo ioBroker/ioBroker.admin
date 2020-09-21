@@ -130,7 +130,7 @@ function System(main) {
                 if (repo === 'default') {
                     name = 'Stable (default)';
                 } else if (repo === 'latest') {
-                    name = 'Beta (latest);
+                    name = 'Beta (latest)';
                 }
                 values.push({
                     name:    name,
