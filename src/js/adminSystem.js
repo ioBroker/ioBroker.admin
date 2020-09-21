@@ -126,9 +126,14 @@ function System(main) {
             for (var repo in that.systemRepos.native.repositories) {
                 if (!that.systemRepos.native.repositories.hasOwnProperty(repo)) continue;
                 var obj = that.systemRepos.native.repositories[repo];
-
+                let name = repo;
+                if (repo === 'default') {
+                    name = 'Stable (default)';
+                } else if (repo === 'latest') {
+                    name = 'Beta (latest);
+                }
                 values.push({
-                    name:    repo,
+                    name:    name,
                     link:    (typeof obj === 'object') ? obj.link : obj
                 });
             }
@@ -166,7 +171,13 @@ function System(main) {
         $system_activeRepo.html('');
         var data = table2values('tab-system-repo');
         for (var i = 0; i < data.length; i++) {
-            $system_activeRepo.append('<option value="' + data[i].name + '">' + data[i].name + '</option>');
+            let name = data[i].name;
+            if (data[i].name === 'default') {
+                name = 'Stable (default)';
+            } else if (data[i].name) {
+                name = 'Beta (latest)';
+            }
+            $system_activeRepo.append('<option value="' + data[i].name + '">' + name + '</option>');
             if (selectedRepo === data[i].name) {
                 isFound = true;
             }
