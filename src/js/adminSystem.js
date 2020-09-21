@@ -174,7 +174,7 @@ function System(main) {
             let name = data[i].name;
             if (data[i].name === 'default') {
                 name = 'Stable (default)';
-            } else if (data[i].name) {
+            } else if (data[i].name === 'latest') {
                 name = 'Beta (latest)';
             }
             $system_activeRepo.append('<option value="' + data[i].name + '">' + name + '</option>');
@@ -633,7 +633,13 @@ function System(main) {
             $system_activeRepo.html('');
             if (that.systemRepos && that.systemRepos.native.repositories) {
                 for (var repo in that.systemRepos.native.repositories) {
-                    $system_activeRepo.append('<option value="' + repo + '">' + repo + '</option>');
+                    let name = repo;
+                    if (repo === 'default') {
+                        name = 'Stable (default)';
+                    } else if (repo === 'latest') {
+                        name = 'Beta (latest)';
+                    }
+                    $system_activeRepo.append('<option value="' + repo + '">' + name + '</option>');
                 }
             } else {
                 that.$dialog.find('#tab-system-repo').html(_('permissionError'));
