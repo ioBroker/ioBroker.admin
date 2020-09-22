@@ -126,14 +126,8 @@ function System(main) {
             for (var repo in that.systemRepos.native.repositories) {
                 if (!that.systemRepos.native.repositories.hasOwnProperty(repo)) continue;
                 var obj = that.systemRepos.native.repositories[repo];
-                let name = repo;
-                if (repo === 'default') {
-                    name = 'Stable (default)';
-                } else if (repo === 'latest') {
-                    name = 'Beta (latest)';
-                }
                 values.push({
-                    name:    name,
+                    name:    overwriteRepoNames(repo),
                     link:    (typeof obj === 'object') ? obj.link : obj
                 });
             }
@@ -171,19 +165,23 @@ function System(main) {
         $system_activeRepo.html('');
         var data = table2values('tab-system-repo');
         for (var i = 0; i < data.length; i++) {
-            let name = data[i].name;
-            if (data[i].name === 'default') {
-                name = 'Stable (default)';
-            } else if (data[i].name === 'latest') {
-                name = 'Beta (latest)';
-            }
-            $system_activeRepo.append('<option value="' + data[i].name + '">' + name + '</option>');
+            $system_activeRepo.append('<option value="' + data[i].name + '">' + overwriteRepoNames(data[i].name) + '</option>');
             if (selectedRepo === data[i].name) {
                 isFound = true;
             }
         }
         if (isFound) $system_activeRepo.val(selectedRepo);
         $system_activeRepo.select();
+    }
+    
+    function overwriteRepoNames(name) {
+        let newName = name;
+        if (name === 'default') {
+                newName = 'Stable (default)';
+            } else if (name === 'latest') {
+                newName = 'Beta (latest)';
+            }
+        return newName;
     }
 
     // ----------------------------- Certificates show and Edit ------------------------------------------------
@@ -633,13 +631,8 @@ function System(main) {
             $system_activeRepo.html('');
             if (that.systemRepos && that.systemRepos.native.repositories) {
                 for (var repo in that.systemRepos.native.repositories) {
-                    let name = repo;
-                    if (repo === 'default') {
-                        name = 'Stable (default)';
-                    } else if (repo === 'latest') {
-                        name = 'Beta (latest)';
-                    }
-                    $system_activeRepo.append('<option value="' + repo + '">' + name + '</option>');
+                    
+                    $system_activeRepo.append('<option value="' + repo + '">' + overwriteRepoNames(repo) + '</option>');
                 }
             } else {
                 that.$dialog.find('#tab-system-repo').html(_('permissionError'));
