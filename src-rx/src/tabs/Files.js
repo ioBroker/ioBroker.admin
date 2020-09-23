@@ -26,25 +26,24 @@ class Files extends React.Component {
             );
         }
 
-        return (
-            <TabContainer>
-                <TabContent overflow="auto">
-                    <FileBrowser
-                        ready={ this.props.ready }
-                        socket={ this.props.socket }
-                        lang={ this.props.lang }
-                        t={ this.props.t }
-                        showToolbar={ true }
-                        allowUpload={ true }
-                        allowView={ true }
-                        allowDownload={ true }
-                        allowCreateFolder={ true }
-                        allowDelete={ true }
-                        expertMode={ this.props.expertMode }
-                    />
-                </TabContent>
-            </TabContainer>
-        );
+        return <TabContainer>
+            <TabContent overflow="auto">
+                <FileBrowser
+                    showViewTypeButton={ true }
+                    ready={ this.props.ready }
+                    socket={ this.props.socket }
+                    lang={ this.props.lang }
+                    t={ this.props.t }
+                    showToolbar={ true }
+                    allowUpload={ true }
+                    allowView={ true }
+                    allowDownload={ true }
+                    allowCreateFolder={ true }
+                    allowDelete={ true }
+                    expertMode={ this.props.expertMode }
+                />
+            </TabContent>
+        </TabContainer>;
     }
 }
 

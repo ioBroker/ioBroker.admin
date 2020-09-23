@@ -27,7 +27,7 @@ import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
 import BuildIcon from '@material-ui/icons/Build';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import ExpertIcon from './components/ExperIcon';
+import ExpertIcon from  '@iobroker/adapter-react/Components/ExpertIcon';
 
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import Brightness5Icon from '@material-ui/icons/Brightness5';
@@ -224,7 +224,7 @@ class App extends Router {
                 allTabs:        null,
 
                 expertMode:     window.localStorage.getItem('App.expertMode') === 'true',
-                
+
                 states:         {},
                 hosts:          [],
                 currentHost:    '',
@@ -460,7 +460,7 @@ class App extends Router {
         console.log('OBJECT: ' + id);
         if (obj) {
             this.setState(prevState => {
-                
+
                 const objects = prevState.objects;
                 objects[id] = obj;
 
@@ -470,7 +470,7 @@ class App extends Router {
             });
         } else {
             this.setState(prevState => {
-                
+
                 const objects = prevState.objects;
                 delete objects[id];
 
@@ -509,7 +509,7 @@ class App extends Router {
     }
 
     saveTabs() {
-        try {  
+        try {
             this.socket.setObject('system.config', this.state.systemConfig);
         } catch(error) {
             this.showError(error);
@@ -703,7 +703,7 @@ class App extends Router {
     }
 
     showAlert(message, type) {
-        
+
         if (type !== 'error' && type !== 'warning' && type !== 'info' && type !== 'success') {
             type = 'info';
         }
@@ -810,7 +810,7 @@ class App extends Router {
                 </ThemeProvider>
             );
         }
-        
+
         if (!this.state.ready) {
             return (
                 <ThemeProvider theme={ this.state.theme }>
@@ -878,7 +878,7 @@ class App extends Router {
                                 />
                             </IconButton>
                             {/*This will be removed later to settings, to not allow so easy to edit it*/}
-                            {   this.state.expertMode && 
+                            {   this.state.expertMode &&
                                 <IconButton onClick={() => this.setState({ baseSettingsOpened: true })}>
                                     <BuildIcon className={ classes.baseSettingsButton }/>
                                 </IconButton>

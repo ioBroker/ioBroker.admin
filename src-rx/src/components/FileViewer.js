@@ -9,10 +9,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import copy from 'copy-to-clipboard';
 
-import NoImage from "../assets/no-image.png";
-import Utils from "../Utils";
+import NoImage from '@iobroker/adapter-react/assets/no_icon.svg';
+import Utils from '@iobroker/adapter-react/Components/Utils';
 
 // Icons
 import {FaCopy as CopyIcon} from 'react-icons/fa';
@@ -39,16 +38,25 @@ const styles = theme => ({
 });
 
 export const EXTENSIONS = {
-    images: ['png', 'jpg', 'svg', 'jpeg'],
+    images: ['png', 'jpg', 'svg', 'jpeg', 'jpg'],
     code:   ['js', 'json'],
     txt:    ['log', 'txt', 'html', 'css', 'xml'],
 };
+
+function getFileExtension(fileName) {
+    const pos = fileName.lastIndexOf('.');
+    if (pos !== -1) {
+        return fileName.substring(pos + 1).toLowerCase();
+    } else {
+        return null;
+    }
+}
 
 class FileViewer extends React.Component {
     constructor(props) {
         super(props);
 
-        this.ext = Utils.getFileExtension(this.props.href);
+        this.ext = getFileExtension(this.props.href); // todo: replace later with Utils.getFileExtension
 
         this.state = {
             text: null,
@@ -99,6 +107,7 @@ class FileViewer extends React.Component {
 
     render() {
         return <Dialog
+            key={this.props.key}
             className={ this.props.classes.dialog }
             open={ this.props.href }
             onClose={ () => this.props.onClose() }
@@ -111,7 +120,7 @@ class FileViewer extends React.Component {
                     { this.getContent() }
             </DialogContent>
             <DialogActions>
-                { this.state.copyPossible ? <Button onClick={() => copy(this.state.text || this.state.code) } >
+                { this.state.copyPossible ? <Button onClick={e => Utils.copyToClipboard(this.state.text || this.state.code, e) } >
                     <CopyIcon />
                     { this.props.t('Copy content') }
                 </Button> : null }
@@ -126,6 +135,7 @@ class FileViewer extends React.Component {
 }
 
 FileViewer.propTypes = {
+    key: PropTypes.string,
     t: PropTypes.func,
     lang: PropTypes.string,
     expertMode: PropTypes.bool,
