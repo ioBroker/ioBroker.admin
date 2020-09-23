@@ -53,6 +53,8 @@ const BUTTON_WIDTH = 32;
 const TILE_HEIGHT = 120;
 const TILE_WIDTH = 64;
 
+const NOT_FOUND = 'Not found';
+
 const styles = theme => ({
     root: {
         width: '100%',
@@ -61,10 +63,10 @@ const styles = theme => ({
         position: 'relative',
     },
     filesDiv: {
-        width: '100%',
+        width: 'calc(100% - ' + theme.spacing(2) + 'px)',
         overflowX: 'hidden',
         overflowY: 'auto',
-        padding: theme.spacing(1)
+        padding: theme.spacing(1),
     },
     filesDivTable: {
         height: 'calc(100% - ' + (48 + theme.spacing(1)) + 'px)',
@@ -598,7 +600,8 @@ class FileBrowser extends React.Component {
 
             if (!item.temp) {
                 return this.browseFolder(item.id)
-                    .then(folders => this.setState({expanded, folders}));
+                    .then(folders => this.setState({expanded, folders}))
+                    .catch(err => this.setState({errorText: err === NOT_FOUND ? this.props.t('re_Cannot find "%s"', item.id) : this.props.t('re_Cannot read "%s"', item.id)}));
             } else {
                 this.setState({expanded});
             }
@@ -803,11 +806,11 @@ class FileBrowser extends React.Component {
             ><DownloadIcon/></IconButton> : null }
 
             {   this.state.viewType === TABLE &&
-                this.props.allowDelete &&
-                item.id !== 'vis.0/' &&
-                item.id !== USER_DATA &&
-                (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/'))
-            ?
+            this.props.allowDelete &&
+            item.id !== 'vis.0/' &&
+            item.id !== USER_DATA &&
+            (this.state.expertMode || item.id.startsWith(USER_DATA) || item.id.startsWith('vis.0/'))
+                ?
                 <IconButton aria-label="delete"
                             onClick={e => {
                                 e.stopPropagation();
@@ -823,9 +826,9 @@ class FileBrowser extends React.Component {
                 </IconButton>
                 :
                 (this.state.viewType === TABLE && this.props.allowDelete ?
-                    <div className={this.props.classes['itemDeleteButton' + this.state.viewType]}/>
+                        <div className={this.props.classes['itemDeleteButton' + this.state.viewType]}/>
                         :
-                    null
+                        null
                 )
             }
         </div>;
@@ -909,9 +912,7 @@ class FileBrowser extends React.Component {
                 title={this.props.t('ra_Toggle expert mode')}
                 className={Utils.clsx(this.props.classes.menuButton, this.state.expertMode && this.props.classes.menuButtonExpertActive)}
                 aria-label="expert mode"
-                onClick={() => {
-                    this.setState({expertMode: !this.state.expertMode});
-                }}
+                onClick={() => this.setState({expertMode: !this.state.expertMode})}
             ><ExpertIcon /></IconButton> : null }
             {this.props.showViewTypeButton ? <IconButton
                 edge="start"
@@ -1217,7 +1218,7 @@ class FileBrowser extends React.Component {
                     if (!this.state.folders[folder]) {
                         return this.browseFolder(folder)
                             .then(folders => this.setState({folders}, () => resolve(true)))
-                            .catch(err => this.setState({errorText: err === 'Not found' ? this.props.t('re_Cannot find "%s"', folder) : this.props.t('re_Cannot read "%s"', folder)}));
+                            .catch(err => this.setState({errorText: err === NOT_FOUND ? this.props.t('re_Cannot find "%s"', folder) : this.props.t('re_Cannot read "%s"', folder)}));
                     } else {
                         return resolve(true);
                     }
@@ -1266,7 +1267,7 @@ class FileBrowser extends React.Component {
 
     render() {
         if (!this.props.ready) {
-            return <LinearProgress  key={this.props.key ? this.props.key + '_c' : 'c'} />;
+            return <LinearProgress key={this.props.key ? this.props.key + '_c' : 'c'} />;
         }
 
         return <div key={this.props.key} style={this.props.style} className={Utils.clsx(this.props.classes.root, this.props.className)}>

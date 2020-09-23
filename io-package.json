@@ -2,8 +2,20 @@
   "common": {
     "name": "admin",
     "title": "Admin",
-    "version": "4.1.2",
+    "version": "5.0.0",
     "news": {
+      "5.0.0": {
+        "en": "The tile view implemented for the file browser",
+        "de": "Die für den Dateibrowser implementierte Kachelansicht",
+        "ru": "Представление плитки реализовано для файлового браузера",
+        "pt": "A visualização em bloco implementada para o navegador de arquivos",
+        "nl": "De tegelweergave geïmplementeerd voor de bestandsbrowser",
+        "fr": "La vue en mosaïque implémentée pour le navigateur de fichiers",
+        "it": "La visualizzazione affiancata implementata per il browser di file",
+        "es": "La vista de mosaico implementada para el navegador de archivos",
+        "pl": "Widok kafelków zaimplementowany dla przeglądarki plików",
+        "zh-cn": "为文件浏览器实现的图块视图"
+      },
       "4.1.1": {
         "en": "Started the development of GUI based on React (only for developers)",
         "de": "Startete die Entwicklung einer GUI basierend auf React (nur für Entwickler)",

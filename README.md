@@ -89,6 +89,8 @@ This project uses some icons from [Flaticon](https://www.flaticon.com/):
 - <img src="src/img/rooms/toilet.svg" height="48" /> - Icons made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 ## Changelog
+### 5.0.0 (2020-09_23)
+* (bluefox) The tile view implemented for the file browser
 
 ### 4.1.6 (2020-07-26)
 * (Apollon77) Increased the socket ping Interval and Timeout to maybe prevent the too fast reconnect attempts.
