@@ -8,6 +8,7 @@
 /* global _ */
 /* global ace */
 /* global console */
+/* global semver */
 /* global alert */
 /* global confirm */
 /* global systemLang: true */
@@ -146,27 +147,7 @@ $(document).ready(function () {
 
         // Helper methods
         upToDate:       function (_new, old) {
-            _new = _new.split('.');
-            old = old.split('.');
-            _new[0] = parseInt(_new[0], 10);
-            old[0] = parseInt(old[0], 10);
-            if (_new[0] > old[0]) {
-                return false;
-            } else if (_new[0] === old[0]) {
-                _new[1] = parseInt(_new[1], 10);
-                old[1] = parseInt(old[1], 10);
-                if (_new[1] > old[1]) {
-                    return false;
-                } else if (_new[1] === old[1]) {
-                    _new[2] = parseInt(_new[2], 10);
-                    old[2] = parseInt(old[2], 10);
-                    return (_new[2] <= old[2]);
-                } else {
-                    return true;
-                }
-            } else {
-                return true;
-            }
+            return semver.gt(_new, old) === false;
         },
 
         // Methods
