@@ -418,31 +418,12 @@ class Adapters extends React.Component {
 
     updateAvailable(oldVersion, newVersion) {
 
-        newVersion = newVersion.split('.');
-        oldVersion = oldVersion.split('.');
-
-        newVersion[0] = parseInt(newVersion[0], 10);
-        oldVersion[0] = parseInt(oldVersion[0], 10);
-
-        if (newVersion[0] > oldVersion[0]) {
-            return true;
-        } else if (newVersion[0] === oldVersion[0]) {
-
-            newVersion[1] = parseInt(newVersion[1], 10);
-            oldVersion[1] = parseInt(oldVersion[1], 10);
-
-            if (newVersion[1] > oldVersion[1]) {
-                return true;
-            } else if (newVersion[1] === oldVersion[1]) {
-
-                newVersion[2] = parseInt(newVersion[2], 10);
-                oldVersion[2] = parseInt(oldVersion[2], 10);
-
-                return (newVersion[2] > oldVersion[2]);
-            }
+        try {
+            return Semver.gt(newVersion, oldVersion) === true;
+        } catch(e) {
+            console.warn('Cannot compare "' + newVersion + '" and "' + oldVersion  + '"');
+            return false;
         }
-
-        return false;
     }
 
     getDependencies(value) {
@@ -474,8 +455,8 @@ class Adapters extends React.Component {
 
                     const installed = this.state.installed[entry.name];
 
-                    entry.installed = installed ? true : false;
-                    entry.installedVersion = installed ? installed.version : null
+                    entry.installed = !!installed;
+                    entry.installedVersion = installed ? installed.version : null;
                     entry.rightVersion = installed ? checkVersion ? Semver.satisfies(installed.version, entry.version): true : false;
                 }
 
@@ -596,13 +577,17 @@ class Adapters extends React.Component {
         if (installed && adapter && adapter.news) {
 
             Object.keys(adapter.news).forEach(version => {
-                console.log(Semver.gt(version, installed.version));
-                if (Semver.gt(version, installed.version)) {
-
-                    news.push({
-                        version: version,
-                        news: adapter.news[version][this.props.lang] || adapter.news[version].en
-                    });
+                try {
+                    console.log(Semver.gt(version, installed.version));
+                    if (Semver.gt(version, installed.version)) {
+                        news.push({
+                            version: version,
+                            news: adapter.news[version][this.props.lang] || adapter.news[version].en
+                        });
+                    }
+                } catch (e) {
+                    // ignore it
+                    console.warn(`Cannot compare "${version}" and "${installed.version}"`);
                 }
             });
         }

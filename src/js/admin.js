@@ -147,7 +147,12 @@ $(document).ready(function () {
 
         // Helper methods
         upToDate:       function (_new, old) {
-            return semver.gt(_new, old) === false;
+            try {
+                return semver.gt(_new, old) === false;
+            } catch(e) {
+                console.warn('Cannot compare "' + _new + '" and "' + old  + '"');
+                return true;
+            }
         },
 
         // Methods
