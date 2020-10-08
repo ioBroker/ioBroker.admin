@@ -126,6 +126,7 @@ function System(main) {
             for (var repo in that.systemRepos.native.repositories) {
                 if (!that.systemRepos.native.repositories.hasOwnProperty(repo)) continue;
                 var obj = that.systemRepos.native.repositories[repo];
+
                 values.push({
                     name:    overwriteRepoNames(repo),
                     link:    (typeof obj === 'object') ? obj.link : obj
@@ -631,7 +632,6 @@ function System(main) {
             $system_activeRepo.html('');
             if (that.systemRepos && that.systemRepos.native.repositories) {
                 for (var repo in that.systemRepos.native.repositories) {
-                    
                     $system_activeRepo.append('<option value="' + repo + '">' + overwriteRepoNames(repo) + '</option>');
                 }
             } else {

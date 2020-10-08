@@ -1,7 +1,7 @@
 {
   "name": "iobroker.admin",
-  "description": "The adapter opens a webserver for the ioBroker admin UI.",
-  "version": "4.1.8",
+  "description": "The adapter opens a web-server for the ioBroker admin UI.",
+  "version": "4.1.9",
   "contributors": [
     "bluefox <dogafox@gmail.com>",
     "apollon77",
@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",
-    "@alcalzone/release-script": "^1.6.0",
+    "@alcalzone/release-script": "^1.8.1",
     "@babel/plugin-transform-arrow-functions": "^7.10.4",
     "@babel/plugin-transform-block-scoping": "^7.10.5",
     "@babel/plugin-transform-classes": "^7.10.4",
@@ -72,6 +72,7 @@
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
     "test:integration": "mocha test/integration --exit",
+    "build": "node node_modules/gulp/bin/gulp default",
     "release": "release-script"
   },
   "author": "bluefox <dogafox@gmail.com>"

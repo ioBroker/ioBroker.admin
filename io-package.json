@@ -2,8 +2,20 @@
     "common": {
         "name": "admin",
         "title": "Admin",
-        "version": "4.1.8",
+        "version": "4.1.9",
         "news": {
+            "4.1.9": {
+                "en": "Corrected the icons of the custom tabs",
+                "de": "Die Symbole der benutzerdefinierten Registerkarten wurden korrigiert",
+                "ru": "Исправлены иконки кастомных вкладок",
+                "pt": "Corrigidos os ícones das guias personalizadas",
+                "nl": "De pictogrammen van de aangepaste tabbladen gecorrigeerd",
+                "fr": "Correction des icônes des onglets personnalisés",
+                "it": "Corrette le icone delle schede personalizzate",
+                "es": "Se corrigieron los iconos de las pestañas personalizadas.",
+                "pl": "Poprawiono ikony niestandardowych kart",
+                "zh-cn": "更正了自定义选项卡的图标"
+            },
             "4.1.8": {
                 "en": "Fixed editing of the objects with % sign in the ID",
                 "de": "Die Bearbeitung der Objekte mit% -Zeichen in der ID wurde korrigiert",

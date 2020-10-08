@@ -1687,6 +1687,9 @@ $(document).ready(function () {
         'tab-fullcalendar-1':   {order: 66,   icon: 'perm_contact_calendar'},
         'tab-fullcalendar-2':   {order: 67,   icon: 'perm_contact_calendar'},
         'tab-echarts':          {order: 70,   icon: 'show_chart'},
+        'tab-eventlist-0':      {order: 80,   icon: 'flash_on'},
+        'tab-eventlist-1':      {order: 81,   icon: 'flash_on'},
+        'tab-eventlist-2':      {order: 82,   icon: 'flash_on'},
         'tab-hosts':            {order: 100,  icon: 'storage'},
     };
 
@@ -1710,17 +1713,21 @@ $(document).ready(function () {
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !== -1) {
                 let icon;
                 if (tabsInfo[id] && tabsInfo[id].icon) {
-                    icon = tabsInfo[id].icon;
+                    icon = '<i class="material-icons left">' + tabsInfo[id].icon + '</i>';
                 } else {
-                    const _id = 'system.adapter.' + id.substring(4);
-		            if (main.objects[_id] && main.objects[_id].common.adminTab && main.objects[_id].common.adminTab['fa-icon']) {
-                        icon = main.objects[_id].common.adminTab['fa-icon'];
+                    const _id = 'system.adapter.' + id.substring(4).replace(/-\d\d?$/, ''); //tab-name or tab-name-1 (with instance)
+		            if (main.objects[_id]) {
+		                if (main.objects[_id].common.adminTab && main.objects[_id].common.adminTab['fa-icon']) {
+                            icon = '<i class="material-icons left">' + main.objects[_id].common.adminTab['fa-icon'] + '</i>';
+                        } else {
+                            icon = '<img style="width: 24px; margin-bottom: -5px;" src="adapter/' + main.objects[_id].name + '/' + main.objects[_id].icon + '">';
+                        }
                     }
                 }
 
                 elements.push({
                     line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a href="#' + id + '">' +
-                    (icon ? '<i class="material-icons left">' + icon + '</i>' : '<i class="material-icons left">live_help</i>') +
+                    (icon || '<i class="material-icons left">live_help</i>') +
                     $(this).data('name') + '</a></li>',
                     id: id
                 });
@@ -1781,7 +1788,7 @@ $(document).ready(function () {
                 onConnect();
             }
         }, 1000);
-        
+
         if (firstConnect) {
             main.socket.emit('getUserPermissions', function (err, acl) {
                 $('#connecting').hide();
