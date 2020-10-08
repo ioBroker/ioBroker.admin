@@ -33,7 +33,6 @@ import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import StorageIcon from '@material-ui/icons/Storage';
 import FilesIcon from '@material-ui/icons/FileCopy';
-import HelpIcon from '@material-ui/icons/Help';
 
 export const DRAWER_FULL_WIDTH = 180;
 export const DRAWER_COMPACT_WIDTH = 50;
@@ -78,6 +77,10 @@ const styles = theme => ({
     },
     logout: {
         color: theme.palette.primary.main
+    },
+    icon: {
+        width: 20,
+        height: 20,
     }
 });
 
@@ -99,20 +102,20 @@ const tabsInfo = {
     'tab-scenes':           {order: 35,   icon: <SubscriptionsIcon />},
     'tab-events':           {order: 40,   icon: <FlashOnIcon />},
     'tab-users':            {order: 45,   icon: <PersonOutlineIcon />},
-    'tab-javascript':       {order: 50,   icon: <CodeIcon />},
-    'tab-text2command-0':   {order: 55,   icon: <AcUnitIcon />, instance: 0},
-    'tab-text2command-1':   {order: 56,   icon: <AcUnitIcon />, instance: 1},
-    'tab-text2command-2':   {order: 57,   icon: <AcUnitIcon />, instance: 2},
-    'tab-node-red-0':       {order: 60,   icon: <DeviceHubIcon />, instance: 0},
-    'tab-node-red-1':       {order: 61,   icon: <DeviceHubIcon />, instance: 1},
-    'tab-node-red-2':       {order: 62,   icon: <DeviceHubIcon />, instance: 2},
-    'tab-fullcalendar-0':   {order: 65,   icon: <PermContactCalendarIcon />, instance: 0},
-    'tab-fullcalendar-1':   {order: 66,   icon: <PermContactCalendarIcon />, instance: 1},
-    'tab-fullcalendar-2':   {order: 67,   icon: <PermContactCalendarIcon />, instance: 2},
-    'tab-echarts':          {order: 70,   icon: <ShowChartIcon />, instance: 2},
-    'tab-eventlist-0':      {order: 80,   icon: <FlashOnIcon />},
-    'tab-eventlist-1':      {order: 81,   icon: <FlashOnIcon />},
-    'tab-eventlist-2':      {order: 82,   icon: <FlashOnIcon />},
+    'tab-javascript':       {order: 50},
+    'tab-text2command-0':   {order: 55, instance: 0},
+    'tab-text2command-1':   {order: 56, instance: 1},
+    'tab-text2command-2':   {order: 57, instance: 2},
+    'tab-node-red-0':       {order: 60, instance: 0},
+    'tab-node-red-1':       {order: 61, instance: 1},
+    'tab-node-red-2':       {order: 62, instance: 2},
+    'tab-fullcalendar-0':   {order: 65, instance: 0},
+    'tab-fullcalendar-1':   {order: 66, instance: 1},
+    'tab-fullcalendar-2':   {order: 67, instance: 2},
+    'tab-echarts':          {order: 70, instance: 2},
+    'tab-eventlist-0':      {order: 80, instance: 0},
+    'tab-eventlist-1':      {order: 81, instance: 1},
+    'tab-eventlist-2':      {order: 82, instance: 2},
     'tab-hosts':            {order: 100,  icon: <StorageIcon />},
     'tab-files':            {order: 110,  icon: <FilesIcon />},
 };
@@ -208,7 +211,11 @@ class Drawer extends React.Component {
                         if (tabsInfo[tab]) {
                             obj = Object.assign({name: tab}, tabsInfo[tab]);
                         } else {
-                            obj = {name: tab, order: 200, icon: <HelpIcon />};
+                            obj = {name: tab, order: 200};
+                        }
+
+                        if (!obj.icon) {
+                            obj.icon = <img alt="" className={this.props.classes.icon} src={`adapter/${instance.common.name}/${instance.common.icon}`}/>;
                         }
 
                         obj.title = title;

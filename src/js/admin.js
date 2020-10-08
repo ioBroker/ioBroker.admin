@@ -8,6 +8,7 @@
 /* global _ */
 /* global ace */
 /* global console */
+/* global semver */
 /* global alert */
 /* global confirm */
 /* global systemLang: true */
@@ -146,27 +147,7 @@ $(document).ready(function () {
 
         // Helper methods
         upToDate:       function (_new, old) {
-            _new = _new.split('.');
-            old = old.split('.');
-            _new[0] = parseInt(_new[0], 10);
-            old[0] = parseInt(old[0], 10);
-            if (_new[0] > old[0]) {
-                return false;
-            } else if (_new[0] === old[0]) {
-                _new[1] = parseInt(_new[1], 10);
-                old[1] = parseInt(old[1], 10);
-                if (_new[1] > old[1]) {
-                    return false;
-                } else if (_new[1] === old[1]) {
-                    _new[2] = parseInt(_new[2], 10);
-                    old[2] = parseInt(old[2], 10);
-                    return (_new[2] <= old[2]);
-                } else {
-                    return true;
-                }
-            } else {
-                return true;
-            }
+            return semver.gt(_new, old) === false;
         },
 
         // Methods
@@ -391,9 +372,9 @@ $(document).ready(function () {
                 if (!$wizard.data('inited')) {
                     $wizard.data('inited', true);
                     $wizard/*.button({
-                        icons: {primary: ' ui-icon-search'},
-                        text: false
-                    })*/.on('click', function () {
+                    icons: {primary: ' ui-icon-search'},
+                    text: false
+                })*/.on('click', function () {
                         // open configuration dialog
                         main.navigate({
                             tab: 'instances',
@@ -634,15 +615,15 @@ $(document).ready(function () {
 
     function initHtmlButtons() {
         main.socket.emit('getVersion', function (err, version) {
-			const $versionBtn = $('.button-version');
-	        if (!$versionBtn.hasClass('vendor')) {
-	            $versionBtn.text('ioBroker.admin ' + version);
-	        }
+            var $versionBtn = $('.button-version');
+            if (!$versionBtn.hasClass('vendor')) {
+                $versionBtn.text('ioBroker.admin ' + version);
+            }
         });
 
         $('.choose-tabs-config-button').off('click').on('click', function(event) {
-            const $dialog = $('#admin_sidemenu_dialog');
-            const html = $dialog.html();
+            var $dialog = $('#admin_sidemenu_dialog');
+            var html = $dialog.html();
             if (html) {
                 $dialog.html('');
                 // disable global handler
@@ -653,8 +634,8 @@ $(document).ready(function () {
                 // enable global handler
                 $('html').on('click', globalClickHandler);
             }, 100);
-            const $e = $(event.target);
-            const offs = $e.offset();
+            var $e = $(event.target);
+            var offs = $e.offset();
             offs.top += $e.height() - 2;
 
             let text =
@@ -662,10 +643,10 @@ $(document).ready(function () {
                 '<div>' +
                 '<ul style="">';
 
-            const $lis = $adminSideMenu;
-            for (const tid in allTabs) {
-                const name = allTabs[tid];
-                const found = $adminSideMenu.find('.admin-sidemenu-items[data-tab="' + tid + '"]').length;
+            var $lis = $adminSideMenu;
+            for (var tid in allTabs) {
+                var name = allTabs[tid];
+                var found = $adminSideMenu.find('.admin-sidemenu-items[data-tab="' + tid + '"]').length;
                 // TABS
                 /*$adminSideMenu.each(function (i, e) {
                     if (tid === $(e).attr('aria-controls')) {
@@ -673,7 +654,7 @@ $(document).ready(function () {
                         return false;
                     }
                 });*/
-                const id = 'chk-' + tid;
+                var id = 'chk-' + tid;
                 text +=
                     '<li><input ' + (found ? 'checked' : 'unchecked') + ' class="chk-tab filled-in" type="checkbox" id="' + id + '" />' +
                     '<span for="' + id + '">' + _(name) + '</span></id>';
@@ -685,11 +666,11 @@ $(document).ready(function () {
             $dialog.append(text);
 
             $dialog.find('.chk-tab').off('change').on('change', function (event) {
-                const id = $(this).attr('id').substr(4);
+                var id = $(this).attr('id').substr(4);
                 if ($(this).prop('checked')) {
                     main.systemConfig.common.tabs.push(id);
                 } else {
-                    const pos = main.systemConfig.common.tabs.indexOf(id);
+                    var pos = main.systemConfig.common.tabs.indexOf(id);
                     if (id !== -1) {
                         main.systemConfig.common.tabs.splice(pos, 1);
                     }
@@ -699,7 +680,7 @@ $(document).ready(function () {
             });
             // workaround for materialize checkbox problem
             $dialog.find('input[type="checkbox"]+span').off('click').on('click', function () {
-                const $input = $(this).prev();
+                var $input = $(this).prev();
                 if (!$input.prop('disabled')) {
                     $input.prop('checked', !$input.prop('checked')).trigger('change');
                 }
@@ -1721,8 +1702,8 @@ $(document).ready(function () {
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !== -1) {
                 elements.push({
                     line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a href="#' + id + '">' +
-                            (tabsInfo[id] && tabsInfo[id].icon ? '<i class="material-icons left">' + tabsInfo[id].icon + '</i>' : '<i class="material-icons left">live_help</i>') +
-                            _($(this).data('name')) + '</a></li>',
+                        (tabsInfo[id] && tabsInfo[id].icon ? '<i class="material-icons left">' + tabsInfo[id].icon + '</i>' : '<i class="material-icons left">live_help</i>') +
+                        _($(this).data('name')) + '</a></li>',
                     id: id
                 });
             }
@@ -1732,18 +1713,22 @@ $(document).ready(function () {
             if (!main.systemConfig.common.tabs || main.systemConfig.common.tabs.indexOf(id) !== -1) {
                 let icon;
                 if (tabsInfo[id] && tabsInfo[id].icon) {
-                    icon = tabsInfo[id].icon;
+                    icon = '<i class="material-icons left">' + tabsInfo[id].icon + '</i>';
                 } else {
-                    const _id = 'system.adapter.' + id.substring(4);
-		            if (main.objects[_id] && main.objects[_id].common.adminTab && main.objects[_id].common.adminTab['fa-icon']) {
-                        icon = main.objects[_id].common.adminTab['fa-icon'];
+                    const _id = 'system.adapter.' + id.substring(4).replace(/-\d\d?$/, ''); //tab-name or tab-name-1 (with instance)
+                    if (main.objects[_id]) {
+                        if (main.objects[_id].common.adminTab && main.objects[_id].common.adminTab['fa-icon']) {
+                            icon = '<i class="material-icons left">' + main.objects[_id].common.adminTab['fa-icon'] + '</i>';
+                        } else {
+                            icon = '<img style="width: 24px; margin-bottom: -5px;" src="adapter/' + main.objects[_id].name + '/' + main.objects[_id].icon + '">';
+                        }
                     }
                 }
 
                 elements.push({
                     line: '<li class="admin-sidemenu-items" data-tab="' + id + '"><a href="#' + id + '">' +
-                    (icon ? '<i class="material-icons left">' + icon + '</i>' : '<i class="material-icons left">live_help</i>') +
-                    $(this).data('name') + '</a></li>',
+                        (icon || '<i class="material-icons left">live_help</i>') +
+                        $(this).data('name') + '</a></li>',
                     id: id
                 });
             }
@@ -1803,7 +1788,7 @@ $(document).ready(function () {
                 onConnect();
             }
         }, 1000);
-        
+
         if (firstConnect) {
             main.socket.emit('getUserPermissions', function (err, acl) {
                 $('#connecting').hide();
@@ -2175,5 +2160,5 @@ $(document).ready(function () {
         location.reload();
     });
 
-    });
+});
 })(jQuery);

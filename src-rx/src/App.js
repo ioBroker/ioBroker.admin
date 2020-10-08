@@ -618,28 +618,24 @@ class App extends Router {
                 );
             } else
             if (this.state.currentTab.tab === 'tab-files') {
-                return (
-                    <Files
-                        key="files"
-                        ready={ this.state.ready }
-                        t={ I18n.t }
-                        expertMode={ this.state.expertMode }
-                        lang={ I18n.getLanguage() }
-                        socket={ this.socket }
-                    />
-                );
+                return <Files
+                    key="files"
+                    ready={ this.state.ready }
+                    t={ I18n.t }
+                    expertMode={ this.state.expertMode }
+                    lang={ I18n.getLanguage() }
+                    socket={ this.socket }
+                />;
             } else
             if (this.state.currentTab.tab === 'tab-objects') {
-                return (
-                    <Objects
-                        key="objects"
-                        t={ I18n.t }
-                        themeName={ this.state.themeName }
-                        expertMode={ this.state.expertMode }
-                        lang={ I18n.getLanguage() }
-                        socket={ this.socket }
-                    />
-                );
+                return <Objects
+                    key="objects"
+                    t={ I18n.t }
+                    themeName={ this.state.themeName }
+                    expertMode={ this.state.expertMode }
+                    lang={ I18n.getLanguage() }
+                    socket={ this.socket }
+                />;
             } else {
                 const m = this.state.currentTab.tab.match(/^tab-([-\w\d]+)(-\d+)?$/);
                 if (m) {
@@ -652,19 +648,17 @@ class App extends Router {
                     }*/
 
                     // /adapter/javascript/tab.html
-                    return (
-                        <CustomTab
-                            key={ this.state.currentTab.tab }
-                            t={ I18n.t }
-                            protocol={ this.state.protocol }
-                            hostname={ this.state.hostname }
-                            instancesWorker={ this.instancesWorker }
-                            tab={ this.state.currentTab.tab }
-                            themeName={ this.state.themeName }
-                            expertMode={ this.state.expertMode }
-                            lang={ I18n.getLanguage() }
-                        />
-                    );
+                    return <CustomTab
+                        key={ this.state.currentTab.tab }
+                        t={ I18n.t }
+                        protocol={ this.state.protocol }
+                        hostname={ this.state.hostname }
+                        instancesWorker={ this.instancesWorker }
+                        tab={ this.state.currentTab.tab }
+                        themeName={ this.state.themeName }
+                        expertMode={ this.state.expertMode }
+                        lang={ I18n.getLanguage() }
+                    />;
                 }
             }
         }

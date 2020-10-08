@@ -128,7 +128,7 @@ function System(main) {
                 var obj = that.systemRepos.native.repositories[repo];
 
                 values.push({
-                    name:    repo,
+                    name:    overwriteRepoNames(repo),
                     link:    (typeof obj === 'object') ? obj.link : obj
                 });
             }
@@ -166,13 +166,23 @@ function System(main) {
         $system_activeRepo.html('');
         var data = table2values('tab-system-repo');
         for (var i = 0; i < data.length; i++) {
-            $system_activeRepo.append('<option value="' + data[i].name + '">' + data[i].name + '</option>');
+            $system_activeRepo.append('<option value="' + data[i].name + '">' + overwriteRepoNames(data[i].name) + '</option>');
             if (selectedRepo === data[i].name) {
                 isFound = true;
             }
         }
         if (isFound) $system_activeRepo.val(selectedRepo);
         $system_activeRepo.select();
+    }
+
+    function overwriteRepoNames(name) {
+        let newName = name;
+        if (name === 'default') {
+                newName = 'Stable (default)';
+            } else if (name === 'latest') {
+                newName = 'Beta (latest)';
+            }
+        return newName;
     }
 
     // ----------------------------- Certificates show and Edit ------------------------------------------------
@@ -622,7 +632,7 @@ function System(main) {
             $system_activeRepo.html('');
             if (that.systemRepos && that.systemRepos.native.repositories) {
                 for (var repo in that.systemRepos.native.repositories) {
-                    $system_activeRepo.append('<option value="' + repo + '">' + repo + '</option>');
+                    $system_activeRepo.append('<option value="' + repo + '">' + overwriteRepoNames(repo) + '</option>');
                 }
             } else {
                 that.$dialog.find('#tab-system-repo').html(_('permissionError'));
