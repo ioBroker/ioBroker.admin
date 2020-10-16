@@ -2,7 +2,7 @@
  * ioBroker WebSockets
  * Copyright 2020, bluefox <dogafox@gmail.com>
  * Released under the MIT License.
- * v 0.2.0
+ * v 0.2.1 (2020_10_16)
  */
 /* jshint -W097 */
 /* jshint strict: false */
@@ -82,7 +82,7 @@ function SocketClient () {
             // "ws://www.example.com/socketserver"
             socket = new WebSocket(u);
         } catch (error) {
-            handlers.error && handlers.error.forEach(cb => cb(error));
+            handlers.error && handlers.error.forEach(cb => cb.call(this, error));
             return this.close();
         }
 
@@ -121,7 +121,7 @@ function SocketClient () {
                 if (socket.readyState === 1) {
                     this.log.error('ws normal error: ' + error.type);
                 }
-                handlers.error && handlers.error.forEach(cb => cb(ERRORS[error.code] || 'UNKNOWN'));
+                handlers.error && handlers.error.forEach(cb => cb.call(this, ERRORS[error.code] || 'UNKNOWN'));
             }
             this.close();
         };
@@ -153,9 +153,9 @@ function SocketClient () {
                     this.connected  = true;
 
                     if (wasConnected) {
-                        handlers.reconnect && handlers.reconnect.forEach(cb => cb(true));
+                        handlers.reconnect && handlers.reconnect.forEach(cb => cb.call(this, true));
                     } else {
-                        handlers.connect && handlers.connect.forEach(cb => cb(true));
+                        handlers.connect && handlers.connect.forEach(cb => cb.call(this, true));
                         wasConnected = true;
                     }
 
@@ -171,9 +171,9 @@ function SocketClient () {
                     }
 
                 } else if (args) {
-                    handlers[name] && handlers[name].forEach(cb => cb(args[0], args[1], args[2], args[3], args[4]));
+                    handlers[name] && handlers[name].forEach(cb => cb.call(this, args[0], args[1], args[2], args[3], args[4]));
                 } else {
-                    handlers[name] && handlers[name].forEach(cb => cb());
+                    handlers[name] && handlers[name].forEach(cb => cb.call(this));
                 }
             } else if (type === MESSAGE_TYPES.PING) {
                 socket.send(JSON.stringify([MESSAGE_TYPES.PONG]));
@@ -221,7 +221,7 @@ function SocketClient () {
                 authTimeout = null;
                 if (this.connected) {
                     this.log.debug('Authenticate timeout');
-                    handlers.error && handlers.error.forEach(cb => cb('Authenticate timeout'));
+                    handlers.error && handlers.error.forEach(cb => cb.call(this, 'Authenticate timeout'));
                 }
                 this.close();
             }, 2000);
@@ -328,7 +328,7 @@ function SocketClient () {
         }
 
         if (this.connected) {
-            handlers.disconnect && handlers.disconnect.forEach(cb => cb());
+            handlers.disconnect && handlers.disconnect.forEach(cb => cb.call(this));
             this.connected = false;
         }
 
