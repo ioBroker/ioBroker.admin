@@ -26,11 +26,11 @@ import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
 import SubscriptionsIcon from '@material-ui/icons/Subscriptions';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
-import CodeIcon from '@material-ui/icons/Code';
-import AcUnitIcon from '@material-ui/icons/AcUnit';
-import DeviceHubIcon from '@material-ui/icons/DeviceHub';
-import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
-import ShowChartIcon from '@material-ui/icons/ShowChart';
+// import CodeIcon from '@material-ui/icons/Code';
+// import AcUnitIcon from '@material-ui/icons/AcUnit';
+// import DeviceHubIcon from '@material-ui/icons/DeviceHub';
+// import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
+// import ShowChartIcon from '@material-ui/icons/ShowChart';
 import StorageIcon from '@material-ui/icons/Storage';
 import FilesIcon from '@material-ui/icons/FileCopy';
 

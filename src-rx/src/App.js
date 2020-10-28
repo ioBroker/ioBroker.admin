@@ -64,6 +64,7 @@ import i18n from '@iobroker/adapter-react/i18n';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 import WizardDialog from './dialogs/WizardDialog';
 import BaseSettingsDialog from './dialogs/BaseSettingsDialog';
+import SystemSettingsDialog from "./dialogs/SystemSettingsDialog";
 
 const query = {};
 (window.location.search || '').replace(/^\?/, '').split('&').forEach(attr => {
@@ -261,6 +262,7 @@ class App extends Router {
 
                 baseSettingsOpened: false,
                 unsavedDataInDialog: false,
+                systemSettingsOpened: false,
 
                 cmd: null,
                 cmdDialog: false,
@@ -666,34 +668,52 @@ class App extends Router {
         return null;
     }
 
-    getBaseSettingsDialog() {
-        if (this.state.baseSettingsOpened) {
-            return (<BaseSettingsDialog
-                currentHost={ this.state.currentHost }
-                hosts={ this.state.hosts }
-                themeName={ this.state.themeName }
-                currentHostName={ this.state.currentHostName }
-                key="base"
-                onClose={ () =>
-                    this.setState({ baseSettingsOpened: false} ) }
-                lang={ this.state.lang }
-                showAlert={ (message, type) => this.showAlert(message, type) }
-                socket={ this.socket }
-                t={ I18n.t }
-            />);
-        } else {
-            return null;
+    getCurrentDialog() {
+        if (this.state && this.state.currentTab && this.state.currentTab.dialog) {
+            if (this.state.currentTab.dialog === 'base') {
+                return this.getBaseSettingsDialog();
+            } else if (this.state.currentTab.dialog === 'system') {
+                return this.getSystemSettingsDialog();
+            }
         }
+        return null;
+    }
+
+    getBaseSettingsDialog() {
+        return <BaseSettingsDialog
+            currentHost={ this.state.currentHost }
+            hosts={ this.state.hosts }
+            themeName={ this.state.themeName }
+            currentHostName={ this.state.currentHostName }
+            key="base"
+            onClose={ () => Router.doNavigate(null) }
+            lang={ this.state.lang }
+            showAlert={ (message, type) => this.showAlert(message, type) }
+            socket={ this.socket }
+            currentTab={this.state.currentTab}
+            t={ I18n.t }
+        />;
+    }
+
+    getSystemSettingsDialog() {
+        return <SystemSettingsDialog
+            themeName={ this.state.themeName }
+            key="systemSettings"
+            onClose={ () => Router.doNavigate(null) }
+            lang={ this.state.lang }
+            showAlert={ (message, type) => this.showAlert(message, type) }
+            socket={ this.socket }
+            currentTab={this.state.currentTab}
+            t={ I18n.t }
+        />;
     }
 
     handleAlertClose(event, reason) {
         if (reason === 'clickaway') {
-          return;
+            return;
         }
 
-        this.setState({
-            alert: false
-        });
+        this.setState({alert: false});
     }
 
     showAlert(message, type) {
@@ -730,9 +750,7 @@ class App extends Router {
 
                 Router.doNavigate(tab);
 
-                this.setState({
-                    currentTab: Router.getLocation()
-                });
+                this.setState({currentTab: Router.getLocation()});
             } else {
                 this.setState({
                     dataNotStoredDialog: true,
@@ -757,9 +775,7 @@ class App extends Router {
     };
 
     closeDataNotStoredDialog() {
-        this.setState({
-            dataNotStoredDialog: false
-        });
+        this.setState({dataNotStoredDialog: false});
     }
 
     confirmDataNotStored() {
@@ -794,6 +810,34 @@ class App extends Router {
                 onClose={ () => this.setState({ wizard: false }) }
             />;
         }
+    }
+
+    renderCommandDialog() {
+        return this.state.cmd ?
+            <CommandDialog
+                onClose={ () => this.closeCmdDialog() }
+                open={ this.state.cmdDialog }
+                header={ i18n.t('Command') /* Placeholder */}
+                onConfirm={ () => {} /* Test command */}
+                cmd={ this.state.cmd }
+                confirmText={ i18n.t('Ok') /* Test command */}
+                socket={ this.socket }
+                currentHost={ this.state.currentHost }
+                ready={ this.state.ready }
+                t={ I18n.t }
+            /> : null;
+    }
+
+    renderConfirmDialog() {
+        return                 <ConfirmDialog
+            onClose={ () => this.closeDataNotStoredDialog() }
+            open={ this.state.dataNotStoredDialog }
+            header={ i18n.t('Please confirm') }
+            onConfirm={ () => this.confirmDataNotStored() }
+            confirmText={ i18n.t('Ok') }
+        >
+            { i18n.t('Some data are not stored. Discard?') }
+        </ConfirmDialog>;
     }
 
     render() {
@@ -839,7 +883,7 @@ class App extends Router {
                             <IconButton>
                                 <VisibilityIcon />
                             </IconButton>
-                            <IconButton>
+                            <IconButton onClick={() => Router.doNavigate(null, 'system')}>
                                 <BuildIcon />
                             </IconButton>
                             <IconButton onClick={ () => this.toggleTheme() }>
@@ -873,12 +917,11 @@ class App extends Router {
                             </IconButton>
                             {/*This will be removed later to settings, to not allow so easy to edit it*/}
                             {   this.state.expertMode &&
-                                <IconButton onClick={() => this.setState({ baseSettingsOpened: true })}>
+                                <IconButton onClick={() => Router.doNavigate(null, 'base') }>
                                     <BuildIcon className={ classes.baseSettingsButton }/>
                                 </IconButton>
                             }
-                            <Typography variant="h6" className={classes.title} style={{flexGrow: 1}}>
-                            </Typography>
+                            <Typography variant="h6" className={classes.title} style={{flexGrow: 1}}/>
                             <Grid container spacing={ 1 } alignItems="center" style={{width: 'initial'}}>
                                 <Grid item>
                                     <Typography>admin</Typography>
@@ -925,31 +968,10 @@ class App extends Router {
                         </Alert>
                     </Snackbar>
                 </Paper>
-                <ConfirmDialog
-                    onClose={ () => this.closeDataNotStoredDialog() }
-                    open={ this.state.dataNotStoredDialog }
-                    header={ i18n.t('Please confirm') }
-                    onConfirm={ () => this.confirmDataNotStored() }
-                    confirmText={ i18n.t('Ok') }
-                >
-                        { i18n.t('Some data are not stored. Discard?') }
-                </ConfirmDialog>
-                { this.state.cmd &&
-                    <CommandDialog
-                        onClose={ () => this.closeCmdDialog() }
-                        open={ this.state.cmdDialog }
-                        header={ i18n.t('Command') /* Placeholder */}
-                        onConfirm={ () => {} /* Test command */}
-                        cmd={ this.state.cmd }
-                        confirmText={ i18n.t('Ok') /* Test command */}
-                        socket={ this.socket }
-                        currentHost={ this.state.currentHost }
-                        ready={ this.state.ready }
-                        t={ I18n.t }
-                    />
-                }
+                { this.getCurrentDialog() }
+                { this.renderConfirmDialog() }
+                { this.renderCommandDialog() }
                 { this.renderWizardDialog() }
-                { this.getBaseSettingsDialog() }
                 { !this.state.connected && <Connecting /> }
             </ThemeProvider>
         );
