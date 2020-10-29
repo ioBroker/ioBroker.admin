@@ -145,7 +145,7 @@ class SystemSettingsDialog extends React.Component {
                 {this.state.loading ? <LinearProgress/> : null}
                 {!this.state.loading && (!this.props.currentTab.id || this.props.currentTab.id === '0') ?
                     <div className={ this.props.classes.tabPanel }><pre>{JSON.stringify(this.state.systemSettings, null, 2)}</pre></div> : null }
-                {!this.state.loading && this.props.currentTab.id === '1' || this.props.currentTab.id === 1 ?
+                {!this.state.loading && (this.props.currentTab.id === '1' || this.props.currentTab.id === 1) ?
                     <div className={ this.props.classes.tabPanel }><pre>{JSON.stringify(this.state.systemRepositories, null, 2)}</pre></div> : null }
                 { this.renderConfirmDialog() }
             </DialogContent>
