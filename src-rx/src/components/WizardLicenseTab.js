@@ -1,4 +1,4 @@
-import React from 'react';
+import { createRef, Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
@@ -67,7 +67,7 @@ const styles = theme => ({
     }
 });
 
-class WizardLicenseTab extends React.Component {
+class WizardLicenseTab extends Component {
     constructor(props) {
         super(props);
 
@@ -76,7 +76,7 @@ class WizardLicenseTab extends React.Component {
             lang: this.props.lang,
             notAgree: false,
         };
-        this.focusRef = React.createRef();
+        this.focusRef = createRef();
     }
 
     componentDidMount() {

@@ -1,4 +1,4 @@
-import React from 'react';
+import { createRef, Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
@@ -79,7 +79,7 @@ const styles = theme => ({
     }
 });
 
-class WizardSettingsTab extends React.Component {
+class WizardSettingsTab extends Component {
     constructor(props) {
         super(props);
 
@@ -99,7 +99,7 @@ class WizardSettingsTab extends React.Component {
             latitude:     0,
         };
 
-        this.focusRef = React.createRef();
+        this.focusRef = createRef();
 
         this.props.socket.getSystemConfig(true)
             .then(obj =>

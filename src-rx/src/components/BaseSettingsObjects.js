@@ -1,4 +1,4 @@
-import React from 'react';
+import { createRef, Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
@@ -32,7 +32,7 @@ const styles = theme => ({
     },
 });
 
-class BaseSettingsObjects extends React.Component {
+class BaseSettingsObjects extends Component {
     constructor(props) {
         super(props);
 
@@ -63,7 +63,7 @@ class BaseSettingsObjects extends React.Component {
             loading:      true,
         };
 
-        this.focusRef = React.createRef();
+        this.focusRef = createRef();
 
         this.props.socket.getIpAddresses(this.props.currentHost)
             .then(_IPs => {

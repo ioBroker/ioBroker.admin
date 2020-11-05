@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -6,7 +6,7 @@ import { Grid } from '@material-ui/core';
 import { Tooltip } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 
-class InstanceInfo extends React.Component {
+class InstanceInfo extends Component {
     render() {
         return (
             <Grid

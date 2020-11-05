@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -80,7 +80,7 @@ const styles = theme => ({
     }
 });
 
-class AdapterRow extends React.Component {
+class AdapterRow extends Component {
 
     renderVersion() {
 

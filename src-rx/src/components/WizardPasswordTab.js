@@ -1,4 +1,4 @@
-import React from 'react';
+import { createRef, Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
@@ -38,7 +38,7 @@ const styles = theme => ({
     }
 });
 
-class WizardPasswordTab extends React.Component {
+class WizardPasswordTab extends Component {
     constructor(props) {
         super(props);
 
@@ -49,7 +49,7 @@ class WizardPasswordTab extends React.Component {
             errorPasswordRepeat: false,
         };
 
-        this.focusRef = React.createRef();
+        this.focusRef = createRef();
     }
 
     componentDidMount() {

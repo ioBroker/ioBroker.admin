@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
@@ -120,7 +120,7 @@ const tabsInfo = {
     'tab-files':            {order: 110,  icon: <FilesIcon />},
 };
 
-class Drawer extends React.Component {
+class Drawer extends Component {
     constructor(props) {
         super(props);
 

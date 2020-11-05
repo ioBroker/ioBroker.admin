@@ -1,4 +1,4 @@
-import React from 'react';
+import { createRef, Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
@@ -405,7 +405,7 @@ function installTemplate(el, lang, id, commonConfig, wordDifferent, onChangedBou
     return controls;
 }
 
-class ObjectCustomEditor extends React.Component {
+class ObjectCustomEditor extends Component {
     constructor(props) {
         super(props);
 
@@ -424,14 +424,14 @@ class ObjectCustomEditor extends React.Component {
         this.scrollDone = false;
         this.expanded = expanded;
         this.lastExpanded = window.localStorage.getItem('App.customsLastExpanded') || '';
-        this.scrollDivRef = React.createRef();
+        this.scrollDivRef = createRef();
 
         this.onChangedBound = this.onChange.bind(this);
         this.changedItems = [];
 
         this.controls = {};
         this.refTemplate = {};
-        this.props.customsInstances.map(id => this.refTemplate[id] = React.createRef());
+        this.props.customsInstances.map(id => this.refTemplate[id] = createRef());
 
         window.gMain.objects = this.props.objects;
         window.gMain.socket = this.props.socket.getRawSocket();

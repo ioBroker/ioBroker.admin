@@ -1,4 +1,4 @@
-import React from 'react';
+import { createRef, Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
@@ -29,7 +29,7 @@ const styles = theme => ({
     }
 });
 
-class BaseSettingsSystem extends React.Component {
+class BaseSettingsSystem extends Component {
     constructor(props) {
         super(props);
 
@@ -47,7 +47,7 @@ class BaseSettingsSystem extends React.Component {
             memLimitError:         settings.memLimitError         || 50,
         };
 
-        this.focusRef = React.createRef();
+        this.focusRef = createRef();
     }
 
     componentDidMount() {

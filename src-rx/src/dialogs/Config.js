@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -19,7 +19,7 @@ const styles = {
     }
 };
 
-class Config extends React.Component {
+class Config extends Component {
 
     componentDidMount() {
 

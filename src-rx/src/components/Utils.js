@@ -5,7 +5,6 @@
  *
  **/
 
-import React from 'react';
 import I18n from '@iobroker/adapter-react/i18n';
 
 const NAMESPACE = 'material';

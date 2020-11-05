@@ -1,6 +1,6 @@
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -32,7 +32,7 @@ const styles = theme => ({
     }
 });
 
-class BaseSettingsDialog extends React.Component {
+class BaseSettingsDialog extends Component {
 
     constructor(props) {
         super(props);

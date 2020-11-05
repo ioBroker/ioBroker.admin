@@ -1,5 +1,3 @@
-import React from 'react';
-
 import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 

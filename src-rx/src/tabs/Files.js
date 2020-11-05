@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 
 import PropTypes from 'prop-types';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -8,7 +8,7 @@ import FileBrowser from '../components/FileBrowser';
 import TabContainer from '../components/TabContainer';
 import TabContent from '../components/TabContent';
 
-class Files extends React.Component {
+class Files extends Component {
 
     constructor(props) {
         super(props);

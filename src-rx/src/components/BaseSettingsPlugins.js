@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
@@ -33,7 +33,7 @@ const styles = theme => ({
 
 });
 
-class BaseSettingsPlugins extends React.Component {
+class BaseSettingsPlugins extends Component {
     constructor(props) {
         super(props);
 

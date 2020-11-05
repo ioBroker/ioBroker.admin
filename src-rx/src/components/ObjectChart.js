@@ -1,4 +1,4 @@
-import React from "react";
+import { createRef, Component } from "react";
 import PropTypes from "prop-types";
 import withWidth from "@material-ui/core/withWidth";
 import {withStyles} from "@material-ui/core/styles";
@@ -84,7 +84,7 @@ const styles = theme => ({
 const GRID_PADDING_LEFT = 80;
 const GRID_PADDING_RIGHT = 25;
 
-class ObjectChart extends React.Component {
+class ObjectChart extends Component {
     constructor(props) {
         super(props);
         let from = new Date();
@@ -105,15 +105,15 @@ class ObjectChart extends React.Component {
             splitLine: window.localStorage.getItem('App.splitLine') === 'true',
         };
 
-        this.echartsReact = React.createRef();
-        this.rangeRef = React.createRef();
+        this.echartsReact = createRef();
+        this.rangeRef = createRef();
         this.readTimeout = null;
         this.chartValues = null;
         this.rangeValues = null;
 
         this.unit = this.props.obj.common && this.props.obj.common.unit ? ' ' + this.props.obj.common.unit : '';
 
-        this.divRef = React.createRef();
+        this.divRef = createRef();
 
         this.chart = {};
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -110,7 +110,7 @@ const styles = theme => ({
     }
 });
 
-class Adapters extends React.Component {
+class Adapters extends Component {
 
     constructor(props) {
 

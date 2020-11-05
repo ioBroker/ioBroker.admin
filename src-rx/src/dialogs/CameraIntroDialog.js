@@ -1,4 +1,4 @@
-import React from 'react';
+import { createRef, Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -37,13 +37,13 @@ const styles = theme => ({
     }
 });
 
-class EditIntroLinkDialog extends React.Component {
+class EditIntroLinkDialog extends Component {
 
     constructor(props) {
         super(props);
 
         this.cameraUpdateTimer = null;
-        this.cameraRef = React.createRef();
+        this.cameraRef = createRef();
     }
 
     componentDidMount() {

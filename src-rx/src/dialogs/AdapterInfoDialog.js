@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 
 import ReactMarkdown from 'react-markdown';
 import PropTypes from 'prop-types';
@@ -28,7 +28,7 @@ const styles = {
     }
 };
 
-class AdapterInfoDialog extends React.Component {
+class AdapterInfoDialog extends Component {
 
     constructor(props) {
 

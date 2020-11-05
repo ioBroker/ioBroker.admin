@@ -1,4 +1,4 @@
-import React from 'react';
+import { createRef, Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
@@ -53,7 +53,7 @@ const styles = theme => ({
     }
 });
 
-class BaseSettingsLog extends React.Component {
+class BaseSettingsLog extends Component {
     constructor(props) {
         super(props);
 
@@ -93,7 +93,7 @@ class BaseSettingsLog extends React.Component {
             expanded:  [],
         };
 
-        this.focusRef = React.createRef();
+        this.focusRef = createRef();
     }
 
     componentDidMount() {

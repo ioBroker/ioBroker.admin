@@ -1,6 +1,6 @@
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
@@ -17,7 +17,7 @@ const styles = theme => ({
     },
 });
 
-class CustomTab extends React.Component {
+class CustomTab extends Component {
     constructor(props) {
         super(props);
         this.state = {

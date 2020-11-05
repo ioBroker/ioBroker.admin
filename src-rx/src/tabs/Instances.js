@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from "prop-types";
 
 import withWidth from '@material-ui/core/withWidth';
@@ -135,7 +135,7 @@ const styles = theme => ({
 });
 
 // every tab should get their data itself from server
-class Instances extends React.Component {
+class Instances extends Component {
 
     constructor(props) {
 

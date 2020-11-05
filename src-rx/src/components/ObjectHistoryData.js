@@ -1,4 +1,4 @@
-import React from "react";
+import { Component } from "react";
 import PropTypes from "prop-types";
 import withWidth from "@material-ui/core/withWidth";
 import {withStyles} from "@material-ui/core/styles";
@@ -186,7 +186,7 @@ const styles = theme => ({
     }
 });
 
-class ObjectHistoryData extends React.Component {
+class ObjectHistoryData extends Component {
     constructor(props) {
         super(props);
 

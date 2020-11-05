@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -67,7 +67,7 @@ const formatInfo = {
     'Disk free':     Utils.formatBytes
 };
 
-class Intro extends React.Component {
+class Intro extends Component {
 
     constructor(props) {
 

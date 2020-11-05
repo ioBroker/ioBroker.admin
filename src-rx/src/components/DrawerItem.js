@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -31,7 +31,7 @@ const styles = theme => ({
     }
 });
 
-class DrawerItem extends React.Component {
+class DrawerItem extends Component {
 
     render() {
 

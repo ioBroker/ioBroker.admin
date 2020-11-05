@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
@@ -73,7 +73,7 @@ const styles = theme => ({
     }
 });
 
-class WizardDialog extends React.Component {
+class WizardDialog extends Component {
     constructor(props) {
         super(props);
 

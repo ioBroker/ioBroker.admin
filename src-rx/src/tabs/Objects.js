@@ -1,6 +1,6 @@
 import withWidth from '@material-ui/core/withWidth';
 
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import ObjectBrowser from '../components/ObjectBrowser';
@@ -9,7 +9,7 @@ import Router from '@iobroker/adapter-react/Components/Router';
 import ObjectBrowserValue from '../components/ObjectBrowserValue';
 import ObjectBrowserEditObject from '../components/ObjectBrowserEditObject';
 
-class Objects extends React.Component {
+class Objects extends Component {
 
     constructor(props) {
 

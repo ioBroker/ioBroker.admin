@@ -4,7 +4,7 @@
 
 import withWidth from '@material-ui/core/withWidth';
 import {withStyles} from '@material-ui/core/styles';
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone'
 
@@ -354,14 +354,14 @@ function isFile(path) {
 }
 
 // all icons are copied from https://github.com/FortAwesome/Font-Awesome/blob/0d1f27efb836eb2ab994ba37221849ed64a73e5c/svgs/regular/
-class IconClosed extends React.Component {
+class IconClosed extends Component {
     render() {
         return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 650 512" xmlns="http://www.w3.org/2000/svg" width={this.props.width || 28} height={this.props.height || 28} className={ this.props.className }>
             <path fill="currentColor" d="M464 128H272l-64-64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48z"/>
         </svg>;
     }
 }
-class IconOpen extends React.Component {
+class IconOpen extends Component {
     render() {
         return <svg onClick={e => this.props.onClick && this.props.onClick(e)} viewBox="0 0 650 512" xmlns="http://www.w3.org/2000/svg" width={this.props.width || 28} height={this.props.height || 28} className={ this.props.className }>
             <path fill="currentColor" d="M572.694 292.093L500.27 416.248A63.997 63.997 0 0 1 444.989 448H45.025c-18.523 0-30.064-20.093-20.731-36.093l72.424-124.155A64 64 0 0 1 152 256h399.964c18.523 0 30.064 20.093 20.73 36.093zM152 224h328v-48c0-26.51-21.49-48-48-48H272l-64-64H48C21.49 64 0 85.49 0 112v278.046l69.077-118.418C86.214 242.25 117.989 224 152 224z"/>
@@ -372,7 +372,7 @@ class IconOpen extends React.Component {
 const TABLE = 'Table';
 const TILE = 'Tile';
 
-class FileBrowser extends React.Component {
+class FileBrowser extends Component {
     constructor(props) {
         super(props);
         let expanded = window.localStorage.getItem('files.expanded') || '[]';

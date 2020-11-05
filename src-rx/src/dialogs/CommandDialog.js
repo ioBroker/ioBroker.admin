@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -49,7 +49,7 @@ const styles = theme => ({
     }
 });
 
-class ConfirmDialog extends React.Component {
+class ConfirmDialog extends Component {
 
     constructor(props) {
 

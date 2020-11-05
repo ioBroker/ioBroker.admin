@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -17,7 +17,7 @@ const styles = {
     }
 };
 
-class TabContent extends React.Component {
+class TabContent extends Component {
 
     render() {
 

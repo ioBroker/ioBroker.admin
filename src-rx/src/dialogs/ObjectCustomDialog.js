@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
@@ -42,7 +42,7 @@ export const EXTENSIONS = {
     txt:    ['log', 'txt', 'html', 'css', 'xml'],
 };
 
-class ObjectCustomDialog extends React.Component {
+class ObjectCustomDialog extends Component {
     constructor(props) {
         super(props);
 

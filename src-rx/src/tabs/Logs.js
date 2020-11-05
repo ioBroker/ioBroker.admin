@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import clsx from 'clsx';
 
 import withWidth from '@material-ui/core/withWidth';
@@ -151,7 +151,7 @@ function padding3(num) {
     return s;
 }
 
-class Logs extends React.Component {
+class Logs extends Component {
 
     constructor(props) {
         super(props);

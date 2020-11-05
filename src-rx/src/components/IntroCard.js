@@ -1,4 +1,4 @@
-import React from 'react';
+import { createRef, Component } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -169,7 +169,7 @@ const styles = theme => ({
     }
 });
 
-class IntroCard extends React.Component {
+class IntroCard extends Component {
 
     constructor(props) {
         super(props);
@@ -181,7 +181,7 @@ class IntroCard extends React.Component {
             loaded: false
         };
 
-        this.cameraRef = React.createRef();
+        this.cameraRef = createRef();
         this.cameraUpdateTimer = null;
 
         this.interval = this.props.interval;

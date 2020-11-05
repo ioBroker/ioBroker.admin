@@ -1,4 +1,4 @@
-import React from 'react';
+import { createRef, Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
@@ -29,7 +29,7 @@ const styles = theme => ({
     }
 });
 
-class BaseSettingsMultihost extends React.Component {
+class BaseSettingsMultihost extends Component {
     constructor(props) {
         super(props);
 
@@ -45,7 +45,7 @@ class BaseSettingsMultihost extends React.Component {
             .then(plainPass =>
                 this.setState({ password: plainPass }));
 
-        this.focusRef = React.createRef();
+        this.focusRef = createRef();
     }
 
     componentDidMount() {

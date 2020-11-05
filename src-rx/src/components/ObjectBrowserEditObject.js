@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -27,7 +27,7 @@ const styles = theme => ({
     }
 });
 
-class ObjectBrowserEditObject extends React.Component {
+class ObjectBrowserEditObject extends Component {
     constructor(props) {
         super(props);
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -29,7 +29,7 @@ const styles = theme => ({
     }
 });
 
-class AdapterDeletionDialog extends React.Component {
+class AdapterDeletionDialog extends Component {
 
     constructor(props) {
         super(props);

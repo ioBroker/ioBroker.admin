@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
@@ -52,7 +52,7 @@ function getFileExtension(fileName) {
     }
 }
 
-class FileViewer extends React.Component {
+class FileViewer extends Component {
     constructor(props) {
         super(props);
 
