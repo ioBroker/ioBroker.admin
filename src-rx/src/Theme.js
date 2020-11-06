@@ -59,7 +59,7 @@ function getElevations(color, overlay) {
     return elevations;
 }
 
-export default type => {
+const theme = type => {
     if (type === 'dark') {
         return createMuiTheme({
             name: type,
@@ -195,3 +195,5 @@ export default type => {
         });
     }
 }
+
+export default theme;
