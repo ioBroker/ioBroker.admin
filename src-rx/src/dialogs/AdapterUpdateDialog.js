@@ -61,7 +61,7 @@ class AdapterUpdateDialog extends Component {
 
         this.props.news && this.props.news.forEach(entry => {
 
-            const news = entry.news.split('\n');
+            const news = entry.news ? entry.news.split('\n') : [];
 
             result.push(
                 <Grid item key={ entry.version }>
