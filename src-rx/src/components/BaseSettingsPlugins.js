@@ -1,14 +1,15 @@
 import { Component } from 'react';
 import {withStyles} from '@material-ui/core/styles';
-import withWidth from "@material-ui/core/withWidth";
+import withWidth from '@material-ui/core/withWidth';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import Paper from  '@material-ui/core/Paper';
-import "ace-builds/src-noconflict/mode-json";
-import "ace-builds/src-noconflict/theme-clouds_midnight";
-import "ace-builds/src-noconflict/theme-chrome";
-import "ace-builds/src-noconflict/ext-language_tools";
-import AceEditor from "react-ace";
+import AceEditor from 'react-ace';
+import 'ace-builds/src-noconflict/mode-json';
+import 'ace-builds/src-noconflict/theme-clouds_midnight';
+import 'ace-builds/src-noconflict/theme-chrome';
+import 'ace-builds/src-noconflict/ext-language_tools';
+
 
 const styles = theme => ({
     paper: {
