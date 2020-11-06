@@ -28,7 +28,7 @@ import clsx from 'clsx';
 import Utils from '@iobroker/adapter-react/Components/Utils';
 
 // icons
-import {FaChartLine as SplitLineIcon} from 'react-icons/all';
+import {FaChartLine as SplitLineIcon} from 'react-icons/fa';
 
 function padding3(ms) {
     if (ms < 10) {

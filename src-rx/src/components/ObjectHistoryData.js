@@ -52,8 +52,8 @@ import Utils from '@iobroker/adapter-react/Components/Utils';
 // icons
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import { FaPlusSquare as InsertIcon} from 'react-icons/all';
-import { FaDownload as ExportIcon} from 'react-icons/all';
+import { FaPlusSquare as InsertIcon} from 'react-icons/fa';
+import { FaDownload as ExportIcon} from 'react-icons/fa';
 
 const localeMap = {
     en: enLocale,
