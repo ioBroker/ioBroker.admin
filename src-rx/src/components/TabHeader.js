@@ -1,20 +1,24 @@
-import { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import { Grid } from '@material-ui/core';
 
-class TabHeader extends Component {
-
-    render() {
-        return (
-            <Grid
-                item
-                container
-                alignItems="center"
-            >
-                { this.props.children }
-            </Grid>
-        );
-    }
+const TabHeader = props => {
+    return (
+        <Grid
+            item
+            container
+            alignItems="center"
+        >
+            { props.children }
+        </Grid>
+    );
 }
+
+TabHeader.propTypes = {
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node
+};
 
 export default TabHeader;
