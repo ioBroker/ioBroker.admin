@@ -6,9 +6,9 @@ import { withStyles } from '@material-ui/core/styles';
 
 import Avatar from '@material-ui/core/Avatar';
 import Badge from '@material-ui/core/Badge';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
@@ -600,8 +600,8 @@ class Instances extends Component {
             const loglevelIcon = this.getLogLevelIcon(instance.loglevel);
 
             return (
-                <ExpansionPanel key={ instance.id } square expanded={ this.state.expanded === instance.id } onChange={ () => this.handleChange(instance.id ) }>
-                    <ExpansionPanelSummary
+                <Accordion key={ instance.id } square expanded={ this.state.expanded === instance.id } onChange={ () => this.handleChange(instance.id ) }>
+                    <AccordionSummary
                         expandIcon={ <ExpandMoreIcon /> }
                     >
                         <Grid container spacing={ 1 } alignItems="center" direction="row" wrap="nowrap">
@@ -697,8 +697,8 @@ class Instances extends Component {
                         >
                             <InputIcon />
                         </IconButton>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
+                    </AccordionSummary>
+                    <AccordionDetails>
                         <Grid
                             container
                             direction="row"
@@ -805,8 +805,8 @@ class Instances extends Component {
                                 </Grid>
                             </Grid>
                         </Grid>
-                    </ExpansionPanelDetails>
-                </ExpansionPanel>
+                    </AccordionDetails>
+                </Accordion>
             );
         });
     }

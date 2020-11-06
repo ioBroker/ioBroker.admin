@@ -3,9 +3,9 @@ import {withStyles} from '@material-ui/core/styles';
 import withWidth from "@material-ui/core/withWidth";
 import PropTypes from 'prop-types';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -571,9 +571,9 @@ class ObjectCustomEditor extends Component {
         const enabled = this.commonConfig.commons[id] && (this.commonConfig.commons[id].enabled === true || this.commonConfig.commons[id].enabled === STR_DIFFERENT);
 
         // we use style here, because it will be controlled from non-react (vanilaJS) part
-        return <ExpansionPanel
+        return <Accordion
             key={ id }
-            id={ 'ExpansionPanel_' + id }
+            id={ 'Accordion_' + id }
             className="expansionDiv"
             defaultExpanded={ this.expanded.includes(id) }
             ref={ this.refTemplate[id] }
@@ -589,15 +589,15 @@ class ObjectCustomEditor extends Component {
                 _expanded && window.localStorage.setItem('App.customsLastExpanded', id);
             }}
         >
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} data-id={ id }>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} data-id={ id }>
                 <img src={ icon } className={ this.props.classes.headingIcon } alt="" />
                 <Typography className={ this.props.classes.heading }>{ this.props.t('Settings %s', id)}</Typography>
                 <div className={ clsx(this.props.classes.titleEnabled, 'titleEnabled') } style={{ display: enabled ? 'display-block' : 'none'} }>{ this.props.t('Enabled') }</div>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails className={ clsx(this.props.classes.simulateM, 'm') } >
+            </AccordionSummary>
+            <AccordionDetails className={ clsx(this.props.classes.simulateM, 'm') } >
                 <div className={ this.props.classes.expansionPanelDetailsTabDiv } dangerouslySetInnerHTML={{__html: GLOBAL_TEMPLATES[adapter]}} />
-            </ExpansionPanelDetails>
-        </ExpansionPanel>;
+            </AccordionDetails>
+        </Accordion>;
     }
 
     isAllOk() {
@@ -651,9 +651,9 @@ class ObjectCustomEditor extends Component {
             if (this.expanded.length) {
                 let item;
                 if (this.expanded.includes(this.lastExpanded)) {
-                    item = window.document.getElementById('ExpansionPanel_' + this.lastExpanded);
+                    item = window.document.getElementById('Accordion_' + this.lastExpanded);
                 } else {
-                    item = window.document.getElementById('ExpansionPanel_' + this.expanded[0]);
+                    item = window.document.getElementById('Accordion_' + this.expanded[0]);
                 }
                 item && item.scrollIntoView(true);
             }

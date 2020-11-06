@@ -13,9 +13,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from '@material-ui/core/Toolbar';
 import FormControl from '@material-ui/core/FormControl';
 import Paper from  '@material-ui/core/Paper';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 
@@ -147,7 +147,7 @@ class BaseSettingsLog extends Component {
     }
 
     renderSyslog(name) {
-        return <ExpansionPanel expanded={this.state.expanded.includes(name)} onChange={() => {
+        return <Accordion expanded={this.state.expanded.includes(name)} onChange={() => {
             const expanded = [...this.state.expanded];
             const pos = expanded.indexOf(name);
             if (pos === -1) {
@@ -158,11 +158,11 @@ class BaseSettingsLog extends Component {
 
             this.setState({ expanded });
         }}>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative' }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative' }}>
                 <Typography className={ this.props.classes.heading }>{ name }</Typography>
                 <Fab size="small" className={ this.props.classes.delButton }  onClick={() => this.onDelete(name)}><IconDelete/></Fab>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
                 <Grid container direction="column">
                     <Grid item>
                         <FormControlLabel
@@ -304,12 +304,12 @@ class BaseSettingsLog extends Component {
                         />
                     </Grid> : null }
                 </Grid>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionDetails>
+        </Accordion>
     }
 
     renderFile(name) {
-        return <ExpansionPanel expanded={this.state.expanded.includes(name)} onChange={() => {
+        return <Accordion expanded={this.state.expanded.includes(name)} onChange={() => {
             const expanded = [...this.state.expanded];
             const pos = expanded.indexOf(name);
             if (pos === -1) {
@@ -320,11 +320,11 @@ class BaseSettingsLog extends Component {
 
             this.setState({ expanded });
         }}>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography className={ this.props.classes.heading }>{ name }</Typography>
                 <Fab size="small" className={ this.props.classes.delButton } onClick={() => this.onDelete(name)}><IconDelete/></Fab>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
                 <Grid container direction="column">
                     <Grid item>
                         <FormControlLabel
@@ -397,12 +397,12 @@ class BaseSettingsLog extends Component {
                         />
                     </Grid> : null }
                 </Grid>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionDetails>
+        </Accordion>
     }
 
     renderHttp(name) {
-        return <ExpansionPanel expanded={this.state.expanded.includes(name)} onChange={() => {
+        return <Accordion expanded={this.state.expanded.includes(name)} onChange={() => {
             const expanded = [...this.state.expanded];
             const pos = expanded.indexOf(name);
             if (pos === -1) {
@@ -413,11 +413,11 @@ class BaseSettingsLog extends Component {
 
             this.setState({ expanded });
         }}>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative' }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative' }}>
                 <Typography className={ this.props.classes.heading }>{ name }</Typography>
                 <Fab size="small" className={ this.props.classes.delButton }  onClick={() => this.onDelete(name)}><IconDelete/></Fab>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
                 <Grid container direction="column">
                     <Grid item>
                         <FormControlLabel
@@ -505,12 +505,12 @@ class BaseSettingsLog extends Component {
                         />
                     </Grid> : null }
                 </Grid>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionDetails>
+        </Accordion>
     }
 
     renderStream(name) {
-        return <ExpansionPanel expanded={this.state.expanded.includes(name)} onChange={() => {
+        return <Accordion expanded={this.state.expanded.includes(name)} onChange={() => {
             const expanded = [...this.state.expanded];
             const pos = expanded.indexOf(name);
             if (pos === -1) {
@@ -521,11 +521,11 @@ class BaseSettingsLog extends Component {
 
             this.setState({ expanded });
         }}>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative' }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ position: 'relative' }}>
                 <Typography className={ this.props.classes.heading }>{ name }</Typography>
                 <Fab size="small" className={ this.props.classes.delButton }  onClick={() => this.onDelete(name)}><IconDelete/></Fab>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
                 <Grid container direction="column">
                     <Grid item>
                         <FormControlLabel
@@ -599,8 +599,8 @@ class BaseSettingsLog extends Component {
                         />
                     </Grid> : null }
                 </Grid>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionDetails>
+        </Accordion>
     }
 
     add(type) {
