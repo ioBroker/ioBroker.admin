@@ -9,7 +9,6 @@ import {
     Avatar,
     Badge,
     Grid,
-    Icon,
     IconButton,
     TableCell,
     TableRow,
@@ -26,11 +25,10 @@ import CloudIcon from '@material-ui/icons/Cloud';
 import CloudOffIcon from '@material-ui/icons/CloudOff';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import GitHubIcon from '@material-ui/icons/GitHub';
 import HelpIcon from '@material-ui/icons/Help';
 import PublishIcon from '@material-ui/icons/Publish';
 import RefreshIcon from '@material-ui/icons/Refresh';
-
-import { FaGithub as GithubIcon } from 'react-icons/fa';
 
 import {
     amber,
@@ -105,12 +103,10 @@ class AdapterRow extends Component {
                         container
                     >
                         <Tooltip title={ 'Non-NPM-Version: ' + installedFrom }>
-                            <Icon
-                                className={ classes.versionWarn }
+                            <GitHubIcon
                                 fontSize="small"
-                            >
-                                <GithubIcon />
-                            </Icon>
+                                className={ classes.versionWarn }
+                            />
                         </Tooltip>
                     </Grid>
                 }
