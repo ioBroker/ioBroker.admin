@@ -16,7 +16,7 @@ import StepLabel from '@material-ui/core/StepLabel';
 import clsx from 'clsx';
 
 // Icons
-import {FaPlay as PlayIcon} from 'react-icons/all';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import CheckIcon from '@material-ui/icons/Check';
 import WizardPasswordTab from '../components/WizardPasswordTab';
 import WizardLicenseTab from '../components/WizardLicenseTab';
@@ -102,7 +102,7 @@ class WizardDialog extends Component {
                             .then(obj =>
                                 this.setState( {activeStep: this.state.activeStep + 1 + (obj.common.licenseConfirmed ? 0 : 0) }))
                     }>
-                    { this.props.t('Start wizard') } <PlayIcon className={ this.props.classes.playIcon }/></Button>
+                    { this.props.t('Start wizard') } <PlayArrowIcon className={ this.props.classes.playIcon }/></Button>
                 <div  className={ this.props.classes.grow }/>
             </Toolbar>
         </div>;
