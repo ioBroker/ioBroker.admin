@@ -126,10 +126,12 @@ class Drawer extends Component {
 
         this.state = {
             logErrors: 0,
+            logWarnings: 0,
             tabs: []
         };
 
         this.logErrorHandlerBound = this.logErrorHandler.bind(this);
+        this.logWarningHandlerBound = this.logWarningHandler.bind(this);
         this.instanceChangedHandlerBound = this.instanceChangedHandler.bind(this);
 
         this.instances = null;
@@ -143,11 +145,13 @@ class Drawer extends Component {
 
     componentDidMount() {
         this.props.logsWorker.registerErrorCountHandler(this.logErrorHandlerBound);
+        this.props.logsWorker.registerWarningCountHandler(this.logWarningHandlerBound);
         this.props.instancesWorker.registerHandler(this.instanceChangedHandlerBound);
     }
 
     componentWillUnmount () {
         this.props.logsWorker.unregisterErrorCountHandler(this.logErrorHandlerBound);
+        this.props.logsWorker.unregisterWarningCountHandler(this.logWarningHandlerBound);
         this.props.instancesWorker.unregisterHandler(this.instanceChangedHandlerBound);
     }
 
@@ -155,6 +159,14 @@ class Drawer extends Component {
         if (logErrors !== this.state.logErrors) {
             this.setState({
                 logErrors
+            });
+        }
+    }
+
+    logWarningHandler(logWarnings) {
+        if (logWarnings !== this.state.logWarnings) {
+            this.setState({
+                logWarnings
             });
         }
     }
@@ -307,8 +319,8 @@ class Drawer extends Component {
                     icon={ tab.icon }
                     text={ tab.title }
                     selected={ this.props.currentTab === tab.name }
-                    badgeContent={ tab.name === 'tab-logs' ? this.state.logErrors : 0 }
-                    badgeColor={ tab.name === 'tab-logs' ? 'error' : '' }
+                    badgeContent={ tab.name === 'tab-logs' ? this.state.logErrors || this.state.logWarnings : 0 }
+                    badgeColor={ tab.name === 'tab-logs' ? this.state.logErrors ? 'error' : 'warn' : '' }
                 />
             );
         });

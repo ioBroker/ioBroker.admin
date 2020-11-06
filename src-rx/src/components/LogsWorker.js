@@ -9,10 +9,13 @@ class LogsWorker {
         this.logHandlerBound = this.logHandler.bind(this);
         this.connectionHandlerBound = this.connectionHandler.bind(this);
         this.errorCountHandlers = [];
+        this.warningCountHandlers = [];
         socket.registerLogHandler(this.logHandlerBound);
         socket.registerConnectionHandler(this.connectionHandlerBound);
         this.countErrors = true;
+        this.countWarnings = true;
         this.errors = 0;
+        this.warnings = 0;
         this.currentHost = '';
         this.connected = this.socket.isConnected();
         this.maxLogs = maxLogs || 1000;
@@ -38,13 +41,33 @@ class LogsWorker {
             }
         }
     }
+
+    enableCountWarnings(isEnabled) {
+        if (this.countWarnings !== isEnabled) {
+            this.countWarnings = isEnabled;
+            if (!this.countWarnings) {
+                const warnings = this.warnings;
+                this.warnings = 0;
+                if (warnings) {
+                    this.warningCountHandlers.forEach(handler => handler && handler(warnings));
+                }
+            }
+        }
+    }
     
     logHandler(line) {
         const errors = this.errors;
+        const warnings = this.warnings;
+
         const obj = this._processLine(line);
         obj && this.handlers.forEach(handler => handler && handler([obj]));
+
         if (errors !== this.errors) {
             this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
+        }
+
+        if (warnings !== this.warnings) {
+            this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
         }
     }
 
@@ -82,6 +105,20 @@ class LogsWorker {
 
         if (pos !== -1) {
             this.errorCountHandlers.splice(pos, 1);
+        }
+    }
+
+    registerWarningCountHandler(cb) {
+        if (!this.warningCountHandlers.includes(cb)) {
+            this.warningCountHandlers.push(cb);
+        }
+    }
+
+    unregisterWarningCountHandler(cb) {
+        const pos = this.warningCountHandlers.indexOf(cb);
+
+        if (pos !== -1) {
+            this.warningCountHandlers.splice(pos, 1);
         }
     }
 
@@ -168,6 +205,10 @@ class LogsWorker {
             if (isNew && obj.severity === 'error' && this.countErrors) {
                 this.errors++;
             }
+
+            if (isNew && obj.severity === 'warn' && this.countWarnings) {
+                this.warnings++;
+            }
         }
 
         return obj;
@@ -193,6 +234,7 @@ class LogsWorker {
             new Promise(resolve => this.resolve = resolve);
 
         this.errors = 0;
+        this.warnings = 0;
 
         this.socket.getLogs(this.currentHost, 200)
             .then(lines => {
@@ -215,6 +257,7 @@ class LogsWorker {
                 this.handlers.forEach(cb => cb && cb(this.logs));
 
                 this.errors && this.errorCountHandlers.forEach(handler => handler && handler(this.errors));
+                this.warnings && this.warningCountHandlers.forEach(handler => handler && handler(this.warnings));
 
                 this.resolve({logs: this.logs, logSize});
             });
@@ -230,6 +273,12 @@ class LogsWorker {
             const errors = this.errors;
             this.errors = 0;
             this.errorCountHandlers.forEach(handler => handler && handler(errors));
+        }
+
+        if (this.warnings) {
+            const warnings = this.warnings;
+            this.warnings = 0;
+            this.warningCountHandlers.forEach(handler => handler && handler(warnings));
         }
     }
 }
