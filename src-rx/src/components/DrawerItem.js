@@ -1,16 +1,15 @@
-import { Component } from 'react';
+import PropTypes from 'prop-types';
+import clsx from 'clsx';
 
 import { withStyles } from '@material-ui/core/styles';
-
-import PropTypes from 'prop-types';
-
-import clsx from 'clsx';
 
 import Badge from '@material-ui/core/Badge';
 import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+
+import amber from '@material-ui/core/colors/amber';
 
 import Utils from '../Utils';
 
@@ -28,49 +27,60 @@ const styles = theme => ({
     noWrap: {
         flexWrap: 'nowrap',
         height: 40
+    },
+    warn: {
+        backgroundColor: amber[500]
     }
 });
 
-class DrawerItem extends Component {
+const DrawerItem = props => {
 
-    render() {
+    const {
+        badgeColor,
+        badgeContent,
+        classes,
+        compact,
+        icon,
+        onClick,
+        selected,
+        text
+    } = props;
 
-        const { classes } = this.props;
-        const text = this.props.text ? this.props.text.replace('&gt;', '>') : '';
+    const content = text ? text.replace('&gt;', '>') : '';
 
-        return (
-            <ListItem
-                button
-                className={ clsx({ [classes.selected]: this.props.selected }, this.props.compact && classes.compactBadge) }
-                onClick={ this.props.onClick }
+    return (
+        <ListItem
+            button
+            className={ clsx({ [classes.selected]: selected }, compact && classes.compactBadge) }
+            onClick={ onClick }
+        >
+            <Grid
+                container
+                spacing={ 1 }
+                alignItems="center"
+                className={ classes.noWrap }
             >
-                <Grid
-                    container
-                    spacing={1}
-                    alignItems="center"
-                    className={ classes.noWrap }
-                >
-                    <Grid item>
-                        <ListItemIcon style={{ minWidth: 0 }}>
-                            <Badge
-                                badgeContent={ this.props.badgeContent || 0 }
-                                color={ this.props.badgeColor || 'primary' }
-                            >
-                                { this.props.icon }
-                            </Badge>
-                        </ListItemIcon>
-                    </Grid>
-                    { !this.props.compact &&
-                        <Grid item>
-                            <ListItemText>
-                                { text }
-                            </ListItemText>
-                        </Grid>
-                    }
+                <Grid item>
+                    <ListItemIcon style={{ minWidth: 0 }}>
+                        <Badge
+                            badgeContent={ badgeContent || 0 }
+                            color={ (badgeColor === 'warn' ? 'default' : badgeColor) || 'primary' }
+                            classes={ badgeColor === 'warn' ? {badge: classes.warn } : {} }
+                        >
+                            { icon }
+                        </Badge>
+                    </ListItemIcon>
                 </Grid>
-            </ListItem>
-        )
-    }
+                { !compact &&
+                    <Grid item>
+                        <ListItemText>
+                            { content }
+                        </ListItemText>
+                    </Grid>
+                }
+            </Grid>
+        </ListItem>
+    );
 }
 
 DrawerItem.propTypes = {
@@ -80,7 +90,7 @@ DrawerItem.propTypes = {
     compact: PropTypes.bool,
     text: PropTypes.string,
     badgeContent: PropTypes.number,
-    badgeColor: PropTypes.string
+    badgeColor: PropTypes.oneOf(['', 'default', 'primary', 'secondary', 'error', 'warn'])
 };
 
 export default withStyles(styles)(DrawerItem);
