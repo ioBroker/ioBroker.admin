@@ -1,39 +1,38 @@
-import { Component } from 'react';
-
 import PropTypes from 'prop-types';
 
-import { Grid } from '@material-ui/core';
-import { Tooltip } from '@material-ui/core';
-import { Typography } from '@material-ui/core';
+import {
+    Grid,
+    Tooltip,
+    Typography
+} from '@material-ui/core';
 
-class InstanceInfo extends Component {
-    render() {
-        return (
-            <Grid
-                item
-                container
-                alignItems="center"
-                direction="row"
-                spacing={ 1 }
-            >
-                <Grid item>
-                    { this.props.icon &&
-                        <Tooltip title={ this.props.tooltip || '' }>
-                            { this.props.icon }
-                        </Tooltip>
-                    }
-                </Grid>
-                <Grid item>
-                    <Typography>
-                        { this.props.children }
-                    </Typography>
-                </Grid>
+const InstanceInfo = props => {
+    return (
+        <Grid
+            item
+            container
+            alignItems="center"
+            direction="row"
+            spacing={ 1 }
+        >
+            <Grid item>
+                { props.icon &&
+                    <Tooltip title={ props.tooltip || '' }>
+                        { props.icon }
+                    </Tooltip>
+                }
             </Grid>
-        );
-    }
+            <Grid item>
+                <Typography>
+                    { props.children }
+                </Typography>
+            </Grid>
+        </Grid>
+    );
 }
 
 InstanceInfo.propTypes = {
+    children: PropTypes.node,
     icon: PropTypes.node,
     tooltip: PropTypes.string
 };
